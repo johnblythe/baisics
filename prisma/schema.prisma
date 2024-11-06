@@ -19,7 +19,20 @@ model UserImages {
   fileName   String   @map("file_name")
   base64Data String   @map("base64_data") @db.Text
   createdAt  DateTime @default(now()) @map("created_at")
+  Users      Users?   @relation(fields: [usersId], references: [id])
+  usersId    String?
 
   @@index([sessionId])
   @@map("user_images")
+}
+
+model Users {
+  id         String       @id @default(uuid()) @map("id")
+  email      String       @unique @map("email")
+  password   String       @map("password")
+  createdAt  DateTime     @default(now()) @map("created_at")
+  updatedAt  DateTime     @updatedAt @map("updated_at")
+  UserImages UserImages[]
+
+  @@map("users")
 }

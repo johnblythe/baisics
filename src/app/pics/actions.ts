@@ -1,6 +1,7 @@
 'use server'
 
 import { prisma } from '@/lib/prisma';
+import { sendMessage } from '@/utils/chat';
 
 type ImageUpload = {
   fileName: string;
@@ -12,13 +13,49 @@ export async function uploadImages(images: ImageUpload[]) {
   try {
     const savedImages = await Promise.all(
       images.map(async (image) => {
-        return prisma.userImages.create({
+        const savedImage = await prisma.userImages.create({
           data: {
             fileName: image.fileName,
             base64Data: image.base64Data,
             sessionId: image.sessionId,
           },
         });
+
+        const base64String = image.base64Data.split(',')[1];
+        const mediaType = image.base64Data.split(';')[0].split(':')[1];
+
+        const messages = [{
+          role: 'user',
+          content: [
+            {
+              type: "image",
+              source: {
+                type: "base64",
+                media_type: mediaType,
+                data: base64String,
+              },
+            },
+            { type: 'text', text: 'Describe this image in detail.' },
+          ],
+        }];
+
+        const aiResponse = await sendMessage(messages);
+        
+        if (aiResponse.success) {
+          // await prisma.userImages.update({
+          //   where: { id: savedImage.id },
+          //   data: { 
+          //     aiDescription: aiResponse.data.content[0].text 
+          //   }
+          // });
+
+          return {
+            ...savedImage,
+            aiDescription: aiResponse.data?.content[0].text
+          };
+        }
+
+        return savedImage;
       })
     );
 
@@ -48,5 +85,19 @@ export async function getSessionImages(sessionId: string) {
   } catch (error) {
     console.error('Failed to fetch images:', error);
     return { success: false, error: 'Failed to fetch images' };
+  }
+}
+
+export async function deleteImage(imageId: string) {
+  try {
+    await prisma.userImages.delete({
+      where: {
+        id: imageId,
+      },
+    });
+    return { success: true };
+  } catch (error) {
+    console.error('Delete error:', error);
+    return { success: false, error: 'Failed to delete image' };
   }
 }
