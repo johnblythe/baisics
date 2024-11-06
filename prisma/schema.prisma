@@ -12,3 +12,14 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model UserImages {
+  id         String   @id @default(uuid())
+  sessionId  String   @map("session_id")
+  fileName   String   @map("file_name")
+  base64Data String   @map("base64_data") @db.Text
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([sessionId])
+  @@map("user_images")
+}

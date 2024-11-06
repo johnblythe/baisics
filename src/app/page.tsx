@@ -1,4 +1,4 @@
-import { sendMessage } from "@/utils/chat";
+// import { sendMessage } from "@/utils/chat";
 
 export default async function Home() {
   // Test the Anthropic integration with a simple message
