@@ -13,6 +13,7 @@ import {
   Sex,
   TrainingGoal,
   TrainingPreference,
+  getSessionWorkoutPlan,
 } from "./actions";
 import { useSearchParams, useRouter } from "next/navigation";
 
@@ -36,6 +37,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [intakeForm, setIntakeForm] = useState<IntakeFormData | null>(null);
   const [showIntakeForm, setShowIntakeForm] = useState(true);
+  const [workoutPlan, setWorkoutPlan] = useState<any>(null);
 
   // Add useEffect to handle session initialization and image loading
   useEffect(() => {
@@ -44,6 +46,7 @@ export default function Home() {
       setSessionId(urlSessionId);
       loadSessionImages(urlSessionId);
       loadIntakeForm(urlSessionId);
+      loadWorkoutPlan(urlSessionId);
     } else {
       setSessionId(uuidv4());
       setIsLoading(false);
@@ -101,7 +104,15 @@ export default function Home() {
     }
   };
 
-  // Modified handleIntakeSubmit to include image uploads
+  // Add new function to load workout plan
+  const loadWorkoutPlan = async (sid: string) => {
+    const result = await getSessionWorkoutPlan(sid);
+    if (result.success && result.workoutPlan) {
+      setWorkoutPlan(result.workoutPlan);
+    }
+  };
+
+  // Modified handleIntakeSubmit to include image uploads and workout plan
   const handleIntakeSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsUploading(true);
@@ -123,6 +134,10 @@ export default function Home() {
       const intakeResult = await saveIntakeForm(sessionId, intakeData);
       if (!intakeResult.success) {
         throw new Error("Failed to save intake form");
+      }
+
+      if (intakeResult.success && intakeResult.workoutPlan) {
+        setWorkoutPlan(intakeResult.workoutPlan);
       }
 
       // Then handle file uploads if there are any
@@ -399,6 +414,8 @@ export default function Home() {
               </div>
             </div>
           )}
+
+          {workoutPlan && <WorkoutPlan workoutPlan={workoutPlan} />}
 
           {uploadedImages.length > 0 && (
             <div className="mt-6">

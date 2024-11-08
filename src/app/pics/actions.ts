@@ -150,6 +150,35 @@ export async function saveIntakeForm(sessionId: string, intakeForm: IntakeFormDa
         additionalInfo: intakeForm.additionalInfo,
       },
     });
+
+    // Get the latest AI response from prompt logs
+    const latestPromptLog = await prisma.promptLog.findFirst({
+      where: {
+        sessionId: sessionId,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    if (latestPromptLog) {
+      try {
+        // Parse the AI response and save workout plan
+        const aiResponse = JSON.parse(latestPromptLog.response) as WorkoutPlanData;
+        const workoutPlanResult = await saveWorkoutPlan(sessionId, aiResponse);
+        
+        return { 
+          success: true, 
+          intake: savedIntake,
+          workoutPlan: workoutPlanResult.success ? workoutPlanResult.workoutPlan : null,
+        };
+      } catch (parseError) {
+        console.error('Failed to parse AI response:', parseError);
+        // Continue even if workout plan saving fails
+        return { success: true, intake: savedIntake };
+      }
+    }
+
     return { success: true, intake: savedIntake };
   } catch (error) {
     console.error('Intake form save error:', error);
@@ -199,5 +228,129 @@ export async function getSessionPromptLogs(sessionId: string) {
   } catch (error) {
     console.error('Failed to fetch prompt logs:', error);
     return { success: false, error: 'Failed to fetch prompt logs' };
+  }
+}
+
+// Add new types for workout data
+type Exercise = {
+  name: string;
+  sets: number;
+  reps: number;
+  restPeriod: string;
+};
+
+type Workout = {
+  day: number;
+  exercises: Exercise[];
+};
+
+type WorkoutPlanData = {
+  bodyComposition: {
+    bodyFatPercentage: number;
+    muscleMassDistribution: string;
+  };
+  workoutPlan: {
+    daysPerWeek: number;
+    workouts: Workout[];
+  };
+  nutrition: {
+    dailyCalories: number;
+    macros: {
+      protein: number;
+      carbs: number;
+      fats: number;
+    };
+    mealTiming: string[];
+  };
+  progressionProtocol: string[];
+};
+
+// Function to save workout plan from Claude's response
+export async function saveWorkoutPlan(sessionId: string, planData: WorkoutPlanData) {
+  try {
+    const workoutPlan = await prisma.workoutPlan.create({
+      data: {
+        sessionId,
+        bodyFatPercentage: planData.bodyComposition.bodyFatPercentage,
+        muscleMassDistribution: planData.bodyComposition.muscleMassDistribution,
+        daysPerWeek: planData.workoutPlan.daysPerWeek,
+        dailyCalories: planData.nutrition.dailyCalories,
+        proteinGrams: planData.nutrition.macros.protein,
+        carbGrams: planData.nutrition.macros.carbs,
+        fatGrams: planData.nutrition.macros.fats,
+        mealTiming: planData.nutrition.mealTiming,
+        progressionProtocol: planData.progressionProtocol,
+        workouts: {
+          create: planData.workoutPlan.workouts.map(workout => ({
+            dayNumber: workout.day,
+            exercises: {
+              create: workout.exercises.map(exercise => ({
+                name: exercise.name,
+                sets: exercise.sets,
+                reps: exercise.reps,
+                restPeriod: exercise.restPeriod,
+              })),
+            },
+          })),
+        },
+      },
+      include: {
+        workouts: {
+          include: {
+            exercises: true,
+          },
+        },
+      },
+    });
+
+    return { success: true, workoutPlan };
+  } catch (error) {
+    console.error('Failed to save workout plan:', error);
+    return { success: false, error: 'Failed to save workout plan' };
+  }
+}
+
+// Function to get workout plan for a session
+export async function getSessionWorkoutPlan(sessionId: string) {
+  if (!sessionId) {
+    return { success: false, error: 'Session ID is required' };
+  }
+
+  try {
+    const workoutPlan = await prisma.workoutPlan.findFirst({
+      where: {
+        sessionId: sessionId,
+      },
+      include: {
+        workouts: {
+          orderBy: {
+            dayNumber: 'asc',
+          },
+          include: {
+            exercises: true,
+          },
+        },
+      },
+    });
+
+    return { success: true, workoutPlan };
+  } catch (error) {
+    console.error('Failed to fetch workout plan:', error);
+    return { success: false, error: 'Failed to fetch workout plan' };
+  }
+}
+
+// Add function to delete workout plan
+export async function deleteWorkoutPlan(sessionId: string) {
+  try {
+    await prisma.workoutPlan.deleteMany({
+      where: {
+        sessionId: sessionId,
+      },
+    });
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to delete workout plan:', error);
+    return { success: false, error: 'Failed to delete workout plan' };
   }
 }
