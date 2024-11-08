@@ -26,6 +26,37 @@ model UserImages {
   @@map("user_images")
 }
 
+model UserIntake {
+  id                  String   @id @default(uuid())
+  sessionId           String   @map("session_id")
+  sex                 String
+  trainingGoal        String   @map("training_goal")
+  daysAvailable       Int      @map("days_available")
+  budget              Int?
+  trainingPreferences String[] @map("training_preferences")
+  additionalInfo      String?  @map("additional_info") @db.Text
+  createdAt           DateTime @default(now()) @map("created_at")
+  Users               Users?   @relation(fields: [usersId], references: [id])
+  usersId             String?  @map("users_id")
+
+  @@index([sessionId])
+  @@map("user_intake")
+}
+
+model PromptLog {
+  id        String   @id @default(uuid())
+  sessionId String   @map("session_id")
+  prompt    String   @db.Text
+  response  String   @db.Text
+  model     String   @map("model")
+  createdAt DateTime @default(now()) @map("created_at")
+  Users     Users?   @relation(fields: [usersId], references: [id])
+  usersId   String?  @map("users_id")
+
+  @@index([sessionId])
+  @@map("prompt_log")
+}
+
 model Users {
   id         String       @id @default(uuid()) @map("id")
   email      String       @unique @map("email")
@@ -33,6 +64,8 @@ model Users {
   createdAt  DateTime     @default(now()) @map("created_at")
   updatedAt  DateTime     @updatedAt @map("updated_at")
   UserImages UserImages[]
+  UserIntake UserIntake[]
+  PromptLog  PromptLog[]
 
   @@map("users")
 }
