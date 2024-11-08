@@ -3,8 +3,23 @@
 import { useCallback, useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import { v4 as uuidv4 } from "uuid";
-import { uploadImages, getSessionImages, deleteImage } from "./actions";
+import {
+  uploadImages,
+  getSessionImages,
+  deleteImage,
+  saveIntakeForm,
+  getSessionIntake,
+  IntakeFormData,
+  Sex,
+  TrainingGoal,
+  TrainingPreference,
+  getSessionWorkoutPlan,
+  getSessionPromptLogs,
+  createWorkoutPlan,
+} from "./actions";
 import { useSearchParams, useRouter } from "next/navigation";
+import { WorkoutPlanDisplay } from "@/app/components/WorkoutPlanDisplay";
+import { fileToBase64 } from "@/utils/fileHandling";
 
 // Add new types
 type UploadedImage = {
@@ -24,6 +39,9 @@ export default function Home() {
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [intakeForm, setIntakeForm] = useState<IntakeFormData | null>(null);
+  const [showIntakeForm, setShowIntakeForm] = useState(true);
+  const [workoutPlan, setWorkoutPlan] = useState<any>(null);
 
   // Add useEffect to handle session initialization and image loading
   useEffect(() => {
@@ -31,50 +49,13 @@ export default function Home() {
     if (urlSessionId) {
       setSessionId(urlSessionId);
       loadSessionImages(urlSessionId);
+      loadIntakeForm(urlSessionId);
+      loadWorkoutPlan(urlSessionId);
     } else {
       setSessionId(uuidv4());
       setIsLoading(false);
     }
   }, [searchParams]);
-
-  // Convert file to base64
-  const fileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (error) => reject(error);
-    });
-  };
-
-  // Handle file upload to server
-  const uploadFiles = async (filesToUpload: File[]) => {
-    setIsUploading(true);
-    try {
-      const base64Files = await Promise.all(
-        filesToUpload.map(async (file) => ({
-          fileName: file.name,
-          base64Data: await fileToBase64(file),
-          sessionId,
-        }))
-      );
-
-      const result = await uploadImages(base64Files);
-      if (result.success) {
-        setUploadedImages((prev) => [...prev, ...result.images]);
-        if (!searchParams.get("sessionId")) {
-          router.push(`/pics?sessionId=${sessionId}`);
-        }
-      } else {
-        // Handle error
-        console.error("Upload failed:", result.error);
-      }
-    } catch (error) {
-      console.error("Upload failed:", error);
-    } finally {
-      setIsUploading(false);
-    }
-  };
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     setFiles((prev) => {
@@ -83,13 +64,6 @@ export default function Home() {
       return newFiles.slice(0, 10);
     });
   }, []);
-
-  // Add new submit handler
-  const handleSubmit = async () => {
-    if (files.length === 0) return;
-    await uploadFiles(files);
-    setFiles([]); // Clear files after successful upload
-  };
 
   // Add the dropzone setup
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -101,6 +75,12 @@ export default function Home() {
   });
 
   const loadSessionImages = async (sid: string) => {
+    // Skip loading for new sessions (when sid is not in URL)
+    if (!searchParams.get("sessionId")) {
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const result = await getSessionImages(sid);
       if (result.success) {
@@ -115,6 +95,124 @@ export default function Home() {
     }
   };
 
+  // Add new function to load intake form
+  const loadIntakeForm = async (sid: string) => {
+    const result = await getSessionIntake(sid);
+    if (result.success && result.intake) {
+      setIntakeForm(result.intake);
+      setShowIntakeForm(false);
+    }
+  };
+
+  // Modify loadWorkoutPlan to handle parsing from prompt logs if needed
+  const loadWorkoutPlan = async (sid: string) => {
+    const result = await getSessionWorkoutPlan(sid);
+    console.log("🚀 ~ loadWorkoutPlan ~ result:", result);
+
+    if (result.success && result.workoutPlan) {
+      setWorkoutPlan(result.workoutPlan);
+      setShowIntakeForm(false); // Hide intake form when plan exists
+    } else {
+      // Try to find and parse from prompt logs
+      const logsResult = await getSessionPromptLogs(sid);
+      if (logsResult.success && logsResult.logs.length > 0) {
+        try {
+          const latestLog = logsResult.logs[0];
+          const parsedPlan = JSON.parse(latestLog.response);
+          const saveResult = await createWorkoutPlan(parsedPlan, sessionId);
+          if (saveResult) {
+            setWorkoutPlan(saveResult);
+            setShowIntakeForm(false);
+          }
+        } catch (error) {
+          console.error("Failed to parse workout plan from logs:", error);
+        }
+      }
+    }
+  };
+
+  // Modified handleIntakeSubmit to include image uploads and workout plan
+  const handleIntakeSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsUploading(true);
+
+    try {
+      const formData = new FormData(e.currentTarget);
+
+      // Validate required fields
+      const sex = formData.get("sex");
+      const trainingGoal = formData.get("trainingGoal");
+      const daysAvailable = formData.get("daysAvailable");
+      const trainingPreferences = formData.getAll("trainingPreferences");
+
+      if (
+        !sex ||
+        !trainingGoal ||
+        !daysAvailable ||
+        !trainingPreferences.length
+      ) {
+        throw new Error("Please fill in all required fields");
+      }
+
+      // Create intake data with validated fields
+      const intakeData: IntakeFormData = {
+        sex: sex as Sex,
+        trainingGoal: trainingGoal as TrainingGoal,
+        daysAvailable: Number(daysAvailable),
+        trainingPreferences: trainingPreferences as TrainingPreference[],
+        additionalInfo: formData.get("additionalInfo")?.toString() || "", // Provide default empty string
+      };
+
+      const intakeResult = await saveIntakeForm(sessionId, intakeData);
+      if (!intakeResult.success) {
+        throw new Error("Failed to save intake form");
+      }
+
+      if (intakeResult.success && intakeResult.workoutPlan) {
+        setWorkoutPlan(intakeResult.workoutPlan);
+      }
+
+      // Then handle file uploads if there are any
+      if (files.length > 0) {
+        const base64Files = await Promise.all(
+          files.map(async (file) => ({
+            fileName: file.name,
+            base64Data: await fileToBase64(file),
+            sessionId,
+          }))
+        );
+
+        const uploadResult = await uploadImages(base64Files);
+        if (uploadResult.success) {
+          setUploadedImages((prev) => [...prev, ...uploadResult.images]);
+        } else {
+          throw new Error("Failed to upload images");
+        }
+      }
+
+      // Update UI state
+      setIntakeForm(intakeResult.intake);
+      setShowIntakeForm(false);
+      setFiles([]); // Clear files after successful upload
+
+      // Update URL if needed
+      if (!searchParams.get("sessionId")) {
+        router.push(`/pics?sessionId=${sessionId}`);
+      }
+    } catch (error) {
+      console.error("Submission failed:", error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  // Add new handler for starting a new session
+  const handleNewSession = () => {
+    const newSessionId = uuidv4();
+    router.push(`/pics?sessionId=${newSessionId}`);
+    window.location.reload();
+  };
+
   // Add delete handler
   const handleDelete = async (imageId: string) => {
     const result = await deleteImage(imageId);
@@ -127,57 +225,239 @@ export default function Home() {
 
   return (
     <main className="p-4">
-      <h1 className="text-2xl font-bold mb-4">
-        Image Upload {sessionId && `- Session: ${sessionId}`}
-      </h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">
+          Image Upload {sessionId && `- Session: ${sessionId}`}
+        </h1>
+        <button
+          onClick={handleNewSession}
+          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+        >
+          New Session
+        </button>
+      </div>
 
       {isLoading ? (
         <div className="flex items-center justify-center py-8">
-          <div className="text-gray-600">Loading session images...</div>
+          <div className="text-gray-600">Loading session data...</div>
         </div>
       ) : (
         <>
-          {/* Add the dropzone UI */}
-          <div
-            {...getRootProps()}
-            className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer
-              ${
-                isDragActive ? "border-blue-500 bg-blue-50" : "border-gray-300"
-              }`}
-          >
-            <input {...getInputProps()} />
-            {isDragActive ? (
-              <p>Drop the files here ...</p>
-            ) : (
-              <p>Drag 'n' drop some files here, or click to select files</p>
-            )}
-            <p className="text-sm text-gray-500 mt-2">
-              (Max 10 images, 5MB each. Accepts JPG, PNG, GIF)
-            </p>
-          </div>
-
-          {files.length > 0 && (
-            <div className="mt-4">
-              <h2 className="text-xl font-semibold mb-3">Pending Files:</h2>
-              <div className="mb-4">
-                {files.map((file, index) => (
-                  <div key={index} className="text-sm text-gray-600">
-                    {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
+          {workoutPlan ? (
+            <WorkoutPlanDisplay plan={workoutPlan} />
+          ) : (
+            showIntakeForm &&
+            !intakeForm && (
+              <div className="mb-8 p-6 border rounded-lg">
+                <h2 className="text-xl font-semibold mb-4">
+                  Training Intake Form
+                </h2>
+                <form onSubmit={handleIntakeSubmit} className="space-y-4">
+                  <div>
+                    <label className="block mb-2">Sex</label>
+                    <select
+                      name="sex"
+                      required
+                      defaultValue="man"
+                      className="w-full p-2 border rounded bg-inherit"
+                    >
+                      <option value="">Select...</option>
+                      <option value="man">Man</option>
+                      <option value="woman">Woman</option>
+                      <option value="other">Other</option>
+                    </select>
                   </div>
-                ))}
+
+                  <div>
+                    <label className="block mb-2">Training Goal</label>
+                    <select
+                      name="trainingGoal"
+                      required
+                      defaultValue="strength gains"
+                      className="w-full p-2 border rounded bg-inherit"
+                    >
+                      <option value="">Select...</option>
+                      <option value="weight loss">Weight Loss</option>
+                      <option value="maintenance">Maintenance</option>
+                      <option value="body recomposition">
+                        Body Recomposition
+                      </option>
+                      <option value="strength gains">Strength Gains</option>
+                      <option value="weight gain">Weight Gain</option>
+                      <option value="muscle building">Muscle Building</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block mb-2">
+                      Days Available Per Week
+                    </label>
+                    <input
+                      type="number"
+                      name="daysAvailable"
+                      min="1"
+                      max="7"
+                      defaultValue="4"
+                      required
+                      className="w-full p-2 border rounded bg-inherit"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block mb-2">
+                      Training Preferences (select multiple)
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        "cardio",
+                        "resistance",
+                        "free weights",
+                        "machines",
+                        "kettlebell",
+                        "running",
+                        "plyometrics",
+                        "yoga",
+                      ].map((pref) => (
+                        <label
+                          key={pref}
+                          className="flex items-center space-x-2"
+                        >
+                          <input
+                            type="checkbox"
+                            name="trainingPreferences"
+                            value={pref}
+                            defaultChecked={[
+                              "free weights",
+                              "cardio",
+                              "kettlebell",
+                            ].includes(pref)}
+                            className="form-checkbox bg-inherit"
+                          />
+                          <span className="capitalize">{pref}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block mb-2">Additional Information</label>
+                    <textarea
+                      name="additionalInfo"
+                      className="w-full p-2 border rounded bg-inherit"
+                      rows={3}
+                      defaultValue="I travel a lot so will be limited to hotel weight rooms Monday through Thursday. I can do kettlebells and running Friday through Sunday."
+                    ></textarea>
+                  </div>
+
+                  <div>
+                    <label className="block mb-2">
+                      Upload Progress Pictures (Optional)
+                    </label>
+                    <div
+                      {...getRootProps()}
+                      className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer
+                        ${
+                          isDragActive
+                            ? "border-blue-500 bg-blue-50"
+                            : "border-gray-300"
+                        }`}
+                    >
+                      <input {...getInputProps()} />
+                      {isDragActive ? (
+                        <p>Drop the files here ...</p>
+                      ) : (
+                        <p>
+                          Drag 'n' drop some files here, or click to select
+                          files
+                        </p>
+                      )}
+                      <p className="text-sm text-gray-500 mt-2">
+                        (Max 10 images, 5MB each. Accepts JPG, PNG, GIF)
+                      </p>
+                    </div>
+                  </div>
+
+                  {files.length > 0 && (
+                    <div className="mt-4">
+                      <h3 className="font-semibold mb-2">Selected Files:</h3>
+                      {files.map((file, index) => (
+                        <div key={index} className="text-sm text-gray-600">
+                          {file.name} ({(file.size / 1024 / 1024).toFixed(2)}{" "}
+                          MB)
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="space-y-4">
+                    <div className="border-t pt-4">
+                      <label className="flex items-start space-x-2">
+                        <input
+                          type="checkbox"
+                          name="consent"
+                          required
+                          defaultChecked
+                          className="mt-1 form-checkbox bg-inherit"
+                        />
+                        <span className="text-sm">
+                          I agree to share my data for the purpose of receiving
+                          a training program. I understand that AI-generated
+                          recommendations may contain mistakes and that I should
+                          consult with my physician before starting any new
+                          exercise program. I acknowledge that this is for
+                          informational purposes only and does not constitute
+                          medical or professional advice.
+                        </span>
+                      </label>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isUploading}
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded w-full disabled:opacity-50"
+                    >
+                      {isUploading ? "Submitting..." : "Submit Intake Form"}
+                    </button>
+                  </div>
+                </form>
               </div>
-              <button
-                onClick={handleSubmit}
-                disabled={isUploading}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
-              >
-                {isUploading ? "Uploading..." : "Upload Files"}
-              </button>
-            </div>
+            )
           )}
 
-          {isUploading && (
-            <div className="mt-4 text-blue-600">Uploading images...</div>
+          {intakeForm && (
+            <div className="mb-8 p-6 border rounded-lg">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold">Training Profile</h2>
+                <button
+                  onClick={() => setShowIntakeForm(true)}
+                  className="text-blue-500 hover:text-blue-600"
+                >
+                  Edit Profile
+                </button>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <p>
+                  <strong>Sex:</strong> {intakeForm.sex}
+                </p>
+                <p>
+                  <strong>Training Goal:</strong> {intakeForm.trainingGoal}
+                </p>
+                <p>
+                  <strong>Days Available:</strong> {intakeForm.daysAvailable}
+                </p>
+                <p>
+                  <strong>Preferences:</strong>{" "}
+                  {intakeForm.trainingPreferences.join(", ")}
+                </p>
+                {intakeForm.additionalInfo && (
+                  <p className="col-span-2">
+                    <strong>Additional Info:</strong>{" "}
+                    {intakeForm.additionalInfo}
+                  </p>
+                )}
+              </div>
+            </div>
           )}
 
           {uploadedImages.length > 0 && (

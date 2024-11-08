@@ -14,25 +14,123 @@ datasource db {
 }
 
 model UserImages {
-  id         String   @id @default(uuid())
-  sessionId  String   @map("session_id")
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId     String?  @map("user_id") @db.Uuid
+  sessionId  String   @map("session_id") @db.Uuid
   fileName   String   @map("file_name")
   base64Data String   @map("base64_data") @db.Text
   createdAt  DateTime @default(now()) @map("created_at")
-  Users      Users?   @relation(fields: [usersId], references: [id])
-  usersId    String?
+  Users      Users?   @relation(fields: [userId], references: [id])
 
   @@index([sessionId])
   @@map("user_images")
 }
 
+model UserIntake {
+  id                  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId              String?  @map("user_id") @db.Uuid
+  sessionId           String   @map("session_id") @db.Uuid
+  sex                 String
+  trainingGoal        String   @map("training_goal")
+  daysAvailable       Int      @map("days_available")
+  budget              Int?
+  trainingPreferences String[] @map("training_preferences")
+  additionalInfo      String?  @map("additional_info") @db.Text
+  createdAt           DateTime @default(now()) @map("created_at")
+  Users               Users?   @relation(fields: [userId], references: [id])
+
+  @@index([sessionId])
+  @@map("user_intake")
+}
+
+model PromptLog {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String?  @map("user_id") @db.Uuid
+  sessionId String   @map("session_id") @db.Uuid
+  prompt    String   @db.Text
+  response  String   @db.Text
+  model     String   @map("model")
+  createdAt DateTime @default(now()) @map("created_at")
+  Users     Users?   @relation(fields: [userId], references: [id])
+
+  @@index([sessionId])
+  @@map("prompt_log")
+}
+
 model Users {
-  id         String       @id @default(uuid()) @map("id")
-  email      String       @unique @map("email")
-  password   String       @map("password")
-  createdAt  DateTime     @default(now()) @map("created_at")
-  updatedAt  DateTime     @updatedAt @map("updated_at")
-  UserImages UserImages[]
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email       String        @unique @map("email")
+  password    String        @map("password")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+  UserImages  UserImages[]
+  UserIntake  UserIntake[]
+  PromptLog   PromptLog[]
+  WorkoutPlan WorkoutPlan[]
 
   @@map("users")
+}
+
+model WorkoutPlan {
+  id                     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sessionId              String    @map("session_id") @db.Uuid
+  bodyFatPercentage      Float     @map("body_fat_percentage")
+  muscleMassDistribution String    @map("muscle_mass_distribution") @db.Text
+  daysPerWeek            Int       @map("days_per_week")
+  dailyCalories          Int       @map("daily_calories")
+  proteinGrams           Int       @map("protein_grams")
+  carbGrams              Int       @map("carb_grams")
+  fatGrams               Int       @map("fat_grams")
+  mealTiming             String[]  @map("meal_timing")
+  progressionProtocol    String[]  @map("progression_protocol")
+  createdAt              DateTime  @default(now()) @map("created_at")
+  Users                  Users?    @relation(fields: [userId], references: [id])
+  userId                 String?   @map("user_id") @db.Uuid
+  workouts               Workout[]
+
+  @@index([sessionId])
+  @@map("workout_plans")
+}
+
+model Workout {
+  id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workoutPlanId String      @map("workout_plan_id") @db.Uuid
+  dayNumber     Int         @map("day_number")
+  workoutPlan   WorkoutPlan @relation(fields: [workoutPlanId], references: [id], onDelete: Cascade)
+  exercises     Exercise[]
+  createdAt     DateTime    @default(now()) @map("created_at")
+
+  @@index([workoutPlanId])
+  @@map("workouts")
+}
+
+model ExerciseLibrary {
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String     @unique
+  category    String // e.g., "Chest", "Back", "Legs"
+  equipment   String[] // e.g., ["Barbell", "Dumbbell"]
+  description String?    @db.Text
+  difficulty  String // e.g., "Beginner", "Intermediate", "Advanced"
+  videoUrl    String?    @map("video_url")
+  exercises   Exercise[]
+  createdAt   DateTime   @default(now()) @map("created_at")
+
+  @@map("exercise_library")
+}
+
+model Exercise {
+  id                String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workoutId         String          @map("workout_id") @db.Uuid
+  exerciseLibraryId String          @map("exercise_library_id") @db.Uuid
+  name              String          @map("name")
+  sets              Int
+  reps              Int
+  restPeriod        String          @map("rest_period")
+  workout           Workout         @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  exerciseLibrary   ExerciseLibrary @relation(fields: [exerciseLibraryId], references: [id])
+  createdAt         DateTime        @default(now()) @map("created_at")
+
+  @@index([workoutId])
+  @@index([exerciseLibraryId])
+  @@map("exercises")
 }
