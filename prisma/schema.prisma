@@ -122,6 +122,7 @@ model Exercise {
   id                String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   workoutId         String          @map("workout_id") @db.Uuid
   exerciseLibraryId String          @map("exercise_library_id") @db.Uuid
+  name              String          @map("name")
   sets              Int
   reps              Int
   restPeriod        String          @map("rest_period")

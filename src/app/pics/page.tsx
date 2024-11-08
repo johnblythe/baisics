@@ -14,8 +14,12 @@ import {
   TrainingGoal,
   TrainingPreference,
   getSessionWorkoutPlan,
+  getSessionPromptLogs,
+  createWorkoutPlan,
 } from "./actions";
 import { useSearchParams, useRouter } from "next/navigation";
+import { WorkoutPlanDisplay } from "@/app/components/WorkoutPlanDisplay";
+import { fileToBase64 } from "@/utils/fileHandling";
 
 // Add new types
 type UploadedImage = {
@@ -53,16 +57,6 @@ export default function Home() {
     }
   }, [searchParams]);
 
-  // Convert file to base64
-  const fileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (error) => reject(error);
-    });
-  };
-
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     setFiles((prev) => {
       const newFiles = [...prev, ...acceptedFiles];
@@ -81,6 +75,12 @@ export default function Home() {
   });
 
   const loadSessionImages = async (sid: string) => {
+    // Skip loading for new sessions (when sid is not in URL)
+    if (!searchParams.get("sessionId")) {
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const result = await getSessionImages(sid);
       if (result.success) {
@@ -104,11 +104,30 @@ export default function Home() {
     }
   };
 
-  // Add new function to load workout plan
+  // Modify loadWorkoutPlan to handle parsing from prompt logs if needed
   const loadWorkoutPlan = async (sid: string) => {
     const result = await getSessionWorkoutPlan(sid);
+    console.log("🚀 ~ loadWorkoutPlan ~ result:", result);
+
     if (result.success && result.workoutPlan) {
       setWorkoutPlan(result.workoutPlan);
+      setShowIntakeForm(false); // Hide intake form when plan exists
+    } else {
+      // Try to find and parse from prompt logs
+      const logsResult = await getSessionPromptLogs(sid);
+      if (logsResult.success && logsResult.logs.length > 0) {
+        try {
+          const latestLog = logsResult.logs[0];
+          const parsedPlan = JSON.parse(latestLog.response);
+          const saveResult = await createWorkoutPlan(parsedPlan, sessionId);
+          if (saveResult) {
+            setWorkoutPlan(saveResult);
+            setShowIntakeForm(false);
+          }
+        } catch (error) {
+          console.error("Failed to parse workout plan from logs:", error);
+        }
+      }
     }
   };
 
@@ -120,15 +139,28 @@ export default function Home() {
     try {
       const formData = new FormData(e.currentTarget);
 
-      // First save the intake form
+      // Validate required fields
+      const sex = formData.get("sex");
+      const trainingGoal = formData.get("trainingGoal");
+      const daysAvailable = formData.get("daysAvailable");
+      const trainingPreferences = formData.getAll("trainingPreferences");
+
+      if (
+        !sex ||
+        !trainingGoal ||
+        !daysAvailable ||
+        !trainingPreferences.length
+      ) {
+        throw new Error("Please fill in all required fields");
+      }
+
+      // Create intake data with validated fields
       const intakeData: IntakeFormData = {
-        sex: formData.get("sex") as Sex,
-        trainingGoal: formData.get("trainingGoal") as TrainingGoal,
-        daysAvailable: Number(formData.get("daysAvailable")),
-        trainingPreferences: formData.getAll(
-          "trainingPreferences"
-        ) as TrainingPreference[],
-        additionalInfo: formData.get("additionalInfo")?.toString(),
+        sex: sex as Sex,
+        trainingGoal: trainingGoal as TrainingGoal,
+        daysAvailable: Number(daysAvailable),
+        trainingPreferences: trainingPreferences as TrainingPreference[],
+        additionalInfo: formData.get("additionalInfo")?.toString() || "", // Provide default empty string
       };
 
       const intakeResult = await saveIntakeForm(sessionId, intakeData);
@@ -178,6 +210,7 @@ export default function Home() {
   const handleNewSession = () => {
     const newSessionId = uuidv4();
     router.push(`/pics?sessionId=${newSessionId}`);
+    window.location.reload();
   };
 
   // Add delete handler
@@ -206,178 +239,190 @@ export default function Home() {
 
       {isLoading ? (
         <div className="flex items-center justify-center py-8">
-          <div className="text-gray-600">Loading session images...</div>
+          <div className="text-gray-600">Loading session data...</div>
         </div>
       ) : (
         <>
-          {showIntakeForm && !intakeForm && (
-            <div className="mb-8 p-6 border rounded-lg">
-              <h2 className="text-xl font-semibold mb-4">
-                Training Intake Form
-              </h2>
-              <form onSubmit={handleIntakeSubmit} className="space-y-4">
-                <div>
-                  <label className="block mb-2">Sex</label>
-                  <select
-                    name="sex"
-                    required
-                    defaultValue="man"
-                    className="w-full p-2 border rounded bg-inherit"
-                  >
-                    <option value="">Select...</option>
-                    <option value="man">Man</option>
-                    <option value="woman">Woman</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
+          {workoutPlan ? (
+            <WorkoutPlanDisplay plan={workoutPlan} />
+          ) : (
+            showIntakeForm &&
+            !intakeForm && (
+              <div className="mb-8 p-6 border rounded-lg">
+                <h2 className="text-xl font-semibold mb-4">
+                  Training Intake Form
+                </h2>
+                <form onSubmit={handleIntakeSubmit} className="space-y-4">
+                  <div>
+                    <label className="block mb-2">Sex</label>
+                    <select
+                      name="sex"
+                      required
+                      defaultValue="man"
+                      className="w-full p-2 border rounded bg-inherit"
+                    >
+                      <option value="">Select...</option>
+                      <option value="man">Man</option>
+                      <option value="woman">Woman</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
 
-                <div>
-                  <label className="block mb-2">Training Goal</label>
-                  <select
-                    name="trainingGoal"
-                    required
-                    defaultValue="strength gains"
-                    className="w-full p-2 border rounded bg-inherit"
-                  >
-                    <option value="">Select...</option>
-                    <option value="weight loss">Weight Loss</option>
-                    <option value="maintenance">Maintenance</option>
-                    <option value="body recomposition">
-                      Body Recomposition
-                    </option>
-                    <option value="strength gains">Strength Gains</option>
-                    <option value="weight gain">Weight Gain</option>
-                    <option value="muscle building">Muscle Building</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
+                  <div>
+                    <label className="block mb-2">Training Goal</label>
+                    <select
+                      name="trainingGoal"
+                      required
+                      defaultValue="strength gains"
+                      className="w-full p-2 border rounded bg-inherit"
+                    >
+                      <option value="">Select...</option>
+                      <option value="weight loss">Weight Loss</option>
+                      <option value="maintenance">Maintenance</option>
+                      <option value="body recomposition">
+                        Body Recomposition
+                      </option>
+                      <option value="strength gains">Strength Gains</option>
+                      <option value="weight gain">Weight Gain</option>
+                      <option value="muscle building">Muscle Building</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
 
-                <div>
-                  <label className="block mb-2">Days Available Per Week</label>
-                  <input
-                    type="number"
-                    name="daysAvailable"
-                    min="1"
-                    max="7"
-                    defaultValue="4"
-                    required
-                    className="w-full p-2 border rounded bg-inherit"
-                  />
-                </div>
+                  <div>
+                    <label className="block mb-2">
+                      Days Available Per Week
+                    </label>
+                    <input
+                      type="number"
+                      name="daysAvailable"
+                      min="1"
+                      max="7"
+                      defaultValue="4"
+                      required
+                      className="w-full p-2 border rounded bg-inherit"
+                    />
+                  </div>
 
-                <div>
-                  <label className="block mb-2">
-                    Training Preferences (select multiple)
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {[
-                      "cardio",
-                      "resistance",
-                      "free weights",
-                      "machines",
-                      "kettlebell",
-                      "running",
-                      "plyometrics",
-                      "yoga",
-                    ].map((pref) => (
-                      <label key={pref} className="flex items-center space-x-2">
+                  <div>
+                    <label className="block mb-2">
+                      Training Preferences (select multiple)
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        "cardio",
+                        "resistance",
+                        "free weights",
+                        "machines",
+                        "kettlebell",
+                        "running",
+                        "plyometrics",
+                        "yoga",
+                      ].map((pref) => (
+                        <label
+                          key={pref}
+                          className="flex items-center space-x-2"
+                        >
+                          <input
+                            type="checkbox"
+                            name="trainingPreferences"
+                            value={pref}
+                            defaultChecked={[
+                              "free weights",
+                              "cardio",
+                              "kettlebell",
+                            ].includes(pref)}
+                            className="form-checkbox bg-inherit"
+                          />
+                          <span className="capitalize">{pref}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block mb-2">Additional Information</label>
+                    <textarea
+                      name="additionalInfo"
+                      className="w-full p-2 border rounded bg-inherit"
+                      rows={3}
+                      defaultValue="I travel a lot so will be limited to hotel weight rooms Monday through Thursday. I can do kettlebells and running Friday through Sunday."
+                    ></textarea>
+                  </div>
+
+                  <div>
+                    <label className="block mb-2">
+                      Upload Progress Pictures (Optional)
+                    </label>
+                    <div
+                      {...getRootProps()}
+                      className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer
+                        ${
+                          isDragActive
+                            ? "border-blue-500 bg-blue-50"
+                            : "border-gray-300"
+                        }`}
+                    >
+                      <input {...getInputProps()} />
+                      {isDragActive ? (
+                        <p>Drop the files here ...</p>
+                      ) : (
+                        <p>
+                          Drag 'n' drop some files here, or click to select
+                          files
+                        </p>
+                      )}
+                      <p className="text-sm text-gray-500 mt-2">
+                        (Max 10 images, 5MB each. Accepts JPG, PNG, GIF)
+                      </p>
+                    </div>
+                  </div>
+
+                  {files.length > 0 && (
+                    <div className="mt-4">
+                      <h3 className="font-semibold mb-2">Selected Files:</h3>
+                      {files.map((file, index) => (
+                        <div key={index} className="text-sm text-gray-600">
+                          {file.name} ({(file.size / 1024 / 1024).toFixed(2)}{" "}
+                          MB)
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="space-y-4">
+                    <div className="border-t pt-4">
+                      <label className="flex items-start space-x-2">
                         <input
                           type="checkbox"
-                          name="trainingPreferences"
-                          value={pref}
-                          defaultChecked={[
-                            "free weights",
-                            "cardio",
-                            "kettlebell",
-                          ].includes(pref)}
-                          className="form-checkbox bg-inherit"
+                          name="consent"
+                          required
+                          defaultChecked
+                          className="mt-1 form-checkbox bg-inherit"
                         />
-                        <span className="capitalize">{pref}</span>
+                        <span className="text-sm">
+                          I agree to share my data for the purpose of receiving
+                          a training program. I understand that AI-generated
+                          recommendations may contain mistakes and that I should
+                          consult with my physician before starting any new
+                          exercise program. I acknowledge that this is for
+                          informational purposes only and does not constitute
+                          medical or professional advice.
+                        </span>
                       </label>
-                    ))}
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isUploading}
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded w-full disabled:opacity-50"
+                    >
+                      {isUploading ? "Submitting..." : "Submit Intake Form"}
+                    </button>
                   </div>
-                </div>
-
-                <div>
-                  <label className="block mb-2">Additional Information</label>
-                  <textarea
-                    name="additionalInfo"
-                    className="w-full p-2 border rounded bg-inherit"
-                    rows={3}
-                    defaultValue="I travel a lot so will be limited to hotel weight rooms Monday through Thursday. I can do kettlebells and running Friday through Sunday."
-                  ></textarea>
-                </div>
-
-                <div>
-                  <label className="block mb-2">
-                    Upload Progress Pictures (Optional)
-                  </label>
-                  <div
-                    {...getRootProps()}
-                    className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer
-                      ${
-                        isDragActive
-                          ? "border-blue-500 bg-blue-50"
-                          : "border-gray-300"
-                      }`}
-                  >
-                    <input {...getInputProps()} />
-                    {isDragActive ? (
-                      <p>Drop the files here ...</p>
-                    ) : (
-                      <p>
-                        Drag 'n' drop some files here, or click to select files
-                      </p>
-                    )}
-                    <p className="text-sm text-gray-500 mt-2">
-                      (Max 10 images, 5MB each. Accepts JPG, PNG, GIF)
-                    </p>
-                  </div>
-                </div>
-
-                {files.length > 0 && (
-                  <div className="mt-4">
-                    <h3 className="font-semibold mb-2">Selected Files:</h3>
-                    {files.map((file, index) => (
-                      <div key={index} className="text-sm text-gray-600">
-                        {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                <div className="space-y-4">
-                  <div className="border-t pt-4">
-                    <label className="flex items-start space-x-2">
-                      <input
-                        type="checkbox"
-                        name="consent"
-                        required
-                        defaultChecked
-                        className="mt-1 form-checkbox bg-inherit"
-                      />
-                      <span className="text-sm">
-                        I agree to share my data for the purpose of receiving a
-                        training program. I understand that AI-generated
-                        recommendations may contain mistakes and that I should
-                        consult with my physician before starting any new
-                        exercise program. I acknowledge that this is for
-                        informational purposes only and does not constitute
-                        medical or professional advice.
-                      </span>
-                    </label>
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={isUploading}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded w-full disabled:opacity-50"
-                  >
-                    {isUploading ? "Submitting..." : "Submit Intake Form"}
-                  </button>
-                </div>
-              </form>
-            </div>
+                </form>
+              </div>
+            )
           )}
 
           {intakeForm && (
@@ -414,8 +459,6 @@ export default function Home() {
               </div>
             </div>
           )}
-
-          {workoutPlan && <WorkoutPlan workoutPlan={workoutPlan} />}
 
           {uploadedImages.length > 0 && (
             <div className="mt-6">

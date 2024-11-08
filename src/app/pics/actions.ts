@@ -145,12 +145,12 @@ export async function saveIntakeForm(sessionId: string, intakeForm: IntakeFormDa
         sex: intakeForm.sex,
         trainingGoal: intakeForm.trainingGoal,
         daysAvailable: intakeForm.daysAvailable,
-        budget: intakeForm.budget,
+        // budget: intakeForm.budget,
         trainingPreferences: intakeForm.trainingPreferences,
         additionalInfo: intakeForm.additionalInfo,
       },
     });
-
+    
     // Get the latest AI response from prompt logs
     const latestPromptLog = await prisma.promptLog.findFirst({
       where: {
@@ -289,6 +289,13 @@ export async function saveWorkoutPlan(sessionId: string, planData: WorkoutPlanDa
                 sets: exercise.sets,
                 reps: exercise.reps,
                 restPeriod: exercise.restPeriod,
+                exerciseLibrary: {
+                  create: {
+                    name: exercise.name,
+                    category: 'default',
+                    difficulty: 'intermediate'
+                  }
+                }
               })),
             },
           })),
@@ -353,4 +360,53 @@ export async function deleteWorkoutPlan(sessionId: string) {
     console.error('Failed to delete workout plan:', error);
     return { success: false, error: 'Failed to delete workout plan' };
   }
+}
+
+async function parseWorkoutPlan(data: WorkoutPlanData) {
+  const workouts = await Promise.all(data.workoutPlan.workouts.map(async (workout: Workout) => ({
+    dayNumber: workout.day,
+    exercises: {
+      create: workout.exercises.map(exercise => ({
+        name: exercise.name,
+        sets: exercise.sets,
+        reps: exercise.reps,
+        restPeriod: exercise.restPeriod,
+        exerciseLibrary: {
+          create: {
+            name: exercise.name,
+            category: 'default',
+            difficulty: 'intermediate'
+          }
+        }
+      })),
+    },
+  })));
+
+  return {
+    bodyFatPercentage: data.bodyComposition.bodyFatPercentage,
+    muscleMassDistribution: data.bodyComposition.muscleMassDistribution,
+    dailyCalories: data.nutrition.dailyCalories,
+    proteinGrams: data.nutrition.macros.protein,
+    carbGrams: data.nutrition.macros.carbs,
+    fatGrams: data.nutrition.macros.fats,
+    mealTiming: data.nutrition.mealTiming,
+    progressionProtocol: data.progressionProtocol,
+    daysPerWeek: data.workoutPlan.daysPerWeek,
+    workouts: {
+      create: workouts
+    }
+  };
+}
+
+export async function createWorkoutPlan(planData: WorkoutPlanData, sessionId: string) {
+  console.log("🚀 ~ createWorkoutPlan ~ planData:", planData)
+  const parsedPlan = await parseWorkoutPlan(planData);
+  console.log("🚀 ~ createWorkoutPlan ~ parsedPlan:", parsedPlan)
+  // const result = await saveWorkoutPlan(sessionId, parsedPlan);
+  
+  const result = await prisma.workoutPlan.create({
+    data: {...parsedPlan, sessionId}
+  });
+
+  return result;
 }

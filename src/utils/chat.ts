@@ -6,9 +6,8 @@ export async function sendMessage(messages: { role: string; content: string }[])
       messages: messages,
       system: "You are a world-class fitness coach. You are helping a client with their fitness journey by providing feedback on their progress pictures and programming for their training and macros.",
       model: 'claude-3-5-sonnet-20241022',
-      max_tokens: 1000,
-    })
-    console.log("🚀 ~ sendMessage ~ response:", response)
+      max_tokens: 4000,
+    });
 
     return { success: true, data: response }
   } catch (error) {

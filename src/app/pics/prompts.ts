@@ -17,7 +17,9 @@ Interface Requirements:
         name: string,
         sets: number,
         reps: number,
-        restPeriod: string
+        restPeriod: string,
+        category: string,
+        difficulty: string
       }>
     }>,
   },
