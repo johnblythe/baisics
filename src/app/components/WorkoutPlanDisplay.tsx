@@ -25,9 +25,9 @@ type WorkoutPlan = {
 
 export function WorkoutPlanDisplay({ plan }: { plan: WorkoutPlan }) {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 mt-4">
       {/* Overview Section */}
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <h2 className="text-xl font-semibold mb-4">
           Training Program Overview
         </h2>
@@ -73,29 +73,32 @@ export function WorkoutPlanDisplay({ plan }: { plan: WorkoutPlan }) {
           .map((workout) => (
             <div
               key={workout.dayNumber}
-              className="bg-white rounded-lg shadow p-6"
+              className="bg-white dark:bg-gray-800 rounded-lg shadow p-6"
             >
               <h3 className="font-semibold mb-4">Day {workout.dayNumber}</h3>
-              <table className="w-full">
-                <thead>
-                  <tr className="text-left">
-                    <th className="pb-2">Exercise</th>
-                    <th className="pb-2">Sets</th>
-                    <th className="pb-2">Reps</th>
-                    <th className="pb-2">Rest</th>
-                  </tr>
-                </thead>
-                <tbody>
+              <div className="w-full">
+                {/* Header */}
+                <div className="grid grid-cols-12 gap-4 text-left font-medium mb-2">
+                  <div className="col-span-6">Exercise</div>
+                  <div className="col-span-1">Sets</div>
+                  <div className="col-span-2">Reps</div>
+                  <div className="col-span-3">Rest</div>
+                </div>
+                {/* Exercise Rows */}
+                <div className="space-y-2">
                   {workout.exercises.map((exercise, index) => (
-                    <tr key={index} className="border-t">
-                      <td className="py-2">{exercise.name}</td>
-                      <td className="py-2">{exercise.sets}</td>
-                      <td className="py-2">{exercise.reps}</td>
-                      <td className="py-2">{exercise.restPeriod}</td>
-                    </tr>
+                    <div
+                      key={index}
+                      className="grid grid-cols-12 gap-4 py-2 border-t"
+                    >
+                      <div className="col-span-6">{exercise.name}</div>
+                      <div className="col-span-1">{exercise.sets}</div>
+                      <div className="col-span-2">{exercise.reps}</div>
+                      <div className="col-span-3">{exercise.restPeriod}</div>
+                    </div>
                   ))}
-                </tbody>
-              </table>
+                </div>
+              </div>
             </div>
           ))}
       </div>
