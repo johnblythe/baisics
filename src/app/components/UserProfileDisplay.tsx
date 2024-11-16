@@ -1,4 +1,4 @@
-import { IntakeFormData } from "@/app/pics/actions";
+import { IntakeFormData } from "@/app/start/actions";
 
 type UploadedImage = {
   id: string;

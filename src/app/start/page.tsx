@@ -33,7 +33,7 @@ type UploadedImage = {
   aiDescription?: string;
 };
 
-export default function PicsPage() {
+export default function StartPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [files, setFiles] = useState<File[]>([]);
@@ -140,19 +140,14 @@ export default function PicsPage() {
     }
   };
 
-  // Modified handleIntakeSubmit to include image uploads and workout plan
-  const handleIntakeSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  // Modified handleIntakeSubmit to handle form data directly
+  const handleIntakeSubmit = async (formData: IntakeFormData) => {
     setIsUploading(true);
 
     try {
-      const formData = new FormData(e.currentTarget);
-
       // Validate required fields
-      const sex = formData.get("sex");
-      const trainingGoal = formData.get("trainingGoal");
-      const daysAvailable = formData.get("daysAvailable");
-      const trainingPreferences = formData.getAll("trainingPreferences");
+      const { sex, trainingGoal, daysAvailable, trainingPreferences } =
+        formData;
 
       if (
         !sex ||
@@ -163,16 +158,7 @@ export default function PicsPage() {
         throw new Error("Please fill in all required fields");
       }
 
-      // Create intake data with validated fields
-      const intakeData: IntakeFormData = {
-        sex: sex as Sex,
-        trainingGoal: trainingGoal as TrainingGoal,
-        daysAvailable: Number(daysAvailable),
-        trainingPreferences: trainingPreferences as TrainingPreference[],
-        additionalInfo: formData.get("additionalInfo")?.toString() || "", // Provide default empty string
-      };
-
-      const intakeResult = await saveIntakeForm(sessionId, intakeData);
+      const intakeResult = await saveIntakeForm(sessionId, formData);
       if (!intakeResult.success) {
         throw new Error("Failed to save intake form");
       }
@@ -200,13 +186,22 @@ export default function PicsPage() {
       }
 
       // Update UI state
-      setIntakeForm(intakeResult.intake);
+      if (intakeResult.intake) {
+        setIntakeForm({
+          sex: intakeResult.intake.sex as Sex,
+          trainingGoal: intakeResult.intake.trainingGoal as TrainingGoal,
+          daysAvailable: intakeResult.intake.daysAvailable,
+          trainingPreferences: intakeResult.intake
+            .trainingPreferences as TrainingPreference[],
+          additionalInfo: intakeResult.intake.additionalInfo || "",
+        });
+      }
       setShowIntakeForm(false);
       setFiles([]); // Clear files after successful upload
 
       // Update URL if needed
       if (!searchParams.get("sessionId")) {
-        router.push(`/pics?sessionId=${sessionId}`);
+        router.push(`${window.location.pathname}?sessionId=${sessionId}`);
       }
     } catch (error) {
       console.error("Submission failed:", error);
@@ -218,7 +213,7 @@ export default function PicsPage() {
   // Add new handler for starting a new session
   const handleNewSession = () => {
     const newSessionId = uuidv4();
-    router.push(`/pics?sessionId=${newSessionId}`);
+    router.push(`${window.location.pathname}?sessionId=${newSessionId}`);
     window.location.reload();
   };
 

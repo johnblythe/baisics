@@ -1,4 +1,4 @@
-import { IntakeFormData } from "@/app/pics/actions";
+import { IntakeFormData, Sex, TrainingGoal } from "@/app/start/actions";
 import { useState } from "react";
 
 interface IntakeFormProps {
@@ -9,10 +9,10 @@ interface IntakeFormProps {
 export function IntakeForm({ initialData, onSubmit }: IntakeFormProps) {
   const [formData, setFormData] = useState<IntakeFormData>(
     initialData || {
-      sex: "",
-      trainingGoal: "",
+      sex: "male" as Sex,
+      trainingGoal: "muscle_gain" as TrainingGoal,
       daysAvailable: 3,
-      trainingPreferences: [],
+      trainingPreferences: ["resistance"],
       additionalInfo: "",
     }
   );
@@ -31,7 +31,9 @@ export function IntakeForm({ initialData, onSubmit }: IntakeFormProps) {
           <label className="block text-sm font-medium mb-2">Sex</label>
           <select
             value={formData.sex}
-            onChange={(e) => setFormData({ ...formData, sex: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, sex: e.target.value as Sex })
+            }
             className="w-full p-2 border rounded-md"
             required
           >
@@ -89,27 +91,41 @@ export function IntakeForm({ initialData, onSubmit }: IntakeFormProps) {
           <label className="block text-sm font-medium mb-2">
             Training Preferences
           </label>
-          <div className="space-y-2">
+          <div className="grid grid-cols-2 gap-2">
             {[
-              "home_workouts",
-              "gym_workouts",
-              "cardio",
-              "weight_training",
-              "bodyweight_exercises",
-              "hiit",
-            ].map((pref) => (
-              <label key={pref} className="flex items-center">
+              {
+                value: "resistance",
+                label: "Resistance Training",
+              },
+              {
+                value: "free weights",
+                label: "Free Weights",
+              },
+              { value: "machines", label: "Machines" },
+              {
+                value: "kettlebell",
+                label: "Kettlebell",
+              },
+              { value: "running", label: "Running" },
+              {
+                value: "plyometrics",
+                label: "Plyometrics",
+              },
+              { value: "yoga", label: "Yoga" },
+              { value: "cardio", label: "Cardio" },
+            ].map(({ value, label }) => (
+              <label key={value} className="flex items-center">
                 <input
                   type="checkbox"
-                  checked={formData.trainingPreferences.includes(pref)}
+                  checked={formData.trainingPreferences.includes(value)}
                   onChange={(e) => {
                     const newPrefs = e.target.checked
-                      ? [...formData.trainingPreferences, pref]
-                      : formData.trainingPreferences.filter((p) => p !== pref);
+                      ? [...formData.trainingPreferences, value]
+                      : formData.trainingPreferences.filter((p) => p !== value);
                     setFormData({ ...formData, trainingPreferences: newPrefs });
                   }}
                 />
-                <span className="ml-2">{pref}</span>
+                <span className="ml-2">{label}</span>
               </label>
             ))}
           </div>
