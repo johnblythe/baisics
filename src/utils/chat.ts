@@ -1,10 +1,11 @@
 import { anthropic } from '@/lib/anthropic'
+import { MessageParam } from '@anthropic-ai/sdk/src/resources/messages.js';
 
 export async function sendMessage(messages: { role: string; content: string }[]) {
   const systemPrompt = "You are a world-class fitness coach. You are helping a client with their fitness journey by providing feedback on their progress pictures and programming for their training and macros."
   try {
     const response = await anthropic.messages.create({
-      messages: messages,
+      messages: messages as MessageParam[],
       system: systemPrompt,
       model: 'claude-3-5-sonnet-20241022',
       max_tokens: 4000,

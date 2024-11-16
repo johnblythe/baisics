@@ -47,6 +47,10 @@ Client Data:
 - Sex: ${intakeData.sex}
 - Training Goal: ${intakeData.trainingGoal}
 - Days Available: ${intakeData.daysAvailable} per week
+- Time available per day: ${intakeData.dailyBudget}
+- Age: ${intakeData.age}
+- Weight: ${intakeData.weight}
+- Height: ${intakeData.height}
 - Training Preferences: ${intakeData.trainingPreferences.join(', ')}
 ${intakeData.additionalInfo ? `- Additional Context: ${intakeData.additionalInfo}` : ''}
 

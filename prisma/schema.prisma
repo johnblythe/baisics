@@ -34,6 +34,10 @@ model UserIntake {
   trainingGoal        String   @map("training_goal")
   daysAvailable       Int      @map("days_available")
   budget              Int?
+  experienceLevel     String?  @map("experience_level")
+  age                 Int?
+  weight              Int?
+  height              Int?
   trainingPreferences String[] @map("training_preferences")
   additionalInfo      String?  @map("additional_info") @db.Text
   createdAt           DateTime @default(now()) @map("created_at")

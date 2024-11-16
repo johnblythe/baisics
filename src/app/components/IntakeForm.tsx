@@ -1,30 +1,102 @@
-import { IntakeFormData, Sex, TrainingGoal } from "@/app/start/actions";
+import {
+  IntakeFormData,
+  Sex,
+  TrainingGoal,
+  TrainingPreference,
+} from "@/app/start/actions";
 import { useState } from "react";
+import { ImageDropzone } from "./ImageDropzone";
 
 interface IntakeFormProps {
-  initialData?: IntakeFormData;
-  onSubmit: (data: IntakeFormData) => Promise<void>;
+  initialData: IntakeFormData | null;
+  onSubmit: (data: IntakeFormData & { files?: File[] }) => Promise<void>;
+  isSubmitting: boolean;
 }
 
-export function IntakeForm({ initialData, onSubmit }: IntakeFormProps) {
+const SAMPLE_PROFILES = {
+  athleteProfile: {
+    sex: "male" as Sex,
+    trainingGoal: "muscle_gain" as TrainingGoal,
+    daysAvailable: 5,
+    trainingPreferences: [
+      "resistance",
+      "free weights",
+      "plyometrics",
+      "running",
+    ] as TrainingPreference[],
+    age: 25,
+    weight: 180,
+    height: 72,
+    additionalInfo:
+      "I was an athlete in college but have since lost my physique. famliar with weights and lifting, but need some help with the programming and diet to do some body recomp and get back to my best.",
+    dailyBudget: 60,
+  },
+  beginnerProfile: {
+    sex: "female" as Sex,
+    trainingGoal: "weight_loss" as TrainingGoal,
+    daysAvailable: 3,
+    trainingPreferences: ["machines", "cardio", "yoga"] as TrainingPreference[],
+    age: 35,
+    weight: 150,
+    height: 65,
+    additionalInfo: "i'm new to fitness. looking to establish healthy habits",
+    dailyBudget: 30,
+  },
+  seniorProfile: {
+    sex: "other" as Sex,
+    trainingGoal: "endurance" as TrainingGoal,
+    daysAvailable: 4,
+    trainingPreferences: [
+      "resistance",
+      "machines",
+      "yoga",
+    ] as TrainingPreference[],
+    age: 65,
+    weight: 160,
+    height: 68,
+    additionalInfo: "Focus on maintaining mobility and independence",
+    dailyBudget: 45,
+  },
+};
+
+export function IntakeForm({
+  initialData,
+  onSubmit,
+  isSubmitting,
+}: IntakeFormProps) {
   const [formData, setFormData] = useState<IntakeFormData>(
-    initialData || {
-      sex: "male" as Sex,
-      trainingGoal: "muscle_gain" as TrainingGoal,
-      daysAvailable: 3,
-      trainingPreferences: ["resistance"],
-      additionalInfo: "",
-    }
+    initialData || SAMPLE_PROFILES.athleteProfile
   );
+  const [files, setFiles] = useState<File[]>([]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await onSubmit(formData);
+    await onSubmit({ ...formData, files });
   };
 
   return (
     <div className="max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
       <h2 className="text-2xl font-bold mb-6">Training Profile Setup</h2>
+
+      {/* Profile Selection Buttons */}
+      <div className="flex gap-2 mb-6">
+        {Object.entries(SAMPLE_PROFILES).map(([key, profile]) => (
+          <button
+            key={key}
+            type="button"
+            onClick={() => setFormData(profile)}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Load{" "}
+            {key
+              .replace(/Profile$/, "")
+              .replace(/([A-Z])/g, " $1")
+              .trim()}{" "}
+            Profile
+          </button>
+        ))}
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Sex Selection */}
         <div>
@@ -52,7 +124,10 @@ export function IntakeForm({ initialData, onSubmit }: IntakeFormProps) {
           <select
             value={formData.trainingGoal}
             onChange={(e) =>
-              setFormData({ ...formData, trainingGoal: e.target.value })
+              setFormData({
+                ...formData,
+                trainingGoal: e.target.value as TrainingGoal,
+              })
             }
             className="w-full p-2 border rounded-md"
             required
@@ -80,6 +155,67 @@ export function IntakeForm({ initialData, onSubmit }: IntakeFormProps) {
                 ...formData,
                 daysAvailable: parseInt(e.target.value),
               })
+            }
+            className="w-full p-2 border rounded-md"
+            required
+          />
+        </div>
+
+        {/* Daily Budget */}
+        <div>
+          <label className="block text-sm font-medium mb-2">
+            Daily Budget (minutes)
+          </label>
+          <input
+            type="number"
+            value={formData.dailyBudget}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                dailyBudget: parseInt(e.target.value),
+              })
+            }
+            className="w-full p-2 border rounded-md"
+            required
+          />
+        </div>
+
+        {/* Age */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Age</label>
+          <input
+            type="number"
+            value={formData.age}
+            onChange={(e) =>
+              setFormData({ ...formData, age: parseInt(e.target.value) })
+            }
+            className="w-full p-2 border rounded-md"
+            required
+          />
+        </div>
+
+        {/* Weight */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Weight</label>
+          <input
+            type="number"
+            value={formData.weight}
+            onChange={(e) =>
+              setFormData({ ...formData, weight: parseInt(e.target.value) })
+            }
+            className="w-full p-2 border rounded-md"
+            required
+          />
+        </div>
+
+        {/* Height */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Height</label>
+          <input
+            type="number"
+            value={formData.height}
+            onChange={(e) =>
+              setFormData({ ...formData, height: parseInt(e.target.value) })
             }
             className="w-full p-2 border rounded-md"
             required
@@ -117,12 +253,17 @@ export function IntakeForm({ initialData, onSubmit }: IntakeFormProps) {
               <label key={value} className="flex items-center">
                 <input
                   type="checkbox"
-                  checked={formData.trainingPreferences.includes(value)}
+                  checked={formData.trainingPreferences.includes(
+                    value as TrainingPreference
+                  )}
                   onChange={(e) => {
                     const newPrefs = e.target.checked
                       ? [...formData.trainingPreferences, value]
                       : formData.trainingPreferences.filter((p) => p !== value);
-                    setFormData({ ...formData, trainingPreferences: newPrefs });
+                    setFormData({
+                      ...formData,
+                      trainingPreferences: newPrefs as TrainingPreference[],
+                    });
                   }}
                 />
                 <span className="ml-2">{label}</span>
@@ -142,9 +283,11 @@ export function IntakeForm({ initialData, onSubmit }: IntakeFormProps) {
               setFormData({ ...formData, additionalInfo: e.target.value })
             }
             className="w-full p-2 border rounded-md"
-            rows="3"
+            rows={3}
           />
         </div>
+
+        <ImageDropzone onFilesChange={setFiles} files={files} />
 
         <button
           type="submit"

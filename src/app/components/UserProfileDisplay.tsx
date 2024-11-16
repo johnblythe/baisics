@@ -28,12 +28,20 @@ export function UserProfileDisplay({
       <div className="p-6 border-gray-200 dark:border-gray-700">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">User Profile</h2>
-          <button
-            onClick={onEditProfile}
-            className="px-4 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-          >
-            Edit Profile
-          </button>
+          <div className="space-x-2">
+            <button
+              onClick={onEditProfile}
+              className="px-4 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+            >
+              Edit Profile
+            </button>
+            <a
+              href="/start"
+              className="px-4 py-2 text-sm bg-green-500 text-white rounded hover:bg-green-600 transition-colors inline-block"
+            >
+              Start New Session
+            </a>
+          </div>
         </div>
 
         {/* Profile Details Grid */}
@@ -83,6 +91,24 @@ export function UserProfileDisplay({
           <div className="space-y-3">
             <div>
               <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Age
+              </h3>
+              <p className="mt-1">{intakeForm.age} years</p>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Height
+              </h3>
+              <p className="mt-1">{intakeForm.height} cm</p>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Weight
+              </h3>
+              <p className="mt-1">{intakeForm.weight} kg</p>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
                 Sex
               </h3>
               <p className="mt-1 capitalize">{intakeForm.sex}</p>
@@ -91,10 +117,22 @@ export function UserProfileDisplay({
               <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
                 Training Goal
               </h3>
-              <p className="mt-1 capitalize">{intakeForm.trainingGoal}</p>
+              <p className="mt-1 capitalize">
+                {intakeForm.trainingGoal
+                  .split("_")
+                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                  .join(" ")}
+              </p>
             </div>
           </div>
+
           <div className="space-y-3">
+            <div>
+              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Experience Level
+              </h3>
+              <p className="mt-1 capitalize">{intakeForm.experienceLevel}</p>
+            </div>
             <div>
               <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
                 Days Available

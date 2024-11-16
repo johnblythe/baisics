@@ -16,12 +16,14 @@ import {
   getSessionWorkoutPlan,
   getSessionPromptLogs,
   createWorkoutPlan,
+  preparePromptForAI,
 } from "./actions";
 import { useSearchParams, useRouter } from "next/navigation";
 import { WorkoutPlanDisplay } from "@/app/components/WorkoutPlanDisplay";
 import { fileToBase64 } from "@/utils/fileHandling";
 import { IntakeForm } from "@/app/components/IntakeForm";
 import { UserProfileDisplay } from "@/app/components/UserProfileDisplay";
+import { WorkoutPlanData } from "./types";
 
 // Add new types
 type UploadedImage = {
@@ -44,6 +46,7 @@ export default function StartPage() {
   const [intakeForm, setIntakeForm] = useState<IntakeFormData | null>(null);
   const [showIntakeForm, setShowIntakeForm] = useState(!intakeForm);
   const [workoutPlan, setWorkoutPlan] = useState<any>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Add useEffect to handle session initialization and image loading
   useEffect(() => {
@@ -116,18 +119,17 @@ export default function StartPage() {
   // Modify loadWorkoutPlan to handle parsing from prompt logs if needed
   const loadWorkoutPlan = async (sid: string) => {
     const result = await getSessionWorkoutPlan(sid);
-    console.log("🚀 ~ loadWorkoutPlan ~ result:", result);
 
     if (result.success && result.workoutPlan) {
       setWorkoutPlan(result.workoutPlan);
       setShowIntakeForm(false); // Hide intake form when plan exists
     } else {
-      // Try to find and parse from prompt logs
+      // This is a fallback state ONLY for easier testing, not irl
       const logsResult = await getSessionPromptLogs(sid);
-      if (logsResult.success && logsResult.logs.length > 0) {
+      if (logsResult.success && logsResult.logs && logsResult.logs.length > 0) {
         try {
           const latestLog = logsResult.logs[0];
-          const parsedPlan = JSON.parse(latestLog.response);
+          const parsedPlan = JSON.parse(latestLog.response) as WorkoutPlanData;
           const saveResult = await createWorkoutPlan(parsedPlan, sessionId);
           if (saveResult) {
             setWorkoutPlan(saveResult);
@@ -140,37 +142,57 @@ export default function StartPage() {
     }
   };
 
-  // Modified handleIntakeSubmit to handle form data directly
-  const handleIntakeSubmit = async (formData: IntakeFormData) => {
+  // Modified handleIntakeSubmit to handle form data with files
+  const handleIntakeSubmit = async (
+    formData: IntakeFormData & { files?: File[] }
+  ) => {
     setIsUploading(true);
-
     try {
-      // Validate required fields
-      const { sex, trainingGoal, daysAvailable, trainingPreferences } =
-        formData;
+      // Extract files from form data
+      // const { files: uploadedFiles, ...intakeData } = formData;
 
-      if (
-        !sex ||
-        !trainingGoal ||
-        !daysAvailable ||
-        !trainingPreferences.length
-      ) {
-        throw new Error("Please fill in all required fields");
-      }
-
+      // Save intake form
       const intakeResult = await saveIntakeForm(sessionId, formData);
       if (!intakeResult.success) {
         throw new Error("Failed to save intake form");
       }
 
-      if (intakeResult.success && intakeResult.workoutPlan) {
+      // now that we've saved it, shoot it off to the AI
+      const promptResult = await preparePromptForAI(
+        sessionId,
+        formData,
+        intakeResult.images || []
+      );
+
+      // NOTE: START HERE
+      // need to get submission to:
+      // 1. load intake
+      // 2. save intake -- both data and images
+      // 3. prepare prompt -- with intake data and/or images
+      // 4. get a response
+      // 5. save it
+
+      console.log("🚀 ~ StartPage ~ promptResult:", promptResult);
+      if (!promptResult.success) {
+        throw new Error("Failed to prepare prompt for AI");
+      }
+
+      // const workoutPlan = promptResult.response.data.content[0].text;
+
+      // now save it
+      const workoutPlanResult = await createWorkoutPlan(
+        promptResult.workoutPlan,
+        sessionId
+      );
+
+      if (workoutPlanResult.success) {
         setWorkoutPlan(intakeResult.workoutPlan);
       }
 
-      // Then handle file uploads if there are any
-      if (files.length > 0) {
+      // Handle file uploads if there are any
+      if (uploadedFiles && uploadedFiles.length > 0) {
         const base64Files = await Promise.all(
-          files.map(async (file) => ({
+          uploadedFiles.map(async (file) => ({
             fileName: file.name,
             base64Data: await fileToBase64(file),
             sessionId,
@@ -232,9 +254,15 @@ export default function StartPage() {
       {showIntakeForm ? (
         <IntakeForm
           initialData={intakeForm}
+          isSubmitting={isSubmitting}
           onSubmit={async (data) => {
-            await handleIntakeSubmit(data);
-            setShowIntakeForm(false);
+            setIsSubmitting(true);
+            try {
+              await handleIntakeSubmit(data);
+              setShowIntakeForm(false);
+            } finally {
+              setIsSubmitting(false);
+            }
           }}
         />
       ) : (
