@@ -33,7 +33,7 @@ model UserIntake {
   sex                 String
   trainingGoal        String   @map("training_goal")
   daysAvailable       Int      @map("days_available")
-  budget              Int?
+  dailyBudget         Int?
   experienceLevel     String?  @map("experience_level")
   age                 Int?
   weight              Int?

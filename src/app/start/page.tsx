@@ -118,6 +118,7 @@ export default function StartPage() {
 
   // Modify loadWorkoutPlan to handle parsing from prompt logs if needed
   const loadWorkoutPlan = async (sid: string) => {
+    console.log("🚀 ~ loadWorkoutPlan ~ sid:", sid);
     const result = await getSessionWorkoutPlan(sid);
 
     if (result.success && result.workoutPlan) {
@@ -156,6 +157,7 @@ export default function StartPage() {
       if (!intakeResult.success) {
         throw new Error("Failed to save intake form");
       }
+      console.log("🚀 ~ handleIntakeSubmit ~ intakeResult:", intakeResult);
 
       // now that we've saved it, shoot it off to the AI
       const promptResult = await preparePromptForAI(
@@ -167,7 +169,7 @@ export default function StartPage() {
       // NOTE: START HERE
       // need to get submission to:
       // 1. load intake
-      // 2. save intake -- both data and images
+      // 2. save intake -- ~both data~ and images
       // 3. prepare prompt -- with intake data and/or images
       // 4. get a response
       // 5. save it

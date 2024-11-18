@@ -95,7 +95,7 @@ export async function deleteImage(imageId: string) {
 // todo: consider upserting
 export async function saveIntakeForm(sessionId: string, intakeForm: IntakeFormData) {
   try {
-    let uploadedImages = [];
+    const uploadedImages = [];
     // Handle any uploaded files if they exist
     if ('files' in intakeForm) {
       const { files, ...intakeData } = intakeForm as IntakeFormData & { files: ImageUpload[] };
@@ -119,26 +119,28 @@ export async function saveIntakeForm(sessionId: string, intakeForm: IntakeFormDa
       
       intakeForm = intakeData;
     }
+    const intakeData = {
+      sessionId,
+      sex: intakeForm.sex as Sex,
+      trainingGoal: intakeForm.trainingGoal as TrainingGoal,
+      daysAvailable: intakeForm.daysAvailable,
+      dailyBudget: intakeForm.dailyBudget,
+      age: intakeForm.age,
+      experienceLevel: "",
+      weight: intakeForm.weight,
+      height: intakeForm.height,
+      trainingPreferences: intakeForm.trainingPreferences,
+      additionalInfo: intakeForm.additionalInfo,
+    };
 
     const savedIntake = await prisma.userIntake.create({
-      data: {
-        sessionId,
-        sex: intakeForm.sex,
-        trainingGoal: intakeForm.trainingGoal,
-        daysAvailable: intakeForm.daysAvailable,
-        budget: intakeForm.dailyBudget,
-        age: intakeForm.age,
-        weight: intakeForm.weight,
-        height: intakeForm.height,
-        trainingPreferences: intakeForm.trainingPreferences,
-        additionalInfo: intakeForm.additionalInfo,
-      },
+      data: intakeData,
     });
 
     return { success: true, intake: savedIntake, images: uploadedImages };
   } catch (error) {
     console.error('Intake form save error:', error);
-    return { success: false, error: 'Failed to save intake form' };
+    return { success: false, error: 'Failed to save intake form failed here' };
   }
 }
 
@@ -298,11 +300,13 @@ export async function preparePromptForAI(
 ) {
   try {
     // rethink this, seems sloppy/verbose
-    if (!intakeData && sessionId) {
+    if (sessionId && !intakeData) {
+      console.log("🚀 ~ preparePromptForAI ~ trying to load intake data via sessionId ", sessionId)
       const dbIntake = await prisma.userIntake.findFirst({
         where: { sessionId },
         orderBy: { createdAt: 'desc' },
       });
+      console.log("🚀 ~ dbIntake:", dbIntake)
       
       if (dbIntake) {
         intakeData = {
@@ -311,12 +315,17 @@ export async function preparePromptForAI(
           daysAvailable: dbIntake.daysAvailable,
           trainingPreferences: dbIntake.trainingPreferences as TrainingPreference[],
           additionalInfo: dbIntake.additionalInfo || '',
-          dailyBudget: dbIntake.budget || undefined,
+          dailyBudget: dbIntake.dailyBudget || undefined,
           age: dbIntake.age || undefined,
           weight: dbIntake.weight || undefined,
           height: dbIntake.height || undefined,
         };
       }
+    }
+
+    if (!intakeData) {
+      console.log("🚀 ~ preparePromptForAI ~ no intake data sent or found")
+      return { success: false, error: 'No intake data found' };
     }
 
     const clientDataPrompt = generateTrainingProgramPrompt(intakeData); 
@@ -327,6 +336,7 @@ export async function preparePromptForAI(
 
     // Add images to message content if provided
     if (images?.length) {
+      console.log("🚀 ~ preparePromptForAI ~ attempting to add images to message content:", images)
       for (const image of images) {
         const base64String = image.base64Data.split(',')[1];
         const mediaType = image.base64Data.split(';')[0].split(':')[1];
@@ -345,12 +355,15 @@ export async function preparePromptForAI(
 
     // Add text prompt
     messageContent.push({ type: 'text', text: clientDataPrompt });
+    
+    console.log("🚀 ~ prepared prompt content:", messageContent)
 
     // Send message to AI
     const aiResponse = await sendMessage([{
       role: 'user',
       content: messageContent,
     }]);
+    console.log("🚀 ~ aiResponse:", aiResponse)
 
     if (aiResponse.success) {
       await prisma.promptLog.create({
@@ -361,6 +374,7 @@ export async function preparePromptForAI(
           model: 'claude-3-5-sonnet-20240620',
         },
       });
+          console.log("🚀 ~ aiResponse.data?.content[0].text:", aiResponse.data?.content[0].text)
 
       return {
         success: true,
