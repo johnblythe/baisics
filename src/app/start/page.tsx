@@ -130,7 +130,8 @@ export default function StartPage() {
       if (logsResult.success && logsResult.logs && logsResult.logs.length > 0) {
         try {
           const latestLog = logsResult.logs[0];
-          const parsedPlan = JSON.parse(latestLog.response) as WorkoutPlanData;
+          const parsedPlan = JSON.parse(latestLog.response)
+            .program as WorkoutPlanData;
           const saveResult = await createWorkoutPlan(parsedPlan, sessionId);
           if (saveResult) {
             setWorkoutPlan(saveResult);
@@ -157,7 +158,6 @@ export default function StartPage() {
       if (!intakeResult.success) {
         throw new Error("Failed to save intake form");
       }
-      console.log("🚀 ~ handleIntakeSubmit ~ intakeResult:", intakeResult);
 
       // now that we've saved it, shoot it off to the AI
       const promptResult = await preparePromptForAI(
@@ -178,50 +178,55 @@ export default function StartPage() {
       if (!promptResult.success) {
         throw new Error("Failed to prepare prompt for AI");
       }
+      console.log("here");
 
-      // const workoutPlan = promptResult.response.data.content[0].text;
+      const responseText = promptResult.response;
+      console.log("🚀 ~ StartPage ~ responseText:", responseText);
+      const parsedResponse = JSON.parse(responseText);
+      console.log("🚀 ~ StartPage ~ parsedResponse:", parsedResponse);
+      const { program, contextRequest } = parsedResponse;
+      console.log("🚀 ~ StartPage ~ program:", program);
+      console.log("🚀 ~ StartPage ~ contextRequest:", contextRequest);
 
       // now save it
-      const workoutPlanResult = await createWorkoutPlan(
-        promptResult.workoutPlan,
-        sessionId
-      );
+      const workoutPlanResult = await createWorkoutPlan(program, sessionId);
 
       if (workoutPlanResult.success) {
-        setWorkoutPlan(intakeResult.workoutPlan);
+        console.log("🚀 ~ StartPage ~ workoutPlanResult:", workoutPlanResult);
+        setWorkoutPlan(workoutPlanResult.workoutPlan);
       }
 
       // Handle file uploads if there are any
-      if (uploadedFiles && uploadedFiles.length > 0) {
-        const base64Files = await Promise.all(
-          uploadedFiles.map(async (file) => ({
-            fileName: file.name,
-            base64Data: await fileToBase64(file),
-            sessionId,
-          }))
-        );
+      // if (uploadedImages && uploadedImages.length > 0) {
+      //   const base64Files = await Promise.all(
+      //     uploadedImages.map(async (image) => ({
+      //       fileName: file.name,
+      //       base64Data: await fileToBase64(file),
+      //       sessionId,
+      //     }))
+      //   );
 
-        const uploadResult = await uploadImages(base64Files);
-        if (uploadResult.success) {
-          setUploadedImages((prev) => [...prev, ...uploadResult.images]);
-        } else {
-          throw new Error("Failed to upload images");
-        }
-      }
+      //   const uploadResult = await uploadImages(base64Files);
+      //   if (uploadResult.success) {
+      //     setUploadedImages((prev) => [...prev, ...uploadResult.images]);
+      //   } else {
+      //     throw new Error("Failed to upload images");
+      //   }
+      // }
 
       // Update UI state
-      if (intakeResult.intake) {
-        setIntakeForm({
-          sex: intakeResult.intake.sex as Sex,
-          trainingGoal: intakeResult.intake.trainingGoal as TrainingGoal,
-          daysAvailable: intakeResult.intake.daysAvailable,
-          trainingPreferences: intakeResult.intake
-            .trainingPreferences as TrainingPreference[],
-          additionalInfo: intakeResult.intake.additionalInfo || "",
-        });
-      }
-      setShowIntakeForm(false);
-      setFiles([]); // Clear files after successful upload
+      // if (intakeResult.intake) {
+      //   setIntakeForm({
+      //     sex: intakeResult.intake.sex as Sex,
+      //     trainingGoal: intakeResult.intake.trainingGoal as TrainingGoal,
+      //     daysAvailable: intakeResult.intake.daysAvailable,
+      //     trainingPreferences: intakeResult.intake
+      //       .trainingPreferences as TrainingPreference[],
+      //     additionalInfo: intakeResult.intake.additionalInfo || "",
+      //   });
+      // }
+      // setShowIntakeForm(false);
+      // setFiles([]); // Clear files after successful upload
 
       // Update URL if needed
       if (!searchParams.get("sessionId")) {

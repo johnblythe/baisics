@@ -233,8 +233,16 @@ export async function deleteWorkoutPlan(sessionId: string) {
     return { success: false, error: 'Failed to delete workout plan' };
   }
 }
-
-async function parseWorkoutPlan(data: WorkoutPlanData) {
+/**
+ * Parse the workout plan data from the AI response
+ * to save all the exercises in the core library
+ * and then the workouts themselves
+ * @NOTE / @TODO: UNSURE I LOVE THIS APPROACH 
+ * 
+ * @param data - The workout plan data from the AI response
+ * @returns The parsed workout plan data
+ */
+const parseWorkoutPlan = async (data: WorkoutPlanData) => {
   const workouts = await Promise.all(data.workoutPlan.workouts.map(async (workout: Workout) => ({
     dayNumber: workout.day,
     exercises: {
@@ -251,8 +259,8 @@ async function parseWorkoutPlan(data: WorkoutPlanData) {
           }
         }
       })),
-    },
-  })));
+      },
+    })));
 
   return {
     bodyFatPercentage: data.bodyComposition.bodyFatPercentage,
@@ -272,8 +280,10 @@ async function parseWorkoutPlan(data: WorkoutPlanData) {
 
 // Save workout plan to db
 export async function createWorkoutPlan(planData: WorkoutPlanData, sessionId: string) {
+  console.log("🚀 ~ createWorkoutPlan ~ planData:", planData)
   try {
     const parsedPlan = await parseWorkoutPlan(planData);
+    console.log("🚀 ~ createWorkoutPlan ~ parsedPlan:", parsedPlan)
     const workoutPlan = await prisma.workoutPlan.create({
       data: { ...parsedPlan, sessionId },
       include: {
@@ -356,14 +366,12 @@ export async function preparePromptForAI(
     // Add text prompt
     messageContent.push({ type: 'text', text: clientDataPrompt });
     
-    console.log("🚀 ~ prepared prompt content:", messageContent)
 
     // Send message to AI
     const aiResponse = await sendMessage([{
       role: 'user',
       content: messageContent,
     }]);
-    console.log("🚀 ~ aiResponse:", aiResponse)
 
     if (aiResponse.success) {
       await prisma.promptLog.create({
@@ -374,11 +382,10 @@ export async function preparePromptForAI(
           model: 'claude-3-5-sonnet-20240620',
         },
       });
-          console.log("🚀 ~ aiResponse.data?.content[0].text:", aiResponse.data?.content[0].text)
 
       return {
         success: true,
-        response: aiResponse.data?.content[0].text,
+        response: aiResponse.data?.content[0].text, // @TODO: may need more than first content, should refactor?
         images: images?.map(img => ({ fileName: img.fileName }))
       };
     }
