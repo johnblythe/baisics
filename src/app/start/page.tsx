@@ -24,7 +24,7 @@ import { fileToBase64 } from "@/utils/fileHandling";
 import { IntakeForm } from "@/app/components/IntakeForm";
 import { UserProfileDisplay } from "@/app/components/UserProfileDisplay";
 import { WorkoutPlanData } from "./types";
-import { formatCamelCase } from "@/utils/formatting";
+import { formatCamelCase, formatUnderscoreDelimitedString } from "@/utils/formatting";
 
 // Add new types
 type ContextRequest = {
@@ -283,7 +283,7 @@ export default function StartPage() {
                 <ul className="list-disc ml-5 mt-2">
                   {Object.entries(contextRequest).map(([idx, value]) => (
                     <li key={idx} className="mb-2">
-                      <span className="font-semibold capitalize">{formatCamelCase(value.key)}</span>
+                      <span className="font-semibold capitalize">{formatUnderscoreDelimitedString(value.key)}</span>
                       {value.reason && <span>: {value.reason}</span>}
                       {value.importance && (
                         <span className="inline-block text-xs px-2 py-1 mt-1 rounded-full bg-blue-100 text-blue-800 border border-blue-200 font-medium">

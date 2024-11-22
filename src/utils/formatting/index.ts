@@ -5,3 +5,7 @@ export const formatCamelCase = (str: string) => {
     .replace(/^./, (str) => str.toUpperCase()) // Capitalize first letter
     .trim();
 };
+
+export const formatUnderscoreDelimitedString = (str: string) => {
+  return str.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
+};
