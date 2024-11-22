@@ -242,7 +242,7 @@ export async function deleteWorkoutPlan(sessionId: string) {
  * @param data - The workout plan data from the AI response
  * @returns The parsed workout plan data
  */
-const parseWorkoutPlan = async (data: WorkoutPlanData) => {
+const prepareWorkoutPlanObject = async (data: WorkoutPlanData) => {
   const workouts = await Promise.all(data.workoutPlan.workouts.map(async (workout: Workout) => ({
     dayNumber: workout.day,
     exercises: {
@@ -252,15 +252,20 @@ const parseWorkoutPlan = async (data: WorkoutPlanData) => {
         reps: exercise.reps,
         restPeriod: exercise.restPeriod,
         exerciseLibrary: {
-          create: {
-            name: exercise.name,
-            category: 'default',
-            difficulty: 'intermediate'
+          connectOrCreate: {
+            where: {
+              name: exercise.name
+            },
+            create: {
+              name: exercise.name,
+              category: 'default',
+              difficulty: 'intermediate'
+            }
           }
         }
       })),
-      },
-    })));
+    }
+  })));
 
   return {
     bodyFatPercentage: data.bodyComposition.bodyFatPercentage,
@@ -280,12 +285,12 @@ const parseWorkoutPlan = async (data: WorkoutPlanData) => {
 
 // Save workout plan to db
 export async function createWorkoutPlan(planData: WorkoutPlanData, sessionId: string) {
-  console.log("🚀 ~ createWorkoutPlan ~ planData:", planData)
   try {
-    const parsedPlan = await parseWorkoutPlan(planData);
-    console.log("🚀 ~ createWorkoutPlan ~ parsedPlan:", parsedPlan)
+    const preppedPlan = await prepareWorkoutPlanObject(planData);
+    console.log("Attempting to save workout plan with data:", JSON.stringify(preppedPlan, null, 2));
+    
     const workoutPlan = await prisma.workoutPlan.create({
-      data: { ...parsedPlan, sessionId },
+      data: { ...preppedPlan, sessionId },
       include: {
         workouts: {
           include: {
@@ -297,7 +302,14 @@ export async function createWorkoutPlan(planData: WorkoutPlanData, sessionId: st
 
     return { success: true, workoutPlan };
   } catch (error) {
-    console.error('Failed to save workout plan:', error);
+    // More detailed error logging
+    console.error('Failed to save workout plan. Error:', error);
+    console.error('Error details:', {
+      name: error.name,
+      message: error.message,
+      code: error.code,  // Prisma error code if available
+      meta: error.meta,  // Prisma error metadata if available
+    });
     return { success: false, error: 'Failed to save workout plan' };
   }
 }
@@ -311,12 +323,10 @@ export async function preparePromptForAI(
   try {
     // rethink this, seems sloppy/verbose
     if (sessionId && !intakeData) {
-      console.log("🚀 ~ preparePromptForAI ~ trying to load intake data via sessionId ", sessionId)
       const dbIntake = await prisma.userIntake.findFirst({
         where: { sessionId },
         orderBy: { createdAt: 'desc' },
       });
-      console.log("🚀 ~ dbIntake:", dbIntake)
       
       if (dbIntake) {
         intakeData = {
@@ -334,7 +344,7 @@ export async function preparePromptForAI(
     }
 
     if (!intakeData) {
-      console.log("🚀 ~ preparePromptForAI ~ no intake data sent or found")
+      console.error("🚀 ~ preparePromptForAI ~ no intake data sent or found")
       return { success: false, error: 'No intake data found' };
     }
 

@@ -130,8 +130,8 @@ export default function StartPage() {
       if (logsResult.success && logsResult.logs && logsResult.logs.length > 0) {
         try {
           const latestLog = logsResult.logs[0];
-          const parsedPlan = JSON.parse(latestLog.response)
-            .program as WorkoutPlanData;
+          const parsedPlan = JSON.parse(latestLog.response).program as WorkoutPlanData;
+          console.log("🚀 ~ loadWorkoutPlan ~ parsedPlan:", parsedPlan)
           const saveResult = await createWorkoutPlan(parsedPlan, sessionId);
           if (saveResult) {
             setWorkoutPlan(saveResult);
@@ -144,11 +144,11 @@ export default function StartPage() {
     }
   };
 
-  // Modified handleIntakeSubmit to handle form data with files
   const handleIntakeSubmit = async (
     formData: IntakeFormData & { files?: File[] }
   ) => {
     setIsUploading(true);
+    router.push(`${window.location.pathname}?sessionId=${sessionId}`);
     try {
       // Extract files from form data
       // const { files: uploadedFiles, ...intakeData } = formData;
@@ -166,33 +166,28 @@ export default function StartPage() {
         intakeResult.images || []
       );
 
-      // NOTE: START HERE
+      // NOTE: START HERE TODO LIST
       // need to get submission to:
-      // 1. load intake
-      // 2. save intake -- ~both data~ and images
-      // 3. prepare prompt -- with intake data and/or images
-      // 4. get a response
-      // 5. save it
+      // 1. reintegrate images
+      // 2. allow updates after first turn, including images
+      // 3. add teaser
+      // 4. add lead magnet
 
       console.log("🚀 ~ StartPage ~ promptResult:", promptResult);
       if (!promptResult.success) {
         throw new Error("Failed to prepare prompt for AI");
       }
-      console.log("here");
 
       const responseText = promptResult.response;
-      console.log("🚀 ~ StartPage ~ responseText:", responseText);
       const parsedResponse = JSON.parse(responseText);
-      console.log("🚀 ~ StartPage ~ parsedResponse:", parsedResponse);
+
+      // @TODO: use contextRequest to update UI and request more information for updates
       const { program, contextRequest } = parsedResponse;
-      console.log("🚀 ~ StartPage ~ program:", program);
-      console.log("🚀 ~ StartPage ~ contextRequest:", contextRequest);
 
       // now save it
       const workoutPlanResult = await createWorkoutPlan(program, sessionId);
 
       if (workoutPlanResult.success) {
-        console.log("🚀 ~ StartPage ~ workoutPlanResult:", workoutPlanResult);
         setWorkoutPlan(workoutPlanResult.workoutPlan);
       }
 
@@ -237,13 +232,6 @@ export default function StartPage() {
     } finally {
       setIsUploading(false);
     }
-  };
-
-  // Add new handler for starting a new session
-  const handleNewSession = () => {
-    const newSessionId = uuidv4();
-    router.push(`${window.location.pathname}?sessionId=${newSessionId}`);
-    window.location.reload();
   };
 
   // Add delete handler

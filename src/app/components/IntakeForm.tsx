@@ -106,7 +106,7 @@ export function IntakeForm({
             onChange={(e) =>
               setFormData({ ...formData, sex: e.target.value as Sex })
             }
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             required
           >
             <option value="">Select...</option>
@@ -129,7 +129,7 @@ export function IntakeForm({
                 trainingGoal: e.target.value as TrainingGoal,
               })
             }
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             required
           >
             <option value="">Select...</option>
@@ -156,7 +156,7 @@ export function IntakeForm({
                 daysAvailable: parseInt(e.target.value),
               })
             }
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             required
           />
         </div>
@@ -175,7 +175,7 @@ export function IntakeForm({
                 dailyBudget: parseInt(e.target.value),
               })
             }
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             required
           />
         </div>
@@ -189,7 +189,7 @@ export function IntakeForm({
             onChange={(e) =>
               setFormData({ ...formData, age: parseInt(e.target.value) })
             }
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             required
           />
         </div>
@@ -203,7 +203,7 @@ export function IntakeForm({
             onChange={(e) =>
               setFormData({ ...formData, weight: parseInt(e.target.value) })
             }
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             required
           />
         </div>
@@ -217,7 +217,7 @@ export function IntakeForm({
             onChange={(e) =>
               setFormData({ ...formData, height: parseInt(e.target.value) })
             }
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             required
           />
         </div>
@@ -282,7 +282,7 @@ export function IntakeForm({
             onChange={(e) =>
               setFormData({ ...formData, additionalInfo: e.target.value })
             }
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             rows={3}
           />
         </div>
@@ -291,9 +291,17 @@ export function IntakeForm({
 
         <button
           type="submit"
-          className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          disabled={isSubmitting}
+          className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Submit
+          {isSubmitting ? (
+            <div className="flex items-center justify-center gap-2">
+              <div className="w-5 h-5 border-t-2 border-b-2 border-white rounded-full animate-spin" />
+              <span>Submitting...</span>
+            </div>
+          ) : (
+            "Submit"
+          )}
         </button>
       </form>
     </div>
