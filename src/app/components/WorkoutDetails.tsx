@@ -28,7 +28,7 @@ export default function WorkoutDetails({
   );
 
   return (
-    <div className="flex flex-col gap-6 p-6 bg-white rounded-xl shadow-sm">
+    <div className="flex flex-col gap-6 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
       <h2
         className={`text-3xl font-bold ${
           workoutNumber === 1

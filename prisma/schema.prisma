@@ -20,7 +20,7 @@ model UserImages {
   fileName   String   @map("file_name")
   base64Data String   @map("base64_data") @db.Text
   createdAt  DateTime @default(now()) @map("created_at")
-  Users      Users?   @relation(fields: [userId], references: [id])
+  user       User?    @relation(fields: [userId], references: [id])
 
   @@index([sessionId])
   @@map("user_images")
@@ -33,11 +33,15 @@ model UserIntake {
   sex                 String
   trainingGoal        String   @map("training_goal")
   daysAvailable       Int      @map("days_available")
-  budget              Int?
+  dailyBudget         Int?
+  experienceLevel     String?  @map("experience_level")
+  age                 Int?
+  weight              Int?
+  height              Int?
   trainingPreferences String[] @map("training_preferences")
   additionalInfo      String?  @map("additional_info") @db.Text
   createdAt           DateTime @default(now()) @map("created_at")
-  Users               Users?   @relation(fields: [userId], references: [id])
+  user                User?   @relation(fields: [userId], references: [id])
 
   @@index([sessionId])
   @@map("user_intake")
@@ -51,16 +55,17 @@ model PromptLog {
   response  String   @db.Text
   model     String   @map("model")
   createdAt DateTime @default(now()) @map("created_at")
-  Users     Users?   @relation(fields: [userId], references: [id])
+  user     User?   @relation(fields: [userId], references: [id])
 
   @@index([sessionId])
   @@map("prompt_log")
 }
 
-model Users {
+model User {
   id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   email       String        @unique @map("email")
   password    String        @map("password")
+  isPremium   Boolean       @default(false) @map("is_premium")
   createdAt   DateTime      @default(now()) @map("created_at")
   updatedAt   DateTime      @updatedAt @map("updated_at")
   UserImages  UserImages[]
@@ -84,7 +89,7 @@ model WorkoutPlan {
   mealTiming             String[]  @map("meal_timing")
   progressionProtocol    String[]  @map("progression_protocol")
   createdAt              DateTime  @default(now()) @map("created_at")
-  Users                  Users?    @relation(fields: [userId], references: [id])
+  user                  User?    @relation(fields: [userId], references: [id])
   userId                 String?   @map("user_id") @db.Uuid
   workouts               Workout[]
 
