@@ -198,6 +198,7 @@ export default function StartPage() {
 
       const responseText = promptResult.response;
       const parsedResponse = JSON.parse(responseText);
+      console.log("🚀 ~ StartPage ~ parsedResponse:", JSON.stringify(parsedResponse, null, 2));
       const { program, contextRequest } = parsedResponse;
 
       if (contextRequest) {
