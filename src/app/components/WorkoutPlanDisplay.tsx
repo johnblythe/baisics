@@ -1,3 +1,6 @@
+import { useState } from 'react';
+import { UpsellModal } from './UpsellModal';
+
 type Exercise = {
   name: string;
   sets: number;
@@ -23,7 +26,21 @@ type WorkoutPlan = {
   workouts: Workout[];
 };
 
-export function WorkoutPlanDisplay({ plan }: { plan: WorkoutPlan }) {
+export function WorkoutPlanDisplay({ plan, userEmail }: { plan: WorkoutPlan, userEmail?: string }) {
+  const [isUpsellOpen, setIsUpsellOpen] = useState(false);
+
+  const handleEmailSubmit = (email: string) => {
+    // TODO: Implement email submission logic
+    console.log('Email submitted:', email);
+    setIsUpsellOpen(false);
+  };
+
+  const handlePurchase = () => {
+    // TODO: Implement purchase flow
+    console.log('Purchase clicked');
+    setIsUpsellOpen(false);
+  };
+
   return (
     <div className="space-y-8 mt-4">
       {/* Overview Section */}
@@ -66,15 +83,30 @@ export function WorkoutPlanDisplay({ plan }: { plan: WorkoutPlan }) {
       </div>
 
       {/* Workouts Section */}
-      <div className="space-y-6">
+      <div className="space-y-6 relative">
         <h2 className="text-xl font-semibold">Weekly Workout Schedule</h2>
         {plan.workouts
           .sort((a, b) => a.dayNumber - b.dayNumber)
-          .map((workout) => (
+          .map((workout, index) => (
             <div
               key={workout.dayNumber}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow p-6"
+              className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 relative"
             >
+              {index > 0 && !userEmail && (
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white dark:to-gray-800 backdrop-blur-sm z-10 rounded-lg flex items-center justify-center">
+                  <div className="text-center p-4">
+                    <p className="font-semibold text-lg mb-2">
+                      Unlock Full Workout Plan
+                    </p>
+                    <button 
+                      onClick={() => setIsUpsellOpen(true)} 
+                      className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+                    >
+                      Upgrade Now
+                    </button>
+                  </div>
+                </div>
+              )}
               <h3 className="font-semibold mb-4">Day {workout.dayNumber}</h3>
               <div className="w-full">
                 {/* Header */}
@@ -102,6 +134,13 @@ export function WorkoutPlanDisplay({ plan }: { plan: WorkoutPlan }) {
             </div>
           ))}
       </div>
+
+      <UpsellModal
+        isOpen={isUpsellOpen}
+        onClose={() => setIsUpsellOpen(false)}
+        onEmailSubmit={handleEmailSubmit}
+        onPurchase={handlePurchase}
+      />
     </div>
   );
 }
