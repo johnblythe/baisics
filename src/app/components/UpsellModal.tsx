@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import ReactConfetti from "react-confetti";
 import { validateEmail } from "@/utils/forms/validation";
 
 type UpsellModalProps = {

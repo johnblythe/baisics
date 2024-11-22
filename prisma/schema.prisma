@@ -65,6 +65,7 @@ model Users {
   id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   email       String        @unique @map("email")
   password    String        @map("password")
+  isPremium   Boolean       @default(false) @map("is_premium")
   createdAt   DateTime      @default(now()) @map("created_at")
   updatedAt   DateTime      @updatedAt @map("updated_at")
   UserImages  UserImages[]
