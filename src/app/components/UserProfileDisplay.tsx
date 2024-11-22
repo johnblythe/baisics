@@ -99,13 +99,13 @@ export function UserProfileDisplay({
               <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
                 Height
               </h3>
-              <p className="mt-1">{intakeForm.height} cm</p>
+              <p className="mt-1">{intakeForm.height} in</p>
             </div>
             <div>
               <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
                 Weight
               </h3>
-              <p className="mt-1">{intakeForm.weight} kg</p>
+              <p className="mt-1">{intakeForm.weight} lbs</p>
             </div>
             <div>
               <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">

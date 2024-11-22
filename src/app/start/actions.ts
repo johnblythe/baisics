@@ -6,7 +6,6 @@ import { generateTrainingProgramPrompt } from './prompts';
 import { Exercise, WorkoutPlanData, Workout } from './types';
 import { MessageParam } from '@anthropic-ai/sdk/src/resources/messages.js';
 import { UserImages } from '@prisma/client';
-import { Message } from '@anthropic-ai/sdk/resources/messages.mjs';
 
 // Add new types for the form data
 export type TrainingGoal = 'weight loss' | 'maintenance' | 'body recomposition' | 'strength gains' | 'weight gain' | 'muscle building' | 'other';
@@ -23,6 +22,7 @@ export interface IntakeFormData {
   age?: number;
   weight?: number;
   height?: number;
+  experienceLevel?: string;
 }
 
 export type ImageUpload = {

@@ -111,6 +111,10 @@ export default function StartPage() {
         trainingPreferences: result.intake
           .trainingPreferences as TrainingPreference[],
         additionalInfo: result.intake.additionalInfo || "",
+        age: result.intake.age,
+        height: result.intake.height,
+        weight: result.intake.weight,
+        experienceLevel: result.intake.experienceLevel,
       });
       setShowIntakeForm(false);
     }
