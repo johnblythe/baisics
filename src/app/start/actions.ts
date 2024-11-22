@@ -92,6 +92,19 @@ export async function deleteImage(imageId: string) {
   }
 }
 
+export async function createNewUser(email: string) {
+  try {
+    const user = await prisma.user.create({
+      data: { email, password: '0218fatloss' },
+    });
+
+    return { success: true, user };
+  } catch (error) {
+    console.error('Failed to create new user:', error);
+    return { success: false, error: 'Failed to create new user' };
+  }
+}
+
 // todo: consider upserting
 export async function saveIntakeForm(sessionId: string, intakeForm: IntakeFormData) {
   try {

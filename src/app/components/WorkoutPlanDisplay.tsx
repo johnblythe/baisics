@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { UpsellModal } from './UpsellModal';
 import ReactConfetti from "react-confetti";
+import { createNewUser } from '../start/actions';
 
 type Exercise = {
   name: string;
@@ -48,6 +49,14 @@ export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: Workou
     setUserEmail(email);
     setIsUpsellOpen(false);
     setShowConfetti(true);
+    handleCreateNewUser(email);
+  };
+
+  const handleCreateNewUser = async (email: string) => {
+    const response = await createNewUser(email);
+    if (response.success) {
+      setUserEmail(email);
+    }
   };
 
   const handlePurchase = () => {
