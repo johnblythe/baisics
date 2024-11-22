@@ -48,7 +48,11 @@ Interface Requirements:
     },
     progressionProtocol: string[]
   },
-  contextRequest: string
+  contextRequest: [{
+    key: string,
+    reason?: string,
+    importance?: string
+  }]
 }
 
 Analysis Requirements:
@@ -58,8 +62,6 @@ Analysis Requirements:
 4. Include progression protocols.
 5. Structure all workouts with clear sets, reps, and rest periods. Use the "daily budget" information to determine how many exercises to include per workout.
 6. Account for any stated injuries or limitations.
-
-If any relevant information is missing, generate all of the above to the best of your ability but also note what information could be helpful for you. Wrap this context request in a JSON object with a key called "contextRequest".
 
 Return a single JSON object following the interface exactly, with no additional text or explanation outside the structured response.`;
 

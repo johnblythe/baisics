@@ -33,7 +33,7 @@ model UserIntake {
   sex                 String
   trainingGoal        String   @map("training_goal")
   daysAvailable       Int      @map("days_available")
-  dailyBudget         Int?
+  dailyBudget         Int?     @map("daily_budget")
   experienceLevel     String?  @map("experience_level")
   age                 Int?
   weight              Int?
@@ -44,6 +44,7 @@ model UserIntake {
   user                User?   @relation(fields: [userId], references: [id])
 
   @@index([sessionId])
+  @@unique([sessionId])
   @@map("user_intake")
 }
 
@@ -68,10 +69,10 @@ model User {
   isPremium   Boolean       @default(false) @map("is_premium")
   createdAt   DateTime      @default(now()) @map("created_at")
   updatedAt   DateTime      @updatedAt @map("updated_at")
-  UserImages  UserImages[]
-  UserIntake  UserIntake[]
-  PromptLog   PromptLog[]
-  WorkoutPlan WorkoutPlan[]
+  userImages   UserImages[]
+  userIntakes UserIntake[]
+  promptLogs   PromptLog[]
+  workoutPlans WorkoutPlan[]
 
   @@map("users")
 }
@@ -89,7 +90,7 @@ model WorkoutPlan {
   mealTiming             String[]  @map("meal_timing")
   progressionProtocol    String[]  @map("progression_protocol")
   createdAt              DateTime  @default(now()) @map("created_at")
-  user                  User?    @relation(fields: [userId], references: [id])
+  user                   User?    @relation(fields: [userId], references: [id])
   userId                 String?   @map("user_id") @db.Uuid
   workouts               Workout[]
 

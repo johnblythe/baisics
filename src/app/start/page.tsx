@@ -24,8 +24,15 @@ import { fileToBase64 } from "@/utils/fileHandling";
 import { IntakeForm } from "@/app/components/IntakeForm";
 import { UserProfileDisplay } from "@/app/components/UserProfileDisplay";
 import { WorkoutPlanData } from "./types";
+import { formatCamelCase } from "@/utils/formatting";
 
 // Add new types
+type ContextRequest = {
+  key: string; 
+  reason?: string;
+  importance?: string;
+};
+
 type UploadedImage = {
   id: string;
   sessionId: string;
@@ -47,6 +54,7 @@ export default function StartPage() {
   const [showIntakeForm, setShowIntakeForm] = useState(!intakeForm);
   const [workoutPlan, setWorkoutPlan] = useState<any>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [contextRequest, setContextRequest] = useState<ContextRequest[] | null>(null);
 
   // Add useEffect to handle session initialization and image loading
   useEffect(() => {
@@ -122,8 +130,12 @@ export default function StartPage() {
 
   // Modify loadWorkoutPlan to handle parsing from prompt logs if needed
   const loadWorkoutPlan = async (sid: string) => {
-    console.log("🚀 ~ loadWorkoutPlan ~ sid:", sid);
     const result = await getSessionWorkoutPlan(sid);
+    const sessionPromptLog = await getSessionPromptLogs(sid);
+    const contextRequest = sessionPromptLog.success && sessionPromptLog.log? JSON.parse(sessionPromptLog.log.response).contextRequest : null;
+    if (contextRequest) {
+      setContextRequest(contextRequest);
+    }
 
     if (result.success && result.workoutPlan) {
       setWorkoutPlan(result.workoutPlan);
@@ -131,11 +143,13 @@ export default function StartPage() {
     } else {
       // This is a fallback state ONLY for easier testing, not irl
       const logsResult = await getSessionPromptLogs(sid);
-      if (logsResult.success && logsResult.logs && logsResult.logs.length > 0) {
+      if (logsResult.success && logsResult.log) {
         try {
-          const latestLog = logsResult.logs[0];
+          const latestLog = logsResult.log;
           const parsedPlan = JSON.parse(latestLog.response).program as WorkoutPlanData;
-          console.log("🚀 ~ loadWorkoutPlan ~ parsedPlan:", parsedPlan)
+          if (contextRequest) {
+            setContextRequest(contextRequest);
+          }
           const saveResult = await createWorkoutPlan(parsedPlan, sessionId);
           if (saveResult) {
             setWorkoutPlan(saveResult);
@@ -184,9 +198,11 @@ export default function StartPage() {
 
       const responseText = promptResult.response;
       const parsedResponse = JSON.parse(responseText);
-
-      // @TODO: use contextRequest to update UI and request more information for updates
       const { program, contextRequest } = parsedResponse;
+
+      if (contextRequest) {
+        setContextRequest(contextRequest);
+      }
 
       // now save it
       const workoutPlanResult = await createWorkoutPlan(program, sessionId);
@@ -250,6 +266,45 @@ export default function StartPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      {contextRequest && (
+        <div className="mb-6 bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-blue-800">
+                Help us personalize your plan further!
+              </h3>
+              <div className="mt-2 text-sm text-blue-700">
+                <p>We&apos;re missing some key information that could help improve your results:</p>
+                <ul className="list-disc ml-5 mt-2">
+                  {Object.entries(contextRequest).map(([idx, value]) => (
+                    <li key={idx} className="mb-2">
+                      <span className="font-semibold capitalize">{formatCamelCase(value.key)}</span>
+                      {value.reason && <span>: {value.reason}</span>}
+                      {value.importance && (
+                        <span className="inline-block text-xs px-2 py-1 mt-1 rounded-full bg-blue-100 text-blue-800 border border-blue-200 font-medium">
+                          {value.importance}
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <button
+                onClick={() => setShowIntakeForm(true)}
+                className="mt-3 text-sm font-medium text-blue-600 hover:text-blue-500"
+              >
+                Update Profile →
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {showIntakeForm ? (
         <IntakeForm
           initialData={intakeForm}

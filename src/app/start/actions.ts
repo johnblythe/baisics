@@ -146,8 +146,10 @@ export async function saveIntakeForm(sessionId: string, intakeForm: IntakeFormDa
       additionalInfo: intakeForm.additionalInfo,
     };
 
-    const savedIntake = await prisma.userIntake.create({
-      data: intakeData,
+    const savedIntake = await prisma.userIntake.upsert({
+      where: { sessionId },
+      update: intakeData,
+      create: intakeData,
     });
 
     return { success: true, intake: savedIntake, images: uploadedImages };
@@ -186,7 +188,7 @@ export async function getSessionPromptLogs(sessionId: string) {
   }
 
   try {
-    const logs = await prisma.promptLog.findMany({
+    const log = await prisma.promptLog.findFirst({
       where: {
         sessionId: sessionId,
       },
@@ -195,7 +197,7 @@ export async function getSessionPromptLogs(sessionId: string) {
       },
     });
 
-    return { success: true, logs };
+    return { success: true, log };
   } catch (error) {
     console.error('Failed to fetch prompt logs:', error);
     return { success: false, error: 'Failed to fetch prompt logs' };
