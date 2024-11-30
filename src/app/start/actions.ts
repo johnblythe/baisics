@@ -3,7 +3,7 @@
 import { prisma } from '@/lib/prisma';
 import { sendMessage } from '@/utils/chat';
 import { generateTrainingProgramPrompt } from './prompts';
-import { Exercise, WorkoutPlanData, Workout } from './types';
+import { Exercise, Workout, ProgramData, PhasesData } from './types';
 import { MessageParam } from '@anthropic-ai/sdk/src/resources/messages.js';
 import { UserImages } from '@prisma/client';
 
@@ -211,9 +211,12 @@ export async function getSessionWorkoutPlan(sessionId: string) {
   }
 
   try {
-    const workoutPlan = await prisma.workoutPlan.findFirst({
+    const workoutPlans = await prisma.workoutPlan.findMany({
       where: {
         sessionId: sessionId,
+      },
+      orderBy: {
+        phase: 'asc'
       },
       include: {
         workouts: {
@@ -227,7 +230,11 @@ export async function getSessionWorkoutPlan(sessionId: string) {
       },
     });
 
-    return { success: true, workoutPlan };
+    return { 
+      success: true, 
+      workoutPlan: workoutPlans[0], // Return first phase by default
+      allPhases: workoutPlans // Optional: include all phases if needed
+    };
   } catch (error) {
     console.error('Failed to fetch workout plan:', error);
     return { success: false, error: 'Failed to fetch workout plan' };
@@ -257,74 +264,90 @@ export async function deleteWorkoutPlan(sessionId: string) {
  * @param data - The workout plan data from the AI response
  * @returns The parsed workout plan data
  */
-const prepareWorkoutPlanObject = async (data: WorkoutPlanData) => {
-  const workouts = await Promise.all(data.workoutPlan.workouts.map(async (workout: Workout) => ({
-    dayNumber: workout.day,
-    exercises: {
-      create: workout.exercises.map((exercise: Exercise) => ({
-        name: exercise.name,
-        sets: exercise.sets,
-        reps: exercise.reps,
-        restPeriod: exercise.restPeriod,
-        exerciseLibrary: {
-          connectOrCreate: {
-            where: {
-              name: exercise.name
-            },
-            create: {
-              name: exercise.name,
-              category: 'default',
-              difficulty: 'intermediate'
+const prepareWorkoutPlanObject = async (phases: PhasesData[]) => {
+  const workouts = await Promise.all(phases.map(async (phase) => 
+    phase.trainingPlan.workouts.map((workout: Workout) => ({
+      dayNumber: workout.day,
+      exercises: {
+        create: workout.exercises.map((exercise: Exercise) => ({
+          name: exercise.name,
+          sets: exercise.sets,
+          reps: exercise.reps,
+          restPeriod: exercise.restPeriod,
+          exerciseLibrary: {
+            connectOrCreate: {
+              where: { name: exercise.name },
+              create: {
+                name: exercise.name,
+                category: 'default',
+                difficulty: 'intermediate'
+              }
             }
           }
-        }
-      })),
-    }
-  })));
+        })),
+      }
+    }))
+  ));
 
-  return {
-    bodyFatPercentage: data.bodyComposition.bodyFatPercentage,
-    muscleMassDistribution: data.bodyComposition.muscleMassDistribution,
-    dailyCalories: data.nutrition.dailyCalories,
-    proteinGrams: data.nutrition.macros.protein,
-    carbGrams: data.nutrition.macros.carbs,
-    fatGrams: data.nutrition.macros.fats,
-    mealTiming: data.nutrition.mealTiming,
-    progressionProtocol: data.progressionProtocol,
-    daysPerWeek: data.workoutPlan.daysPerWeek,
+  // Create a workout plan for each phase
+  return phases.map((phase, index) => ({
+    phase: phase.phase,
+    bodyFatPercentage: phase.bodyComposition.bodyFatPercentage,
+    muscleMassDistribution: phase.bodyComposition.muscleMassDistribution,
+    dailyCalories: phase.nutrition.dailyCalories,
+    proteinGrams: phase.nutrition.macros.protein,
+    carbGrams: phase.nutrition.macros.carbs,
+    fatGrams: phase.nutrition.macros.fats,
+    mealTiming: phase.nutrition.mealTiming,
+    progressionProtocol: phase.progressionProtocol,
+    daysPerWeek: phase.trainingPlan.daysPerWeek,
     workouts: {
-      create: workouts
+      create: workouts[index]
     }
-  };
-}
+  }));
+};
 
 // Save workout plan to db
-export async function createWorkoutPlan(planData: WorkoutPlanData, sessionId: string) {
+export async function createNewProgram(programData: ProgramData, sessionId: string) {
+  // create a new program with the descriptoin and name and a fake userid 82dd7d11-6683-4c7c-a3bf-e7f059ae2e24
   try {
-    const preppedPlan = await prepareWorkoutPlanObject(planData);
-    console.log("Attempting to save workout plan with data:", JSON.stringify(preppedPlan, null, 2));
-    
-    const workoutPlan = await prisma.workoutPlan.create({
-      data: { ...preppedPlan, sessionId },
-      include: {
-        workouts: {
-          include: {
-            exercises: true,
-          },
-        },
+    const userId = '82dd7d11-6683-4c7c-a3bf-e7f059ae2e24';
+    const { phases, ...programDetails } = programData;
+    const newProgram = await prisma.program.create({
+      data: {
+        name: programDetails.programName,
+        description: programDetails.programDescription,
+        userId,
       },
     });
 
-    return { success: true, workoutPlan };
+    const preppedPlans = await prepareWorkoutPlanObject(phases);
+    
+    // Create all workout plans for each phase
+    const workoutPlans = await Promise.all(
+      preppedPlans.map(async (plan, index) => {
+        const createData = {
+          ...plan,
+          sessionId,
+          programId: newProgram.id,
+        };
+        
+        return prisma.workoutPlan.create({
+          data: createData,
+          include: {
+            workouts: {
+              include: {
+                exercises: true
+              }
+            }
+          }
+        });
+      })
+    );
+
+    return { success: true, workoutPlan: workoutPlans[0] }; // Return first phase by default
   } catch (error) {
-    // More detailed error logging
-    console.error('Failed to save workout plan. Error:', error);
-    console.error('Error details:', {
-      name: error.name,
-      message: error.message,
-      code: error.code,  // Prisma error code if available
-      meta: error.meta,  // Prisma error metadata if available
-    });
+    console.error('Failed to save workout plan:', error);
     return { success: false, error: 'Failed to save workout plan' };
   }
 }

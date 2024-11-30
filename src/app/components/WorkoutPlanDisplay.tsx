@@ -2,38 +2,11 @@ import { useState, useEffect } from 'react';
 import { UpsellModal } from './UpsellModal';
 import ReactConfetti from "react-confetti";
 import { createNewUser } from '../start/actions';
+import { WorkoutPlanDisplayProps } from '../start/types';
 
-type Exercise = {
-  name: string;
-  sets: number;
-  reps: number;
-  restPeriod: string;
-};
-
-type Workout = {
-  dayNumber: number;
-  exercises: Exercise[];
-};
-
-type WorkoutPlan = {
-  bodyFatPercentage: number;
-  muscleMassDistribution: string;
-  daysPerWeek: number;
-  dailyCalories: number;
-  proteinGrams: number;
-  carbGrams: number;
-  fatGrams: number;
-  mealTiming: string[];
-  progressionProtocol: string[];
-  workouts: Workout[];
-};
-
-type WorkoutPlanDisplayProps = {
-  plan: WorkoutPlan;
-  userEmail?: string;
-};
 
 export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: WorkoutPlanDisplayProps) {
+  console.log("🚀 ~ WorkoutPlanDisplay ~ plan:", plan)
   const [isUpsellOpen, setIsUpsellOpen] = useState(false);
   const [userEmail, setUserEmail] = useState(initialUserEmail);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -72,7 +45,7 @@ export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: Workou
         {/* Overview Section */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <h2 className="text-xl font-semibold mb-4">
-            Training Program Overview
+            Training Program Overview - Phase {plan.phase}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -112,10 +85,10 @@ export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: Workou
         <div className="space-y-6 relative">
           <h2 className="text-xl font-semibold">Weekly Workout Schedule</h2>
           {plan.workouts
-            .sort((a, b) => a.dayNumber - b.dayNumber)
+            .sort((a, b) => a.day - b.day)
             .map((workout, index) => (
               <div
-                key={workout.dayNumber}
+                key={workout.day}
                 className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 relative"
               >
                 {index > 0 && !userEmail && (
@@ -133,7 +106,7 @@ export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: Workou
                     </div>
                   </div>
                 )}
-                <h3 className="font-semibold mb-4">Day {workout.dayNumber}</h3>
+                <h3 className="font-semibold mb-4">Day {workout.day}</h3>
                 <div className="w-full">
                   {/* Header */}
                   <div className="grid grid-cols-12 gap-4 text-left font-medium mb-2">
