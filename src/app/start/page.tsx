@@ -13,7 +13,7 @@ import {
   Sex,
   TrainingGoal,
   TrainingPreference,
-  getSessionWorkoutPlan,
+  getSessionWorkoutPlans,
   getSessionPromptLogs,
   createNewProgram,
   preparePromptForAI,
@@ -23,8 +23,10 @@ import { WorkoutPlanDisplay } from "@/app/components/WorkoutPlanDisplay";
 import { fileToBase64 } from "@/utils/fileHandling";
 import { IntakeForm } from "@/app/components/IntakeForm";
 import { UserProfileDisplay } from "@/app/components/UserProfileDisplay";
-import { WorkoutPlan, WorkoutPlanData } from "./types";
-import { formatCamelCase, formatUnderscoreDelimitedString } from "@/utils/formatting";
+import { ProgramData, WorkoutPlan, WorkoutPlanData } from "./types";
+import { Program as PrismaProgram, WorkoutPlan as PrismaWorkoutPlan } from "@prisma/client";
+import { formatUnderscoreDelimitedString } from "@/utils/formatting";
+import { ProgramDisplay } from "../components/ProgramDisplay";
 
 // Add new types
 type ContextRequest = {
@@ -52,7 +54,8 @@ export default function StartPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [intakeForm, setIntakeForm] = useState<IntakeFormData | null>(null);
   const [showIntakeForm, setShowIntakeForm] = useState(!intakeForm);
-  const [workoutPlan, setWorkoutPlan] = useState<WorkoutPlan | null>(null);
+  const [workoutPlan, setWorkoutPlans] = useState<PrismaWorkoutPlan | null>(null);
+  const [program, setProgram] = useState<PrismaProgram | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [contextRequest, setContextRequest] = useState<ContextRequest[] | null>(null);
 
@@ -63,7 +66,7 @@ export default function StartPage() {
       setSessionId(urlSessionId);
       loadSessionImages(urlSessionId);
       loadIntakeForm(urlSessionId);
-      loadWorkoutPlan(urlSessionId);
+      loadProgram(urlSessionId);
     } else {
       setSessionId(uuidv4());
       setIsLoading(false);
@@ -129,42 +132,22 @@ export default function StartPage() {
   };
 
   // Modify loadWorkoutPlan to handle parsing from prompt logs if needed
-  const loadWorkoutPlan = async (sid: string) => {
-    const result = await getSessionWorkoutPlan(sid);
-    console.log("🚀 ~ loadWorkoutPlan ~ result:", result)
+  const loadProgram = async (sid: string) => {
+    const result = await getSessionWorkoutPlans(sid);
+    console.log("🚀 ~ loadProgram ~ result:", result)
+    const program = result.success ? result.program : null;
+    const workoutPlans = program?.workoutPlans || [];
+    setProgram(program);
+    setWorkoutPlans(workoutPlans);
+    setShowIntakeForm(false);
+
+    // TODO: get more context from prompts to make customizations
     const sessionPromptLog = await getSessionPromptLogs(sid);
     const contextRequest = sessionPromptLog.success && sessionPromptLog.log? JSON.parse(sessionPromptLog.log.response).contextRequest : null;
     if (contextRequest) {
       setContextRequest(contextRequest);
     }
-
-    if (result.success && result.workoutPlan) {
-      setWorkoutPlan(result.workoutPlan);
-      setShowIntakeForm(false);
-    } else {
-      // This is a fallback state ONLY for easier testing, not irl
-      console.log('ohai')
-      const logsResult = await getSessionPromptLogs(sid);
-      if (logsResult.success && logsResult.log) {
-        try {
-          const parsedResponse = JSON.parse(logsResult.log.response);
-          // Now we expect phases and contextRequest directly
-          const { contextRequest, ...programData } = parsedResponse;
-          
-          if (contextRequest) {
-            setContextRequest(contextRequest);
-          }
-          console.log("umm")
-          const saveResult = await createNewProgram(programData, sessionId);
-          if (saveResult.success) {
-            setWorkoutPlan(saveResult.workoutPlan);
-            setShowIntakeForm(false);
-          }
-        } catch (error) {
-          console.error("Failed to parse workout plan from logs:", error);
-        }
-      }
-    }
+    // end TODO
   };
 
   const handleIntakeSubmit = async (
@@ -213,7 +196,7 @@ export default function StartPage() {
       const workoutPlanResult = await createNewProgram(program, sessionId);
 
       if (workoutPlanResult.success) {
-        setWorkoutPlan(workoutPlanResult.workoutPlan);
+        setWorkoutPlans(workoutPlanResult.workoutPlan);
       }
 
       // Handle file uploads if there are any
@@ -334,7 +317,8 @@ export default function StartPage() {
               onEditProfile={() => setShowIntakeForm(true)}
             />
           )}
-          {workoutPlan && <WorkoutPlanDisplay plan={workoutPlan} />}
+          {program && <ProgramDisplay 
+            program={program} />}
         </>
       )}
     </div>

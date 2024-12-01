@@ -6,7 +6,7 @@ import { WorkoutPlanDisplayProps } from '../start/types';
 
 
 export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: WorkoutPlanDisplayProps) {
-  console.log("🚀 ~ WorkoutPlanDisplay ~ plan:", plan)
+  console.log("Plan structure:", JSON.stringify(plan, null, 2));
   const [isUpsellOpen, setIsUpsellOpen] = useState(false);
   const [userEmail, setUserEmail] = useState(initialUserEmail);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -41,7 +41,7 @@ export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: Workou
   return (
     <>
       {showConfetti && <ReactConfetti />}
-      <div className="space-y-8 mt-4">
+      <div className="space-y-8">
         {/* Overview Section */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <h2 className="text-xl font-semibold mb-4">
@@ -66,7 +66,7 @@ export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: Workou
             <h3 className="font-medium">Meal Timing</h3>
             <ul className="list-disc list-inside">
               {plan.mealTiming.map((timing, index) => (
-                <li key={index}>{timing}</li>
+                <li key={`meal-timing-${index}`}>{timing}</li>
               ))}
             </ul>
           </div>
@@ -75,7 +75,7 @@ export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: Workou
             <h3 className="font-medium">Progression Protocol</h3>
             <ul className="list-disc list-inside">
               {plan.progressionProtocol.map((protocol, index) => (
-                <li key={index}>{protocol}</li>
+                <li key={`progression-${index}`}>{protocol}</li>
               ))}
             </ul>
           </div>
@@ -83,55 +83,40 @@ export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: Workou
 
         {/* Workouts Section */}
         <div className="space-y-6 relative">
-          <h2 className="text-xl font-semibold">Weekly Workout Schedule</h2>
+          <h2 className="text-xl font-semibold">Training Schedule</h2>
           {plan.workouts
-            .sort((a, b) => a.day - b.day)
-            .map((workout, index) => (
-              <div
-                key={workout.day}
-                className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 relative"
-              >
-                {index > 0 && !userEmail && (
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white dark:to-gray-800 backdrop-blur-sm z-10 rounded-lg flex items-center justify-center">
-                    <div className="text-center p-4">
-                      <p className="font-semibold text-lg mb-2">
-                        Unlock Full Workout Plan
-                      </p>
-                      <button 
-                        onClick={() => setIsUpsellOpen(true)} 
-                        className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
-                      >
-                        Upgrade Now
-                      </button>
+            .sort((a, b) => a.dayNumber - b.dayNumber)
+            .map((workout) => (
+            <div
+              key={workout.id}
+              className="bg-white dark:bg-gray-800 rounded-lg shadow p-6"
+            >
+              <h3 className="font-semibold mb-4">Day {workout.dayNumber}</h3>
+              <div className="w-full">
+                {/* Header */}
+                <div className="grid grid-cols-12 gap-4 text-left font-medium mb-2">
+                  <div className="col-span-6">Exercise</div>
+                  <div className="col-span-1">Sets</div>
+                  <div className="col-span-2">Reps</div>
+                  <div className="col-span-3">Rest</div>
+                </div>
+                {/* Exercise Rows */}
+                <div className="space-y-2">
+                  {workout.exercises.map((exercise, index) => (
+                    <div
+                      key={index}
+                      className="grid grid-cols-12 gap-4 py-2 border-t"
+                    >
+                      <div className="col-span-6">{exercise.name}</div>
+                      <div className="col-span-1">{exercise.sets}</div>
+                      <div className="col-span-2">{exercise.reps}</div>
+                      <div className="col-span-3">{exercise.restPeriod}</div>
                     </div>
-                  </div>
-                )}
-                <h3 className="font-semibold mb-4">Day {workout.day}</h3>
-                <div className="w-full">
-                  {/* Header */}
-                  <div className="grid grid-cols-12 gap-4 text-left font-medium mb-2">
-                    <div className="col-span-6">Exercise</div>
-                    <div className="col-span-1">Sets</div>
-                    <div className="col-span-2">Reps</div>
-                    <div className="col-span-3">Rest</div>
-                  </div>
-                  {/* Exercise Rows */}
-                  <div className="space-y-2">
-                    {workout.exercises.map((exercise, index) => (
-                      <div
-                        key={index}
-                        className="grid grid-cols-12 gap-4 py-2 border-t"
-                      >
-                        <div className="col-span-6">{exercise.name}</div>
-                        <div className="col-span-1">{exercise.sets}</div>
-                        <div className="col-span-2">{exercise.reps}</div>
-                        <div className="col-span-3">{exercise.restPeriod}</div>
-                      </div>
-                    ))}
-                  </div>
+                  ))}
                 </div>
               </div>
-            ))}
+            </div>
+          ))}
         </div>
       </div>
 

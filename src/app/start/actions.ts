@@ -205,36 +205,40 @@ export async function getSessionPromptLogs(sessionId: string) {
 }
 
 // Get workout plan for a previously saved session
-export async function getSessionWorkoutPlan(sessionId: string) {
+export async function getSessionWorkoutPlans(sessionId: string) {
   if (!sessionId) {
     return { success: false, error: 'Session ID is required' };
   }
 
   try {
-    const workoutPlans = await prisma.workoutPlan.findMany({
+    const program = await prisma.program.findFirst({
       where: {
-        sessionId: sessionId,
-      },
-      orderBy: {
-        phase: 'asc'
-      },
-      include: {
-        workouts: {
-          orderBy: {
-            dayNumber: 'asc',
-          },
-          include: {
-            exercises: true,
+        workoutPlans: {
+          some: {
+            sessionId: sessionId,
           },
         },
       },
+      include: {
+        workoutPlans: {
+          orderBy: {
+            phase: 'asc',
+          },
+          include: {
+            workouts: {
+              orderBy: {
+                dayNumber: 'asc',
+              },
+              include: {
+                exercises: true,
+              }
+            }
+          } 
+        }
+      },
     });
 
-    return { 
-      success: true, 
-      workoutPlan: workoutPlans[0], // Return first phase by default
-      allPhases: workoutPlans // Optional: include all phases if needed
-    };
+    return { success: true, program };
   } catch (error) {
     console.error('Failed to fetch workout plan:', error);
     return { success: false, error: 'Failed to fetch workout plan' };
@@ -345,7 +349,7 @@ export async function createNewProgram(programData: ProgramData, sessionId: stri
       })
     );
 
-    return { success: true, workoutPlan: workoutPlans[0] }; // Return first phase by default
+    return { success: true, program: newProgram, workoutPlans: workoutPlans };
   } catch (error) {
     console.error('Failed to save workout plan:', error);
     return { success: false, error: 'Failed to save workout plan' };

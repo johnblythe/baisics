@@ -46,7 +46,8 @@ export type Exercise = {
 };
 
 export type Workout = {
-  day: number;
+  id: string;
+  dayNumber: number;
   exercises: Exercise[];
 };
 
