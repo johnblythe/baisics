@@ -14,7 +14,7 @@ export async function sendMessage(messages: { role: string; content: string }[])
     const response = await anthropic.messages.create({
       messages: messages as MessageParam[],
       system: systemPrompt,
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-3-haiku-20240307',
       max_tokens: 4096,
     });
 

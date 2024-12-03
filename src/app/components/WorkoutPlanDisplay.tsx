@@ -6,7 +6,7 @@ import { WorkoutPlanDisplayProps } from '../start/types';
 
 
 export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: WorkoutPlanDisplayProps) {
-  console.log("Plan structure:", JSON.stringify(plan, null, 2));
+  // console.log("Plan structure:", JSON.stringify(plan, null, 2));
   const [isUpsellOpen, setIsUpsellOpen] = useState(false);
   const [userEmail, setUserEmail] = useState(initialUserEmail);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -26,7 +26,11 @@ export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: Workou
   };
 
   const handleCreateNewUser = async (email: string) => {
-    const response = await createNewUser(email);
+    const userId = new URLSearchParams(window.location.search).get('userId');
+    if (!userId) {
+      throw new Error("No user ID found in URL");
+    }
+    const response = await createNewUser({ userId, email });
     if (response.success) {
       setUserEmail(email);
     }
