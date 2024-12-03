@@ -16,12 +16,28 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
   const [emailError, setEmailError] = useState("");
   const [showConfetti, setShowConfetti] = useState(false);
 
+  const testimonials = [
+    { text: "Life changing! Truly.", author: "Addison W., Premium Member" },
+    { text: "I've tried lots of programs before, but this one actually delivered results. The premium features made all the difference!", author: "Sarah M., Premium Member" },
+    { text: "I can't overstate how easy this was to follow. I didn't need to think about costs, annoying my trainer with too many questions, or anything else. Simple, affordable, and EFFECTIVE! Thank you bAIsic!", author: "John D., Premium Member" },
+    { text: "Too easy to not try it!", author: "Emily R., Premium Member" },
+  ];
+
+  const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
+
   useEffect(() => {
     if (showConfetti) {
       const timer = setTimeout(() => setShowConfetti(false), 3000);
       return () => clearTimeout(timer);
     }
   }, [showConfetti]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTestimonialIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [testimonials.length]);
 
   const handleUpdateAnonUser = async (email: string) => {
     const userId = new URLSearchParams(window.location.search).get('userId');
@@ -39,7 +55,7 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       {showConfetti && <ReactConfetti />}
       <div className="bg-white dark:bg-gray-800 rounded-lg p-8 max-w-4xl w-full">
         {/* Header */}
@@ -180,10 +196,18 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
         {/* Testimonial */}
         <div className="mt-8 text-center">
           <p className="italic text-gray-600 dark:text-gray-400">
-            &quot;I&apos;ve tried many fitness programs, but this one actually delivered results. 
-            The premium features made all the difference!&quot; 
+            &quot;{testimonials[currentTestimonialIndex].text}&quot;
           </p>
-          <p className="mt-2 font-medium">- Sarah M., Premium Member</p>
+          <p className="mt-2 font-medium">- {testimonials[currentTestimonialIndex].author}</p>
+          <div className="flex justify-center mt-4">
+            {testimonials.map((_, index) => (
+              <span
+                key={index}
+                onClick={() => setCurrentTestimonialIndex(index)}
+                className={`h-2 w-2 mx-1 rounded-full cursor-pointer ${index === currentTestimonialIndex ? 'bg-blue-600' : 'bg-gray-300'}`}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>

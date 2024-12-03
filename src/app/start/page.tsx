@@ -53,18 +53,25 @@ export default function StartPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [intakeForm, setIntakeForm] = useState<IntakeFormData | null>(null);
   const [showIntakeForm, setShowIntakeForm] = useState(!intakeForm);
-  const [workoutPlan, setWorkoutPlans] = useState<PrismaWorkoutPlan[] | null>(null);
+  const [workoutPlans, setWorkoutPlans] = useState<PrismaWorkoutPlan[] | null>(null);
   const [program, setProgram] = useState<PrismaProgram | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [contextRequest, setContextRequest] = useState<ContextRequest[] | null>(null);
+  const [programId, setProgramId] = useState<string | null>(null);
 
   useEffect(() => {
+    const urlProgramId = searchParams.get("programId");
+    if (urlProgramId) {
+      setProgramId(urlProgramId);
+    }
     const urlUserId = searchParams.get("userId");
     if (urlUserId) {
       setUserId(urlUserId);
-      loadUserImages(urlUserId);
-      loadIntakeForm(urlUserId);
-      loadProgram(urlUserId);
+      // loadIntakeForm(urlUserId);
+      // loadUserImages(urlUserId);
+    }
+    if (urlUserId && urlProgramId) {
+      loadProgram(urlUserId, urlProgramId);
     }
   }, []); 
 
@@ -137,8 +144,8 @@ export default function StartPage() {
   };
 
   // Modify loadWorkoutPlan to handle parsing from prompt logs if needed
-  const loadProgram = async (uid: string) => {
-    const result = await getUserProgram(uid);
+  const loadProgram = async (uid: string, programId: string | null) => {
+    const result = await getUserProgram(uid, programId);
     const program = result.success ? result.program : null;
     const workoutPlans = program?.workoutPlans || [];
     setProgram(program);
@@ -187,7 +194,6 @@ export default function StartPage() {
        */
 
       // now that we've saved it, shoot it off to the AI
-      console.log("🚀 ~ StartPage ~ about to start preparePromptForAI")
       const startTime = performance.now();
       const promptResult = await preparePromptForAI(
         newUserId,
@@ -205,18 +211,23 @@ export default function StartPage() {
       const responseText = promptResult.response;
       try {
         const parsedResponse = JSON.parse(responseText);
-        const { contextRequest, ...programData } = parsedResponse;
+        // contextRequest
+        const programData = parsedResponse;
 
         // if (contextRequest) {
         //   setContextRequest(contextRequest);
         // }
 
         // now save it
-        const program = await createNewProgram(programData, newUserId);
-        console.log("🚀 ~ StartPage ~ workoutPlanResult:", workoutPlanResult)
+        const result = await createNewProgram(programData, newUserId);
 
-        if (workoutPlanResult.success) {
-          setWorkoutPlans(program.workoutPlans);
+        if (result.success) {
+          const program = result.success ? result.program : null;
+          const workoutPlans = program?.workoutPlans || [];
+          setProgram(program);
+          setWorkoutPlans(workoutPlans);
+          setShowIntakeForm(false);
+          router.push(`${window.location.pathname}?userId=${newUserId}&programId=${program?.id}`);
         }
 
         // Handle file uploads if there are any
@@ -340,7 +351,8 @@ export default function StartPage() {
             />
           )}
           {program && <ProgramDisplay 
-            program={program} />}
+            program={program}
+            workoutPlans={workoutPlans} />}
         </>
       )}
     </div>

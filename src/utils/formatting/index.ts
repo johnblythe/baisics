@@ -9,3 +9,10 @@ export const formatCamelCase = (str: string) => {
 export const formatUnderscoreDelimitedString = (str: string) => {
   return str.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
 };
+
+// Utility function to convert inches to feet and inches
+export const convertHeightToFeetAndInches = (heightInInches: number): string => {
+  const feet = Math.floor(heightInInches / 12);
+  const inches = heightInInches % 12;
+  return inches === 0 ? `${feet}′` : `${feet}′ ${inches}″`;
+}

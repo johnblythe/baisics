@@ -239,7 +239,8 @@ export async function getSessionPromptLogs(userId: string) {
 }
 
 // Get workout plan for a previously saved session
-export async function getUserProgram(userId: string) {
+export async function getUserProgram(userId: string, programId?: string | null) {
+  console.log("🚀 ~ getUserProgram ~ programId:", programId)
   if (!userId) {
     return { success: false, error: 'User ID is required' };
   }
@@ -249,9 +250,10 @@ export async function getUserProgram(userId: string) {
       where: {
         workoutPlans: {
           some: {
-            userId: userId,
+            userId,
           },
         },
+        ...(programId ? { id: programId } : {}),
       },
       include: {
         workoutPlans: {
@@ -274,8 +276,8 @@ export async function getUserProgram(userId: string) {
 
     return { success: true, program };
   } catch (error) {
-    console.error('Failed to fetch workout plan:', error);
-    return { success: false, error: 'Failed to fetch workout plan' };
+    console.error('Failed to fetch program:', error);
+    return { success: false, error: 'Failed to fetch program' };
   }
 }
 

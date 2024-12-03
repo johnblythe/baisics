@@ -1,7 +1,7 @@
 import { WorkoutPlanDisplayProps } from '../start/types';
 import { WorkoutPlanDisplay } from './WorkoutPlanDisplay';
 import { UpsellModal } from './UpsellModal';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface ProgramDisplayProps {
   program: {
@@ -30,6 +30,14 @@ export function ProgramDisplay({ program, userEmail: initialUserEmail = null }: 
   const handlePurchase = () => {
     setIsUpsellOpen(false);
   };
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (!url.searchParams.has('programId')) {
+      url.searchParams.set('programId', program.id);
+      window.history.replaceState({}, '', url.toString());
+    }
+  }, [program.id]);
 
   if (!program) {
     return (
@@ -110,8 +118,8 @@ export function ProgramDisplay({ program, userEmail: initialUserEmail = null }: 
       {/* Active Workout Plan */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 relative">
         {!isPhaseUnlocked(activePlanIndex) && (
-          <div className="absolute inset-0 backdrop-blur-md bg-white/30 dark:bg-gray-800/30 rounded-xl z-10 flex items-center justify-center">
-            <div className="text-center p-6 max-w-md">
+          <div className="absolute inset-0 backdrop-blur-sm bg-white/30 dark:bg-gray-800/30 rounded-xl z-10 flex justify-center">
+            <div className="text-center p-6 max-w-md mt-40">
               <svg 
                 xmlns="http://www.w3.org/2000/svg" 
                 viewBox="0 0 24 24" 
