@@ -237,7 +237,7 @@ export async function getSessionPromptLogs(userId: string) {
 }
 
 // Get workout plan for a previously saved session
-export async function getSessionWorkoutPlans(userId: string) {
+export async function getUserProgram(userId: string) {
   if (!userId) {
     return { success: false, error: 'User ID is required' };
   }
@@ -363,7 +363,7 @@ export async function createNewProgram(programData: ProgramData, userId: string)
     const preppedPlans = await prepareWorkoutPlanObject(phases);
     
     // Create all workout plans for each phase
-    const workoutPlans = await Promise.all(
+    const newWorkoutPlans = await Promise.all(
       preppedPlans.map(async (plan, index) => {
         const createData = {
           ...plan,
@@ -384,7 +384,9 @@ export async function createNewProgram(programData: ProgramData, userId: string)
       })
     );
 
-    return { success: true, program: newProgram, workoutPlans: workoutPlans };
+    const program = await getUserProgram(userId);
+
+    return program;
   } catch (error) {
     console.error('Failed to save workout plan:', error);
     return { success: false, error: 'Failed to save workout plan' };
@@ -467,21 +469,28 @@ export async function preparePromptForAI(
       role: 'user',
       content: messageContent,
     }]);
+    console.log("🚀 ~ preparePromptForAI ~ aiResponse:", JSON.stringify(aiResponse, null, 2))
     console.timeEnd('ai-response');
 
     if (aiResponse.success) {
+      console.log("sup");
       console.time('save-prompt-log');
+      console.log("sup2");
       await prisma.promptLog.create({
         data: {
           userId,
           prompt: JSON.stringify(messageContent),
           response: aiResponse.data?.content[0].text || '',
-          model: 'claude-3-haiku-20240307',
+          inputTokens: aiResponse.data?.usage?.input_tokens,
+          outputTokens: aiResponse.data?.usage?.output_tokens,
+          model: process.env.HAIKU_MODEL!,
         },
       });
+      console.log("sup3");
       console.timeEnd('save-prompt-log');
-
+      console.log("sup4"); 
       console.timeEnd('preparePromptForAI-total');
+      console.log("sup5");
       return {
         success: true,
         response: aiResponse.data?.content[0].text,

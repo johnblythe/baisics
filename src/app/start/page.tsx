@@ -13,18 +13,16 @@ import {
   Sex,
   TrainingGoal,
   TrainingPreference,
-  getSessionWorkoutPlans,
+  getUserProgram,
   getSessionPromptLogs,
   createNewProgram,
   preparePromptForAI,
   createAnonUser,
 } from "./actions";
 import { useSearchParams, useRouter } from "next/navigation";
-import { WorkoutPlanDisplay } from "@/app/components/WorkoutPlanDisplay";
 import { fileToBase64 } from "@/utils/fileHandling";
 import { IntakeForm } from "@/app/components/IntakeForm";
 import { UserProfileDisplay } from "@/app/components/UserProfileDisplay";
-import { ProgramData, WorkoutPlan, WorkoutPlanData } from "./types";
 import { Program as PrismaProgram, WorkoutPlan as PrismaWorkoutPlan } from "@prisma/client";
 import { formatUnderscoreDelimitedString } from "@/utils/formatting";
 import { ProgramDisplay } from "../components/ProgramDisplay";
@@ -55,12 +53,11 @@ export default function StartPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [intakeForm, setIntakeForm] = useState<IntakeFormData | null>(null);
   const [showIntakeForm, setShowIntakeForm] = useState(!intakeForm);
-  const [workoutPlan, setWorkoutPlans] = useState<PrismaWorkoutPlan | null>(null);
+  const [workoutPlan, setWorkoutPlans] = useState<PrismaWorkoutPlan[] | null>(null);
   const [program, setProgram] = useState<PrismaProgram | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [contextRequest, setContextRequest] = useState<ContextRequest[] | null>(null);
 
-  // Add useEffect to handle session initialization and image loading
   useEffect(() => {
     const urlUserId = searchParams.get("userId");
     if (urlUserId) {
@@ -68,6 +65,16 @@ export default function StartPage() {
       loadUserImages(urlUserId);
       loadIntakeForm(urlUserId);
       loadProgram(urlUserId);
+    }
+  }, []); 
+
+  // add useEffect to handle session initialization and image loading
+  useEffect(() => {
+    const urlUserId = searchParams.get("userId");
+    if (urlUserId) {
+      setUserId(urlUserId);
+      loadUserImages(urlUserId);
+      loadIntakeForm(urlUserId);
     }
   }, [searchParams]);
 
@@ -131,20 +138,20 @@ export default function StartPage() {
 
   // Modify loadWorkoutPlan to handle parsing from prompt logs if needed
   const loadProgram = async (uid: string) => {
-    const result = await getSessionWorkoutPlans(uid);
-    console.log("🚀 ~ loadProgram ~ result:", result)
+    const result = await getUserProgram(uid);
     const program = result.success ? result.program : null;
+    console.log("🚀 ~ loadProgram ~ program:", program)
     const workoutPlans = program?.workoutPlans || [];
     setProgram(program);
     setWorkoutPlans(workoutPlans);
     setShowIntakeForm(false);
 
     // TODO: get more context from prompts to make customizations
-    const sessionPromptLog = await getSessionPromptLogs(uid);
-    const contextRequest = sessionPromptLog.success && sessionPromptLog.log? JSON.parse(sessionPromptLog.log.response).contextRequest : null;
-    if (contextRequest) {
-      setContextRequest(contextRequest);
-    }
+    // const sessionPromptLog = await getSessionPromptLogs(uid);
+    // const contextRequest = sessionPromptLog.success && sessionPromptLog.log? JSON.parse(sessionPromptLog.log.response).contextRequest : null;
+    // if (contextRequest) {
+    //   setContextRequest(contextRequest);
+    // }
     // end TODO
   };
 
@@ -175,7 +182,7 @@ export default function StartPage() {
       }
 
       /**
-       * move on to the next page w user profile
+       * TODO: move on to the next page w user profile
        * add loading state and pretty whatever
        * while doing prompting and such
        */
@@ -197,53 +204,59 @@ export default function StartPage() {
       }
 
       const responseText = promptResult.response;
-      const parsedResponse = JSON.parse(responseText);
-      console.log("🚀 ~ StartPage ~ parsedResponse:", parsedResponse)
-      const { contextRequest, ...programData } = parsedResponse;
+      try {
+        const parsedResponse = JSON.parse(responseText);
+        const { contextRequest, ...programData } = parsedResponse;
 
-      if (contextRequest) {
-        setContextRequest(contextRequest);
+        // if (contextRequest) {
+        //   setContextRequest(contextRequest);
+        // }
+
+        // now save it
+        const program = await createNewProgram(programData, newUserId);
+        console.log("🚀 ~ StartPage ~ workoutPlanResult:", workoutPlanResult)
+
+        if (workoutPlanResult.success) {
+          setWorkoutPlans(program.workoutPlans);
+        }
+
+        // Handle file uploads if there are any
+        // if (uploadedImages && uploadedImages.length > 0) {
+        //   const base64Files = await Promise.all(
+        //     uploadedImages.map(async (image) => ({
+        //       fileName: file.name,
+        //       base64Data: await fileToBase64(file),
+        //       userId,
+        //     }))
+        //   );
+
+        //   const uploadResult = await uploadImages(base64Files);
+        //   if (uploadResult.success) {
+        //     setUploadedImages((prev) => [...prev, ...uploadResult.images]);
+        //   } else {
+        //     throw new Error("Failed to upload images");
+        //   }
+        // }
+
+        // Update UI state
+        // if (intakeResult.intake) {
+        //   setIntakeForm({
+        //     sex: intakeResult.intake.sex as Sex,
+        //     trainingGoal: intakeResult.intake.trainingGoal as TrainingGoal,
+        //     daysAvailable: intakeResult.intake.daysAvailable,
+        //     trainingPreferences: intakeResult.intake
+        //       .trainingPreferences as TrainingPreference[],
+        //     additionalInfo: intakeResult.intake.additionalInfo || "",
+        //   });
+        // }
+        // setShowIntakeForm(false);
+        // setFiles([]); // Clear files after successful upload
+
+      } catch (error) {
+        console.error("JSON Parse Error:", error);
+        console.error("Failed response:", responseText);
+        throw new Error("Failed to parse AI response");
       }
-
-      // now save it
-      console.log("🚀 ~ StartPage ~ programData:", programData)
-      const workoutPlanResult = await createNewProgram(programData, newUserId);
-
-      if (workoutPlanResult.success) {
-        setWorkoutPlans(workoutPlanResult.workoutPlans);
-      }
-
-      // Handle file uploads if there are any
-      // if (uploadedImages && uploadedImages.length > 0) {
-      //   const base64Files = await Promise.all(
-      //     uploadedImages.map(async (image) => ({
-      //       fileName: file.name,
-      //       base64Data: await fileToBase64(file),
-      //       userId,
-      //     }))
-      //   );
-
-      //   const uploadResult = await uploadImages(base64Files);
-      //   if (uploadResult.success) {
-      //     setUploadedImages((prev) => [...prev, ...uploadResult.images]);
-      //   } else {
-      //     throw new Error("Failed to upload images");
-      //   }
-      // }
-
-      // Update UI state
-      // if (intakeResult.intake) {
-      //   setIntakeForm({
-      //     sex: intakeResult.intake.sex as Sex,
-      //     trainingGoal: intakeResult.intake.trainingGoal as TrainingGoal,
-      //     daysAvailable: intakeResult.intake.daysAvailable,
-      //     trainingPreferences: intakeResult.intake
-      //       .trainingPreferences as TrainingPreference[],
-      //     additionalInfo: intakeResult.intake.additionalInfo || "",
-      //   });
-      // }
-      // setShowIntakeForm(false);
-      // setFiles([]); // Clear files after successful upload
 
     } catch (error) {
       console.error("Submission failed:", error);
