@@ -1,3 +1,5 @@
+import { Program } from "@prisma/client";
+
 export type ProgramData = {
   programName: string;
   programDescription: string;
@@ -29,6 +31,14 @@ export type PhasesData = {
     // suggestedSupplements?: string[];
   };
   progressionProtocol: string[];
+};
+
+export type ProgramFullDisplay = Program & {
+  workoutPlans: Array<WorkoutPlan & {
+    workouts: Array<Workout & {
+      exercises: Exercise[];
+    }>;
+  }>;
 };
 
 export type WorkoutPlanDisplayProps = {

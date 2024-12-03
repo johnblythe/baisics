@@ -46,12 +46,12 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
     return () => clearInterval(interval);
   }, [testimonials.length]);
 
-  const handleUpdateAnonUser = async (email: string) => {
+  const handleUpdateAnonUser = async (email: string, isPremium = false) => {
     const userId = new URLSearchParams(window.location.search).get('userId');
     if (!userId) {
       throw new Error("No user ID found in URL");
     }
-    const response = await updateUser(userId, { email });
+    const response = await updateUser(userId, { email, isPremium });
     if (response.success) {
       // setShowConfetti(true);
       onEmailSubmit(email);
@@ -189,7 +189,7 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
               </li>
             </ul>
             <button
-              onClick={onPurchase}
+              onClick={() => handleUpdateAnonUser(email || "john@test.com", true)}
               className="w-full bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 font-medium"
             >
               Upgrade Now - $29.99/month

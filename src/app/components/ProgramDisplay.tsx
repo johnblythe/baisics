@@ -1,11 +1,11 @@
-import { WorkoutPlanDisplayProps } from '../start/types';
+// import { WorkoutPlanDisplayProps } from '../start/types';
 import { WorkoutPlanDisplay } from './WorkoutPlanDisplay';
 import { UpsellModal } from './UpsellModal';
-import { useState, useEffect } from 'react';
-import { Program } from '@prisma/client';
+import { useState } from 'react';
+import { ProgramFullDisplay } from '../start/types';
 
 interface ProgramDisplayProps {
-  program: Program;
+  program: ProgramFullDisplay;
   userEmail?: string | null;
 }
 
@@ -17,24 +17,10 @@ export function ProgramDisplay({ program, userEmail: initialUserEmail = null }: 
     setUserEmail(email);
     setIsUpsellOpen(false);
   };
-  console.log("🚀 ~ ProgramDisplay ~ userEmail:", userEmail)
-
-  // setting email = unlocked
-  // const handleUnlockAllPhases = () => {
-  //   setLockedPhases([]);
-  // };
 
   const handlePurchase = () => {
     setIsUpsellOpen(false);
   };
-
-  // useEffect(() => {
-  //   const url = new URL(window.location.href);
-  //   if (!url.searchParams.has('programId')) {
-  //     url.searchParams.set('programId', program.id);
-  //     window.history.replaceState({}, '', url.toString());
-  //   }
-  // }, [program.id]);
 
   if (!program) {
     return (
@@ -144,7 +130,7 @@ export function ProgramDisplay({ program, userEmail: initialUserEmail = null }: 
         )}
         <WorkoutPlanDisplay 
           plan={program.workoutPlans[activePlanIndex]} 
-          userEmail={userEmail}
+          userEmail={userEmail || undefined}
         />
       </div>
 

@@ -1,5 +1,6 @@
 import { IntakeFormData } from "@/app/start/actions";
 import { convertHeightToFeetAndInches } from "@/utils/formatting";
+import { User } from "@prisma/client";
 import { useState } from "react";
 
 type UploadedImage = {
@@ -16,6 +17,7 @@ interface UserProfileDisplayProps {
   images: UploadedImage[];
   onDeleteImage: (imageId: string) => void;
   onEditProfile: () => void;
+  user: User;
 }
 
 export function UserProfileDisplay({
@@ -23,8 +25,10 @@ export function UserProfileDisplay({
   images,
   onDeleteImage,
   onEditProfile,
+  user: initialUser,
 }: UserProfileDisplayProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [user, setUser] = useState(initialUser);
 
   // Create a summary of key information
   const summaryInfo = [
@@ -36,11 +40,28 @@ export function UserProfileDisplay({
 
   return (
     <div className="space-y-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      {/* Upsell Banner for Freemium Users */}
+      {!user.isPremium && (
+        <div className="bg-yellow-100 text-yellow-800 p-4 rounded-lg text-center">
+          Upgrade to Premium for exclusive features and benefits!
+        </div>
+      )}
+
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md transition-all duration-300">
-        {/* Collapsed View */}
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold">User Profile</h2>
+            <div className="flex items-center space-x-3">
+              <h3 className="text-xl font-bold">Your Profile</h3>
+              {user.email && (
+                <span className={`px-2 py-1 text-xs rounded-full ${
+                  user.isPremium 
+                    ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white' 
+                    : 'bg-blue-100 text-blue-800'
+                }`}>
+                  {user.isPremium ? 'Premium' : 'Freemium'}
+                </span>
+              )}
+            </div>
             <div className="space-x-2">
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
@@ -63,20 +84,12 @@ export function UserProfileDisplay({
                 )}
               </button>
               {!isExpanded && (
-                <>
-                  <button
-                    onClick={onEditProfile}
-                    className="px-4 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-                  >
-                    Edit Profile
-                  </button>
-                  <a
-                    href="/start"
-                    className="px-4 py-2 text-sm bg-green-500 text-white rounded hover:bg-green-600 transition-colors inline-block"
-                  >
-                    Start New Session
-                  </a>
-                </>
+                <button
+                  onClick={onEditProfile}
+                  className="px-4 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                >
+                  Edit Profile
+                </button>
               )}
             </div>
           </div>
@@ -229,6 +242,15 @@ export function UserProfileDisplay({
                 >
                   Start New Session
                 </a>
+                {/* Upsell Button for Freemium Users */}
+                {!user.isPremium && (
+                  <button
+                    onClick={() => alert('Upgrade to Premium!')}
+                    className="px-4 py-2 text-sm bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors"
+                  >
+                    Upgrade to Premium
+                  </button>
+                )}
               </div>
             </div>
           )}

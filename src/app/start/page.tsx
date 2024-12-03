@@ -358,6 +358,7 @@ export default function StartPage() {
             <UserProfileDisplay
               intakeForm={intakeForm}
               images={uploadedImages}
+              user={user}
               onDeleteImage={handleDelete}
               onEditProfile={() => setShowIntakeForm(true)}
             />
@@ -368,6 +369,16 @@ export default function StartPage() {
             userEmail={user?.email} />}
         </>
       )}
+
+      {/* Admin Testing Corner */}
+      <div className="fixed bottom-4 right-4 opacity-50 hover:opacity-100 transition-opacity">
+        <a
+          href="/start"
+          className="px-3 py-1 text-xs bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors"
+        >
+          New Session
+        </a>
+      </div>
     </div>
   );
 }
