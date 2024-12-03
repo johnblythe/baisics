@@ -171,6 +171,7 @@ export default function StartPage() {
     formData: IntakeFormData & { files?: File[] }
   ) => {
     setIsSubmitting(true);
+    let uploadResult: { success: boolean, images?: UploadedImage[] } | null = null;
     try {
       // First phase: Create user and save intake
       const newUserId = uuidv4();
@@ -191,14 +192,13 @@ export default function StartPage() {
           userId: anonUser.user.id,
         })));
 
-        const uploadResult = await uploadImages(imagesToUpload);
+        uploadResult = await uploadImages(imagesToUpload);
         if (uploadResult.success && uploadResult.images) {
           setUploadedImages(uploadResult.images);
         }
       }
 
-      // Remove files from formData before saving intake
-      // @TODO: idk if i want this
+      // @TODO: find way to tie images to intake
       const { files, ...intakeData } = formData;
       const intakeResult = await saveIntakeForm(newUserId, intakeData);
       if (!intakeResult.success) {
@@ -210,7 +210,8 @@ export default function StartPage() {
       setIsSubmitting(false);
 
       setIsProgramGenerating(true);
-      const promptResult = await preparePromptForAI(newUserId, formData);
+      console.log("🚀 ~ uploadedImages:", uploadedImages)
+      const promptResult = await preparePromptForAI(newUserId, formData, uploadResult?.images);
       
       if (!promptResult.success) {
         throw new Error("Failed to prepare prompt for AI");

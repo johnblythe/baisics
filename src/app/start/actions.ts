@@ -168,9 +168,8 @@ export async function saveIntakeForm(userId: string, intakeForm: IntakeFormData)
       }
       
       intakeForm = intakeData;
-    } else {
-      console.log("🚀 ~ saveIntakeForm ~ no files in intake form")
     }
+    
     const intakeData = {
       userId,
       sex: intakeForm.sex as Sex,
@@ -429,6 +428,7 @@ export async function preparePromptForAI(
   intakeData?: IntakeFormData,
   images?: UserImages[]
 ) {
+  console.log("🚀 ~ preparePromptForAI ~ images:", images)
   console.time('preparePromptForAI-total');
   try {
     console.time('fetch-intake-data');
@@ -501,9 +501,7 @@ export async function preparePromptForAI(
     console.timeEnd('ai-response');
 
     if (aiResponse.success) {
-      console.log("sup");
       console.time('save-prompt-log');
-      console.log("sup2");
       await prisma.promptLog.create({
         data: {
           userId,
@@ -511,14 +509,11 @@ export async function preparePromptForAI(
           response: aiResponse.data?.content[0].text || '',
           inputTokens: aiResponse.data?.usage?.input_tokens,
           outputTokens: aiResponse.data?.usage?.output_tokens,
-          model: process.env.HAIKU_MODEL!,
+          model: process.env.SONNET_MODEL!,
         },
       });
-      console.log("sup3");
       console.timeEnd('save-prompt-log');
-      console.log("sup4"); 
       console.timeEnd('preparePromptForAI-total');
-      console.log("sup5");
       return {
         success: true,
         response: aiResponse.data?.content[0].text,
