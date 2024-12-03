@@ -28,6 +28,7 @@ import { Program as PrismaProgram, WorkoutPlan as PrismaWorkoutPlan, User } from
 import { formatUnderscoreDelimitedString } from "@/utils/formatting";
 import { ProgramDisplay } from "../components/ProgramDisplay";
 import { UpsellModal } from "@/app/components/UpsellModal";
+import { Skeleton } from "@/app/components/ui/skeleton";
 
 // Add new types
 type ContextRequest = {
@@ -62,6 +63,7 @@ export default function StartPage() {
   const [programId, setProgramId] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isUpsellOpen, setIsUpsellOpen] = useState(false);
+  const [isProgramGenerating, setIsProgramGenerating] = useState(false);
 
   useEffect(() => {
     const urlProgramId = searchParams.get("programId");
@@ -177,117 +179,56 @@ export default function StartPage() {
     // end TODO
   };
 
+  // Modify handleIntakeSubmit to split the flow
   const handleIntakeSubmit = async (
     formData: IntakeFormData & { files?: File[] }
   ) => {
-    setIsUploading(true);
-    const newUserId = uuidv4();
-    const anonUser = await createAnonUser(newUserId)
-    if (anonUser.success && anonUser.user) {
+    setIsSubmitting(true);
+    try {
+      // First phase: Create user and save intake
+      const newUserId = uuidv4();
+      const anonUser = await createAnonUser(newUserId);
+      if (!anonUser.success || !anonUser.user) {
+        throw new Error("Failed to create new anonymous user");
+      }
+
       setUserId(anonUser.user.id);
       setUser(anonUser.user);
       router.push(`${window.location.pathname}?userId=${anonUser.user.id}`);
-      setIsLoading(false);
-    } else {
-      console.error("Failed to create new anonymous user:", anonUser.error);
-      throw new Error("Failed to create new anonymous user");
-    }
-    
-    try {
-      // Extract files from form data
-      // const { files: uploadedFiles, ...intakeData } = formData;
 
-      // Save intake form
       const intakeResult = await saveIntakeForm(newUserId, formData);
       if (!intakeResult.success) {
         throw new Error("Failed to save intake form");
       }
 
-      /**
-       * TODO: move on to the next page w user profile
-       * add loading state and pretty whatever
-       * while doing prompting and such
-       */
+      // Update UI to show profile
+      setIntakeForm(formData);
+      setShowIntakeForm(false);
+      setIsSubmitting(false);
 
-      // now that we've saved it, shoot it off to the AI
-      const startTime = performance.now();
-      const promptResult = await preparePromptForAI(
-        newUserId,
-        formData,
-        // intakeResult.images || []
-      );
-      const endTime = performance.now();
-      const duration = (endTime - startTime) / 1000; // Convert to seconds
-      console.log(`🚀 ~ StartPage ~ preparePromptForAI completed in ${duration.toFixed(2)} seconds`);
-
+      // Second phase: Generate program
+      setIsProgramGenerating(true);
+      const promptResult = await preparePromptForAI(newUserId, formData);
+      
       if (!promptResult.success) {
         throw new Error("Failed to prepare prompt for AI");
       }
 
-      const responseText = promptResult.response;
-      try {
-        const parsedResponse = JSON.parse(responseText);
-        // contextRequest
-        const programData = parsedResponse;
+      const programData = JSON.parse(promptResult.response);
+      const result = await createNewProgram(programData, newUserId);
 
-        // if (contextRequest) {
-        //   setContextRequest(contextRequest);
-        // }
-
-        // now save it
-        const result = await createNewProgram(programData, newUserId);
-
-        if (result.success) {
-          const program = result.success ? result.program : null;
-          const workoutPlans = program?.workoutPlans || [];
-          setProgram(program);
-          setWorkoutPlans(workoutPlans);
-          setShowIntakeForm(false);
-          setProgramId(program?.id);
-          router.push(`${window.location.pathname}?userId=${newUserId}&programId=${program?.id}`);
-        }
-
-        // Handle file uploads if there are any
-        // if (uploadedImages && uploadedImages.length > 0) {
-        //   const base64Files = await Promise.all(
-        //     uploadedImages.map(async (image) => ({
-        //       fileName: file.name,
-        //       base64Data: await fileToBase64(file),
-        //       userId,
-        //     }))
-        //   );
-
-        //   const uploadResult = await uploadImages(base64Files);
-        //   if (uploadResult.success) {
-        //     setUploadedImages((prev) => [...prev, ...uploadResult.images]);
-        //   } else {
-        //     throw new Error("Failed to upload images");
-        //   }
-        // }
-
-        // Update UI state
-        // if (intakeResult.intake) {
-        //   setIntakeForm({
-        //     sex: intakeResult.intake.sex as Sex,
-        //     trainingGoal: intakeResult.intake.trainingGoal as TrainingGoal,
-        //     daysAvailable: intakeResult.intake.daysAvailable,
-        //     trainingPreferences: intakeResult.intake
-        //       .trainingPreferences as TrainingPreference[],
-        //     additionalInfo: intakeResult.intake.additionalInfo || "",
-        //   });
-        // }
-        // setShowIntakeForm(false);
-        // setFiles([]); // Clear files after successful upload
-
-      } catch (error) {
-        console.error("Failed response:", responseText);
-        throw new Error("Failed to parse AI response");
+      if (result.success) {
+        const program = result.program;
+        setProgram(program);
+        setWorkoutPlans(program?.workoutPlans || []);
+        setProgramId(program?.id);
+        router.push(`${window.location.pathname}?userId=${newUserId}&programId=${program?.id}`);
       }
-
     } catch (error) {
       console.error("Submission failed:", error);
     } finally {
-      setIsUploading(false);
+      setIsProgramGenerating(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -354,15 +295,7 @@ export default function StartPage() {
         <IntakeForm
           initialData={intakeForm}
           isSubmitting={isSubmitting}
-          onSubmit={async (data) => {
-            setIsSubmitting(true);
-            try {
-              await handleIntakeSubmit(data);
-              setShowIntakeForm(false);
-            } finally {
-              setIsSubmitting(false);
-            }
-          }}
+          onSubmit={handleIntakeSubmit}
         />
       ) : (
         <>
@@ -377,11 +310,24 @@ export default function StartPage() {
             />
           )}
 
-          {program && <ProgramDisplay 
-            program={program}
-            userEmail={user?.email}
-            onRequestUpsell={handleOpenUpsellModal}
-          />}
+          {isProgramGenerating ? (
+            <div className="mt-8 space-y-6">
+              <h2 className="text-2xl font-bold">Generating Your Program...</h2>
+              <div className="space-y-4">
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-48 w-full" />
+                <Skeleton className="h-48 w-full" />
+              </div>
+            </div>
+          ) : (
+            program && (
+              <ProgramDisplay 
+                program={program}
+                userEmail={user?.email}
+                onRequestUpsell={handleOpenUpsellModal}
+              />
+            )
+          )}
         </>
       )}
 
