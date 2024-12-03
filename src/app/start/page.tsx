@@ -18,12 +18,13 @@ import {
   createNewProgram,
   preparePromptForAI,
   createAnonUser,
+  getUser,
 } from "./actions";
 import { useSearchParams, useRouter } from "next/navigation";
 import { fileToBase64 } from "@/utils/fileHandling";
 import { IntakeForm } from "@/app/components/IntakeForm";
 import { UserProfileDisplay } from "@/app/components/UserProfileDisplay";
-import { Program as PrismaProgram, WorkoutPlan as PrismaWorkoutPlan } from "@prisma/client";
+import { Program as PrismaProgram, WorkoutPlan as PrismaWorkoutPlan, User } from "@prisma/client";
 import { formatUnderscoreDelimitedString } from "@/utils/formatting";
 import { ProgramDisplay } from "../components/ProgramDisplay";
 
@@ -58,7 +59,7 @@ export default function StartPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [contextRequest, setContextRequest] = useState<ContextRequest[] | null>(null);
   const [programId, setProgramId] = useState<string | null>(null);
-
+  const [user, setUser] = useState<User | null>(null);
   useEffect(() => {
     const urlProgramId = searchParams.get("programId");
     if (urlProgramId) {
@@ -67,6 +68,7 @@ export default function StartPage() {
     const urlUserId = searchParams.get("userId");
     if (urlUserId) {
       setUserId(urlUserId);
+      loadUser(urlUserId);
     }
       // loadIntakeForm(urlUserId);
       // loadUserImages(urlUserId);
@@ -75,7 +77,16 @@ export default function StartPage() {
     } else if (urlUserId) {
       loadIntakeForm(urlUserId);
     }
-  }, []); 
+  }, []);
+
+  const loadUser = async (userId: string) => {
+    const result = await getUser(userId);
+    if (result.success && result.user) {
+      setUser(result.user);
+      console.log("🚀 ~ loadUser ~ result.user:", result.user)
+      setUserId(result.user.id);
+    }
+  }
 
   // add useEffect to handle session initialization and image loading
   useEffect(() => {
@@ -351,9 +362,10 @@ export default function StartPage() {
               onEditProfile={() => setShowIntakeForm(true)}
             />
           )}
+
           {program && <ProgramDisplay 
             program={program}
-            workoutPlans={workoutPlans} />}
+            userEmail={user?.email} />}
         </>
       )}
     </div>

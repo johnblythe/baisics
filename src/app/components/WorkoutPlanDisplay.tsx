@@ -6,7 +6,6 @@ import { WorkoutPlanDisplayProps } from '../start/types';
 
 
 export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: WorkoutPlanDisplayProps) {
-  // console.log("Plan structure:", JSON.stringify(plan, null, 2));
   const [isUpsellOpen, setIsUpsellOpen] = useState(false);
   const [userEmail, setUserEmail] = useState(initialUserEmail);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -49,7 +48,7 @@ export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: Workou
         {/* Overview Section */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <h2 className="text-xl font-semibold mb-4">
-            Training Program Overview - Phase {plan.phase}
+            Phase {plan.phase} Overview
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -95,7 +94,7 @@ export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: Workou
               key={workout.id}
               className="bg-white dark:bg-gray-800 rounded-lg shadow p-6"
             >
-              <h3 className="font-semibold mb-4">Day {workout.dayNumber}</h3>
+              <h3 className="font-semibold mb-4">Session {workout.dayNumber}</h3>
               <div className="w-full">
                 {/* Header */}
                 <div className="grid grid-cols-12 gap-4 text-left font-medium mb-2">

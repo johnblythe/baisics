@@ -62,8 +62,8 @@ model PromptLog {
 }
 
 model User {
-  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email       String?       @unique @map("email")
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid @unique
+  email       String?       @map("email") /// @TODO: make unique, not helpful during testing tho
   password    String?       @map("password")
   isPremium   Boolean       @default(false) @map("is_premium")
   createdAt   DateTime      @default(now()) @map("created_at")
@@ -74,6 +74,7 @@ model User {
   workoutPlans WorkoutPlan[]
   programs     Program[]
 
+  @@index([email])
   @@map("users")
 }
 

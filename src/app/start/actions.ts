@@ -238,6 +238,27 @@ export async function getSessionPromptLogs(userId: string) {
   }
 }
 
+export async function getUser(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+  return { success: true, user };
+}
+
+export async function getUserByEmail(email: string) {
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+  return { success: true, user };
+}
+
+export async function getProgram(programId: string) {
+  const program = await prisma.program.findUnique({
+    where: { id: programId },
+  });
+  return { success: true, program };
+}
+
 // Get workout plan for a previously saved session
 export async function getUserProgram(userId: string, programId: string) {
   if (!userId || !programId) {
