@@ -114,10 +114,12 @@ export async function createNewUser({ userId, email }: { userId: string, email: 
 }
 
 export async function updateUser(userId: string, data: Partial<User>) {
-  await prisma.user.update({
+  const user = await prisma.user.update({
     where: { id: userId },
     data,
   });
+
+  return { success: true, user };
 } 
 
 export async function createAnonUser(userId: string) {

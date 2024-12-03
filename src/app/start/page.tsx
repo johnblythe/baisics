@@ -140,7 +140,6 @@ export default function StartPage() {
   const loadProgram = async (uid: string) => {
     const result = await getUserProgram(uid);
     const program = result.success ? result.program : null;
-    console.log("🚀 ~ loadProgram ~ program:", program)
     const workoutPlans = program?.workoutPlans || [];
     setProgram(program);
     setWorkoutPlans(workoutPlans);

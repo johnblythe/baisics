@@ -1,22 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { validateEmail } from "@/utils/forms/validation";
+import ReactConfetti from "react-confetti";
+import { updateUser } from '../start/actions';
 
 type UpsellModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onEmailSubmit: (email: string) => void;
   onPurchase: () => void;
-  userEmail?: string;
+  userEmail?: string | null;
 };
 
 export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEmail }: UpsellModalProps) {
   const [email, setEmail] = useState(userEmail || "");
   const [emailError, setEmailError] = useState("");
+  const [showConfetti, setShowConfetti] = useState(false);
+
+  useEffect(() => {
+    if (showConfetti) {
+      const timer = setTimeout(() => setShowConfetti(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showConfetti]);
+
+  const handleUpdateAnonUser = async (email: string) => {
+    const userId = new URLSearchParams(window.location.search).get('userId');
+    if (!userId) {
+      throw new Error("No user ID found in URL");
+    }
+    const response = await updateUser(userId, { email });
+    if (response.success) {
+      // setShowConfetti(true);
+      onEmailSubmit(email);
+      onClose();
+    }
+  };
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      {showConfetti && <ReactConfetti />}
       <div className="bg-white dark:bg-gray-800 rounded-lg p-8 max-w-4xl w-full">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
@@ -67,7 +91,9 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
             </ul>
             <form onSubmit={(e) => {
               e.preventDefault();
-              onEmailSubmit(email);
+              if (validateEmail(email)) {
+                handleUpdateAnonUser(email);
+              }
             }}>
               <input
                 type="email"
@@ -104,10 +130,14 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
 
           {/* Premium Option */}
           <div className="p-6 border rounded-xl bg-blue-50 dark:bg-gray-700 relative overflow-hidden">
-            <div className="absolute top-4 right-4 bg-yellow-400 text-black px-3 py-1 rounded-full text-sm font-medium">
-              MOST POPULAR
+            <div className="flex justify-between items-center mb-4">
+              <span className="bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-medium">
+                Premium Access
+              </span>
+              <span className="bg-yellow-400 text-gray-900 px-4 py-1 rounded-full text-sm font-medium">
+                MOST POPULAR
+              </span>
             </div>
-            <div className="bg-blue-600 inline-block px-3 py-1 rounded-full text-sm text-white mb-4">Premium Access</div>
             <h3 className="text-2xl font-bold mb-4">Unlock Your Full Potential</h3>
             <ul className="space-y-3 mb-6">
               <li className="flex items-center">
