@@ -5,7 +5,7 @@ import { sendMessage } from '@/utils/chat';
 import { generateTrainingProgramPrompt } from './prompts';
 import { Exercise, Workout, ProgramData, PhasesData } from './types';
 import { MessageParam } from '@anthropic-ai/sdk/src/resources/messages.js';
-import { UserImages } from '@prisma/client';
+import { User, UserImages } from '@prisma/client';
 
 // Add new types for the form data
 export type TrainingGoal = 'weight loss' | 'maintenance' | 'body recomposition' | 'strength gains' | 'weight gain' | 'muscle building' | 'other';
@@ -28,8 +28,8 @@ export interface IntakeFormData {
 export type ImageUpload = {
   fileName: string;
   base64Data: string;
-  sessionId: string;
-  intakeForm?: IntakeFormData;  // Make intake form optional for backwards compatibility
+  userId: string;
+  intakeForm?: IntakeFormData;
 };
 
 // rn just storing base64 data, can deal w uploads later
@@ -41,7 +41,7 @@ export async function uploadImages(images: ImageUpload[]) {
           data: {
             fileName: image.fileName,
             base64Data: image.base64Data,
-            sessionId: image.sessionId,
+            userId: image.userId,
           },
         });
 
@@ -56,15 +56,15 @@ export async function uploadImages(images: ImageUpload[]) {
   }
 }
 
-export async function getSessionImages(sessionId: string) {
-  if (!sessionId) {
-    return { success: false, error: 'Session ID is required' };
+export async function getSessionImages(userId: string) {
+  if (!userId) {
+    return { success: false, error: 'User ID is required' };
   }
 
   try {
     const images = await prisma.userImages.findMany({
       where: {
-        sessionId: sessionId,
+        userId: userId,
       },
       orderBy: {
         createdAt: 'desc',
@@ -92,10 +92,18 @@ export async function deleteImage(imageId: string) {
   }
 }
 
-export async function createNewUser(email: string) {
+// specifically from anon state
+export async function createNewUser({ userId, email }: { userId: string, email: string }) {
   try {
-    const user = await prisma.user.create({
-      data: { email, password: '0218fatloss' },
+    const user = await prisma.user.upsert({
+      where: { id: userId },
+      update: {
+        email,
+      },
+      create: {
+        id: userId,
+        email,
+      },
     });
 
     return { success: true, user };
@@ -105,8 +113,30 @@ export async function createNewUser(email: string) {
   }
 }
 
+export async function updateUser(userId: string, data: Partial<User>) {
+  await prisma.user.update({
+    where: { id: userId },
+    data,
+  });
+} 
+
+export async function createAnonUser(userId: string) {
+  try {
+    const user = await prisma.user.create({
+      data: {
+        id: userId,
+      },
+    });
+
+    return { success: true, user };
+  } catch (error) {
+    console.error('Failed to create anonymous user:', error);
+    return { success: false, error: 'Failed to create anonymous user' };
+  }
+}
+
 // todo: consider upserting
-export async function saveIntakeForm(sessionId: string, intakeForm: IntakeFormData) {
+export async function saveIntakeForm(userId: string, intakeForm: IntakeFormData) {
   try {
     const uploadedImages = [];
     // Handle any uploaded files if they exist
@@ -118,7 +148,7 @@ export async function saveIntakeForm(sessionId: string, intakeForm: IntakeFormDa
         const imageUploadResult = await uploadImages(
           files.map(file => ({
             ...file,
-            sessionId,
+            userId,
             intakeForm: intakeData
           }))
         );
@@ -131,15 +161,17 @@ export async function saveIntakeForm(sessionId: string, intakeForm: IntakeFormDa
       }
       
       intakeForm = intakeData;
+    } else {
+      console.log("🚀 ~ saveIntakeForm ~ no files in intake form")
     }
     const intakeData = {
-      sessionId,
+      userId,
       sex: intakeForm.sex as Sex,
       trainingGoal: intakeForm.trainingGoal as TrainingGoal,
       daysAvailable: intakeForm.daysAvailable,
       dailyBudget: intakeForm.dailyBudget,
       age: intakeForm.age,
-      experienceLevel: "",
+      experienceLevel: intakeForm.experienceLevel || "",
       weight: intakeForm.weight,
       height: intakeForm.height,
       trainingPreferences: intakeForm.trainingPreferences,
@@ -147,7 +179,7 @@ export async function saveIntakeForm(sessionId: string, intakeForm: IntakeFormDa
     };
 
     const savedIntake = await prisma.userIntake.upsert({
-      where: { sessionId },
+      where: { userId },
       update: intakeData,
       create: intakeData,
     });
@@ -159,15 +191,15 @@ export async function saveIntakeForm(sessionId: string, intakeForm: IntakeFormDa
   }
 }
 
-export async function getSessionIntake(sessionId: string) {
-  if (!sessionId) {
-    return { success: false, error: 'Session ID is required' };
+export async function getSessionIntake(userId: string) {
+  if (!userId) {
+    return { success: false, error: 'User ID is required' };
   }
 
   try {
     const intake = await prisma.userIntake.findFirst({
       where: {
-        sessionId: sessionId,
+        userId: userId,
       },
       orderBy: {
         createdAt: 'desc',
@@ -182,15 +214,15 @@ export async function getSessionIntake(sessionId: string) {
 }
 
 // Add a new function to retrieve prompt logs
-export async function getSessionPromptLogs(sessionId: string) {
-  if (!sessionId) {
-    return { success: false, error: 'Session ID is required' };
+export async function getSessionPromptLogs(userId: string) {
+  if (!userId) {
+    return { success: false, error: 'User ID is required' };
   }
 
   try {
     const log = await prisma.promptLog.findFirst({
       where: {
-        sessionId: sessionId,
+        userId: userId,
       },
       orderBy: {
         createdAt: 'desc',
@@ -205,9 +237,9 @@ export async function getSessionPromptLogs(sessionId: string) {
 }
 
 // Get workout plan for a previously saved session
-export async function getSessionWorkoutPlans(sessionId: string) {
-  if (!sessionId) {
-    return { success: false, error: 'Session ID is required' };
+export async function getSessionWorkoutPlans(userId: string) {
+  if (!userId) {
+    return { success: false, error: 'User ID is required' };
   }
 
   try {
@@ -215,7 +247,7 @@ export async function getSessionWorkoutPlans(sessionId: string) {
       where: {
         workoutPlans: {
           some: {
-            sessionId: sessionId,
+            userId: userId,
           },
         },
       },
@@ -246,11 +278,11 @@ export async function getSessionWorkoutPlans(sessionId: string) {
 }
 
 // Add function to delete workout plan
-export async function deleteWorkoutPlan(sessionId: string) {
+export async function deleteWorkoutPlan(userId: string) {
   try {
     await prisma.workoutPlan.deleteMany({
       where: {
-        sessionId: sessionId,
+        userId: userId,
       },
     });
     return { success: true };
@@ -312,16 +344,19 @@ const prepareWorkoutPlanObject = async (phases: PhasesData[]) => {
 };
 
 // Save workout plan to db
-export async function createNewProgram(programData: ProgramData, sessionId: string) {
+export async function createNewProgram(programData: ProgramData, userId: string) {
   // create a new program with the descriptoin and name and a fake userid 82dd7d11-6683-4c7c-a3bf-e7f059ae2e24
   try {
-    const userId = '82dd7d11-6683-4c7c-a3bf-e7f059ae2e24';
     const { phases, ...programDetails } = programData;
     const newProgram = await prisma.program.create({
       data: {
         name: programDetails.programName,
         description: programDetails.programDescription,
-        userId,
+        user: {
+          connect: {
+            id: userId,
+          },
+        },
       },
     });
 
@@ -332,7 +367,7 @@ export async function createNewProgram(programData: ProgramData, sessionId: stri
       preppedPlans.map(async (plan, index) => {
         const createData = {
           ...plan,
-          sessionId,
+          userId,
           programId: newProgram.id,
         };
         
@@ -358,15 +393,17 @@ export async function createNewProgram(programData: ProgramData, sessionId: stri
 
 // todo: rename to its more specific purpose
 export async function preparePromptForAI(
-  sessionId: string, 
+  userId: string,
   intakeData?: IntakeFormData,
   images?: UserImages[]
 ) {
+  console.time('preparePromptForAI-total');
   try {
+    console.time('fetch-intake-data');
     // rethink this, seems sloppy/verbose
-    if (sessionId && !intakeData) {
+    if (userId && !intakeData) {
       const dbIntake = await prisma.userIntake.findFirst({
-        where: { sessionId },
+        where: { userId },
         orderBy: { createdAt: 'desc' },
       });
       
@@ -384,21 +421,25 @@ export async function preparePromptForAI(
         };
       }
     }
+    console.timeEnd('fetch-intake-data');
 
     if (!intakeData) {
       console.error("🚀 ~ preparePromptForAI ~ no intake data sent or found")
       return { success: false, error: 'No intake data found' };
     }
 
+    console.time('generate-prompt');
     const clientDataPrompt = generateTrainingProgramPrompt(intakeData); 
     const clientPicturePrompt = "Please analyze this image and estimate body fat percentage.";
+    console.timeEnd('generate-prompt');
 
     // Base message content
     const messageContent: MessageParam['content'] = [];
 
+    console.time('process-images');
     // Add images to message content if provided
     if (images?.length) {
-      console.log("🚀 ~ preparePromptForAI ~ attempting to add images to message content:", images)
+      console.log("🚀 ~ preparePromptForAI ~ attempting to add images to message content:", images.length)
       for (const image of images) {
         const base64String = image.base64Data.split(',')[1];
         const mediaType = image.base64Data.split(';')[0].split(':')[1];
@@ -407,43 +448,51 @@ export async function preparePromptForAI(
           type: "image",
           source: {
             type: "base64",
-            media_type: mediaType,
+            media_type: mediaType as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp',
             data: base64String,
           },
         });
       }
       messageContent.push({ type: 'text', text: clientPicturePrompt });
     }
+    console.timeEnd('process-images');
 
     // Add text prompt
     messageContent.push({ type: 'text', text: clientDataPrompt });
+    console.log("🚀 ~ messageContent:", messageContent)
     
-
+    console.time('ai-response');
     // Send message to AI
     const aiResponse = await sendMessage([{
       role: 'user',
       content: messageContent,
     }]);
+    console.timeEnd('ai-response');
 
     if (aiResponse.success) {
+      console.time('save-prompt-log');
       await prisma.promptLog.create({
         data: {
-          sessionId,
+          userId,
           prompt: JSON.stringify(messageContent),
           response: aiResponse.data?.content[0].text || '',
-          model: 'claude-3-5-sonnet-20240620',
+          model: 'claude-3-haiku-20240307',
         },
       });
+      console.timeEnd('save-prompt-log');
 
+      console.timeEnd('preparePromptForAI-total');
       return {
         success: true,
-        response: aiResponse.data?.content[0].text, // @TODO: may need more than first content, should refactor?
+        response: aiResponse.data?.content[0].text,
         images: images?.map(img => ({ fileName: img.fileName }))
       };
     }
 
+    console.timeEnd('preparePromptForAI-total');
     return { success: false, error: 'AI response failed' };
   } catch (error) {
+    console.timeEnd('preparePromptForAI-total');
     console.error('Claude processing error:', error);
     return { success: false, error: 'Failed to process with Claude' };
   }

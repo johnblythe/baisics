@@ -17,6 +17,7 @@ import {
   getSessionPromptLogs,
   createNewProgram,
   preparePromptForAI,
+  createAnonUser,
 } from "./actions";
 import { useSearchParams, useRouter } from "next/navigation";
 import { WorkoutPlanDisplay } from "@/app/components/WorkoutPlanDisplay";
@@ -37,7 +38,7 @@ type ContextRequest = {
 
 type UploadedImage = {
   id: string;
-  sessionId: string;
+  userId: string;
   fileName: string;
   base64Data: string;
   createdAt: Date;
@@ -48,7 +49,7 @@ export default function StartPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [files, setFiles] = useState<File[]>([]);
-  const [sessionId, setSessionId] = useState("");
+  const [userId, setUserId] = useState("");
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -61,15 +62,12 @@ export default function StartPage() {
 
   // Add useEffect to handle session initialization and image loading
   useEffect(() => {
-    const urlSessionId = searchParams.get("sessionId");
-    if (urlSessionId) {
-      setSessionId(urlSessionId);
-      loadSessionImages(urlSessionId);
-      loadIntakeForm(urlSessionId);
-      loadProgram(urlSessionId);
-    } else {
-      setSessionId(uuidv4());
-      setIsLoading(false);
+    const urlUserId = searchParams.get("userId");
+    if (urlUserId) {
+      setUserId(urlUserId);
+      loadUserImages(urlUserId);
+      loadIntakeForm(urlUserId);
+      loadProgram(urlUserId);
     }
   }, [searchParams]);
 
@@ -90,15 +88,15 @@ export default function StartPage() {
     maxSize: 5242880, // 5MB
   });
 
-  const loadSessionImages = async (sid: string) => {
-    // Skip loading for new sessions (when sid is not in URL)
-    if (!searchParams.get("sessionId")) {
+  const loadUserImages = async (uid: string) => {
+    // Skip loading for new sessions (when uid is not in URL)
+    if (!searchParams.get("userId")) {
       setIsLoading(false);
       return;
     }
 
     try {
-      const result = await getSessionImages(sid);
+      const result = await getSessionImages(uid);
       if (result.success) {
         setUploadedImages(result.images);
       } else {
@@ -112,8 +110,8 @@ export default function StartPage() {
   };
 
   // Add new function to load intake form
-  const loadIntakeForm = async (sid: string) => {
-    const result = await getSessionIntake(sid);
+  const loadIntakeForm = async (uid: string) => {
+    const result = await getSessionIntake(uid);
     if (result.success && result.intake) {
       setIntakeForm({
         sex: result.intake.sex as Sex,
@@ -132,8 +130,8 @@ export default function StartPage() {
   };
 
   // Modify loadWorkoutPlan to handle parsing from prompt logs if needed
-  const loadProgram = async (sid: string) => {
-    const result = await getSessionWorkoutPlans(sid);
+  const loadProgram = async (uid: string) => {
+    const result = await getSessionWorkoutPlans(uid);
     console.log("🚀 ~ loadProgram ~ result:", result)
     const program = result.success ? result.program : null;
     const workoutPlans = program?.workoutPlans || [];
@@ -142,7 +140,7 @@ export default function StartPage() {
     setShowIntakeForm(false);
 
     // TODO: get more context from prompts to make customizations
-    const sessionPromptLog = await getSessionPromptLogs(sid);
+    const sessionPromptLog = await getSessionPromptLogs(uid);
     const contextRequest = sessionPromptLog.success && sessionPromptLog.log? JSON.parse(sessionPromptLog.log.response).contextRequest : null;
     if (contextRequest) {
       setContextRequest(contextRequest);
@@ -154,30 +152,45 @@ export default function StartPage() {
     formData: IntakeFormData & { files?: File[] }
   ) => {
     setIsUploading(true);
-    router.push(`${window.location.pathname}?sessionId=${sessionId}`);
+
+    const newUserId = uuidv4();
+    const anonUser = await createAnonUser(newUserId)
+    if (anonUser.success && anonUser.user) {
+      setUserId(anonUser.user.id);
+      router.push(`${window.location.pathname}?userId=${anonUser.user.id}`);
+      setIsLoading(false);
+    } else {
+      console.error("Failed to create new anonymous user:", anonUser.error);
+      throw new Error("Failed to create new anonymous user");
+    }
+    
     try {
       // Extract files from form data
       // const { files: uploadedFiles, ...intakeData } = formData;
 
       // Save intake form
-      const intakeResult = await saveIntakeForm(sessionId, formData);
+      const intakeResult = await saveIntakeForm(newUserId, formData);
       if (!intakeResult.success) {
         throw new Error("Failed to save intake form");
       }
 
-      // now that we've saved it, shoot it off to the AI
-      const promptResult = await preparePromptForAI(
-        sessionId,
-        formData,
-        intakeResult.images || []
-      );
+      /**
+       * move on to the next page w user profile
+       * add loading state and pretty whatever
+       * while doing prompting and such
+       */
 
-      // NOTE: START HERE TODO LIST
-      // need to get submission to:
-      // 1. reintegrate images
-      // 2. allow updates after first turn, including images
-      // 3. add teaser
-      // 4. add lead magnet
+      // now that we've saved it, shoot it off to the AI
+      console.log("🚀 ~ StartPage ~ about to start preparePromptForAI")
+      const startTime = performance.now();
+      const promptResult = await preparePromptForAI(
+        newUserId,
+        formData,
+        // intakeResult.images || []
+      );
+      const endTime = performance.now();
+      const duration = (endTime - startTime) / 1000; // Convert to seconds
+      console.log(`🚀 ~ StartPage ~ preparePromptForAI completed in ${duration.toFixed(2)} seconds`);
 
       if (!promptResult.success) {
         throw new Error("Failed to prepare prompt for AI");
@@ -186,17 +199,18 @@ export default function StartPage() {
       const responseText = promptResult.response;
       const parsedResponse = JSON.parse(responseText);
       console.log("🚀 ~ StartPage ~ parsedResponse:", parsedResponse)
-      const { program, contextRequest } = parsedResponse;
+      const { contextRequest, ...programData } = parsedResponse;
 
       if (contextRequest) {
         setContextRequest(contextRequest);
       }
 
       // now save it
-      const workoutPlanResult = await createNewProgram(program, sessionId);
+      console.log("🚀 ~ StartPage ~ programData:", programData)
+      const workoutPlanResult = await createNewProgram(programData, newUserId);
 
       if (workoutPlanResult.success) {
-        setWorkoutPlans(workoutPlanResult.workoutPlan);
+        setWorkoutPlans(workoutPlanResult.workoutPlans);
       }
 
       // Handle file uploads if there are any
@@ -205,7 +219,7 @@ export default function StartPage() {
       //     uploadedImages.map(async (image) => ({
       //       fileName: file.name,
       //       base64Data: await fileToBase64(file),
-      //       sessionId,
+      //       userId,
       //     }))
       //   );
 
@@ -231,10 +245,6 @@ export default function StartPage() {
       // setShowIntakeForm(false);
       // setFiles([]); // Clear files after successful upload
 
-      // Update URL if needed
-      if (!searchParams.get("sessionId")) {
-        router.push(`${window.location.pathname}?sessionId=${sessionId}`);
-      }
     } catch (error) {
       console.error("Submission failed:", error);
     } finally {
