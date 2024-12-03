@@ -155,9 +155,9 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
           <div className="p-6 border rounded-xl bg-blue-50 dark:bg-gray-700 relative overflow-hidden">
             <div className="flex justify-between items-center mb-4">
               <span className="bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-medium">
-                Premium Access
+              💪 Premium Access
               </span>
-              <span className="bg-yellow-400 text-gray-900 px-4 py-1 rounded-full text-sm font-medium">
+              <span className="bg-yellow-400 text-gray-900 px-4 py-1 rounded-full text-sm font-extrabold">
                 MOST POPULAR
               </span>
             </div>
@@ -165,7 +165,7 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
             <ul className="space-y-3 mb-6">
               <li className="flex items-center">
                 <span className="text-green-500 mr-2">✓</span>
-                <strong>Everything in Free, plus:</strong>
+                <strong><span className="font-extrabold underline">Everything</span> in Free, plus:</strong>
               </li>
               <li className="flex items-center">
                 <span className="text-green-500 mr-2">✓</span>

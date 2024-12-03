@@ -18,6 +18,7 @@ interface UserProfileDisplayProps {
   onDeleteImage: (imageId: string) => void;
   onEditProfile: () => void;
   user: User;
+  onRequestUpsell: () => void;
 }
 
 export function UserProfileDisplay({
@@ -26,9 +27,11 @@ export function UserProfileDisplay({
   onDeleteImage,
   onEditProfile,
   user: initialUser,
+  onRequestUpsell,
 }: UserProfileDisplayProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [user, setUser] = useState(initialUser);
+  console.log("🚀 ~ initialUser:", initialUser)
 
   // Create a summary of key information
   const summaryInfo = [
@@ -40,11 +43,23 @@ export function UserProfileDisplay({
 
   return (
     <div className="space-y-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      {/* Upsell Banner for Freemium Users */}
-      {!user.isPremium && (
-        <div className="bg-yellow-100 text-yellow-800 p-4 rounded-lg text-center">
-          Upgrade to Premium for exclusive features and benefits!
-        </div>
+      {/* Upsell Banner for Freemium/Anonymous Users */}
+      {user && (
+        !user.email ? (
+          <div 
+            onClick={onRequestUpsell}
+            className="bg-yellow-100 text-yellow-800 p-4 rounded-lg text-center cursor-pointer hover:bg-yellow-200 transition-colors"
+          >
+            Get your full, customizable program for free!
+          </div>
+        ) : !user.isPremium && (
+          <div 
+            onClick={onRequestUpsell}
+            className="bg-yellow-100 text-yellow-800 p-4 rounded-lg text-center cursor-pointer hover:bg-yellow-200 transition-colors"
+          >
+            Upgrade to Premium for even more features and greater success on your journey!
+          </div>
+        )
       )}
 
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md transition-all duration-300">
@@ -245,7 +260,7 @@ export function UserProfileDisplay({
                 {/* Upsell Button for Freemium Users */}
                 {!user.isPremium && (
                   <button
-                    onClick={() => alert('Upgrade to Premium!')}
+                    onClick={onRequestUpsell}
                     className="px-4 py-2 text-sm bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors"
                   >
                     Upgrade to Premium

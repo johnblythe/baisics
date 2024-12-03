@@ -1,4 +1,4 @@
-import { Program } from "@prisma/client";
+import { Program, User } from "@prisma/client";
 
 export type ProgramData = {
   programName: string;
@@ -39,6 +39,7 @@ export type ProgramFullDisplay = Program & {
       exercises: Exercise[];
     }>;
   }>;
+  user: User;
 };
 
 export type WorkoutPlanDisplayProps = {

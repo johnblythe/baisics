@@ -27,6 +27,7 @@ import { UserProfileDisplay } from "@/app/components/UserProfileDisplay";
 import { Program as PrismaProgram, WorkoutPlan as PrismaWorkoutPlan, User } from "@prisma/client";
 import { formatUnderscoreDelimitedString } from "@/utils/formatting";
 import { ProgramDisplay } from "../components/ProgramDisplay";
+import { UpsellModal } from "@/app/components/UpsellModal";
 
 // Add new types
 type ContextRequest = {
@@ -60,6 +61,8 @@ export default function StartPage() {
   const [contextRequest, setContextRequest] = useState<ContextRequest[] | null>(null);
   const [programId, setProgramId] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [isUpsellOpen, setIsUpsellOpen] = useState(false);
+
   useEffect(() => {
     const urlProgramId = searchParams.get("programId");
     if (urlProgramId) {
@@ -297,6 +300,14 @@ export default function StartPage() {
     }
   };
 
+  const handleOpenUpsellModal = () => {
+    setIsUpsellOpen(true);
+  };
+
+  const handleCloseUpsellModal = () => {
+    setIsUpsellOpen(false);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       {contextRequest && (
@@ -361,14 +372,31 @@ export default function StartPage() {
               user={user}
               onDeleteImage={handleDelete}
               onEditProfile={() => setShowIntakeForm(true)}
+              onRequestUpsell={handleOpenUpsellModal}
             />
           )}
 
           {program && <ProgramDisplay 
             program={program}
-            userEmail={user?.email} />}
+            userEmail={user?.email}
+            onRequestUpsell={handleOpenUpsellModal}
+          />}
         </>
       )}
+
+      <UpsellModal
+        isOpen={isUpsellOpen}
+        onClose={handleCloseUpsellModal}
+        onEmailSubmit={(email) => {
+          // Handle email submission logic
+          handleCloseUpsellModal();
+        }}
+        onPurchase={() => {
+          // Handle purchase logic
+          handleCloseUpsellModal();
+        }}
+        userEmail={user?.email}
+      />
 
       {/* Admin Testing Corner */}
       <div className="fixed bottom-4 right-4 opacity-50 hover:opacity-100 transition-opacity">

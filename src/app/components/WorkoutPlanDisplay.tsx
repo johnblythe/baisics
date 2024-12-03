@@ -94,10 +94,10 @@ export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: Workou
               key={workout.id}
               className="bg-white dark:bg-gray-800 rounded-lg shadow p-6"
             >
-              <h3 className="font-semibold mb-4">Session {workout.dayNumber}</h3>
+              <h3 className="font-extrabold mb-4">Session {workout.dayNumber}</h3>
               <div className="w-full">
                 {/* Header */}
-                <div className="grid grid-cols-12 gap-4 text-left font-medium mb-2">
+                <div className="grid font-semibold grid-cols-12 gap-4 text-sm text-left mb-2">
                   <div className="col-span-6">Exercise</div>
                   <div className="col-span-1">Sets</div>
                   <div className="col-span-2">Reps</div>
@@ -116,6 +116,19 @@ export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: Workou
                       <div className="col-span-3">{exercise.restPeriod}</div>
                     </div>
                   ))}
+                </div>
+
+                <div className="mt-4">
+                  <p className="text-sm text-gray-500">
+                    Have questions?{' '}
+                    <span 
+                      onClick={() => setIsUpsellOpen(true)} 
+                      className="cursor-pointer hover:no-underline underline hover:text-blue-600 transition-colors"
+                    >
+                      Upgrade to get full access
+                    </span>{' '}
+                    to your trainer. No limits, no ads, just success.
+                  </p>
                 </div>
               </div>
             </div>

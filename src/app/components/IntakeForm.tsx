@@ -76,7 +76,7 @@ export function IntakeForm({
 
   return (
     <div className="max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-      <h2 className="text-2xl font-bold mb-6">Training Profile Setup</h2>
+      <h2 className="text-2xl font-bold mb-6">Build your program</h2>
 
       {/* Profile Selection Buttons */}
       <div className="flex gap-2 mb-6">

@@ -290,7 +290,8 @@ export async function getUserProgram(userId: string, programId: string) {
               }
             }
           } 
-        }
+        },
+        user: true,
       },
     });
 
