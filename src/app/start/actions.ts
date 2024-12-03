@@ -486,7 +486,6 @@ export async function preparePromptForAI(
 
     // Add text prompt
     messageContent.push({ type: 'text', text: clientDataPrompt });
-    console.log("🚀 ~ messageContent:", messageContent)
     
     console.time('ai-response');
     // Send message to AI
@@ -494,7 +493,6 @@ export async function preparePromptForAI(
       role: 'user',
       content: messageContent,
     }]);
-    console.log("🚀 ~ preparePromptForAI ~ aiResponse:", JSON.stringify(aiResponse, null, 2))
     console.timeEnd('ai-response');
 
     if (aiResponse.success) {

@@ -185,6 +185,7 @@ export default function StartPage() {
     const anonUser = await createAnonUser(newUserId)
     if (anonUser.success && anonUser.user) {
       setUserId(anonUser.user.id);
+      setUser(anonUser.user);
       router.push(`${window.location.pathname}?userId=${anonUser.user.id}`);
       setIsLoading(false);
     } else {

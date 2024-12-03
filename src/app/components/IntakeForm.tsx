@@ -168,11 +168,11 @@ export function IntakeForm({
           </label>
           <input
             type="number"
-            value={formData.dailyBudget}
+            value={formData.dailyBudget || ''}
             onChange={(e) =>
               setFormData({
                 ...formData,
-                dailyBudget: parseInt(e.target.value),
+                dailyBudget: e.target.value ? parseInt(e.target.value) : 0,
               })
             }
             className="w-full p-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
