@@ -6,6 +6,7 @@ import { generateTrainingProgramPrompt } from './prompts';
 import { Exercise, Workout, ProgramData, PhasesData } from './types';
 import { MessageParam } from '@anthropic-ai/sdk/src/resources/messages.js';
 import { User, UserImages } from '@prisma/client';
+import { fileToBase64 } from '@/utils/fileHandling';
 
 // Add new types for the form data
 export type TrainingGoal = 'weight loss' | 'maintenance' | 'body recomposition' | 'strength gains' | 'weight gain' | 'muscle building' | 'other';
@@ -37,6 +38,7 @@ export async function uploadImages(images: ImageUpload[]) {
   try {
     const savedImages = await Promise.all(
       images.map(async (image) => {
+        console.log("🚀 ~ images.map ~ image:", image)
         const savedImage = await prisma.userImages.create({
           data: {
             fileName: image.fileName,
@@ -45,6 +47,7 @@ export async function uploadImages(images: ImageUpload[]) {
           },
         });
 
+        console.log("🚀 ~ images.map ~ savedImage:", savedImage)
         return savedImage;
       })
     );
@@ -143,17 +146,19 @@ export async function saveIntakeForm(userId: string, intakeForm: IntakeFormData)
     const uploadedImages = [];
     // Handle any uploaded files if they exist
     if ('files' in intakeForm) {
-      const { files, ...intakeData } = intakeForm as IntakeFormData & { files: ImageUpload[] };
+      const { files, ...intakeData } = intakeForm as IntakeFormData & { files: File[] };
       
-      // Upload images if present
       if (files?.length) {
-        const imageUploadResult = await uploadImages(
-          files.map(file => ({
-            ...file,
-            userId,
-            intakeForm: intakeData
+        // Convert Files to base64 first
+        const base64Files = await Promise.all(
+          files.map(async (file) => ({
+            fileName: file.name,
+            base64Data: await fileToBase64(file),
+            userId
           }))
         );
+        
+        const imageUploadResult = await uploadImages(base64Files);
         
         if (!imageUploadResult.success) {
           throw new Error('Failed to upload images');

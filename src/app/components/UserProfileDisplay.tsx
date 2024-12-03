@@ -2,6 +2,7 @@ import { IntakeFormData } from "@/app/start/actions";
 import { convertHeightToFeetAndInches } from "@/utils/formatting";
 import { User } from "@prisma/client";
 import { useState } from "react";
+import { useDropzone } from "react-dropzone";
 
 type UploadedImage = {
   id: string;
@@ -19,6 +20,7 @@ interface UserProfileDisplayProps {
   onEditProfile: () => void;
   user: User;
   onRequestUpsell: () => void;
+  onUploadImages?: (files: File[]) => void;
 }
 
 export function UserProfileDisplay({
@@ -28,10 +30,10 @@ export function UserProfileDisplay({
   onEditProfile,
   user: initialUser,
   onRequestUpsell,
+  onUploadImages,
 }: UserProfileDisplayProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [user, setUser] = useState(initialUser);
-  console.log("🚀 ~ initialUser:", initialUser)
 
   // Create a summary of key information
   const summaryInfo = [
@@ -40,6 +42,14 @@ export function UserProfileDisplay({
     { label: "Experience", value: intakeForm.experienceLevel },
     { label: "Stats", value: `${intakeForm.age}y, ${intakeForm.height && convertHeightToFeetAndInches(intakeForm.height)}, ${intakeForm.weight}lb` },
   ];
+
+  // Add dropzone configuration
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    accept: {
+      "image/*": [".jpeg", ".jpg", ".png", ".gif"],
+    },
+    maxSize: 5242880, // 5MB
+  });
 
   return (
     <div className="space-y-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
@@ -127,9 +137,9 @@ export function UserProfileDisplay({
               {/* Original detailed content */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Progress Pictures Section */}
-                {images.length > 0 && (
-                  <div className="p-6">
-                    <h3 className="text-xl font-semibold mb-4">Progress Pictures</h3>
+                <div className="p-6">
+                  <h3 className="text-xl font-semibold mb-4">Progress Pictures</h3>
+                  {images.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {images.map((image) => (
                         <div key={image.id} className="relative group">
@@ -166,9 +176,51 @@ export function UserProfileDisplay({
                         </div>
                       ))}
                     </div>
-                  </div>
-                )}
-                
+                  ) : (
+                    <div
+                      {...getRootProps()}
+                      className={`
+                        border-2 border-dashed rounded-lg p-8 text-center cursor-pointer
+                        transition-all duration-200 ease-in-out
+                        ${isDragActive 
+                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' 
+                          : 'border-gray-300 hover:border-blue-400 dark:border-gray-600'
+                        }
+                      `}
+                    >
+                      <input {...getInputProps()} />
+                      <div className="space-y-4">
+                        <div className="mx-auto w-16 h-16 text-gray-400">
+                          <svg 
+                            xmlns="http://www.w3.org/2000/svg" 
+                            fill="none" 
+                            viewBox="0 0 24 24" 
+                            strokeWidth={1.5} 
+                            stroke="currentColor"
+                            className="w-full h-full"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+                            {isDragActive 
+                              ? 'Drop your images here...' 
+                              : 'Add Progress Pictures'
+                            }
+                          </p>
+                          <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                            Drag and drop your images here, or click to select files
+                          </p>
+                          <p className="mt-1 text-xs text-gray-400">
+                            PNG, JPG, GIF up to 5MB
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 <div className="space-y-3">
                   <div>
                     <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">

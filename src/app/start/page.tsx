@@ -103,23 +103,6 @@ export default function StartPage() {
     }
   }, [searchParams]);
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    setFiles((prev) => {
-      const newFiles = [...prev, ...acceptedFiles];
-      // Limit to 10 files
-      return newFiles.slice(0, 10);
-    });
-  }, []);
-
-  // Add the dropzone setup
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      "image/*": [".jpeg", ".jpg", ".png", ".gif"],
-    },
-    maxSize: 5242880, // 5MB
-  });
-
   const loadUserImages = async (uid: string) => {
     // Skip loading for new sessions (when uid is not in URL)
     if (!searchParams.get("userId")) {
@@ -165,6 +148,10 @@ export default function StartPage() {
   const loadProgram = async (uid: string, programId: string) => {
     const result = await getUserProgram(uid, programId);
     const program = result.success ? result.program : null;
+    if (!program) {
+      console.error("Failed to load program:", result.error);
+      return;
+    }
     const workoutPlans = program?.workoutPlans || [];
     setProgram(program);
     setWorkoutPlans(workoutPlans);
@@ -196,17 +183,32 @@ export default function StartPage() {
       setUser(anonUser.user);
       router.push(`${window.location.pathname}?userId=${anonUser.user.id}`);
 
-      const intakeResult = await saveIntakeForm(newUserId, formData);
+      // Handle file uploads if present
+      if (formData.files && formData.files.length > 0) {
+        const imagesToUpload = await Promise.all(formData.files.map(async (file) => ({
+          fileName: file.name,
+          base64Data: await fileToBase64(file),
+          userId: anonUser.user.id,
+        })));
+
+        const uploadResult = await uploadImages(imagesToUpload);
+        if (uploadResult.success && uploadResult.images) {
+          setUploadedImages(uploadResult.images);
+        }
+      }
+
+      // Remove files from formData before saving intake
+      // @TODO: idk if i want this
+      const { files, ...intakeData } = formData;
+      const intakeResult = await saveIntakeForm(newUserId, intakeData);
       if (!intakeResult.success) {
         throw new Error("Failed to save intake form");
       }
 
-      // Update UI to show profile
       setIntakeForm(formData);
       setShowIntakeForm(false);
       setIsSubmitting(false);
 
-      // Second phase: Generate program
       setIsProgramGenerating(true);
       const promptResult = await preparePromptForAI(newUserId, formData);
       
@@ -307,6 +309,22 @@ export default function StartPage() {
               onDeleteImage={handleDelete}
               onEditProfile={() => setShowIntakeForm(true)}
               onRequestUpsell={handleOpenUpsellModal}
+              onUploadImages={async (files) => {
+                setIsUploading(true);
+                try {
+                  const base64Files = await Promise.all(files.map(fileToBase64));
+                  console.log("🚀 ~ onUploadImages={ ~ base64Files:", base64Files)
+                  const result = await uploadImages(userId, base64Files);
+                  console.log("🚀 ~ onUploadImages={ ~ result:", result)
+                  if (result.success) {
+                    setUploadedImages(prev => [...prev, ...result.images]);
+                  }
+                } catch (error) {
+                  console.error('Failed to upload images:', error);
+                } finally {
+                  setIsUploading(false);
+                }
+              }}
             />
           )}
 
