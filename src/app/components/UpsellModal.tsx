@@ -1,22 +1,69 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { validateEmail } from "@/utils/forms/validation";
+import ReactConfetti from "react-confetti";
+import { updateUser } from '../start/actions';
+
+/**
+ * TODOs:
+ * - refactor testimonials to its own component for reuse
+ * - add real stripe checkout or link
+ * - more evidence based stats/upsell stuff (add citations?)
+ */
 
 type UpsellModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onEmailSubmit: (email: string) => void;
   onPurchase: () => void;
-  userEmail?: string;
+  userEmail?: string | null;
 };
 
 export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEmail }: UpsellModalProps) {
   const [email, setEmail] = useState(userEmail || "");
   const [emailError, setEmailError] = useState("");
+  const [showConfetti, setShowConfetti] = useState(false);
+
+  const testimonials = [
+    { text: "Life changing! Truly.", author: "Addison W., Premium Member" },
+    { text: "I've tried lots of programs before, but this one actually delivered results. The premium features made all the difference!", author: "Sarah M., Premium Member" },
+    { text: "I can't overstate how easy this was to follow. I didn't need to think about costs, annoying my trainer with too many questions, or anything else. Simple, affordable, and EFFECTIVE! Thank you bAIsic!", author: "John D., Premium Member" },
+    { text: "Too easy to not try it!", author: "Emily R., Premium Member" },
+  ];
+
+  const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
+
+  useEffect(() => {
+    if (showConfetti) {
+      const timer = setTimeout(() => setShowConfetti(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showConfetti]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTestimonialIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [testimonials.length]);
+
+  const handleUpdateAnonUser = async (email: string, isPremium = false) => {
+    const userId = new URLSearchParams(window.location.search).get('userId');
+    if (!userId) {
+      throw new Error("No user ID found in URL");
+    }
+    const response = await updateUser(userId, { email, isPremium });
+    if (response.success) {
+      // setShowConfetti(true);
+      onEmailSubmit(email);
+      onClose();
+    }
+  };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      {showConfetti && <ReactConfetti />}
       <div className="bg-white dark:bg-gray-800 rounded-lg p-8 max-w-4xl w-full">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
@@ -67,7 +114,9 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
             </ul>
             <form onSubmit={(e) => {
               e.preventDefault();
-              onEmailSubmit(email);
+              if (validateEmail(email)) {
+                handleUpdateAnonUser(email);
+              }
             }}>
               <input
                 type="email"
@@ -104,10 +153,14 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
 
           {/* Premium Option */}
           <div className="p-6 border rounded-xl bg-blue-50 dark:bg-gray-700 relative overflow-hidden">
-            <div className="absolute top-4 right-4 bg-yellow-400 text-black px-3 py-1 rounded-full text-sm font-medium">
-              MOST POPULAR
+            <div className="flex justify-between items-center mb-4">
+              <span className="bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-medium">
+                Premium Access
+              </span>
+              <span className="bg-yellow-400 text-gray-900 px-4 py-1 rounded-full text-sm font-medium">
+                MOST POPULAR
+              </span>
             </div>
-            <div className="bg-blue-600 inline-block px-3 py-1 rounded-full text-sm text-white mb-4">Premium Access</div>
             <h3 className="text-2xl font-bold mb-4">Unlock Your Full Potential</h3>
             <ul className="space-y-3 mb-6">
               <li className="flex items-center">
@@ -136,7 +189,7 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
               </li>
             </ul>
             <button
-              onClick={onPurchase}
+              onClick={() => handleUpdateAnonUser(email || "john@test.com", true)}
               className="w-full bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 font-medium"
             >
               Upgrade Now - $29.99/month
@@ -150,10 +203,18 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
         {/* Testimonial */}
         <div className="mt-8 text-center">
           <p className="italic text-gray-600 dark:text-gray-400">
-            &quot;I&apos;ve tried many fitness programs, but this one actually delivered results. 
-            The premium features made all the difference!&quot; 
+            &quot;{testimonials[currentTestimonialIndex].text}&quot;
           </p>
-          <p className="mt-2 font-medium">- Sarah M., Premium Member</p>
+          <p className="mt-2 font-medium">- {testimonials[currentTestimonialIndex].author}</p>
+          <div className="flex justify-center mt-4">
+            {testimonials.map((_, index) => (
+              <span
+                key={index}
+                onClick={() => setCurrentTestimonialIndex(index)}
+                className={`h-2 w-2 mx-1 rounded-full cursor-pointer ${index === currentTestimonialIndex ? 'bg-blue-600' : 'bg-gray-300'}`}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>

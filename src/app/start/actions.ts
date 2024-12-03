@@ -3,9 +3,9 @@
 import { prisma } from '@/lib/prisma';
 import { sendMessage } from '@/utils/chat';
 import { generateTrainingProgramPrompt } from './prompts';
-import { Exercise, WorkoutPlanData, Workout } from './types';
+import { Exercise, Workout, ProgramData, PhasesData } from './types';
 import { MessageParam } from '@anthropic-ai/sdk/src/resources/messages.js';
-import { UserImages } from '@prisma/client';
+import { User, UserImages } from '@prisma/client';
 
 // Add new types for the form data
 export type TrainingGoal = 'weight loss' | 'maintenance' | 'body recomposition' | 'strength gains' | 'weight gain' | 'muscle building' | 'other';
@@ -28,8 +28,8 @@ export interface IntakeFormData {
 export type ImageUpload = {
   fileName: string;
   base64Data: string;
-  sessionId: string;
-  intakeForm?: IntakeFormData;  // Make intake form optional for backwards compatibility
+  userId: string;
+  intakeForm?: IntakeFormData;
 };
 
 // rn just storing base64 data, can deal w uploads later
@@ -41,7 +41,7 @@ export async function uploadImages(images: ImageUpload[]) {
           data: {
             fileName: image.fileName,
             base64Data: image.base64Data,
-            sessionId: image.sessionId,
+            userId: image.userId,
           },
         });
 
@@ -56,15 +56,15 @@ export async function uploadImages(images: ImageUpload[]) {
   }
 }
 
-export async function getSessionImages(sessionId: string) {
-  if (!sessionId) {
-    return { success: false, error: 'Session ID is required' };
+export async function getSessionImages(userId: string) {
+  if (!userId) {
+    return { success: false, error: 'User ID is required' };
   }
 
   try {
     const images = await prisma.userImages.findMany({
       where: {
-        sessionId: sessionId,
+        userId: userId,
       },
       orderBy: {
         createdAt: 'desc',
@@ -92,10 +92,18 @@ export async function deleteImage(imageId: string) {
   }
 }
 
-export async function createNewUser(email: string) {
+// specifically from anon state
+export async function createNewUser({ userId, email }: { userId: string, email: string }) {
   try {
-    const user = await prisma.user.create({
-      data: { email, password: '0218fatloss' },
+    const user = await prisma.user.upsert({
+      where: { id: userId },
+      update: {
+        email,
+      },
+      create: {
+        id: userId,
+        email,
+      },
     });
 
     return { success: true, user };
@@ -105,8 +113,32 @@ export async function createNewUser(email: string) {
   }
 }
 
+export async function updateUser(userId: string, data: Partial<User>) {
+  const user = await prisma.user.update({
+    where: { id: userId },
+    data,
+  });
+
+  return { success: true, user };
+} 
+
+export async function createAnonUser(userId: string) {
+  try {
+    const user = await prisma.user.create({
+      data: {
+        id: userId,
+      },
+    });
+
+    return { success: true, user };
+  } catch (error) {
+    console.error('Failed to create anonymous user:', error);
+    return { success: false, error: 'Failed to create anonymous user' };
+  }
+}
+
 // todo: consider upserting
-export async function saveIntakeForm(sessionId: string, intakeForm: IntakeFormData) {
+export async function saveIntakeForm(userId: string, intakeForm: IntakeFormData) {
   try {
     const uploadedImages = [];
     // Handle any uploaded files if they exist
@@ -118,7 +150,7 @@ export async function saveIntakeForm(sessionId: string, intakeForm: IntakeFormDa
         const imageUploadResult = await uploadImages(
           files.map(file => ({
             ...file,
-            sessionId,
+            userId,
             intakeForm: intakeData
           }))
         );
@@ -131,23 +163,27 @@ export async function saveIntakeForm(sessionId: string, intakeForm: IntakeFormDa
       }
       
       intakeForm = intakeData;
+    } else {
+      console.log("🚀 ~ saveIntakeForm ~ no files in intake form")
     }
     const intakeData = {
-      sessionId,
+      userId,
       sex: intakeForm.sex as Sex,
       trainingGoal: intakeForm.trainingGoal as TrainingGoal,
       daysAvailable: intakeForm.daysAvailable,
       dailyBudget: intakeForm.dailyBudget,
       age: intakeForm.age,
-      experienceLevel: "",
+      experienceLevel: intakeForm.experienceLevel || "",
       weight: intakeForm.weight,
       height: intakeForm.height,
       trainingPreferences: intakeForm.trainingPreferences,
       additionalInfo: intakeForm.additionalInfo,
     };
 
-    const savedIntake = await prisma.userIntake.create({
-      data: intakeData,
+    const savedIntake = await prisma.userIntake.upsert({
+      where: { userId },
+      update: intakeData,
+      create: intakeData,
     });
 
     return { success: true, intake: savedIntake, images: uploadedImages };
@@ -157,15 +193,15 @@ export async function saveIntakeForm(sessionId: string, intakeForm: IntakeFormDa
   }
 }
 
-export async function getSessionIntake(sessionId: string) {
-  if (!sessionId) {
-    return { success: false, error: 'Session ID is required' };
+export async function getSessionIntake(userId: string) {
+  if (!userId) {
+    return { success: false, error: 'User ID is required' };
   }
 
   try {
     const intake = await prisma.userIntake.findFirst({
       where: {
-        sessionId: sessionId,
+        userId: userId,
       },
       orderBy: {
         createdAt: 'desc',
@@ -180,64 +216,97 @@ export async function getSessionIntake(sessionId: string) {
 }
 
 // Add a new function to retrieve prompt logs
-export async function getSessionPromptLogs(sessionId: string) {
-  if (!sessionId) {
-    return { success: false, error: 'Session ID is required' };
+export async function getSessionPromptLogs(userId: string) {
+  if (!userId) {
+    return { success: false, error: 'User ID is required' };
   }
 
   try {
-    const logs = await prisma.promptLog.findMany({
+    const log = await prisma.promptLog.findFirst({
       where: {
-        sessionId: sessionId,
+        userId: userId,
       },
       orderBy: {
         createdAt: 'desc',
       },
     });
 
-    return { success: true, logs };
+    return { success: true, log };
   } catch (error) {
     console.error('Failed to fetch prompt logs:', error);
     return { success: false, error: 'Failed to fetch prompt logs' };
   }
 }
 
+export async function getUser(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+  return { success: true, user };
+}
+
+export async function getUserByEmail(email: string) {
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+  return { success: true, user };
+}
+
+export async function getProgram(programId: string) {
+  const program = await prisma.program.findUnique({
+    where: { id: programId },
+  });
+  return { success: true, program };
+}
+
 // Get workout plan for a previously saved session
-export async function getSessionWorkoutPlan(sessionId: string) {
-  if (!sessionId) {
-    return { success: false, error: 'Session ID is required' };
+export async function getUserProgram(userId: string, programId: string) {
+  if (!userId || !programId) {
+    return { success: false, error: 'User ID is required' };
   }
 
   try {
-    const workoutPlan = await prisma.workoutPlan.findFirst({
+    const program = await prisma.program.findFirst({
       where: {
-        sessionId: sessionId,
-      },
-      include: {
-        workouts: {
-          orderBy: {
-            dayNumber: 'asc',
-          },
-          include: {
-            exercises: true,
+        workoutPlans: {
+          some: {
+            userId,
           },
         },
+        id: programId,
+      },
+      include: {
+        workoutPlans: {
+          orderBy: {
+            phase: 'asc',
+          },
+          include: {
+            workouts: {
+              orderBy: {
+                dayNumber: 'asc',
+              },
+              include: {
+                exercises: true,
+              }
+            }
+          } 
+        }
       },
     });
 
-    return { success: true, workoutPlan };
+    return { success: true, program };
   } catch (error) {
-    console.error('Failed to fetch workout plan:', error);
-    return { success: false, error: 'Failed to fetch workout plan' };
+    console.error('Failed to fetch program:', error);
+    return { success: false, error: 'Failed to fetch program' };
   }
 }
 
 // Add function to delete workout plan
-export async function deleteWorkoutPlan(sessionId: string) {
+export async function deleteWorkoutPlan(userId: string) {
   try {
     await prisma.workoutPlan.deleteMany({
       where: {
-        sessionId: sessionId,
+        userId: userId,
       },
     });
     return { success: true };
@@ -255,89 +324,112 @@ export async function deleteWorkoutPlan(sessionId: string) {
  * @param data - The workout plan data from the AI response
  * @returns The parsed workout plan data
  */
-const prepareWorkoutPlanObject = async (data: WorkoutPlanData) => {
-  const workouts = await Promise.all(data.workoutPlan.workouts.map(async (workout: Workout) => ({
-    dayNumber: workout.day,
-    exercises: {
-      create: workout.exercises.map((exercise: Exercise) => ({
-        name: exercise.name,
-        sets: exercise.sets,
-        reps: exercise.reps,
-        restPeriod: exercise.restPeriod,
-        exerciseLibrary: {
-          connectOrCreate: {
-            where: {
-              name: exercise.name
-            },
-            create: {
-              name: exercise.name,
-              category: 'default',
-              difficulty: 'intermediate'
+const prepareWorkoutPlanObject = async (phases: PhasesData[]) => {
+  const workouts = await Promise.all(phases.map(async (phase) => 
+    phase.trainingPlan.workouts.map((workout: Workout) => ({
+      dayNumber: workout.day,
+      exercises: {
+        create: workout.exercises.map((exercise: Exercise) => ({
+          name: exercise.name,
+          sets: exercise.sets,
+          reps: exercise.reps,
+          restPeriod: exercise.restPeriod,
+          exerciseLibrary: {
+            connectOrCreate: {
+              where: { name: exercise.name },
+              create: {
+                name: exercise.name,
+                category: 'default',
+                difficulty: 'intermediate'
+              }
             }
           }
-        }
-      })),
-    }
-  })));
+        })),
+      }
+    }))
+  ));
 
-  return {
-    bodyFatPercentage: data.bodyComposition.bodyFatPercentage,
-    muscleMassDistribution: data.bodyComposition.muscleMassDistribution,
-    dailyCalories: data.nutrition.dailyCalories,
-    proteinGrams: data.nutrition.macros.protein,
-    carbGrams: data.nutrition.macros.carbs,
-    fatGrams: data.nutrition.macros.fats,
-    mealTiming: data.nutrition.mealTiming,
-    progressionProtocol: data.progressionProtocol,
-    daysPerWeek: data.workoutPlan.daysPerWeek,
+  // Create a workout plan for each phase
+  return phases.map((phase, index) => ({
+    phase: phase.phase,
+    bodyFatPercentage: phase.bodyComposition.bodyFatPercentage,
+    muscleMassDistribution: phase.bodyComposition.muscleMassDistribution,
+    dailyCalories: phase.nutrition.dailyCalories,
+    proteinGrams: phase.nutrition.macros.protein,
+    carbGrams: phase.nutrition.macros.carbs,
+    fatGrams: phase.nutrition.macros.fats,
+    mealTiming: phase.nutrition.mealTiming,
+    progressionProtocol: phase.progressionProtocol,
+    daysPerWeek: phase.trainingPlan.daysPerWeek,
     workouts: {
-      create: workouts
+      create: workouts[index]
     }
-  };
-}
+  }));
+};
 
 // Save workout plan to db
-export async function createWorkoutPlan(planData: WorkoutPlanData, sessionId: string) {
+export async function createNewProgram(programData: ProgramData, userId: string) {
+  // create a new program with the descriptoin and name and a fake userid 82dd7d11-6683-4c7c-a3bf-e7f059ae2e24
   try {
-    const preppedPlan = await prepareWorkoutPlanObject(planData);
-    console.log("Attempting to save workout plan with data:", JSON.stringify(preppedPlan, null, 2));
-    
-    const workoutPlan = await prisma.workoutPlan.create({
-      data: { ...preppedPlan, sessionId },
-      include: {
-        workouts: {
-          include: {
-            exercises: true,
+    const { phases, ...programDetails } = programData;
+    const newProgram = await prisma.program.create({
+      data: {
+        name: programDetails.programName,
+        description: programDetails.programDescription,
+        user: {
+          connect: {
+            id: userId,
           },
         },
       },
     });
 
-    return { success: true, workoutPlan };
+    const preppedPlans = await prepareWorkoutPlanObject(phases);
+    
+    // Create all workout plans for each phase
+    const newWorkoutPlans = await Promise.all(
+      preppedPlans.map(async (plan, index) => {
+        const createData = {
+          ...plan,
+          userId,
+          programId: newProgram.id,
+        };
+        
+        return prisma.workoutPlan.create({
+          data: createData,
+          include: {
+            workouts: {
+              include: {
+                exercises: true
+              }
+            }
+          }
+        });
+      })
+    );
+
+    const program = await getUserProgram(userId, newProgram.id);
+
+    return program;
   } catch (error) {
-    // More detailed error logging
-    console.error('Failed to save workout plan. Error:', error);
-    console.error('Error details:', {
-      name: error.name,
-      message: error.message,
-      code: error.code,  // Prisma error code if available
-      meta: error.meta,  // Prisma error metadata if available
-    });
+    console.error('Failed to save workout plan:', error);
     return { success: false, error: 'Failed to save workout plan' };
   }
 }
 
 // todo: rename to its more specific purpose
 export async function preparePromptForAI(
-  sessionId: string, 
+  userId: string,
   intakeData?: IntakeFormData,
   images?: UserImages[]
 ) {
+  console.time('preparePromptForAI-total');
   try {
+    console.time('fetch-intake-data');
     // rethink this, seems sloppy/verbose
-    if (sessionId && !intakeData) {
+    if (userId && !intakeData) {
       const dbIntake = await prisma.userIntake.findFirst({
-        where: { sessionId },
+        where: { userId },
         orderBy: { createdAt: 'desc' },
       });
       
@@ -355,21 +447,25 @@ export async function preparePromptForAI(
         };
       }
     }
+    console.timeEnd('fetch-intake-data');
 
     if (!intakeData) {
       console.error("🚀 ~ preparePromptForAI ~ no intake data sent or found")
       return { success: false, error: 'No intake data found' };
     }
 
+    console.time('generate-prompt');
     const clientDataPrompt = generateTrainingProgramPrompt(intakeData); 
     const clientPicturePrompt = "Please analyze this image and estimate body fat percentage.";
+    console.timeEnd('generate-prompt');
 
     // Base message content
     const messageContent: MessageParam['content'] = [];
 
+    console.time('process-images');
     // Add images to message content if provided
     if (images?.length) {
-      console.log("🚀 ~ preparePromptForAI ~ attempting to add images to message content:", images)
+      console.log("🚀 ~ preparePromptForAI ~ attempting to add images to message content:", images.length)
       for (const image of images) {
         const base64String = image.base64Data.split(',')[1];
         const mediaType = image.base64Data.split(';')[0].split(':')[1];
@@ -378,43 +474,58 @@ export async function preparePromptForAI(
           type: "image",
           source: {
             type: "base64",
-            media_type: mediaType,
+            media_type: mediaType as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp',
             data: base64String,
           },
         });
       }
       messageContent.push({ type: 'text', text: clientPicturePrompt });
     }
+    console.timeEnd('process-images');
 
     // Add text prompt
     messageContent.push({ type: 'text', text: clientDataPrompt });
+    console.log("🚀 ~ messageContent:", messageContent)
     
-
+    console.time('ai-response');
     // Send message to AI
     const aiResponse = await sendMessage([{
       role: 'user',
       content: messageContent,
     }]);
+    console.log("🚀 ~ preparePromptForAI ~ aiResponse:", JSON.stringify(aiResponse, null, 2))
+    console.timeEnd('ai-response');
 
     if (aiResponse.success) {
+      console.log("sup");
+      console.time('save-prompt-log');
+      console.log("sup2");
       await prisma.promptLog.create({
         data: {
-          sessionId,
+          userId,
           prompt: JSON.stringify(messageContent),
           response: aiResponse.data?.content[0].text || '',
-          model: 'claude-3-5-sonnet-20240620',
+          inputTokens: aiResponse.data?.usage?.input_tokens,
+          outputTokens: aiResponse.data?.usage?.output_tokens,
+          model: process.env.HAIKU_MODEL!,
         },
       });
-
+      console.log("sup3");
+      console.timeEnd('save-prompt-log');
+      console.log("sup4"); 
+      console.timeEnd('preparePromptForAI-total');
+      console.log("sup5");
       return {
         success: true,
-        response: aiResponse.data?.content[0].text, // @TODO: may need more than first content, should refactor?
+        response: aiResponse.data?.content[0].text,
         images: images?.map(img => ({ fileName: img.fileName }))
       };
     }
 
+    console.timeEnd('preparePromptForAI-total');
     return { success: false, error: 'AI response failed' };
   } catch (error) {
+    console.timeEnd('preparePromptForAI-total');
     console.error('Claude processing error:', error);
     return { success: false, error: 'Failed to process with Claude' };
   }
