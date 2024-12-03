@@ -239,9 +239,8 @@ export async function getSessionPromptLogs(userId: string) {
 }
 
 // Get workout plan for a previously saved session
-export async function getUserProgram(userId: string, programId?: string | null) {
-  console.log("🚀 ~ getUserProgram ~ programId:", programId)
-  if (!userId) {
+export async function getUserProgram(userId: string, programId: string) {
+  if (!userId || !programId) {
     return { success: false, error: 'User ID is required' };
   }
 
@@ -253,7 +252,7 @@ export async function getUserProgram(userId: string, programId?: string | null) 
             userId,
           },
         },
-        ...(programId ? { id: programId } : {}),
+        id: programId,
       },
       include: {
         workoutPlans: {
@@ -388,7 +387,7 @@ export async function createNewProgram(programData: ProgramData, userId: string)
       })
     );
 
-    const program = await getUserProgram(userId);
+    const program = await getUserProgram(userId, newProgram.id);
 
     return program;
   } catch (error) {

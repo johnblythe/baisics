@@ -31,13 +31,13 @@ export function ProgramDisplay({ program, userEmail: initialUserEmail = null }: 
     setIsUpsellOpen(false);
   };
 
-  useEffect(() => {
-    const url = new URL(window.location.href);
-    if (!url.searchParams.has('programId')) {
-      url.searchParams.set('programId', program.id);
-      window.history.replaceState({}, '', url.toString());
-    }
-  }, [program.id]);
+  // useEffect(() => {
+  //   const url = new URL(window.location.href);
+  //   if (!url.searchParams.has('programId')) {
+  //     url.searchParams.set('programId', program.id);
+  //     window.history.replaceState({}, '', url.toString());
+  //   }
+  // }, [program.id]);
 
   if (!program) {
     return (

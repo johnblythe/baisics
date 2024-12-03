@@ -67,11 +67,13 @@ export default function StartPage() {
     const urlUserId = searchParams.get("userId");
     if (urlUserId) {
       setUserId(urlUserId);
+    }
       // loadIntakeForm(urlUserId);
       // loadUserImages(urlUserId);
-    }
     if (urlUserId && urlProgramId) {
       loadProgram(urlUserId, urlProgramId);
+    } else if (urlUserId) {
+      loadIntakeForm(urlUserId);
     }
   }, []); 
 
@@ -144,7 +146,7 @@ export default function StartPage() {
   };
 
   // Modify loadWorkoutPlan to handle parsing from prompt logs if needed
-  const loadProgram = async (uid: string, programId: string | null) => {
+  const loadProgram = async (uid: string, programId: string) => {
     const result = await getUserProgram(uid, programId);
     const program = result.success ? result.program : null;
     const workoutPlans = program?.workoutPlans || [];
@@ -165,7 +167,6 @@ export default function StartPage() {
     formData: IntakeFormData & { files?: File[] }
   ) => {
     setIsUploading(true);
-
     const newUserId = uuidv4();
     const anonUser = await createAnonUser(newUserId)
     if (anonUser.success && anonUser.user) {
@@ -227,6 +228,7 @@ export default function StartPage() {
           setProgram(program);
           setWorkoutPlans(workoutPlans);
           setShowIntakeForm(false);
+          setProgramId(program?.id);
           router.push(`${window.location.pathname}?userId=${newUserId}&programId=${program?.id}`);
         }
 
@@ -263,7 +265,6 @@ export default function StartPage() {
         // setFiles([]); // Clear files after successful upload
 
       } catch (error) {
-        console.error("JSON Parse Error:", error);
         console.error("Failed response:", responseText);
         throw new Error("Failed to parse AI response");
       }

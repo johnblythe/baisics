@@ -3,6 +3,13 @@ import { validateEmail } from "@/utils/forms/validation";
 import ReactConfetti from "react-confetti";
 import { updateUser } from '../start/actions';
 
+/**
+ * TODOs:
+ * - refactor testimonials to its own component for reuse
+ * - add real stripe checkout or link
+ * - more evidence based stats/upsell stuff (add citations?)
+ */
+
 type UpsellModalProps = {
   isOpen: boolean;
   onClose: () => void;
