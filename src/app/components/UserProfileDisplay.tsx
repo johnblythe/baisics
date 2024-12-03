@@ -67,7 +67,7 @@ export function UserProfileDisplay({
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center space-x-3">
               <h3 className="text-xl font-bold">Your Profile</h3>
-              {user.email && (
+              {user && (
                 <span className={`px-2 py-1 text-xs rounded-full ${
                   user.isPremium 
                     ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white' 

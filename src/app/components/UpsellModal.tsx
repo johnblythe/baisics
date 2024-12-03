@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { validateEmail } from "@/utils/forms/validation";
 import ReactConfetti from "react-confetti";
 import { updateUser } from '../start/actions';
@@ -31,6 +31,7 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
   ];
 
   const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
+  const intervalRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     if (showConfetti) {
@@ -40,11 +41,23 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
   }, [showConfetti]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const startInterval = () => {
+      intervalRef.current = setInterval(() => {
+        setCurrentTestimonialIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
+      }, 4000);
+    };
+
+    startInterval();
+    return () => clearInterval(intervalRef.current);
+  }, [testimonials.length]);
+
+  const resetCurrentTestimonialIndex = (index: number) => {
+    setCurrentTestimonialIndex(index);
+    clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
       setCurrentTestimonialIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
     }, 4000);
-    return () => clearInterval(interval);
-  }, [testimonials.length]);
+  };
 
   const handleUpdateAnonUser = async (email: string, isPremium = false) => {
     const userId = new URLSearchParams(window.location.search).get('userId');
@@ -101,15 +114,15 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
             <ul className="space-y-3 mb-6">
               <li className="flex items-center">
                 <span className="text-green-500 mr-2">✓</span>
-                Basic workout plan
+                Your custom program&apos;s first 4-6 weeks
               </li>
               <li className="flex items-center">
                 <span className="text-green-500 mr-2">✓</span>
-                Weekly fitness tips
+                Customizable to your goals and needs
               </li>
               <li className="flex items-center">
                 <span className="text-green-500 mr-2">✓</span>
-                Exercise tutorials
+                Access online or download to go
               </li>
             </ul>
             <form onSubmit={(e) => {
@@ -169,19 +182,19 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
               </li>
               <li className="flex items-center">
                 <span className="text-green-500 mr-2">✓</span>
-                Complete workout program
+                Complete custom training program
               </li>
               <li className="flex items-center">
                 <span className="text-green-500 mr-2">✓</span>
-                Personalized nutrition plans
+                Personalized nutrition and meal planning
               </li>
               <li className="flex items-center">
                 <span className="text-green-500 mr-2">✓</span>
-                Advanced progress tracking
+                Advanced progress tracking with weekly check-ins
               </li>
               <li className="flex items-center">
                 <span className="text-green-500 mr-2">✓</span>
-                1-on-1 coaching support
+                Customizable throughout the whole program
               </li>
               <li className="flex items-center">
                 <span className="text-green-500 mr-2">✓</span>
@@ -192,7 +205,7 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
               onClick={() => handleUpdateAnonUser(email || "john@test.com", true)}
               className="w-full bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 font-medium"
             >
-              Upgrade Now - $29.99/month
+              <strong>Upgrade Now - $19/month</strong>
             </button>
             <p className="text-center text-sm mt-3 text-gray-600 dark:text-gray-400">
               Cancel anytime. Keep everything you&apos;ve built.
@@ -210,7 +223,7 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
             {testimonials.map((_, index) => (
               <span
                 key={index}
-                onClick={() => setCurrentTestimonialIndex(index)}
+                onClick={() => resetCurrentTestimonialIndex(index)}
                 className={`h-2 w-2 mx-1 rounded-full cursor-pointer ${index === currentTestimonialIndex ? 'bg-blue-600' : 'bg-gray-300'}`}
               />
             ))}

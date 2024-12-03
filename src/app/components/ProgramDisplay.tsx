@@ -101,7 +101,7 @@ export function ProgramDisplay({ program, userEmail: initialUserEmail = null, on
             
             <div className="flex items-center gap-3">
               <button
-                onClick={() => generateWorkoutPDF(program)}
+                onClick={() => userEmail ? generateWorkoutPDF(program) : onRequestUpsell()}
                 className="flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors duration-150"
               >
                 <svg 
@@ -168,14 +168,6 @@ export function ProgramDisplay({ program, userEmail: initialUserEmail = null, on
           userEmail={userEmail || undefined}
         />
       </div>
-
-      <UpsellModal
-        isOpen={isUpsellOpen}
-        onClose={() => setIsUpsellOpen(false)}
-        onEmailSubmit={handleEmailSubmit}
-        onPurchase={handlePurchase}
-        userEmail={userEmail}
-      />
     </div>
   );
 }
