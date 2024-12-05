@@ -68,6 +68,7 @@ export async function getSessionImages(userId: string) {
     const images = await prisma.userImages.findMany({
       where: {
         userId: userId,
+        deletedAt: null,
       },
       orderBy: {
         createdAt: 'desc',
@@ -82,10 +83,14 @@ export async function getSessionImages(userId: string) {
 }
 
 export async function deleteImage(imageId: string) {
+  console.log("🚀 ~ deleteImage ~ imageId:", imageId)
   try {
-    await prisma.userImages.delete({
+    await prisma.userImages.update({
       where: {
         id: imageId,
+      },
+      data: {
+        deletedAt: new Date(),
       },
     });
     return { success: true };
