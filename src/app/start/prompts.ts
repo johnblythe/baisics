@@ -67,8 +67,6 @@ Your response will be rejected if:
 - Any phase is shorter than 3 weeks or longer than 6 weeks
 - Phases are not properly sequenced (1, 2, 3, [4])
 
-
-
 Return a single JSON object following the interface exactly, with no additional text or explanation outside the structured response.`;
 
 };

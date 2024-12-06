@@ -6,6 +6,7 @@ import { generateTrainingProgramPrompt } from './prompts';
 import { Exercise, Workout, ProgramData, PhasesData } from './types';
 import { MessageParam } from '@anthropic-ai/sdk/src/resources/messages.js';
 import { User, UserImages } from '@prisma/client';
+import { fileToBase64 } from '@/utils/fileHandling';
 
 // Add new types for the form data
 export type TrainingGoal = 'weight loss' | 'maintenance' | 'body recomposition' | 'strength gains' | 'weight gain' | 'muscle building' | 'other';
@@ -37,6 +38,7 @@ export async function uploadImages(images: ImageUpload[]) {
   try {
     const savedImages = await Promise.all(
       images.map(async (image) => {
+        console.log("🚀 ~ images.map ~ image:", image)
         const savedImage = await prisma.userImages.create({
           data: {
             fileName: image.fileName,
@@ -45,6 +47,7 @@ export async function uploadImages(images: ImageUpload[]) {
           },
         });
 
+        console.log("🚀 ~ images.map ~ savedImage:", savedImage)
         return savedImage;
       })
     );
@@ -65,6 +68,7 @@ export async function getSessionImages(userId: string) {
     const images = await prisma.userImages.findMany({
       where: {
         userId: userId,
+        deletedAt: null,
       },
       orderBy: {
         createdAt: 'desc',
@@ -80,9 +84,12 @@ export async function getSessionImages(userId: string) {
 
 export async function deleteImage(imageId: string) {
   try {
-    await prisma.userImages.delete({
+    await prisma.userImages.update({
       where: {
         id: imageId,
+      },
+      data: {
+        deletedAt: new Date(),
       },
     });
     return { success: true };
@@ -143,17 +150,19 @@ export async function saveIntakeForm(userId: string, intakeForm: IntakeFormData)
     const uploadedImages = [];
     // Handle any uploaded files if they exist
     if ('files' in intakeForm) {
-      const { files, ...intakeData } = intakeForm as IntakeFormData & { files: ImageUpload[] };
+      const { files, ...intakeData } = intakeForm as IntakeFormData & { files: File[] };
       
-      // Upload images if present
       if (files?.length) {
-        const imageUploadResult = await uploadImages(
-          files.map(file => ({
-            ...file,
-            userId,
-            intakeForm: intakeData
+        // Convert Files to base64 first
+        const base64Files = await Promise.all(
+          files.map(async (file) => ({
+            fileName: file.name,
+            base64Data: await fileToBase64(file),
+            userId
           }))
         );
+        
+        const imageUploadResult = await uploadImages(base64Files);
         
         if (!imageUploadResult.success) {
           throw new Error('Failed to upload images');
@@ -163,9 +172,8 @@ export async function saveIntakeForm(userId: string, intakeForm: IntakeFormData)
       }
       
       intakeForm = intakeData;
-    } else {
-      console.log("🚀 ~ saveIntakeForm ~ no files in intake form")
     }
+    
     const intakeData = {
       userId,
       sex: intakeForm.sex as Sex,
@@ -424,6 +432,7 @@ export async function preparePromptForAI(
   intakeData?: IntakeFormData,
   images?: UserImages[]
 ) {
+  console.log("🚀 ~ preparePromptForAI ~ images:", images)
   console.time('preparePromptForAI-total');
   try {
     console.time('fetch-intake-data');
@@ -496,9 +505,7 @@ export async function preparePromptForAI(
     console.timeEnd('ai-response');
 
     if (aiResponse.success) {
-      console.log("sup");
       console.time('save-prompt-log');
-      console.log("sup2");
       await prisma.promptLog.create({
         data: {
           userId,
@@ -506,14 +513,11 @@ export async function preparePromptForAI(
           response: aiResponse.data?.content[0].text || '',
           inputTokens: aiResponse.data?.usage?.input_tokens,
           outputTokens: aiResponse.data?.usage?.output_tokens,
-          model: process.env.HAIKU_MODEL!,
+          model: process.env.SONNET_MODEL!,
         },
       });
-      console.log("sup3");
       console.timeEnd('save-prompt-log');
-      console.log("sup4"); 
       console.timeEnd('preparePromptForAI-total');
-      console.log("sup5");
       return {
         success: true,
         response: aiResponse.data?.content[0].text,

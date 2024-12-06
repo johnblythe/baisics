@@ -19,6 +19,7 @@ model UserImages {
   fileName   String   @map("file_name")
   base64Data String   @map("base64_data") @db.Text
   createdAt  DateTime @default(now()) @map("created_at")
+  deletedAt  DateTime? @map("deleted_at")
   user       User     @relation(fields: [userId], references: [id])
 
   @@index([userId])
