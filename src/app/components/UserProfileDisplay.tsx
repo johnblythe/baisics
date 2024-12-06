@@ -2,7 +2,7 @@ import { IntakeFormData } from "@/app/start/actions";
 import { convertHeightToFeetAndInches } from "@/utils/formatting";
 import { User } from "@prisma/client";
 import { useState, useEffect } from "react";
-import { useDropzone } from "react-dropzone";
+import { ImageDropzone } from "./ImageDropzone";
 
 type UploadedImage = {
   id: string;
@@ -36,6 +36,7 @@ export function UserProfileDisplay({
   const [user, setUser] = useState(initialUser);
   const [deletingImageIds, setDeletingImageIds] = useState<Set<string>>(new Set());
   const [selectedImage, setSelectedImage] = useState<UploadedImage | null>(null);
+  const [uploadFiles, setUploadFiles] = useState<File[]>([]);
 
   const handleDeleteImage = async (imageId: string) => {
     setDeletingImageIds(prev => new Set([...prev, imageId]));
@@ -74,13 +75,25 @@ export function UserProfileDisplay({
     }
   ];
 
-  // Add dropzone configuration
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: {
-      "image/*": [".jpeg", ".jpg", ".png", ".gif"],
-    },
-    maxSize: 5242880, // 5MB
-  });
+  // When files change in the ImageDropzone, process them for upload
+  const handleFilesChange = (files: File[]) => {
+    console.log("🚀 ~ handleFilesChange ~ files:", files)
+    setUploadFiles(files);
+  };
+
+  // Handle the upload of images
+  const handleUploadImages = async (files: File[]) => {
+    console.log("🚀 ~ handleUploadImages ~ files:", files)
+    if (!onUploadImages) return;
+    try {
+      await onUploadImages(files);
+      // Clear the upload files after successful upload
+      setUploadFiles([]);
+    } catch (error) {
+      console.error('Error uploading images:', error);
+      // Optionally, you could add error handling UI here
+    }
+  };
 
   const handleKeyPress = (e: KeyboardEvent) => {
     if (!selectedImage) return;
@@ -179,7 +192,7 @@ export function UserProfileDisplay({
                 </div>
               ))}
 
-              {/* Progress Pictures Section - Enhanced */}
+              {/* Progress Pictures Section */}
               <div className="lg:col-span-2">
                 <div className="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800/50 dark:to-gray-700/50 rounded-xl p-6">
                   <div className="flex items-center justify-between mb-6">
@@ -191,104 +204,44 @@ export function UserProfileDisplay({
                     </span>
                   </div>
                   
-                  {images.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {images.map((image) => (
-                        <div 
-                          key={image.id} 
-                          className="relative group z-10 bg-white dark:bg-gray-800 rounded-2xl p-2 shadow-lg hover:shadow-xl transition-all duration-300"
-                        >
-                          <div className="relative overflow-hidden rounded-xl cursor-pointer">
-                            <img
-                              src={image.base64Data}
-                              alt={image.fileName}
-                              className={`w-full h-48 object-cover object-top hover:brightness-110 transition-all duration-300 ${
-                                deletingImageIds.has(image.id) ? 'opacity-50' : ''
-                              }`}
-                              onClick={() => setSelectedImage(image)}
-                            />
-                            <div className="absolute top-2 right-2 z-30">
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDeleteImage(image.id);
-                                }}
-                                disabled={deletingImageIds.has(image.id)}
-                                className={`p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg 
-                                  hover:bg-red-50 transition-colors ${
-                                  deletingImageIds.has(image.id) 
-                                    ? 'opacity-50 cursor-not-allowed' 
-                                    : 'hover:text-red-500'
-                                  }`}
-                                title="Delete image"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  className="h-5 w-5"
-                                  viewBox="0 0 20 20"
-                                  fill="currentColor"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                    clipRule="evenodd"
-                                  />
-                                </svg>
-                              </button>
-                            </div>
-                          </div>
-                          {image.aiDescription && (
-                            <div className="p-3 text-sm text-gray-600 dark:text-gray-300">
-                              {image.aiDescription}
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div
-                      {...getRootProps()}
-                      className={`
-                        relative overflow-hidden rounded-2xl p-8 text-center cursor-pointer
-                        bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20
-                        border-2 border-dashed transition-all duration-200 ease-in-out
-                        ${isDragActive 
-                          ? 'border-blue-500 shadow-lg scale-[0.99]' 
-                          : 'border-gray-300 hover:border-blue-400 hover:shadow-md'
-                        }
-                      `}
-                    >
-                      <input {...getInputProps()} />
-                      <div className="space-y-4">
-                        <div className="mx-auto w-20 h-20 text-blue-500 dark:text-blue-400">
-                          <svg 
-                            xmlns="http://www.w3.org/2000/svg" 
-                            fill="none" 
-                            viewBox="0 0 24 24" 
-                            strokeWidth={1.5} 
-                            stroke="currentColor"
-                            className="w-full h-full"
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {images.map((image) => (
+                      <div 
+                        key={image.id} 
+                        className="relative group bg-white dark:bg-gray-800 rounded-2xl p-2 shadow-lg hover:shadow-xl transition-all duration-300"
+                      >
+                        <div className="relative overflow-hidden rounded-xl cursor-pointer">
+                          <img
+                            src={image.base64Data}
+                            alt={image.fileName}
+                            className={`w-full h-48 object-cover object-top transition-all duration-300 ${
+                              deletingImageIds.has(image.id) ? 'opacity-50' : ''
+                            }`}
+                            onClick={() => setSelectedImage(image)}
+                          />
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteImage(image.id);
+                            }}
+                            className="absolute top-2 right-2 p-2 rounded-full bg-red-500 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-600"
+                            disabled={deletingImageIds.has(image.id)}
                           >
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-                          </svg>
-                        </div>
-                        <div>
-                          <p className="text-xl font-semibold text-gray-700 dark:text-gray-200">
-                            {isDragActive 
-                              ? 'Drop to upload!' 
-                              : 'Add Progress Pictures'
-                            }
-                          </p>
-                          <p className="mt-2 text-gray-500 dark:text-gray-400">
-                            Drag and drop your images here, or click to select files
-                          </p>
-                          <p className="mt-1 text-sm text-gray-400">
-                            PNG, JPG, GIF up to 5MB
-                          </p>
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
                         </div>
                       </div>
-                    </div>
-                  )}
+                    ))}
+                    
+                    {/* Dropzone */}
+                    <ImageDropzone
+                      files={uploadFiles}
+                      onFilesChange={setUploadFiles}
+                      onUploadImages={handleUploadImages}
+                    />
+                  </div>
                 </div>
               </div>
             </div>

@@ -253,6 +253,32 @@ export default function StartPage() {
     setIsUpsellOpen(false);
   };
 
+  // @todo: refactor so this isn't 99% duplicate code
+  const handleUploadImages = async (files: File[]) => {
+    if (!userId) return;
+    setIsUploading(true);
+    try {
+      const imagesToUpload = await Promise.all(
+        files.map(async (file) => ({
+          fileName: file.name,
+          base64Data: await fileToBase64(file),
+          userId: userId,
+        }))
+      );
+
+      const uploadResult = await uploadImages(imagesToUpload);
+      if (uploadResult.success && uploadResult.images) {
+        setUploadedImages(prev => [...prev, ...uploadResult.images]);
+      } else {
+        console.error("Failed to upload images:", uploadResult.error);
+      }
+    } catch (error) {
+      console.error('Failed to upload images:', error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       {contextRequest && (
@@ -310,22 +336,7 @@ export default function StartPage() {
               onDeleteImage={handleDelete}
               onEditProfile={() => setShowIntakeForm(true)}
               onRequestUpsell={handleOpenUpsellModal}
-              onUploadImages={async (files) => {
-                setIsUploading(true);
-                try {
-                  const base64Files = await Promise.all(files.map(fileToBase64));
-                  console.log("🚀 ~ onUploadImages={ ~ base64Files:", base64Files)
-                  const result = await uploadImages(userId, base64Files);
-                  console.log("🚀 ~ onUploadImages={ ~ result:", result)
-                  if (result.success) {
-                    setUploadedImages(prev => [...prev, ...result.images]);
-                  }
-                } catch (error) {
-                  console.error('Failed to upload images:', error);
-                } finally {
-                  setIsUploading(false);
-                }
-              }}
+              onUploadImages={handleUploadImages}
             />
           )}
 

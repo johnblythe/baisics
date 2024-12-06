@@ -83,7 +83,6 @@ export async function getSessionImages(userId: string) {
 }
 
 export async function deleteImage(imageId: string) {
-  console.log("🚀 ~ deleteImage ~ imageId:", imageId)
   try {
     await prisma.userImages.update({
       where: {

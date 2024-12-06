@@ -4,6 +4,8 @@ import { useCallback, useEffect } from "react";
 interface ImageDropzoneProps {
   onFilesChange: (files: File[]) => void;
   files: File[];
+  className?: string;
+  onUploadImages?: (files: File[]) => Promise<void>;
 }
 
 const compressImage = async (file: File): Promise<File> => {
@@ -58,20 +60,29 @@ const compressImage = async (file: File): Promise<File> => {
   });
 };
 
-export function ImageDropzone({ onFilesChange, files }: ImageDropzoneProps) {
+export function ImageDropzone({ onFilesChange, files, className = '', onUploadImages }: ImageDropzoneProps) {
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
+      console.log(" ImageDropzone onDrop - acceptedFiles:", acceptedFiles);
       try {
         const compressedFiles = await Promise.all(
           acceptedFiles.map(file => compressImage(file))
         );
-        const newFiles = [...files, ...compressedFiles].slice(0, 10);
-        onFilesChange(newFiles);
+        console.log("🚀 ImageDropzone onDrop - compressedFiles:", compressedFiles);
+        
+        // Update local state
+        onFilesChange([...files, ...compressedFiles].slice(0, 10));
+        
+        // Immediately trigger upload for new files
+        if (compressedFiles.length > 0 && onUploadImages) {
+          console.log("🚀 ImageDropzone - Triggering upload");
+          await onUploadImages(compressedFiles);
+        }
       } catch (error) {
-        console.error('Error compressing images:', error);
+        console.error('Error in ImageDropzone onDrop:', error);
       }
     },
-    [onFilesChange, files]
+    [files, onFilesChange, onUploadImages]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -92,7 +103,7 @@ export function ImageDropzone({ onFilesChange, files }: ImageDropzoneProps) {
   }, [files]);
 
   return (
-    <div className="mt-4">
+    <div className={`mt-4`}>
       <div
         {...getRootProps()}
         className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer
