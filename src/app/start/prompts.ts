@@ -38,7 +38,7 @@ Interface Requirements:
           restPeriod: string,
           category: string,
           difficulty: string
-        }>
+        }> & { length: number }
       }> & { length: 3 | 4 } , // ideally 3-5, but based on the days available. if user inputs 3 then 3 is the max, but we should not do only 1
     },
     nutrition: {
