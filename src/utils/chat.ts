@@ -1,3 +1,4 @@
+import { prisma } from '@/lib/prisma';
 import { anthropic } from '@/lib/anthropic'
 import { MessageParam } from '@anthropic-ai/sdk/src/resources/messages.js';
 
@@ -15,6 +16,19 @@ export async function sendMessage(messages: { role: string; content: string }[])
       model: process.env.SONNET_MODEL!,
       max_tokens: 4096,
     });
+
+    // await prisma.promptLog.create({
+    //   data: {
+    //     userId: '123',
+    //     success: response.type === 'message' ? true : false,
+    //     prompt: JSON.stringify(messages),
+    //     response: response.content?.[0]?.text || '',
+    //     model: process.env.SONNET_MODEL!,
+    //     inputTokens: response.usage?.input_tokens,
+    //     outputTokens: response.usage?.output_tokens,
+    //     // user: { connect: { id: userId } },
+    //   }
+    // });
 
     return { success: true, data: response }
   } catch (error) {

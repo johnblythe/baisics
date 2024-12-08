@@ -1,4 +1,42 @@
 import { IntakeFormData } from './actions';
+import { AnalysisRequirements } from '@/app/hi/types';
+
+const workoutProgramSchema = {
+  programName: "string",
+  programDescription: "string",
+  phases: [{
+    phase: "number",
+    durationWeeks: "number",
+    bodyComposition: {
+      bodyFatPercentage: "number",
+      muscleMassDistribution: "string"
+    },
+    trainingPlan: {
+      daysPerWeek: "number",
+      workouts: [{
+        day: "number",
+        exercises: [{
+          name: "string",
+          sets: "number",
+          reps: "number",
+          restPeriod: "string",
+          category: "string",
+          difficulty: "string"
+        }]
+      }]
+    },
+    nutrition: {
+      dailyCalories: "number",
+      macros: {
+        protein: "number",
+        carbs: "number",
+        fats: "number"
+      },
+      mealTiming: ["string"]
+    },
+    progressionProtocol: ["string"]
+  }]
+};
 
 export const generateTrainingProgramPrompt = (intakeData: IntakeFormData) => {
   return `
@@ -16,43 +54,8 @@ ${intakeData.additionalInfo ? `- Additional Context: ${intakeData.additionalInfo
   </client data>
   As a fitness expert, analyze the provided images and client data to create a comprehensive training program. Your response must be a single JSON object matching this exact structure:
 
-Interface Requirements:
-{
-  programName: string,
-  programDescription: string,
-  phases: Array<{
-    phase: number, // the sequence for phases of the workout plans -- include 3-4 phases
-    durationWeeks: number, // how long to do the given phase
-    bodyComposition: {
-      bodyFatPercentage: number,
-      muscleMassDistribution: string
-    },
-    trainingPlan: {
-      daysPerWeek: number,
-      workouts: Array<{
-        day: number,
-        exercises: Array<{
-          name: string,
-          sets: number,
-          reps: number,
-          restPeriod: string,
-          category: string,
-          difficulty: string
-        }> & { length: number }
-      }> & { length: 3 | 4 } , // ideally 3-5, but based on the days available. if user inputs 3 then 3 is the max, but we should not do only 1
-    },
-    nutrition: {
-      dailyCalories: number,
-      macros: {
-        protein: number,
-        carbs: number,
-        fats: number
-      },
-      mealTiming: string[]
-    },
-    progressionProtocol: string[]
-  }> & { length: 3 | 4 } // 3-4 phases. 4-6 weeks each.
-}
+  Interface requirements:
+${JSON.stringify(workoutProgramSchema, null, 2)}
 
 Analysis Requirements:
 - Design program matching client's available days, equipment, and preferences.
@@ -82,3 +85,17 @@ Return a single JSON object following the interface exactly, with no additional 
 
   The contextRequest section is for you to give the user feedback on what information could help make a better plan for them. Use the client data above to decide what is most important. Do not ask for information outside of those items.
  */
+
+export const defaultAnalysisRequirements: AnalysisRequirements = {
+  matchClientPreferences: true,
+  phaseRequirements: {
+    minPhases: 3,
+    maxPhases: 4,
+    minWeeksPerPhase: 4,
+    maxWeeksPerPhase: 6
+  },
+  requireMacroRecommendations: true,
+  requireProgressionProtocols: true,
+  requireStructuredWorkouts: true,
+  considerInjuryLimitations: true
+};
