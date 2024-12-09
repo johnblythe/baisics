@@ -52,6 +52,7 @@ model PromptLog {
   userId    String   @map("user_id") @db.Uuid
   prompt    String   @db.Text
   response  String   @db.Text
+  success   Boolean  @default(true) @map("success")
   inputTokens Int?     @map("input_tokens")
   outputTokens Int?     @map("output_tokens")
   model     String   @map("model")

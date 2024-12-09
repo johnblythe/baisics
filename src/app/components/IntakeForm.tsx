@@ -13,7 +13,7 @@ interface IntakeFormProps {
   isSubmitting: boolean;
 }
 
-const SAMPLE_PROFILES = {
+export const SAMPLE_PROFILES = {
   athleteProfile: {
     sex: "male" as Sex,
     trainingGoal: "muscle_gain" as TrainingGoal,
