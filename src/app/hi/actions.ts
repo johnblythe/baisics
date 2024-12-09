@@ -3,8 +3,9 @@
 import { Message, ExtractedData, IntakeFormData } from "./types";
 // import { revalidatePath } from "next/cache";
 import { sendMessage } from "@/utils/chat";
-import { generateTrainingProgramPrompt } from "../start/prompts";
+import { generateTrainingProgramPrompt, workoutProgramSchema } from "../start/prompts";
 import { prisma } from "@/lib/prisma";
+import { ProgramFullDisplay } from "../start/types";
 
 const REQUIRED_CONFIDENCE_THRESHOLD = 0.7;
 
@@ -41,6 +42,7 @@ export async function processUserMessage(
       // Skip extraction and go straight to program generation
       const intakeData = convertToIntakeFormat(extractedData);
       const programPrompt = generateTrainingProgramPrompt(intakeData);
+      console.log("🚀 ~ programPrompt:", programPrompt)
       const programResult = await sendMessage([{
         role: 'user',
         content: programPrompt
@@ -121,6 +123,93 @@ export async function processUserMessage(
     return {
       success: false,
       message: "I'm sorry, I encountered an error. Please try again."
+    };
+  }
+}
+
+export async function processModificationRequest(
+  messages: Message[],
+  userId: string,
+  currentProgram: ProgramFullDisplay,
+  modificationRequest: string
+) {
+  try {
+    // Create a pseudo intake form from the current program
+    const intakeData: IntakeFormData = {
+      sex: 'other', // Default since we don't have this in program
+      trainingGoal: currentProgram.workoutPlans[0].muscleMassDistribution,
+      daysAvailable: currentProgram.workoutPlans[0].daysPerWeek,
+      dailyBudget: 60, // Default or could calculate from workouts
+      trainingPreferences: [], // Could extract from exercise types
+      additionalInfo: `
+        !!Requested Modifications:
+        ${modificationRequest}
+      `,
+      experienceLevel: "intermediate", // Default or could infer from program difficulty
+    };
+
+    // Use the original program generation prompt with our enhanced context
+    const programPrompt = generateTrainingProgramPrompt(intakeData);
+    console.log("🚀 ~ programPrompt:", programPrompt)
+
+    const result = await sendMessage([{
+      role: 'user',
+      content: programPrompt
+    }]);
+
+    if (!result.success) {
+      throw new Error('Failed to get response from Claude');
+    }
+
+    console.log("🚀 ~ result.data?.content?:", JSON.stringify(result.data, null, 2))
+    const aiResponse = JSON.parse(result.data?.content?.[0]?.text || '{}');
+
+    // Transform the new program to match DB structure
+    const transformedProgram = {
+      ...currentProgram,
+      name: aiResponse.programName,
+      description: aiResponse.programDescription,
+      updatedAt: new Date(),
+      workoutPlans: aiResponse.phases.map((phase: any, index: number) => ({
+        ...currentProgram.workoutPlans[index],
+        bodyFatPercentage: phase.bodyComposition.bodyFatPercentage,
+        muscleMassDistribution: phase.bodyComposition.muscleMassDistribution,
+        dailyCalories: phase.nutrition.dailyCalories,
+        proteinGrams: phase.nutrition.macros.protein,
+        carbGrams: phase.nutrition.macros.carbs,
+        fatGrams: phase.nutrition.macros.fats,
+        mealTiming: phase.nutrition.mealTiming,
+        progressionProtocol: phase.progressionProtocol,
+        daysPerWeek: phase.trainingPlan.daysPerWeek,
+        durationWeeks: phase.durationWeeks,
+        updatedAt: new Date(),
+        workouts: phase.trainingPlan.workouts.map((workout: any, wIndex: number) => ({
+          ...currentProgram.workoutPlans[index].workouts[wIndex],
+          updatedAt: new Date(),
+          exercises: workout.exercises.map((exercise: any, eIndex: number) => ({
+            ...currentProgram.workoutPlans[index].workouts[wIndex].exercises[eIndex],
+            name: exercise.name,
+            sets: exercise.sets,
+            reps: exercise.reps,
+            restPeriod: exercise.restPeriod,
+            updatedAt: new Date(),
+          }))
+        }))
+      }))
+    };
+
+    return {
+      success: true,
+      message: "I've created a new version of your program incorporating your feedback.",
+      program: transformedProgram,
+      needsClarification: false
+    };
+
+  } catch (error) {
+    console.error("Failed to process modification request:", error);
+    return {
+      success: false,
+      message: "I'm sorry, I encountered an error while processing your request. Please try again."
     };
   }
 } 
