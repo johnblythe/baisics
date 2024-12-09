@@ -27,18 +27,19 @@ function convertToIntakeFormat(extractedData: any): IntakeFormData {
 }
 
 // @TODO: rename, clean up, etc
+// @TODO: i'm not sure this is properly keeping a continuation of the conversation since it chops out
+// a pretty, human-readable message instead of the entirety of what the AI has figured out
 export async function processUserMessage(
   messages: Message[], 
   userId: string, 
+  extractedData: ExtractedData | null = null,
   generateProgramDirectly: boolean = false
 ) {
   try {
     // @TODO: break this up into two discerete helper methods. one to generate the training program, one is to source new information. 
     if (generateProgramDirectly) {
-      console.log("asahhhh");
       // Skip extraction and go straight to program generation
-      console.log("🚀 ~ messages:", messages)
-      const intakeData = convertToIntakeFormat(messages[messages.length - 2].extractedData);
+      const intakeData = convertToIntakeFormat(extractedData);
       const programPrompt = generateTrainingProgramPrompt(intakeData);
       const programResult = await sendMessage([{
         role: 'user',
@@ -46,6 +47,7 @@ export async function processUserMessage(
       }]);
 
       if (programResult.success) {
+        console.log("🚀 ~ programResult:", JSON.stringify(programResult.data, null, 2))
         return {
           success: true,
           program: JSON.parse(programResult.data?.content?.[0]?.text || '{}')

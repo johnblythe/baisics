@@ -80,28 +80,61 @@ export function ConversationalInterface({ userId, user }: ConversationalInterfac
           }, 1000);
 
           // Generate the program
-          const programResult = await processUserMessage([...messages, userMessage], userId, true);
+          const programResult = await processUserMessage([...messages, userMessage], userId, result.extractedData, true);
           if (programResult.success && programResult.program) {
-            // Convert the program data to match ProgramFullDisplay type
-            const displayProgram: ProgramFullDisplay = {
-              id: userId, // or generate a unique ID
+            console.log("🚀 ~ handleSubmit ~ programResult.program:", programResult.program)
+            // Transform the AI response to match DB structure
+            const transformedProgram = {
+              id: `draft-${Date.now()}`, // Temporary ID for draft program
               name: programResult.program.programName,
               description: programResult.program.programDescription,
               createdBy: userId,
               createdAt: new Date(),
               updatedAt: new Date(),
+              user: {
+                id: userId,
+                email: user?.email || "",
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              },
               workoutPlans: programResult.program.phases.map(phase => ({
                 id: `phase-${phase.phase}`,
-                programId: userId,
+                userId,
+                programId: `draft-${Date.now()}`,
                 phase: phase.phase,
+                bodyFatPercentage: phase.bodyComposition.bodyFatPercentage,
+                muscleMassDistribution: phase.bodyComposition.muscleMassDistribution,
+                dailyCalories: phase.nutrition.dailyCalories,
+                proteinGrams: phase.nutrition.macros.protein,
+                carbGrams: phase.nutrition.macros.carbs,
+                fatGrams: phase.nutrition.macros.fats,
+                mealTiming: phase.nutrition.mealTiming,
+                progressionProtocol: phase.progressionProtocol,
+                daysPerWeek: phase.trainingPlan.daysPerWeek,
                 durationWeeks: phase.durationWeeks,
-                workouts: phase.trainingPlan.workouts,
                 createdAt: new Date(),
-                updatedAt: new Date()
+                updatedAt: new Date(),
+                workouts: phase.trainingPlan.workouts.map(workout => ({
+                  id: `workout-${workout.day}`,
+                  workoutPlanId: `phase-${phase.phase}`,
+                  dayNumber: workout.day,
+                  createdAt: new Date(),
+                  updatedAt: new Date(),
+                  exercises: workout.exercises.map(exercise => ({
+                    id: `exercise-${exercise.name}-${workout.day}`,
+                    workoutId: `workout-${workout.day}`,
+                    name: exercise.name,
+                    sets: exercise.sets,
+                    reps: exercise.reps,
+                    restPeriod: exercise.restPeriod,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                  }))
+                }))
               }))
             };
 
-            setProgram(displayProgram);
+            setProgram(transformedProgram);
             setIsGeneratingProgram(false);
           }
         } else {
