@@ -1,5 +1,15 @@
-import { IntakeFormData } from './actions';
-import { AnalysisRequirements } from '@/app/hi/types';
+import { IntakeFormData, AnalysisRequirements, ProgramStructure } from '@/types';
+
+const formatClientData = (intakeData: IntakeFormData) => `
+- Sex: ${intakeData.sex || 'unspecified'}
+- Training Goal: ${intakeData.trainingGoal}
+- Days Available: ${intakeData.daysAvailable} per week
+- Time available per day: ${intakeData.dailyBudget} minutes
+- Age: ${intakeData.age || 'unspecified'}
+- Weight: ${intakeData.weight || 'unspecified'}
+- Height: ${intakeData.height || 'unspecified'}
+- Training Preferences: ${intakeData.trainingPreferences?.join(', ') || 'none specified'}
+${intakeData.additionalInfo ? `\nAdditional Context:\n${intakeData.additionalInfo}` : ''}`;
 
 export const workoutProgramSchema = {
   programName: "string",
@@ -38,53 +48,116 @@ export const workoutProgramSchema = {
   }]
 };
 
-export const generateTrainingProgramPrompt = (intakeData: IntakeFormData) => {
+export const generateInitialProgramPrompt = (intakeData: IntakeFormData) => {
   return `
   <client data>
-- Images: [Attached if client included images]
-- Sex: male
-- Training Goal: build muscle
-- Days Available: 4 per week
-- Time available per day: 60 minutes
-- Age: 35
-- Weight: 182
-- Height: 6'0
-- Training Preferences: free weights, machines, bodyweight
-${intakeData.additionalInfo ? `
-Additional Context:
-${intakeData.additionalInfo}` : ''}
+${formatClientData(intakeData)}
   </client data>
 
-  As a fitness expert, analyze the provided client data to create a comprehensive training program. 
-  If additional context is provided, ensure the program addresses any specific modifications or requirements mentioned.
-  Your response must be a single JSON object matching this exact structure:
+  As a fitness expert, create a comprehensive training program following these strict requirements:
+  1. The program MUST have exactly ${defaultAnalysisRequirements.phaseRequirements.minPhases} to ${defaultAnalysisRequirements.phaseRequirements.maxPhases} phases
+  2. Each phase MUST be ${defaultAnalysisRequirements.phaseRequirements.minWeeksPerPhase}-${defaultAnalysisRequirements.phaseRequirements.maxWeeksPerPhase} weeks long
+  3. Workouts MUST match client's available days (${intakeData.daysAvailable} per week)
+  4. Each workout MUST fit within ${intakeData.dailyBudget} minutes
 
-  Interface requirements:
-${JSON.stringify(workoutProgramSchema, null, 2)}
-
-Analysis Requirements:
-- Design program matching client's available days, equipment, and preferences
-- Design the program in 3 or 4 distinct, sequential phases
-- Include detailed macronutrient recommendations
-- Include progression protocols
-- Structure all workouts with clear sets, reps, and rest periods
-- Account for any stated injuries, limitations, or modification requests
-
-Return a single JSON object following the interface exactly, with no additional text or explanation outside the structured response.`;
-
+  Return a single JSON object matching this exact structure:
+${JSON.stringify(workoutProgramSchema, null, 2)}`;
 };
 
-/**
- * Assess body composition from images providing numerical body fat estimate and muscle mass distribution
- * 
- * contextRequest: Array<{
-    key: string,
-    reason?: string,
-    importance?: string
-  }>
+export const generateModificationPrompt = (
+  currentProgram: any, 
+  modificationRequest: string,
+  intakeData: IntakeFormData
+) => {
+  // Helper to format exercises for prompt with null checks
+  const formatExercises = (exercises: any[] = []) => {
+    if (!Array.isArray(exercises)) return '';
+    
+    return exercises.map(e => {
+      if (!e) return '';
+      const { name = 'unknown', sets = '?', reps = '?', restPeriod = '?' } = e;
+      return `        - ${name}: ${sets}x${reps}, rest ${restPeriod}`;
+    }).filter(Boolean).join('\n');
+  };
 
-  The contextRequest section is for you to give the user feedback on what information could help make a better plan for them. Use the client data above to decide what is most important. Do not ask for information outside of those items.
- */
+  // Create detailed phase breakdown with null checks
+  const phaseDetails = currentProgram.workoutPlans.map((phase: any, i: number) => {
+    if (!phase) return '';
+    
+    const {
+      durationWeeks = '?',
+      bodyFatPercentage = '?',
+      muscleMassDistribution = '?',
+      dailyCalories = '?',
+      proteinGrams = '?',
+      carbGrams = '?',
+      fatGrams = '?',
+      daysPerWeek = '?',
+      progressionProtocol = [],
+      mealTiming = [],
+      workouts = []
+    } = phase;
+
+    return `
+    Phase ${i + 1} (${durationWeeks} weeks):
+    - Body Composition Target: ${bodyFatPercentage}% BF, ${muscleMassDistribution}
+    - Nutrition: ${dailyCalories} calories (P:${proteinGrams}g, C:${carbGrams}g, F:${fatGrams}g)
+    - Meal Timing: ${Array.isArray(mealTiming) ? mealTiming.join(', ') : ''}
+    - Training Days: ${daysPerWeek} per week
+    - Progression Protocol: ${Array.isArray(progressionProtocol) ? progressionProtocol.join(', ') : ''}
+    
+    Workouts:
+    ${workouts.map((workout: any) => {
+      if (!workout) return '';
+      return `
+      Day ${workout.dayNumber || '?'}:
+${formatExercises(workout.exercises)}`;
+    }).filter(Boolean).join('\n')}
+  `}).filter(Boolean).join('\n');
+
+  return `
+  You are modifying an existing workout program. The client has requested: "${modificationRequest}"
+
+  CURRENT PROGRAM DETAILS:
+  ${phaseDetails}
+
+  MODIFICATION REQUIREMENTS:
+  1. Maintain exactly ${currentProgram.workoutPlans.length} phases
+  2. Keep the same phase durations
+  3. Preserve the overall progression logic between phases
+  4. Stay within ${intakeData.dailyBudget} minutes per workout
+  5. Maintain the core compound lifts in each phase
+  6. Only modify elements specifically related to the client's request
+  7. IMPORTANT: For each phase, you MUST include complete nutrition data:
+     - Daily calorie targets
+     - Macronutrient breakdown (protein, carbs, fats)
+     - Meal timing recommendations
+  8. If the modification request doesn't mention nutrition changes, keep the existing nutrition and meal timing data exactly as is
+
+  Client Parameters:
+  ${JSON.stringify(intakeData, null, 2)}
+
+  Return a complete program JSON that matches the exact structure of the current program.
+  Focus modifications ONLY on aspects mentioned in the client's request.
+  
+  Response must be valid JSON matching this structure:
+  {
+    "programName": "string",
+    "programDescription": "string",
+    "phases": [{
+      "phase": number,
+      "durationWeeks": number,
+      "bodyComposition": { "bodyFatPercentage": number, "muscleMassDistribution": string },
+      "trainingPlan": { "daysPerWeek": number, "workouts": [/* workouts */] },
+      "nutrition": {
+        "dailyCalories": number,
+        "macros": { "protein": number, "carbs": number, "fats": number },
+        "mealTiming": ["string"]
+      },
+      "progressionProtocol": ["string"]
+    }]
+  }`;
+};
 
 export const defaultAnalysisRequirements: AnalysisRequirements = {
   matchClientPreferences: true,
@@ -98,4 +171,121 @@ export const defaultAnalysisRequirements: AnalysisRequirements = {
   requireProgressionProtocols: true,
   requireStructuredWorkouts: true,
   considerInjuryLimitations: true
+};
+
+export const generateProgramStructurePrompt = (intakeData: IntakeFormData) => {
+  return `
+  Based on this client profile:
+  ${formatClientData(intakeData)}
+
+  Design a program structure that:
+  1. Has ${defaultAnalysisRequirements.phaseRequirements.minPhases}-${defaultAnalysisRequirements.phaseRequirements.maxPhases} phases
+  2. Each phase ${defaultAnalysisRequirements.phaseRequirements.minWeeksPerPhase}-${defaultAnalysisRequirements.phaseRequirements.maxWeeksPerPhase} weeks
+  3. Follows a logical progression toward the client's goals
+
+  Return a JSON object with this structure:
+  {
+    "totalPhases": number,
+    "phaseStructure": [{
+      "phase": number,
+      "durationWeeks": number,
+      "focus": string,
+      "progressionStrategy": string,
+      "targetIntensity": string
+    }],
+    "overallProgression": string[],
+    "estimatedTimePerWorkout": number
+  }`;
+};
+
+export const generatePhaseDetailsPrompt = (
+  intakeData: IntakeFormData,
+  programStructure: ProgramStructure,
+  phaseNumber: number,
+  currentPhase?: any,
+  modificationRequest?: string
+) => {
+  const phase = programStructure.phaseStructure[phaseNumber - 1];
+  
+  let prompt = `
+  Create detailed workout and nutrition plans for Phase ${phaseNumber}:
+  Focus: ${phase.focus}
+  Duration: ${phase.durationWeeks} weeks
+  Target Intensity: ${phase.targetIntensity}
+
+  Client Profile for Nutrition Calculations:
+  - Sex: ${intakeData.sex || 'unspecified'}
+  - Age: ${intakeData.age || 'unspecified'}
+  - Weight: ${intakeData.weight || 'unspecified'} 
+  - Height: ${intakeData.height || 'unspecified'}
+  - Training Goal: ${intakeData.trainingGoal}
+  - Days Training: ${intakeData.daysAvailable} per week
+  - Daily Training Time: ${intakeData.dailyBudget} minutes
+
+  Client Constraints:
+  - ${intakeData.daysAvailable} days per week
+  - ${intakeData.dailyBudget} minutes per session`;
+
+  if (currentPhase && modificationRequest) {
+    const mealTimingDisplay = Array.isArray(currentPhase.mealTiming) 
+      ? currentPhase.mealTiming.join(', ')
+      : currentPhase.mealTiming || 'not specified';
+
+    prompt += `\n
+  MODIFICATION REQUEST: "${modificationRequest}"
+  
+  CURRENT PHASE DETAILS:
+  - Current Body Fat Target: ${currentPhase.bodyFatPercentage}%
+  - Current Focus: ${currentPhase.muscleMassDistribution}
+  - Current Training Days: ${currentPhase.daysPerWeek}
+  - Current Nutrition:
+    * Daily Calories: ${currentPhase.dailyCalories}
+    * Protein: ${currentPhase.proteinGrams}g
+    * Carbs: ${currentPhase.carbGrams}g
+    * Fats: ${currentPhase.fatGrams}g
+    * Meal Timing: ${mealTimingDisplay}
+  - Current Progression: ${Array.isArray(currentPhase.progressionProtocol) 
+      ? currentPhase.progressionProtocol.join(', ') 
+      : currentPhase.progressionProtocol || 'not specified'}
+  
+  Maintain the core structure while incorporating the requested changes.
+  If no nutrition changes are requested, keep the current nutrition values.`;
+  }
+  
+  prompt += `\n
+  Return a JSON object for this phase matching this structure:
+  {
+    "phase": ${phaseNumber},
+    "durationWeeks": ${phase.durationWeeks},
+    "bodyComposition": {
+      "bodyFatPercentage": number,
+      "muscleMassDistribution": string
+    },
+    "trainingPlan": {
+      "daysPerWeek": ${intakeData.daysAvailable},
+      "workouts": [{
+        "day": number,
+        "exercises": [{
+          "name": string,
+          "sets": number,
+          "reps": number,
+          "restPeriod": string,
+          "category": string,
+          "difficulty": string
+        }]
+      }]
+    },
+    "nutrition": {
+      "dailyCalories": number,
+      "macros": {
+        "protein": number,
+        "carbs": number,
+        "fats": number
+      },
+      "mealTiming": ["string"]
+    },
+    "progressionProtocol": ["${phase.progressionStrategy}"]
+  }`;
+
+  return prompt;
 };

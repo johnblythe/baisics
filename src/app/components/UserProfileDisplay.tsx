@@ -1,4 +1,4 @@
-import { IntakeFormData } from "@/app/start/actions";
+import { IntakeFormData } from "@/app/hi/types";
 import { convertHeightToFeetAndInches } from "@/utils/formatting";
 import { User } from "@prisma/client";
 import { useState, useEffect } from "react";

@@ -1,13 +1,11 @@
 'use server';
 
-import { Message, ExtractedData, IntakeFormData } from "./types";
+import { Message, ExtractedData, IntakeFormData, ChatResponse, Program, ProgramFullDisplay } from "@/types";
 // import { revalidatePath } from "next/cache";
 import { sendMessage } from "@/utils/chat";
-import { generateTrainingProgramPrompt, workoutProgramSchema } from "../start/prompts";
+import { generateInitialProgramPrompt, generateModificationPrompt } from "../start/prompts";
+import { createProgram, modifyProgram } from "./services/programCreation";
 import { prisma } from "@/lib/prisma";
-import { ProgramFullDisplay } from "../start/types";
-
-const REQUIRED_CONFIDENCE_THRESHOLD = 0.7;
 
 // Helper to convert extracted data to IntakeFormData format
 function convertToIntakeFormat(extractedData: any): IntakeFormData {
@@ -23,7 +21,8 @@ function convertToIntakeFormat(extractedData: any): IntakeFormData {
       extractedData.preferences.value.split(',').map((p: string) => p.trim()) : 
       [],
     additionalInfo: extractedData.additionalInfo?.value || '',
-    experienceLevel: 'beginner' // Default value, could be extracted from conversation
+    experienceLevel: 'beginner', // Default value, could be extracted from conversation
+    modificationRequest: extractedData.modificationRequest?.value || '',
   };
 }
 
@@ -37,24 +36,57 @@ export async function processUserMessage(
   generateProgramDirectly: boolean = false
 ) {
   try {
-    // @TODO: break this up into two discerete helper methods. one to generate the training program, one is to source new information. 
     if (generateProgramDirectly) {
-      // Skip extraction and go straight to program generation
       const intakeData = convertToIntakeFormat(extractedData);
-      const programPrompt = generateTrainingProgramPrompt(intakeData);
-      console.log("🚀 ~ programPrompt:", programPrompt)
-      const programResult = await sendMessage([{
-        role: 'user',
-        content: programPrompt
-      }]);
+      
+      // Save intake data using existing UserIntake model
+      await prisma.userIntake.upsert({
+        where: { userId },
+        create: {
+          userId,
+          sex: intakeData.sex || 'other',
+          trainingGoal: intakeData.trainingGoal,
+          daysAvailable: intakeData.daysAvailable,
+          dailyBudget: intakeData.dailyBudget,
+          experienceLevel: intakeData.experienceLevel,
+          age: intakeData.age,
+          weight: intakeData.weight,
+          height: intakeData.height,
+          trainingPreferences: intakeData.trainingPreferences || [],
+          additionalInfo: intakeData.additionalInfo
+        },
+        update: {
+          sex: intakeData.sex || 'other',
+          trainingGoal: intakeData.trainingGoal,
+          daysAvailable: intakeData.daysAvailable,
+          dailyBudget: intakeData.dailyBudget,
+          experienceLevel: intakeData.experienceLevel,
+          age: intakeData.age,
+          weight: intakeData.weight,
+          height: intakeData.height,
+          trainingPreferences: intakeData.trainingPreferences || [],
+          additionalInfo: intakeData.additionalInfo
+        }
+      });
 
-      if (programResult.success) {
-        console.log("🚀 ~ programResult:", JSON.stringify(programResult.data, null, 2))
-        return {
-          success: true,
-          program: JSON.parse(programResult.data?.content?.[0]?.text || '{}')
-        };
-      }
+      // Save confidence scores in prompt log for analysis
+      await prisma.promptLog.create({
+        data: {
+          userId,
+          prompt: 'Initial intake analysis',
+          response: JSON.stringify(extractedData?.confidence || {}),
+          model: process.env.SONNET_MODEL!,
+          success: true
+        }
+      });
+
+      // Generate program using new service
+      const program = await createProgram(intakeData);
+      
+      return {
+        success: true,
+        program
+      };
     }
 
     const messageHistory = messages.map(m => ({
@@ -134,60 +166,54 @@ export async function processModificationRequest(
   modificationRequest: string
 ) {
   try {
-    // Create a pseudo intake form from the current program
     const intakeData: IntakeFormData = {
-      sex: 'other', // Default since we don't have this in program
+      sex: 'male',
       trainingGoal: currentProgram.workoutPlans[0].muscleMassDistribution,
       daysAvailable: currentProgram.workoutPlans[0].daysPerWeek,
-      dailyBudget: 60, // Default or could calculate from workouts
-      trainingPreferences: [], // Could extract from exercise types
-      additionalInfo: `
-        !!Requested Modifications:
-        ${modificationRequest}
-      `,
-      experienceLevel: "intermediate", // Default or could infer from program difficulty
+      dailyBudget: 60,
+      trainingPreferences: [],
+      additionalInfo: '',
+      modificationRequest: modificationRequest,
+      experienceLevel: "intermediate",
     };
 
-    // Use the original program generation prompt with our enhanced context
-    const programPrompt = generateTrainingProgramPrompt(intakeData);
-    console.log("🚀 ~ programPrompt:", programPrompt)
+    // Get modified program from Claude
+    const modifiedProgram = await modifyProgram(
+      currentProgram,
+      modificationRequest,
+      intakeData
+    );
 
-    const result = await sendMessage([{
-      role: 'user',
-      content: programPrompt
-    }]);
-
-    if (!result.success) {
-      throw new Error('Failed to get response from Claude');
-    }
-
-    console.log("🚀 ~ result.data?.content?:", JSON.stringify(result.data, null, 2))
-    const aiResponse = JSON.parse(result.data?.content?.[0]?.text || '{}');
-
-    // Transform the new program to match DB structure
+    // Transform to DB structure - exactly the same as initial program creation
     const transformedProgram = {
-      ...currentProgram,
-      name: aiResponse.programName,
-      description: aiResponse.programDescription,
+      ...currentProgram, // Keep the IDs and metadata
+      name: modifiedProgram.programName,
+      description: modifiedProgram.programDescription,
       updatedAt: new Date(),
-      workoutPlans: aiResponse.phases.map((phase: any, index: number) => ({
-        ...currentProgram.workoutPlans[index],
-        bodyFatPercentage: phase.bodyComposition.bodyFatPercentage,
-        muscleMassDistribution: phase.bodyComposition.muscleMassDistribution,
-        dailyCalories: phase.nutrition.dailyCalories,
-        proteinGrams: phase.nutrition.macros.protein,
-        carbGrams: phase.nutrition.macros.carbs,
-        fatGrams: phase.nutrition.macros.fats,
-        mealTiming: phase.nutrition.mealTiming,
+      workoutPlans: modifiedProgram.phases.map((phase: any, index: number) => ({
+        id: `phase-${phase.phase}`,
+        userId,
+        programId: currentProgram.id,
+        phase: phase.phase,
+        bodyFatPercentage: phase.bodyComposition?.bodyFatPercentage,
+        muscleMassDistribution: phase.bodyComposition?.muscleMassDistribution,
+        dailyCalories: phase.nutrition?.dailyCalories,
+        proteinGrams: phase.nutrition?.macros?.protein,
+        carbGrams: phase.nutrition?.macros?.carbs,
+        fatGrams: phase.nutrition?.macros?.fats,
+        mealTiming: phase.nutrition?.mealTiming,
         progressionProtocol: phase.progressionProtocol,
-        daysPerWeek: phase.trainingPlan.daysPerWeek,
+        daysPerWeek: phase.trainingPlan?.daysPerWeek,
         durationWeeks: phase.durationWeeks,
         updatedAt: new Date(),
-        workouts: phase.trainingPlan.workouts.map((workout: any, wIndex: number) => ({
-          ...currentProgram.workoutPlans[index].workouts[wIndex],
+        workouts: phase.trainingPlan?.workouts?.map((workout: any) => ({
+          id: `workout-${workout.day}`,
+          workoutPlanId: `phase-${phase.phase}`,
+          dayNumber: workout.day,
           updatedAt: new Date(),
-          exercises: workout.exercises.map((exercise: any, eIndex: number) => ({
-            ...currentProgram.workoutPlans[index].workouts[wIndex].exercises[eIndex],
+          exercises: workout.exercises.map((exercise: any) => ({
+            id: `exercise-${exercise.name}-${workout.day}`,
+            workoutId: `workout-${workout.day}`,
             name: exercise.name,
             sets: exercise.sets,
             reps: exercise.reps,
@@ -200,7 +226,7 @@ export async function processModificationRequest(
 
     return {
       success: true,
-      message: "I've created a new version of your program incorporating your feedback.",
+      message: "Program updated successfully with your requested changes.",
       program: transformedProgram,
       needsClarification: false
     };
@@ -209,7 +235,42 @@ export async function processModificationRequest(
     console.error("Failed to process modification request:", error);
     return {
       success: false,
-      message: "I'm sorry, I encountered an error while processing your request. Please try again."
+      message: "I encountered an error while processing your request. Please try again.",
+      needsClarification: true
     };
+  }
+}
+
+export async function saveDemoIntake(userId: string) {
+  'use server'
+  
+  const DEMO_INTAKE = {
+    sex: 'male',
+    trainingGoal: 'muscle building',
+    daysAvailable: 5,
+    dailyBudget: 90,
+    age: 30,
+    weight: 180,
+    height: 72,
+    experienceLevel: 'intermediate',
+    trainingPreferences: ['free weights', 'machines', 'bodyweight'],
+    additionalInfo: 'Athletic background, looking to build muscle while maintaining conditioning'
+  };
+
+  try {
+    await prisma.userIntake.upsert({
+      where: { userId },
+      create: {
+        userId,
+        ...DEMO_INTAKE
+      },
+      update: {
+        ...DEMO_INTAKE
+      }
+    });
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to save demo intake:', error);
+    return { success: false };
   }
 } 

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Message } from "../types";
+import { useState } from "react";
 import { ImageDropzone } from "@/app/components/ImageDropzone";
+import { IntakeFormData } from "@/app/hi/types";
 
 interface ChatInterfaceProps {
   userId: string;

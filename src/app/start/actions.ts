@@ -2,29 +2,16 @@
 
 import { prisma } from '@/lib/prisma';
 import { sendMessage } from '@/utils/chat';
-import { generateTrainingProgramPrompt } from './prompts';
+import { generateInitialProgramPrompt } from './prompts';
 import { Exercise, Workout, ProgramData, PhasesData } from './types';
 import { MessageParam } from '@anthropic-ai/sdk/src/resources/messages.js';
 import { User, UserImages } from '@prisma/client';
 import { fileToBase64 } from '@/utils/fileHandling';
-
+import { IntakeFormData } from '../hi/types';
 // Add new types for the form data
 export type TrainingGoal = 'weight loss' | 'maintenance' | 'body recomposition' | 'strength gains' | 'weight gain' | 'muscle building' | 'other';
 export type Sex = 'man' | 'woman' | 'other';
 export type TrainingPreference = 'cardio' | 'resistance' | 'free weights' | 'machines' | 'kettlebell' | 'running' | 'plyometrics' | 'yoga';
-
-export interface IntakeFormData {
-  sex: Sex;
-  trainingGoal: TrainingGoal;
-  daysAvailable: number;
-  trainingPreferences: TrainingPreference[];
-  additionalInfo: string;
-  dailyBudget?: number;
-  age?: number;
-  weight?: number;
-  height?: number;
-  experienceLevel?: string;
-}
 
 export type ImageUpload = {
   fileName: string;
@@ -465,7 +452,7 @@ export async function preparePromptForAI(
     }
 
     console.time('generate-prompt');
-    const clientDataPrompt = generateTrainingProgramPrompt(intakeData); 
+    const clientDataPrompt = generateInitialProgramPrompt(intakeData); 
     const clientPicturePrompt = "Please analyze this image and estimate body fat percentage.";
     console.timeEnd('generate-prompt');
 

@@ -85,7 +85,7 @@ export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: Workou
                 <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                   <h3 className="font-semibold text-lg mb-3">Meal Timing</h3>
                   <ul className="list-disc pl-5 space-y-2">
-                    {plan.mealTiming.map((timing, index) => (
+                    {plan.mealTiming?.length > 0 && plan.mealTiming?.map((timing, index) => (
                       <li key={`meal-timing-${index}`}>{timing}</li>
                     ))}
                   </ul>
@@ -94,7 +94,7 @@ export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: Workou
                 <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                   <h3 className="font-semibold text-lg mb-3">Progression Protocol</h3>
                   <ul className="list-disc pl-5 space-y-2">
-                    {plan.progressionProtocol.map((protocol, index) => (
+                    {(plan.progressionProtocol || []).map((protocol, index) => (
                       <li key={`progression-${index}`}>{protocol}</li>
                     ))}
                   </ul>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Message, ExtractedData } from "../types";
+import { Message, IntakeFormData, ExtractedData, ChatResponse } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { processUserMessage } from "../actions";
 import { ProgramDisplay } from "@/app/components/ProgramDisplay";
@@ -13,6 +13,9 @@ import { getRandomWelcomeMessage } from "../utils/welcomeMessages";
 import { createNewProgram } from "@/app/start/actions";
 import { processModificationRequest } from "../actions";
 import exampleProgram from '../utils/example.json';
+import { createAnonUser, getUser } from "@/app/start/actions";
+import { v4 as uuidv4 } from "uuid";
+import { saveDemoIntake } from "../actions";
 
 interface ConversationalInterfaceProps {
   userId: string;
@@ -273,72 +276,121 @@ export function ConversationalInterface({ userId, user }: ConversationalInterfac
     }
   };
 
-  const loadDemoProgram = () => {
-    setIsGeneratingProgram(true);
-    
-    // Simulate a brief loading state
-    setTimeout(() => {
-      const transformedProgram = {
-        id: `draft-${Date.now()}`,
-        name: exampleProgram.programName,
-        description: exampleProgram.programDescription,
-        createdBy: userId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        user: {
-          id: userId,
-          email: user?.email || "",
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          password: null,
-          isPremium: false,
+  const demoUser = async () => {
+    if (!userId) {
+      const newUserId = uuidv4();
+      const result = await createAnonUser(newUserId);
+      if (result.success && result.user) {
+        return result.user;
+      }
+      throw new Error('Failed to create anonymous user');
+    }
+
+    const result = await getUser(userId);
+    if (!result.success || !result.user) {
+      const createResult = await createAnonUser(userId);
+      if (!createResult.success || !createResult.user) {
+        throw new Error('Failed to create/get user');
+      }
+      return createResult.user;
+    }
+
+    return result.user;
+  };
+
+  const loadDemoProgram = async () => {
+    try {
+      const user = await demoUser();
+      
+      // Save demo intake using server action
+      const demoIntake = await saveDemoIntake(user.id);
+      console.log("🚀 ~ loadDemoProgram ~ demoIntake:", demoIntake)
+
+      // Add intake conversation to message history
+      setMessages([
+        {
+          role: "assistant",
+          content: getRandomWelcomeMessage()
         },
-        workoutPlans: exampleProgram.phases.map(phase => ({
-          id: `phase-${phase.phase}`,
-          userId,
-          programId: `draft-${Date.now()}`,
-          phase: phase.phase,
-          bodyFatPercentage: phase.bodyComposition.bodyFatPercentage,
-          muscleMassDistribution: phase.bodyComposition.muscleMassDistribution,
-          dailyCalories: phase.nutrition.dailyCalories,
-          proteinGrams: phase.nutrition.macros.protein,
-          carbGrams: phase.nutrition.macros.carbs,
-          fatGrams: phase.nutrition.macros.fats,
-          mealTiming: phase.nutrition.mealTiming,
-          progressionProtocol: phase.progressionProtocol,
-          daysPerWeek: phase.trainingPlan.daysPerWeek,
-          durationWeeks: phase.durationWeeks,
+        {
+          role: "user",
+          content: `Hi! I'm 30, male, 180lbs, 6'0" tall. Looking to build muscle. Can train 5 days/week, 90 mins/session. Athletic background, looking to build muscle while maintaining conditioning.`
+        },
+        {
+          role: "assistant",
+          content: "Great! I have all the information I need. Let me create your program..."
+        }
+      ]);
+      
+      setIsGeneratingProgram(true);
+      
+      // Simulate a brief loading state
+      setTimeout(() => {
+        const transformedProgram = {
+          id: `draft-${Date.now()}`,
+          name: exampleProgram.programName,
+          description: exampleProgram.programDescription,
+          createdBy: userId,
           createdAt: new Date(),
           updatedAt: new Date(),
-          workouts: phase.trainingPlan.workouts.map(workout => ({
-            id: `workout-${workout.day}`,
-            workoutPlanId: `phase-${phase.phase}`,
-            dayNumber: workout.day,
+          user: {
+            id: userId,
+            email: user?.email || "",
             createdAt: new Date(),
             updatedAt: new Date(),
-            exercises: workout.exercises.map(exercise => ({
-              id: `exercise-${exercise.name}-${workout.day}`,
-              workoutId: `workout-${workout.day}`,
-              name: exercise.name,
-              sets: exercise.sets,
-              reps: exercise.reps,
-              restPeriod: exercise.restPeriod,
+            password: null,
+            isPremium: false,
+          },
+          workoutPlans: exampleProgram.phases.map(phase => ({
+            id: `phase-${phase.phase}`,
+            userId,
+            programId: `draft-${Date.now()}`,
+            phase: phase.phase,
+            bodyFatPercentage: phase.bodyComposition.bodyFatPercentage,
+            muscleMassDistribution: phase.bodyComposition.muscleMassDistribution,
+            dailyCalories: phase.nutrition.dailyCalories,
+            proteinGrams: phase.nutrition.macros.protein,
+            carbGrams: phase.nutrition.macros.carbs,
+            fatGrams: phase.nutrition.macros.fats,
+            mealTiming: phase.nutrition.mealTiming,
+            progressionProtocol: phase.progressionProtocol,
+            daysPerWeek: phase.trainingPlan.daysPerWeek,
+            durationWeeks: phase.durationWeeks,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            workouts: phase.trainingPlan.workouts.map(workout => ({
+              id: `workout-${workout.day}`,
+              workoutPlanId: `phase-${phase.phase}`,
+              dayNumber: workout.day,
               createdAt: new Date(),
               updatedAt: new Date(),
+              exercises: workout.exercises.map(exercise => ({
+                id: `exercise-${exercise.name}-${workout.day}`,
+                workoutId: `workout-${workout.day}`,
+                name: exercise.name,
+                sets: exercise.sets,
+                reps: exercise.reps,
+                restPeriod: exercise.restPeriod,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              }))
             }))
           }))
-        }))
-      };
+        };
 
-      setProgram(transformedProgram);
+        setProgram(transformedProgram);
+        setIsGeneratingProgram(false);
+        
+        // Add a message to show it's demo mode
+        setMessages(prev => [...prev, {
+          role: "assistant",
+          content: "Demo program loaded! You can now test program modifications."
+        }]);
+      }, 1000);
+    } catch (error) {
+      console.error("Failed to load demo program:", error);
       setIsGeneratingProgram(false);
-      
-      // Add a message to show it's demo mode
-      setMessages(prev => [...prev, {
-        role: "assistant",
-        content: "Demo program loaded! You can now test program modifications."
-      }]);
-    }, 1000);
+    }
   };
 
   // Update the form section based on whether we have a program
