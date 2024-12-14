@@ -1,6 +1,7 @@
-import { IntakeFormData, ProgramStructure, ProgramData, Phase } from "@/types";
+import { IntakeFormData, ProgramStructure, WorkoutPlan, Workout, Exercise } from "@/types";
 import { generateProgramStructurePrompt, generatePhaseDetailsPrompt } from "@/app/start/prompts";
 import { sendMessage } from "@/utils/chat";
+import { prisma } from "@/lib/prisma";
 
 export async function createProgram(intakeData: IntakeFormData) {
   try {
@@ -119,6 +120,108 @@ export async function modifyProgram(
     };
   } catch (error) {
     console.error('Program modification failed:', error);
+    throw error;
+  }
+}
+
+export async function modifyPhase(
+  userId: string,
+  currentPhase: WorkoutPlan,
+  modificationRequest: string
+) {
+  try {
+    // Get user's intake data
+    const userIntake = await prisma.userIntake.findUnique({
+      where: { userId }
+    });
+
+    if (!userIntake) {
+      throw new Error('User intake data not found');
+    }
+
+    // Convert UserIntake to IntakeFormData
+    const intakeData: IntakeFormData = {
+      sex: userIntake.sex as 'male' | 'female' | 'other',
+      trainingGoal: userIntake.trainingGoal,
+      daysAvailable: userIntake.daysAvailable,
+      dailyBudget: userIntake.dailyBudget || undefined,
+      age: userIntake.age || undefined,
+      weight: userIntake.weight || undefined,
+      height: userIntake.height || undefined,
+      experienceLevel: userIntake.experienceLevel || 'intermediate',
+      trainingPreferences: userIntake.trainingPreferences,
+      additionalInfo: userIntake.additionalInfo || '',
+      modificationRequest
+    };
+
+    // Create a minimal program structure for this phase
+    const programStructure: ProgramStructure = {
+      totalPhases: 1,
+      phaseStructure: [{
+        phase: currentPhase.phase,
+        durationWeeks: currentPhase.durationWeeks,
+        focus: currentPhase.muscleMassDistribution || 'maintain current focus',
+        progressionStrategy: currentPhase.progressionProtocol?.[0] || 'progressive overload',
+        targetIntensity: 'maintain current intensity'
+      }],
+      overallProgression: [],
+      estimatedTimePerWorkout: intakeData.dailyBudget || 60
+    };
+
+    // Generate modified phase details
+    const phasePrompt = generatePhaseDetailsPrompt(
+      intakeData,
+      programStructure,
+      1, // Since we're only dealing with one phase
+      currentPhase,
+      modificationRequest
+    );
+
+    const phaseResult = await sendMessage([{
+      role: 'user',
+      content: phasePrompt
+    }]);
+
+    if (!phaseResult.success) {
+      throw new Error('Failed to generate phase details');
+    }
+
+    const phaseDetails = JSON.parse(
+      phaseResult.data?.content?.[0]?.text || '{}'
+    );
+
+    // Transform the phase details to match WorkoutPlan structure
+    const modifiedPhase: WorkoutPlan = {
+      ...currentPhase,
+      bodyFatPercentage: phaseDetails.bodyComposition.bodyFatPercentage,
+      muscleMassDistribution: phaseDetails.bodyComposition.muscleMassDistribution,
+      dailyCalories: phaseDetails.nutrition.dailyCalories,
+      proteinGrams: phaseDetails.nutrition.macros.protein,
+      carbGrams: phaseDetails.nutrition.macros.carbs,
+      fatGrams: phaseDetails.nutrition.macros.fats,
+      mealTiming: phaseDetails.nutrition.mealTiming,
+      progressionProtocol: phaseDetails.progressionProtocol,
+      daysPerWeek: phaseDetails.trainingPlan.daysPerWeek,
+      workouts: phaseDetails.trainingPlan.workouts.map((workout: Workout) => ({
+        id: `workout-${workout.day}`,
+        workoutPlanId: currentPhase.id,
+        dayNumber: workout.day,
+        exercises: workout.exercises.map((exercise: Exercise) => ({
+          id: `exercise-${exercise.name}-${workout.day}`,
+          workoutId: `workout-${workout.day}`,
+          name: exercise.name,
+          sets: exercise.sets,
+          reps: exercise.reps,
+          restPeriod: exercise.restPeriod,
+          category: exercise.category,
+          difficulty: exercise.difficulty
+        }))
+      }))
+    };
+
+    return modifiedPhase;
+  } catch (error) {
+    console.error('Phase modification failed:', error);
     throw error;
   }
 } 

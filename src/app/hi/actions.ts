@@ -1,11 +1,10 @@
 'use server';
 
-import { Message, ExtractedData, IntakeFormData, ChatResponse, Program, ProgramFullDisplay } from "@/types";
-// import { revalidatePath } from "next/cache";
+import { Message, ExtractedData, IntakeFormData, WorkoutPlan, Program } from "@/types";
 import { sendMessage } from "@/utils/chat";
-import { generateInitialProgramPrompt, generateModificationPrompt } from "../start/prompts";
-import { createProgram, modifyProgram } from "./services/programCreation";
+import { createProgram } from "./services/programCreation";
 import { prisma } from "@/lib/prisma";
+import { modifyPhase } from "./services/programCreation";
 
 // Helper to convert extracted data to IntakeFormData format
 function convertToIntakeFormat(extractedData: any): IntakeFormData {
@@ -35,8 +34,10 @@ export async function processUserMessage(
   extractedData: ExtractedData | null = null,
   generateProgramDirectly: boolean = false
 ) {
+  console.log("🚀 ~ processUserMessage ~ extractedData:", extractedData)
   try {
     if (generateProgramDirectly) {
+      console.log("generateProgramDirectly");
       const intakeData = convertToIntakeFormat(extractedData);
       
       // Save intake data using existing UserIntake model
@@ -141,6 +142,7 @@ export async function processUserMessage(
     }
 
     const aiResponse = JSON.parse(result.data?.content?.[0]?.text || '{}');
+    console.log("🚀 ~ aiResponse:", aiResponse)
 
     return {
       success: true,
@@ -162,72 +164,31 @@ export async function processUserMessage(
 export async function processModificationRequest(
   messages: Message[],
   userId: string,
-  currentProgram: ProgramFullDisplay,
-  modificationRequest: string
+  currentProgram: Program,
+  modificationRequest: string,
+  requestedPhase: number = 1,
 ) {
   try {
-    const intakeData: IntakeFormData = {
-      sex: 'male',
-      trainingGoal: currentProgram.workoutPlans[0].muscleMassDistribution,
-      daysAvailable: currentProgram.workoutPlans[0].daysPerWeek,
-      dailyBudget: 60,
-      trainingPreferences: [],
-      additionalInfo: '',
-      modificationRequest: modificationRequest,
-      experienceLevel: "intermediate",
-    };
 
     // Get modified program from Claude
-    const modifiedProgram = await modifyProgram(
-      currentProgram,
-      modificationRequest,
-      intakeData
-    );
+    // const modifiedProgram = await modifyProgram(
+    //   currentProgram,
+    //   modificationRequest,
+    //   intakeData
+    // );
 
-    // Transform to DB structure - exactly the same as initial program creation
-    const transformedProgram = {
-      ...currentProgram, // Keep the IDs and metadata
-      name: modifiedProgram.programName,
-      description: modifiedProgram.programDescription,
-      updatedAt: new Date(),
-      workoutPlans: modifiedProgram.phases.map((phase: any, index: number) => ({
-        id: `phase-${phase.phase}`,
-        userId,
-        programId: currentProgram.id,
-        phase: phase.phase,
-        bodyFatPercentage: phase.bodyComposition?.bodyFatPercentage,
-        muscleMassDistribution: phase.bodyComposition?.muscleMassDistribution,
-        dailyCalories: phase.nutrition?.dailyCalories,
-        proteinGrams: phase.nutrition?.macros?.protein,
-        carbGrams: phase.nutrition?.macros?.carbs,
-        fatGrams: phase.nutrition?.macros?.fats,
-        mealTiming: phase.nutrition?.mealTiming,
-        progressionProtocol: phase.progressionProtocol,
-        daysPerWeek: phase.trainingPlan?.daysPerWeek,
-        durationWeeks: phase.durationWeeks,
-        updatedAt: new Date(),
-        workouts: phase.trainingPlan?.workouts?.map((workout: any) => ({
-          id: `workout-${workout.day}`,
-          workoutPlanId: `phase-${phase.phase}`,
-          dayNumber: workout.day,
-          updatedAt: new Date(),
-          exercises: workout.exercises.map((exercise: any) => ({
-            id: `exercise-${exercise.name}-${workout.day}`,
-            workoutId: `workout-${workout.day}`,
-            name: exercise.name,
-            sets: exercise.sets,
-            reps: exercise.reps,
-            restPeriod: exercise.restPeriod,
-            updatedAt: new Date(),
-          }))
-        }))
-      }))
-    };
+    const programWithModifiedPhase = await processPhaseModification(
+      userId,
+      currentProgram,
+      requestedPhase,
+      modificationRequest,
+    );
+    console.log("🚀 ~ programWithModifiedPhase:", JSON.stringify(programWithModifiedPhase, null, 2))
 
     return {
       success: true,
       message: "Program updated successfully with your requested changes.",
-      program: transformedProgram,
+      program: programWithModifiedPhase,
       needsClarification: false
     };
 
@@ -272,5 +233,51 @@ export async function saveDemoIntake(userId: string) {
   } catch (error) {
     console.error('Failed to save demo intake:', error);
     return { success: false };
+  }
+}
+
+export async function processPhaseModification(
+  userId: string,
+  currentProgram: Program,
+  phaseNumber: number,
+  modificationRequest: string
+) {
+  try {
+    const currentPhase = currentProgram.workoutPlans.find((p: WorkoutPlan) => p.phase === phaseNumber);
+    if (!currentPhase) {
+      throw new Error(`Phase ${phaseNumber} not found`);
+    }
+    console.log("🚀 ~ currentPhase:", currentPhase)
+
+    // Get modified phase from Claude
+    const modifiedPhase = await modifyPhase(
+      userId,
+      currentPhase,
+      modificationRequest
+    );
+    console.log("🚀 ~ modifiedPhase:", modifiedPhase)
+
+    // Create a new program object with the modified phase
+    const transformedProgram = {
+      ...currentProgram,
+      workoutPlans: currentProgram.workoutPlans.map((phase: WorkoutPlan) => 
+        phase.phase === phaseNumber ? modifiedPhase : phase
+      )
+    };
+
+    return {
+      success: true,
+      message: `Phase ${phaseNumber} has been updated with your requested changes.`,
+      program: transformedProgram,
+      needsClarification: false
+    };
+
+  } catch (error) {
+    console.error("Failed to process phase modification request:", error);
+    return {
+      success: false,
+      message: "I encountered an error while processing your request. Please try again.",
+      needsClarification: true
+    };
   }
 } 

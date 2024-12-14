@@ -7,7 +7,7 @@ import { processUserMessage } from "../actions";
 import { ProgramDisplay } from "@/app/components/ProgramDisplay";
 import { GeneratingProgramTransition } from "./GeneratingProgramTransition";
 import { SAMPLE_PROFILES } from "@/app/components/IntakeForm";
-import { ProgramFullDisplay } from "@/app/start/types";
+import { Program } from "@/types";
 import { User } from "@prisma/client";
 import { getRandomWelcomeMessage } from "../utils/welcomeMessages";
 import { createNewProgram } from "@/app/start/actions";
@@ -27,7 +27,7 @@ export function ConversationalInterface({ userId, user }: ConversationalInterfac
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [extractedData, setExtractedData] = useState<ExtractedData | null>(null);
-  const [program, setProgram] = useState<ProgramFullDisplay | null>(null);
+  const [program, setProgram] = useState<Program | null>(null);
   const [isGeneratingProgram, setIsGeneratingProgram] = useState(false);
   const [isUpsellOpen, setIsUpsellOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -85,9 +85,11 @@ export function ConversationalInterface({ userId, user }: ConversationalInterfac
           program,
           inputValue
         );
-        
+        console.log("🚀 ~ handleSubmit ~ result:", JSON.stringify(result, null, 2))
         if (result.success) {
+          console.log("🚀 ~ handleSubmit ~ result.success:", result.success)
           if (result.needsClarification) {
+            console.log("🚀 ~ handleSubmit ~ result.needsClarification:", result.needsClarification)
             // AI needs more information
             setIsGeneratingProgram(false);
             setTimeout(() => {
@@ -98,13 +100,14 @@ export function ConversationalInterface({ userId, user }: ConversationalInterfac
               setIsTyping(false);
             }, Math.random() * 1000 + 500);
           } else {
+            console.log("🚀 ~ setTimeout ~ result.program:", result.program)
             // AI has modified the program
             setTimeout(() => {
               setMessages(prev => [...prev, { 
                 role: "assistant", 
                 content: `I've made the requested changes: ${result.message}` 
               }]);
-              setProgram(result.program);
+              setProgram(result.program ? result.program.program as Program : null);
               setIsGeneratingProgram(false);
               setIsTyping(false);
             }, Math.random() * 1000 + 500);
@@ -118,6 +121,7 @@ export function ConversationalInterface({ userId, user }: ConversationalInterfac
           }]);
         }
       } else {
+        console.log("no program yet");
         // First check if this response completes our data gathering
         const result = await processUserMessage([...messages, userMessage], userId);
         
@@ -140,20 +144,18 @@ export function ConversationalInterface({ userId, user }: ConversationalInterfac
 
             // Generate the program
             const programResult = await processUserMessage([...messages, userMessage], userId, result.extractedData, true);
+            console.log("🚀 ~ handleSubmit ~ programResult:", JSON.stringify(programResult, null, 2))
             if (programResult.success && programResult.program) {
+              console.log("🚀 ~ handleSubmit ~ programResult.program:", programResult.program)
               // Transform the AI response to match DB structure
               const transformedProgram = {
                 id: `draft-${Date.now()}`, // Temporary ID for draft program
                 name: programResult.program.programName,
                 description: programResult.program.programDescription,
                 createdBy: userId,
-                // createdAt: new Date(),
-                // updatedAt: new Date(),
                 user: {
                   id: userId,
                   email: user?.email || "",
-                  // createdAt: new Date(),
-                  // updatedAt: new Date(),
                 },
                 workoutPlans: programResult.program.phases.map(phase => ({
                   id: `phase-${phase.phase}`,
@@ -170,14 +172,10 @@ export function ConversationalInterface({ userId, user }: ConversationalInterfac
                   progressionProtocol: phase.progressionProtocol,
                   daysPerWeek: phase.trainingPlan.daysPerWeek,
                   durationWeeks: phase.durationWeeks,
-                  // createdAt: new Date(),
-                  // updatedAt: new Date(),
                   workouts: phase.trainingPlan.workouts.map(workout => ({
                     id: `workout-${workout.day}`,
                     workoutPlanId: `phase-${phase.phase}`,
                     dayNumber: workout.day,
-                    // createdAt: new Date(),
-                    // updatedAt: new Date(),
                     exercises: workout.exercises.map(exercise => ({
                       id: `exercise-${exercise.name}-${workout.day}`,
                       workoutId: `workout-${workout.day}`,
@@ -185,8 +183,6 @@ export function ConversationalInterface({ userId, user }: ConversationalInterfac
                       sets: exercise.sets,
                       reps: exercise.reps,
                       restPeriod: exercise.restPeriod,
-                      // createdAt: new Date(),
-                      // updatedAt: new Date(),
                     }))
                   }))
                 }))

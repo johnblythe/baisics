@@ -4,7 +4,7 @@ export interface Program {
   id: string;
   name: string;
   description?: string;
-  workoutPlans: WorkoutPlan[];
+  workoutPlans: WorkoutPlan[]; // phases
   user: User;
 }
 
@@ -59,7 +59,7 @@ export interface Nutrition {
     carbs: number;
     fats: number;
   };
-  mealTiming: string[];
+  mealTiming?: string[];
 }
 
 export interface WorkoutPlan {
