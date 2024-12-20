@@ -2,7 +2,7 @@
 
 import { Message, ExtractedData, IntakeFormData, WorkoutPlan, Program } from "@/types";
 import { sendMessage } from "@/utils/chat";
-import { createProgram } from "./services/programCreation";
+import { analyzeModificationRequest, createProgram } from "./services/programCreation";
 import { prisma } from "@/lib/prisma";
 import { modifyPhase } from "./services/programCreation";
 
@@ -169,28 +169,78 @@ export async function processModificationRequest(
   requestedPhase: number = 1,
 ) {
   try {
+    // First analyze the modification request
+    const analysis = await analyzeModificationRequest(modificationRequest);
+    console.log("🚀 ~ analysis:", analysis)
+    
+    // If confidence is low, ask for clarification
+    if (analysis.confidence < 0.7) {
+      return {
+        success: true,
+        message: "I'm not quite sure what changes you'd like to make. Could you please be more specific?",
+        needsClarification: true
+      };
+    }
 
-    // Get modified program from Claude
-    // const modifiedProgram = await modifyProgram(
-    //   currentProgram,
-    //   modificationRequest,
-    //   intakeData
-    // );
+    // If there are multiple requests, handle them one by one
+    if (analysis.type === 'multiple' && analysis.subRequests) {
+      let modifiedProgram = currentProgram;
+      const modifications = [];
 
-    const programWithModifiedPhase = await processPhaseModification(
+      for (const request of analysis.subRequests) {
+        const result = await processPhaseModification(
+          userId,
+          modifiedProgram,
+          requestedPhase,
+          request
+        );
+        if (result.success) {
+          modifiedProgram = result.program as Program;
+          modifications.push(result.message);
+        }
+      }
+
+      return {
+        success: true,
+        message: modifications.join(' '),
+        program: modifiedProgram,
+        needsClarification: false
+      };
+    }
+
+    // If the modification affects all phases, apply to each phase
+    if (analysis.affectsAllPhases) {
+      let modifiedProgram = currentProgram;
+      const modifications = [];
+
+      for (let phase = 1; phase <= currentProgram.workoutPlans.length; phase++) {
+        const result = await processPhaseModification(
+          userId,
+          modifiedProgram,
+          phase,
+          modificationRequest
+        );
+        if (result.success) {
+          modifiedProgram = result.program as Program;
+          modifications.push(result.message);
+        }
+      }
+
+      return {
+        success: true,
+        message: "I've applied your changes across all phases of the program.",
+        program: modifiedProgram,
+        needsClarification: false
+      };
+    }
+
+    // Otherwise, just modify the requested phase
+    return processPhaseModification(
       userId,
       currentProgram,
       requestedPhase,
-      modificationRequest,
+      modificationRequest
     );
-    console.log("🚀 ~ programWithModifiedPhase:", JSON.stringify(programWithModifiedPhase, null, 2))
-
-    return {
-      success: true,
-      message: "Program updated successfully with your requested changes.",
-      program: programWithModifiedPhase,
-      needsClarification: false
-    };
 
   } catch (error) {
     console.error("Failed to process modification request:", error);

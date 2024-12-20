@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Message, IntakeFormData, ExtractedData, ChatResponse } from "@/types";
+import { Message, ExtractedData } from "../types";
 import { motion, AnimatePresence } from "framer-motion";
 import { processUserMessage } from "../actions";
 import { ProgramDisplay } from "@/app/components/ProgramDisplay";
 import { GeneratingProgramTransition } from "./GeneratingProgramTransition";
 import { SAMPLE_PROFILES } from "@/app/components/IntakeForm";
-import { Program } from "@/types";
+import { Program, ProgramAIResponse } from "@/types/program";
 import { User } from "@prisma/client";
 import { getRandomWelcomeMessage } from "../utils/welcomeMessages";
 import { createNewProgram } from "@/app/start/actions";
@@ -15,7 +15,7 @@ import { processModificationRequest } from "../actions";
 import exampleProgram from '../utils/example.json';
 import { createAnonUser, getUser } from "@/app/start/actions";
 import { v4 as uuidv4 } from "uuid";
-import { saveDemoIntake } from "../actions";
+import { transformAIResponseToProgram } from "../services/programCreation";
 
 interface ConversationalInterfaceProps {
   userId: string;
@@ -147,48 +147,8 @@ export function ConversationalInterface({ userId, user }: ConversationalInterfac
             console.log("🚀 ~ handleSubmit ~ programResult:", JSON.stringify(programResult, null, 2))
             if (programResult.success && programResult.program) {
               console.log("🚀 ~ handleSubmit ~ programResult.program:", programResult.program)
-              // Transform the AI response to match DB structure
-              const transformedProgram = {
-                id: `draft-${Date.now()}`, // Temporary ID for draft program
-                name: programResult.program.programName,
-                description: programResult.program.programDescription,
-                createdBy: userId,
-                user: {
-                  id: userId,
-                  email: user?.email || "",
-                },
-                workoutPlans: programResult.program.phases.map(phase => ({
-                  id: `phase-${phase.phase}`,
-                  userId,
-                  programId: `draft-${Date.now()}`,
-                  phase: phase.phase,
-                  bodyFatPercentage: phase.bodyComposition.bodyFatPercentage,
-                  muscleMassDistribution: phase.bodyComposition.muscleMassDistribution,
-                  dailyCalories: phase.nutrition.dailyCalories,
-                  proteinGrams: phase.nutrition.macros.protein,
-                  carbGrams: phase.nutrition.macros.carbs,
-                  fatGrams: phase.nutrition.macros.fats,
-                  mealTiming: phase.nutrition.mealTiming,
-                  progressionProtocol: phase.progressionProtocol,
-                  daysPerWeek: phase.trainingPlan.daysPerWeek,
-                  durationWeeks: phase.durationWeeks,
-                  workouts: phase.trainingPlan.workouts.map(workout => ({
-                    id: `workout-${workout.day}`,
-                    workoutPlanId: `phase-${phase.phase}`,
-                    dayNumber: workout.day,
-                    exercises: workout.exercises.map(exercise => ({
-                      id: `exercise-${exercise.name}-${workout.day}`,
-                      workoutId: `workout-${workout.day}`,
-                      name: exercise.name,
-                      sets: exercise.sets,
-                      reps: exercise.reps,
-                      restPeriod: exercise.restPeriod,
-                    }))
-                  }))
-                }))
-              };
-
-              setProgram(transformedProgram as ProgramFullDisplay);
+              const transformedProgram = transformAIResponseToProgram(programResult.program as ProgramAIResponse, userId);
+              setProgram(transformedProgram);
               setIsGeneratingProgram(false);
             }
           } else {
@@ -255,7 +215,7 @@ export function ConversationalInterface({ userId, user }: ConversationalInterfac
     try {
       const savedProgram = await createNewProgram(program, userId);
       if (savedProgram) {
-        setProgram(savedProgram);
+        setProgram(savedProgram.program as Program);
         setMessages(prev => [...prev, {
           role: "assistant",
           content: "Your program has been saved! You can now access it anytime from your dashboard."
@@ -458,55 +418,112 @@ export function ConversationalInterface({ userId, user }: ConversationalInterfac
   };
 
   return (
-    <div className="flex flex-col min-h-[80vh] bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 rounded-lg shadow-lg">
-      {program ? (
-        <ProgramDisplay 
-          program={program} 
-          userEmail={user?.email}
-          onRequestUpsell={handleOpenUpsellModal}
-        />
-      ) : isGeneratingProgram ? (
-        <GeneratingProgramTransition />
-      ) : (
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
-          <AnimatePresence>
-            {messages.map((message, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className={`flex ${message.role === "assistant" ? "justify-start" : "justify-end"}`}
-              >
-                <div
-                  className={`max-w-[85%] p-6 rounded-2xl ${
-                    message.role === "assistant"
-                      ? "bg-white dark:bg-gray-800 shadow-md"
-                      : "bg-blue-500 text-white"
-                  }`}
+    <div className={`min-h-[80vh] transition-all duration-300 ${
+      program ? 'flex' : 'flex flex-col'
+    } bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 rounded-lg shadow-lg`}>
+      
+      {/* Chat Section */}
+      <div className={`${
+        program ? 'w-1/2 border-r border-gray-200 dark:border-gray-700' : 'flex-1'
+      } flex flex-col`}>
+        {!program && !isGeneratingProgram && (
+          <div className="flex-1 overflow-y-auto p-6 space-y-6">
+            <AnimatePresence>
+              {messages.map((message, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className={`flex ${message.role === "assistant" ? "justify-start" : "justify-end"}`}
                 >
-                  <p className="whitespace-pre-wrap text-lg leading-relaxed">{message.content}</p>
-                </div>
+                  <div
+                    className={`max-w-[85%] p-6 rounded-2xl ${
+                      message.role === "assistant"
+                        ? "bg-white dark:bg-gray-800 shadow-md"
+                        : "bg-blue-500 text-white"
+                    }`}
+                  >
+                    <p className="whitespace-pre-wrap text-lg leading-relaxed">{message.content}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+            
+            {isTyping && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex items-center space-x-2 text-gray-500"
+              >
+                <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" />
+                <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }} />
+                <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: "0.4s" }} />
               </motion.div>
-            ))}
-          </AnimatePresence>
-          
-          {isTyping && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex items-center space-x-2 text-gray-500"
-            >
-              <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" />
-              <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }} />
-              <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: "0.4s" }} />
-            </motion.div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+        )}
+        {program && (
+          <div className="flex-1 overflow-y-auto p-6 space-y-6">
+            <AnimatePresence>
+              {messages.map((message, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className={`flex ${message.role === "assistant" ? "justify-start" : "justify-end"}`}
+                >
+                  <div
+                    className={`max-w-[85%] p-6 rounded-2xl ${
+                      message.role === "assistant"
+                        ? "bg-white dark:bg-gray-800 shadow-md"
+                        : "bg-blue-500 text-white"
+                    }`}
+                  >
+                    <p className="whitespace-pre-wrap text-lg leading-relaxed">{message.content}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+            
+            {isTyping && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex items-center space-x-2 text-gray-500"
+              >
+                <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" />
+                <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }} />
+                <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: "0.4s" }} />
+              </motion.div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+        )}
+        {renderFormSection()}
+      </div>
+
+      {/* Program Section */}
+      {program && (
+        <motion.div 
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="w-1/2 overflow-y-auto"
+        >
+          <ProgramDisplay 
+            program={program} 
+            userEmail={user?.email}
+            onRequestUpsell={handleOpenUpsellModal}
+          />
+        </motion.div>
       )}
 
-      {renderFormSection()}
+      {/* Program Generation Transition */}
+      {isGeneratingProgram && !program && (
+        <GeneratingProgramTransition />
+      )}
     </div>
   );
 } 

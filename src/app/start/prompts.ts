@@ -1,4 +1,4 @@
-import { IntakeFormData, AnalysisRequirements, ProgramStructure } from '@/types';
+import { IntakeFormData, AnalysisRequirements, ProgramStructure, ModificationAnalysis, WorkoutPlan } from '@/types';
 
 const formatClientData = (intakeData: IntakeFormData) => `
 - Sex: ${intakeData.sex || 'unspecified'}
@@ -162,8 +162,8 @@ ${formatExercises(workout.exercises)}`;
 export const defaultAnalysisRequirements: AnalysisRequirements = {
   matchClientPreferences: true,
   phaseRequirements: {
-    minPhases: 3,
-    maxPhases: 4,
+    minPhases: 1,
+    maxPhases: 1,
     minWeeksPerPhase: 4,
     maxWeeksPerPhase: 6
   },
@@ -202,8 +202,9 @@ export const generatePhaseDetailsPrompt = (
   intakeData: IntakeFormData,
   programStructure: ProgramStructure,
   phaseNumber: number,
-  currentPhase?: any,
-  modificationRequest?: string
+  currentPhase?: WorkoutPlan,
+  modificationRequest?: string,
+  analysis?: ModificationAnalysis
 ) => {
   const phase = programStructure.phaseStructure[phaseNumber - 1];
   
@@ -234,6 +235,32 @@ export const generatePhaseDetailsPrompt = (
     prompt += `\n
   MODIFICATION REQUEST: "${modificationRequest}"
   
+  MODIFICATION ANALYSIS:
+  - Type: ${analysis?.type}
+  - Affects All Phases: ${analysis?.affectsAllPhases}
+  ${analysis?.type === 'exercises' ? `
+  - Exercise Changes:
+    * Remove: ${analysis.details.exerciseChanges?.exercisesToRemove?.join(', ') || 'none'}
+    * Add: ${analysis.details.exerciseChanges?.exercisesToAdd?.join(', ') || 'none'}
+    * Modify: ${Object.entries(analysis.details.exerciseChanges?.exerciseModifications || {})
+      .map(([exercise, mods]) => 
+        `${exercise} (${Object.entries(mods)
+          .map(([key, value]) => `${key}: ${value}`)
+          .join(', ')})`
+      ).join(', ') || 'none'}`
+    : ''}
+  ${analysis?.type === 'nutrition' ? `
+  - Nutrition Changes:
+    * Calories: ${analysis.details.nutritionChanges?.calories ? 'yes' : 'no'}
+    * Macros: ${analysis.details.nutritionChanges?.macros ? 'yes' : 'no'}
+    * Meal Timing: ${analysis.details.nutritionChanges?.mealTiming ? 'yes' : 'no'}`
+    : ''}
+  ${analysis?.type === 'capacity' ? `
+  - Capacity Changes:
+    * Days per Week: ${analysis.details.capacityChanges?.daysPerWeek || 'unchanged'}
+    * Time per Session: ${analysis.details.capacityChanges?.timePerSession || 'unchanged'}`
+    : ''}
+  
   CURRENT PHASE DETAILS:
   - Current Body Fat Target: ${currentPhase.bodyFatPercentage}%
   - Current Focus: ${currentPhase.muscleMassDistribution}
@@ -249,9 +276,11 @@ export const generatePhaseDetailsPrompt = (
       : currentPhase.progressionProtocol || 'not specified'}
   
   Maintain the core structure while incorporating the requested changes.
-  If no nutrition changes are requested, keep the current nutrition values.`;
+  If no nutrition changes are requested, keep the current nutrition values.
+  If no exercise changes are requested, keep the current exercises.
+  If no capacity changes are requested, keep the current schedule.`;
   }
-  
+
   prompt += `\n
   Return a JSON object for this phase matching this structure:
   {

@@ -1,26 +1,50 @@
 import { User } from "@prisma/client";
 
+// Base program interface that matches database schema
 export interface Program {
   id: string;
   name: string;
   description?: string;
-  workoutPlans: WorkoutPlan[]; // phases
+  workoutPlans: WorkoutPlan[]; // Each workout plan represents a phase
   user: User;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
-export interface ProgramData {
+// Interface for AI response format
+export interface ProgramAIResponse {
   programName: string;
   programDescription: string;
-  phases: Phase[];
+  phases: PhaseData[]; // AI returns phases which we transform to workoutPlans
 }
 
-export interface Phase {
+// Represents a single phase's data from AI
+export interface PhaseData {
   phase: number;
   durationWeeks: number;
   bodyComposition: BodyComposition;
   trainingPlan: TrainingPlan;
   nutrition: Nutrition;
   progressionProtocol: string[];
+}
+
+// Database and display model for a workout plan (phase)
+export interface WorkoutPlan {
+  id: string;
+  phase: number;
+  bodyFatPercentage?: number;
+  muscleMassDistribution?: string;
+  dailyCalories?: number;
+  proteinGrams?: number;
+  carbGrams?: number;
+  fatGrams?: number;
+  mealTiming?: string[];
+  progressionProtocol?: string[];
+  daysPerWeek: number;
+  workouts: Workout[];
+  durationWeeks: number;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface BodyComposition {
@@ -39,6 +63,8 @@ export interface Workout {
   dayNumber?: number;
   workoutPlanId?: string;
   exercises: Exercise[];
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface Exercise {
@@ -50,6 +76,8 @@ export interface Exercise {
   restPeriod: string;
   category?: string;
   difficulty?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface Nutrition {
@@ -62,27 +90,34 @@ export interface Nutrition {
   mealTiming?: string[];
 }
 
-export interface WorkoutPlan {
-  id: string;
-  phase: number;
-  bodyFatPercentage?: number;
-  muscleMassDistribution?: string;
-  dailyCalories?: number;
-  proteinGrams?: number;
-  carbGrams?: number;
-  fatGrams?: number;
-  mealTiming?: string[];
-  progressionProtocol?: string[];
-  daysPerWeek: number;
-  workouts: Workout[];
-  durationWeeks: number;
-  contextRequest?: Array<{
-    key: string;
-    reason?: string;
-    importance?: string;
-  }>;
-}
+// Type for program modifications
+export type ModificationType = 'exercises' | 'nutrition' | 'capacity' | 'multiple';
 
-// Type guards
-export type ValidPhaseCount<T extends Phase[]> = T extends { length: 3 | 4 } ? T : never;
-export type ValidWorkoutCount<T extends Workout[]> = T extends { length: 3 | 4 } ? T : never; 
+export interface ModificationAnalysis {
+  type: ModificationType;
+  details: {
+    exerciseChanges?: {
+      exercisesToRemove?: string[];
+      exercisesToAdd?: string[];
+      exerciseModifications?: {
+        [key: string]: {
+          sets?: number;
+          reps?: number;
+          restPeriod?: string;
+        };
+      };
+    };
+    nutritionChanges?: {
+      calories?: boolean;
+      macros?: boolean;
+      mealTiming?: boolean;
+    };
+    capacityChanges?: {
+      daysPerWeek?: number;
+      timePerSession?: number;
+    };
+  };
+  affectsAllPhases: boolean;
+  subRequests?: string[];
+  confidence: number;
+}
