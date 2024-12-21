@@ -1,56 +1,133 @@
-import { IntakeFormData, ProgramStructure, WorkoutPlan, Workout, Exercise } from "@/types";
-import { generateProgramStructurePrompt, generatePhaseDetailsPrompt } from "@/app/start/prompts";
+import { IntakeFormData } from "@/types";
+import { newPrompt } from "@/app/start/prompts";
 import { sendMessage } from "@/utils/chat";
 import { prisma } from "@/lib/prisma";
+import type { Message } from '@anthropic-ai/sdk/src/resources/messages.js';
+
+interface AIWorkout {
+  day: number;
+  focus: string;
+  warmup: {
+    duration: number;
+    activities: string[];
+  };
+  exercises: Array<{
+    name: string;
+    sets: number;
+    reps: number;
+    restPeriod: string;
+    category: string;
+    difficulty: string;
+    formCues: string[];
+    modifications: {
+      easier: string;
+      harder: string;
+    };
+  }>;
+  cooldown: {
+    duration: number;
+    activities: string[];
+  };
+}
+
+interface AIResponse {
+  requiredProgramStructure: {
+    durationWeeks: number;
+    phaseExplanation: string;
+    phaseExpectations: string[];
+    phaseKeyPoints: string[];
+  };
+  workoutRequirements: {
+    daysPerWeek: number;
+  };
+  workoutStructure: {
+    workouts: AIWorkout[];
+  };
+  nutritionGuidelines: {
+    dailyCalories: number;
+    macros: {
+      protein: string;
+      carbs: string;
+      fats: string;
+    };
+  };
+  progressionRules: string[];
+  promptInstructions: string;
+}
+
+interface SendMessageResponse {
+  success: boolean;
+  data?: Message;
+  error?: string;
+}
 
 export async function createProgram(intakeData: IntakeFormData) {
   try {
-    const structurePrompt = generateProgramStructurePrompt(intakeData);
-    console.log("🚀 ~ createProgram ~ structurePrompt:", structurePrompt)
-    const structureResult = await sendMessage([{
+    const prompt = newPrompt(intakeData);
+    console.log("🚀 ~ createProgram ~ prompt:", prompt)
+    
+    const result = await sendMessage([{
       role: 'user',
-      content: structurePrompt
-    }]);
-    console.log("🚀 ~ createProgram ~ structureResult:", structureResult)
+      content: prompt
+    }]) as SendMessageResponse;
 
-    if (!structureResult.success) {
-      throw new Error('Failed to generate program structure');
+    if (!result.success || !result.data?.content?.[0]) {
+      throw new Error('Failed to generate program');
     }
 
-    const programStructure: ProgramStructure = JSON.parse(
-      structureResult.data?.content?.[0]?.text || '{}'
-    );
-
-    const phases = [];
-    for (let i = 1; i <= 1; i++) {
-      const phasePrompt = generatePhaseDetailsPrompt(
-        intakeData,
-        programStructure,
-        i
-      );
-      console.log("🚀 ~ createProgram ~ phasePrompt:", phasePrompt)
-
-      const phaseResult = await sendMessage([{
-        role: 'user',
-        content: phasePrompt
-      }]);
-      console.log("🚀 ~ createProgram ~ phaseResult:", JSON.stringify(phaseResult.data?.content?.[0]?.text, null, 2))
-
-      if (!phaseResult.success) {
-        throw new Error(`Failed to generate phase ${i} details`);
-      }
-
-      const phaseDetails = JSON.parse(
-        phaseResult.data?.content?.[0]?.text || '{}'
-      );
-      phases.push(phaseDetails);
+    const responseText = result.data.content[0].text;
+    console.log("🚀 ~ createProgram ~ responseText:", responseText)
+    if (!responseText) {
+      throw new Error('Invalid response format');
     }
 
-    // get a cooler name from the AI
+    const programInstructions = JSON.parse(responseText) as AIResponse;
+
+    // Transform the AI response into our program structure
+    const phase = {
+      phase: 1,
+      durationWeeks: programInstructions.requiredProgramStructure.durationWeeks,
+      phaseExplanation: programInstructions.requiredProgramStructure.phaseExplanation,
+      phaseExpectations: programInstructions.requiredProgramStructure.phaseExpectations,
+      phaseKeyPoints: programInstructions.requiredProgramStructure.phaseKeyPoints,
+      bodyComposition: {
+        bodyFatPercentage: 0, // Will be populated when user adds measurements
+        muscleMassDistribution: "Balanced" // Default value
+      },
+      trainingPlan: {
+        daysPerWeek: programInstructions.workoutRequirements.daysPerWeek,
+        workouts: programInstructions.workoutStructure.workouts.map((workout) => ({
+          day: workout.day,
+          focus: workout.focus,
+          warmup: workout.warmup,
+          cooldown: workout.cooldown,
+          exercises: workout.exercises.map((exercise) => ({
+            name: exercise.name,
+            sets: exercise.sets,
+            reps: exercise.reps,
+            restPeriod: exercise.restPeriod,
+            category: exercise.category,
+            difficulty: exercise.difficulty,
+            formCues: exercise.formCues,
+            modifications: exercise.modifications
+          }))
+        }))
+      },
+      nutrition: {
+        dailyCalories: programInstructions.nutritionGuidelines.dailyCalories,
+        macros: {
+          protein: programInstructions.nutritionGuidelines.macros.protein,
+          carbs: programInstructions.nutritionGuidelines.macros.carbs,
+          fats: programInstructions.nutritionGuidelines.macros.fats
+        }
+      },
+      progressionProtocol: programInstructions.progressionRules
+    };
+
     return {
-      programName: `${intakeData.trainingGoal} Focus Program`,
-      programDescription: programStructure.overallProgression.join('. '),
-      phases
+      programName: `${intakeData.trainingGoal} Focus Program`, // @todo: better name, from AI
+      programDescription: programInstructions.promptInstructions,
+      phases: [phase]
     };
   } catch (error) {
     console.error('Program creation failed:', error);
@@ -65,7 +142,7 @@ export async function modifyProgram(
 ) {
   try {
     // Step 1: Generate modification structure
-    const structurePrompt = generateProgramStructurePrompt(intakeData);
+    const structurePrompt = newPrompt(intakeData);
     const structureResult = await sendMessage([{
       role: 'user',
       content: structurePrompt
@@ -226,4 +303,57 @@ export async function modifyPhase(
     console.error('Phase modification failed:', error);
     throw error;
   }
-} 
+}
+
+// Helper function to transform AI response to Program format
+export function transformAIResponseToProgram(aiResponse: ProgramAIResponse, userId: string): Program {
+  return {
+    id: `draft-${Date.now()}`,
+    name: aiResponse.programName,
+    description: aiResponse.programDescription,
+    createdBy: userId,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    user: {
+      id: userId,
+      email: "",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      password: null,
+      isPremium: false,
+    },
+    workoutPlans: aiResponse.phases.map(phase => ({
+      id: `phase-${phase.phase}`,
+      phase: phase.phase,
+      bodyFatPercentage: phase.bodyComposition.bodyFatPercentage,
+      muscleMassDistribution: phase.bodyComposition.muscleMassDistribution,
+      dailyCalories: phase.nutrition.dailyCalories,
+      proteinGrams: phase.nutrition.macros.protein,
+      carbGrams: phase.nutrition.macros.carbs,
+      fatGrams: phase.nutrition.macros.fats,
+      mealTiming: phase.nutrition.mealTiming,
+      progressionProtocol: phase.progressionProtocol,
+      daysPerWeek: phase.trainingPlan.daysPerWeek,
+      durationWeeks: phase.durationWeeks,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      workouts: phase.trainingPlan.workouts.map(workout => ({
+        id: `workout-${workout.day}`,
+        workoutPlanId: `phase-${phase.phase}`,
+        dayNumber: workout.day,
+        exercises: workout.exercises.map(exercise => ({
+          id: `exercise-${exercise.name}-${workout.day}`,
+          workoutId: `workout-${workout.day}`,
+          name: exercise.name,
+          sets: exercise.sets,
+          reps: exercise.reps,
+          restPeriod: exercise.restPeriod,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }))
+    }))
+  };
+}

@@ -34,7 +34,6 @@ export async function processUserMessage(
   extractedData: ExtractedData | null = null,
   generateProgramDirectly: boolean = false
 ) {
-  console.log("🚀 ~ processUserMessage ~ extractedData:", extractedData)
   try {
     if (generateProgramDirectly) {
       const intakeData = convertToIntakeFormat(extractedData);

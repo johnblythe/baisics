@@ -175,6 +175,139 @@ export const defaultAnalysisRequirements: AnalysisRequirements = {
 
 //  ${defaultAnalysisRequirements.phaseRequirements.minPhases}-${defaultAnalysisRequirements.phaseRequirements.maxPhases} phases
 
+
+export const newPrompt = (intakeData: IntakeFormData) => {
+  return `
+  Return a JSON object with this structure:
+  {
+    "promptInstructions": "Create a beginner-to-intermediate-friendly fitness program that prioritizes proper form, gradual progression, and sustainable habits. Focus on fundamental movement patterns and include clear instruction for exercise execution.",
+    
+    "requiredProgramStructure": {
+      "phase": 1,
+      "durationWeeks": "number (recommended 4-8 weeks for beginners)",
+      "phaseExplanation": "string explaining why this phase is important for beginners",
+      "phaseExpectations": [
+        "what to expect physically",
+        "common challenges for beginners",
+        "realistic timeline for results",
+        "importance of consistency over intensity"
+      ],
+      "phaseKeyPoints": [
+        "3-5 fundamental success factors focusing on form, consistency, and basic progression"
+      ]
+    },
+
+    "workoutRequirements": {
+      "daysPerWeek": "number (client specified, validate 2-5 days only)", // ${intakeData.daysAvailable}
+      "sessionDuration": "number (client specified, validate 30-60 minutes)", // ${intakeData.dailyBudget}
+      "mandatoryWorkoutElements": {
+        "warmup": "5-10 minutes dynamic warmup",
+        "mainWork": "20-40 minutes primary exercises",
+        "cooldown": "5-10 minutes mobility/stretching"
+      },
+      "exerciseSelectionRules": {
+        "maximumExercisesPerWorkout": 10,
+        "minimumExercisesPerWorkout": 4,
+        "exerciseCategories": [
+          "compound movements first",
+          "isolation movements second",
+          "core/stability work last"
+        ],
+        "mandatoryPatterns": [
+          "push",
+          "pull",
+          "squat",
+          "hinge",
+          "core"
+        ]
+      }
+    },
+
+    "workoutStructure": {
+      "fullWeekRequired": true,
+      "restDayDistribution": "evenly spaced throughout week",
+      "workouts": [
+        {
+          "day": "number (1-7)",
+          "focus": "string (e.g., 'Push', 'Pull', 'Legs')",
+          "warmup": {
+            "duration": "number (minutes)",
+            "activities": ["array of warmup exercises"]
+          },
+          "exercises": [
+            {
+              "name": "string (must be beginner or intermediate friendly)",
+              "sets": "number (2-4)",
+              "reps": "number (8-15)",
+              "restPeriod": "string (60-120 seconds)",
+              "category": "string (push/pull/legs/core)",
+              "difficulty": "string (beginner/beginner-intermediate only)",
+              "formCues": ["array of 2-3 key form points"],
+              "modifications": {
+                "easier": "string (regression option)",
+                "harder": "string (progression option)"
+              }
+            }
+          ],
+          "cooldown": {
+            "duration": "number (minutes)",
+            "activities": ["array of cooldown exercises"]
+          }
+        }
+      ]
+    },
+    "nutritionGuidelines": {
+      "dailyCalories": "number (based on goals)",
+      "macros": {
+        "protein": "0.8-1.2g per pound of bodyweight",
+        "carbs": "40-50% of total calories",
+        "fats": "20-30% of total calories"
+      },
+      "focusPoints": [
+        "establishing consistent meal timing",
+        "proper hydration (min 64oz daily)",
+        "protein with each meal",
+        "vegetables with main meals",
+        "pre/post workout nutrition basics"
+      ]
+    },
+
+    "progressionRules": [
+      "form mastery before weight increase",
+      "increase weight 2.5-5lbs when all sets completed with good form",
+      "focus on rep quality over weight",
+      "minimum 2 weeks at each weight before progression"
+    ],
+
+    "validationChecks": {
+      "enforceRules": [
+        "must include all specified training days",
+        "must have minimum exercises per workout",
+        "must include all fundamental movement patterns weekly",
+        "must provide form cues for each exercise",
+        "must include modifications for all exercises",
+        "rest periods must be specified"
+      ]
+    },
+
+    "followUpQuestions": [
+      "array of strings (questions to ask the client to clarify the program further)"
+    ]
+  }
+    Using the template above, create a workout program for someone with the following parameters:
+  ${formatClientData(intakeData)}
+    
+    Ensure that:
+    1. All workouts fill up the required session duration
+    2. Each workout includes warm-up and cool-down protocols
+    3. Exercises focus on compound movements and progress to isolation movements for accessory work
+    4. Form cues and modifications are provided for each exercise
+    5. Weekly training covers all fundamental movement patterns unless otherwise requested by the client
+    6. Generate a program NO MATTER WHAT. If you feel there is a discrepancy then note it in the followUpQuestions field for further user input
+    `
+  ;
+};
+
 export const generateProgramStructurePrompt = (intakeData: IntakeFormData) => {
   return `
   Based on this client profile:

@@ -38,7 +38,16 @@ export interface Workout {
   day: number;
   dayNumber?: number;
   workoutPlanId?: string;
+  focus?: string;
   exercises: Exercise[];
+  warmup?: {
+    duration: number;
+    activities: string[];
+  };
+  cooldown?: {
+    duration: number;
+    activities: string[];
+  };
 }
 
 export interface Exercise {
@@ -50,6 +59,11 @@ export interface Exercise {
   restPeriod: string;
   category?: string;
   difficulty?: string;
+  formCues?: string[];
+  modifications?: {
+    easier: string;
+    harder: string;
+  };
 }
 
 export interface Nutrition {
