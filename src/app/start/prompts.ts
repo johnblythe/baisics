@@ -225,10 +225,18 @@ export const newPrompt = (intakeData: IntakeFormData) => {
 
     "workoutStructure": {
       "fullWeekRequired": true,
-      "restDayDistribution": "evenly spaced throughout week",
+      "weekConfiguration": {
+        "daysAvailable": "number (${intakeData.daysAvailable})",
+        "requiredWorkouts": "must match daysAvailable",
+        "minimumWorkouts": "number (2 or greater)",
+        "maximumWorkouts": "number (must not exceed ${intakeData.daysAvailable})",
+        "restDayDistribution": "evenly spaced throughout week"
+      },
       "workouts": [
         {
-          "day": "number (1-7)",
+          "_comment": "This array MUST contain exactly the number of workouts specified in daysAvailable",
+          "_validation": "Length of this array must be between minimumWorkouts and maximumWorkouts",
+          "day": "number (1-7, must be unique)",
           "focus": "string (e.g., 'Push', 'Pull', 'Legs')",
           "warmup": {
             "duration": "number (minutes)",
@@ -254,7 +262,13 @@ export const newPrompt = (intakeData: IntakeFormData) => {
             "activities": ["array of cooldown exercises"]
           }
         }
-      ]
+      ],
+      "workoutDistributionRules": {
+        "2_days": ["Push/Pull", "Full Body"],
+        "3_days": ["Push", "Pull", "Legs"],
+        "4_days": ["Upper", "Lower", "Upper", "Lower"],
+        "5_days": ["Push", "Pull", "Legs", "Upper", "Lower"]
+      }
     },
     "nutritionGuidelines": {
       "dailyCalories": "number (based on goals)",
@@ -294,16 +308,17 @@ export const newPrompt = (intakeData: IntakeFormData) => {
       "array of strings (questions to ask the client to clarify the program further)"
     ]
   }
-    Using the template above, create a workout program for someone with the following parameters:
+    Using the template above, create a workout program for someone with the following profile:
   ${formatClientData(intakeData)}
     
     Ensure that:
-    1. All workouts fill up the required session duration
-    2. Each workout includes warm-up and cool-down protocols
+    1. All workouts fill up the required session duration with an appropriate amount of movements
+    2. Each workout includes suggested warm-up and cool-down protocols
     3. Exercises focus on compound movements and progress to isolation movements for accessory work
     4. Form cues and modifications are provided for each exercise
     5. Weekly training covers all fundamental movement patterns unless otherwise requested by the client
     6. Generate a program NO MATTER WHAT. If you feel there is a discrepancy then note it in the followUpQuestions field for further user input
+    7. The generated program has 3-5 workouts per week depending on the user's daysAvailable
     `
   ;
 };
