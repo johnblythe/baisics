@@ -2,7 +2,7 @@
 import { WorkoutPlanDisplay } from './WorkoutPlanDisplay';
 import { UpsellModal } from './UpsellModal';
 import { useState } from 'react';
-import { ProgramFullDisplay } from '../start/types';
+import { ProgramFullDisplay } from '@/types';
 import { generateWorkoutPDF } from '@/utils/pdf';
 
 interface ProgramDisplayProps {
@@ -24,6 +24,8 @@ export function ProgramDisplay({ program, userEmail: initialUserEmail = null, on
   const handlePurchase = () => {
     setIsUpsellOpen(false);
   };
+
+  console.log("🚀 ~ ProgramDisplay ~ program:", program)
 
   if (!program) {
     return (
@@ -70,7 +72,7 @@ export function ProgramDisplay({ program, userEmail: initialUserEmail = null, on
             <div className="border-b border-gray-200 dark:border-gray-700">
               <nav className="flex justify-between px-6" aria-label="Workout Phases">
                 <div className="flex gap-1">
-                  {program.workoutPlans.map((plan, index) => (
+                  {program.workoutPlans.map((_, index: number) => (
                     <button
                       key={`phase-${index}`}
                       onClick={() => {

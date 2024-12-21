@@ -1,13 +1,10 @@
 'use server';
 
-import { Message, ExtractedData, IntakeFormData } from "./types";
-// import { revalidatePath } from "next/cache";
+import { Message, ExtractedData, IntakeFormData, newWorkoutPlan, WorkoutPlan, Program } from "@/types";
 import { sendMessage } from "@/utils/chat";
-import { generateTrainingProgramPrompt, workoutProgramSchema } from "../start/prompts";
+import { createProgram } from "./services/programCreation";
 import { prisma } from "@/lib/prisma";
-import { ProgramFullDisplay } from "../start/types";
-
-const REQUIRED_CONFIDENCE_THRESHOLD = 0.7;
+import { modifyPhase } from "./services/programCreation";
 
 // Helper to convert extracted data to IntakeFormData format
 function convertToIntakeFormat(extractedData: any): IntakeFormData {
@@ -23,7 +20,8 @@ function convertToIntakeFormat(extractedData: any): IntakeFormData {
       extractedData.preferences.value.split(',').map((p: string) => p.trim()) : 
       [],
     additionalInfo: extractedData.additionalInfo?.value || '',
-    experienceLevel: 'beginner' // Default value, could be extracted from conversation
+    experienceLevel: 'beginner', // Default value, could be extracted from conversation
+    modificationRequest: extractedData.modificationRequest?.value || '',
   };
 }
 
@@ -37,24 +35,58 @@ export async function processUserMessage(
   generateProgramDirectly: boolean = false
 ) {
   try {
-    // @TODO: break this up into two discerete helper methods. one to generate the training program, one is to source new information. 
     if (generateProgramDirectly) {
-      // Skip extraction and go straight to program generation
       const intakeData = convertToIntakeFormat(extractedData);
-      const programPrompt = generateTrainingProgramPrompt(intakeData);
-      console.log("🚀 ~ programPrompt:", programPrompt)
-      const programResult = await sendMessage([{
-        role: 'user',
-        content: programPrompt
-      }]);
+      
+      // Save intake data using existing UserIntake model
+      await prisma.userIntake.upsert({
+        where: { userId },
+        create: {
+          userId,
+          sex: intakeData.sex || 'other',
+          trainingGoal: intakeData.trainingGoal,
+          daysAvailable: intakeData.daysAvailable,
+          dailyBudget: intakeData.dailyBudget,
+          experienceLevel: intakeData.experienceLevel,
+          age: intakeData.age,
+          weight: intakeData.weight,
+          height: intakeData.height,
+          trainingPreferences: intakeData.trainingPreferences || [],
+          additionalInfo: intakeData.additionalInfo
+        },
+        update: {
+          sex: intakeData.sex || 'other',
+          trainingGoal: intakeData.trainingGoal,
+          daysAvailable: intakeData.daysAvailable,
+          dailyBudget: intakeData.dailyBudget,
+          experienceLevel: intakeData.experienceLevel,
+          age: intakeData.age,
+          weight: intakeData.weight,
+          height: intakeData.height,
+          trainingPreferences: intakeData.trainingPreferences || [],
+          additionalInfo: intakeData.additionalInfo
+        }
+      });
 
-      if (programResult.success) {
-        console.log("🚀 ~ programResult:", JSON.stringify(programResult.data, null, 2))
-        return {
-          success: true,
-          program: JSON.parse(programResult.data?.content?.[0]?.text || '{}')
-        };
-      }
+      // Save confidence scores in prompt log for analysis
+      await prisma.promptLog.create({
+        data: {
+          userId,
+          prompt: 'Initial intake analysis',
+          response: JSON.stringify(extractedData?.confidence || {}),
+          model: process.env.SONNET_MODEL!,
+          success: true
+        }
+      });
+
+      // Generate program using new service
+      const program = await createProgram(intakeData);
+      console.log("🚀 ~ program:", JSON.stringify(program, null, 2))
+      
+      return {
+        success: true,
+        program
+      };
     }
 
     const messageHistory = messages.map(m => ({
@@ -109,6 +141,7 @@ export async function processUserMessage(
     }
 
     const aiResponse = JSON.parse(result.data?.content?.[0]?.text || '{}');
+    console.log("🚀 ~ aiResponse:", aiResponse)
 
     return {
       success: true,
@@ -130,78 +163,24 @@ export async function processUserMessage(
 export async function processModificationRequest(
   messages: Message[],
   userId: string,
-  currentProgram: ProgramFullDisplay,
-  modificationRequest: string
+  currentProgram: Program,
+  modificationRequest: string,
+  requestedPhase: number = 1,
 ) {
   try {
-    // Create a pseudo intake form from the current program
-    const intakeData: IntakeFormData = {
-      sex: 'other', // Default since we don't have this in program
-      trainingGoal: currentProgram.workoutPlans[0].muscleMassDistribution,
-      daysAvailable: currentProgram.workoutPlans[0].daysPerWeek,
-      dailyBudget: 60, // Default or could calculate from workouts
-      trainingPreferences: [], // Could extract from exercise types
-      additionalInfo: `
-        !!Requested Modifications:
-        ${modificationRequest}
-      `,
-      experienceLevel: "intermediate", // Default or could infer from program difficulty
-    };
 
-    // Use the original program generation prompt with our enhanced context
-    const programPrompt = generateTrainingProgramPrompt(intakeData);
-    console.log("🚀 ~ programPrompt:", programPrompt)
-
-    const result = await sendMessage([{
-      role: 'user',
-      content: programPrompt
-    }]);
-
-    if (!result.success) {
-      throw new Error('Failed to get response from Claude');
-    }
-
-    console.log("🚀 ~ result.data?.content?:", JSON.stringify(result.data, null, 2))
-    const aiResponse = JSON.parse(result.data?.content?.[0]?.text || '{}');
-
-    // Transform the new program to match DB structure
-    const transformedProgram = {
-      ...currentProgram,
-      name: aiResponse.programName,
-      description: aiResponse.programDescription,
-      updatedAt: new Date(),
-      workoutPlans: aiResponse.phases.map((phase: any, index: number) => ({
-        ...currentProgram.workoutPlans[index],
-        bodyFatPercentage: phase.bodyComposition.bodyFatPercentage,
-        muscleMassDistribution: phase.bodyComposition.muscleMassDistribution,
-        dailyCalories: phase.nutrition.dailyCalories,
-        proteinGrams: phase.nutrition.macros.protein,
-        carbGrams: phase.nutrition.macros.carbs,
-        fatGrams: phase.nutrition.macros.fats,
-        mealTiming: phase.nutrition.mealTiming,
-        progressionProtocol: phase.progressionProtocol,
-        daysPerWeek: phase.trainingPlan.daysPerWeek,
-        durationWeeks: phase.durationWeeks,
-        updatedAt: new Date(),
-        workouts: phase.trainingPlan.workouts.map((workout: any, wIndex: number) => ({
-          ...currentProgram.workoutPlans[index].workouts[wIndex],
-          updatedAt: new Date(),
-          exercises: workout.exercises.map((exercise: any, eIndex: number) => ({
-            ...currentProgram.workoutPlans[index].workouts[wIndex].exercises[eIndex],
-            name: exercise.name,
-            sets: exercise.sets,
-            reps: exercise.reps,
-            restPeriod: exercise.restPeriod,
-            updatedAt: new Date(),
-          }))
-        }))
-      }))
-    };
+    const programWithModifiedPhase = await processPhaseModification(
+      userId,
+      currentProgram,
+      requestedPhase,
+      modificationRequest,
+    );
+    console.log("🚀 ~ programWithModifiedPhase:", JSON.stringify(programWithModifiedPhase, null, 2))
 
     return {
       success: true,
-      message: "I've created a new version of your program incorporating your feedback.",
-      program: transformedProgram,
+      message: "Program updated successfully with your requested changes.",
+      program: programWithModifiedPhase,
       needsClarification: false
     };
 
@@ -209,7 +188,89 @@ export async function processModificationRequest(
     console.error("Failed to process modification request:", error);
     return {
       success: false,
-      message: "I'm sorry, I encountered an error while processing your request. Please try again."
+      message: "I encountered an error while processing your request. Please try again.",
+      needsClarification: true
+    };
+  }
+}
+
+export async function saveDemoIntake(userId: string) {
+  'use server'
+  
+  const DEMO_INTAKE = {
+    sex: 'male',
+    trainingGoal: 'muscle building',
+    daysAvailable: 5,
+    dailyBudget: 90,
+    age: 30,
+    weight: 180,
+    height: 72,
+    experienceLevel: 'intermediate',
+    trainingPreferences: ['free weights', 'machines', 'bodyweight'],
+    additionalInfo: 'Athletic background, looking to build muscle while maintaining conditioning'
+  };
+
+  try {
+    await prisma.userIntake.upsert({
+      where: { userId },
+      create: {
+        userId,
+        ...DEMO_INTAKE
+      },
+      update: {
+        ...DEMO_INTAKE
+      }
+    });
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to save demo intake:', error);
+    return { success: false };
+  }
+}
+
+// @TODO: refactor
+export async function processPhaseModification(
+  userId: string,
+  currentProgram: Program,
+  phaseNumber: number,
+  modificationRequest: string
+) {
+  try {
+    const currentPhase = currentProgram.workoutPlans.find((p: WorkoutPlan) => p.phase === phaseNumber);
+    if (!currentPhase) {
+      throw new Error(`Phase ${phaseNumber} not found`);
+    }
+    console.log("🚀 ~ currentPhase:", currentPhase)
+
+    // Get modified phase from Claude
+    const modifiedPhase = await modifyPhase(
+      userId,
+      currentPhase,
+      modificationRequest
+    );
+    console.log("🚀 ~ modifiedPhase:", modifiedPhase)
+
+    // Create a new program object with the modified phase
+    const transformedProgram = {
+      ...currentProgram,
+      workoutPlans: currentProgram.workoutPlans.map((phase: WorkoutPlan) => 
+        phase.phase === phaseNumber ? modifiedPhase : phase
+      )
+    };
+
+    return {
+      success: true,
+      message: `Phase ${phaseNumber} has been updated with your requested changes.`,
+      program: transformedProgram,
+      needsClarification: false
+    };
+
+  } catch (error) {
+    console.error("Failed to process phase modification request:", error);
+    return {
+      success: false,
+      message: "I encountered an error while processing your request. Please try again.",
+      needsClarification: true
     };
   }
 } 

@@ -1,9 +1,9 @@
 import {
-  IntakeFormData,
   Sex,
   TrainingGoal,
   TrainingPreference,
 } from "@/app/start/actions";
+import { IntakeFormData } from "@/app/hi/types"; // @todo: move this to generic types.ts
 import { useState } from "react";
 import { ImageDropzone } from "./ImageDropzone";
 

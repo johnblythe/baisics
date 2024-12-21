@@ -1,36 +1,45 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Message, ExtractedData } from "../types";
+import { Message, IntakeFormData, ExtractedData, ChatResponse } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { processUserMessage } from "../actions";
 import { ProgramDisplay } from "@/app/components/ProgramDisplay";
 import { GeneratingProgramTransition } from "./GeneratingProgramTransition";
 import { SAMPLE_PROFILES } from "@/app/components/IntakeForm";
-import { ProgramFullDisplay } from "@/app/start/types";
+import { Program } from "@/types";
 import { User } from "@prisma/client";
 import { getRandomWelcomeMessage } from "../utils/welcomeMessages";
 import { createNewProgram } from "@/app/start/actions";
 import { processModificationRequest } from "../actions";
 import exampleProgram from '../utils/example.json';
+import { createAnonUser, getUser } from "@/app/start/actions";
+import { v4 as uuidv4 } from "uuid";
+import { saveDemoIntake } from "../actions";
 
 interface ConversationalInterfaceProps {
   userId: string;
   user: User | null;
+  onProgramChange?: (program: Program | null) => void;
 }
 
-export function ConversationalInterface({ userId, user }: ConversationalInterfaceProps) {
+export function ConversationalInterface({ userId, user, onProgramChange }: ConversationalInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [extractedData, setExtractedData] = useState<ExtractedData | null>(null);
-  const [program, setProgram] = useState<ProgramFullDisplay | null>(null);
+  const [program, setProgram] = useState<Program | null>(null);
   const [isGeneratingProgram, setIsGeneratingProgram] = useState(false);
   const [isUpsellOpen, setIsUpsellOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [currentProfileIndex, setCurrentProfileIndex] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
   
+  // Add effect to notify parent of program changes
+  useEffect(() => {
+    onProgramChange?.(program);
+  }, [program, onProgramChange]);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -82,9 +91,11 @@ export function ConversationalInterface({ userId, user }: ConversationalInterfac
           program,
           inputValue
         );
-        
+        console.log("🚀 ~ handleSubmit ~ result:", JSON.stringify(result, null, 2))
         if (result.success) {
+          console.log("🚀 ~ handleSubmit ~ result.success:", result.success)
           if (result.needsClarification) {
+            console.log("🚀 ~ handleSubmit ~ result.needsClarification:", result.needsClarification)
             // AI needs more information
             setIsGeneratingProgram(false);
             setTimeout(() => {
@@ -95,13 +106,14 @@ export function ConversationalInterface({ userId, user }: ConversationalInterfac
               setIsTyping(false);
             }, Math.random() * 1000 + 500);
           } else {
+            console.log("🚀 ~ setTimeout ~ result.program:", result.program)
             // AI has modified the program
             setTimeout(() => {
               setMessages(prev => [...prev, { 
                 role: "assistant", 
                 content: `I've made the requested changes: ${result.message}` 
               }]);
-              setProgram(result.program);
+              setProgram(result.program ? result.program.program as Program : null);
               setIsGeneratingProgram(false);
               setIsTyping(false);
             }, Math.random() * 1000 + 500);
@@ -121,6 +133,7 @@ export function ConversationalInterface({ userId, user }: ConversationalInterfac
         if (result.success) {
           if (result.extractedData) {
             setExtractedData(result.extractedData);
+            console.log("🚀 ~ handleSubmit ~ result.extractedData:", result.extractedData)
           }
           
           // If we have enough data to generate a program
@@ -137,20 +150,20 @@ export function ConversationalInterface({ userId, user }: ConversationalInterfac
 
             // Generate the program
             const programResult = await processUserMessage([...messages, userMessage], userId, result.extractedData, true);
+            console.log("🚀 ~ handleSubmit ~ programResult:", programResult)
             if (programResult.success && programResult.program) {
+              console.log("🚀 ~ handleSubmit ~ programResult.program:", programResult.program)
               // Transform the AI response to match DB structure
+              // @TODO: there shouldn't be a need to do a full transformation here,
+              // clean up the fucking types and interfaces and shit
               const transformedProgram = {
                 id: `draft-${Date.now()}`, // Temporary ID for draft program
                 name: programResult.program.programName,
                 description: programResult.program.programDescription,
                 createdBy: userId,
-                // createdAt: new Date(),
-                // updatedAt: new Date(),
                 user: {
                   id: userId,
                   email: user?.email || "",
-                  // createdAt: new Date(),
-                  // updatedAt: new Date(),
                 },
                 workoutPlans: programResult.program.phases.map(phase => ({
                   id: `phase-${phase.phase}`,
@@ -167,14 +180,13 @@ export function ConversationalInterface({ userId, user }: ConversationalInterfac
                   progressionProtocol: phase.progressionProtocol,
                   daysPerWeek: phase.trainingPlan.daysPerWeek,
                   durationWeeks: phase.durationWeeks,
-                  // createdAt: new Date(),
-                  // updatedAt: new Date(),
+                  phaseExplanation: phase.phaseExplanation,
+                  phaseExpectations: phase.phaseExpectations,
+                  phaseKeyPoints: phase.phaseKeyPoints,
                   workouts: phase.trainingPlan.workouts.map(workout => ({
                     id: `workout-${workout.day}`,
                     workoutPlanId: `phase-${phase.phase}`,
                     dayNumber: workout.day,
-                    // createdAt: new Date(),
-                    // updatedAt: new Date(),
                     exercises: workout.exercises.map(exercise => ({
                       id: `exercise-${exercise.name}-${workout.day}`,
                       workoutId: `workout-${workout.day}`,
@@ -182,8 +194,6 @@ export function ConversationalInterface({ userId, user }: ConversationalInterfac
                       sets: exercise.sets,
                       reps: exercise.reps,
                       restPeriod: exercise.restPeriod,
-                      // createdAt: new Date(),
-                      // updatedAt: new Date(),
                     }))
                   }))
                 }))
@@ -273,72 +283,121 @@ export function ConversationalInterface({ userId, user }: ConversationalInterfac
     }
   };
 
-  const loadDemoProgram = () => {
-    setIsGeneratingProgram(true);
-    
-    // Simulate a brief loading state
-    setTimeout(() => {
-      const transformedProgram = {
-        id: `draft-${Date.now()}`,
-        name: exampleProgram.programName,
-        description: exampleProgram.programDescription,
-        createdBy: userId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        user: {
-          id: userId,
-          email: user?.email || "",
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          password: null,
-          isPremium: false,
+  const demoUser = async () => {
+    if (!userId) {
+      const newUserId = uuidv4();
+      const result = await createAnonUser(newUserId);
+      if (result.success && result.user) {
+        return result.user;
+      }
+      throw new Error('Failed to create anonymous user');
+    }
+
+    const result = await getUser(userId);
+    if (!result.success || !result.user) {
+      const createResult = await createAnonUser(userId);
+      if (!createResult.success || !createResult.user) {
+        throw new Error('Failed to create/get user');
+      }
+      return createResult.user;
+    }
+
+    return result.user;
+  };
+
+  const loadDemoProgram = async () => {
+    try {
+      const user = await demoUser();
+      
+      // Save demo intake using server action
+      const demoIntake = await saveDemoIntake(user.id);
+      console.log("🚀 ~ loadDemoProgram ~ demoIntake:", demoIntake)
+
+      // Add intake conversation to message history
+      setMessages([
+        {
+          role: "assistant",
+          content: getRandomWelcomeMessage()
         },
-        workoutPlans: exampleProgram.phases.map(phase => ({
-          id: `phase-${phase.phase}`,
-          userId,
-          programId: `draft-${Date.now()}`,
-          phase: phase.phase,
-          bodyFatPercentage: phase.bodyComposition.bodyFatPercentage,
-          muscleMassDistribution: phase.bodyComposition.muscleMassDistribution,
-          dailyCalories: phase.nutrition.dailyCalories,
-          proteinGrams: phase.nutrition.macros.protein,
-          carbGrams: phase.nutrition.macros.carbs,
-          fatGrams: phase.nutrition.macros.fats,
-          mealTiming: phase.nutrition.mealTiming,
-          progressionProtocol: phase.progressionProtocol,
-          daysPerWeek: phase.trainingPlan.daysPerWeek,
-          durationWeeks: phase.durationWeeks,
+        {
+          role: "user",
+          content: `Hi! I'm 30, male, 180lbs, 6'0" tall. Looking to build muscle. Can train 5 days/week, 90 mins/session. Athletic background, looking to build muscle while maintaining conditioning.`
+        },
+        {
+          role: "assistant",
+          content: "Great! I have all the information I need. Let me create your program..."
+        }
+      ]);
+      
+      setIsGeneratingProgram(true);
+      
+      // Simulate a brief loading state
+      setTimeout(() => {
+        const transformedProgram = {
+          id: `draft-${Date.now()}`,
+          name: exampleProgram.programName,
+          description: exampleProgram.programDescription,
+          createdBy: userId,
           createdAt: new Date(),
           updatedAt: new Date(),
-          workouts: phase.trainingPlan.workouts.map(workout => ({
-            id: `workout-${workout.day}`,
-            workoutPlanId: `phase-${phase.phase}`,
-            dayNumber: workout.day,
+          user: {
+            id: userId,
+            email: user?.email || "",
             createdAt: new Date(),
             updatedAt: new Date(),
-            exercises: workout.exercises.map(exercise => ({
-              id: `exercise-${exercise.name}-${workout.day}`,
-              workoutId: `workout-${workout.day}`,
-              name: exercise.name,
-              sets: exercise.sets,
-              reps: exercise.reps,
-              restPeriod: exercise.restPeriod,
+            password: null,
+            isPremium: false,
+          },
+          workoutPlans: exampleProgram.phases.map(phase => ({
+            id: `phase-${phase.phase}`,
+            userId,
+            programId: `draft-${Date.now()}`,
+            phase: phase.phase,
+            bodyFatPercentage: phase.bodyComposition.bodyFatPercentage,
+            muscleMassDistribution: phase.bodyComposition.muscleMassDistribution,
+            dailyCalories: phase.nutrition.dailyCalories,
+            proteinGrams: phase.nutrition.macros.protein,
+            carbGrams: phase.nutrition.macros.carbs,
+            fatGrams: phase.nutrition.macros.fats,
+            mealTiming: phase.nutrition.mealTiming,
+            progressionProtocol: phase.progressionProtocol,
+            daysPerWeek: phase.trainingPlan.daysPerWeek,
+            durationWeeks: phase.durationWeeks,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            workouts: phase.trainingPlan.workouts.map(workout => ({
+              id: `workout-${workout.day}`,
+              workoutPlanId: `phase-${phase.phase}`,
+              dayNumber: workout.day,
               createdAt: new Date(),
               updatedAt: new Date(),
+              exercises: workout.exercises.map(exercise => ({
+                id: `exercise-${exercise.name}-${workout.day}`,
+                workoutId: `workout-${workout.day}`,
+                name: exercise.name,
+                sets: exercise.sets,
+                reps: exercise.reps,
+                restPeriod: exercise.restPeriod,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              }))
             }))
           }))
-        }))
-      };
+        };
 
-      setProgram(transformedProgram);
+        setProgram(transformedProgram);
+        setIsGeneratingProgram(false);
+        
+        // Add a message to show it's demo mode
+        setMessages(prev => [...prev, {
+          role: "assistant",
+          content: "Demo program loaded! You can now test program modifications."
+        }]);
+      }, 1000);
+    } catch (error) {
+      console.error("Failed to load demo program:", error);
       setIsGeneratingProgram(false);
-      
-      // Add a message to show it's demo mode
-      setMessages(prev => [...prev, {
-        role: "assistant",
-        content: "Demo program loaded! You can now test program modifications."
-      }]);
-    }, 1000);
+    }
   };
 
   // Update the form section based on whether we have a program
@@ -410,7 +469,7 @@ export function ConversationalInterface({ userId, user }: ConversationalInterfac
   };
 
   return (
-    <div className="flex flex-col min-h-[80vh] bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 rounded-lg shadow-lg">
+    <div className={`flex flex-col min-h-[80vh] bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 rounded-lg shadow-lg ${program ? 'max-w-full' : 'max-w-3xl mx-auto'}`}>
       {program ? (
         <ProgramDisplay 
           program={program} 

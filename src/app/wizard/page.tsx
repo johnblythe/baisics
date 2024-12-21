@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createAnonUser, getUser } from "../start/actions";
 import { User } from "@prisma/client";
-import { WizardInterface } from "./components/WizardInterface";
+// import { WizardInterface } from "./components/WizardInterface";
 
 export default function WizardIntakePage() {
   const router = useRouter();
@@ -47,7 +47,7 @@ export default function WizardIntakePage() {
 
   return (
     <div className="container mx-auto max-w-3xl px-4 py-8">
-      <WizardInterface userId={userId} />
+      {/* <WizardInterface userId={userId} /> */}
     </div>
   );
 } 

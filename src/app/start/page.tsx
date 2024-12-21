@@ -1,7 +1,6 @@
 "use client";
 
-import { useCallback, useState, useEffect } from "react";
-import { useDropzone } from "react-dropzone";
+import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import {
   uploadImages,
