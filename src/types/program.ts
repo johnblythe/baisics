@@ -4,10 +4,11 @@ export interface Program {
   id: string;
   name: string;
   description?: string;
-  workoutPlans: WorkoutPlan[]; // phases
+  workoutPlans: newWorkoutPlan[];
   user: User;
 }
 
+// used in /start
 export interface ProgramData {
   programName: string;
   programDescription: string;
@@ -57,6 +58,7 @@ export interface Exercise {
   sets: number;
   reps: number;
   restPeriod: string;
+  exerciseLibraryId?: string;
   category?: string;
   difficulty?: string;
   formCues?: string[];
@@ -74,6 +76,13 @@ export interface Nutrition {
     fats: number;
   };
   mealTiming?: string[];
+}
+
+export interface newWorkoutPlan {
+  id: string;
+  nutrition: Nutrition;
+  workouts: Workout[];
+  // todo: user composition / profile / stats / etc
 }
 
 export interface WorkoutPlan {

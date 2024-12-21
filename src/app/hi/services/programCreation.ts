@@ -1,4 +1,4 @@
-import { IntakeFormData } from "@/types";
+import { IntakeFormData, Program } from "@/types";
 import { newPrompt } from "@/app/start/prompts";
 import { sendMessage } from "@/utils/chat";
 import { prisma } from "@/lib/prisma";
@@ -61,7 +61,7 @@ interface SendMessageResponse {
   error?: string;
 }
 
-export async function createProgram(intakeData: IntakeFormData) {
+export async function createProgram(intakeData: IntakeFormData): Promise<Program> {
   try {
     const prompt = newPrompt(intakeData);
     console.log("🚀 ~ createProgram ~ prompt:", prompt)

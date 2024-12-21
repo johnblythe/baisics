@@ -1,6 +1,6 @@
 'use server';
 
-import { Message, ExtractedData, IntakeFormData, WorkoutPlan, Program } from "@/types";
+import { Message, ExtractedData, IntakeFormData, newWorkoutPlan, WorkoutPlan, Program } from "@/types";
 import { sendMessage } from "@/utils/chat";
 import { createProgram } from "./services/programCreation";
 import { prisma } from "@/lib/prisma";
@@ -169,13 +169,6 @@ export async function processModificationRequest(
 ) {
   try {
 
-    // Get modified program from Claude
-    // const modifiedProgram = await modifyProgram(
-    //   currentProgram,
-    //   modificationRequest,
-    //   intakeData
-    // );
-
     const programWithModifiedPhase = await processPhaseModification(
       userId,
       currentProgram,
@@ -235,6 +228,7 @@ export async function saveDemoIntake(userId: string) {
   }
 }
 
+// @TODO: refactor
 export async function processPhaseModification(
   userId: string,
   currentProgram: Program,

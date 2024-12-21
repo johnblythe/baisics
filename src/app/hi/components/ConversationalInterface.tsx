@@ -127,13 +127,13 @@ export function ConversationalInterface({ userId, user, onProgramChange }: Conve
           }]);
         }
       } else {
-        console.log("no program yet");
         // First check if this response completes our data gathering
         const result = await processUserMessage([...messages, userMessage], userId);
         
         if (result.success) {
           if (result.extractedData) {
             setExtractedData(result.extractedData);
+            console.log("🚀 ~ handleSubmit ~ result.extractedData:", result.extractedData)
           }
           
           // If we have enough data to generate a program
@@ -150,7 +150,7 @@ export function ConversationalInterface({ userId, user, onProgramChange }: Conve
 
             // Generate the program
             const programResult = await processUserMessage([...messages, userMessage], userId, result.extractedData, true);
-            console.log("🚀 ~ handleSubmit ~ programResult:", JSON.stringify(programResult, null, 2))
+            console.log("🚀 ~ handleSubmit ~ programResult:", programResult)
             if (programResult.success && programResult.program) {
               console.log("🚀 ~ handleSubmit ~ programResult.program:", programResult.program)
               // Transform the AI response to match DB structure
