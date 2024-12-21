@@ -20,9 +20,10 @@ import { saveDemoIntake } from "../actions";
 interface ConversationalInterfaceProps {
   userId: string;
   user: User | null;
+  onProgramChange?: (program: Program | null) => void;
 }
 
-export function ConversationalInterface({ userId, user }: ConversationalInterfaceProps) {
+export function ConversationalInterface({ userId, user, onProgramChange }: ConversationalInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -34,6 +35,11 @@ export function ConversationalInterface({ userId, user }: ConversationalInterfac
   const [currentProfileIndex, setCurrentProfileIndex] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
   
+  // Add effect to notify parent of program changes
+  useEffect(() => {
+    onProgramChange?.(program);
+  }, [program, onProgramChange]);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -148,6 +154,8 @@ export function ConversationalInterface({ userId, user }: ConversationalInterfac
             if (programResult.success && programResult.program) {
               console.log("🚀 ~ handleSubmit ~ programResult.program:", programResult.program)
               // Transform the AI response to match DB structure
+              // @TODO: there shouldn't be a need to do a full transformation here,
+              // clean up the fucking types and interfaces and shit
               const transformedProgram = {
                 id: `draft-${Date.now()}`, // Temporary ID for draft program
                 name: programResult.program.programName,
@@ -172,6 +180,9 @@ export function ConversationalInterface({ userId, user }: ConversationalInterfac
                   progressionProtocol: phase.progressionProtocol,
                   daysPerWeek: phase.trainingPlan.daysPerWeek,
                   durationWeeks: phase.durationWeeks,
+                  phaseExplanation: phase.phaseExplanation,
+                  phaseExpectations: phase.phaseExpectations,
+                  phaseKeyPoints: phase.phaseKeyPoints,
                   workouts: phase.trainingPlan.workouts.map(workout => ({
                     id: `workout-${workout.day}`,
                     workoutPlanId: `phase-${phase.phase}`,
@@ -458,7 +469,7 @@ export function ConversationalInterface({ userId, user }: ConversationalInterfac
   };
 
   return (
-    <div className="flex flex-col min-h-[80vh] bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 rounded-lg shadow-lg">
+    <div className={`flex flex-col min-h-[80vh] bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 rounded-lg shadow-lg ${program ? 'max-w-full' : 'max-w-3xl mx-auto'}`}>
       {program ? (
         <ProgramDisplay 
           program={program} 

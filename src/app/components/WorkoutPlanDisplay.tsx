@@ -1,125 +1,194 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { WorkoutPlan } from '@/types/program';
 import { UpsellModal } from './UpsellModal';
-import ReactConfetti from "react-confetti";
-import { createNewUser } from '../start/actions';
-import { WorkoutPlanDisplayProps } from '../start/types';
 
+interface WorkoutPlanDisplayProps {
+  plan: WorkoutPlan;
+  userEmail?: string | null;
+}
 
 export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: WorkoutPlanDisplayProps) {
   const [isUpsellOpen, setIsUpsellOpen] = useState(false);
   const [userEmail, setUserEmail] = useState(initialUserEmail);
-  const [showConfetti, setShowConfetti] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(true);
 
-  useEffect(() => {
-    if (showConfetti) {
-      const timer = setTimeout(() => setShowConfetti(false), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [showConfetti]);
-
-  const handleEmailSubmit = (email: string) => {
-    setUserEmail(email);
-    setIsUpsellOpen(false);
-    setShowConfetti(true);
-    handleCreateNewUser(email);
-  };
-
-  const handleCreateNewUser = async (email: string) => {
-    const userId = new URLSearchParams(window.location.search).get('userId');
-    if (!userId) {
-      throw new Error("No user ID found in URL");
-    }
-    const response = await createNewUser({ userId, email });
-    if (response.success) {
-      setUserEmail(email);
-    }
-  };
-
-  const handlePurchase = () => {
-    // TODO: Implement purchase flow
-    console.log('Purchase clicked');
-    setIsUpsellOpen(false);
+  const handleUpsell = () => {
+    setIsUpsellOpen(true);
   };
 
   return (
-    <>
-      {showConfetti && <ReactConfetti />}
-      <div className="space-y-8">
-        {/* Overview Section */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 flex justify-between items-center">
-            <h2 className="text-2xl font-bold text-white">
-              Phase {plan.phase} Overview
-            </h2>
-            <button
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-sm transition"
-            >
-              {isExpanded ? 'Show Less' : 'Show More'}
-            </button>
-          </div>
-
-          {isExpanded && (
-            <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                  <h3 className="font-semibold text-lg mb-3">Body Composition</h3>
-                  <div className="space-y-2">
-                    <p className="flex justify-between"><span>Body Fat:</span> <span className="font-medium">{plan.bodyFatPercentage}%</span></p>
-                    <p className="flex justify-between"><span>Muscle Distribution:</span> <span className="font-medium">{plan.muscleMassDistribution}</span></p>
-                  </div>
-                </div>
-                <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                  <h3 className="font-semibold text-lg mb-3">Nutrition</h3>
-                  <div className="space-y-2">
-                    <p className="flex justify-between"><span>Daily Calories:</span> <span className="font-medium">{plan.dailyCalories}</span></p>
-                    <p className="flex justify-between"><span>Protein:</span> <span className="font-medium">{plan.proteinGrams}g</span></p>
-                    <p className="flex justify-between"><span>Carbs:</span> <span className="font-medium">{plan.carbGrams}g</span></p>
-                    <p className="flex justify-between"><span>Fats:</span> <span className="font-medium">{plan.fatGrams}g</span></p>
-                  </div>
-                </div>
+    <div className="space-y-8">
+      {/* Overview Section */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+          {/* Phase Overview Section */}
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
+            <h3 className="text-xl font-semibold mb-4">Phase Overview</h3>
+            <div className="space-y-4">
+              <div>
+                <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">Why This Phase</h4>
+                <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+                  {plan.phaseExplanation || "This phase focuses on building foundational strength and muscle mass through progressive overload and compound movements."}
+                </p>
               </div>
-
-              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                  <h3 className="font-semibold text-lg mb-3">Meal Timing</h3>
-                  <ul className="list-disc pl-5 space-y-2">
-                    {plan.mealTiming?.length > 0 && plan.mealTiming?.map((timing, index) => (
-                      <li key={`meal-timing-${index}`}>{timing}</li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                  <h3 className="font-semibold text-lg mb-3">Progression Protocol</h3>
-                  <ul className="list-disc pl-5 space-y-2">
-                    {(plan.progressionProtocol || []).map((protocol, index) => (
-                      <li key={`progression-${index}`}>{protocol}</li>
-                    ))}
-                  </ul>
-                </div>
+              <div>
+                <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">What to Expect</h4>
+                <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+                  {plan.phaseExpectations || "You'll start with moderate weights to perfect form, gradually increasing intensity. Expect to feel challenged but not overwhelmed."}
+                </p>
+              </div>
+              <div>
+                <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">Keys to Success</h4>
+                <ul className="list-disc pl-4 text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                  {(plan.phaseKeyPoints || [
+                    "Focus on form over weight",
+                    "Track your progress each session",
+                    "Ensure adequate rest between workouts"
+                  ]).map((point, index) => (
+                    <li key={index}>{point}</li>
+                  ))}
+                </ul>
               </div>
             </div>
-          )}
-        </div>
+          </div>
 
-        {/* Workouts Section */}
-        <div className="space-y-6 relative">
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-transparent bg-clip-text">Training Schedule</h2>
-          {plan.workouts
-            .sort((a, b) => a.dayNumber - b.dayNumber)
-            .map((workout) => (
+          {/* Combined Nutrition & Progression Section */}
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
+            <div className="space-y-6">
+              {/* Nutrition Part */}
+              <div>
+                <h3 className="text-xl font-semibold mb-4">Nutrition</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600 dark:text-gray-400">Daily Calories:</span>
+                    <span className="font-medium">{plan.dailyCalories}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600 dark:text-gray-400">Protein:</span>
+                    <span className="font-medium">{plan.proteinGrams}g</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600 dark:text-gray-400">Carbs:</span>
+                    <span className="font-medium">{plan.carbGrams}g</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600 dark:text-gray-400">Fats:</span>
+                    <span className="font-medium">{plan.fatGrams}g</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="border-t border-gray-200 dark:border-gray-700"></div>
+
+              {/* Progression Part */}
+              <div>
+                <h3 className="text-xl font-semibold mb-4">Progression Protocol</h3>
+                <ul className="space-y-2">
+                  {plan.progressionProtocol?.map((protocol: string, index: number) => (
+                    <li key={index} className="text-gray-600 dark:text-gray-400">
+                      {protocol}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Body Composition Section */}
+          <div className="relative bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
+            <div className="flex justify-between items-start mb-4">
+              <h3 className="text-xl font-semibold">Body Composition</h3>
+            </div>
+            
+            {!userEmail ? (
+              <div className="flex flex-col items-center justify-center text-center py-6">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                  Add photos or measurements to get custom analysis & nutrition
+                </p>
+                <button
+                  onClick={handleUpsell}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                >
+                  Get Custom Analysis
+                </button>
+              </div>
+            ) : (
+              <div>
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-gray-600 dark:text-gray-400">Body Fat:</span>
+                  <span className="font-medium">{plan.bodyFatPercentage}%</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600 dark:text-gray-400">Muscle Distribution:</span>
+                  <span className="font-medium">{plan.muscleMassDistribution}</span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Progress Stats Section */}
+          <div className="relative bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
+            <div className="flex justify-between items-start mb-4">
+              <h3 className="text-xl font-semibold">Body & Progress Stats</h3>
+            </div>
+            
+            {!userEmail ? (
+              <div>
+                {/* Blurred Charts */}
+                <div className="filter blur-sm pointer-events-none">
+                  <div className="h-32 bg-gradient-to-r from-blue-100 to-blue-50 dark:from-blue-900 dark:to-blue-800 rounded-lg mb-4">
+                    {/* Placeholder for body measurements chart */}
+                  </div>
+                  <div className="h-32 bg-gradient-to-r from-green-100 to-green-50 dark:from-green-900 dark:to-green-800 rounded-lg">
+                    {/* Placeholder for progress tracking chart */}
+                  </div>
+                </div>
+                
+                {/* Overlay Content */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                    Track your progress with detailed body measurements and performance metrics
+                  </p>
+                  <button
+                    onClick={handleUpsell}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                  >
+                    Unlock Progress Tracking
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="h-32 bg-gradient-to-r from-blue-100 to-blue-50 dark:from-blue-900 dark:to-blue-800 rounded-lg">
+                  {/* Actual body measurements chart would go here */}
+                </div>
+                <div className="h-32 bg-gradient-to-r from-green-100 to-green-50 dark:from-green-900 dark:to-green-800 rounded-lg">
+                  {/* Actual progress tracking chart would go here */}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Training Schedule */}
+      <div className="space-y-6">
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-transparent bg-clip-text">
+          Training Schedule
+        </h2>
+        {plan.workouts
+          .sort((a, b) => (a.dayNumber || a.day) - (b.dayNumber || b.day))
+          .map((workout) => (
             <div
               key={workout.id}
               className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden"
             >
               <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 p-4 border-b border-gray-200 dark:border-gray-600">
-                <h3 className="font-bold text-xl">Session {workout.dayNumber}</h3>
+                <h3 className="font-bold text-xl">Session {workout.dayNumber || workout.day}</h3>
               </div>
               <div className="p-6">
                 {/* Header */}
-                <div className="grid font-semibold grid-cols-12 gap-4 text-sm text-left mb-2 bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+                <div className="grid grid-cols-12 gap-4 text-sm text-left mb-2 bg-gray-50 dark:bg-gray-700 p-3 rounded-lg font-medium">
                   <div className="col-span-6">Exercise</div>
                   <div className="col-span-1">Sets</div>
                   <div className="col-span-2">Reps</div>
@@ -139,32 +208,21 @@ export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: Workou
                     </div>
                   ))}
                 </div>
-
-                <div className="mt-6 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-                  <p className="text-sm text-gray-600 dark:text-gray-300">
-                    Have questions?{' '}
-                    <span 
-                      onClick={() => setIsUpsellOpen(true)} 
-                      className="cursor-pointer font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
-                    >
-                      Upgrade to get full access
-                    </span>{' '}
-                    to your trainer. No limits, no ads, just success.
-                  </p>
-                </div>
               </div>
             </div>
           ))}
-        </div>
       </div>
 
       <UpsellModal
         isOpen={isUpsellOpen}
         onClose={() => setIsUpsellOpen(false)}
-        onEmailSubmit={handleEmailSubmit}
-        onPurchase={handlePurchase}
+        onEmailSubmit={(email: string) => {
+          setUserEmail(email);
+          setIsUpsellOpen(false);
+        }}
+        onPurchase={() => setIsUpsellOpen(false)}
         userEmail={userEmail}
       />
-    </>
+    </div>
   );
 }

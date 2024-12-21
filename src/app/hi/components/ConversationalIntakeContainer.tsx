@@ -13,6 +13,7 @@ export function ConversationalIntakeContainer() {
   const searchParams = useSearchParams();
   const [userId, setUserId] = useState<string>("");
   const [user, setUser] = useState<User | null>(null);
+  const [hasProgram, setHasProgram] = useState(false);
 
   useEffect(() => {
     const initializeUser = async () => {
@@ -46,7 +47,7 @@ export function ConversationalIntakeContainer() {
   }
 
   return (
-    <div className="container mx-auto max-w-3xl px-4 py-8 relative">
+    <div className="container mx-auto max-w-7xl px-4 py-8 relative">
       <ConversationalInterface 
         userId={userId} 
         user={user}

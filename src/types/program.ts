@@ -76,11 +76,11 @@ export interface WorkoutPlan {
   daysPerWeek: number;
   workouts: Workout[];
   durationWeeks: number;
-  contextRequest?: Array<{
-    key: string;
-    reason?: string;
-    importance?: string;
-  }>;
+  phaseExplanation?: string;
+  phaseExpectations?: string;
+  phaseKeyPoints?: string[];
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 // Type guards

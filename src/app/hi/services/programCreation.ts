@@ -5,12 +5,13 @@ import { prisma } from "@/lib/prisma";
 
 export async function createProgram(intakeData: IntakeFormData) {
   try {
-    // Step 1: Generate program structure
     const structurePrompt = generateProgramStructurePrompt(intakeData);
+    console.log("🚀 ~ createProgram ~ structurePrompt:", structurePrompt)
     const structureResult = await sendMessage([{
       role: 'user',
       content: structurePrompt
     }]);
+    console.log("🚀 ~ createProgram ~ structureResult:", structureResult)
 
     if (!structureResult.success) {
       throw new Error('Failed to generate program structure');
@@ -20,19 +21,20 @@ export async function createProgram(intakeData: IntakeFormData) {
       structureResult.data?.content?.[0]?.text || '{}'
     );
 
-    // Step 2: Generate each phase's details
     const phases = [];
-    for (let i = 1; i <= programStructure.totalPhases; i++) {
+    for (let i = 1; i <= 1; i++) {
       const phasePrompt = generatePhaseDetailsPrompt(
         intakeData,
         programStructure,
         i
       );
+      console.log("🚀 ~ createProgram ~ phasePrompt:", phasePrompt)
 
       const phaseResult = await sendMessage([{
         role: 'user',
         content: phasePrompt
       }]);
+      console.log("🚀 ~ createProgram ~ phaseResult:", JSON.stringify(phaseResult.data?.content?.[0]?.text, null, 2))
 
       if (!phaseResult.success) {
         throw new Error(`Failed to generate phase ${i} details`);
@@ -44,7 +46,7 @@ export async function createProgram(intakeData: IntakeFormData) {
       phases.push(phaseDetails);
     }
 
-    // Step 3: Combine into final program
+    // get a cooler name from the AI
     return {
       programName: `${intakeData.trainingGoal} Focus Program`,
       programDescription: programStructure.overallProgression.join('. '),

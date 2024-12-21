@@ -37,7 +37,6 @@ export async function processUserMessage(
   console.log("🚀 ~ processUserMessage ~ extractedData:", extractedData)
   try {
     if (generateProgramDirectly) {
-      console.log("generateProgramDirectly");
       const intakeData = convertToIntakeFormat(extractedData);
       
       // Save intake data using existing UserIntake model
@@ -83,6 +82,7 @@ export async function processUserMessage(
 
       // Generate program using new service
       const program = await createProgram(intakeData);
+      console.log("🚀 ~ program:", JSON.stringify(program, null, 2))
       
       return {
         success: true,
