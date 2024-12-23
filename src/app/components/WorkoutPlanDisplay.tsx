@@ -110,8 +110,9 @@ export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: Workou
           
           {!userEmail ? (
             <div className="flex flex-col items-center justify-center text-center py-6 space-y-4">
-              <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-4 w-full">
-                <p className="text-sm text-gray-700 dark:text-gray-300 font-medium mb-2">
+              {/* <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-4 w-full"> */}
+              <div className="bg-white/90 dark:bg-gray-800/95 p-4 rounded-xl shadow-lg w-full max-w-sm">
+                <p className="font-semibold text-gray-900 dark:text-white mb-3">
                   Unlock Your Custom Analysis
                 </p>
                 <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-2 mb-4">
@@ -164,8 +165,8 @@ export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: Workou
               </div>
               
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
-                <div className="bg-white/95 dark:bg-gray-800/95 p-4 rounded-xl shadow-lg w-full max-w-sm">
-                  <p className="font-medium text-gray-900 dark:text-white mb-3">
+                <div className="bg-white/90 dark:bg-gray-800/95 p-4 rounded-xl shadow-lg w-full max-w-sm">
+                  <p className="font-semibold text-gray-900 dark:text-white mb-3">
                     Transform Your Journey
                   </p>
                   <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-2 mb-4">

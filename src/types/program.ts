@@ -85,26 +85,26 @@ export interface newWorkoutPlan {
   // todo: user composition / profile / stats / etc
 }
 
-export interface WorkoutPlan {
-  id: string;
-  phase: number;
-  bodyFatPercentage?: number;
-  muscleMassDistribution?: string;
-  dailyCalories?: number;
-  proteinGrams?: number;
-  carbGrams?: number;
-  fatGrams?: number;
-  mealTiming?: string[];
-  progressionProtocol?: string[];
-  daysPerWeek: number;
-  workouts: Workout[];
-  durationWeeks: number;
-  phaseExplanation?: string;
-  phaseExpectations?: string;
-  phaseKeyPoints?: string[];
-  createdAt?: Date;
-  updatedAt?: Date;
-}
+// export interface _WorkoutPlan {
+//   id: string;
+//   phase: number;
+//   bodyFatPercentage?: number;
+//   muscleMassDistribution?: string;
+//   dailyCalories?: number;
+//   proteinGrams?: number;
+//   carbGrams?: number;
+//   fatGrams?: number;
+//   mealTiming?: string[];
+//   progressionProtocol?: string[];
+//   daysPerWeek: number;
+//   workouts: Workout[];
+//   durationWeeks: number;
+//   phaseExplanation?: string;
+//   phaseExpectations?: string;
+//   phaseKeyPoints?: string[];
+//   createdAt?: Date;
+//   updatedAt?: Date;
+// }
 
 // Type guards
 export type ValidPhaseCount<T extends Phase[]> = T extends { length: 3 | 4 } ? T : never;
