@@ -39,8 +39,8 @@ export interface Workout {
   day: number;
   dayNumber?: number;
   workoutPlanId?: string;
-  focus?: string;
   exercises: Exercise[];
+  focus?: string;
   warmup?: {
     duration: number;
     activities: string[];

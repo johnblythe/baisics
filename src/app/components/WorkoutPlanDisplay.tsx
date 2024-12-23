@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { WorkoutPlan } from '@/types/program';
 import { UpsellModal } from './UpsellModal';
-
+import { Target, Brain, Activity, Key, Dumbbell, Apple, ChartLine } from 'lucide-react';
 interface WorkoutPlanDisplayProps {
   plan: WorkoutPlan;
   userEmail?: string | null;
@@ -15,242 +15,318 @@ export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: Workou
     setIsUpsellOpen(true);
   };
 
+  const nutrition = plan.nutrition;
+
   return (
     <div className="space-y-8">
       {/* Overview Section */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
-          {/* Phase Overview Section */}
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
-            <h3 className="text-xl font-semibold mb-4">Phase Overview</h3>
-            <div className="space-y-4">
-              <div>
-                <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">Why This Phase</h4>
-                <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-                  {plan.phaseExplanation || "This phase focuses on building foundational strength and muscle mass through progressive overload and compound movements."}
-                </p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+        {/* Phase Overview Section */}
+        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+              <Target className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            </div>
+            <h3 className="text-xl font-semibold">Phase Overview</h3>
+          </div>
+          <div className="space-y-6">
+            <div className="flex items-start space-x-3">
+              <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg mt-1">
+                <Brain className="w-4 h-4 text-purple-600 dark:text-purple-400" />
               </div>
               <div>
-                <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">What to Expect</h4>
+                <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2 font-semibold">Why This Phase</h4>
                 <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-                  {plan.phaseExpectations || "You'll start with moderate weights to perfect form, gradually increasing intensity. Expect to feel challenged but not overwhelmed."}
+                  {plan?.phaseExplanation || "This phase focuses on building foundational strength and muscle mass through progressive overload and compound movements."}
                 </p>
               </div>
+            </div>
+            <div className="flex items-start space-x-3">
+              <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg mt-1">
+                <Activity className="w-4 h-4 text-green-600 dark:text-green-400" />
+              </div>
               <div>
-                <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">Keys to Success</h4>
-                <ul className="list-disc pl-4 text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                  {(plan.phaseKeyPoints || [
+                <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2 font-semibold">What to Expect</h4>
+                <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+                  {plan?.phaseExpectations || "You'll start with moderate weights to perfect form, gradually increasing intensity. Expect to feel challenged but not overwhelmed."}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start space-x-3">
+              <div className="p-2 bg-amber-100 dark:bg-amber-900 rounded-lg mt-1">
+                <Key className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+              </div>
+              <div>
+                <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2 font-semibold">Keys to Success</h4>
+                <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                  {(plan?.phaseKeyPoints || [
                     "Focus on form over weight",
                     "Track your progress each session",
                     "Ensure adequate rest between workouts"
                   ]).map((point, index) => (
-                    <li key={index}>{point}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          {/* Combined Nutrition & Progression Section */}
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
-            <div className="space-y-6">
-              {/* Nutrition Part */}
-              <div>
-                <h3 className="text-xl font-semibold mb-4">Nutrition</h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600 dark:text-gray-400">Daily Calories:</span>
-                    <span className="font-medium">{plan.dailyCalories}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600 dark:text-gray-400">Protein:</span>
-                    <span className="font-medium">{plan.proteinGrams}g</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600 dark:text-gray-400">Carbs:</span>
-                    <span className="font-medium">{plan.carbGrams}g</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600 dark:text-gray-400">Fats:</span>
-                    <span className="font-medium">{plan.fatGrams}g</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Divider */}
-              <div className="border-t border-gray-200 dark:border-gray-700"></div>
-
-              {/* Progression Part */}
-              <div>
-                <h3 className="text-xl font-semibold mb-4">Progression Protocol</h3>
-                <ul className="space-y-2">
-                  {plan.progressionProtocol?.map((protocol: string, index: number) => (
-                    <li key={index} className="text-gray-600 dark:text-gray-400">
-                      {protocol}
+                    <li key={`key-point-${index}`} className="flex items-center">
+                      <Dumbbell className="w-4 h-4 mr-2 text-amber-600 dark:text-amber-400" />
+                      {point}
                     </li>
                   ))}
                 </ul>
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Body Composition Section */}
-          <div className="relative bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
-            <div className="flex justify-between items-start mb-4">
-              <h3 className="text-xl font-semibold">Body Composition</h3>
+        {/* Nutrition Section */}
+        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="p-2 bg-red-100 dark:bg-red-900 rounded-lg">
+              <Apple className="w-5 h-5 text-red-600 dark:text-red-400" />
             </div>
-            
-            {!userEmail ? (
-              <div className="flex flex-col items-center justify-center text-center py-6">
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                  Add photos or measurements to get custom analysis & nutrition
+            <h3 className="text-xl font-semibold">Nutrition</h3>
+          </div>
+          <div className="space-y-3">
+            {[
+              { label: 'Daily Calories', value: `${nutrition?.dailyCalories} kcals` },
+              { label: 'Protein', value: `${nutrition?.macros?.protein}g` },
+              { label: 'Carbs', value: `${nutrition?.macros?.carbs}g` },
+              { label: 'Fats', value: `${nutrition?.macros?.fats}g` }
+            ].map((item, index) => (
+              <div key={index} className="flex justify-between items-center p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
+                <span className="text-gray-600 dark:text-gray-300">{item.label}</span>
+                <span className="font-medium text-gray-900 dark:text-white">{item.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Body Composition Section */}
+        <div className="relative bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="p-2 bg-indigo-100 dark:bg-indigo-900 rounded-lg">
+              <Activity className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+            </div>
+            <h3 className="text-xl font-semibold">Body Composition</h3>
+          </div>
+          
+          {!userEmail ? (
+            <div className="flex flex-col items-center justify-center text-center py-6 space-y-4">
+              <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-4 w-full">
+                <p className="text-sm text-gray-700 dark:text-gray-300 font-medium mb-2">
+                  Unlock Your Custom Analysis
                 </p>
+                <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-2 mb-4">
+                  <li className="flex items-center">
+                    <span className="mr-2">✓</span> Precise body fat calculations
+                  </li>
+                  <li className="flex items-center">
+                    <span className="mr-2">✓</span> Muscle mass distribution insights
+                  </li>
+                  <li className="flex items-center">
+                    <span className="mr-2">✓</span> Personalized nutrition adjustments
+                  </li>
+                </ul>
                 <button
                   onClick={handleUpsell}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                  className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-sm hover:shadow-md"
                 >
                   Get Custom Analysis
                 </button>
               </div>
-            ) : (
-              <div>
-                <div className="flex justify-between items-center mb-3">
-                  <span className="text-gray-600 dark:text-gray-400">Body Fat:</span>
-                  <span className="font-medium">{plan.bodyFatPercentage}%</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600 dark:text-gray-400">Muscle Distribution:</span>
-                  <span className="font-medium">{plan.muscleMassDistribution}</span>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Progress Stats Section */}
-          <div className="relative bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
-            <div className="flex justify-between items-start mb-4">
-              <h3 className="text-xl font-semibold">Body & Progress Stats</h3>
             </div>
-            
-            {!userEmail ? (
-              <div>
-                {/* Blurred Charts */}
-                <div className="filter blur-sm pointer-events-none">
-                  <div className="h-32 bg-gradient-to-r from-blue-100 to-blue-50 dark:from-blue-900 dark:to-blue-800 rounded-lg mb-4">
-                    {/* Placeholder for body measurements chart */}
-                  </div>
-                  <div className="h-32 bg-gradient-to-r from-green-100 to-green-50 dark:from-green-900 dark:to-green-800 rounded-lg">
-                    {/* Placeholder for progress tracking chart */}
-                  </div>
-                </div>
-                
-                {/* Overlay Content */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                    Track your progress with detailed body measurements and performance metrics
+          ) : (
+            <div className="space-y-3">
+              <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-700 rounded-lg">
+                <span className="text-gray-600 dark:text-gray-300">Body Fat:</span>
+                <span className="font-medium text-gray-900 dark:text-white">{plan?.bodyFatPercentage}%</span>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-700 rounded-lg">
+                <span className="text-gray-600 dark:text-gray-300">Muscle Distribution:</span>
+                <span className="font-medium text-gray-900 dark:text-white">{plan?.muscleMassDistribution}</span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Progress Stats Section */}
+        <div className="relative bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="p-2 bg-teal-100 dark:bg-teal-900 rounded-lg">
+              <ChartLine className="w-5 h-5 text-teal-600 dark:text-teal-400" />
+            </div>
+            <h3 className="text-xl font-semibold">Body & Progress Stats</h3>
+          </div>
+          
+          {!userEmail ? (
+            <div>
+              <div className="filter blur-sm pointer-events-none">
+                <div className="h-32 bg-gradient-to-r from-blue-100 to-blue-50 dark:from-blue-900 dark:to-blue-800 rounded-lg mb-4" />
+                <div className="h-32 bg-gradient-to-r from-green-100 to-green-50 dark:from-green-900 dark:to-green-800 rounded-lg" />
+              </div>
+              
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
+                <div className="bg-white/95 dark:bg-gray-800/95 p-4 rounded-xl shadow-lg w-full max-w-sm">
+                  <p className="font-medium text-gray-900 dark:text-white mb-3">
+                    Transform Your Journey
                   </p>
+                  <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-2 mb-4">
+                    <li className="flex items-center">
+                      <span className="mr-2">✓</span> Weekly progress photos
+                    </li>
+                    <li className="flex items-center">
+                      <span className="mr-2">✓</span> Body measurements tracking
+                    </li>
+                    <li className="flex items-center">
+                      <span className="mr-2">✓</span> Strength progression analytics
+                    </li>
+                    <li className="flex items-center">
+                      <span className="mr-2">✓</span> Smart goal adjustments
+                    </li>
+                  </ul>
                   <button
                     onClick={handleUpsell}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                    className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-sm hover:shadow-md"
                   >
                     Unlock Progress Tracking
                   </button>
                 </div>
               </div>
-            ) : (
-              <div className="space-y-4">
-                <div className="h-32 bg-gradient-to-r from-blue-100 to-blue-50 dark:from-blue-900 dark:to-blue-800 rounded-lg">
-                  {/* Actual body measurements chart would go here */}
-                </div>
-                <div className="h-32 bg-gradient-to-r from-green-100 to-green-50 dark:from-green-900 dark:to-green-800 rounded-lg">
-                  {/* Actual progress tracking chart would go here */}
-                </div>
-              </div>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="h-32 bg-gradient-to-r from-blue-100 to-blue-50 dark:from-blue-900 dark:to-blue-800 rounded-lg" />
+              <div className="h-32 bg-gradient-to-r from-green-100 to-green-50 dark:from-green-900 dark:to-green-800 rounded-lg" />
+            </div>
+          )}
         </div>
       </div>
-
+    </div>
       {/* Training Schedule */}
       <div className="space-y-6">
         <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-transparent bg-clip-text">
           Training Schedule
         </h2>
+        {/* Debugging */}
+        {console.log("Full plan:", plan)}
+        {console.log("Workouts array:", plan.workouts)}
         {plan.workouts
-          .sort((a, b) => (a.dayNumber || a.day) - (b.dayNumber || b.day))
-          .map((workout, index) => (
-            <div
-              key={workout.id}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden"
-            >
-              <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 p-4 border-b border-gray-200 dark:border-gray-600">
-                <h3 className="font-bold text-xl">Session {index+1} - {workout.focus}</h3>
-                {workout.focus && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{workout.focus}</p>
-                )}
-              </div>
-              <div className="p-6 space-y-6">
-                {/* Warmup Section */}
-                {workout.warmup && (
-                  <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-                    <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2 flex items-center gap-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
-                      </svg>
-                      Warmup ({workout.warmup.duration} mins)
-                    </h4>
-                    <ul className="list-disc list-inside text-sm text-blue-800 dark:text-blue-200 space-y-1">
-                      {workout.warmup.activities.map((activity, index) => (
-                        <li key={index}>{activity}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* Main Workout */}
-                <div>
-                  {/* Header */}
-                  <div className="grid grid-cols-12 gap-4 text-sm text-left mb-2 bg-gray-50 dark:bg-gray-700 p-3 rounded-lg font-medium">
-                    <div className="col-span-6">Exercise</div>
-                    <div className="col-span-1">Sets</div>
-                    <div className="col-span-2">Reps</div>
-                    <div className="col-span-3">Rest</div>
-                  </div>
-                  {/* Exercise Rows */}
-                  <div className="space-y-2">
-                    {workout.exercises.map((exercise, index) => (
-                      <div
-                        key={index}
-                        className="grid grid-cols-12 gap-4 py-3 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors rounded-lg px-3"
-                      >
-                        <div className="col-span-6 font-medium">{exercise.name}</div>
-                        <div className="col-span-1">{exercise.sets}</div>
-                        <div className="col-span-2">{exercise.reps}</div>
-                        <div className="col-span-3">{exercise.restPeriod}</div>
-                      </div>
-                    ))}
-                  </div>
+          .sort((a, b) => {
+            console.log("Sorting workouts:", { a, b });
+            return (a.dayNumber || a.day) - (b.dayNumber || b.day);
+          })
+          .map((workout, index) => {
+            console.log("Workout details:", {
+              id: workout.id,
+              focus: workout.focus,
+              warmup: workout.warmup,
+              cooldown: workout.cooldown,
+              exercises: workout.exercises.map(ex => ({
+                name: ex.name,
+                sets: ex.sets,
+                reps: ex.reps,
+                restPeriod: ex.restPeriod
+              }))
+            });
+            return (
+              <div
+                key={workout.id}
+                className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden"
+              >
+                <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 p-4 border-b border-gray-200 dark:border-gray-600">
+                  <h3 className="font-bold text-xl">{workout.name ? `${workout.name}` : ``}</h3>
+                  {workout.focus && (
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{workout.focus}</p>
+                  )}
                 </div>
+                <div className="p-6 space-y-6">
+                  {/* Warmup Section */}
+                  {workout.warmup && (
+                    <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+                      <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2 flex items-center gap-2">
+                        <svg 
+                          xmlns="http://www.w3.org/2000/svg" 
+                          className="h-5 w-5" 
+                          viewBox="0 0 24 24" 
+                          fill="none" 
+                          stroke="currentColor" 
+                          strokeWidth="2" 
+                          strokeLinecap="round" 
+                          strokeLinejoin="round"
+                        >
+                          <path d="M12 2v4" />
+                          <path d="M12 18v4" />
+                          <path d="m4.93 4.93 2.83 2.83" />
+                          <path d="m16.24 16.24 2.83 2.83" />
+                          <path d="M2 12h4" />
+                          <path d="M18 12h4" />
+                          <path d="m4.93 19.07 2.83-2.83" />
+                          <path d="m16.24 7.76 2.83-2.83" />
+                        </svg>
+                        Warmup {workout.warmup.duration ? `(${workout.warmup.duration} mins)` : ''}
+                      </h4>
+                      <ul className="list-disc list-inside text-sm text-blue-800 dark:text-blue-200 space-y-1">
+                        {workout.warmup.activities?.map((activity, index) => (
+                          <li key={`warmup-${index}`}>{activity}</li>
+                        )) || <li>General warmup</li>}
+                      </ul>
+                    </div>
+                  )}
 
-                {/* Cooldown Section */}
-                {workout.cooldown && (
-                  <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
-                    <h4 className="font-semibold text-green-900 dark:text-green-100 mb-2 flex items-center gap-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12.75 12.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM7.5 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM8.25 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM9.75 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM10.5 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM12.75 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM14.25 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM15 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM16.5 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM15 12.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM16.5 13.5a.75.75 0 100-1.5.75.75 0 000 1.5z" />
-                      </svg>
-                      Cooldown ({workout.cooldown.duration} mins)
-                    </h4>
-                    <ul className="list-disc list-inside text-sm text-green-800 dark:text-green-200 space-y-1">
-                      {workout.cooldown.activities.map((activity, index) => (
-                        <li key={index}>{activity}</li>
-                      ))}
-                    </ul>
+                  {/* Main Workout */}
+                  <div>
+                    {/* Header */}
+                    <div className="grid font-bold grid-cols-12 gap-4 text-sm text-left mb-2 bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+                      <div className="col-span-6">Exercise</div>
+                      <div className="col-span-1">Sets</div>
+                      <div className="col-span-2">Reps</div>
+                      <div className="col-span-3">Rest</div>
+                    </div>
+                    {/* Exercise Rows */}
+                    <div className="space-y-2">
+                      {workout.exercises.map((exercise, index) => {
+                        return (
+                          <div
+                            key={`exercise-${workout.id}-${index}`}
+                            className="grid grid-cols-12 gap-4 py-3 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors rounded-lg px-3"
+                          >
+                            <div className="col-span-6 font-medium">{exercise.name}</div>
+                            <div className="col-span-1">{exercise.sets}</div>
+                            <div className="col-span-2">{exercise.reps}</div>
+                            <div className="col-span-3">{exercise.restPeriod || '60s'}</div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
-                )}
+
+                  {/* Cooldown Section */}
+                  {workout.cooldown && (
+                    <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
+                      <h4 className="font-semibold text-green-900 dark:text-green-100 mb-2 flex items-center gap-2">
+                        <svg 
+                          xmlns="http://www.w3.org/2000/svg" 
+                          className="h-5 w-5" 
+                          viewBox="0 0 24 24" 
+                          fill="none" 
+                          stroke="currentColor" 
+                          strokeWidth="2" 
+                          strokeLinecap="round" 
+                          strokeLinejoin="round"
+                        >
+                          <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2" />
+                        </svg>
+                        Cooldown {workout.cooldown.duration ? `(${workout.cooldown.duration} mins)` : ''}
+                      </h4>
+                      <ul className="list-disc list-inside text-sm text-green-800 dark:text-green-200 space-y-1">
+                        {workout.cooldown.activities?.map((activity, index) => (
+                          <li key={`cooldown-${index}`}>{activity}</li>
+                        )) || <li>General cooldown</li>}
+                      </ul>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
       </div>
 
       <UpsellModal

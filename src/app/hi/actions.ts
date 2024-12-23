@@ -5,6 +5,7 @@ import { sendMessage } from "@/utils/chat";
 import { createProgram } from "./services/programCreation";
 import { prisma } from "@/lib/prisma";
 import { modifyPhase } from "./services/programCreation";
+import { createProgramSequentially } from "./services/sequentialProgramCreation";
 
 // Helper to convert extracted data to IntakeFormData format
 function convertToIntakeFormat(extractedData: any): IntakeFormData {
@@ -80,8 +81,8 @@ export async function processUserMessage(
       });
 
       // Generate program using new service
-      const program = await createProgram(intakeData);
-      console.log("🚀 ~ program:", JSON.stringify(program, null, 2))
+      // const program = await createProgram(intakeData);
+      const program = await createProgramSequentially(intakeData, userId);
       
       return {
         success: true,
