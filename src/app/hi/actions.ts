@@ -1,6 +1,6 @@
 'use server';
 
-import { Message, ExtractedData, IntakeFormData, newWorkoutPlan, WorkoutPlan, Program } from "@/types";
+import { Message, ExtractedData, IntakeFormData, WorkoutPlan, WorkoutPlan, Program } from "@/types";
 import { sendMessage } from "@/utils/chat";
 import { createProgram } from "./services/programCreation";
 import { prisma } from "@/lib/prisma";

@@ -137,7 +137,7 @@ model Exercise {
   name              String          @map("name")
   sets              Int
   reps              Int
-  restPeriod        String          @map("rest_period")
+  restPeriod        Int?            @map("rest_period")
   workout           Workout         @relation(fields: [workoutId], references: [id], onDelete: Cascade)
   exerciseLibrary   ExerciseLibrary @relation(fields: [exerciseLibraryId], references: [id])
   createdAt         DateTime        @default(now()) @map("created_at")

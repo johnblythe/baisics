@@ -1,6 +1,7 @@
-import { IntakeFormData, Program, Nutrition, newWorkoutPlan } from "@/types";
+import { IntakeFormData, Program, Nutrition, WorkoutPlan, Workout } from "@/types";
 import { sendMessage } from "@/utils/chat";
 import type { ContentBlock } from '@anthropic-ai/sdk/src/resources/messages.js';
+import { prisma } from '@/lib/prisma';
 
 interface SendMessageResponse {
   success: boolean;
@@ -120,17 +121,18 @@ const formatWorkoutDetailsPrompt = (
             "name": string,
             "sets": number,
             "reps": number,
-            "restPeriod": number
+            "restPeriod": number // in seconds
           }>,
-          focus: string;
-          warmup: {
-            duration: number;
-            activities: string[];
-          };
-          cooldown: {
-            duration: number;
-            activities: string[];
-          };
+          "focus": string,
+          "warmup": {
+            "duration": number,
+            "activities": string[]
+          },
+          "cooldown": {
+            "duration": number,
+            "activities": string[]
+          },
+          "dayNumber": number
         }>,
         "nutrition": {
           "dailyCalories": number,
@@ -144,7 +146,7 @@ const formatWorkoutDetailsPrompt = (
   }];
 };
 
-const formatNutritionPrompt = (
+const _formatNutritionPrompt = (
   intakeData: IntakeFormData,
   programStructure: ProgramStructure
 ): { role: string; content: string; }[] => {
@@ -168,11 +170,11 @@ Please provide a response in the following JSON format:
   }];
 };
 
-const formatFinalReviewPrompt = (
+const _formatFinalReviewPrompt = (
   intakeData: IntakeFormData,
   programStructure: ProgramStructure,
   workoutStructure: WorkoutStructure,
-  workoutPlans: newWorkoutPlan[],
+  workoutPlans: WorkoutPlan[],
   nutritionPlan: Nutrition
 ): { role: string; content: string; }[] => {
   return [{
@@ -218,6 +220,63 @@ const parseAIResponse = <T>(response: SendMessageResponse, defaultValue: T): T =
   }
 };
 
+const saveProgramToDatabase = async (program: Program): Promise<void> => {
+  try {
+    if (!program?.name || !program?.user?.id) {
+      throw new Error('Invalid program data');
+    }
+
+    const dbData = {
+      id: program.id,
+      name: program.name,
+      description: program.description || '',
+      createdBy: program.user.id,
+      workoutPlans: {
+        create: program.workoutPlans.map(plan => ({
+          phase: 1, // @todo
+          bodyFatPercentage: 0, // @todo
+          muscleMassDistribution: "Balanced", // @todo
+          dailyCalories: plan.nutrition.dailyCalories,
+          proteinGrams: plan.nutrition.macros.protein,
+          carbGrams: plan.nutrition.macros.carbs,
+          fatGrams: plan.nutrition.macros.fats,
+          daysPerWeek: plan.workouts.length,
+          userId: program.user.id,
+          workouts: {
+            create: plan.workouts.map(workout => ({
+              dayNumber: workout.dayNumber || 1,
+              exercises: {
+                create: workout.exercises.map(exercise => ({
+                  name: exercise.name,
+                  sets: exercise.sets,
+                  reps: exercise.reps,
+                  restPeriod: exercise.restPeriod,
+                  exerciseLibrary: {
+                    connectOrCreate: {
+                      where: { name: exercise.name },
+                      create: {
+                        name: exercise.name,
+                        category: exercise.category || 'default',
+                        equipment: [],
+                        difficulty: exercise.difficulty || 'beginner'
+                      }
+                    }
+                  }
+                }))
+              }
+            }))
+          }
+        }))
+      }
+    };
+
+    await prisma.program.create({ data: dbData });
+  } catch (error) {
+    console.error('Error in saveProgramToDatabase:', error);
+    throw error;
+  }
+};
+
 // Main function to create program sequentially
 export const createProgramSequentially = async (
   intakeData: IntakeFormData,
@@ -259,19 +318,36 @@ export const createProgramSequentially = async (
     }
 
     // Step 3: Get workout details
-    const workoutPlans: newWorkoutPlan[] = [];
+    const workoutPlans: WorkoutPlan[] = [];
     // programStructure.phaseCount
     for (let phase = 0; phase < 1; phase++) {
       const workoutDetailsResponse = await sendMessage(
         formatWorkoutDetailsPrompt(intakeData, programStructure, workoutStructure, phase)
       );
-      const workoutDetails = parseAIResponse<newWorkoutPlan>(workoutDetailsResponse, []);
+      const workoutDetails = parseAIResponse<{
+        id: string;
+        workouts: Workout[];
+        nutrition: Nutrition;
+      }>(workoutDetailsResponse, {
+        id: crypto.randomUUID(),
+        workouts: [],
+        nutrition: {
+          dailyCalories: 2000,
+          macros: { protein: 150, carbs: 200, fats: 70 }
+        }
+      });
 
-      if (!workoutDetails || typeof workoutDetails !== 'object') {
+      if (!workoutDetails.workouts.length) {
         throw new Error(`Failed to generate workout details for phase ${phase + 1}`);
       }
 
-      workoutPlans.push(workoutDetails);
+      const workoutPlan: WorkoutPlan = {
+        id: workoutDetails.id,
+        workouts: workoutDetails.workouts,
+        nutrition: workoutDetails.nutrition
+      };
+
+      workoutPlans.push(workoutPlan);
     }
 
     // Step 4: Get nutrition plan
@@ -324,9 +400,18 @@ export const createProgramSequentially = async (
       }
     };
 
+    // Save program to database
+    await saveProgramToDatabase(program);
+
     return program;
   } catch (error) {
-    console.error('Error creating program:', error);
+    console.error('Error in createProgramSequentially:', error);
+    if (error instanceof Error) {
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack
+      });
+    }
     return null;
   }
 };

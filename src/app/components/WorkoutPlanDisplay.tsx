@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { WorkoutPlan } from '@/types/program';
 import { UpsellModal } from './UpsellModal';
 import { Target, Brain, Activity, Key, Dumbbell, Apple, ChartLine } from 'lucide-react';
+import { formatRestPeriod } from '@/utils/formatters';
+
 interface WorkoutPlanDisplayProps {
   plan: WorkoutPlan;
   userEmail?: string | null;
@@ -64,8 +66,8 @@ export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: Workou
                     "Focus on form over weight",
                     "Track your progress each session",
                     "Ensure adequate rest between workouts"
-                  ]).map((point, index) => (
-                    <li key={`key-point-${index}`} className="flex items-center">
+                  ]).map((point: string, index: number) => (
+                    <li key={`key-point-${point}-${index}`} className="flex items-center">
                       <Dumbbell className="w-4 h-4 mr-2 text-amber-600 dark:text-amber-400" />
                       {point}
                     </li>
@@ -86,12 +88,12 @@ export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: Workou
           </div>
           <div className="space-y-3">
             {[
-              { label: 'Daily Calories', value: `${nutrition?.dailyCalories} kcals` },
-              { label: 'Protein', value: `${nutrition?.macros?.protein}g` },
-              { label: 'Carbs', value: `${nutrition?.macros?.carbs}g` },
-              { label: 'Fats', value: `${nutrition?.macros?.fats}g` }
-            ].map((item, index) => (
-              <div key={index} className="flex justify-between items-center p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
+              { id: 'calories', label: 'Daily Calories', value: `${nutrition?.dailyCalories} kcals` },
+              { id: 'protein', label: 'Protein', value: `${nutrition?.macros?.protein}g` },
+              { id: 'carbs', label: 'Carbs', value: `${nutrition?.macros?.carbs}g` },
+              { id: 'fats', label: 'Fats', value: `${nutrition?.macros?.fats}g` }
+            ].map((item) => (
+              <div key={item.id} className="flex justify-between items-center p-3 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
                 <span className="text-gray-600 dark:text-gray-300">{item.label}</span>
                 <span className="font-medium text-gray-900 dark:text-white">{item.value}</span>
               </div>
@@ -109,7 +111,7 @@ export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: Workou
           </div>
           
           {!userEmail ? (
-            <div className="flex flex-col items-center justify-center text-center py-6 space-y-4">
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
               {/* <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-4 w-full"> */}
               <div className="bg-white/90 dark:bg-gray-800/95 p-4 rounded-xl shadow-lg w-full max-w-sm">
                 <p className="font-semibold text-gray-900 dark:text-white mb-3">
@@ -208,25 +210,13 @@ export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: Workou
         </h2>
         {/* Debugging */}
         {console.log("Full plan:", plan)}
-        {console.log("Workouts array:", plan.workouts)}
+        {/* {console.log("Workouts array:", plan.workouts)} */}
         {plan.workouts
           .sort((a, b) => {
-            console.log("Sorting workouts:", { a, b });
+            // console.log("Sorting workouts:", { a, b });
             return (a.dayNumber || a.day) - (b.dayNumber || b.day);
           })
           .map((workout, index) => {
-            console.log("Workout details:", {
-              id: workout.id,
-              focus: workout.focus,
-              warmup: workout.warmup,
-              cooldown: workout.cooldown,
-              exercises: workout.exercises.map(ex => ({
-                name: ex.name,
-                sets: ex.sets,
-                reps: ex.reps,
-                restPeriod: ex.restPeriod
-              }))
-            });
             return (
               <div
                 key={workout.id}
@@ -265,8 +255,8 @@ export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: Workou
                         Warmup {workout.warmup.duration ? `(${workout.warmup.duration} mins)` : ''}
                       </h4>
                       <ul className="list-disc list-inside text-sm text-blue-800 dark:text-blue-200 space-y-1">
-                        {workout.warmup.activities?.map((activity, index) => (
-                          <li key={`warmup-${index}`}>{activity}</li>
+                        {workout.warmup.activities?.map((activity) => (
+                          <li key={`warmup-${workout.id}-${activity}`}>{activity}</li>
                         )) || <li>General warmup</li>}
                       </ul>
                     </div>
@@ -292,7 +282,7 @@ export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: Workou
                             <div className="col-span-6 font-medium">{exercise.name}</div>
                             <div className="col-span-1">{exercise.sets}</div>
                             <div className="col-span-2">{exercise.reps}</div>
-                            <div className="col-span-3">{exercise.restPeriod || '60s'}</div>
+                            <div className="col-span-3">{formatRestPeriod(exercise.restPeriod)}</div>
                           </div>
                         );
                       })}
@@ -318,8 +308,8 @@ export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: Workou
                         Cooldown {workout.cooldown.duration ? `(${workout.cooldown.duration} mins)` : ''}
                       </h4>
                       <ul className="list-disc list-inside text-sm text-green-800 dark:text-green-200 space-y-1">
-                        {workout.cooldown.activities?.map((activity, index) => (
-                          <li key={`cooldown-${index}`}>{activity}</li>
+                        {workout.cooldown.activities?.map((activity) => (
+                          <li key={`cooldown-${workout.id}-${activity}`}>{activity}</li>
                         )) || <li>General cooldown</li>}
                       </ul>
                     </div>

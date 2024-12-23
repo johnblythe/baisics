@@ -4,7 +4,7 @@ export interface Program {
   id: string;
   name: string;
   description?: string;
-  workoutPlans: newWorkoutPlan[];
+  workoutPlans: WorkoutPlan[];
   user: User;
 }
 
@@ -36,8 +36,9 @@ export interface TrainingPlan {
 
 export interface Workout {
   id?: string;
+  name?: string;
   day: number;
-  dayNumber?: number;
+  dayNumber: number;
   workoutPlanId?: string;
   exercises: Exercise[];
   focus?: string;
@@ -78,7 +79,7 @@ export interface Nutrition {
   mealTiming?: string[];
 }
 
-export interface newWorkoutPlan {
+export interface WorkoutPlan {
   id: string;
   nutrition: Nutrition;
   workouts: Workout[];
