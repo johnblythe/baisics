@@ -253,9 +253,7 @@ export const createProgramSequentially = async (
         repRanges: { default: 10 }
       }
     });
-    console.log("🚀 ~ workoutStructure:", workoutStructure)
-    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-
+    
     if (!workoutStructure.workoutDistribution.length) {
       throw new Error('Failed to generate workout structure');
     }
@@ -267,10 +265,7 @@ export const createProgramSequentially = async (
       const workoutDetailsResponse = await sendMessage(
         formatWorkoutDetailsPrompt(intakeData, programStructure, workoutStructure, phase)
       );
-      console.log("🚀 ~ workoutDetailsResponse:", workoutDetailsResponse.data?.content[0]?.text)
       const workoutDetails = parseAIResponse<newWorkoutPlan>(workoutDetailsResponse, []);
-      console.log("🚀 ~ workoutDetails:", workoutDetails)
-      console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
       if (!workoutDetails || typeof workoutDetails !== 'object') {
         throw new Error(`Failed to generate workout details for phase ${phase + 1}`);
@@ -281,37 +276,37 @@ export const createProgramSequentially = async (
 
     // Step 4: Get nutrition plan
     // @TODO: need this?
-    const nutritionResponse = await sendMessage(formatNutritionPrompt(intakeData, programStructure));
-    const nutritionPlan = parseAIResponse<Nutrition>(nutritionResponse, {
-      dailyCalories: 2000,
-      macros: { protein: 150, carbs: 200, fats: 70 },
-      // mealTiming: ['Pre-workout', 'Post-workout']
-    });
-    console.log("🚀 ~ nutritionPlan:", nutritionPlan)
-    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    // const nutritionResponse = await sendMessage(formatNutritionPrompt(intakeData, programStructure));
+    // const nutritionPlan = parseAIResponse<Nutrition>(nutritionResponse, {
+    //   dailyCalories: 2000,
+    //   macros: { protein: 150, carbs: 200, fats: 70 },
+    //   // mealTiming: ['Pre-workout', 'Post-workout']
+    // });
+    // console.log("🚀 ~ nutritionPlan:", nutritionPlan)
+    // console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
-    if (!nutritionPlan) {
-      throw new Error('Failed to generate nutrition plan');
-    }
+    // if (!nutritionPlan) {
+    //   throw new Error('Failed to generate nutrition plan');
+    // }
 
     // Step 5: Final review and recommendations
-    const reviewResponse = await sendMessage(
-      formatFinalReviewPrompt(intakeData, programStructure, workoutStructure, workoutPlans, nutritionPlan)
-    );
-    const review = parseAIResponse<ProgramReview>(reviewResponse, {
-      isComplete: false,
-      isSafe: false,
-      meetsClientNeeds: false,
-      suggestedAdjustments: [],
-      warnings: [],
-      finalRecommendations: []
-    });
-    console.log("🚀 ~ review:", review)
-    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    // const reviewResponse = await sendMessage(
+    //   formatFinalReviewPrompt(intakeData, programStructure, workoutStructure, workoutPlans, nutritionPlan)
+    // );
+    // const review = parseAIResponse<ProgramReview>(reviewResponse, {
+    //   isComplete: false,
+    //   isSafe: false,
+    //   meetsClientNeeds: false,
+    //   suggestedAdjustments: [],
+    //   warnings: [],
+    //   finalRecommendations: []
+    // });
+    // console.log("🚀 ~ review:", review)
+    // console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
-    if (!review.isComplete || !review.isSafe || !review.meetsClientNeeds) {
-      throw new Error('Program review failed: ' + review.warnings.join(', '));
-    }
+    // if (!review.isComplete || !review.isSafe || !review.meetsClientNeeds) {
+    //   throw new Error('Program review failed: ' + review.warnings.join(', '));
+    // }
 
     // Construct the final program
     const program: Program = {
@@ -328,9 +323,6 @@ export const createProgramSequentially = async (
         updatedAt: new Date()
       }
     };
-
-    console.log("🚀 ~ program:", program)
-    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
     return program;
   } catch (error) {
