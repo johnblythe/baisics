@@ -202,9 +202,9 @@ export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: Workou
                 className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden"
               >
                 <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 p-4 border-b border-gray-200 dark:border-gray-600">
-                  <h3 className="font-bold text-xl">{workout.focus ? ` - ${workout.focus}` : `${workout.name}`}</h3>
-                  {workout.name && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{workout.name}</p>
+                  <h3 className="font-bold text-xl">{workout.name ? `${workout.name}` : ``}</h3>
+                  {workout.focus && (
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{workout.focus}</p>
                   )}
                 </div>
                 <div className="p-6 space-y-6">
@@ -212,8 +212,24 @@ export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: Workou
                   {workout.warmup && (
                     <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
                       <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2 flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+                        <svg 
+                          xmlns="http://www.w3.org/2000/svg" 
+                          className="h-5 w-5" 
+                          viewBox="0 0 24 24" 
+                          fill="none" 
+                          stroke="currentColor" 
+                          strokeWidth="2" 
+                          strokeLinecap="round" 
+                          strokeLinejoin="round"
+                        >
+                          <path d="M12 2v4" />
+                          <path d="M12 18v4" />
+                          <path d="m4.93 4.93 2.83 2.83" />
+                          <path d="m16.24 16.24 2.83 2.83" />
+                          <path d="M2 12h4" />
+                          <path d="M18 12h4" />
+                          <path d="m4.93 19.07 2.83-2.83" />
+                          <path d="m16.24 7.76 2.83-2.83" />
                         </svg>
                         Warmup {workout.warmup.duration ? `(${workout.warmup.duration} mins)` : ''}
                       </h4>
@@ -257,8 +273,17 @@ export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: Workou
                   {workout.cooldown && (
                     <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
                       <h4 className="font-semibold text-green-900 dark:text-green-100 mb-2 flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M12.75 12.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM7.5 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM8.25 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM9.75 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM10.5 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM12.75 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM14.25 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM15 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM16.5 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM15 12.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM16.5 13.5a.75.75 0 100-1.5.75.75 0 000 1.5z" />
+                        <svg 
+                          xmlns="http://www.w3.org/2000/svg" 
+                          className="h-5 w-5" 
+                          viewBox="0 0 24 24" 
+                          fill="none" 
+                          stroke="currentColor" 
+                          strokeWidth="2" 
+                          strokeLinecap="round" 
+                          strokeLinejoin="round"
+                        >
+                          <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2" />
                         </svg>
                         Cooldown {workout.cooldown.duration ? `(${workout.cooldown.duration} mins)` : ''}
                       </h4>
