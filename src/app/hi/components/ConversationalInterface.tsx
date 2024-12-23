@@ -156,50 +156,50 @@ export function ConversationalInterface({ userId, user, onProgramChange }: Conve
               // Transform the AI response to match DB structure
               // @TODO: there shouldn't be a need to do a full transformation here,
               // clean up the fucking types and interfaces and shit
-              const transformedProgram = {
-                id: `draft-${Date.now()}`, // Temporary ID for draft program
-                name: programResult.program.programName,
-                description: programResult.program.programDescription,
-                createdBy: userId,
-                user: {
-                  id: userId,
-                  email: user?.email || "",
-                },
-                workoutPlans: programResult.program.phases.map(phase => ({
-                  id: `phase-${phase.phase}`,
-                  userId,
-                  programId: `draft-${Date.now()}`,
-                  phase: phase.phase,
-                  bodyFatPercentage: phase.bodyComposition.bodyFatPercentage,
-                  muscleMassDistribution: phase.bodyComposition.muscleMassDistribution,
-                  dailyCalories: phase.nutrition.dailyCalories,
-                  proteinGrams: phase.nutrition.macros.protein,
-                  carbGrams: phase.nutrition.macros.carbs,
-                  fatGrams: phase.nutrition.macros.fats,
-                  mealTiming: phase.nutrition.mealTiming,
-                  progressionProtocol: phase.progressionProtocol,
-                  daysPerWeek: phase.trainingPlan.daysPerWeek,
-                  durationWeeks: phase.durationWeeks,
-                  phaseExplanation: phase.phaseExplanation,
-                  phaseExpectations: phase.phaseExpectations,
-                  phaseKeyPoints: phase.phaseKeyPoints,
-                  workouts: phase.trainingPlan.workouts.map(workout => ({
-                    id: `workout-${workout.day}`,
-                    workoutPlanId: `phase-${phase.phase}`,
-                    dayNumber: workout.day,
-                    exercises: workout.exercises.map(exercise => ({
-                      id: `exercise-${exercise.name}-${workout.day}`,
-                      workoutId: `workout-${workout.day}`,
-                      name: exercise.name,
-                      sets: exercise.sets,
-                      reps: exercise.reps,
-                      restPeriod: exercise.restPeriod,
-                    }))
-                  }))
-                }))
-              };
+              // const transformedProgram = {
+              //   id: `draft-${Date.now()}`, // Temporary ID for draft program
+              //   name: programResult.program.programName,
+              //   description: programResult.program.programDescription,
+              //   createdBy: userId,
+              //   user: {
+              //     id: userId,
+              //     email: user?.email || "",
+              //   },
+              //   workoutPlans: programResult.program.phases.map(phase => ({
+              //     id: `phase-${phase.phase}`,
+              //     userId,
+              //     programId: `draft-${Date.now()}`,
+              //     phase: phase.phase,
+              //     bodyFatPercentage: phase.bodyComposition.bodyFatPercentage,
+              //     muscleMassDistribution: phase.bodyComposition.muscleMassDistribution,
+              //     dailyCalories: phase.nutrition.dailyCalories,
+              //     proteinGrams: phase.nutrition.macros.protein,
+              //     carbGrams: phase.nutrition.macros.carbs,
+              //     fatGrams: phase.nutrition.macros.fats,
+              //     mealTiming: phase.nutrition.mealTiming,
+              //     progressionProtocol: phase.progressionProtocol,
+              //     daysPerWeek: phase.trainingPlan.daysPerWeek,
+              //     durationWeeks: phase.durationWeeks,
+              //     phaseExplanation: phase.phaseExplanation,
+              //     phaseExpectations: phase.phaseExpectations,
+              //     phaseKeyPoints: phase.phaseKeyPoints,
+              //     workouts: phase.trainingPlan.workouts.map(workout => ({
+              //       id: `workout-${workout.day}`,
+              //       workoutPlanId: `phase-${phase.phase}`,
+              //       dayNumber: workout.day,
+              //       exercises: workout.exercises.map(exercise => ({
+              //         id: `exercise-${exercise.name}-${workout.day}`,
+              //         workoutId: `workout-${workout.day}`,
+              //         name: exercise.name,
+              //         sets: exercise.sets,
+              //         reps: exercise.reps,
+              //         restPeriod: exercise.restPeriod,
+              //       }))
+              //     }))
+              //   }))
+              // };
 
-              setProgram(transformedProgram as ProgramFullDisplay);
+              setProgram(programResult.program);
               setIsGeneratingProgram(false);
             }
           } else {

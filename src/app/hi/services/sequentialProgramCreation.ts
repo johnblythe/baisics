@@ -120,8 +120,17 @@ const formatWorkoutDetailsPrompt = (
             "name": string,
             "sets": number,
             "reps": number,
-            "rest": number
-          }>
+            "restPeriod": number
+          }>,
+          focus: string;
+          warmup: {
+            duration: number;
+            activities: string[];
+          };
+          cooldown: {
+            duration: number;
+            activities: string[];
+          };
         }>,
         "nutrition": {
           "dailyCalories": number,
@@ -217,7 +226,6 @@ export const createProgramSequentially = async (
   try {
     // Step 1: Get program structure
     const programStructureResponse = await sendMessage(formatProgramStructurePrompt(intakeData));
-    console.log("🚀 ~ programStructureResponse:", programStructureResponse)
     const programStructure = parseAIResponse<ProgramStructure>(programStructureResponse, {
       programName: '',
       programDescription: '',
@@ -226,15 +234,12 @@ export const createProgramSequentially = async (
       phaseProgression: [],
       overallGoals: []
     });
-    console.log("🚀 ~ programStructure:", programStructure)
-    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
     if (!programStructure.programName) {
       throw new Error('Failed to generate program structure');
     }
 
     // Step 2: Get workout structure
     const workoutStructureResponse = await sendMessage(formatWorkoutStructurePrompt(intakeData, programStructure));
-    console.log("🚀 ~ workoutStructureResponse:", workoutStructureResponse)
     const workoutStructure = parseAIResponse<WorkoutStructure>(workoutStructureResponse, {
       daysPerWeek: intakeData.daysAvailable || 3,
       sessionDuration: intakeData.dailyBudget || 60,
@@ -275,8 +280,8 @@ export const createProgramSequentially = async (
     }
 
     // Step 4: Get nutrition plan
+    // @TODO: need this?
     const nutritionResponse = await sendMessage(formatNutritionPrompt(intakeData, programStructure));
-    console.log("🚀 ~ nutritionResponse:", nutritionResponse)
     const nutritionPlan = parseAIResponse<Nutrition>(nutritionResponse, {
       dailyCalories: 2000,
       macros: { protein: 150, carbs: 200, fats: 70 },
@@ -293,7 +298,6 @@ export const createProgramSequentially = async (
     const reviewResponse = await sendMessage(
       formatFinalReviewPrompt(intakeData, programStructure, workoutStructure, workoutPlans, nutritionPlan)
     );
-    console.log("🚀 ~ reviewResponse:", reviewResponse)
     const review = parseAIResponse<ProgramReview>(reviewResponse, {
       isComplete: false,
       isSafe: false,

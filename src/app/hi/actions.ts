@@ -83,7 +83,6 @@ export async function processUserMessage(
       // Generate program using new service
       // const program = await createProgram(intakeData);
       const program = await createProgramSequentially(intakeData, userId);
-      console.log("🚀 ~ program:", JSON.stringify(program, null, 2))
       
       return {
         success: true,
