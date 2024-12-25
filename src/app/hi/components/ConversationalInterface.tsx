@@ -40,6 +40,20 @@ export function ConversationalInterface({ userId, user, onProgramChange }: Conve
     onProgramChange?.(program);
   }, [program, onProgramChange]);
 
+  // Add escape key handler
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isUpsellOpen) {
+        setIsUpsellOpen(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleEscapeKey);
+    return () => {
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, [isUpsellOpen]);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -474,7 +488,9 @@ export function ConversationalInterface({ userId, user, onProgramChange }: Conve
         <ProgramDisplay 
           program={program} 
           userEmail={user?.email}
-          onRequestUpsell={handleOpenUpsellModal}
+          onRequestUpsell={() => setIsUpsellOpen(!isUpsellOpen)}
+          isUpsellOpen={isUpsellOpen}
+          onCloseUpsell={() => setIsUpsellOpen(false)}
         />
       ) : isGeneratingProgram ? (
         <GeneratingProgramTransition />

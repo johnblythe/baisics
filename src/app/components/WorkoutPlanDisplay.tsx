@@ -4,17 +4,28 @@ import { UpsellModal } from './UpsellModal';
 import { Target, Brain, Activity, Key, Dumbbell, Apple, ChartLine } from 'lucide-react';
 import { formatRestPeriod } from '@/utils/formatters';
 
-interface WorkoutPlanDisplayProps {
-  plan: WorkoutPlan;
-  userEmail?: string | null;
+interface ExtendedWorkoutPlan extends WorkoutPlan {
+  phaseExplanation?: string;
+  phaseExpectations?: string;
+  phaseKeyPoints?: string[];
+  bodyFatPercentage?: number;
+  muscleMassDistribution?: string;
 }
 
-export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan }: WorkoutPlanDisplayProps) {
+interface WorkoutPlanDisplayProps {
+  plan: ExtendedWorkoutPlan;
+  userEmail?: string | null;
+  onRequestUpsell?: () => void;
+}
+
+export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan, onRequestUpsell }: WorkoutPlanDisplayProps) {
   const [isUpsellOpen, setIsUpsellOpen] = useState(false);
   const [userEmail, setUserEmail] = useState(initialUserEmail);
 
   const handleUpsell = () => {
-    setIsUpsellOpen(true);
+    if (onRequestUpsell) {
+      onRequestUpsell();
+    }
   };
 
   const nutrition = plan.nutrition;
