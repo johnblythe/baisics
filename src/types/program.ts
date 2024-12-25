@@ -83,6 +83,10 @@ export interface WorkoutPlan {
   id: string;
   nutrition: Nutrition;
   workouts: Workout[];
+  phaseExplanation?: string;
+  phaseExpectations?: string;
+  phaseKeyPoints?: string[];
+  splitType?: string;
   // todo: user composition / profile / stats / etc
 }
 

@@ -134,6 +134,10 @@ const formatWorkoutDetailsPrompt = (
           },
           "dayNumber": number
         }>,
+        "phaseExplanation": string,
+        "phaseExpectations": string,
+        "phaseKeyPoints": string[],
+        "splitType": string,
         "nutrition": {
           "dailyCalories": number,
           "macros": {
@@ -226,6 +230,8 @@ const saveProgramToDatabase = async (program: Program): Promise<void> => {
       throw new Error('Invalid program data');
     }
 
+    console.log("🚀 ~ saveProgramToDatabase ~ program:", JSON.stringify(program, null, 2))
+
     const dbData = {
       id: program.id,
       name: program.name,
@@ -237,6 +243,9 @@ const saveProgramToDatabase = async (program: Program): Promise<void> => {
           bodyFatPercentage: 0, // @todo
           muscleMassDistribution: "Balanced", // @todo
           dailyCalories: plan.nutrition.dailyCalories,
+          phaseExplanation: plan.phaseExplanation || '', // @todo
+          phaseExpectations: plan.phaseExpectations || '', // @todo
+          phaseKeyPoints: plan.phaseKeyPoints || [], // @todo
           proteinGrams: plan.nutrition.macros.protein,
           carbGrams: plan.nutrition.macros.carbs,
           fatGrams: plan.nutrition.macros.fats,
@@ -324,17 +333,17 @@ export const createProgramSequentially = async (
       const workoutDetailsResponse = await sendMessage(
         formatWorkoutDetailsPrompt(intakeData, programStructure, workoutStructure, phase)
       );
-      const workoutDetails = parseAIResponse<{
-        id: string;
-        workouts: Workout[];
-        nutrition: Nutrition;
-      }>(workoutDetailsResponse, {
+      const workoutDetails = parseAIResponse<WorkoutPlan>(workoutDetailsResponse, {
         id: crypto.randomUUID(),
         workouts: [],
         nutrition: {
           dailyCalories: 2000,
           macros: { protein: 150, carbs: 200, fats: 70 }
-        }
+        },
+        phaseExplanation: '', // @todo
+        phaseExpectations: '', // @todo
+        phaseKeyPoints: [], // @todo
+        splitType: 'Full Body' // @todo
       });
 
       if (!workoutDetails.workouts.length) {
@@ -344,7 +353,11 @@ export const createProgramSequentially = async (
       const workoutPlan: WorkoutPlan = {
         id: workoutDetails.id,
         workouts: workoutDetails.workouts,
-        nutrition: workoutDetails.nutrition
+        nutrition: workoutDetails.nutrition,
+        phaseExplanation: workoutDetails.phaseExplanation,
+        phaseExpectations: workoutDetails.phaseExpectations,
+        phaseKeyPoints: workoutDetails.phaseKeyPoints,
+        splitType: workoutDetails.splitType
       };
 
       workoutPlans.push(workoutPlan);
