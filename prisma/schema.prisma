@@ -121,15 +121,25 @@ model Workout {
 }
 
 model ExerciseLibrary {
-  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name        String     @unique
-  category    String // e.g., "Chest", "Back", "Legs"
-  equipment   String[] // e.g., ["Barbell", "Dumbbell"]
-  description String?    @db.Text
-  difficulty  String // e.g., "Beginner", "Intermediate", "Advanced"
-  videoUrl    String?    @map("video_url")
-  exercises   Exercise[]
-  createdAt   DateTime   @default(now()) @map("created_at")
+  id               String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name             String         @unique
+  category         String
+  equipment        String[]
+  description      String?        @db.Text
+  instructions     String[]       @db.Text
+  commonMistakes   String[]       @db.Text
+  benefits         String[]       @db.Text
+  difficulty       Difficulty     @default(BEGINNER)
+  isCompound       Boolean        @default(false)
+  movementPattern  MovementPattern @default(PUSH)
+  targetMuscles    MuscleGroup[]
+  secondaryMuscles MuscleGroup[]
+  videoUrl         String?           @map("video_url")
+  variations       ExerciseLibrary[] @relation("ExerciseVariations")
+  parentExercise   ExerciseLibrary?  @relation("ExerciseVariations", fields: [parentId], references: [id])
+  parentId         String?           @db.Uuid
+  exercises        Exercise[]
+  createdAt        DateTime       @default(now()) @map("created_at")
 
   @@map("exercise_library")
 }
@@ -162,4 +172,38 @@ model Program {
   workoutPlans WorkoutPlan[]
 
   @@map("programs")
+}
+
+enum MuscleGroup {
+  CHEST
+  BACK
+  SHOULDERS
+  BICEPS
+  TRICEPS
+  FOREARMS
+  CORE
+  QUADRICEPS
+  HAMSTRINGS
+  CALVES
+  GLUTES
+  TRAPEZIUS
+  LATS
+}
+
+enum MovementPattern {
+  PUSH
+  PULL
+  HINGE
+  SQUAT
+  LUNGE
+  CARRY
+  ROTATION
+  PLANK
+}
+
+enum Difficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
 }
