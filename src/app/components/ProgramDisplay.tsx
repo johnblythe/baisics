@@ -1,31 +1,36 @@
-// import { WorkoutPlanDisplayProps } from '../start/types';
+import { Program } from '@/types';
 import { WorkoutPlanDisplay } from './WorkoutPlanDisplay';
 import { UpsellModal } from './UpsellModal';
 import { useState } from 'react';
-import { ProgramFullDisplay } from '@/types';
 import { generateWorkoutPDF } from '@/utils/pdf';
 
 interface ProgramDisplayProps {
-  program: ProgramFullDisplay;
+  program: Program;
   userEmail?: string | null;
   onRequestUpsell: () => void;
+  isUpsellOpen?: boolean;
+  onCloseUpsell?: () => void;
 }
 
-export function ProgramDisplay({ program, userEmail: initialUserEmail = null, onRequestUpsell }: ProgramDisplayProps) {
+export function ProgramDisplay({ 
+  program, 
+  userEmail: initialUserEmail = null, 
+  onRequestUpsell,
+  isUpsellOpen = false,
+  onCloseUpsell
+}: ProgramDisplayProps) {
   const [activePlanIndex, setActivePlanIndex] = useState(0);
-  const [isUpsellOpen, setIsUpsellOpen] = useState(false);
   const [userEmail, setUserEmail] = useState(initialUserEmail);
   const [isExpanded, setIsExpanded] = useState(true);
+  
   const handleEmailSubmit = (email: string) => {
     setUserEmail(email);
-    setIsUpsellOpen(false);
+    onCloseUpsell?.();
   };
 
   const handlePurchase = () => {
-    setIsUpsellOpen(false);
+    onCloseUpsell?.();
   };
-
-  console.log("🚀 ~ ProgramDisplay ~ program:", program)
 
   if (!program) {
     return (
@@ -72,13 +77,13 @@ export function ProgramDisplay({ program, userEmail: initialUserEmail = null, on
             <div className="border-b border-gray-200 dark:border-gray-700">
               <nav className="flex justify-between px-6" aria-label="Workout Phases">
                 <div className="flex gap-1">
-                  {program.workoutPlans.map((_, index: number) => (
+                  {program.workoutPlans.map((_, index) => (
                     <button
                       key={`phase-${index}`}
                       onClick={() => {
                         setActivePlanIndex(index);
                         if (!isPhaseUnlocked(index)) {
-                          setIsUpsellOpen(true);
+                          onRequestUpsell();
                         }
                       }}
                       className={`
@@ -178,11 +183,20 @@ export function ProgramDisplay({ program, userEmail: initialUserEmail = null, on
               <WorkoutPlanDisplay 
                 plan={program.workoutPlans[activePlanIndex]} 
                 userEmail={userEmail || undefined}
+                onRequestUpsell={onRequestUpsell}
               />
             </div>
           </>
         )}
       </div>
+
+      <UpsellModal
+        isOpen={isUpsellOpen}
+        onClose={() => onCloseUpsell?.()}
+        onEmailSubmit={handleEmailSubmit}
+        onPurchase={handlePurchase}
+        userEmail={userEmail}
+      />
     </div>
   );
 }

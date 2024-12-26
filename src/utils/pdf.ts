@@ -1,5 +1,21 @@
 import { jsPDF } from 'jspdf';
-import { ProgramFullDisplay } from '@/app/start/types';
+import { Program, Workout, Exercise } from '@/types';
+import { formatRestPeriod } from '@/utils/formatters';
+
+interface ExtendedWorkoutPlan {
+  id: string;
+  nutrition: {
+    dailyCalories: number;
+    macros: {
+      protein: number;
+      carbs: number;
+      fats: number;
+    };
+  };
+  workouts: Workout[];
+  bodyFatPercentage?: number;
+  muscleMassDistribution?: string;
+}
 
 /**
  * TODO:
@@ -9,7 +25,7 @@ import { ProgramFullDisplay } from '@/app/start/types';
  */
 
 
-export const generateWorkoutPDF = (program: ProgramFullDisplay): void => {
+export const generateWorkoutPDF = (program: Program): void => {
   const doc = new jsPDF();
   let yOffset = 20;
   const margin = 20;
@@ -28,7 +44,7 @@ export const generateWorkoutPDF = (program: ProgramFullDisplay): void => {
   }
 
   // Phases
-  program.workoutPlans.forEach((plan, phaseIndex) => {
+  program.workoutPlans.forEach((plan: ExtendedWorkoutPlan, phaseIndex: number) => {
     // Phase Overview Section
     doc.setFontSize(16);
     doc.text(`Phase ${phaseIndex + 1} Overview`, margin, yOffset);
@@ -39,23 +55,27 @@ export const generateWorkoutPDF = (program: ProgramFullDisplay): void => {
     doc.text('Body Composition:', margin, yOffset);
     yOffset += 7;
     doc.setFontSize(11);
-    doc.text(`Body Fat: ${plan.bodyFatPercentage}%`, margin + 5, yOffset);
-    yOffset += 7;
-    doc.text(`Muscle Distribution: ${plan.muscleMassDistribution}`, margin + 5, yOffset);
-    yOffset += 12;
+    if (plan.bodyFatPercentage) {
+      doc.text(`Body Fat: ${plan.bodyFatPercentage}%`, margin + 5, yOffset);
+      yOffset += 7;
+    }
+    if (plan.muscleMassDistribution) {
+      doc.text(`Muscle Distribution: ${plan.muscleMassDistribution}`, margin + 5, yOffset);
+      yOffset += 12;
+    }
 
     // Nutrition
     doc.setFontSize(12);
     doc.text('Nutrition:', margin, yOffset);
     yOffset += 7;
     doc.setFontSize(11);
-    doc.text(`Daily Calories: ${plan.dailyCalories}`, margin + 5, yOffset);
+    doc.text(`Daily Calories: ${plan.nutrition.dailyCalories}`, margin + 5, yOffset);
     yOffset += 7;
-    doc.text(`Protein: ${plan.proteinGrams}g`, margin + 5, yOffset);
+    doc.text(`Protein: ${plan.nutrition.macros.protein}g`, margin + 5, yOffset);
     yOffset += 7;
-    doc.text(`Carbs: ${plan.carbGrams}g`, margin + 5, yOffset);
+    doc.text(`Carbs: ${plan.nutrition.macros.carbs}g`, margin + 5, yOffset);
     yOffset += 7;
-    doc.text(`Fats: ${plan.fatGrams}g`, margin + 5, yOffset);
+    doc.text(`Fats: ${plan.nutrition.macros.fats}g`, margin + 5, yOffset);
     yOffset += 12;
 
     // Training Schedule
@@ -65,8 +85,8 @@ export const generateWorkoutPDF = (program: ProgramFullDisplay): void => {
 
     // Workouts in phase
     plan.workouts
-      .sort((a, b) => a.dayNumber - b.dayNumber)
-      .forEach((workout) => {
+      .sort((a: Workout, b: Workout) => (a.dayNumber || 0) - (b.dayNumber || 0))
+      .forEach((workout: Workout) => {
         // Check if we need a new page
         if (yOffset > doc.internal.pageSize.height - 60) {
           doc.addPage();
@@ -90,7 +110,7 @@ export const generateWorkoutPDF = (program: ProgramFullDisplay): void => {
         yOffset += 4;
 
         // Exercises
-        workout.exercises.forEach((exercise) => {
+        workout.exercises.forEach((exercise: Exercise) => {
           if (yOffset > doc.internal.pageSize.height - 20) {
             doc.addPage();
             yOffset = 20;
@@ -100,28 +120,20 @@ export const generateWorkoutPDF = (program: ProgramFullDisplay): void => {
           doc.text(exercise.name, margin + 5, yOffset);
           doc.text(exercise.sets.toString(), margin + 90, yOffset);
           doc.text(exercise.reps.toString(), margin + 110, yOffset);
-          doc.text(exercise.restPeriod || '', margin + 140, yOffset);
+          const restPeriodText = formatRestPeriod(typeof exercise.restPeriod === 'string' ? parseInt(exercise.restPeriod) : exercise.restPeriod);
+          doc.text(restPeriodText, margin + 140, yOffset);
           yOffset += 7;
         });
 
         yOffset += 10; // Space after workout
       });
-
     yOffset += 15; // Space after phase
   });
 
-  // Save with sanitized filename
-  const filename = program.name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '');
-  const pdfOutput = `${filename}-workout-program.pdf`;
+  // Create and open PDF in new tab
   const pdfBlob = doc.output('blob');
   const blobUrl = URL.createObjectURL(pdfBlob);
   window.open(blobUrl, '_blank');
   // Clean up blob URL after opening
   setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
-
-  // actual downloads later
-  // doc.save(`${filename}-workout-program.pdf`);
-}; 
+} 

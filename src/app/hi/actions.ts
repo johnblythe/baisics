@@ -1,8 +1,7 @@
 'use server';
 
-import { Message, ExtractedData, IntakeFormData, newWorkoutPlan, WorkoutPlan, Program } from "@/types";
+import { Message, ExtractedData, IntakeFormData, WorkoutPlan, Program } from "@/types";
 import { sendMessage } from "@/utils/chat";
-import { createProgram } from "./services/programCreation";
 import { prisma } from "@/lib/prisma";
 import { modifyPhase } from "./services/programCreation";
 import { createProgramSequentially } from "./services/sequentialProgramCreation";
@@ -81,7 +80,6 @@ export async function processUserMessage(
       });
 
       // Generate program using new service
-      // const program = await createProgram(intakeData);
       const program = await createProgramSequentially(intakeData, userId);
       
       return {
@@ -195,9 +193,7 @@ export async function processModificationRequest(
   }
 }
 
-export async function saveDemoIntake(userId: string) {
-  'use server'
-  
+export async function saveDemoIntake(userId: string) {  
   const DEMO_INTAKE = {
     sex: 'male',
     trainingGoal: 'muscle building',

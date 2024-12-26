@@ -1,6 +1,7 @@
-import { IntakeFormData, Program, Nutrition, newWorkoutPlan } from "@/types";
+import { IntakeFormData, Program, Nutrition, WorkoutPlan, Workout } from "@/types";
 import { sendMessage } from "@/utils/chat";
 import type { ContentBlock } from '@anthropic-ai/sdk/src/resources/messages.js';
+import { prisma } from '@/lib/prisma';
 
 interface SendMessageResponse {
   success: boolean;
@@ -120,18 +121,23 @@ const formatWorkoutDetailsPrompt = (
             "name": string,
             "sets": number,
             "reps": number,
-            "restPeriod": number
+            "restPeriod": number // in seconds
           }>,
-          focus: string;
-          warmup: {
-            duration: number;
-            activities: string[];
-          };
-          cooldown: {
-            duration: number;
-            activities: string[];
-          };
+          "focus": string,
+          "warmup": {
+            "duration": number,
+            "activities": string[]
+          },
+          "cooldown": {
+            "duration": number,
+            "activities": string[]
+          },
+          "dayNumber": number
         }>,
+        "phaseExplanation": string,
+        "phaseExpectations": string,
+        "phaseKeyPoints": string[],
+        "splitType": string,
         "nutrition": {
           "dailyCalories": number,
           "macros": {
@@ -144,7 +150,7 @@ const formatWorkoutDetailsPrompt = (
   }];
 };
 
-const formatNutritionPrompt = (
+const _formatNutritionPrompt = (
   intakeData: IntakeFormData,
   programStructure: ProgramStructure
 ): { role: string; content: string; }[] => {
@@ -168,11 +174,11 @@ Please provide a response in the following JSON format:
   }];
 };
 
-const formatFinalReviewPrompt = (
+const _formatFinalReviewPrompt = (
   intakeData: IntakeFormData,
   programStructure: ProgramStructure,
   workoutStructure: WorkoutStructure,
-  workoutPlans: newWorkoutPlan[],
+  workoutPlans: WorkoutPlan[],
   nutritionPlan: Nutrition
 ): { role: string; content: string; }[] => {
   return [{
@@ -218,6 +224,68 @@ const parseAIResponse = <T>(response: SendMessageResponse, defaultValue: T): T =
   }
 };
 
+const saveProgramToDatabase = async (program: Program): Promise<void> => {
+  try {
+    if (!program?.name || !program?.user?.id) {
+      throw new Error('Invalid program data');
+    }
+
+    console.log("🚀 ~ saveProgramToDatabase ~ program:", JSON.stringify(program, null, 2))
+
+    const dbData = {
+      id: program.id,
+      name: program.name,
+      description: program.description || '',
+      createdBy: program.user.id,
+      workoutPlans: {
+        create: program.workoutPlans.map(plan => ({
+          phase: 1, // @todo
+          bodyFatPercentage: 0, // @todo
+          muscleMassDistribution: "Balanced", // @todo
+          dailyCalories: plan.nutrition.dailyCalories,
+          phaseExplanation: plan.phaseExplanation || '', // @todo
+          phaseExpectations: plan.phaseExpectations || '', // @todo
+          phaseKeyPoints: plan.phaseKeyPoints || [], // @todo
+          proteinGrams: plan.nutrition.macros.protein,
+          carbGrams: plan.nutrition.macros.carbs,
+          fatGrams: plan.nutrition.macros.fats,
+          daysPerWeek: plan.workouts.length,
+          userId: program.user.id,
+          workouts: {
+            create: plan.workouts.map(workout => ({
+              dayNumber: workout.dayNumber || 1,
+              exercises: {
+                create: workout.exercises.map(exercise => ({
+                  name: exercise.name,
+                  sets: exercise.sets,
+                  reps: exercise.reps,
+                  restPeriod: exercise.restPeriod,
+                  exerciseLibrary: {
+                    connectOrCreate: {
+                      where: { name: exercise.name },
+                      create: {
+                        name: exercise.name,
+                        category: exercise.category || 'default',
+                        equipment: [],
+                        difficulty: exercise.difficulty || 'beginner'
+                      }
+                    }
+                  }
+                }))
+              }
+            }))
+          }
+        }))
+      }
+    };
+
+    await prisma.program.create({ data: dbData });
+  } catch (error) {
+    console.error('Error in saveProgramToDatabase:', error);
+    throw error;
+  }
+};
+
 // Main function to create program sequentially
 export const createProgramSequentially = async (
   intakeData: IntakeFormData,
@@ -253,65 +321,81 @@ export const createProgramSequentially = async (
         repRanges: { default: 10 }
       }
     });
-    console.log("🚀 ~ workoutStructure:", workoutStructure)
-    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-
+    
     if (!workoutStructure.workoutDistribution.length) {
       throw new Error('Failed to generate workout structure');
     }
 
     // Step 3: Get workout details
-    const workoutPlans: newWorkoutPlan[] = [];
+    const workoutPlans: WorkoutPlan[] = [];
     // programStructure.phaseCount
     for (let phase = 0; phase < 1; phase++) {
       const workoutDetailsResponse = await sendMessage(
         formatWorkoutDetailsPrompt(intakeData, programStructure, workoutStructure, phase)
       );
-      console.log("🚀 ~ workoutDetailsResponse:", workoutDetailsResponse.data?.content[0]?.text)
-      const workoutDetails = parseAIResponse<newWorkoutPlan>(workoutDetailsResponse, []);
-      console.log("🚀 ~ workoutDetails:", workoutDetails)
-      console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+      const workoutDetails = parseAIResponse<WorkoutPlan>(workoutDetailsResponse, {
+        id: crypto.randomUUID(),
+        workouts: [],
+        nutrition: {
+          dailyCalories: 2000,
+          macros: { protein: 150, carbs: 200, fats: 70 }
+        },
+        phaseExplanation: '', // @todo
+        phaseExpectations: '', // @todo
+        phaseKeyPoints: [], // @todo
+        splitType: 'Full Body' // @todo
+      });
 
-      if (!workoutDetails || typeof workoutDetails !== 'object') {
+      if (!workoutDetails.workouts.length) {
         throw new Error(`Failed to generate workout details for phase ${phase + 1}`);
       }
 
-      workoutPlans.push(workoutDetails);
+      const workoutPlan: WorkoutPlan = {
+        id: workoutDetails.id,
+        workouts: workoutDetails.workouts,
+        nutrition: workoutDetails.nutrition,
+        phaseExplanation: workoutDetails.phaseExplanation,
+        phaseExpectations: workoutDetails.phaseExpectations,
+        phaseKeyPoints: workoutDetails.phaseKeyPoints,
+        splitType: workoutDetails.splitType
+      };
+
+      workoutPlans.push(workoutPlan);
     }
 
     // Step 4: Get nutrition plan
     // @TODO: need this?
-    const nutritionResponse = await sendMessage(formatNutritionPrompt(intakeData, programStructure));
-    const nutritionPlan = parseAIResponse<Nutrition>(nutritionResponse, {
-      dailyCalories: 2000,
-      macros: { protein: 150, carbs: 200, fats: 70 },
-      // mealTiming: ['Pre-workout', 'Post-workout']
-    });
-    console.log("🚀 ~ nutritionPlan:", nutritionPlan)
-    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    // const nutritionResponse = await sendMessage(formatNutritionPrompt(intakeData, programStructure));
+    // const nutritionPlan = parseAIResponse<Nutrition>(nutritionResponse, {
+    //   dailyCalories: 2000,
+    //   macros: { protein: 150, carbs: 200, fats: 70 },
+    //   // mealTiming: ['Pre-workout', 'Post-workout']
+    // });
+    // console.log("🚀 ~ nutritionPlan:", nutritionPlan)
+    // console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
-    if (!nutritionPlan) {
-      throw new Error('Failed to generate nutrition plan');
-    }
+    // if (!nutritionPlan) {
+    //   throw new Error('Failed to generate nutrition plan');
+    // }
 
     // Step 5: Final review and recommendations
-    const reviewResponse = await sendMessage(
-      formatFinalReviewPrompt(intakeData, programStructure, workoutStructure, workoutPlans, nutritionPlan)
-    );
-    const review = parseAIResponse<ProgramReview>(reviewResponse, {
-      isComplete: false,
-      isSafe: false,
-      meetsClientNeeds: false,
-      suggestedAdjustments: [],
-      warnings: [],
-      finalRecommendations: []
-    });
-    console.log("🚀 ~ review:", review)
-    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    // const reviewResponse = await sendMessage(
+    //   formatFinalReviewPrompt(intakeData, programStructure, workoutStructure, workoutPlans, nutritionPlan)
+    // );
+    // const review = parseAIResponse<ProgramReview>(reviewResponse, {
+    //   isComplete: false,
+    //   isSafe: false,
+    //   meetsClientNeeds: false,
+    //   suggestedAdjustments: [],
+    //   warnings: [],
+    //   finalRecommendations: []
+    // });
+    // console.log("🚀 ~ review:", review)
+    // console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
-    if (!review.isComplete || !review.isSafe || !review.meetsClientNeeds) {
-      throw new Error('Program review failed: ' + review.warnings.join(', '));
-    }
+    // if (!review.isComplete || !review.isSafe || !review.meetsClientNeeds) {
+    //   throw new Error('Program review failed: ' + review.warnings.join(', '));
+    // }
 
     // Construct the final program
     const program: Program = {
@@ -329,12 +413,18 @@ export const createProgramSequentially = async (
       }
     };
 
-    console.log("🚀 ~ program:", program)
-    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    // Save program to database
+    await saveProgramToDatabase(program);
 
     return program;
   } catch (error) {
-    console.error('Error creating program:', error);
+    console.error('Error in createProgramSequentially:', error);
+    if (error instanceof Error) {
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack
+      });
+    }
     return null;
   }
 };

@@ -94,6 +94,10 @@ model WorkoutPlan {
   mealTiming             String[]  @map("meal_timing")
   progressionProtocol    String[]  @map("progression_protocol")
   phase                  Int       @map("phase")
+  phaseExplanation       String?   @map("phase_explanation") @db.Text
+  phaseExpectations      String?   @map("phase_expectations") @db.Text
+  phaseKeyPoints         String[]  @map("phase_key_points") @default([])
+  splitType              String?   @map("split_type")
   createdAt              DateTime  @default(now()) @map("created_at")
   user                   User      @relation(fields: [userId], references: [id])
   workouts               Workout[]
@@ -137,7 +141,7 @@ model Exercise {
   name              String          @map("name")
   sets              Int
   reps              Int
-  restPeriod        String          @map("rest_period")
+  restPeriod        Int?            @map("rest_period")
   workout           Workout         @relation(fields: [workoutId], references: [id], onDelete: Cascade)
   exerciseLibrary   ExerciseLibrary @relation(fields: [exerciseLibraryId], references: [id])
   createdAt         DateTime        @default(now()) @map("created_at")
