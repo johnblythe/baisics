@@ -175,19 +175,49 @@ model Program {
 }
 
 enum MuscleGroup {
+  // Upper Body - Front
   CHEST
-  BACK
   SHOULDERS
+  SHOULDERS_FRONT // anterior deltoid
+  SHOULDERS_SIDE  // lateral deltoid
+  SHOULDERS_REAR  // posterior deltoid
   BICEPS
   TRICEPS
   FOREARMS
-  CORE
-  QUADRICEPS
-  HAMSTRINGS
-  CALVES
-  GLUTES
+  
+  // Upper Body - Back
+  UPPER_BACK     // general upper back area
+  TRAPS
   TRAPEZIUS
+  TRAPEZIUS_UPPER
+  TRAPEZIUS_MIDDLE
+  TRAPEZIUS_LOWER
   LATS
+  RHOMBOIDS
+  BACK
+  
+  // Core
+  CORE_FRONT    // rectus abdominis
+  CORE_SIDE     // obliques
+  LOWER_BACK    // erector spinae
+  CORE
+  
+  // Lower Body - Front
+  QUADRICEPS
+  HIP_FLEXORS
+  
+  // Lower Body - Back
+  HAMSTRINGS
+  GLUTES
+  CALVES
+  CALVES_OUTER  // gastrocnemius
+  CALVES_INNER  // soleus
+  
+  // Stabilizers
+  ROTATOR_CUFF
+  SERRATUS
+  HIP_ABDUCTORS
+  HIP_ADDUCTORS
 }
 
 enum MovementPattern {

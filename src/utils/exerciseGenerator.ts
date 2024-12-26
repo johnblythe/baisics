@@ -31,7 +31,7 @@ const EXAMPLE_EXERCISE = {
   difficulty: "INTERMEDIATE",
   isCompound: true,
   movementPattern: "PULL",
-  targetMuscles: ["BACK", "LATS"],
+  targetMuscles: ["UPPER_BACK", "LATS"],
   secondaryMuscles: ["BICEPS", "CORE", "FOREARMS"],
   videoUrl: "https://example.com/barbell-row"
 };
@@ -56,7 +56,7 @@ Requirements:
    - difficulty: "BEGINNER" | "INTERMEDIATE" | "ADVANCED"
    - movementPattern: "PUSH" | "PULL" | "HINGE" | "SQUAT" | "LUNGE" | "CARRY" | "ROTATION" | "PLANK"
    - targetMuscles/secondaryMuscles: "CHEST" | "BACK" | "SHOULDERS" | "BICEPS" | "TRICEPS" | "FOREARMS" | "CORE" | "QUADRICEPS" | "HAMSTRINGS" | "CALVES" | "GLUTES" | "TRAPEZIUS" | "LATS"
-4. Do not duplicate any of these existing exercises:
+4. Exclude these exercises:
 ${existingExercises.map(e => `- ${e.name} (${e.movementPattern})`).join('\n')}
 
 Please provide the response as a valid JSON array that can be parsed directly.`;
@@ -115,16 +115,68 @@ async function example() {
 
 const sendToClaude = async (prompt: string) => {
   const response = await anthropic.messages.create({
-    model: 'claude-3-5-sonnet-latest',
-    messages: [{ role: 'user', content: prompt }],
+    model: 'claude-3-sonnet-20240229',
     max_tokens: 4096,
+    messages: [{ role: 'user', content: prompt }],
   });
-  return response.content[0].text;
+
+  const content = response.content[0];
+  if (content.type !== 'text') {
+    throw new Error('Expected text response from Claude');
+  }
+  
+  return content.text;
 };
 
+async function generateExercisesInChunks(totalExercises: number, chunkSize: number = 10) {
+  const chunks = Math.ceil(totalExercises / chunkSize);
+  let successfullyCreated = 0;
+  
+  for (let i = 0; i < chunks; i++) {
+    const remainingExercises = totalExercises - successfullyCreated;
+    const currentChunkSize = Math.min(chunkSize, remainingExercises);
+    
+    console.log(`\nProcessing chunk ${i + 1}/${chunks} (${currentChunkSize} exercises)...`);
+    
+    try {
+      const prompt = await generateExercisePrompt(currentChunkSize);
+      const response = await sendToClaude(prompt);
+      
+      // Try to parse the response before saving
+      const exercises = JSON.parse(response);
+      if (!Array.isArray(exercises)) {
+        throw new Error('Claude did not return a valid array of exercises');
+      }
+      
+      console.log(`Received ${exercises.length} exercises from Claude`);
+      await saveNewExercises(response);
+      
+      successfullyCreated += exercises.length;
+      console.log(`Progress: ${successfullyCreated}/${totalExercises} exercises created`);
+      
+      // Add a small delay between chunks to avoid rate limiting
+      if (i < chunks - 1) {
+        console.log('Waiting 2 seconds before next chunk...');
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
+    } catch (error) {
+      console.error(`Error processing chunk ${i + 1}:`, error);
+      console.log('Retrying this chunk...');
+      i--; // Retry this chunk
+      
+      // Add a longer delay before retrying
+      await new Promise(resolve => setTimeout(resolve, 5000));
+    }
+  }
+  
+  console.log(`\nFinished generating exercises. Created ${successfullyCreated}/${totalExercises} exercises.`);
+}
+
+// Main execution
 (async () => {
-  const prompt = await generateExercisePrompt(50);
-  const response = await sendToClaude(prompt);
-  console.log(response);
-  await saveNewExercises(response);
+  const TOTAL_EXERCISES = 100;
+  const CHUNK_SIZE = 10;
+  
+  console.log(`Starting exercise generation: ${TOTAL_EXERCISES} total exercises in chunks of ${CHUNK_SIZE}`);
+  await generateExercisesInChunks(TOTAL_EXERCISES, CHUNK_SIZE);
 })();
