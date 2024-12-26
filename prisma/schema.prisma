@@ -121,15 +121,25 @@ model Workout {
 }
 
 model ExerciseLibrary {
-  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name        String     @unique
-  category    String // e.g., "Chest", "Back", "Legs"
-  equipment   String[] // e.g., ["Barbell", "Dumbbell"]
-  description String?    @db.Text
-  difficulty  String // e.g., "Beginner", "Intermediate", "Advanced"
-  videoUrl    String?    @map("video_url")
-  exercises   Exercise[]
-  createdAt   DateTime   @default(now()) @map("created_at")
+  id               String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name             String         @unique
+  category         String
+  equipment        String[]
+  description      String?        @db.Text
+  instructions     String[]       @db.Text
+  commonMistakes   String[]       @db.Text
+  benefits         String[]       @db.Text
+  difficulty       Difficulty     @default(BEGINNER)
+  isCompound       Boolean        @default(false)
+  movementPattern  MovementPattern @default(PUSH)
+  targetMuscles    MuscleGroup[]
+  secondaryMuscles MuscleGroup[]
+  videoUrl         String?           @map("video_url")
+  variations       ExerciseLibrary[] @relation("ExerciseVariations")
+  parentExercise   ExerciseLibrary?  @relation("ExerciseVariations", fields: [parentId], references: [id])
+  parentId         String?           @db.Uuid
+  exercises        Exercise[]
+  createdAt        DateTime       @default(now()) @map("created_at")
 
   @@map("exercise_library")
 }
@@ -162,4 +172,68 @@ model Program {
   workoutPlans WorkoutPlan[]
 
   @@map("programs")
+}
+
+enum MuscleGroup {
+  // Upper Body - Front
+  CHEST
+  SHOULDERS
+  SHOULDERS_FRONT // anterior deltoid
+  SHOULDERS_SIDE  // lateral deltoid
+  SHOULDERS_REAR  // posterior deltoid
+  BICEPS
+  TRICEPS
+  FOREARMS
+  
+  // Upper Body - Back
+  UPPER_BACK     // general upper back area
+  TRAPS
+  TRAPEZIUS
+  TRAPEZIUS_UPPER
+  TRAPEZIUS_MIDDLE
+  TRAPEZIUS_LOWER
+  LATS
+  RHOMBOIDS
+  BACK
+  
+  // Core
+  CORE_FRONT    // rectus abdominis
+  CORE_SIDE     // obliques
+  LOWER_BACK    // erector spinae
+  CORE
+  
+  // Lower Body - Front
+  QUADRICEPS
+  HIP_FLEXORS
+  
+  // Lower Body - Back
+  HAMSTRINGS
+  GLUTES
+  CALVES
+  CALVES_OUTER  // gastrocnemius
+  CALVES_INNER  // soleus
+  
+  // Stabilizers
+  ROTATOR_CUFF
+  SERRATUS
+  HIP_ABDUCTORS
+  HIP_ADDUCTORS
+}
+
+enum MovementPattern {
+  PUSH
+  PULL
+  HINGE
+  SQUAT
+  LUNGE
+  CARRY
+  ROTATION
+  PLANK
+}
+
+enum Difficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
 }
