@@ -18,7 +18,7 @@ export function ConversationalIntakeContainer() {
   const [isLoading, setIsLoading] = useState(true);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // One-time initialization from URL
+  // fist-time initialization from URL
   useEffect(() => {
     if (isInitialized) return;
 

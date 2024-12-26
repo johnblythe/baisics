@@ -109,6 +109,12 @@ export function WorkoutPlanDisplay({ userEmail: initialUserEmail, plan, onReques
                   <span className="font-medium text-gray-900 dark:text-white">{item.value}</span>
                 </div>
               ))}
+
+              {!userEmail && (
+                <p className="mt-8 text-sm text-gray-600 dark:text-gray-400">
+                  ✨ <button onClick={handleUpsell} className="text-blue-600 dark:text-blue-400 hover:underline">Upgrade to premium</button> for detailed meal plans. COMING SOON: recipes and grocery lists!
+                </p>
+              )}
             </div>
           </div>
 
