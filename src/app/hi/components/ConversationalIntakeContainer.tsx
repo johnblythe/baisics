@@ -46,7 +46,6 @@ export function ConversationalIntakeContainer() {
         if (result.success && result.user) {
           setUserId(result.user.id);
           setUser(result.user);
-          // Use replace instead of push to avoid refresh
           router.replace(`/hi?userId=${result.user.id}`);
         }
       }
@@ -60,7 +59,6 @@ export function ConversationalIntakeContainer() {
   []);
 
   const handleProgramChange = (newProgram: Program | null) => {
-    console.log("fuck you john");
     setProgram(newProgram);
     // if (newProgram?.id && userId) {
     //   // Use replace instead of push to avoid refresh

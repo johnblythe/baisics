@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Message, IntakeFormData, ExtractedData, ChatResponse } from "@/types";
+import { Message, ExtractedData } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { processUserMessage } from "../actions";
 import { ProgramDisplay } from "@/app/components/ProgramDisplay";
@@ -16,29 +16,42 @@ import exampleProgram from '../utils/example.json';
 import { createAnonUser, getUser } from "@/app/start/actions";
 import { v4 as uuidv4 } from "uuid";
 import { saveDemoIntake } from "../actions";
+import { useRouter } from "next/navigation";
 
 interface ConversationalInterfaceProps {
   userId: string;
   user: User | null;
+  initialProgram?: Program | null;
   onProgramChange?: (program: Program | null) => void;
 }
 
-export function ConversationalInterface({ userId, user, onProgramChange }: ConversationalInterfaceProps) {
+export function ConversationalInterface({ userId, user, initialProgram }: ConversationalInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [extractedData, setExtractedData] = useState<ExtractedData | null>(null);
+  const [_extractedData, setExtractedData] = useState<ExtractedData | null>(null);
   const [program, setProgram] = useState<Program | null>(null);
+  // const [initialProgram, setInitialProgram] = useState<Program | null>(null);
   const [isGeneratingProgram, setIsGeneratingProgram] = useState(false);
   const [isUpsellOpen, setIsUpsellOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [currentProfileIndex, setCurrentProfileIndex] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
+
+  const router = useRouter();
+
+  console.log(user)
   
   // Add effect to notify parent of program changes
+  // useEffect(() => {
+  //   onProgramChange?.(program);
+  // }, [program, onProgramChange]);
+
   useEffect(() => {
-    onProgramChange?.(program);
-  }, [program, onProgramChange]);
+    if (initialProgram) {
+      setProgram(initialProgram);
+    }
+  }, [initialProgram]);
 
   // Add escape key handler
   useEffect(() => {
@@ -86,6 +99,88 @@ export function ConversationalInterface({ userId, user, onProgramChange }: Conve
     scrollToBottom();
   }, [messages]);
 
+  // Handle program modification request
+  // -- not ready for the big leagues just yet
+  const handleProgramModification = async (userMessage: Message, program: Program) => {
+    setIsGeneratingProgram(true);
+    const result = await processModificationRequest(
+      [...messages, userMessage],
+      userId,
+      program,
+      inputValue
+    );
+    if (result.success) {
+      if (result.needsClarification) {
+        // AI needs more information
+        setIsGeneratingProgram(false);
+        setTimeout(() => {
+          setMessages(prev => [...prev, { 
+            role: "assistant", 
+            content: result.message 
+          }]);
+          setIsTyping(false);
+        }, Math.random() * 1000 + 500);
+      } else {
+        // AI has modified the program
+        setTimeout(() => {
+          setMessages(prev => [...prev, { 
+            role: "assistant", 
+            content: `I've made the requested changes: ${result.message}` 
+          }]);
+          setProgram(result.program ? result.program.program as Program : null);
+          setIsGeneratingProgram(false);
+          setIsTyping(false);
+        }, Math.random() * 1000 + 500);
+      }
+    } else {
+      setIsGeneratingProgram(false);
+      setIsTyping(false);
+      setMessages(prev => [...prev, {
+        role: "assistant",
+        content: result.message || "Sorry, I couldn't process that request. Please try again."
+      }]);
+    }
+  };
+
+  // Work on getting the right data from the user to generate a program
+  const handleInitialIntake = async (userMessage: Message) => {
+    // First check if this response completes our data gathering
+    const result = await processUserMessage([...messages, userMessage], userId);
+        
+    if (result.success) {
+      if (result.extractedData) {
+        setExtractedData(result.extractedData);
+      }
+      
+      // enough data gathered to generate a program
+      if (result.readyForProgram) {
+        // ...
+        setTimeout(() => {
+          setIsTyping(false);
+          setMessages(prev => [...prev, { 
+            role: "assistant", 
+            content: "Great! I have enough information to create your personalized program now. Let me put that together for you..." 
+          }]);
+          setIsGeneratingProgram(true);
+        }, 8000);
+
+        const programResult = await processUserMessage([...messages, userMessage], userId, result.extractedData, true);
+        if (programResult.success && programResult.program) {
+          setProgram(programResult.program);
+          // setInitialProgram(programResult.program);
+          setIsGeneratingProgram(false);
+          router.replace(`/hi?userId=${userId}&programId=${programResult.program.id}`);
+        }
+      } else {
+        // Just continue the conversation
+        setTimeout(() => {
+          setMessages(prev => [...prev, { role: "assistant", content: result.message }]);
+          setIsTyping(false);
+        }, Math.random() * 1000 + 500);
+      }
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim()) return;
@@ -97,133 +192,9 @@ export function ConversationalInterface({ userId, user, onProgramChange }: Conve
 
     try {
       if (program) {
-        // Handle program modification request
-        setIsGeneratingProgram(true);
-        const result = await processModificationRequest(
-          [...messages, userMessage],
-          userId,
-          program,
-          inputValue
-        );
-        console.log("🚀 ~ handleSubmit ~ result:", JSON.stringify(result, null, 2))
-        if (result.success) {
-          console.log("🚀 ~ handleSubmit ~ result.success:", result.success)
-          if (result.needsClarification) {
-            console.log("🚀 ~ handleSubmit ~ result.needsClarification:", result.needsClarification)
-            // AI needs more information
-            setIsGeneratingProgram(false);
-            setTimeout(() => {
-              setMessages(prev => [...prev, { 
-                role: "assistant", 
-                content: result.message 
-              }]);
-              setIsTyping(false);
-            }, Math.random() * 1000 + 500);
-          } else {
-            console.log("🚀 ~ setTimeout ~ result.program:", result.program)
-            // AI has modified the program
-            setTimeout(() => {
-              setMessages(prev => [...prev, { 
-                role: "assistant", 
-                content: `I've made the requested changes: ${result.message}` 
-              }]);
-              setProgram(result.program ? result.program.program as Program : null);
-              setIsGeneratingProgram(false);
-              setIsTyping(false);
-            }, Math.random() * 1000 + 500);
-          }
-        } else {
-          setIsGeneratingProgram(false);
-          setIsTyping(false);
-          setMessages(prev => [...prev, {
-            role: "assistant",
-            content: result.message || "Sorry, I couldn't process that request. Please try again."
-          }]);
-        }
+        await handleProgramModification(userMessage, program);
       } else {
-        // First check if this response completes our data gathering
-        const result = await processUserMessage([...messages, userMessage], userId);
-        
-        if (result.success) {
-          if (result.extractedData) {
-            setExtractedData(result.extractedData);
-            console.log("🚀 ~ handleSubmit ~ result.extractedData:", result.extractedData)
-          }
-          
-          // If we have enough data to generate a program
-          if (result.readyForProgram) {
-            // Show typing dots briefly, then transition to program generation
-            setTimeout(() => {
-              setIsTyping(false);
-              setMessages(prev => [...prev, { 
-                role: "assistant", 
-                content: "Great! I have enough information to create your personalized program now. Let me put that together for you..." 
-              }]);
-              setIsGeneratingProgram(true);
-            }, 1000);
-
-            // Generate the program
-            const programResult = await processUserMessage([...messages, userMessage], userId, result.extractedData, true);
-            console.log("🚀 ~ handleSubmit ~ programResult:", programResult)
-            if (programResult.success && programResult.program) {
-              console.log("🚀 ~ handleSubmit ~ programResult.program:", programResult.program)
-              // Transform the AI response to match DB structure
-              // @TODO: there shouldn't be a need to do a full transformation here,
-              // clean up the fucking types and interfaces and shit
-              // const transformedProgram = {
-              //   id: `draft-${Date.now()}`, // Temporary ID for draft program
-              //   name: programResult.program.programName,
-              //   description: programResult.program.programDescription,
-              //   createdBy: userId,
-              //   user: {
-              //     id: userId,
-              //     email: user?.email || "",
-              //   },
-              //   workoutPlans: programResult.program.phases.map(phase => ({
-              //     id: `phase-${phase.phase}`,
-              //     userId,
-              //     programId: `draft-${Date.now()}`,
-              //     phase: phase.phase,
-              //     bodyFatPercentage: phase.bodyComposition.bodyFatPercentage,
-              //     muscleMassDistribution: phase.bodyComposition.muscleMassDistribution,
-              //     dailyCalories: phase.nutrition.dailyCalories,
-              //     proteinGrams: phase.nutrition.macros.protein,
-              //     carbGrams: phase.nutrition.macros.carbs,
-              //     fatGrams: phase.nutrition.macros.fats,
-              //     mealTiming: phase.nutrition.mealTiming,
-              //     progressionProtocol: phase.progressionProtocol,
-              //     daysPerWeek: phase.trainingPlan.daysPerWeek,
-              //     durationWeeks: phase.durationWeeks,
-              //     phaseExplanation: phase.phaseExplanation,
-              //     phaseExpectations: phase.phaseExpectations,
-              //     phaseKeyPoints: phase.phaseKeyPoints,
-              //     workouts: phase.trainingPlan.workouts.map(workout => ({
-              //       id: `workout-${workout.day}`,
-              //       workoutPlanId: `phase-${phase.phase}`,
-              //       dayNumber: workout.day,
-              //       exercises: workout.exercises.map(exercise => ({
-              //         id: `exercise-${exercise.name}-${workout.day}`,
-              //         workoutId: `workout-${workout.day}`,
-              //         name: exercise.name,
-              //         sets: exercise.sets,
-              //         reps: exercise.reps,
-              //         restPeriod: exercise.restPeriod,
-              //       }))
-              //     }))
-              //   }))
-              // };
-
-              setProgram(programResult.program);
-              setIsGeneratingProgram(false);
-            }
-          } else {
-            // Just continue the conversation
-            setTimeout(() => {
-              setMessages(prev => [...prev, { role: "assistant", content: result.message }]);
-              setIsTyping(false);
-            }, Math.random() * 1000 + 500);
-          }
-        }
+        await handleInitialIntake(userMessage);
       }
     } catch (error) {
       console.error("Failed to send message:", error);
@@ -240,13 +211,11 @@ export function ConversationalInterface({ userId, user, onProgramChange }: Conve
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // Cmd + Enter to send
     if (e.key === 'Enter' && e.metaKey) {
       e.preventDefault();
       handleSubmit(e as unknown as React.FormEvent);
     }
     
-    // Option/Alt + P to cycle through profiles
     if ((e.key === 'p' || e.key === 'P') && (e.shiftKey)) {
       e.preventDefault();
       const profiles = Object.values(SAMPLE_PROFILES);
@@ -258,7 +227,6 @@ export function ConversationalInterface({ userId, user, onProgramChange }: Conve
       setCurrentProfileIndex((prev) => (prev + 1) % profiles.length);
     }
 
-    // New shortcut: Shift + D to load demo program
     if ((e.key === 'd' || e.key === 'D') && e.shiftKey) {
       e.preventDefault();
       loadDemoProgram();

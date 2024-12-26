@@ -290,7 +290,29 @@ export async function getUserProgram(userId: string, programId: string) {
       },
     });
 
-    return { success: true, program };
+    if (!program) {
+      return { success: false, error: 'Program not found' };
+    }
+
+    // todo: this is a temp hack, need to fix this
+    // will eventually refactor models to have nutrition as a separate model
+    const finalProgram = {
+      ...program,
+      workoutPlans: program.workoutPlans.map(plan => ({
+        ...plan,
+        nutrition: {
+          macros: {
+            fats: plan.fatGrams,
+            protein: plan.proteinGrams, 
+            carbs: plan.carbGrams,
+          },
+          dailyCalories: plan.dailyCalories,
+        }
+      }))
+    }
+    console.log("🚀 ~ getUserProgram ~ finalProgram:", finalProgram)
+
+    return { success: true, program: finalProgram };
   } catch (error) {
     console.error('Failed to fetch program:', error);
     return { success: false, error: 'Failed to fetch program' };
