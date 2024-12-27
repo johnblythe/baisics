@@ -1,9 +1,22 @@
+'use client'
+
 import Link from 'next/link'
 import Image from 'next/image'
+import { useState } from 'react'
+import BetaModal from './components/BetaModal'
 
 export default function LandingPage() {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const handleGetStarted = (e: React.MouseEvent) => {
+    e.preventDefault()
+    setIsModalOpen(true)
+  }
+
   return (
     <div className="min-h-screen bg-white">
+      <BetaModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-sm z-50 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -34,7 +47,8 @@ export default function LandingPage() {
                 Log in
               </Link>
               <Link 
-                href="/hi" 
+                href="#"
+                onClick={handleGetStarted}
                 className="inline-block px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors"
               >
                 Get Started
@@ -95,10 +109,10 @@ export default function LandingPage() {
               
               <div className="space-y-6 text-lg text-gray-600">
                 <p>
-                  Say good-bye to the cookie cutter programs, the high cost trainers, and the confusing influencers.
+                  Say good-bye to cookie cutter programs, high cost trainers, and confusing & confused influencers.
                 </p>
                 <p>
-                  Build the program you need to build the body you want.
+                  Customize the program you need to build the body you want.
                 </p>
               </div>
               
@@ -106,7 +120,8 @@ export default function LandingPage() {
                 <div className="group relative inline-flex">
                   <div className="absolute -inset-1 rounded-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 opacity-70 blur transition duration-200 group-hover:opacity-100 animate-tilt"></div>
                   <Link 
-                    href="/hi"
+                    href="#"
+                    onClick={handleGetStarted}
                     className="relative inline-flex items-center gap-2 px-8 py-4 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-all duration-200 hover:scale-[1.02] hover:-translate-y-0.5"
                   >
                     <span className="text-xl">Get Started</span>
@@ -288,7 +303,8 @@ export default function LandingPage() {
                 </div>
 
                 <Link 
-                  href="/hi"
+                  href="#"
+                  onClick={handleGetStarted}
                   className="inline-block px-8 py-3 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors"
                 >
                   Start for free
@@ -335,7 +351,8 @@ export default function LandingPage() {
                 {/* </div> */}
 
                 <Link 
-                  href="/hi"
+                  href="#"
+                  onClick={handleGetStarted}
                   className="inline-block px-8 py-4 text-lg rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transform"
                 >
                   Try it free
@@ -408,7 +425,8 @@ export default function LandingPage() {
                 {/* </div> */}
 
                 <Link 
-                  href="/hi"
+                  href="#"
+                  onClick={handleGetStarted}
                   className="inline-block px-8 py-4 text-lg rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transform"
                 >
                   Zero risk to start
@@ -472,7 +490,8 @@ export default function LandingPage() {
               </div>
 
               <Link 
-                href="/hi"
+                href="#"
+                onClick={handleGetStarted}
                 className="inline-block px-16 py-6 text-2xl rounded-full bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transform"
               >
                 Let&apos;s go!
@@ -569,7 +588,8 @@ export default function LandingPage() {
                 </ul>
 
                 <Link 
-                  href="/hi"
+                  href="#"
+                  onClick={handleGetStarted}
                   className="block w-full text-center px-8 py-3 rounded-lg bg-gray-900 text-white font-medium hover:bg-gray-800 transition-colors"
                 >
                   Get started
@@ -609,7 +629,8 @@ export default function LandingPage() {
                 </ul>
 
                 <Link 
-                  href="/hi"
+                  href="#"
+                  onClick={handleGetStarted}
                   className="block w-full text-center px-8 py-3 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors"
                 >
                   Get started
