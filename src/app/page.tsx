@@ -117,35 +117,38 @@ export default function LandingPage() {
               </div>
               
               <div className="space-y-4">
-                <div className="group relative inline-flex">
-                  <div className="absolute -inset-1 rounded-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 opacity-70 blur transition duration-200 group-hover:opacity-100 animate-tilt"></div>
-                  <Link 
-                    href="#"
-                    onClick={handleGetStarted}
-                    className="relative inline-flex items-center gap-2 px-8 py-4 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-all duration-200 hover:scale-[1.02] hover:-translate-y-0.5"
-                  >
-                    <span className="text-xl">Get Started</span>
-                    <div className="flex flex-col text-xs opacity-90">
-                      <span>⚡️ 2-minute setup</span>
-                      <span>💳 No credit card needed</span>
-                    </div>
-                  </Link>
-                </div>
-                
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-2 bg-green-50 border border-green-100 px-3 py-2 rounded-lg">
+                <div className="flex items-center gap-4">
+                  <div className="group relative inline-flex">
+                    <div className="absolute -inset-1 rounded-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 opacity-70 blur transition duration-200 group-hover:opacity-100 animate-tilt"></div>
+                    <Link 
+                      href="#"
+                      onClick={handleGetStarted}
+                      className="relative inline-flex items-center gap-2 px-8 py-4 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-all duration-200 hover:scale-[1.02] hover:-translate-y-0.5"
+                    >
+                      <span className="text-xl">Get Started</span>
+                      <div className="flex flex-col text-xs opacity-90">
+                        <span>⚡️ 2-minute setup</span>
+                        <span>💳 No credit card needed</span>
+                      </div>
+                    </Link>
+                  </div>
+                  <div className="flex items-center gap-2">
                     <span className="flex h-2 w-2 relative">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
                     </span>
-                    <p className="text-gray-900">
-                      Start <span className="font-bold">free</span> or unlock premium and
-                      <span className="ml-1 bg-green-100 px-2 py-0.5 rounded-md text-green-700 font-bold">save 50% today</span>
-                    </p>
+                    <span className="text-sm text-grey-600">Limited time offer inside!</span>
                   </div>
-                  <div className="animate-pulse text-xs px-2 py-1 bg-red-50 text-red-600 rounded-md border border-red-100 whitespace-nowrap">
-                    Limited time offer
-                  </div>
+                </div>
+
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-green-50 border border-green-200">
+                  <span className="flex h-2 w-2 relative">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                  </span>
+                  <p className="text-sm">
+                    Start <span className="font-bold">free</span> or unlock premium and <span className="text-green-600 font-bold">save 50% today</span>
+                  </p>
                 </div>
               </div>
             </div>
@@ -390,47 +393,46 @@ export default function LandingPage() {
                     </h2>
                   </div>
 
-                  {/* <div className="p-8 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-100 shadow-sm"> */}
-                    <p className="text-lg text-gray-600">
-                      Great trainers can cost you $100-400 a month. A nutritionist will set you back another $100-200 per visit. Hunting down the best information online takes dozens if not hundreds of hours. We&apos;ll do the work there so you can do the work that matters.
-                    </p>
+                  <p className="text-lg text-gray-600">
+                    Great trainers can cost you $100-400 a month. A nutritionist will set you back another $100-200 per visit. Hunting down the best information online takes dozens if not hundreds of hours. We&apos;ll do the work there so you can do the work that matters.
+                  </p>
 
-                    <div className="space-y-3 lg:space-y-4">
+                  <div className="space-y-3 lg:space-y-4">
                     <div className="space-y-2 lg:space-y-4">
-                    <p className="text-gray-600 text-lg">For just <span className="text-red-500 font-bold text-xl line-through decoration-2">$20/m</span> <span className="text-2xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 text-transparent bg-clip-text drop-shadow-sm">$10/m</span> you can</p>
-                    <ul className="space-y-2 lg:space-y-4">
-                      <li className="flex items-start gap-3">
-                        <span className="text-indigo-600">✓</span>
-                        <div>
-                          <p className="font-bold text-gray-900">Track every workout</p>
-                          <p className="text-gray-600">Easy to use, easy to track, and easy to see how much progress you&apos;re making</p>
-                        </div>
-                      </li>
-                      <li className="flex items-start gap-3">
-                        <span className="text-indigo-600">✓</span>
-                        <div>
-                          <p className="font-bold text-gray-900">Get meal plans</p>
-                          <p className="text-gray-600">To best help you succeed with your dietary needs, preferences, and goals</p>
-                        </div>
-                      </li>
-                      <li className="flex items-start gap-3">
-                        <span className="text-indigo-600">✓</span>
-                        <div>
-                          <p className="font-bold text-gray-900">Adjust nutrition and workouts automagically</p>
-                          <p className="text-gray-600">Based on your weekly progress check-ins and goals. You&apos;ll be changing, why shouldn&apos;t your program?</p>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                  {/* </div> */}
+                      <p className="text-gray-600 text-lg">For just <span className="text-red-500 font-bold text-xl line-through decoration-2">$20/m</span> <span className="text-2xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 text-transparent bg-clip-text drop-shadow-sm">$10/m</span> you can</p>
+                      <ul className="space-y-2 lg:space-y-4">
+                        <li className="flex items-start gap-3">
+                          <span className="text-indigo-600">✓</span>
+                          <div>
+                            <p className="font-bold text-gray-900">Track every workout</p>
+                            <p className="text-gray-600">Easy to use, easy to track, and easy to see how much progress you&apos;re making</p>
+                          </div>
+                        </li>
+                        <li className="flex items-start gap-3">
+                          <span className="text-indigo-600">✓</span>
+                          <div>
+                            <p className="font-bold text-gray-900">Get meal plans</p>
+                            <p className="text-gray-600">To best help you succeed with your dietary needs, preferences, and goals</p>
+                          </div>
+                        </li>
+                        <li className="flex items-start gap-3">
+                          <span className="text-indigo-600">✓</span>
+                          <div>
+                            <p className="font-bold text-gray-900">Adjust nutrition and workouts automagically</p>
+                            <p className="text-gray-600">Based on your weekly progress check-ins and goals. You&apos;ll be changing, why shouldn&apos;t your program?</p>
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
 
-                  <Link 
-                    href="#"
-                    onClick={handleGetStarted}
-                    className="inline-block px-8 py-4 text-lg rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transform"
-                  >
-                    Zero risk to start
-                  </Link>
+                    <Link 
+                      href="#"
+                      onClick={handleGetStarted}
+                      className="inline-block px-8 py-4 text-lg rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transform"
+                    >
+                      Zero risk to start
+                    </Link>
+                  </div>
                 </div>
 
                 {/* Right Image */}
@@ -443,11 +445,11 @@ export default function LandingPage() {
                       width={500}
                       height={500}
                       className="relative w-full rounded-lg shadow-lg"
+                      priority
                     />
                   </div>
                 </div>
               </div>
-            </div>
             </div>
           </div>
         </main>
