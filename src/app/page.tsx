@@ -83,7 +83,7 @@ export default function LandingPage() {
                     <span className="text-gray-900">sonal training</span>
                   </span>
                   <br />
-                  <span className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-gray-800 opacity-90">
+                  <span className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900">
                     is finally here
                   </span>
                 </h1>
@@ -191,7 +191,7 @@ export default function LandingPage() {
             <div className="relative max-w-7xl mx-auto">
               {/* Section Title */}
               <div className="text-center mb-16">
-                <h2 className="text-4xl sm:text-5xl font-bold mb-6">Why baisics?</h2>
+                <h2 className="text-4xl sm:text-5xl font-bold mb-6 text-gray-900">Why baisics?</h2>
                 <p className="text-xl text-gray-600 max-w-2xl mx-auto">
                   Because getting healhty & fit shouldn&apos;t be complicated
                 </p>
@@ -208,7 +208,7 @@ export default function LandingPage() {
                     </div>
                     <div className="ml-4">
                       <div className="h-0.5 w-12 bg-indigo-600/30 mb-4"></div>
-                      <h3 className="text-xl font-semibold">Quick</h3>
+                      <h3 className="text-xl font-bold text-gray-900">Quick</h3>
                       <p className="text-gray-600">
                         Whether you&apos;re looking to trim some fat or build some muscle, you can have your own personalized training program in less than 2 minutes.
                       </p>
@@ -225,7 +225,7 @@ export default function LandingPage() {
                     </div>
                     <div className="ml-4">
                       <div className="h-0.5 w-12 bg-indigo-600/30 mb-4"></div>
-                      <h3 className="text-xl font-semibold">Easy</h3>
+                      <h3 className="text-xl font-bold text-gray-900">Easy</h3>
                       <p className="text-gray-600">
                         Just chat with our AI trainer to figure out what works for you. New to fitness and need to take it slow? Have a new injury and need to take it easy? Whatever you need, we&apos;ve got you covered.
                       </p>
@@ -242,7 +242,7 @@ export default function LandingPage() {
                     </div>
                     <div className="ml-4">
                       <div className="h-0.5 w-12 bg-indigo-600/30 mb-4"></div>
-                      <h3 className="text-xl font-semibold">Affordable</h3>
+                      <h3 className="text-xl font-bold text-gray-900">Affordable</h3>
                       <p className="text-gray-600">
                         It&apos;s completely free to make a customized program. Seriously. But if you want weekly check-ins, updated nutrition plans, further customization, meal plans, goal tracking, and the rest then it&apos;s still wildly affordable.
                       </p>
@@ -265,7 +265,7 @@ export default function LandingPage() {
                 <div className="space-y-2">
                   <div className="h-0.5 w-12 bg-indigo-600/30 mb-4"></div>
                   <p className="text-sm font-semibold text-indigo-600 uppercase">Built for <span className="underline underline-offset-4">you</span></p>
-                  <h2 className="text-3xl sm:text-4xl font-bold">
+                  <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
                     Training and nutrition<br />
                     as unique as you
                   </h2>
@@ -281,21 +281,21 @@ export default function LandingPage() {
                     <li className="flex items-start gap-3">
                       <span className="text-indigo-600">✓</span>
                       <div>
-                        <p className="font-medium">Hundreds of exercises</p>
+                        <p className="font-bold text-gray-900">Hundreds of exercises</p>
                         <p className="text-gray-600">Complete with education around form and targeted muscle groups</p>
                       </div>
                     </li>
                     <li className="flex items-start gap-3">
                       <span className="text-indigo-600">✓</span>
                       <div>
-                        <p className="font-medium">Unlimited customization</p>
+                        <p className="font-bold text-gray-900">Unlimited customization</p>
                         <p className="text-gray-600">Based on your dietary needs, physical abilities, and goals</p>
                       </div>
                     </li>
                     <li className="flex items-start gap-3">
                       <span className="text-indigo-600">✓</span>
                       <div>
-                        <p className="font-medium">World-class AI models</p>
+                        <p className="font-bold text-gray-900">World-class AI models</p>
                         <p className="text-gray-600">Helping do the work of planning so you can do the work of building your best life</p>
                       </div>
                     </li>
@@ -339,7 +339,7 @@ export default function LandingPage() {
                 <div className="space-y-2">
                   <div className="h-0.5 w-12 bg-indigo-600/30 mb-4"></div>
                   <p className="text-sm font-semibold text-indigo-600 uppercase">Work <span className="underline underline-offset-4">Smarter</span>, Not Harder</p>
-                  <h2 className="text-3xl sm:text-4xl font-bold">
+                  <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
                     Guess what? No more guesswork!
                   </h2>
                 </div>
@@ -386,7 +386,7 @@ export default function LandingPage() {
                 <div className="space-y-2">
                   <div className="h-0.5 w-12 bg-indigo-600/30 mb-4"></div>
                   <p className="text-sm font-semibold text-indigo-600 uppercase">All you need, <span className="underline underline-offset-4">all in one</span></p>
-                  <h2 className="text-3xl sm:text-4xl font-bold">
+                  <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
                     Cut the shit, just get fit
                   </h2>
                 </div>
@@ -402,21 +402,21 @@ export default function LandingPage() {
                     <li className="flex items-start gap-3">
                       <span className="text-indigo-600">✓</span>
                       <div>
-                        <p className="font-medium">Track every workout</p>
+                        <p className="font-bold text-gray-900">Track every workout</p>
                         <p className="text-gray-600">Easy to use, easy to track, and easy to see how much progress you&apos;re making</p>
                       </div>
                     </li>
                     <li className="flex items-start gap-3">
                       <span className="text-indigo-600">✓</span>
                       <div>
-                        <p className="font-medium">Get meal plans</p>
+                        <p className="font-bold text-gray-900">Get meal plans</p>
                         <p className="text-gray-600">To best help you succeed with your dietary needs, preferences, and goals</p>
                       </div>
                     </li>
                     <li className="flex items-start gap-3">
                       <span className="text-indigo-600">✓</span>
                       <div>
-                        <p className="font-medium">Adjust nutrition and workouts automagically</p>
+                        <p className="font-bold text-gray-900">Adjust nutrition and workouts automagically</p>
                         <p className="text-gray-600">Based on your weekly progress check-ins and goals. You&apos;ll be changing, why shouldn&apos;t your program?</p>
                       </div>
                     </li>
@@ -506,7 +506,7 @@ export default function LandingPage() {
           <div className="py-20">
             <div className="text-center mb-16">
               <p className="text-sm font-semibold text-indigo-600 uppercase mb-4">Simple Pricing</p>
-              <h2 className="text-4xl sm:text-5xl font-bold mb-6">Start your journey today</h2>
+              <h2 className="text-4xl sm:text-5xl font-bold mb-6 text-gray-900">Start your journey today</h2>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
                 Choose the plan that works best for you. No hidden fees, no contracts, just results. Cancel anytime. Or <span className="font-bold">use the forever free version</span> to make as many programs as you want. Here&apos;s to health!
               </p>
@@ -559,31 +559,31 @@ export default function LandingPage() {
                 <ul className="space-y-4">
                   <li className="flex gap-3">
                     <span className="text-indigo-600">✓</span>
-                    <span>Unlimited program creation</span>
+                    <span className="text-gray-900">Unlimited program creation</span>
                   </li>
                   <li className="flex gap-3">
                     <span className="text-indigo-600">✓</span>
-                    <span>Unlimited customization</span>
+                    <span className="text-gray-900">Unlimited customization</span>
                   </li>
                   <li className="flex gap-3">
                     <span className="text-indigo-600">✓</span>
-                    <span>Body composition assessment</span>
+                    <span className="text-gray-900">Body composition assessment</span>
                   </li>
                   <li className="flex gap-3">
                     <span className="text-indigo-600">✓</span>
-                    <span>Nutrition goals</span>
+                    <span className="text-gray-900">Nutrition goals</span>
                   </li>
                   <li className="flex gap-3">
                     <span className="text-indigo-600">✓</span>
-                    <span>Weekly check-ins</span>
+                    <span className="text-gray-900">Weekly check-ins</span>
                   </li>
                   <li className="flex gap-3">
                     <span className="text-indigo-600">✓</span>
-                    <span>Automatic program adjustments</span>
+                    <span className="text-gray-900">Automatic program adjustments</span>
                   </li>
                   <li className="flex gap-3">
                     <span className="text-indigo-600">✓</span>
-                    <span>Amazing customer support</span>
+                    <span className="text-gray-900">Amazing customer support</span>
                   </li>
                 </ul>
 
@@ -616,15 +616,15 @@ export default function LandingPage() {
                 <ul className="space-y-4">
                   <li className="flex gap-3">
                     <span className="text-indigo-600">✓</span>
-                    <span>Everything from the <span className="font-medium">Core</span> plan</span>
+                    <span className="text-gray-900">Everything from the <span className="font-bold">Core</span> plan</span>
                   </li>
                   <li className="flex gap-3">
                     <span className="text-indigo-600">✓</span>
-                    <span>And every future update and improvement—for life!</span>
+                    <span className="text-gray-900">And every future update and improvement—for life!</span>
                   </li>
                   <li className="flex gap-3">
                     <span className="text-indigo-600">✓</span>
-                    <span>Pay once, enjoy forever</span>
+                    <span className="text-gray-900">Pay once, enjoy forever</span>
                   </li>
                 </ul>
 
