@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createAnonUser, getUser, getUserProgram } from "../../start/actions";
@@ -9,7 +9,7 @@ import { ConversationalInterface } from "./ConversationalInterface";
 import Link from "next/link";
 import { Program } from "@/types";
 
-export function ConversationalIntakeContainer() {
+function ConversationalIntakeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [userId, setUserId] = useState<string>("");
@@ -99,4 +99,12 @@ export function ConversationalIntakeContainer() {
       </div>
     </div>
   );
+}
+
+export default function ConversationalIntakeContainer() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ConversationalIntakeContent />
+    </Suspense>
+  )
 } 

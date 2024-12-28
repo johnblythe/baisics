@@ -1,4 +1,4 @@
-import { IntakeFormData } from "@/app/hi/types";
+import { IntakeFormData } from "@/types";
 import { convertHeightToFeetAndInches } from "@/utils/formatting";
 import { User } from "@prisma/client";
 import { useState, useEffect } from "react";
@@ -58,7 +58,7 @@ export function UserProfileDisplay({
       icon: "user",
       items: [
         { label: "Age", value: `${intakeForm.age} years`, icon: "calendar" },
-        { label: "Height", value: convertHeightToFeetAndInches(intakeForm.height), icon: "ruler" },
+        { label: "Height", value: convertHeightToFeetAndInches(intakeForm.height as number), icon: "ruler" },
         { label: "Weight", value: `${intakeForm.weight} lbs`, icon: "scale" },
         { label: "Sex", value: intakeForm.sex, icon: "user" },
       ]
@@ -70,7 +70,7 @@ export function UserProfileDisplay({
         { label: "Goal", value: intakeForm.trainingGoal.split("_").join(" "), icon: "target" },
         { label: "Experience", value: intakeForm.experienceLevel, icon: "chart" },
         { label: "Schedule", value: `${intakeForm.daysAvailable} days/week`, icon: "calendar" },
-        { label: "Preferences", value: intakeForm.trainingPreferences.join(", "), icon: "heart" },
+        { label: "Preferences", value: intakeForm.trainingPreferences?.join(", ") || "", icon: "heart" },
       ]
     }
   ];

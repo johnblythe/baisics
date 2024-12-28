@@ -206,11 +206,10 @@ Please provide a response in the following JSON format:
 const parseAIResponse = <T>(response: SendMessageResponse, defaultValue: T): T => {
   try {
     if (response?.success && response?.data?.content) {
-      // Handle Anthropic API response structure
-      const content = typeof response.data.content === 'string' 
-        ? response.data.content 
-        : response.data.content[0]?.type === 'text' 
-          ? response.data.content[0].text 
+      const content = Array.isArray(response.data.content) 
+        ? response.data.content.find(block => 'text' in block)?.text || ''
+        : typeof response.data.content === 'string'
+          ? response.data.content
           : '';
       
       if (content) {
@@ -279,6 +278,7 @@ const saveProgramToDatabase = async (program: Program): Promise<void> => {
       }
     };
 
+    // @ts-ignore
     await prisma.program.create({ data: dbData });
   } catch (error) {
     console.error('Error in saveProgramToDatabase:', error);
