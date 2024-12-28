@@ -74,7 +74,7 @@ export default function LandingPage() {
               <div className="space-y-2">
                 <p className="text-indigo-600 font-semibold tracking-wide uppercase flex items-center gap-2">
                   AI Powered Fitness
-                  <span className="bg-indigo-100 text-indigo-700 text-xs px-2 py-0.5 rounded-full">Just in time for 2025</span>
+                  <span className="bg-indigo-100 text-indigo-700 text-xs px-2 py-0.5 rounded-full">Make 2025 your year</span>
                 </p>
                 
                 <h1 className="relative">
@@ -109,10 +109,10 @@ export default function LandingPage() {
               
               <div className="space-y-6 text-lg text-gray-600">
                 <p>
-                  Say good-bye to cookie cutter programs, high cost trainers, and confusing & confused influencers.
+                  👋 Say good-bye to cookie-cutter programs, high-cost trainers, and confusing-and-confused influencers.
                 </p>
                 <p>
-                  Customize the program you need to build the body you want.
+                  💪 Customize the program you need to build the body you want.
                 </p>
               </div>
               
@@ -127,7 +127,7 @@ export default function LandingPage() {
                     <span className="text-xl">Get Started</span>
                     <div className="flex flex-col text-xs opacity-90">
                       <span>⚡️ 2-minute setup</span>
-                      <span>���� No credit card needed</span>
+                      <span>💳 No credit card needed</span>
                     </div>
                   </Link>
                 </div>
@@ -450,57 +450,64 @@ export default function LandingPage() {
             </div>
             </div>
           </div>
+        </main>
 
+        <main className="w-full">
           {/* Zero Risk Section */}
-          <div className="relative py-16 lg:py-32 bg-indigo-50/30 w-full overflow-hidden border-2 border-gray-200">
-            {/* Background Testimonials Grid */}
-            <div className="absolute inset-0 w-full h-full">
-              {[...Array(8)].map((_, i) => (
-                <div key={i} className={`absolute w-full whitespace-nowrap ${i % 2 === 0 ? 'animate-scroll-left' : 'animate-scroll-right'}`} 
-                     style={{top: `${i * 12.5}%`}}>
-                  <div className="inline-block whitespace-nowrap text-indigo-900/20">
-                    <span className="inline-block mx-8 text-2xl">&ldquo;Life changing! Truly.&rdquo; — Addison W.</span>
-                    <span className="inline-block mx-8 text-2xl">&ldquo;I&apos;ve tried lots of programs before, but this one actually delivered results.&rdquo; — Timothy R.</span>
-                    <span className="inline-block mx-8 text-2xl">&ldquo;Too easy to not try it!&rdquo; — Lo B.</span>
-                    <span className="inline-block mx-8 text-2xl">&ldquo;I can&apos;t overstate how easy this was to succeed with.&rdquo; — John B.</span>
+          <section className="w-full bg-indigo-50/30 border-t border-b border-gray-200">
+            <div className="relative py-16 lg:py-32 overflow-hidden">
+              {/* Background Testimonials Grid */}
+              <div className="absolute inset-0 w-full h-full">
+                {[...Array(8)].map((_, i) => (
+                  <div key={i} className={`absolute w-full whitespace-nowrap ${i % 2 === 0 ? 'animate-scroll-left' : 'animate-scroll-right'}`} 
+                       style={{top: `${i * 12.5}%`}}>
+                    <div className="inline-block whitespace-nowrap text-indigo-900/20">
+                      <span className="inline-block mx-8 text-2xl">&ldquo;Life changing! Truly.&rdquo; — Addison W.</span>
+                      <span className="inline-block mx-8 text-2xl">&ldquo;I&apos;ve tried lots of programs before, but this one actually delivered results.&rdquo; — Timothy R.</span>
+                      <span className="inline-block mx-8 text-2xl">&ldquo;Too easy to not try it!&rdquo; — Lo B.</span>
+                      <span className="inline-block mx-8 text-2xl">&ldquo;I can&apos;t overstate how easy this was to succeed with.&rdquo; — John B.</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Main Content */}
+              <div className="relative">
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                  <div className="flex flex-col items-center bg-gradient-to-b from-white/90 to-white/40 rounded-lg p-8">
+                    <p className="text-xl font-bold text-indigo-600 uppercase tracking-[0.2em] mb-12">
+                      <span className="underline underline-offset-4 font-bold">Zero Risk</span>
+                    </p>
+
+                    <h2 className="text-6xl sm:text-7xl lg:text-[10rem] font-bold mb-12 md:mb-24 text-indigo-600 leading-[0.9]">
+                      <span className="font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 text-transparent bg-clip-text drop-shadow-sm">No pain,</span><br />
+                      <span className="font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 text-transparent bg-clip-text drop-shadow-sm">all gain</span>
+                    </h2>
+
+                    <p className="text-2xl sm:text-3xl text-gray-600 max-w-4xl mx-auto mb-12 leading-relaxed">
+                      Rome wasn&apos;t built in a day, and your ideal body won&apos;t be either. But you <span className="font-bold">can</span> build a great plan in less than two minutes.
+                    </p>
+
+                    <p className="text-2xl sm:text-3xl text-gray-600 max-w-4xl mx-auto mb-12 leading-relaxed">
+                      What are you waiting for? Jump in, chat, and get your free training & nutrition plan now!
+                    </p>
+
+                    <Link 
+                      href="#"
+                      onClick={handleGetStarted}
+                      className="inline-block px-16 py-6 text-2xl rounded-full bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transform"
+                    >
+                      Let&apos;s go!
+                    </Link>
                   </div>
                 </div>
-              ))}
-            </div>
-
-            {/* Main Content */}
-            <div className="relative max-w-[120rem] mx-auto px-4 sm:px-6 lg:px-8 text-center rounded-lg">
-              
-              <div className="max-w-6xl mx-auto">
-              <div className="flex flex-col items-center bg-gradient-to-b from-white/90 to-white/40 rounded-lg p-8">
-              <p className="text-xl font-bold text-indigo-600 uppercase tracking-[0.2em] mb-12">
-                <span className="underline underline-offset-4 font-bold">Zero Risk</span>
-              </p>
-
-                <h2 className="text-6xl sm:text-7xl lg:text-[10rem] font-bold mb-12 md:mb-24 text-indigo-600 leading-[0.9]">
-                  <span className="font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 text-transparent bg-clip-text drop-shadow-sm">No pain,</span><br />
-                  <span className="font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 text-transparent bg-clip-text drop-shadow-sm">all gain</span>
-                </h2>
-
-                  <p className="text-2xl sm:text-3xl text-gray-600 max-w-4xl mx-auto mb-12 leading-relaxed">
-                    Rome wasn&apos;t built in a day, and your ideal body won&apos;t be either. But you <span className="font-bold">can</span> build a great plan in less than two minutes.
-                  </p>
-                <p className="text-2xl sm:text-3xl text-gray-600 max-w-4xl mx-auto mb-6 leading-relaxed">
-                  What are you waiting for? Jump in, chat, and get your free training & nutrition plan now!
-                </p>
-                </div>
-
-                <Link 
-                  href="#"
-                  onClick={handleGetStarted}
-                  className="inline-block px-16 py-6 text-2xl rounded-full bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transform"
-                >
-                  Let&apos;s go!
-                </Link>
               </div>
             </div>
-          </div>
+          </section>
+        </main>
 
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <a id="pricing"></a>
           {/* Pricing Section */}
           <div className="py-12 lg:py-20">
             <div className="text-center mb-8 lg:mb-16">
@@ -643,6 +650,7 @@ export default function LandingPage() {
               </div>
           </div>
         </main>
+
         <a id="features"></a>
 
         {/* Footer */}
