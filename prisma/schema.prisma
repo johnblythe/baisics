@@ -141,6 +141,14 @@ model ExerciseLibrary {
   exercises        Exercise[]
   createdAt        DateTime       @default(now()) @map("created_at")
 
+  @@index([name])
+  @@index([category])
+  @@index([equipment])
+  @@index([difficulty])
+  @@index([isCompound])
+  @@index([movementPattern])
+  @@index([targetMuscles])
+  @@index([secondaryMuscles])
   @@map("exercise_library")
 }
 
@@ -158,6 +166,7 @@ model Exercise {
 
   @@index([workoutId])
   @@index([exerciseLibraryId])
+  @@index([name])
   @@map("exercises")
 }
 
@@ -171,6 +180,9 @@ model Program {
   user         User         @relation(fields: [createdBy], references: [id])
   workoutPlans WorkoutPlan[]
 
+  @@index([name])
+  @@index([createdBy])
+  @@index([description])
   @@map("programs")
 }
 
@@ -183,6 +195,7 @@ model WaitlistLead {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([email])
   @@map("waitlist_leads")
 }
 
