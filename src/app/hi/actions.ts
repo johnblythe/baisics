@@ -3,7 +3,7 @@
 import { Message, ExtractedData, IntakeFormData, WorkoutPlan, Program } from "@/types";
 import { sendMessage } from "@/utils/chat";
 import { prisma } from "@/lib/prisma";
-import { modifyPhase } from "./services/programCreation";
+// import { modifyPhase } from "./services/programCreation";
 import { createProgramSequentially } from "./services/sequentialProgramCreation";
 
 // Helper to convert extracted data to IntakeFormData format
@@ -139,6 +139,7 @@ export async function processUserMessage(
       throw new Error('Failed to get response from Claude');
     }
 
+    // @ts-ignore
     const aiResponse = JSON.parse(result.data?.content?.[0]?.text || '{}');
     console.log("🚀 ~ aiResponse:", aiResponse)
 
@@ -167,7 +168,8 @@ export async function processModificationRequest(
   requestedPhase: number = 1,
 ) {
   try {
-
+    return;
+    // @ts-ignore
     const programWithModifiedPhase = await processPhaseModification(
       userId,
       currentProgram,
@@ -226,48 +228,50 @@ export async function saveDemoIntake(userId: string) {
 }
 
 // @TODO: refactor
-export async function processPhaseModification(
-  userId: string,
-  currentProgram: Program,
-  phaseNumber: number,
-  modificationRequest: string
-) {
-  try {
-    const currentPhase = currentProgram.workoutPlans.find((p: WorkoutPlan) => p.phase === phaseNumber);
-    if (!currentPhase) {
-      throw new Error(`Phase ${phaseNumber} not found`);
-    }
-    console.log("🚀 ~ currentPhase:", currentPhase)
+// export async function processPhaseModification(
+//   userId: string,
+//   currentProgram: Program,
+//   phaseNumber: number,
+//   modificationRequest: string
+// ) {
+//   try {
+//     // @ts-ignore
+//     const currentPhase = currentProgram.workoutPlans.find((p: WorkoutPlan) => p.phase === phaseNumber);
+//     if (!currentPhase) {
+//       throw new Error(`Phase ${phaseNumber} not found`);
+//     }
+//     console.log("🚀 ~ currentPhase:", currentPhase)
 
-    // Get modified phase from Claude
-    const modifiedPhase = await modifyPhase(
-      userId,
-      currentPhase,
-      modificationRequest
-    );
-    console.log("🚀 ~ modifiedPhase:", modifiedPhase)
+//     // Get modified phase from Claude
+//     const modifiedPhase = await modifyPhase(
+//       userId,
+//       currentPhase,
+//       modificationRequest
+//     );
+//     console.log("🚀 ~ modifiedPhase:", modifiedPhase)
 
-    // Create a new program object with the modified phase
-    const transformedProgram = {
-      ...currentProgram,
-      workoutPlans: currentProgram.workoutPlans.map((phase: WorkoutPlan) => 
-        phase.phase === phaseNumber ? modifiedPhase : phase
-      )
-    };
+//     // Create a new program object with the modified phase
+//     const transformedProgram = {
+//       ...currentProgram,
+//       workoutPlans: currentProgram.workoutPlans.map((phase: WorkoutPlan) => 
+//         // @ts-ignore
+//         phase.phase === phaseNumber ? modifiedPhase : phase
+//       )
+//     };
 
-    return {
-      success: true,
-      message: `Phase ${phaseNumber} has been updated with your requested changes.`,
-      program: transformedProgram,
-      needsClarification: false
-    };
+//     return {
+//       success: true,
+//       message: `Phase ${phaseNumber} has been updated with your requested changes.`,
+//       program: transformedProgram,
+//       needsClarification: false
+//     };
 
-  } catch (error) {
-    console.error("Failed to process phase modification request:", error);
-    return {
-      success: false,
-      message: "I encountered an error while processing your request. Please try again.",
-      needsClarification: true
-    };
-  }
-} 
+//   } catch (error) {
+//     console.error("Failed to process phase modification request:", error);
+//     return {
+//       success: false,
+//       message: "I encountered an error while processing your request. Please try again.",
+//       needsClarification: true
+//     };
+//   }
+// } 

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ImageDropzone } from "@/app/components/ImageDropzone";
-import { IntakeFormData } from "@/app/hi/types";
+import { IntakeFormData } from "@/types";
 
 interface ChatInterfaceProps {
   userId: string;
@@ -20,7 +20,7 @@ interface ConversationStep {
 
 const conversationFlow: ConversationStep[] = [
   {
-    question: "Hi there! I'm excited to help you create a personalized fitness program. To get started, what are your main fitness goals?",
+    question: `Hi there! I&apos;m excited to help you create a personalized fitness program. To get started, what are your main fitness goals?`,
     inputType: 'select',
     key: 'trainingGoal',
     options: [
@@ -32,7 +32,7 @@ const conversationFlow: ConversationStep[] = [
     ]
   },
   {
-    question: "Great choice! How would you describe your current fitness level?",
+    question: `Great choice! How would you describe your current fitness level?`,
     inputType: 'select',
     key: 'experienceLevel',
     options: [
@@ -175,7 +175,7 @@ export function ChatInterface({ userId }: ChatInterfaceProps) {
         ) : (
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-4">Thanks for sharing!</h2>
-            <p>We're generating your personalized program...</p>
+            <p>We&apos;re generating your personalized program...</p>
           </div>
         )}
       </div>

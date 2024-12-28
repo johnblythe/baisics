@@ -348,92 +348,92 @@ export const generateProgramStructurePrompt = (intakeData: IntakeFormData) => {
   }`;
 };
 
-export const generatePhaseDetailsPrompt = (
-  intakeData: IntakeFormData,
-  programStructure: ProgramStructure,
-  phaseNumber: number,
-  currentPhase?: WorkoutPlan,
-  modificationRequest?: string
-) => {
-  const phase = programStructure.phaseStructure[phaseNumber - 1];
+// export const generatePhaseDetailsPrompt = (
+//   intakeData: IntakeFormData,
+//   programStructure: ProgramStructure,
+//   phaseNumber: number,
+//   currentPhase?: WorkoutPlan,
+//   modificationRequest?: string
+// ) => {
+//   const phase = programStructure.phaseStructure[phaseNumber - 1];
   
-  let prompt = `
-  Create detailed workout and nutrition plans for Phase ${phaseNumber}:
-  Focus: ${phase.focus}
-  Duration: ${phase.durationWeeks} weeks
-  Target Intensity: ${phase.targetIntensity}
+//   let prompt = `
+//   Create detailed workout and nutrition plans for Phase ${phaseNumber}:
+//   Focus: ${phase.focus}
+//   Duration: ${phase.durationWeeks} weeks
+//   Target Intensity: ${phase.targetIntensity}
 
-  Client Profile:
-  - Sex: ${intakeData.sex || 'unspecified'}
-  - Age: ${intakeData.age || 'unspecified'}
-  - Weight: ${intakeData.weight || 'unspecified'} 
-  - Height: ${intakeData.height || 'unspecified'}
-  - Training Goal: ${intakeData.trainingGoal}
-  - Days Training: ${intakeData.daysAvailable} per week
-  - Daily Training Time: ${intakeData.dailyBudget} minutes
+//   Client Profile:
+//   - Sex: ${intakeData.sex || 'unspecified'}
+//   - Age: ${intakeData.age || 'unspecified'}
+//   - Weight: ${intakeData.weight || 'unspecified'} 
+//   - Height: ${intakeData.height || 'unspecified'}
+//   - Training Goal: ${intakeData.trainingGoal}
+//   - Days Training: ${intakeData.daysAvailable} per week
+//   - Daily Training Time: ${intakeData.dailyBudget} minutes
 
-  For this phase, provide:
-  1. A clear explanation of why this phase is important for the client's goals
-  2. What the client should expect during this phase (intensity, challenges, adaptations)
-  3. 3-5 key points for success in this phase
-  4. Detailed workout and nutrition plans
+//   For this phase, provide:
+//   1. A clear explanation of why this phase is important for the client's goals
+//   2. What the client should expect during this phase (intensity, challenges, adaptations)
+//   3. 3-5 key points for success in this phase
+//   4. Detailed workout and nutrition plans
 
-  Return a JSON object for this phase matching this structure:
-  {
-    "phase": ${phaseNumber},
-    "durationWeeks": ${phase.durationWeeks},
-    "phaseExplanation": "string explaining why this phase is important and how it fits into the overall program",
-    "phaseExpectations": "string describing what the client should expect during this phase",
-    "phaseKeyPoints": ["array of 3-5 key points for success"],
-    "bodyComposition": {
-      "bodyFatPercentage": number,
-      "muscleMassDistribution": string
-    },
-    "trainingPlan": {
-      "daysPerWeek": ${intakeData.daysAvailable},
-      "workouts": [{
-        "day": number,
-        "exercises": [{
-          "name": string,
-          "sets": number,
-          "reps": number,
-          "restPeriod": string,
-          "category": string,
-          "difficulty": string
-        }]
-      }]
-    },
-    "nutrition": {
-      "dailyCalories": number,
-      "macros": {
-        "protein": number,
-        "carbs": number,
-        "fats": number
-      }
-    },
-    "progressionProtocol": ["${phase.progressionStrategy}"]
-  }`;
+//   Return a JSON object for this phase matching this structure:
+//   {
+//     "phase": ${phaseNumber},
+//     "durationWeeks": ${phase.durationWeeks},
+//     "phaseExplanation": "string explaining why this phase is important and how it fits into the overall program",
+//     "phaseExpectations": "string describing what the client should expect during this phase",
+//     "phaseKeyPoints": ["array of 3-5 key points for success"],
+//     "bodyComposition": {
+//       "bodyFatPercentage": number,
+//       "muscleMassDistribution": string
+//     },
+//     "trainingPlan": {
+//       "daysPerWeek": ${intakeData.daysAvailable},
+//       "workouts": [{
+//         "day": number,
+//         "exercises": [{
+//           "name": string,
+//           "sets": number,
+//           "reps": number,
+//           "restPeriod": string,
+//           "category": string,
+//           "difficulty": string
+//         }]
+//       }]
+//     },
+//     "nutrition": {
+//       "dailyCalories": number,
+//       "macros": {
+//         "protein": number,
+//         "carbs": number,
+//         "fats": number
+//       }
+//     },
+//     "progressionProtocol": ["${phase.progressionStrategy}"]
+//   }`;
 
-  if (currentPhase && modificationRequest) {
-    prompt += `\n
-  MODIFICATION REQUEST: "${modificationRequest}"
+//   if (currentPhase && modificationRequest) {
+//     prompt += `\n
+//   MODIFICATION REQUEST: "${modificationRequest}"
   
-  CURRENT PHASE DETAILS:
-  - Current Body Fat Target: ${currentPhase.bodyFatPercentage}%
-  - Current Focus: ${currentPhase.muscleMassDistribution}
-  - Current Training Days: ${currentPhase.daysPerWeek}
-  - Current Nutrition:
-    * Daily Calories: ${currentPhase.dailyCalories}
-    * Protein: ${currentPhase.proteinGrams}g
-    * Carbs: ${currentPhase.carbGrams}g
-    * Fats: ${currentPhase.fatGrams}g
-  - Current Progression: ${Array.isArray(currentPhase.progressionProtocol) 
-      ? currentPhase.progressionProtocol.join(', ') 
-      : currentPhase.progressionProtocol || 'not specified'}
+//   CURRENT PHASE DETAILS:
+//   - Current Body Fat Target: ${currentPhase.bodyFatPercentage}%
+//   - Current Focus: ${currentPhase.muscleMassDistribution}
+//   - Current Training Days: ${currentPhase.daysPerWeek}
+//   - Current Nutrition:
+//     * Daily Calories: ${currentPhase.dailyCalories}
+//     * Protein: ${currentPhase.proteinGrams}g
+//     * Carbs: ${currentPhase.carbGrams}g
+//     * Fats: ${currentPhase.fatGrams}g
+//   - Current Progression: ${Array.isArray(currentPhase.progressionProtocol) 
+//       ? currentPhase.progressionProtocol.join(', ') 
+//       : currentPhase.progressionProtocol || 'not specified'}
   
-  Maintain the core structure while incorporating the requested changes.
-  If no explicit request to change nutrition then DO NOT change the current nutrition values.`;
-  }
+//   Maintain the core structure while incorporating the requested changes.
+//   If no explicit request to change nutrition then DO NOT change the current nutrition values.`;
+//   }
   
-  return prompt;
-};
+//   return prompt;
+// };

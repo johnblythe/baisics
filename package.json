@@ -6,10 +6,12 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "vercel-build": "prisma generate && prisma migrate deploy && next build"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.1",
+    "@headlessui/react": "^2.2.0",
     "@prisma/client": "^5.22.0",
     "@types/uuid": "^10.0.0",
     "@vercel/kv": "^3.0.0",
