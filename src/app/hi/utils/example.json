@@ -1,0 +1,536 @@
+{
+    "programName": "Athletic Hypertrophy Program",
+    "programDescription": "Progressive muscle-building program leveraging athletic background with periodized strength and power phases",
+    "phases": [
+        {
+            "phase": 1,
+            "durationWeeks": 4,
+            "bodyComposition": {
+                "bodyFatPercentage": 15,
+                "muscleMassDistribution": "balanced with focus on posterior chain"
+            },
+            "trainingPlan": {
+                "daysPerWeek": 5,
+                "workouts": [
+                    {
+                        "day": 1,
+                        "exercises": [
+                            {
+                                "name": "Back Squat",
+                                "sets": 5,
+                                "reps": 8,
+                                "restPeriod": "2-3 min",
+                                "category": "compound",
+                                "difficulty": "moderate"
+                            },
+                            {
+                                "name": "Romanian Deadlift",
+                                "sets": 4,
+                                "reps": 10,
+                                "restPeriod": "2 min",
+                                "category": "compound",
+                                "difficulty": "moderate"
+                            },
+                            {
+                                "name": "Bulgarian Split Squat",
+                                "sets": 3,
+                                "reps": 12,
+                                "restPeriod": "90 sec",
+                                "category": "unilateral",
+                                "difficulty": "moderate"
+                            }
+                        ]
+                    },
+                    {
+                        "day": 2,
+                        "exercises": [
+                            {
+                                "name": "Bench Press",
+                                "sets": 5,
+                                "reps": 8,
+                                "restPeriod": "2-3 min",
+                                "category": "compound",
+                                "difficulty": "moderate"
+                            },
+                            {
+                                "name": "Weighted Pull-ups",
+                                "sets": 4,
+                                "reps": 8,
+                                "restPeriod": "2 min",
+                                "category": "compound",
+                                "difficulty": "high"
+                            },
+                            {
+                                "name": "Incline Dumbbell Press",
+                                "sets": 3,
+                                "reps": 12,
+                                "restPeriod": "90 sec",
+                                "category": "compound",
+                                "difficulty": "moderate"
+                            }
+                        ]
+                    },
+                    {
+                        "day": 3,
+                        "exercises": [
+                            {
+                                "name": "Box Jumps",
+                                "sets": 4,
+                                "reps": 6,
+                                "restPeriod": "2 min",
+                                "category": "plyometric",
+                                "difficulty": "moderate"
+                            },
+                            {
+                                "name": "Power Clean",
+                                "sets": 5,
+                                "reps": 5,
+                                "restPeriod": "2-3 min",
+                                "category": "olympic",
+                                "difficulty": "high"
+                            },
+                            {
+                                "name": "Sprint Intervals",
+                                "sets": 6,
+                                "reps": 1,
+                                "restPeriod": "2 min",
+                                "category": "conditioning",
+                                "difficulty": "high"
+                            }
+                        ]
+                    },
+                    {
+                        "day": 4,
+                        "exercises": [
+                            {
+                                "name": "Standing Military Press",
+                                "sets": 4,
+                                "reps": 8,
+                                "restPeriod": "2 min",
+                                "category": "compound",
+                                "difficulty": "moderate"
+                            },
+                            {
+                                "name": "Barbell Row",
+                                "sets": 4,
+                                "reps": 10,
+                                "restPeriod": "90 sec",
+                                "category": "compound",
+                                "difficulty": "moderate"
+                            },
+                            {
+                                "name": "Face Pulls",
+                                "sets": 3,
+                                "reps": 15,
+                                "restPeriod": "60 sec",
+                                "category": "isolation",
+                                "difficulty": "low"
+                            }
+                        ]
+                    },
+                    {
+                        "day": 5,
+                        "exercises": [
+                            {
+                                "name": "Deadlift",
+                                "sets": 5,
+                                "reps": 6,
+                                "restPeriod": "3 min",
+                                "category": "compound",
+                                "difficulty": "high"
+                            },
+                            {
+                                "name": "Front Squat",
+                                "sets": 4,
+                                "reps": 8,
+                                "restPeriod": "2 min",
+                                "category": "compound",
+                                "difficulty": "moderate"
+                            },
+                            {
+                                "name": "Weighted Lunges",
+                                "sets": 3,
+                                "reps": 12,
+                                "restPeriod": "90 sec",
+                                "category": "compound",
+                                "difficulty": "moderate"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "nutrition": {
+                "dailyCalories": 3200,
+                "macros": {
+                    "protein": 180,
+                    "carbs": 400,
+                    "fats": 89
+                },
+                "mealTiming": [
+                    "Pre-workout: 2 hours before training",
+                    "Post-workout: within 30 minutes",
+                    "4-5 total meals spread throughout day"
+                ]
+            },
+            "progressionProtocol": [
+                "Increase weight 5-10 lbs when all sets can be completed",
+                "Focus on form and controlled eccentric",
+                "Track main lifts for progressive overload"
+            ]
+        },
+        {
+            "phase": 2,
+            "durationWeeks": 5,
+            "bodyComposition": {
+                "bodyFatPercentage": 14,
+                "muscleMassDistribution": "upper body emphasis"
+            },
+            "trainingPlan": {
+                "daysPerWeek": 5,
+                "workouts": [
+                    {
+                        "day": 1,
+                        "exercises": [
+                            {
+                                "name": "Incline Bench Press",
+                                "sets": 6,
+                                "reps": 6,
+                                "restPeriod": "2-3 min",
+                                "category": "compound",
+                                "difficulty": "high"
+                            },
+                            {
+                                "name": "Weighted Dips",
+                                "sets": 4,
+                                "reps": 8,
+                                "restPeriod": "2 min",
+                                "category": "compound",
+                                "difficulty": "moderate"
+                            },
+                            {
+                                "name": "Lateral Raises",
+                                "sets": 4,
+                                "reps": 15,
+                                "restPeriod": "60 sec",
+                                "category": "isolation",
+                                "difficulty": "low"
+                            }
+                        ]
+                    },
+                    {
+                        "day": 2,
+                        "exercises": [
+                            {
+                                "name": "Pendlay Rows",
+                                "sets": 5,
+                                "reps": 6,
+                                "restPeriod": "2 min",
+                                "category": "compound",
+                                "difficulty": "high"
+                            },
+                            {
+                                "name": "Chin-ups",
+                                "sets": 4,
+                                "reps": 10,
+                                "restPeriod": "2 min",
+                                "category": "compound",
+                                "difficulty": "moderate"
+                            },
+                            {
+                                "name": "DB Rows",
+                                "sets": 3,
+                                "reps": 12,
+                                "restPeriod": "90 sec",
+                                "category": "compound",
+                                "difficulty": "moderate"
+                            }
+                        ]
+                    },
+                    {
+                        "day": 3,
+                        "exercises": [
+                            {
+                                "name": "Front Squat",
+                                "sets": 5,
+                                "reps": 5,
+                                "restPeriod": "2-3 min",
+                                "category": "compound",
+                                "difficulty": "high"
+                            },
+                            {
+                                "name": "Box Jumps",
+                                "sets": 4,
+                                "reps": 5,
+                                "restPeriod": "2 min",
+                                "category": "plyometric",
+                                "difficulty": "moderate"
+                            },
+                            {
+                                "name": "Hill Sprints",
+                                "sets": 8,
+                                "reps": 1,
+                                "restPeriod": "90 sec",
+                                "category": "conditioning",
+                                "difficulty": "high"
+                            }
+                        ]
+                    },
+                    {
+                        "day": 4,
+                        "exercises": [
+                            {
+                                "name": "Push Press",
+                                "sets": 5,
+                                "reps": 5,
+                                "restPeriod": "2-3 min",
+                                "category": "compound",
+                                "difficulty": "high"
+                            },
+                            {
+                                "name": "Close-Grip Bench",
+                                "sets": 4,
+                                "reps": 8,
+                                "restPeriod": "2 min",
+                                "category": "compound",
+                                "difficulty": "moderate"
+                            },
+                            {
+                                "name": "Upright Rows",
+                                "sets": 3,
+                                "reps": 12,
+                                "restPeriod": "90 sec",
+                                "category": "compound",
+                                "difficulty": "moderate"
+                            }
+                        ]
+                    },
+                    {
+                        "day": 5,
+                        "exercises": [
+                            {
+                                "name": "Romanian Deadlift",
+                                "sets": 5,
+                                "reps": 6,
+                                "restPeriod": "2-3 min",
+                                "category": "compound",
+                                "difficulty": "high"
+                            },
+                            {
+                                "name": "Good Mornings",
+                                "sets": 4,
+                                "reps": 8,
+                                "restPeriod": "2 min",
+                                "category": "compound",
+                                "difficulty": "moderate"
+                            },
+                            {
+                                "name": "Back Extensions",
+                                "sets": 3,
+                                "reps": 15,
+                                "restPeriod": "60 sec",
+                                "category": "isolation",
+                                "difficulty": "low"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "nutrition": {
+                "dailyCalories": 3300,
+                "macros": {
+                    "protein": 190,
+                    "carbs": 410,
+                    "fats": 92
+                },
+                "mealTiming": [
+                    "Pre-workout: 2 hours before training",
+                    "Post-workout: within 30 minutes",
+                    "4-5 total meals spread throughout day"
+                ]
+            },
+            "progressionProtocol": [
+                "Increase weight by 2.5-5 lbs when all sets completed",
+                "Add one set to main exercises when plateau occurs",
+                "Decrease rest periods by 15 seconds when adaptation occurs"
+            ]
+        },
+        {
+            "phase": 3,
+            "durationWeeks": 4,
+            "bodyComposition": {
+                "bodyFatPercentage": 13,
+                "muscleMassDistribution": "full body with strength focus"
+            },
+            "trainingPlan": {
+                "daysPerWeek": 5,
+                "workouts": [
+                    {
+                        "day": 1,
+                        "exercises": [
+                            {
+                                "name": "Back Squat",
+                                "sets": 6,
+                                "reps": 4,
+                                "restPeriod": "3 min",
+                                "category": "compound",
+                                "difficulty": "high"
+                            },
+                            {
+                                "name": "Front Squat",
+                                "sets": 4,
+                                "reps": 6,
+                                "restPeriod": "2-3 min",
+                                "category": "compound",
+                                "difficulty": "high"
+                            },
+                            {
+                                "name": "Jump Squats",
+                                "sets": 3,
+                                "reps": 6,
+                                "restPeriod": "2 min",
+                                "category": "plyometric",
+                                "difficulty": "moderate"
+                            }
+                        ]
+                    },
+                    {
+                        "day": 2,
+                        "exercises": [
+                            {
+                                "name": "Bench Press",
+                                "sets": 6,
+                                "reps": 4,
+                                "restPeriod": "3 min",
+                                "category": "compound",
+                                "difficulty": "high"
+                            },
+                            {
+                                "name": "Weighted Pull-ups",
+                                "sets": 5,
+                                "reps": 5,
+                                "restPeriod": "2-3 min",
+                                "category": "compound",
+                                "difficulty": "high"
+                            },
+                            {
+                                "name": "DB Bench Press",
+                                "sets": 3,
+                                "reps": 8,
+                                "restPeriod": "90 sec",
+                                "category": "compound",
+                                "difficulty": "moderate"
+                            }
+                        ]
+                    },
+                    {
+                        "day": 3,
+                        "exercises": [
+                            {
+                                "name": "Power Clean",
+                                "sets": 6,
+                                "reps": 3,
+                                "restPeriod": "3 min",
+                                "category": "olympic",
+                                "difficulty": "high"
+                            },
+                            {
+                                "name": "Box Jumps",
+                                "sets": 4,
+                                "reps": 4,
+                                "restPeriod": "2 min",
+                                "category": "plyometric",
+                                "difficulty": "moderate"
+                            },
+                            {
+                                "name": "Sprint Intervals",
+                                "sets": 8,
+                                "reps": 1,
+                                "restPeriod": "2 min",
+                                "category": "conditioning",
+                                "difficulty": "high"
+                            }
+                        ]
+                    },
+                    {
+                        "day": 4,
+                        "exercises": [
+                            {
+                                "name": "Standing Military Press",
+                                "sets": 6,
+                                "reps": 4,
+                                "restPeriod": "3 min",
+                                "category": "compound",
+                                "difficulty": "high"
+                            },
+                            {
+                                "name": "Push Press",
+                                "sets": 4,
+                                "reps": 6,
+                                "restPeriod": "2-3 min",
+                                "category": "compound",
+                                "difficulty": "high"
+                            },
+                            {
+                                "name": "Lateral Raises",
+                                "sets": 3,
+                                "reps": 12,
+                                "restPeriod": "60 sec",
+                                "category": "isolation",
+                                "difficulty": "low"
+                            }
+                        ]
+                    },
+                    {
+                        "day": 5,
+                        "exercises": [
+                            {
+                                "name": "Deadlift",
+                                "sets": 6,
+                                "reps": 4,
+                                "restPeriod": "3 min",
+                                "category": "compound",
+                                "difficulty": "high"
+                            },
+                            {
+                                "name": "Romanian Deadlift",
+                                "sets": 4,
+                                "reps": 6,
+                                "restPeriod": "2-3 min",
+                                "category": "compound",
+                                "difficulty": "high"
+                            },
+                            {
+                                "name": "Glute-Ham Raises",
+                                "sets": 3,
+                                "reps": 10,
+                                "restPeriod": "90 sec",
+                                "category": "compound",
+                                "difficulty": "moderate"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "nutrition": {
+                "dailyCalories": 3400,
+                "macros": {
+                    "protein": 200,
+                    "carbs": 425,
+                    "fats": 94
+                },
+                "mealTiming": [
+                    "Pre-workout: 2 hours before training",
+                    "Intra-workout: BCAAs during training",
+                    "Post-workout: within 30 minutes",
+                    "4-5 total meals spread throughout day"
+                ]
+            },
+            "progressionProtocol": [
+                "Focus on perfect form with increased loads",
+                "Add 2.5-5 lbs when all reps completed with good form",
+                "Deload every fourth week if needed",
+                "Track velocity on main lifts"
+            ]
+        }
+    ]
+}
