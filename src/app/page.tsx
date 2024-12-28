@@ -193,7 +193,7 @@ export default function LandingPage() {
               <div className="text-center mb-16">
                 <h2 className="text-4xl sm:text-5xl font-bold mb-6 text-gray-900">Why baisics?</h2>
                 <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                  Because getting healhty & fit shouldn&apos;t be complicated
+                  Because getting healthy & fit shouldn&apos;t be complicated
                 </p>
               </div>
 
