@@ -389,29 +389,27 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
   const renderFormSection = () => {
     if (program) {
       return (
-        <form onSubmit={handleSubmit} className="p-6 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-          <div className="flex flex-col space-y-4">
+        <form onSubmit={handleSubmit} className="p-8 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-b-xl">
+          <div className="flex flex-col space-y-6">
             <textarea
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Have any feedback about your program? Let me know if you'd like any adjustments..."
               rows={3}
-              className="w-full p-4 border rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              className="w-full p-4 border rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none transition-all duration-300"
             />
             <div className="flex space-x-4">
               <button
                 type="button"
                 onClick={handleSaveProgram}
-                // disabled={isSaving}
-                className="flex-1 px-8 py-4 bg-green-500 text-white text-lg rounded-xl hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="flex-1 px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-lg rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:-translate-y-0.5"
               >
                 {isSaving ? "Saving..." : "Save My Custom Program"}
               </button>
               <button
                 type="submit"
-                // disabled={!inputValue.trim() || isTyping}
-                className="flex-1 px-8 py-4 bg-blue-500 text-white text-lg rounded-xl hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="flex-1 px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-lg rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:-translate-y-0.5"
               >
                 Request Changes
               </button>
@@ -423,8 +421,8 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
 
     // Original form for initial conversation
     return (
-      <form onSubmit={handleSubmit} className="p-6 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-        <div className="flex flex-col space-y-4">
+      <form onSubmit={handleSubmit} className="p-8 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-b-xl">
+        <div className="flex flex-col space-y-6">
           <div className="relative">
             <textarea
               value={inputValue}
@@ -433,7 +431,7 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
               placeholder="Share your fitness journey and goals..."
               rows={4}
               autoFocus={true}
-              className="w-full p-4 border rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              className="w-full p-4 border rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none transition-all duration-300"
             />
             <div className="absolute bottom-2 right-2 text-xs text-gray-400 space-x-4">
               <span>⌘ + Return</span>
@@ -444,7 +442,7 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
           <button
             type="submit"
             disabled={!inputValue.trim() || isTyping}
-            className="px-8 py-4 bg-blue-500 text-white text-lg rounded-xl hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-lg rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:-translate-y-0.5"
           >
             Share Your Story
           </button>
@@ -454,7 +452,7 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
   };
 
   return (
-    <div className={`flex flex-col min-h-[80vh] bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 rounded-lg shadow-lg ${program ? 'max-w-full' : 'max-w-3xl mx-auto'}`}>
+    <div className={`flex flex-col min-h-[80vh] bg-gradient-to-b from-white via-indigo-50/30 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-xl shadow-xl ${program ? 'max-w-full' : 'max-w-3xl mx-auto'}`}>
       {program ? (
         <ProgramDisplay 
           program={program} 
@@ -466,7 +464,7 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
       ) : isGeneratingProgram ? (
         <GeneratingProgramTransition />
       ) : (
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-8 space-y-8">
           <AnimatePresence>
             {messages.map((message, index) => (
               <motion.div
@@ -477,10 +475,10 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
                 className={`flex ${message.role === "assistant" ? "justify-start" : "justify-end"}`}
               >
                 <div
-                  className={`max-w-[85%] p-6 rounded-2xl ${
+                  className={`max-w-[85%] p-6 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 ${
                     message.role === "assistant"
-                      ? "bg-white dark:bg-gray-800 shadow-md"
-                      : "bg-blue-500 text-white"
+                      ? "bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700"
+                      : "bg-gradient-to-r from-indigo-600 to-purple-600 text-white"
                   }`}
                 >
                   <p className="whitespace-pre-wrap text-lg leading-relaxed">{message.content}</p>
@@ -493,11 +491,11 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="flex items-center space-x-2 text-gray-500"
+              className="flex items-center space-x-2 text-indigo-600"
             >
-              <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" />
-              <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }} />
-              <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: "0.4s" }} />
+              <div className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce" />
+              <div className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }} />
+              <div className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce" style={{ animationDelay: "0.4s" }} />
             </motion.div>
           )}
           <div ref={messagesEndRef} />
