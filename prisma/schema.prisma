@@ -37,7 +37,7 @@ model UserIntake {
   age                 Int?
   weight              Int?
   height              Int?
-  trainingPreferences String[] @map("training_preferences")
+  trainingPreferences String[] @map("training_preferences") @default([])
   additionalInfo      String?  @map("additional_info") @db.Text
   createdAt           DateTime @default(now()) @map("created_at")
   user                User     @relation(fields: [userId], references: [id])
@@ -84,16 +84,16 @@ model WorkoutPlan {
   id                     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId                 String    @map("user_id") @db.Uuid
   programId              String    @map("program_id") @db.Uuid
-  bodyFatPercentage      Float     @map("body_fat_percentage")
-  muscleMassDistribution String    @map("muscle_mass_distribution") @db.Text
+  bodyFatPercentage      Float?     @map("body_fat_percentage")
+  muscleMassDistribution String?    @map("muscle_mass_distribution") @db.Text
   daysPerWeek            Int       @map("days_per_week")
   dailyCalories          Int       @map("daily_calories")
   proteinGrams           Int       @map("protein_grams")
   carbGrams              Int       @map("carb_grams")
   fatGrams               Int       @map("fat_grams")
-  mealTiming             String[]  @map("meal_timing")
-  progressionProtocol    String[]  @map("progression_protocol")
-  phase                  Int       @map("phase")
+  mealTiming             String[]  @map("meal_timing") @default([])
+  progressionProtocol    String[]  @map("progression_protocol") @default([])
+  phase                  Int       @map("phase") @default(1)
   phaseExplanation       String?   @map("phase_explanation") @db.Text
   phaseExpectations      String?   @map("phase_expectations") @db.Text
   phaseKeyPoints         String[]  @map("phase_key_points") @default([])
@@ -110,6 +110,10 @@ model WorkoutPlan {
 
 model Workout {
   id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String      @map("name")
+  focus         String      @map("focus")
+  warmup        String?     @map("warmup") @db.Text
+  cooldown      String?     @map("cooldown") @db.Text
   workoutPlanId String      @map("workout_plan_id") @db.Uuid
   dayNumber     Int         @map("day_number")
   workoutPlan   WorkoutPlan @relation(fields: [workoutPlanId], references: [id], onDelete: Cascade)
@@ -123,17 +127,17 @@ model Workout {
 model ExerciseLibrary {
   id               String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name             String         @unique
-  category         String
-  equipment        String[]
+  category         String         @default("default")
+  equipment        String[]       @default([])
   description      String?        @db.Text
-  instructions     String[]       @db.Text
-  commonMistakes   String[]       @db.Text
-  benefits         String[]       @db.Text
+  instructions     String[]       @db.Text @default([])
+  commonMistakes   String[]       @db.Text @default([])
+  benefits         String[]       @db.Text @default([])
   difficulty       Difficulty     @default(BEGINNER)
   isCompound       Boolean        @default(false)
   movementPattern  MovementPattern @default(PUSH)
-  targetMuscles    MuscleGroup[]
-  secondaryMuscles MuscleGroup[]
+  targetMuscles    MuscleGroup[]  @default([])
+  secondaryMuscles MuscleGroup[]  @default([])
   videoUrl         String?           @map("video_url")
   variations       ExerciseLibrary[] @relation("ExerciseVariations")
   parentExercise   ExerciseLibrary?  @relation("ExerciseVariations", fields: [parentId], references: [id])
@@ -243,6 +247,8 @@ enum MuscleGroup {
   SERRATUS
   HIP_ABDUCTORS
   HIP_ADDUCTORS
+  
+  OTHER
 }
 
 enum MovementPattern {
@@ -254,6 +260,7 @@ enum MovementPattern {
   CARRY
   ROTATION
   PLANK
+  OTHER
 }
 
 enum Difficulty {
@@ -261,4 +268,5 @@ enum Difficulty {
   INTERMEDIATE
   ADVANCED
   EXPERT
+  OTHER
 }
