@@ -1,4 +1,4 @@
-import { User } from "@prisma/client";
+import { User, UserImages } from "@prisma/client";
 
 export interface Program {
   id: string;
@@ -6,6 +6,7 @@ export interface Program {
   description?: string;
   workoutPlans: WorkoutPlan[];
   user: User;
+  userImages?: UserImages[];
 }
 
 // used in /start
