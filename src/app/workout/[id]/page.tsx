@@ -29,88 +29,133 @@ interface ExerciseWithLogs extends Exercise {
 const SetInput = ({ 
   log, 
   onComplete, 
-  onUpdate 
+  onUpdate,
+  isResting,
+  restTimeRemaining,
+  onSkipRest,
+  showRestIndicator
 }: { 
-  log: SetLog; 
+  log: SetLog;
   onComplete: (data: Partial<SetLog>) => void;
   onUpdate: (data: Partial<SetLog>) => void;
+  isResting?: boolean;
+  restTimeRemaining?: number;
+  onSkipRest?: () => void;
+  showRestIndicator?: boolean;
 }) => {
   const [localWeight, setLocalWeight] = useState(log.weight?.toString() || '');
   const [localReps, setLocalReps] = useState(log.reps?.toString() || '');
   const [localNotes, setLocalNotes] = useState(log.notes || '');
   
-  const canComplete = localWeight && localReps; // Both fields must have values
+  const canComplete = localWeight && localReps;
 
   return (
-    <div 
-      className={`flex items-center space-x-4 p-4 rounded-md group ${
-        log.isCompleted 
-          ? 'bg-green-50' 
-          : 'bg-gray-50 border-2 border-dashed border-gray-300'
-      }`}
-    >
-      {/* Status indicator */}
-      <div className="w-6">
-        {log.isCompleted ? (
-          <CheckCircle className="w-5 h-5 text-green-600" />
-        ) : (
-          <Circle className="w-3 h-3 text-gray-300 fill-gray-300" />
-        )}
+    <div className="space-y-2">
+      <div 
+        className={`relative p-4 rounded-xl transition-all duration-300 group
+          ${log.isCompleted 
+            ? 'bg-green-50/50 border border-green-200' 
+            : 'bg-white border border-gray-200 hover:border-indigo-200 hover:shadow-lg'
+          }
+          ${isResting ? 'scale-95 opacity-50' : 'scale-100 opacity-100'}
+        `}
+      >
+        <div className="absolute -inset-px bg-gradient-to-r from-indigo-500/5 via-purple-500/5 to-indigo-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        
+        <div className="relative flex items-center gap-4">
+          <div className="w-6">
+            {log.isCompleted ? (
+              <CheckCircle className="w-5 h-5 text-green-600" />
+            ) : (
+              <Circle className="w-3 h-3 text-gray-300 fill-gray-300" />
+            )}
+          </div>
+          
+          <span className="font-medium text-gray-900">Set {log.setNumber}</span>
+          
+          <div className="flex-1 flex items-center gap-4">
+            <input
+              type="number"
+              placeholder="Weight"
+              value={localWeight}
+              onChange={(e) => setLocalWeight(e.target.value)}
+              disabled={log.isCompleted}
+              className="w-24 px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50"
+            />
+            <input
+              type="number"
+              placeholder="Reps"
+              value={localReps}
+              onChange={(e) => setLocalReps(e.target.value)}
+              disabled={log.isCompleted}
+              className="w-24 px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50"
+            />
+            <input
+              type="text"
+              placeholder="Notes"
+              value={localNotes}
+              onChange={(e) => setLocalNotes(e.target.value)}
+              disabled={log.isCompleted}
+              className="flex-1 px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50"
+            />
+          </div>
+          
+          {log.isCompleted ? (
+            <button
+              onClick={() => onUpdate({
+                weight: Number(localWeight),
+                reps: Number(localReps),
+                notes: localNotes,
+                isCompleted: false
+              })}
+              className="opacity-0 group-hover:opacity-100 text-indigo-600 hover:text-indigo-800 transition-all duration-200"
+            >
+              <Pencil className="w-5 h-5" />
+            </button>
+          ) : (
+            canComplete && (
+              <button
+                onClick={() => onComplete({
+                  weight: Number(localWeight),
+                  reps: Number(localReps),
+                  notes: localNotes,
+                  isCompleted: true
+                })}
+                className="px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors"
+              >
+                {log.isCompleted ? 'Update Set' : 'Complete Set'}
+              </button>
+            )
+          )}
+        </div>
       </div>
-      
-      <span className="font-medium">Set {log.setNumber}</span>
-      
-      <input
-        type="number"
-        placeholder="Weight"
-        value={localWeight}
-        onChange={(e) => setLocalWeight(e.target.value)}
-        disabled={log.isCompleted}
-        className="w-20 px-2 py-1 border rounded"
-      />
-      <input
-        type="number"
-        placeholder="Reps"
-        value={localReps}
-        onChange={(e) => setLocalReps(e.target.value)}
-        disabled={log.isCompleted}
-        className="w-20 px-2 py-1 border rounded"
-      />
-      <input
-        type="text"
-        placeholder="Notes"
-        value={localNotes}
-        onChange={(e) => setLocalNotes(e.target.value)}
-        disabled={log.isCompleted}
-        className="flex-1 px-2 py-1 border rounded"
-      />
-      
-      {log.isCompleted ? (
-        <button
-          onClick={() => onUpdate({
-            weight: Number(localWeight),
-            reps: Number(localReps),
-            notes: localNotes,
-            isCompleted: false
-          })}
-          className="opacity-0 group-hover:opacity-100 text-blue-600 hover:text-blue-800 transition-opacity"
-        >
-          <Pencil className="w-5 h-5" />
-        </button>
-      ) : (
-        canComplete && (
-          <button
-            onClick={() => onComplete({
-              weight: Number(localWeight),
-              reps: Number(localReps),
-              notes: localNotes,
-              isCompleted: true
-            })}
-            className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
-          >
-            {log.isCompleted ? 'Update Set' : 'Complete Set'}
-          </button>
-        )
+
+      {/* Rest Period Indicator */}
+      {showRestIndicator && (
+        <div className={`
+          relative overflow-hidden transition-all duration-300 rounded-lg
+          ${isResting 
+            ? 'py-8 my-6 bg-gradient-to-r from-indigo-50/30 via-transparent to-indigo-50/30' 
+            : 'py-1 my-2 bg-gray-50'
+          }
+        `}>
+          <div className="flex items-center justify-center space-x-2">
+            {isResting ? (
+              <div className="relative flex flex-col items-center justify-center space-y-4">
+                <div className="text-6xl font-bold text-indigo-600">{restTimeRemaining}s</div>
+                <div className="text-xl text-gray-600">Rest Period</div>
+                <button
+                  onClick={onSkipRest}
+                  className="mt-2 px-6 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-all duration-200 hover:scale-105 transform flex items-center gap-2"
+                >
+                  LFG <span className="animate-bounce">🚀</span>
+                </button>
+              </div>
+            ) : (
+              <div className="text-sm text-gray-500">Rest: {restTimeRemaining ?? '30'}s</div>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );
@@ -211,11 +256,13 @@ export default function WorkoutPage() {
                   reps: existingSet.reps,
                   weight: existingSet.weight,
                   notes: existingSet.notes || '',
+                  isCompleted: !!existingSet.completedAt
                 } : {
                   setNumber: i + 1,
                   reps: exercise.reps,
                   weight: undefined,
                   notes: '',
+                  isCompleted: false
                 };
               }),
             };
@@ -334,75 +381,97 @@ export default function WorkoutPage() {
   const currentExercise = exercises[currentExerciseIndex];
 
   return (
-    <main className="container mx-auto px-4 py-8">
-      <div className="max-w-2xl mx-auto space-y-8">
-        
-          <>
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">
+    <main className="min-h-screen bg-white">
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="space-y-8">
+          <div className="relative overflow-hidden bg-white rounded-2xl border border-gray-200 shadow-sm">
+            {/* Background Texture */}
+            <div className="absolute inset-0">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.03),transparent_70%)]"></div>
+              <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(99,102,241,0.01)_25%,transparent_25%,transparent_75%,rgba(99,102,241,0.01)_75%,rgba(99,102,241,0.01))]" style={{ backgroundSize: '60px 60px' }}></div>
+            </div>
+
+            <div className="relative p-6 space-y-6">
+              {/* Header */}
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold text-gray-900">
                   Exercise {currentExerciseIndex + 1} of {exercises.length}
                 </h2>
                 {restTimer !== null && (
-                  <div className="text-lg font-medium">
-                    Rest: {restTimer}s
+                  <div className="px-4 py-2 rounded-full bg-indigo-50 border border-indigo-100">
+                    <span className="text-lg font-semibold text-indigo-600">
+                      Rest: {restTimer}s
+                    </span>
                   </div>
                 )}
               </div>
 
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-lg font-medium">{currentExercise.name}</h3>
-                  <p className="text-gray-600">
-                    {currentExercise.sets} sets × {currentExercise.reps} reps
-                  </p>
-                </div>
+              {/* Exercise Info */}
+              <div className="space-y-2">
+                <h3 className="text-xl font-semibold text-gray-900">{currentExercise.name}</h3>
+                <p className="text-gray-600">
+                  {currentExercise.sets} sets × {currentExercise.reps} reps
+                </p>
+              </div>
 
-                <div className="space-y-4">
-                  {currentExercise.logs.map((log, setIndex) => (
-                    <SetInput
-                      key={setIndex}
-                      log={log}
-                      onComplete={(data) => updateSet(currentExerciseIndex, setIndex, data)}
-                      onUpdate={(data) => updateSet(currentExerciseIndex, setIndex, data)}
-                    />
-                  ))}
-                </div>
+              {/* Sets */}
+              <div className="space-y-1">
+                {currentExercise.logs.map((log, setIndex) => (
+                  <SetInput
+                    key={setIndex}
+                    log={log}
+                    onComplete={(data) => {
+                      updateSet(currentExerciseIndex, setIndex, data);
+                      // Start rest timer after completing any set
+                      startRestTimer(currentExercise.restPeriod || 30);
+                    }}
+                    onUpdate={(data) => updateSet(currentExerciseIndex, setIndex, data)}
+                    isResting={restTimer !== null && setIndex === currentExercise.logs.findIndex(l => !l.isCompleted)}
+                    restTimeRemaining={restTimer ?? undefined}
+                    onSkipRest={() => setRestTimer(null)}
+                    showRestIndicator={true} // Show rest indicator after every set
+                  />
+                ))}
+              </div>
 
-                <div className="flex justify-between pt-4">
-                  {currentExerciseIndex > 0 && (
-                    <button
-                      onClick={() => setCurrentExerciseIndex(prev => prev - 1)}
-                      className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors"
-                    >
-                      Previous Exercise
-                    </button>
-                  )}
-                  
-                  {currentExerciseIndex < exercises.length - 1 ? (
-                    <button
-                      onClick={() => {
-                        setCurrentExerciseIndex(prev => prev + 1);
-                        if (currentExercise.restPeriod) {
-                          startRestTimer(currentExercise.restPeriod);
-                        }
-                      }}
-                      className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
-                    >
-                      Next Exercise
-                    </button>
-                  ) : (
-                    <button
-                      onClick={completeWorkout}
-                      className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
-                    >
-                      Complete Workout
-                    </button>
-                  )}
-                </div>
+              {/* Navigation */}
+              <div className="flex justify-between pt-6">
+                <button
+                  onClick={() => setCurrentExerciseIndex(prev => prev - 1)}
+                  disabled={currentExerciseIndex === 0}
+                  className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
+                    currentExerciseIndex === 0
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  Previous Exercise
+                </button>
+                
+                {currentExerciseIndex < exercises.length - 1 ? (
+                  <button
+                    onClick={() => {
+                      setCurrentExerciseIndex(prev => prev + 1);
+                      if (currentExercise.restPeriod) {
+                        startRestTimer(currentExercise.restPeriod);
+                      }
+                    }}
+                    className="px-6 py-3 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors"
+                  >
+                    Next Exercise
+                  </button>
+                ) : (
+                  <button
+                    onClick={completeWorkout}
+                    className="px-6 py-3 rounded-lg bg-green-600 text-white font-medium hover:bg-green-700 transition-colors"
+                  >
+                    Complete Workout
+                  </button>
+                )}
               </div>
             </div>
-          </>
+          </div>
+        </div>
       </div>
     </main>
   );
