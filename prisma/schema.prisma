@@ -16,11 +16,14 @@ datasource db {
 model UserImages {
   id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId     String   @map("user_id") @db.Uuid
+  type       String?  @map("type")
+  programId  String?  @map("program_id") @db.Uuid
   fileName   String   @map("file_name")
   base64Data String   @map("base64_data") @db.Text
   createdAt  DateTime @default(now()) @map("created_at")
   deletedAt  DateTime? @map("deleted_at")
   user       User     @relation(fields: [userId], references: [id])
+  program    Program?   @relation(fields: [programId], references: [id])
 
   @@index([userId])
   @@map("user_images")
@@ -183,6 +186,7 @@ model Program {
   updatedAt    DateTime     @updatedAt @map("updated_at")
   user         User         @relation(fields: [createdBy], references: [id])
   workoutPlans WorkoutPlan[]
+  userImages   UserImages[]
 
   @@index([name])
   @@index([createdBy])

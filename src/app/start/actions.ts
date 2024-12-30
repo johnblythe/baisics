@@ -17,6 +17,7 @@ export type ImageUpload = {
   fileName: string;
   base64Data: string;
   userId: string;
+  programId?: string;
   intakeForm?: IntakeFormData;
 };
 
@@ -31,6 +32,7 @@ export async function uploadImages(images: ImageUpload[]) {
             fileName: image.fileName,
             base64Data: image.base64Data,
             userId: image.userId,
+            programId: image.programId,
           },
         });
 
@@ -272,6 +274,7 @@ export async function getUserProgram(userId: string, programId: string) {
         id: programId,
       },
       include: {
+        userImages: true,
         workoutPlans: {
           orderBy: {
             phase: 'asc',
@@ -294,6 +297,8 @@ export async function getUserProgram(userId: string, programId: string) {
     if (!program) {
       return { success: false, error: 'Program not found' };
     }
+
+    console.log("🚀 ~ getUserProgram ~ program:", program)
 
     // todo: this is a temp hack, need to fix this
     // will eventually refactor models to have nutrition as a separate model

@@ -2,7 +2,7 @@ import { Program } from '@/types';
 import { WorkoutPlanDisplay } from './WorkoutPlanDisplay';
 import { UpsellModal } from './UpsellModal';
 import { useState } from 'react';
-import { generateWorkoutPDF } from '@/utils/pdf';
+// import { generateWorkoutPDF } from '@/utils/pdf';
 
 interface ProgramDisplayProps {
   program: Program;
@@ -39,12 +39,20 @@ export function ProgramDisplay({
   };
 
   const handleUploadImages = async (files: File[]) => {
-    if (!onUploadImages) return;
+    console.log('ProgramDisplay: handleUploadImages called with files:', files);
+    if (!onUploadImages) {
+      console.warn('ProgramDisplay: onUploadImages prop is not provided');
+      return;
+    }
     setUploadingImages(true);
     try {
+      console.log('ProgramDisplay: Calling parent onUploadImages function');
       await onUploadImages(files);
+      console.log('ProgramDisplay: Upload completed successfully');
     } catch (error) {
-      console.error('Error uploading images:', error);
+      console.error('ProgramDisplay: Error uploading images:', error);
+      // Optionally add error handling UI here
+      throw error; // Re-throw to let parent components handle the error
     } finally {
       setUploadingImages(false);
     }
@@ -120,6 +128,7 @@ export function ProgramDisplay({
                 </div>
               )}
               <WorkoutPlanDisplay 
+                program={program}
                 plan={program.workoutPlans[activePlanIndex]} 
                 userEmail={userEmail || undefined}
                 onRequestUpsell={onRequestUpsell}

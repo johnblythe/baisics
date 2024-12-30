@@ -17,6 +17,7 @@ import { createAnonUser, getUser } from "@/app/start/actions";
 import { v4 as uuidv4 } from "uuid";
 import { saveDemoIntake } from "../actions";
 import { useRouter } from "next/navigation";
+import { uploadImages, deleteImage, type ImageUpload } from "@/app/start/actions";
 
 interface ConversationalInterfaceProps {
   userId: string;
@@ -385,6 +386,59 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
     }
   };
 
+  // Add image handling functions
+  const handleUploadImages = async (files: File[]) => {
+    console.log('ConversationalInterface: Starting image upload');
+    try {
+      // Convert files to base64
+      const imagePromises = files.map(file => {
+        return new Promise<ImageUpload>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            resolve({
+              fileName: file.name,
+              base64Data: reader.result as string,
+              userId: userId,
+              programId: program?.id,
+            });
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      });
+
+      const imageUploads = await Promise.all(imagePromises);
+      console.log('ConversationalInterface: Images converted to base64', imageUploads);
+
+      const result = await uploadImages(imageUploads);
+      
+      if (!result.success) {
+        throw new Error('Failed to upload images');
+      }
+      
+      console.log('ConversationalInterface: Images uploaded successfully', result);
+      // Update program state or trigger a refresh if needed
+      // setProgram(...)
+    } catch (error) {
+      console.error('ConversationalInterface: Error uploading images:', error);
+      throw error;
+    }
+  };
+
+  const handleDeleteImage = async (imageId: string) => {
+    console.log('ConversationalInterface: Starting image deletion', imageId);
+    try {
+      const result = await deleteImage(imageId);
+      if (!result.success) {
+        throw new Error('Failed to delete image');
+      }
+      console.log('ConversationalInterface: Image deleted successfully');
+    } catch (error) {
+      console.error('ConversationalInterface: Error deleting image:', error);
+      throw error;
+    }
+  };
+
   // Update the form section based on whether we have a program
   const renderFormSection = () => {
     if (program) {
@@ -460,6 +514,8 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
           onRequestUpsell={() => setIsUpsellOpen(!isUpsellOpen)}
           isUpsellOpen={isUpsellOpen}
           onCloseUpsell={() => setIsUpsellOpen(false)}
+          onUploadImages={handleUploadImages}
+          onDeleteImage={handleDeleteImage}
         />
       ) : isGeneratingProgram ? (
         <GeneratingProgramTransition />
