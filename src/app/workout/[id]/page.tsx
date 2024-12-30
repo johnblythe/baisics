@@ -195,6 +195,9 @@ const FloatingEmojis = () => {
     <div className="absolute inset-0 w-full h-full">
       {Array.from({ length: activeEmojis }).map((_, i) => {
         const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+        const duration = 10 + Math.random() * 4; // 10-14 seconds
+        const delay = i * 3 + Math.random() * 2; // 3-5 second stagger between each emoji
+        
         return (
           <div
             key={i}
@@ -202,9 +205,8 @@ const FloatingEmojis = () => {
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
-              // Stagger the animations
-              animationDelay: `${i * 2}s`,
-              animationDuration: '8s',
+              animationDelay: `${delay}s`,
+              animationDuration: `${duration}s`,
               fontSize: `${3 + Math.random() * 3}rem`,
               transform: `rotate(${Math.random() * 360}deg)`,
             }}
@@ -378,18 +380,23 @@ export default function WorkoutPage() {
       console.log('Server response:', responseText);
 
       if (!response.ok) {
-        // Revert the optimistic update on error
-        setExercises(prev => {
-          const newExercises = [...prev];
-          const exercise = newExercises[exerciseIndex];
-          exercise.logs[setIndex] = {
-            ...exercise.logs[setIndex],
-            ...logData, // Keep the old data
-          };
-          return newExercises;
+        throw new Error(responseText || 'Failed to update set');
+      }
+
+      // Check if all sets are completed after this update
+      const allSetsCompleted = exercises[exerciseIndex].logs.every((log, i) => 
+        i === setIndex ? logData.isCompleted : log.isCompleted
+      );
+
+      if (allSetsCompleted) {
+        // Mark the exercise log as completed
+        const completeExerciseResponse = await fetch(`/api/exercise-logs/${exercise.exerciseLogId}/complete`, {
+          method: 'POST',
         });
 
-        throw new Error(responseText || 'Failed to update set');
+        if (!completeExerciseResponse.ok) {
+          console.error('Failed to mark exercise as completed');
+        }
       }
 
       // Only parse JSON if we have content
@@ -397,7 +404,16 @@ export default function WorkoutPage() {
       console.log('Successfully updated set:', data);
     } catch (error) {
       console.error('Failed to update set:', error);
-      // Could add a toast notification here
+      // Revert the optimistic update on error
+      setExercises(prev => {
+        const newExercises = [...prev];
+        const exercise = newExercises[exerciseIndex];
+        exercise.logs[setIndex] = {
+          ...exercise.logs[setIndex],
+          ...logData, // Keep the old data
+        };
+        return newExercises;
+      });
     }
   };
 
@@ -421,6 +437,17 @@ export default function WorkoutPage() {
             }
             return newExercises;
           });
+
+          // Check if this was the last set and all sets are completed
+          const currentExercise = exercises[currentExerciseIndex];
+          const isLastSet = setIndex === currentExercise.logs.length - 1;
+          const allSetsCompleted = currentExercise.logs.every(log => log.isCompleted);
+          
+          // If this was the last set's rest period and all sets are done, move to next exercise
+          if (isLastSet && allSetsCompleted && currentExerciseIndex < exercises.length - 1) {
+            setCurrentExerciseIndex(prev => prev + 1);
+          }
+
           return null;
         }
         return prev - 1;
@@ -438,7 +465,7 @@ export default function WorkoutPage() {
         throw new Error('Failed to complete workout');
       }
 
-      // router.push('/dashboard');
+      router.push('/dashboard');
     } catch (error) {
       console.error('Failed to complete workout:', error);
       // Optionally handle error UI feedback
