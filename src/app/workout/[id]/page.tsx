@@ -90,7 +90,7 @@ const SetInput = ({
               value={localWeight}
               onChange={(e) => setLocalWeight(e.target.value)}
               disabled={log.isCompleted}
-              className="w-24 px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50/50 disabled:text-gray-900"
+              className="w-24 px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder:text-gray-400 disabled:bg-gray-50 disabled:text-gray-900"
             />
             <input
               type="number"
@@ -98,7 +98,7 @@ const SetInput = ({
               value={localReps}
               onChange={(e) => setLocalReps(e.target.value)}
               disabled={log.isCompleted}
-              className="w-24 px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50/50 disabled:text-gray-900"
+              className="w-24 px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder:text-gray-400 disabled:bg-gray-50 disabled:text-gray-900"
             />
             <input
               type="text"
@@ -106,7 +106,7 @@ const SetInput = ({
               value={localNotes}
               onChange={(e) => setLocalNotes(e.target.value)}
               disabled={log.isCompleted}
-              className="flex-1 px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50/50 disabled:text-gray-900"
+              className="flex-1 px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder:text-gray-400 disabled:bg-gray-50 disabled:text-gray-900"
             />
           </div>
           
@@ -145,15 +145,20 @@ const SetInput = ({
         <div className={`
           relative overflow-hidden transition-all duration-300 rounded-lg
           ${isResting 
-            ? 'py-8 my-6 bg-gradient-to-r from-indigo-50/30 via-transparent to-indigo-50/30' 
+            ? 'h-64 my-6 bg-gradient-to-r from-indigo-50/30 via-transparent to-indigo-50/30' 
             : log.restCompleted
               ? 'py-2 my-2 bg-green-50 border border-green-200'
               : 'py-2 my-2 bg-gray-50'
           }
         `}>
-          <div className="flex items-center justify-center space-x-2">
+          {isResting && (
+            <div className="absolute inset-0 w-full h-full">
+              <FloatingEmojis />
+            </div>
+          )}
+          <div className="relative z-10 flex items-center justify-center space-x-2">
             {isResting ? (
-              <div className="relative flex flex-col items-center justify-center space-y-4">
+              <div className="relative flex flex-col items-center justify-center space-y-4 py-8">
                 <div className="text-6xl font-bold text-indigo-600">{restTimeRemaining}s</div>
                 <div className="text-xl text-gray-600">Rest Period</div>
                 <button
@@ -177,6 +182,37 @@ const SetInput = ({
           </div>
         </div>
       )}
+    </div>
+  );
+};
+
+const FloatingEmojis = () => {
+  const emojis = ['😅', '💦', '🥵', '💪', '🔥', '😮‍💨', '🫡', '🏋️‍♂️', '🦾', '🧘‍♂️', '🏃‍♂️', '⚡️'];
+  // Only show 3-4 emojis at a time
+  const activeEmojis = 4;
+  
+  return (
+    <div className="absolute inset-0 w-full h-full">
+      {Array.from({ length: activeEmojis }).map((_, i) => {
+        const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+        return (
+          <div
+            key={i}
+            className="absolute animate-float-continuous opacity-0"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              // Stagger the animations
+              animationDelay: `${i * 2}s`,
+              animationDuration: '8s',
+              fontSize: `${3 + Math.random() * 3}rem`,
+              transform: `rotate(${Math.random() * 360}deg)`,
+            }}
+          >
+            {emoji}
+          </div>
+        );
+      })}
     </div>
   );
 };
