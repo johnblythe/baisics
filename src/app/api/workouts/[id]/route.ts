@@ -3,18 +3,40 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
+    const userId = process.env.TEST_USER_ID;
+    if (!userId) {
+      throw new Error('TEST_USER_ID environment variable is required');
+    }
+
     const workout = await prisma.workout.findUnique({
       where: {
-        id: params.id,
+        id: context.params.id,
       },
       include: {
         exercises: {
           include: {
             exerciseLibrary: true,
           },
+        },
+        workoutLogs: {
+          where: {
+            userId,
+            status: 'in_progress',
+          },
+          include: {
+            exerciseLogs: {
+              include: {
+                setLogs: true,
+              },
+            },
+          },
+          orderBy: {
+            startedAt: 'desc',
+          },
+          take: 1,
         },
       },
     });

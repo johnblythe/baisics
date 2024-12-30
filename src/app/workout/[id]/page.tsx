@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { CheckCircle, Pencil, Circle } from 'lucide-react';
 
 interface Exercise {
   id: string;
@@ -16,6 +17,7 @@ interface SetLog {
   weight?: number;
   reps: number;
   notes?: string;
+  isCompleted?: boolean;
 }
 
 interface ExerciseWithLogs extends Exercise {
@@ -23,6 +25,96 @@ interface ExerciseWithLogs extends Exercise {
   notes?: string;
   exerciseLogId?: string;
 }
+
+const SetInput = ({ 
+  log, 
+  onComplete, 
+  onUpdate 
+}: { 
+  log: SetLog; 
+  onComplete: (data: Partial<SetLog>) => void;
+  onUpdate: (data: Partial<SetLog>) => void;
+}) => {
+  const [localWeight, setLocalWeight] = useState(log.weight?.toString() || '');
+  const [localReps, setLocalReps] = useState(log.reps?.toString() || '');
+  const [localNotes, setLocalNotes] = useState(log.notes || '');
+  
+  const canComplete = localWeight && localReps; // Both fields must have values
+
+  return (
+    <div 
+      className={`flex items-center space-x-4 p-4 rounded-md group ${
+        log.isCompleted 
+          ? 'bg-green-50' 
+          : 'bg-gray-50 border-2 border-dashed border-gray-300'
+      }`}
+    >
+      {/* Status indicator */}
+      <div className="w-6">
+        {log.isCompleted ? (
+          <CheckCircle className="w-5 h-5 text-green-600" />
+        ) : (
+          <Circle className="w-3 h-3 text-gray-300 fill-gray-300" />
+        )}
+      </div>
+      
+      <span className="font-medium">Set {log.setNumber}</span>
+      
+      <input
+        type="number"
+        placeholder="Weight"
+        value={localWeight}
+        onChange={(e) => setLocalWeight(e.target.value)}
+        disabled={log.isCompleted}
+        className="w-20 px-2 py-1 border rounded"
+      />
+      <input
+        type="number"
+        placeholder="Reps"
+        value={localReps}
+        onChange={(e) => setLocalReps(e.target.value)}
+        disabled={log.isCompleted}
+        className="w-20 px-2 py-1 border rounded"
+      />
+      <input
+        type="text"
+        placeholder="Notes"
+        value={localNotes}
+        onChange={(e) => setLocalNotes(e.target.value)}
+        disabled={log.isCompleted}
+        className="flex-1 px-2 py-1 border rounded"
+      />
+      
+      {log.isCompleted ? (
+        <button
+          onClick={() => onUpdate({
+            weight: Number(localWeight),
+            reps: Number(localReps),
+            notes: localNotes,
+            isCompleted: false
+          })}
+          className="opacity-0 group-hover:opacity-100 text-blue-600 hover:text-blue-800 transition-opacity"
+        >
+          <Pencil className="w-5 h-5" />
+        </button>
+      ) : (
+        canComplete && (
+          <button
+            onClick={() => onComplete({
+              weight: Number(localWeight),
+              reps: Number(localReps),
+              notes: localNotes,
+              isCompleted: true
+            })}
+            className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+          >
+            {log.isCompleted ? 'Update Set' : 'Complete Set'}
+          </button>
+        )
+      )}
+    </div>
+  );
+};
 
 export default function WorkoutPage() {
   const params = useParams();
@@ -34,6 +126,21 @@ export default function WorkoutPage() {
   const [workoutStarted, setWorkoutStarted] = useState(false);
   const [workoutLog, setWorkoutLog] = useState<any>(null);
 
+  // Function to find first incomplete exercise/set
+  const findFirstIncompletePosition = (exercises: ExerciseWithLogs[]) => {
+    for (let i = 0; i < exercises.length; i++) {
+      const exercise = exercises[i];
+      for (let j = 0; j < exercise.logs.length; j++) {
+        const log = exercise.logs[j];
+        // Consider a set incomplete if it has no weight or reps different from prescribed
+        if (!log.weight || log.reps !== exercise.reps) {
+          return i;
+        }
+      }
+    }
+    return 0; // Default to first exercise if all complete
+  };
+
   useEffect(() => {
     const fetchWorkout = async () => {
       try {
@@ -43,18 +150,81 @@ export default function WorkoutPage() {
         }
         const data = await response.json();
         
-        // Transform exercises to include logs array
-        const exercisesWithLogs = data.exercises.map((exercise: Exercise) => ({
-          ...exercise,
-          logs: Array(exercise.sets).fill(null).map((_, i) => ({
-            setNumber: i + 1,
-            reps: exercise.reps, // Default to prescribed reps
-            weight: undefined,
-            notes: '',
-          })),
-        }));
+        // If workout isn't started, start it automatically first
+        if (!data.workoutLogs?.[0]) {
+          const startWorkoutResponse = await fetch('/api/workout-logs', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              workoutId: params.id,
+            }),
+          });
 
-        setExercises(exercisesWithLogs);
+          if (!startWorkoutResponse.ok) {
+            throw new Error('Failed to start workout');
+          }
+
+          const startWorkoutData = await startWorkoutResponse.json();
+          setWorkoutLog(startWorkoutData);
+          setWorkoutStarted(true);
+          
+          // Transform exercises with the new workout log data
+          const exercisesWithLogs = data.exercises.map((exercise: Exercise) => {
+            const exerciseLog = startWorkoutData.exerciseLogs.find(
+              (log: any) => log.exerciseId === exercise.id
+            );
+            return {
+              ...exercise,
+              exerciseLogId: exerciseLog?.id,
+              logs: Array(exercise.sets).fill(null).map((_, i) => ({
+                setNumber: i + 1,
+                reps: exercise.reps,
+                weight: undefined,
+                notes: '',
+              })),
+            };
+          });
+          
+          setExercises(exercisesWithLogs);
+        } else {
+          // Use existing workout log data
+          setWorkoutStarted(true);
+          setWorkoutLog(data.workoutLogs[0]);
+          
+          // Transform exercises to include logs array
+          const exercisesWithLogs = data.exercises.map((exercise: Exercise) => {
+            const existingLogs = data.workoutLogs[0].exerciseLogs.find(
+              (log: any) => log.exerciseId === exercise.id
+            );
+
+            return {
+              ...exercise,
+              exerciseLogId: existingLogs.id,
+              logs: Array(exercise.sets).fill(null).map((_, i) => {
+                const existingSet = existingLogs.setLogs.find(
+                  (set: any) => set.setNumber === i + 1
+                );
+                return existingSet ? {
+                  setNumber: existingSet.setNumber,
+                  reps: existingSet.reps,
+                  weight: existingSet.weight,
+                  notes: existingSet.notes || '',
+                } : {
+                  setNumber: i + 1,
+                  reps: exercise.reps,
+                  weight: undefined,
+                  notes: '',
+                };
+              }),
+            };
+          });
+
+          setExercises(exercisesWithLogs);
+          setCurrentExerciseIndex(findFirstIncompletePosition(exercisesWithLogs));
+        }
+        
         setIsLoading(false);
       } catch (error) {
         console.error('Failed to fetch workout:', error);
@@ -62,51 +232,24 @@ export default function WorkoutPage() {
     };
 
     fetchWorkout();
-  }, [params.id, router]);
-
-  const startWorkout = async () => {
-    try {
-      const response = await fetch('/api/workout-logs', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          workoutId: params.id,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to start workout');
-      }
-
-      const data = await response.json();
-      
-      // Update exercises with their exerciseLog IDs
-      setExercises(prev => prev.map(exercise => {
-        const exerciseLog = data.exerciseLogs.find(
-          (log: any) => log.exerciseId === exercise.id
-        );
-        return {
-          ...exercise,
-          exerciseLogId: exerciseLog?.id,
-        };
-      }));
-      
-      setWorkoutLog(data);
-      setWorkoutStarted(true);
-    } catch (error) {
-      console.error('Failed to start workout:', error);
-    }
-  };
+  }, [params.id]);
 
   const updateSet = async (exerciseIndex: number, setIndex: number, logData: Partial<SetLog>) => {
     const exercise = exercises[exerciseIndex];
+    console.log('Updating set for exercise:', {
+      exerciseIndex,
+      setIndex,
+      exerciseId: exercise.id,
+      exerciseLogId: exercise.exerciseLogId,
+      logData
+    });
+
     if (!exercise.exerciseLogId) {
-      console.error('No exercise log ID found');
+      console.error('No exercise log ID found for exercise:', exercise);
       return;
     }
 
+    // Optimistically update the UI
     setExercises(prev => {
       const newExercises = [...prev];
       const exercise = newExercises[exerciseIndex];
@@ -117,9 +260,8 @@ export default function WorkoutPage() {
       return newExercises;
     });
 
-    console.log(exercise.exerciseLogId);
-
     try {
+      console.log('Making API call to:', `/api/exercise-logs/${exercise.exerciseLogId}/sets/${setIndex + 1}`);
       const response = await fetch(`/api/exercise-logs/${exercise.exerciseLogId}/sets/${setIndex + 1}`, {
         method: 'PUT',
         headers: {
@@ -128,11 +270,30 @@ export default function WorkoutPage() {
         body: JSON.stringify(logData),
       });
 
+      const responseText = await response.text();
+      console.log('Server response:', responseText);
+
       if (!response.ok) {
-        throw new Error('Failed to update set');
+        // Revert the optimistic update on error
+        setExercises(prev => {
+          const newExercises = [...prev];
+          const exercise = newExercises[exerciseIndex];
+          exercise.logs[setIndex] = {
+            ...exercise.logs[setIndex],
+            ...logData, // Keep the old data
+          };
+          return newExercises;
+        });
+
+        throw new Error(responseText || 'Failed to update set');
       }
+
+      // Only parse JSON if we have content
+      const data = responseText ? JSON.parse(responseText) : null;
+      console.log('Successfully updated set:', data);
     } catch (error) {
       console.error('Failed to update set:', error);
+      // Could add a toast notification here
     }
   };
 
@@ -175,17 +336,7 @@ export default function WorkoutPage() {
   return (
     <main className="container mx-auto px-4 py-8">
       <div className="max-w-2xl mx-auto space-y-8">
-        {!workoutStarted ? (
-          <div className="text-center space-y-4">
-            <h1 className="text-2xl font-bold">Ready to Begin?</h1>
-            <button
-              onClick={startWorkout}
-              className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors"
-            >
-              Start Workout
-            </button>
-          </div>
-        ) : (
+        
           <>
             <div className="bg-white rounded-lg shadow-sm p-6">
               <div className="flex justify-between items-center mb-4">
@@ -209,30 +360,12 @@ export default function WorkoutPage() {
 
                 <div className="space-y-4">
                   {currentExercise.logs.map((log, setIndex) => (
-                    <div key={setIndex} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-md">
-                      <span className="font-medium">Set {log.setNumber}</span>
-                      <input
-                        type="number"
-                        placeholder="Weight"
-                        value={log.weight || ''}
-                        onChange={(e) => updateSet(currentExerciseIndex, setIndex, { weight: Number(e.target.value) })}
-                        className="w-20 px-2 py-1 border rounded"
-                      />
-                      <input
-                        type="number"
-                        placeholder="Reps"
-                        value={log.reps}
-                        onChange={(e) => updateSet(currentExerciseIndex, setIndex, { reps: Number(e.target.value) })}
-                        className="w-20 px-2 py-1 border rounded"
-                      />
-                      <input
-                        type="text"
-                        placeholder="Notes"
-                        value={log.notes}
-                        onChange={(e) => updateSet(currentExerciseIndex, setIndex, { notes: e.target.value })}
-                        className="flex-1 px-2 py-1 border rounded"
-                      />
-                    </div>
+                    <SetInput
+                      key={setIndex}
+                      log={log}
+                      onComplete={(data) => updateSet(currentExerciseIndex, setIndex, data)}
+                      onUpdate={(data) => updateSet(currentExerciseIndex, setIndex, data)}
+                    />
                   ))}
                 </div>
 
@@ -270,7 +403,6 @@ export default function WorkoutPage() {
               </div>
             </div>
           </>
-        )}
       </div>
     </main>
   );
