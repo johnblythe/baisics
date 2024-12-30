@@ -1,50 +1,51 @@
 'use client';
 
-import React from 'react';
-// import { auth } from "@clerk/nextjs";
-// import { auth } from "@/auth";
-import { redirect } from "next/navigation";
-import { prisma } from "@/lib/prisma";
+import React, { useEffect, useState } from 'react';
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-export default async function DashboardPage() {
-  const session = await auth();
-  if (!session?.user?.id) {
-    redirect("/");
+interface Program {
+  id: string;
+  name: string;
+  description?: string;
+  workoutPlans: any[];
+  workoutLogs: any[];
+}
+
+export default function DashboardPage() {
+  const router = useRouter();
+  const [program, setProgram] = useState<Program | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await fetch('/api/programs/current');
+        const data = await response.json();
+        
+        if (!data) {
+          router.push('/hi');
+          return;
+        }
+
+        setProgram(data);
+      } catch (error) {
+        console.error('Failed to fetch program:', error);
+        router.push('/hi');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchData();
+  }, [router]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
 
-  // Get the user's most recent program with its workout plans
-  const program = await prisma.program.findFirst({
-    where: {
-      createdBy: session.user.id,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-    include: {
-      workoutPlans: {
-        include: {
-          workouts: {
-            include: {
-              exercises: true,
-            },
-          },
-        },
-      },
-      workoutLogs: {
-        where: {
-          status: "completed",
-        },
-        orderBy: {
-          completedAt: "desc",
-        },
-      },
-    },
-  });
-
   if (!program) {
-    // No program found, redirect to program creation
-    redirect("/hi");
+    return null;
   }
 
   // Find the next workout to do (basic logic - can be enhanced)
