@@ -18,6 +18,7 @@ interface SetLog {
   reps: number;
   notes?: string;
   isCompleted?: boolean;
+  restCompleted?: boolean;
 }
 
 interface ExerciseWithLogs extends Exercise {
@@ -33,7 +34,8 @@ const SetInput = ({
   isResting,
   restTimeRemaining,
   onSkipRest,
-  showRestIndicator
+  showRestIndicator,
+  onRestComplete
 }: { 
   log: SetLog;
   onComplete: (data: Partial<SetLog>) => void;
@@ -42,10 +44,18 @@ const SetInput = ({
   restTimeRemaining?: number;
   onSkipRest?: () => void;
   showRestIndicator?: boolean;
+  onRestComplete?: () => void;
 }) => {
   const [localWeight, setLocalWeight] = useState(log.weight?.toString() || '');
   const [localReps, setLocalReps] = useState(log.reps?.toString() || '');
   const [localNotes, setLocalNotes] = useState(log.notes || '');
+  
+  // Update local state when log prop changes
+  useEffect(() => {
+    setLocalWeight(log.weight?.toString() || '');
+    setLocalReps(log.reps?.toString() || '');
+    setLocalNotes(log.notes || '');
+  }, [log]);
   
   const canComplete = localWeight && localReps;
 
@@ -80,7 +90,7 @@ const SetInput = ({
               value={localWeight}
               onChange={(e) => setLocalWeight(e.target.value)}
               disabled={log.isCompleted}
-              className="w-24 px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50"
+              className="w-24 px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50/50 disabled:text-gray-900"
             />
             <input
               type="number"
@@ -88,7 +98,7 @@ const SetInput = ({
               value={localReps}
               onChange={(e) => setLocalReps(e.target.value)}
               disabled={log.isCompleted}
-              className="w-24 px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50"
+              className="w-24 px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50/50 disabled:text-gray-900"
             />
             <input
               type="text"
@@ -96,7 +106,7 @@ const SetInput = ({
               value={localNotes}
               onChange={(e) => setLocalNotes(e.target.value)}
               disabled={log.isCompleted}
-              className="flex-1 px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50"
+              className="flex-1 px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50/50 disabled:text-gray-900"
             />
           </div>
           
@@ -136,7 +146,9 @@ const SetInput = ({
           relative overflow-hidden transition-all duration-300 rounded-lg
           ${isResting 
             ? 'py-8 my-6 bg-gradient-to-r from-indigo-50/30 via-transparent to-indigo-50/30' 
-            : 'py-1 my-2 bg-gray-50'
+            : log.restCompleted
+              ? 'py-2 my-2 bg-green-50 border border-green-200'
+              : 'py-2 my-2 bg-gray-50'
           }
         `}>
           <div className="flex items-center justify-center space-x-2">
@@ -145,14 +157,22 @@ const SetInput = ({
                 <div className="text-6xl font-bold text-indigo-600">{restTimeRemaining}s</div>
                 <div className="text-xl text-gray-600">Rest Period</div>
                 <button
-                  onClick={onSkipRest}
+                  onClick={() => {
+                    onSkipRest?.();
+                    onRestComplete?.();
+                  }}
                   className="mt-2 px-6 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-all duration-200 hover:scale-105 transform flex items-center gap-2"
                 >
                   LFG <span className="animate-bounce">🚀</span>
                 </button>
               </div>
             ) : (
-              <div className="text-sm text-gray-500">Rest: {restTimeRemaining ?? '30'}s</div>
+              <div className="flex items-center gap-2">
+                {log.restCompleted && <CheckCircle className="w-4 h-4 text-green-600" />}
+                <div className="text-sm text-gray-500">
+                  Rest: {log.restCompleted ? 'Completed' : `${restTimeRemaining ?? '30'}s`}
+                </div>
+              </div>
             )}
           </div>
         </div>
@@ -170,20 +190,18 @@ export default function WorkoutPage() {
   const [restTimer, setRestTimer] = useState<number | null>(null);
   const [workoutStarted, setWorkoutStarted] = useState(false);
   const [workoutLog, setWorkoutLog] = useState<any>(null);
+  const [activeRestSet, setActiveRestSet] = useState<number | null>(null);
 
   // Function to find first incomplete exercise/set
   const findFirstIncompletePosition = (exercises: ExerciseWithLogs[]) => {
     for (let i = 0; i < exercises.length; i++) {
       const exercise = exercises[i];
-      for (let j = 0; j < exercise.logs.length; j++) {
-        const log = exercise.logs[j];
-        // Consider a set incomplete if it has no weight or reps different from prescribed
-        if (!log.weight || log.reps !== exercise.reps) {
-          return i;
-        }
+      const hasIncompleteSets = exercise.logs.some(log => !log.isCompleted);
+      if (hasIncompleteSets) {
+        return i;
       }
     }
-    return 0; // Default to first exercise if all complete
+    return exercises.length - 1; // Default to last exercise if all complete
   };
 
   useEffect(() => {
@@ -256,13 +274,16 @@ export default function WorkoutPage() {
                   reps: existingSet.reps,
                   weight: existingSet.weight,
                   notes: existingSet.notes || '',
-                  isCompleted: !!existingSet.completedAt
+                  isCompleted: !!existingSet.completedAt,
+                  // Only mark rest as completed if this set is completed
+                  restCompleted: !!existingSet.completedAt
                 } : {
                   setNumber: i + 1,
                   reps: exercise.reps,
                   weight: undefined,
                   notes: '',
-                  isCompleted: false
+                  isCompleted: false,
+                  restCompleted: false
                 };
               }),
             };
@@ -344,12 +365,26 @@ export default function WorkoutPage() {
     }
   };
 
-  const startRestTimer = (duration: number) => {
+  const startRestTimer = (duration: number, setIndex: number) => {
     setRestTimer(duration);
+    setActiveRestSet(setIndex);
     const timer = setInterval(() => {
       setRestTimer(prev => {
         if (prev === null || prev <= 1) {
           clearInterval(timer);
+          setActiveRestSet(null);
+          // Mark the current set's rest as completed
+          setExercises(prevExercises => {
+            const newExercises = [...prevExercises];
+            const currentExercise = newExercises[currentExerciseIndex];
+            if (setIndex >= 0 && setIndex < currentExercise.logs.length) {
+              currentExercise.logs[setIndex] = {
+                ...currentExercise.logs[setIndex],
+                restCompleted: true
+              };
+            }
+            return newExercises;
+          });
           return null;
         }
         return prev - 1;
@@ -422,14 +457,30 @@ export default function WorkoutPage() {
                     log={log}
                     onComplete={(data) => {
                       updateSet(currentExerciseIndex, setIndex, data);
-                      // Start rest timer after completing any set
-                      startRestTimer(currentExercise.restPeriod || 30);
+                      // Start rest timer for this specific set
+                      startRestTimer(currentExercise.restPeriod || 30, setIndex);
                     }}
                     onUpdate={(data) => updateSet(currentExerciseIndex, setIndex, data)}
-                    isResting={restTimer !== null && setIndex === currentExercise.logs.findIndex(l => !l.isCompleted)}
-                    restTimeRemaining={restTimer ?? undefined}
-                    onSkipRest={() => setRestTimer(null)}
-                    showRestIndicator={true} // Show rest indicator after every set
+                    isResting={activeRestSet === setIndex}
+                    restTimeRemaining={activeRestSet === setIndex ? restTimer ?? undefined : undefined}
+                    onSkipRest={() => {
+                      setRestTimer(null);
+                      setActiveRestSet(null);
+                    }}
+                    showRestIndicator={true}
+                    onRestComplete={() => {
+                      setExercises(prevExercises => {
+                        const newExercises = [...prevExercises];
+                        const currentExercise = newExercises[currentExerciseIndex];
+                        if (setIndex >= 0 && setIndex < currentExercise.logs.length) {
+                          currentExercise.logs[setIndex] = {
+                            ...currentExercise.logs[setIndex],
+                            restCompleted: true
+                          };
+                        }
+                        return newExercises;
+                      });
+                    }}
                   />
                 ))}
               </div>
@@ -452,9 +503,6 @@ export default function WorkoutPage() {
                   <button
                     onClick={() => {
                       setCurrentExerciseIndex(prev => prev + 1);
-                      if (currentExercise.restPeriod) {
-                        startRestTimer(currentExercise.restPeriod);
-                      }
                     }}
                     className="px-6 py-3 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors"
                   >
