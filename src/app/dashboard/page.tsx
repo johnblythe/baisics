@@ -14,7 +14,11 @@ interface Program {
   workoutLogs: WorkoutLog[];
   currentWeight?: number;
   startWeight?: number;
-  progressPhotos?: string[];
+  progressPhotos: {
+    id: string;
+    url: string;
+    type: 'FRONT' | 'BACK' | 'SIDE_LEFT' | 'SIDE_RIGHT' | 'CUSTOM' | null;
+  }[];
 }
 
 interface WorkoutPlan {
@@ -45,16 +49,17 @@ export default function DashboardPage() {
       try {
         const response = await fetch('/api/programs/current');
         const data = await response.json();
+        console.log("🚀 ~ fetchData ~ data:", data)
         
         if (!data) {
-          router.push('/hi');
+          // router.push('/hi');
           return;
         }
 
         setProgram(data);
       } catch (error) {
         console.error('Failed to fetch program:', error);
-        router.push('/hi');
+        // router.push('/hi');
       } finally {
         setIsLoading(false);
       }
@@ -248,9 +253,18 @@ export default function DashboardPage() {
                           
                           {program.progressPhotos && program.progressPhotos.length > 0 ? (
                             <div className="grid grid-cols-3 gap-4">
-                              {program.progressPhotos.slice(0, 3).map((photo, index) => (
-                                <div key={index} className="aspect-square rounded-lg bg-gray-100 overflow-hidden">
-                                  {/* Photo would go here */}
+                              {program.progressPhotos.slice(0, 3).map((photo) => (
+                                <div key={photo.id} className="aspect-square rounded-lg bg-gray-100 overflow-hidden relative group">
+                                  <img 
+                                    src={photo.url} 
+                                    alt={`Progress photo - ${photo.type || 'Custom'} view`}
+                                    className="object-cover w-full h-full"
+                                  />
+                                  {photo.type && (
+                                    <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs py-1 px-2 text-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                      {photo.type.replace('_', ' ').toLowerCase()}
+                                    </div>
+                                  )}
                                 </div>
                               ))}
                             </div>
