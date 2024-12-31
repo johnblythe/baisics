@@ -40,8 +40,6 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
   const [isSaving, setIsSaving] = useState(false);
 
   const router = useRouter();
-
-  console.log(user)
   
   // Add effect to notify parent of program changes
   // useEffect(() => {
@@ -234,13 +232,14 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
     }
   };
 
-  const handleOpenUpsellModal = () => {
-    setIsUpsellOpen(true);
-  };
+  // todo: can likely remove
+  // const handleOpenUpsellModal = () => {
+  //   setIsUpsellOpen(true);
+  // };
 
-  const handleCloseUpsellModal = () => {
-    setIsUpsellOpen(false);
-  };
+  // const handleCloseUpsellModal = () => {
+  //   setIsUpsellOpen(false);
+  // };
 
   const handleSaveProgram = async () => {
     if (!program) return;
