@@ -24,6 +24,8 @@ model UserImages {
   deletedAt  DateTime? @map("deleted_at")
   user       User     @relation(fields: [userId], references: [id])
   program    Program?   @relation(fields: [programId], references: [id])
+  checkInId  String?  @map("check_in_id") @db.Uuid
+  checkIn    CheckIn? @relation(fields: [checkInId], references: [id])
 
   @@index([userId])
   @@map("user_images")
@@ -80,6 +82,8 @@ model User {
   workoutPlans WorkoutPlan[]
   programs     Program[]
   workoutLogs  WorkoutLog[]
+  stats        UserStats[]
+  checkIns     CheckIn[]
 
   @@index([email])
   @@map("users")
@@ -192,6 +196,8 @@ model Program {
   workoutPlans WorkoutPlan[]
   userImages   UserImages[]
   workoutLogs  WorkoutLog[]
+  stats        UserStats[]
+  checkIns     CheckIn[]
 
   @@index([name])
   @@index([createdBy])
@@ -330,4 +336,45 @@ model SetLog {
 
   @@index([exerciseLogId])
   @@map("set_logs")
+}
+
+model UserStats {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  programId   String   @map("program_id") @db.Uuid
+  checkInId   String   @map("check_in_id") @db.Uuid
+  weight      Float?
+  bodyFat     Float?
+  measurements Json?
+  notes       String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user        User     @relation(fields: [userId], references: [id])
+  program     Program  @relation(fields: [programId], references: [id])
+  checkIn     CheckIn  @relation(fields: [checkInId], references: [id])
+
+  @@index([userId])
+  @@index([programId])
+  @@index([checkInId])
+  @@map("user_stats")
+}
+
+model CheckIn {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  programId   String   @map("program_id") @db.Uuid
+  type        String   @default("progress") // 'initial' or 'progress'
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user        User     @relation(fields: [userId], references: [id])
+  program     Program  @relation(fields: [programId], references: [id])
+  stats       UserStats[]
+  photos      UserImages[]
+
+  @@index([userId])
+  @@index([programId])
+  @@map("check_ins")
 }

@@ -12,6 +12,9 @@ interface Program {
   description?: string;
   workoutPlans: WorkoutPlan[];
   workoutLogs: WorkoutLog[];
+  currentWeight?: number;
+  startWeight?: number;
+  progressPhotos?: string[];
 }
 
 interface WorkoutPlan {
@@ -206,63 +209,121 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Next Workout Card */}
-            {nextWorkout ? (
-              <div className="group relative">
-                <div className="absolute -inset-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 rounded-lg opacity-0 blur-xl transition duration-500 group-hover:opacity-30"></div>
-                <div className="relative overflow-hidden bg-white rounded-2xl border border-gray-200 shadow-sm transition duration-300 hover:scale-[1.01] hover:shadow-lg">
-                  <div className="p-6 lg:p-8 space-y-6">
-                    <div className="space-y-2">
-                      <h2 className="text-2xl font-bold text-gray-900">Next Workout</h2>
-                      <div className="space-y-4">
+            {/* Progress and Next Workout Card */}
+            <div className="group relative">
+              <div className="absolute -inset-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 rounded-lg opacity-0 blur-xl transition duration-500 group-hover:opacity-30"></div>
+              <div className="relative overflow-hidden bg-white rounded-2xl border border-gray-200 shadow-sm">
+                <div className="p-6 lg:p-8">
+                  <div className="flex gap-8">
+                    {/* Progress Section - 3/4 width */}
+                    <div className="w-3/4">
+                      <h2 className="text-sm font-medium text-gray-600">Progress</h2>
+                      <div className="mt-4 space-y-6">
+                        {/* Weight Section */}
                         <div className="space-y-2">
-                          <p className="text-lg font-semibold text-gray-900">Day {nextWorkout.dayNumber} - {nextWorkout.name}</p>
-                          <p className="text-gray-600">Focus: {nextWorkout.focus}</p>
-                          <p className="text-gray-600">{nextWorkout.exercises.length} exercises</p>
+                          <div className="flex items-center justify-between">
+                            <span className="text-gray-600">Current Weight</span>
+                            <span className="text-lg font-semibold text-gray-900">
+                              {program.currentWeight ? `${program.currentWeight} lbs` : '–'}
+                            </span>
+                          </div>
+                          {program.startWeight && (
+                            <div className="flex items-center justify-between">
+                              <span className="text-gray-600">Starting Weight</span>
+                              <span className="text-sm text-gray-600">{program.startWeight} lbs</span>
+                            </div>
+                          )}
                         </div>
-                        
-                        <Link 
-                          href={`/workout/${nextWorkout.id}`}
-                          className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-all duration-200 hover:scale-[1.02] hover:-translate-y-0.5"
-                        >
-                          Begin Workout
-                          <span className="text-indigo-200">→</span>
-                        </Link>
+
+                        {/* Photos Section */}
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-gray-600">Progress Photos</span>
+                            {program.progressPhotos && program.progressPhotos.length > 0 && (
+                              <button className="text-sm text-indigo-600 hover:text-indigo-700">
+                                View All →
+                              </button>
+                            )}
+                          </div>
+                          
+                          {program.progressPhotos && program.progressPhotos.length > 0 ? (
+                            <div className="grid grid-cols-3 gap-4">
+                              {program.progressPhotos.slice(0, 3).map((photo, index) => (
+                                <div key={index} className="aspect-square rounded-lg bg-gray-100 overflow-hidden">
+                                  {/* Photo would go here */}
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center">
+                              <div className="space-y-3">
+                                <p className="text-gray-600">No progress photos yet</p>
+                                <button 
+                                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-indigo-600 hover:bg-indigo-50 transition-all duration-200"
+                                  onClick={() => {/* TODO: Implement photo upload */}}
+                                >
+                                  <span className="text-xl">+</span>
+                                  Add Your First Photo
+                                </button>
+                                <p className="text-sm text-gray-500">
+                                  Track your progress visually by adding photos during check-ins
+                                </p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </div>
+                    </div>
+
+                    {/* Next Workout - 1/4 width */}
+                    <div className="w-1/4">
+                      {nextWorkout ? (
+                        <div className="space-y-4">
+                          <h2 className="text-sm font-medium text-gray-600">Next Workout</h2>
+                          <div className="space-y-4">
+                            <div className="space-y-2">
+                              <p className="text-lg font-semibold text-gray-900">Day {nextWorkout.dayNumber} - {nextWorkout.name}</p>
+                              <p className="text-gray-600">Focus: {nextWorkout.focus}</p>
+                              <p className="text-gray-600">{nextWorkout.exercises.length} exercises</p>
+                            </div>
+                            
+                            <Link 
+                              href={`/workout/${nextWorkout.id}`}
+                              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-all duration-200 hover:scale-[1.02] hover:-translate-y-0.5"
+                            >
+                              Begin Workout
+                              <span className="text-indigo-200">→</span>
+                            </Link>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          <h2 className="text-2xl font-bold text-gray-900">Program Complete! 🎉</h2>
+                          <p className="text-lg text-gray-600">
+                            You&apos;ve completed all workouts in this program. What&apos;s next?
+                          </p>
+                          <div className="flex flex-wrap gap-4">
+                            <Link 
+                              href="/hi"
+                              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-all duration-200 hover:scale-[1.02] hover:-translate-y-0.5"
+                            >
+                              Start a New Program
+                              <span className="text-indigo-200">→</span>
+                            </Link>
+                            <button 
+                              className="px-6 py-3 rounded-lg bg-gray-100 text-gray-900 font-medium hover:bg-gray-200 transition-all duration-200 hover:scale-[1.02] hover:-translate-y-0.5"
+                              onClick={() => {/* TODO: Implement restart program */}}
+                            >
+                              Restart Current Program
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
               </div>
-            ) : (
-              <div className="group relative">
-                <div className="absolute -inset-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 rounded-lg opacity-0 blur-xl transition duration-500 group-hover:opacity-30"></div>
-                <div className="relative overflow-hidden bg-white rounded-2xl border border-gray-200 shadow-sm">
-                  <div className="p-6 lg:p-8 space-y-6">
-                    <div className="space-y-4">
-                      <h2 className="text-2xl font-bold text-gray-900">Program Complete! 🎉</h2>
-                      <p className="text-lg text-gray-600">
-                        You&apos;ve completed all workouts in this program. What&apos;s next?
-                      </p>
-                      <div className="flex flex-wrap gap-4">
-                        <Link 
-                          href="/hi"
-                          className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-all duration-200 hover:scale-[1.02] hover:-translate-y-0.5"
-                        >
-                          Start a New Program
-                          <span className="text-indigo-200">→</span>
-                        </Link>
-                        <button 
-                          className="px-6 py-3 rounded-lg bg-gray-100 text-gray-900 font-medium hover:bg-gray-200 transition-all duration-200 hover:scale-[1.02] hover:-translate-y-0.5"
-                          onClick={() => {/* TODO: Implement restart program */}}
-                        >
-                          Restart Current Program
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+            </div>
 
             {/* Recent Activity Card */}
             <div className="group relative">
