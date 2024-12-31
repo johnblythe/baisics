@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { CheckCircle, Pencil, Circle } from 'lucide-react';
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 interface Exercise {
   id: string;
@@ -473,117 +475,129 @@ export default function WorkoutPage() {
   };
 
   if (isLoading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    return (
+      <>
+        <Header />
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="w-6 h-6 border-t-2 border-blue-500 border-solid rounded-full animate-spin"></div>
+        </div>
+        <Footer />
+      </>
+    );
   }
 
   const currentExercise = exercises[currentExerciseIndex];
 
   return (
-    <main className="min-h-screen bg-white">
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="space-y-8">
-          <div className="relative overflow-hidden bg-white rounded-2xl border border-gray-200 shadow-sm">
-            {/* Background Texture */}
-            <div className="absolute inset-0">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.03),transparent_70%)]"></div>
-              <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(99,102,241,0.01)_25%,transparent_25%,transparent_75%,rgba(99,102,241,0.01)_75%,rgba(99,102,241,0.01))]" style={{ backgroundSize: '60px 60px' }}></div>
-            </div>
-
-            <div className="relative p-6 space-y-6">
-              {/* Header */}
-              <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-gray-900">
-                  Exercise {currentExerciseIndex + 1} of {exercises.length}
-                </h2>
-                {restTimer !== null && (
-                  <div className="px-4 py-2 rounded-full bg-indigo-50 border border-indigo-100">
-                    <span className="text-lg font-semibold text-indigo-600">
-                      Rest: {restTimer}s
-                    </span>
-                  </div>
-                )}
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      <main className="flex-grow bg-white pt-16">
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          <div className="space-y-8">
+            <div className="relative overflow-hidden bg-white rounded-2xl border border-gray-200 shadow-sm">
+              {/* Background Texture */}
+              <div className="absolute inset-0">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.03),transparent_70%)]"></div>
+                <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(99,102,241,0.01)_25%,transparent_25%,transparent_75%,rgba(99,102,241,0.01)_75%,rgba(99,102,241,0.01))]" style={{ backgroundSize: '60px 60px' }}></div>
               </div>
 
-              {/* Exercise Info */}
-              <div className="space-y-2">
-                <h3 className="text-xl font-semibold text-gray-900">{currentExercise.name}</h3>
-                <p className="text-gray-600">
-                  {currentExercise.sets} sets × {currentExercise.reps} reps
-                </p>
-              </div>
+              <div className="relative p-6 space-y-6">
+                {/* Header */}
+                <div className="flex justify-between items-center">
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    Exercise {currentExerciseIndex + 1} of {exercises.length}
+                  </h2>
+                  {restTimer !== null && (
+                    <div className="px-4 py-2 rounded-full bg-indigo-50 border border-indigo-100">
+                      <span className="text-lg font-semibold text-indigo-600">
+                        Rest: {restTimer}s
+                      </span>
+                    </div>
+                  )}
+                </div>
 
-              {/* Sets */}
-              <div className="space-y-1">
-                {currentExercise.logs.map((log, setIndex) => (
-                  <SetInput
-                    key={setIndex}
-                    log={log}
-                    onComplete={(data) => {
-                      updateSet(currentExerciseIndex, setIndex, data);
-                      // Start rest timer for this specific set
-                      startRestTimer(currentExercise.restPeriod || 30, setIndex);
-                    }}
-                    onUpdate={(data) => updateSet(currentExerciseIndex, setIndex, data)}
-                    isResting={activeRestSet === setIndex}
-                    restTimeRemaining={activeRestSet === setIndex ? restTimer ?? undefined : undefined}
-                    onSkipRest={() => {
-                      setRestTimer(null);
-                      setActiveRestSet(null);
-                    }}
-                    showRestIndicator={true}
-                    onRestComplete={() => {
-                      setExercises(prevExercises => {
-                        const newExercises = [...prevExercises];
-                        const currentExercise = newExercises[currentExerciseIndex];
-                        if (setIndex >= 0 && setIndex < currentExercise.logs.length) {
-                          currentExercise.logs[setIndex] = {
-                            ...currentExercise.logs[setIndex],
-                            restCompleted: true
-                          };
-                        }
-                        return newExercises;
-                      });
-                    }}
-                  />
-                ))}
-              </div>
+                {/* Exercise Info */}
+                <div className="space-y-2">
+                  <h3 className="text-xl font-semibold text-gray-900">{currentExercise.name}</h3>
+                  <p className="text-gray-600">
+                    {currentExercise.sets} sets × {currentExercise.reps} reps
+                  </p>
+                </div>
 
-              {/* Navigation */}
-              <div className="flex justify-between pt-6">
-                <button
-                  onClick={() => setCurrentExerciseIndex(prev => prev - 1)}
-                  disabled={currentExerciseIndex === 0}
-                  className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
-                    currentExerciseIndex === 0
-                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
-                >
-                  Previous Exercise
-                </button>
-                
-                {currentExerciseIndex < exercises.length - 1 ? (
+                {/* Sets */}
+                <div className="space-y-1">
+                  {currentExercise.logs.map((log, setIndex) => (
+                    <SetInput
+                      key={setIndex}
+                      log={log}
+                      onComplete={(data) => {
+                        updateSet(currentExerciseIndex, setIndex, data);
+                        // Start rest timer for this specific set
+                        startRestTimer(currentExercise.restPeriod || 30, setIndex);
+                      }}
+                      onUpdate={(data) => updateSet(currentExerciseIndex, setIndex, data)}
+                      isResting={activeRestSet === setIndex}
+                      restTimeRemaining={activeRestSet === setIndex ? restTimer ?? undefined : undefined}
+                      onSkipRest={() => {
+                        setRestTimer(null);
+                        setActiveRestSet(null);
+                      }}
+                      showRestIndicator={true}
+                      onRestComplete={() => {
+                        setExercises(prevExercises => {
+                          const newExercises = [...prevExercises];
+                          const currentExercise = newExercises[currentExerciseIndex];
+                          if (setIndex >= 0 && setIndex < currentExercise.logs.length) {
+                            currentExercise.logs[setIndex] = {
+                              ...currentExercise.logs[setIndex],
+                              restCompleted: true
+                            };
+                          }
+                          return newExercises;
+                        });
+                      }}
+                    />
+                  ))}
+                </div>
+
+                {/* Navigation */}
+                <div className="flex justify-between pt-6">
                   <button
-                    onClick={() => {
-                      setCurrentExerciseIndex(prev => prev + 1);
-                    }}
-                    className="px-6 py-3 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors"
+                    onClick={() => setCurrentExerciseIndex(prev => prev - 1)}
+                    disabled={currentExerciseIndex === 0}
+                    className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
+                      currentExerciseIndex === 0
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
                   >
-                    Next Exercise
+                    Previous Exercise
                   </button>
-                ) : (
-                  <button
-                    onClick={completeWorkout}
-                    className="px-6 py-3 rounded-lg bg-green-600 text-white font-medium hover:bg-green-700 transition-colors"
-                  >
-                    Complete Workout
-                  </button>
-                )}
+                  
+                  {currentExerciseIndex < exercises.length - 1 ? (
+                    <button
+                      onClick={() => {
+                        setCurrentExerciseIndex(prev => prev + 1);
+                      }}
+                      className="px-6 py-3 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors"
+                    >
+                      Next Exercise
+                    </button>
+                  ) : (
+                    <button
+                      onClick={completeWorkout}
+                      className="px-6 py-3 rounded-lg bg-green-600 text-white font-medium hover:bg-green-700 transition-colors"
+                    >
+                      Complete Workout
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </main>
+      </main>
+      <Footer />
+    </div>
   );
 } 
