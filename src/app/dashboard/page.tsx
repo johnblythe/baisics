@@ -5,6 +5,21 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, TooltipProps } from 'recharts';
+import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
+
+// Mock weight data - we'll replace this with real data later
+const mockWeightData = [
+  { date: '2024-01-01', weight: 165 },
+  { date: '2024-01-08', weight: 164.2 },
+  // { date: '2024-01-15', weight: 163.5 },
+  // { date: '2024-01-22', weight: 163.8 },
+  // { date: '2024-01-29', weight: 162.9 },
+  // { date: '2024-02-05', weight: 162.3 },
+].map(entry => ({
+  ...entry,
+  displayDate: new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}));
 
 interface Program {
   id: string;
@@ -23,6 +38,10 @@ interface Program {
 
 interface WorkoutPlan {
   workouts: Workout[];
+  proteinGrams: number;
+  carbGrams: number;
+  fatGrams: number;
+  dailyCalories: number;
 }
 
 interface Workout {
@@ -225,19 +244,70 @@ export default function DashboardPage() {
                       <h2 className="text-sm font-medium text-gray-600">Progress</h2>
                       <div className="mt-4 space-y-6">
                         {/* Weight Section */}
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <span className="text-gray-600">Current Weight</span>
-                            <span className="text-lg font-semibold text-gray-900">
-                              {program.currentWeight ? `${program.currentWeight} lbs` : '–'}
-                            </span>
-                          </div>
-                          {program.startWeight && (
+                        <div className="space-y-4">
+                          <div>
                             <div className="flex items-center justify-between">
-                              <span className="text-gray-600">Starting Weight</span>
-                              <span className="text-sm text-gray-600">{program.startWeight} lbs</span>
+                              <span className="text-gray-600">Current Weight</span>
+                              <span className="text-2xl font-semibold text-gray-900">
+                                {program.currentWeight ? `${program.currentWeight} lbs` : '–'}
+                              </span>
                             </div>
+                            {program.startWeight && (
+                              <div className="flex items-center justify-between mt-1">
+                                <span className="text-sm text-gray-500">Starting Weight</span>
+                                <span className="text-sm text-gray-500">{program.startWeight} lbs</span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Weight Chart */}
+                          <div className="h-48 mt-4">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <LineChart data={mockWeightData} margin={{ top: 5, right: 5, bottom: 5, left: 0 }}>
+                                <XAxis 
+                                  dataKey="displayDate" 
+                                  tick={{ fontSize: 12, fill: '#6B7280' }}
+                                  tickLine={false}
+                                  axisLine={false}
+                                />
+                                <YAxis 
+                                  domain={['dataMin - 1', 'dataMax + 1']}
+                                  tick={{ fontSize: 12, fill: '#6B7280' }}
+                                  tickLine={false}
+                                  axisLine={false}
+                                  width={30}
+                                />
+                                <Tooltip
+                                  wrapperStyle={{ outline: 'none' }}
+                                  contentStyle={{ 
+                                    backgroundColor: 'white',
+                                    border: 'none',
+                                    borderRadius: '0.5rem',
+                                    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                                    padding: '0.5rem'
+                                  }}
+                                  formatter={(value: number) => [`${value} lbs`, 'Weight']}
+                                  labelFormatter={(label) => label}
+                                />
+                                <Line 
+                                  type="monotone" 
+                                  dataKey="weight" 
+                                  stroke="#4F46E5" 
+                                  strokeWidth={2}
+                                  dot={{ fill: '#4F46E5', strokeWidth: 2 }}
+                                  activeDot={{ r: 6, fill: '#4F46E5' }}
+                                />
+                              </LineChart>
+                            </ResponsiveContainer>
+                          </div>
+
+                          {mockWeightData.length <= 3 && (
+                            <p className="text-sm text-gray-500">
+                              Weight tracking becomes more meaningful after a few check-ins
+                            </p>
                           )}
+
+                          {/* Tips Section */}
                         </div>
 
                         {/* Photos Section */}
@@ -290,7 +360,7 @@ export default function DashboardPage() {
                     </div>
 
                     {/* Next Workout - 1/4 width */}
-                    <div className="w-1/4">
+                    <div className="w-1/4 space-y-8">
                       {nextWorkout ? (
                         <div className="space-y-4">
                           <h2 className="text-sm font-medium text-gray-600">Next Workout</h2>
@@ -330,6 +400,40 @@ export default function DashboardPage() {
                             >
                               Restart Current Program
                             </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Daily Macros */}
+                      {program.workoutPlans[0] && (
+                        <div className="space-y-4">
+                          <h2 className="text-sm font-medium text-gray-600">Daily Macros</h2>
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
+                                <span className="text-gray-600">Protein</span>
+                              </div>
+                              <span className="font-medium">{program.workoutPlans[0].proteinGrams}g</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                                <span className="text-gray-600">Carbs</span>
+                              </div>
+                              <span className="font-medium">{program.workoutPlans[0].carbGrams}g</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-purple-500"></div>
+                                <span className="text-gray-600">Fat</span>
+                              </div>
+                              <span className="font-medium">{program.workoutPlans[0].fatGrams}g</span>
+                            </div>
+                            <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                              <span className="text-gray-600">Daily Calories</span>
+                              <span className="font-medium">{program.workoutPlans[0].dailyCalories}</span>
+                            </div>
                           </div>
                         </div>
                       )}
