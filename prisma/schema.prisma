@@ -367,6 +367,19 @@ model UserStats {
   hungerLevels  Int?   @map("hunger_levels") // 1-10 scale
   cravings      Int?   @map("cravings") // 1-10 scale
 
+  // Body Measurements
+  chest           Float? @map("chest")
+  waist           Float? @map("waist")
+  hips            Float? @map("hips")
+  bicepLeft       Float? @map("bicep_left")
+  bicepRight      Float? @map("bicep_right")
+  bicepLeftFlex   Float? @map("bicep_left_flex")
+  bicepRightFlex  Float? @map("bicep_right_flex")
+  thighLeft       Float? @map("thigh_left")
+  thighRight      Float? @map("thigh_right")
+  calfLeft        Float? @map("calf_left")
+  calfRight       Float? @map("calf_right")
+
   // Progress Photos
   photos ProgressPhoto[]
 

@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, TooltipProps } from 'recharts';
 import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
+import { useDropzone } from 'react-dropzone';
 
 // Mock weight data - we'll replace this with real data later
 const mockWeightData = [
@@ -315,9 +316,12 @@ export default function DashboardPage() {
                           <div className="flex items-center justify-between">
                             <h2 className="text-sm font-medium text-gray-600">Photos</h2>
                             {program.progressPhotos && program.progressPhotos.length > 0 && (
-                              <button className="text-sm text-indigo-600 hover:text-indigo-700">
+                              <Link 
+                                href="/progress/photos"
+                                className="text-sm text-indigo-600 hover:text-indigo-700"
+                              >
                                 View All →
-                              </button>
+                              </Link>
                             )}
                           </div>
                           
@@ -339,18 +343,36 @@ export default function DashboardPage() {
                               ))}
                             </div>
                           ) : (
-                            <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center">
+                            <div 
+                              className="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center transition-colors duration-200 hover:border-indigo-200 hover:bg-indigo-50/50 cursor-pointer"
+                              onClick={() => router.push('/check-in')}
+                              onDragOver={(e) => {
+                                e.preventDefault();
+                                e.currentTarget.classList.add('border-indigo-300', 'bg-indigo-50');
+                              }}
+                              onDragLeave={(e) => {
+                                e.currentTarget.classList.remove('border-indigo-300', 'bg-indigo-50');
+                              }}
+                              onDrop={(e) => {
+                                e.preventDefault();
+                                router.push('/check-in');
+                              }}
+                            >
                               <div className="space-y-3">
-                                <p className="text-gray-600">No progress photos yet</p>
-                                <button 
-                                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-indigo-600 hover:bg-indigo-50 transition-all duration-200"
-                                  onClick={() => {/* TODO: Implement photo upload */}}
+                                <div className="flex justify-center">
+                                  <svg className="w-12 h-12 text-gray-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16Z" fill="currentColor"/>
+                                    <path d="M9 2L7.17 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4H16.83L15 2H9ZM12 17C9.24 17 7 14.76 7 12C7 9.24 9.24 7 12 7C14.76 7 17 9.24 17 12C17 14.76 14.76 17 12 17Z" fill="currentColor"/>
+                                  </svg>
+                                </div>
+                                <Link 
+                                  href="/check-in"
+                                  className="text-lg text-indigo-600 hover:text-indigo-700 font-medium inline-flex items-center gap-1"
                                 >
-                                  <span className="text-xl">+</span>
-                                  Add Your First Photo
-                                </button>
-                                <p className="text-sm text-gray-500">
-                                  Track your progress visually by adding photos during check-ins
+                                  Add Your First Photo →
+                                </Link>
+                                <p className="text-gray-600">
+                                  Drop photos here or click to start a check-in
                                 </p>
                               </div>
                             </div>
