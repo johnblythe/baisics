@@ -17,7 +17,20 @@ export default function Header() {
 
           {/* Right side - can be extended later for user menu, etc */}
           <div className="flex items-center gap-4">
-            {/* Placeholder for future additions */}
+            <nav className="flex items-center gap-6">
+              <Link 
+                href="/dashboard"
+                className="text-gray-600 hover:text-indigo-600 font-medium transition-colors"
+              >
+                Dashboard
+              </Link>
+              <Link
+                href="/account" 
+                className="text-gray-600 hover:text-indigo-600 font-medium transition-colors"
+              >
+                Account
+              </Link>
+            </nav>
           </div>
         </div>
       </div>

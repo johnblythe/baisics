@@ -23,8 +23,8 @@ interface SendMessageResponse {
 }
 
 interface ProgramStructure {
-  programName: string;
-  programDescription: string;
+  name: string;
+  description: string;
   phaseCount: number;
   phaseDurations: number[];
   phaseProgression: string[];
@@ -63,8 +63,8 @@ ${JSON.stringify(intakeData, null, 2)}
 
 Please provide a response in the following JSON format:
 {
-  "programName": string,
-  "programDescription": string,
+  "name": string,
+  "description": string,
   "phaseCount": number,
   "phaseDurations": number[],
   "phaseProgression": string[],
@@ -324,14 +324,14 @@ export const createProgramSequentially = async (
     // Step 1: Get program structure
     const programStructureResponse = await sendMessage(formatProgramStructurePrompt(intakeData));
     const programStructure = parseAIResponse<ProgramStructure>(programStructureResponse, {
-      programName: '',
-      programDescription: '',
+      name: '',
+      description: '',
       phaseCount: 0,
       phaseDurations: [],
       phaseProgression: [],
       overallGoals: []
     });
-    if (!programStructure.programName) {
+    if (!programStructure.name) {
       throw new Error('Failed to generate program structure');
     }
 
@@ -431,8 +431,8 @@ export const createProgramSequentially = async (
     // Construct the final program
     const program: Program = {
       id: crypto.randomUUID(),
-      name: programStructure.programName,
-      description: programStructure.programDescription,
+      name: programStructure.name,
+      description: programStructure.description,
       workoutPlans,
       user: {
         id: userId,
