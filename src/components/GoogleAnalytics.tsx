@@ -9,8 +9,8 @@ export default function GoogleAnalytics() {
   const isDevelopment = process.env.NODE_ENV === 'development'
 
   if (isDevelopment) {
-    console.log('Google Analytics is disabled in development mode')
-    console.log(GA_MEASUREMENT_ID)
+    // console.log('Google Analytics is disabled in development mode')
+    // console.log(GA_MEASUREMENT_ID)
     return null
   }
 
