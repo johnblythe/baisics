@@ -20,6 +20,7 @@ interface WorkoutPlan {
 
 interface Workout {
   id: string;
+  name: string;
   dayNumber: number;
   focus: string;
   exercises: any[];
@@ -215,7 +216,7 @@ export default function DashboardPage() {
                       <h2 className="text-2xl font-bold text-gray-900">Next Workout</h2>
                       <div className="space-y-4">
                         <div className="space-y-2">
-                          <p className="text-lg font-semibold text-gray-900">Day {nextWorkout.dayNumber}</p>
+                          <p className="text-lg font-semibold text-gray-900">Day {nextWorkout.dayNumber} - {nextWorkout.name}</p>
                           <p className="text-gray-600">Focus: {nextWorkout.focus}</p>
                           <p className="text-gray-600">{nextWorkout.exercises.length} exercises</p>
                         </div>
