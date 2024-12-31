@@ -243,7 +243,7 @@ export default function DashboardPage() {
                         {/* Photos Section */}
                         <div className="space-y-3">
                           <div className="flex items-center justify-between">
-                            <span className="text-gray-600">Progress Photos</span>
+                            <h2 className="text-sm font-medium text-gray-600">Photos</h2>
                             {program.progressPhotos && program.progressPhotos.length > 0 && (
                               <button className="text-sm text-indigo-600 hover:text-indigo-700">
                                 View All →
@@ -344,7 +344,7 @@ export default function DashboardPage() {
               <div className="absolute -inset-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 rounded-lg opacity-0 blur-xl transition duration-500 group-hover:opacity-30"></div>
               <div className="relative overflow-hidden bg-white rounded-2xl border border-gray-200 shadow-sm">
                 <div className="p-6 lg:p-8 space-y-6">
-                  <h2 className="text-2xl font-bold text-gray-900">Recent Activity</h2>
+                  <h2 className="text-sm font-medium text-gray-600">Recent Activity</h2>
                   {program.workoutLogs.length > 0 ? (
                     <div className="space-y-4">
                       {program.workoutLogs.slice(0, 5).map((log) => (
