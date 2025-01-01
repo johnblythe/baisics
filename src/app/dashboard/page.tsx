@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, TooltipProps } from 'recharts';
 import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
+import { useDropzone } from 'react-dropzone';
 
 // Mock weight data - we'll replace this with real data later
 const mockWeightData = [
@@ -34,6 +35,20 @@ interface Program {
     url: string;
     type: 'FRONT' | 'BACK' | 'SIDE_LEFT' | 'SIDE_RIGHT' | 'CUSTOM' | null;
   }[];
+  checkIns?: {
+    id: string;
+    createdAt: string;
+    type: 'initial' | 'progress' | 'end';
+  }[];
+  activities?: {
+    id: string;
+    timestamp: string;
+    type: string;
+    metadata?: {
+      path?: string;
+      userAgent?: string;
+    };
+  }[];
 }
 
 interface WorkoutPlan {
@@ -58,10 +73,16 @@ interface WorkoutLog {
   completedAt: string;
 }
 
+interface TooltipItem {
+  type: 'check-in' | 'workout' | 'visit';
+  text: string;
+}
+
 export default function DashboardPage() {
   const router = useRouter();
   const [program, setProgram] = useState<Program | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [tooltipContent, setTooltipContent] = useState<{ x: number; y: number; content: React.ReactNode } | null>(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -243,71 +264,204 @@ export default function DashboardPage() {
                     <div className="w-3/4">
                       <h2 className="text-sm font-medium text-gray-600">Progress</h2>
                       <div className="mt-4 space-y-6">
-                        {/* Weight Section */}
-                        <div className="space-y-4">
-                          <div>
-                            <div className="flex items-center justify-between">
-                              <span className="text-gray-600">Current Weight</span>
-                              <span className="text-2xl font-semibold text-gray-900">
-                                {program.currentWeight ? `${program.currentWeight} lbs` : '–'}
-                              </span>
-                            </div>
-                            {program.startWeight && (
-                              <div className="flex items-center justify-between mt-1">
-                                <span className="text-sm text-gray-500">Starting Weight</span>
-                                <span className="text-sm text-gray-500">{program.startWeight} lbs</span>
+                        {/* Weight and Activity Grid Row */}
+                        <div className="flex gap-6">
+                          {/* Weight Section */}
+                          <div className="w-1/2 space-y-4">
+                            <div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-gray-600">Current Weight</span>
+                                <span className="text-2xl font-semibold text-gray-900">
+                                  {program.currentWeight ? `${program.currentWeight} lbs` : '–'}
+                                </span>
                               </div>
+                              {program.startWeight && (
+                                <div className="flex items-center justify-between mt-1">
+                                  <span className="text-sm text-gray-500">Starting Weight</span>
+                                  <span className="text-sm text-gray-500">{program.startWeight} lbs</span>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Weight Chart */}
+                            <div className="h-48">
+                              <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={mockWeightData} margin={{ top: 5, right: 5, bottom: 5, left: 0 }}>
+                                  <XAxis 
+                                    dataKey="displayDate" 
+                                    tick={{ fontSize: 12, fill: '#6B7280' }}
+                                    tickLine={false}
+                                    axisLine={false}
+                                  />
+                                  <YAxis 
+                                    domain={['dataMin - 1', 'dataMax + 1']}
+                                    tick={{ fontSize: 12, fill: '#6B7280' }}
+                                    tickLine={false}
+                                    axisLine={false}
+                                    width={30}
+                                  />
+                                  <Tooltip
+                                    wrapperStyle={{ outline: 'none' }}
+                                    contentStyle={{ 
+                                      backgroundColor: 'white',
+                                      border: 'none',
+                                      borderRadius: '0.5rem',
+                                      boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                                      padding: '0.5rem'
+                                    }}
+                                    formatter={(value: number) => [`${value} lbs`, 'Weight']}
+                                    labelFormatter={(label) => label}
+                                  />
+                                  <Line 
+                                    type="monotone" 
+                                    dataKey="weight" 
+                                    stroke="#4F46E5" 
+                                    strokeWidth={2}
+                                    dot={{ fill: '#4F46E5', strokeWidth: 2 }}
+                                    activeDot={{ r: 6, fill: '#4F46E5' }}
+                                  />
+                                </LineChart>
+                              </ResponsiveContainer>
+                            </div>
+
+                            {mockWeightData.length <= 3 && (
+                              <p className="text-sm text-gray-500">
+                                Weight tracking becomes more meaningful after a few check-ins
+                              </p>
                             )}
                           </div>
 
-                          {/* Weight Chart */}
-                          <div className="h-48 mt-4">
-                            <ResponsiveContainer width="100%" height="100%">
-                              <LineChart data={mockWeightData} margin={{ top: 5, right: 5, bottom: 5, left: 0 }}>
-                                <XAxis 
-                                  dataKey="displayDate" 
-                                  tick={{ fontSize: 12, fill: '#6B7280' }}
-                                  tickLine={false}
-                                  axisLine={false}
-                                />
-                                <YAxis 
-                                  domain={['dataMin - 1', 'dataMax + 1']}
-                                  tick={{ fontSize: 12, fill: '#6B7280' }}
-                                  tickLine={false}
-                                  axisLine={false}
-                                  width={30}
-                                />
-                                <Tooltip
-                                  wrapperStyle={{ outline: 'none' }}
-                                  contentStyle={{ 
-                                    backgroundColor: 'white',
-                                    border: 'none',
-                                    borderRadius: '0.5rem',
-                                    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-                                    padding: '0.5rem'
-                                  }}
-                                  formatter={(value: number) => [`${value} lbs`, 'Weight']}
-                                  labelFormatter={(label) => label}
-                                />
-                                <Line 
-                                  type="monotone" 
-                                  dataKey="weight" 
-                                  stroke="#4F46E5" 
-                                  strokeWidth={2}
-                                  dot={{ fill: '#4F46E5', strokeWidth: 2 }}
-                                  activeDot={{ r: 6, fill: '#4F46E5' }}
-                                />
-                              </LineChart>
-                            </ResponsiveContainer>
+                          {/* Activity Grid */}
+                          <div className="w-1/2 space-y-4">
+                            <div className="flex items-center justify-between">
+                              <span className="text-gray-600">Activity</span>
+                              <span className="text-sm text-gray-500">Last 12 weeks</span>
+                            </div>
+                            <div className="bg-gray-50 rounded-lg p-4">
+                              <div className="grid grid-cols-12 gap-1 relative">
+                                {tooltipContent && (
+                                  <div 
+                                    className="fixed px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-pre pointer-events-none min-w-[150px] z-[60]"
+                                    style={{ 
+                                      left: tooltipContent.x,
+                                      top: tooltipContent.y - 10,
+                                      transform: 'translateX(-50%)'
+                                    }}
+                                  >
+                                    {tooltipContent.content}
+                                  </div>
+                                )}
+                                {[...Array(84)].map((_, i) => {
+                                  // Calculate the date for this cell (going backwards from today)
+                                  const date = new Date();
+                                  date.setDate(date.getDate() - (83 - i));
+                                  
+                                  // Find activities for this date
+                                  const hadWorkout = program.workoutLogs.some(log => {
+                                    const logDate = new Date(log.completedAt);
+                                    return logDate.toDateString() === date.toDateString();
+                                  });
+
+                                  // Check if it was a check-in day (Monday)
+                                  const wasCheckIn = date.getDay() === 1 && program.checkIns?.some(checkIn => {
+                                    const checkInDate = new Date(checkIn.createdAt);
+                                    return checkInDate.toDateString() === date.toDateString();
+                                  });
+
+                                  // Check if user logged in
+                                  const activities = program.activities?.filter(activity => {
+                                    const activityDate = new Date(activity.timestamp);
+                                    return activityDate.toDateString() === date.toDateString();
+                                  }) || [];
+
+                                  // Determine cell color based on activity
+                                  let cellColor = 'bg-gray-200'; // default: no activity
+                                  let intensity = 'opacity-100';
+
+                                  if (wasCheckIn) {
+                                    cellColor = 'bg-green-500'; // check-in
+                                  } else if (hadWorkout) {
+                                    cellColor = 'bg-indigo-500'; // workout
+                                  } else if (activities.length > 0) {
+                                    cellColor = 'bg-blue-300'; // visit
+                                    intensity = activities.length > 1 ? 'opacity-100' : 'opacity-70';
+                                  }
+
+                                  // Create activity description for tooltip
+                                  const tooltipItems: TooltipItem[] = [];
+                                  if (wasCheckIn) {
+                                    const checkIn = program.checkIns?.find(c => {
+                                      const checkInDate = new Date(c.createdAt);
+                                      return checkInDate.toDateString() === date.toDateString();
+                                    });
+                                    tooltipItems.push({
+                                      type: 'check-in',
+                                      text: `Check-in completed${checkIn?.type ? ` (${checkIn.type})` : ''}`
+                                    });
+                                  }
+                                  if (hadWorkout) {
+                                    const workout = program.workoutLogs.find(log => {
+                                      const logDate = new Date(log.completedAt);
+                                      return logDate.toDateString() === date.toDateString();
+                                    });
+                                    const workoutName = program.workoutPlans[0]?.workouts.find(w => w.id === workout?.workoutId)?.name;
+                                    tooltipItems.push({
+                                      type: 'workout',
+                                      text: `Workout completed: ${workoutName || 'Unknown workout'}`
+                                    });
+                                  }
+                                  if (activities.length > 0) {
+                                    tooltipItems.push({
+                                      type: 'visit',
+                                      text: `${activities.length} visit${activities.length > 1 ? 's' : ''}`
+                                    });
+                                  }
+
+                                  return (
+                                    <div
+                                      key={i}
+                                      className={`aspect-square rounded-sm ${cellColor} ${intensity} transition-all duration-200 hover:scale-110 cursor-help`}
+                                      onMouseEnter={(e) => {
+                                        const rect = e.currentTarget.getBoundingClientRect();
+                                        setTooltipContent({
+                                          x: rect.left + rect.width / 2,
+                                          y: rect.top,
+                                          content: (
+                                            <>
+                                              {date.toLocaleDateString('en-US', { 
+                                                weekday: 'short',
+                                                month: 'short',
+                                                day: 'numeric',
+                                                year: 'numeric'
+                                              })}
+                                              {tooltipItems.length > 0 ? (
+                                                tooltipItems.map((item, idx) => (
+                                                  <div key={idx} className="mt-1 text-gray-200">{item.text}</div>
+                                                ))
+                                              ) : (
+                                                <div className="mt-1 text-gray-400">No activity</div>
+                                              )}
+                                            </>
+                                          )
+                                        });
+                                      }}
+                                      onMouseLeave={() => setTooltipContent(null)}
+                                    />
+                                  );
+                                })}
+                              </div>
+                              <div className="mt-2 flex items-center justify-end gap-2 text-sm">
+                                <span className="text-gray-600">No activity</span>
+                                <div className="w-3 h-3 rounded-sm bg-gray-200" />
+                                <div className="w-3 h-3 rounded-sm bg-blue-300" />
+                                <span className="text-gray-600">Visit</span>
+                                <div className="w-3 h-3 rounded-sm bg-indigo-500" />
+                                <span className="text-gray-600">Workout</span>
+                                <div className="w-3 h-3 rounded-sm bg-green-500" />
+                                <span className="text-gray-600">Check-in</span>
+                              </div>
+                            </div>
                           </div>
-
-                          {mockWeightData.length <= 3 && (
-                            <p className="text-sm text-gray-500">
-                              Weight tracking becomes more meaningful after a few check-ins
-                            </p>
-                          )}
-
-                          {/* Tips Section */}
                         </div>
 
                         {/* Photos Section */}
@@ -315,9 +469,12 @@ export default function DashboardPage() {
                           <div className="flex items-center justify-between">
                             <h2 className="text-sm font-medium text-gray-600">Photos</h2>
                             {program.progressPhotos && program.progressPhotos.length > 0 && (
-                              <button className="text-sm text-indigo-600 hover:text-indigo-700">
+                              <Link 
+                                href="/progress/photos"
+                                className="text-sm text-indigo-600 hover:text-indigo-700"
+                              >
                                 View All →
-                              </button>
+                              </Link>
                             )}
                           </div>
                           
@@ -339,18 +496,25 @@ export default function DashboardPage() {
                               ))}
                             </div>
                           ) : (
-                            <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center">
+                            <div 
+                              className="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center transition-colors duration-200 hover:border-indigo-200 hover:bg-indigo-50/50 cursor-pointer"
+                              onClick={() => router.push('/check-in')}
+                            >
                               <div className="space-y-3">
-                                <p className="text-gray-600">No progress photos yet</p>
-                                <button 
-                                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-indigo-600 hover:bg-indigo-50 transition-all duration-200"
-                                  onClick={() => {/* TODO: Implement photo upload */}}
+                                <div className="flex justify-center">
+                                  <svg className="w-12 h-12 text-gray-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16Z" fill="currentColor"/>
+                                    <path d="M9 2L7.17 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4H16.83L15 2H9ZM12 17C9.24 17 7 14.76 7 12C7 9.24 9.24 7 12 7C14.76 7 17 9.24 17 12C17 14.76 14.76 17 12 17Z" fill="currentColor"/>
+                                  </svg>
+                                </div>
+                                <Link 
+                                  href="/check-in"
+                                  className="text-lg text-indigo-600 hover:text-indigo-700 font-medium inline-flex items-center gap-1"
                                 >
-                                  <span className="text-xl">+</span>
-                                  Add Your First Photo
-                                </button>
-                                <p className="text-sm text-gray-500">
-                                  Track your progress visually by adding photos during check-ins
+                                  Add Your First Photo →
+                                </Link>
+                                <p className="text-gray-600">
+                                  Drop photos here or click to start a check-in
                                 </p>
                               </div>
                             </div>
@@ -359,7 +523,7 @@ export default function DashboardPage() {
                       </div>
                     </div>
 
-                    {/* Next Workout - 1/4 width */}
+                    {/* Next Workout and Macros - 1/4 width */}
                     <div className="w-1/4 space-y-8">
                       {nextWorkout ? (
                         <div className="space-y-4">
