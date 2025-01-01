@@ -265,23 +265,13 @@ const saveProgramToDatabase = async (program: Program): Promise<void> => {
                   name: exercise.name,
                   sets: exercise.sets,
                   reps: exercise.reps,
-                  restPeriod: exercise.restPeriod,
+                  restPeriod: Number(exercise.restPeriod),
                   exerciseLibrary: {
                     connectOrCreate: {
                       where: { name: exercise.name },
                       create: {
                         name: exercise.name,
                         category: exercise.category || 'default',
-                        // equipment: [],
-                        // difficulty: exercise.difficulty || 'BEGINNER',
-                        // movementPattern: exercise.movementPattern || 'PUSH',
-                        // targetMuscles: exercise.targetMuscles || ['CORE'],
-                        // secondaryMuscles: exercise.secondaryMuscles || [],
-                        // isCompound: exercise.isCompound || false,
-                        // description: exercise.description || '',
-                        // instructions: exercise.instructions || [],
-                        // commonMistakes: exercise.commonMistakes || [],
-                        // benefits: []
                       }
                     }
                   }

@@ -3,8 +3,9 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await context.params;
   try {
     const userId = process.env.TEST_USER_ID;
     if (!userId) {
@@ -13,7 +14,7 @@ export async function POST(
 
     // Get the workout log to verify ownership
     const workoutLog = await prisma.workoutLog.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!workoutLog) {
@@ -26,7 +27,7 @@ export async function POST(
 
     // Update the workout log status and completedAt
     const updatedWorkoutLog = await prisma.workoutLog.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         status: 'completed',
         completedAt: new Date(),
@@ -43,7 +44,7 @@ export async function POST(
     // Also mark all exercise logs as completed
     await prisma.exerciseLog.updateMany({
       where: {
-        workoutLogId: params.id,
+        workoutLogId: id,
         completedAt: null,
       },
       data: {
