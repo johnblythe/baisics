@@ -244,71 +244,121 @@ export default function DashboardPage() {
                     <div className="w-3/4">
                       <h2 className="text-sm font-medium text-gray-600">Progress</h2>
                       <div className="mt-4 space-y-6">
-                        {/* Weight Section */}
-                        <div className="space-y-4">
-                          <div>
-                            <div className="flex items-center justify-between">
-                              <span className="text-gray-600">Current Weight</span>
-                              <span className="text-2xl font-semibold text-gray-900">
-                                {program.currentWeight ? `${program.currentWeight} lbs` : '–'}
-                              </span>
-                            </div>
-                            {program.startWeight && (
-                              <div className="flex items-center justify-between mt-1">
-                                <span className="text-sm text-gray-500">Starting Weight</span>
-                                <span className="text-sm text-gray-500">{program.startWeight} lbs</span>
+                        {/* Weight and Activity Grid Row */}
+                        <div className="flex gap-6">
+                          {/* Weight Section */}
+                          <div className="w-1/2 space-y-4">
+                            <div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-gray-600">Current Weight</span>
+                                <span className="text-2xl font-semibold text-gray-900">
+                                  {program.currentWeight ? `${program.currentWeight} lbs` : '–'}
+                                </span>
                               </div>
+                              {program.startWeight && (
+                                <div className="flex items-center justify-between mt-1">
+                                  <span className="text-sm text-gray-500">Starting Weight</span>
+                                  <span className="text-sm text-gray-500">{program.startWeight} lbs</span>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Weight Chart */}
+                            <div className="h-48">
+                              <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={mockWeightData} margin={{ top: 5, right: 5, bottom: 5, left: 0 }}>
+                                  <XAxis 
+                                    dataKey="displayDate" 
+                                    tick={{ fontSize: 12, fill: '#6B7280' }}
+                                    tickLine={false}
+                                    axisLine={false}
+                                  />
+                                  <YAxis 
+                                    domain={['dataMin - 1', 'dataMax + 1']}
+                                    tick={{ fontSize: 12, fill: '#6B7280' }}
+                                    tickLine={false}
+                                    axisLine={false}
+                                    width={30}
+                                  />
+                                  <Tooltip
+                                    wrapperStyle={{ outline: 'none' }}
+                                    contentStyle={{ 
+                                      backgroundColor: 'white',
+                                      border: 'none',
+                                      borderRadius: '0.5rem',
+                                      boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                                      padding: '0.5rem'
+                                    }}
+                                    formatter={(value: number) => [`${value} lbs`, 'Weight']}
+                                    labelFormatter={(label) => label}
+                                  />
+                                  <Line 
+                                    type="monotone" 
+                                    dataKey="weight" 
+                                    stroke="#4F46E5" 
+                                    strokeWidth={2}
+                                    dot={{ fill: '#4F46E5', strokeWidth: 2 }}
+                                    activeDot={{ r: 6, fill: '#4F46E5' }}
+                                  />
+                                </LineChart>
+                              </ResponsiveContainer>
+                            </div>
+
+                            {mockWeightData.length <= 3 && (
+                              <p className="text-sm text-gray-500">
+                                Weight tracking becomes more meaningful after a few check-ins
+                              </p>
                             )}
                           </div>
 
-                          {/* Weight Chart */}
-                          <div className="h-48 mt-4">
-                            <ResponsiveContainer width="100%" height="100%">
-                              <LineChart data={mockWeightData} margin={{ top: 5, right: 5, bottom: 5, left: 0 }}>
-                                <XAxis 
-                                  dataKey="displayDate" 
-                                  tick={{ fontSize: 12, fill: '#6B7280' }}
-                                  tickLine={false}
-                                  axisLine={false}
-                                />
-                                <YAxis 
-                                  domain={['dataMin - 1', 'dataMax + 1']}
-                                  tick={{ fontSize: 12, fill: '#6B7280' }}
-                                  tickLine={false}
-                                  axisLine={false}
-                                  width={30}
-                                />
-                                <Tooltip
-                                  wrapperStyle={{ outline: 'none' }}
-                                  contentStyle={{ 
-                                    backgroundColor: 'white',
-                                    border: 'none',
-                                    borderRadius: '0.5rem',
-                                    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-                                    padding: '0.5rem'
-                                  }}
-                                  formatter={(value: number) => [`${value} lbs`, 'Weight']}
-                                  labelFormatter={(label) => label}
-                                />
-                                <Line 
-                                  type="monotone" 
-                                  dataKey="weight" 
-                                  stroke="#4F46E5" 
-                                  strokeWidth={2}
-                                  dot={{ fill: '#4F46E5', strokeWidth: 2 }}
-                                  activeDot={{ r: 6, fill: '#4F46E5' }}
-                                />
-                              </LineChart>
-                            </ResponsiveContainer>
+                          {/* Activity Grid */}
+                          <div className="w-1/2 space-y-4">
+                            <div className="flex items-center justify-between">
+                              <span className="text-gray-600">Workout Activity</span>
+                              <span className="text-sm text-gray-500">Last 12 weeks</span>
+                            </div>
+                            <div className="bg-gray-50 rounded-lg p-4">
+                              <div className="grid grid-cols-12 gap-1">
+                                {program.workoutLogs.length > 0 ? (
+                                  [...Array(84)].map((_, i) => {
+                                    // Calculate the date for this cell (going backwards from today)
+                                    const date = new Date();
+                                    date.setDate(date.getDate() - (83 - i));
+                                    
+                                    // Find if there was a workout on this date
+                                    const hadWorkout = program.workoutLogs.some(log => {
+                                      const logDate = new Date(log.completedAt);
+                                      return logDate.toDateString() === date.toDateString();
+                                    });
+
+                                    return (
+                                      <div
+                                        key={i}
+                                        className={`aspect-square rounded-sm ${
+                                          hadWorkout ? 'bg-indigo-500' : 'bg-gray-200'
+                                        }`}
+                                        title={`${date.toLocaleDateString()}: ${hadWorkout ? 'Workout completed' : 'No workout'}`}
+                                      />
+                                    );
+                                  })
+                                ) : (
+                                  // If no workouts yet, show empty grid
+                                  [...Array(84)].map((_, i) => (
+                                    <div
+                                      key={i}
+                                      className="aspect-square rounded-sm bg-gray-200"
+                                    />
+                                  ))
+                                )}
+                              </div>
+                              <div className="mt-2 flex items-center justify-end gap-2 text-sm">
+                                <span className="text-gray-600">No workout</span>
+                                <div className="w-3 h-3 rounded-sm bg-gray-200" />
+                                <div className="w-3 h-3 rounded-sm bg-indigo-500" />
+                                <span className="text-gray-600">Completed</span>
+                              </div>
+                            </div>
                           </div>
-
-                          {mockWeightData.length <= 3 && (
-                            <p className="text-sm text-gray-500">
-                              Weight tracking becomes more meaningful after a few check-ins
-                            </p>
-                          )}
-
-                          {/* Tips Section */}
                         </div>
 
                         {/* Photos Section */}
@@ -346,17 +396,6 @@ export default function DashboardPage() {
                             <div 
                               className="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center transition-colors duration-200 hover:border-indigo-200 hover:bg-indigo-50/50 cursor-pointer"
                               onClick={() => router.push('/check-in')}
-                              onDragOver={(e) => {
-                                e.preventDefault();
-                                e.currentTarget.classList.add('border-indigo-300', 'bg-indigo-50');
-                              }}
-                              onDragLeave={(e) => {
-                                e.currentTarget.classList.remove('border-indigo-300', 'bg-indigo-50');
-                              }}
-                              onDrop={(e) => {
-                                e.preventDefault();
-                                router.push('/check-in');
-                              }}
                             >
                               <div className="space-y-3">
                                 <div className="flex justify-center">
@@ -381,7 +420,7 @@ export default function DashboardPage() {
                       </div>
                     </div>
 
-                    {/* Next Workout - 1/4 width */}
+                    {/* Next Workout and Macros - 1/4 width */}
                     <div className="w-1/4 space-y-8">
                       {nextWorkout ? (
                         <div className="space-y-4">
