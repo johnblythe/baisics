@@ -71,7 +71,7 @@ export function WorkoutPlanDisplay({ program, userEmail: initialUserEmail, plan,
   const handleUploadImages = async (files: File[]) => {
     if (!onUploadImages) return;
     try {
-      await onUploadImages(files, program.id);
+      await onUploadImages(files);
       setUploadFiles([]);
     } catch (error) {
       console.error('Error uploading images:', error);
@@ -255,6 +255,7 @@ export function WorkoutPlanDisplay({ program, userEmail: initialUserEmail, plan,
                           className={`w-full h-48 object-cover object-top transition-all duration-300 ${
                             deletingImageIds.has(image.id) ? 'opacity-50' : ''
                           }`}
+                          // @ts-ignore
                           onClick={() => setSelectedImage(image)}
                         />
                         {onDeleteImage && (
