@@ -85,6 +85,7 @@ model User {
   workoutLogs  WorkoutLog[]
   stats        UserStats[]
   checkIns     CheckIn[]
+  activities   UserActivity[]
 
   @@index([email])
   @@map("users")
@@ -199,6 +200,7 @@ model Program {
   workoutLogs  WorkoutLog[]
   stats        UserStats[]
   checkIns     CheckIn[]
+  activities   UserActivity[]
 
   @@index([name])
   @@index([createdBy])
@@ -441,4 +443,21 @@ enum PhotoType {
   SIDE_LEFT
   SIDE_RIGHT
   CUSTOM
+}
+
+model UserActivity {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  programId String   @map("program_id") @db.Uuid
+  type      String   // 'login', 'visit', etc.
+  timestamp DateTime @default(now())
+  metadata  Json?    // Additional data like device info, page visited, etc.
+
+  user    User    @relation(fields: [userId], references: [id])
+  program Program @relation(fields: [programId], references: [id])
+
+  @@index([userId])
+  @@index([programId])
+  @@index([type])
+  @@map("user_activities")
 }

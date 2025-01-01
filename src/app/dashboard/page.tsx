@@ -35,6 +35,20 @@ interface Program {
     url: string;
     type: 'FRONT' | 'BACK' | 'SIDE_LEFT' | 'SIDE_RIGHT' | 'CUSTOM' | null;
   }[];
+  checkIns?: {
+    id: string;
+    createdAt: string;
+    type: 'initial' | 'progress' | 'end';
+  }[];
+  activities?: {
+    id: string;
+    timestamp: string;
+    type: string;
+    metadata?: {
+      path?: string;
+      userAgent?: string;
+    };
+  }[];
 }
 
 interface WorkoutPlan {
@@ -59,10 +73,16 @@ interface WorkoutLog {
   completedAt: string;
 }
 
+interface TooltipItem {
+  type: 'check-in' | 'workout' | 'visit';
+  text: string;
+}
+
 export default function DashboardPage() {
   const router = useRouter();
   const [program, setProgram] = useState<Program | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [tooltipContent, setTooltipContent] = useState<{ x: number; y: number; content: React.ReactNode } | null>(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -314,48 +334,131 @@ export default function DashboardPage() {
                           {/* Activity Grid */}
                           <div className="w-1/2 space-y-4">
                             <div className="flex items-center justify-between">
-                              <span className="text-gray-600">Workout Activity</span>
+                              <span className="text-gray-600">Activity</span>
                               <span className="text-sm text-gray-500">Last 12 weeks</span>
                             </div>
                             <div className="bg-gray-50 rounded-lg p-4">
-                              <div className="grid grid-cols-12 gap-1">
-                                {program.workoutLogs.length > 0 ? (
-                                  [...Array(84)].map((_, i) => {
-                                    // Calculate the date for this cell (going backwards from today)
-                                    const date = new Date();
-                                    date.setDate(date.getDate() - (83 - i));
-                                    
-                                    // Find if there was a workout on this date
-                                    const hadWorkout = program.workoutLogs.some(log => {
+                              <div className="grid grid-cols-12 gap-1 relative">
+                                {tooltipContent && (
+                                  <div 
+                                    className="fixed px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-pre pointer-events-none min-w-[150px] z-[60]"
+                                    style={{ 
+                                      left: tooltipContent.x,
+                                      top: tooltipContent.y - 10,
+                                      transform: 'translateX(-50%)'
+                                    }}
+                                  >
+                                    {tooltipContent.content}
+                                  </div>
+                                )}
+                                {[...Array(84)].map((_, i) => {
+                                  // Calculate the date for this cell (going backwards from today)
+                                  const date = new Date();
+                                  date.setDate(date.getDate() - (83 - i));
+                                  
+                                  // Find activities for this date
+                                  const hadWorkout = program.workoutLogs.some(log => {
+                                    const logDate = new Date(log.completedAt);
+                                    return logDate.toDateString() === date.toDateString();
+                                  });
+
+                                  // Check if it was a check-in day (Monday)
+                                  const wasCheckIn = date.getDay() === 1 && program.checkIns?.some(checkIn => {
+                                    const checkInDate = new Date(checkIn.createdAt);
+                                    return checkInDate.toDateString() === date.toDateString();
+                                  });
+
+                                  // Check if user logged in
+                                  const activities = program.activities?.filter(activity => {
+                                    const activityDate = new Date(activity.timestamp);
+                                    return activityDate.toDateString() === date.toDateString();
+                                  }) || [];
+
+                                  // Determine cell color based on activity
+                                  let cellColor = 'bg-gray-200'; // default: no activity
+                                  let intensity = 'opacity-100';
+
+                                  if (wasCheckIn) {
+                                    cellColor = 'bg-green-500'; // check-in
+                                  } else if (hadWorkout) {
+                                    cellColor = 'bg-indigo-500'; // workout
+                                  } else if (activities.length > 0) {
+                                    cellColor = 'bg-blue-300'; // visit
+                                    intensity = activities.length > 1 ? 'opacity-100' : 'opacity-70';
+                                  }
+
+                                  // Create activity description for tooltip
+                                  const tooltipItems: TooltipItem[] = [];
+                                  if (wasCheckIn) {
+                                    const checkIn = program.checkIns?.find(c => {
+                                      const checkInDate = new Date(c.createdAt);
+                                      return checkInDate.toDateString() === date.toDateString();
+                                    });
+                                    tooltipItems.push({
+                                      type: 'check-in',
+                                      text: `Check-in completed${checkIn?.type ? ` (${checkIn.type})` : ''}`
+                                    });
+                                  }
+                                  if (hadWorkout) {
+                                    const workout = program.workoutLogs.find(log => {
                                       const logDate = new Date(log.completedAt);
                                       return logDate.toDateString() === date.toDateString();
                                     });
+                                    const workoutName = program.workoutPlans[0]?.workouts.find(w => w.id === workout?.workoutId)?.name;
+                                    tooltipItems.push({
+                                      type: 'workout',
+                                      text: `Workout completed: ${workoutName || 'Unknown workout'}`
+                                    });
+                                  }
+                                  if (activities.length > 0) {
+                                    tooltipItems.push({
+                                      type: 'visit',
+                                      text: `${activities.length} visit${activities.length > 1 ? 's' : ''}`
+                                    });
+                                  }
 
-                                    return (
-                                      <div
-                                        key={i}
-                                        className={`aspect-square rounded-sm ${
-                                          hadWorkout ? 'bg-indigo-500' : 'bg-gray-200'
-                                        }`}
-                                        title={`${date.toLocaleDateString()}: ${hadWorkout ? 'Workout completed' : 'No workout'}`}
-                                      />
-                                    );
-                                  })
-                                ) : (
-                                  // If no workouts yet, show empty grid
-                                  [...Array(84)].map((_, i) => (
+                                  return (
                                     <div
                                       key={i}
-                                      className="aspect-square rounded-sm bg-gray-200"
+                                      className={`aspect-square rounded-sm ${cellColor} ${intensity} transition-all duration-200 hover:scale-110 cursor-help`}
+                                      onMouseEnter={(e) => {
+                                        const rect = e.currentTarget.getBoundingClientRect();
+                                        setTooltipContent({
+                                          x: rect.left + rect.width / 2,
+                                          y: rect.top,
+                                          content: (
+                                            <>
+                                              {date.toLocaleDateString('en-US', { 
+                                                weekday: 'short',
+                                                month: 'short',
+                                                day: 'numeric',
+                                                year: 'numeric'
+                                              })}
+                                              {tooltipItems.length > 0 ? (
+                                                tooltipItems.map((item, idx) => (
+                                                  <div key={idx} className="mt-1 text-gray-200">{item.text}</div>
+                                                ))
+                                              ) : (
+                                                <div className="mt-1 text-gray-400">No activity</div>
+                                              )}
+                                            </>
+                                          )
+                                        });
+                                      }}
+                                      onMouseLeave={() => setTooltipContent(null)}
                                     />
-                                  ))
-                                )}
+                                  );
+                                })}
                               </div>
                               <div className="mt-2 flex items-center justify-end gap-2 text-sm">
-                                <span className="text-gray-600">No workout</span>
+                                <span className="text-gray-600">No activity</span>
                                 <div className="w-3 h-3 rounded-sm bg-gray-200" />
+                                <div className="w-3 h-3 rounded-sm bg-blue-300" />
+                                <span className="text-gray-600">Visit</span>
                                 <div className="w-3 h-3 rounded-sm bg-indigo-500" />
-                                <span className="text-gray-600">Completed</span>
+                                <span className="text-gray-600">Workout</span>
+                                <div className="w-3 h-3 rounded-sm bg-green-500" />
+                                <span className="text-gray-600">Check-in</span>
                               </div>
                             </div>
                           </div>
