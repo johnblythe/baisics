@@ -1,4 +1,5 @@
 import { IntakeFormData, Program, Nutrition, WorkoutPlan, Workout } from "@/types";
+import { Difficulty, MovementPattern, MuscleGroup } from "@prisma/client";
 import { sendMessage } from "@/utils/chat";
 import type { ContentBlock } from '@anthropic-ai/sdk/src/resources/messages.js';
 import { prisma } from '@/lib/prisma';
@@ -22,8 +23,8 @@ interface SendMessageResponse {
 }
 
 interface ProgramStructure {
-  programName: string;
-  programDescription: string;
+  name: string;
+  description: string;
   phaseCount: number;
   phaseDurations: number[];
   phaseProgression: string[];
@@ -38,7 +39,7 @@ interface WorkoutStructure {
   exerciseSelectionRules: {
     compoundToIsolationRatio: string;
     exercisesPerWorkout: number;
-    restPeriods: { [key: string]: string };
+    restPeriods: { [key: string]: number };
     setRanges: { [key: string]: number };
     repRanges: { [key: string]: number };
   };
@@ -62,8 +63,8 @@ ${JSON.stringify(intakeData, null, 2)}
 
 Please provide a response in the following JSON format:
 {
-  "programName": string,
-  "programDescription": string,
+  "name": string,
+  "description": string,
   "phaseCount": number,
   "phaseDurations": number[],
   "phaseProgression": string[],
@@ -91,7 +92,7 @@ Please provide a response in the following JSON format:
   "exerciseSelectionRules": {
     "compoundToIsolationRatio": string,
     "exercisesPerWorkout": number,
-    "restPeriods": { "default": string },
+    "restPeriods": { "default": number },
     "setRanges": { "default": number },
     "repRanges": { "default": number }
   }
@@ -112,7 +113,7 @@ const formatWorkoutDetailsPrompt = (
       Program Structure: ${JSON.stringify(programStructure, null, 2)}
       Workout Structure: ${JSON.stringify(workoutStructure, null, 2)}
 
-      Please provide a response in the following JSON format:
+      Provide a response ONLY in the following JSON format:
       {
         "id": string,
         "workouts": Array<{
@@ -229,8 +230,6 @@ const saveProgramToDatabase = async (program: Program): Promise<void> => {
       throw new Error('Invalid program data');
     }
 
-    console.log("🚀 ~ saveProgramToDatabase ~ program:", JSON.stringify(program, null, 2))
-
     const dbData = {
       id: program.id,
       name: program.name,
@@ -249,24 +248,30 @@ const saveProgramToDatabase = async (program: Program): Promise<void> => {
           carbGrams: plan.nutrition.macros.carbs,
           fatGrams: plan.nutrition.macros.fats,
           daysPerWeek: plan.workouts.length,
-          userId: program.user.id,
+          user: { 
+            connect: { 
+              id: program.user.id
+            } 
+          },
           workouts: {
             create: plan.workouts.map(workout => ({
+              name: workout.name || '',
               dayNumber: workout.dayNumber || 1,
+              focus: workout.focus || '',
+              warmup: JSON.stringify(workout.warmup) || '',
+              cooldown: JSON.stringify(workout.cooldown) || '',
               exercises: {
                 create: workout.exercises.map(exercise => ({
                   name: exercise.name,
                   sets: exercise.sets,
                   reps: exercise.reps,
-                  restPeriod: exercise.restPeriod,
+                  restPeriod: Number(exercise.restPeriod),
                   exerciseLibrary: {
                     connectOrCreate: {
                       where: { name: exercise.name },
                       create: {
                         name: exercise.name,
                         category: exercise.category || 'default',
-                        equipment: [],
-                        difficulty: exercise.difficulty || 'beginner'
                       }
                     }
                   }
@@ -278,8 +283,22 @@ const saveProgramToDatabase = async (program: Program): Promise<void> => {
       }
     };
 
-    // @ts-ignore
-    await prisma.program.create({ data: dbData });
+    console.log("🚀 ~ saveProgramToDatabase ~ dbData:", JSON.stringify(dbData, null, 2));
+
+    await prisma.program.create({
+      data: dbData,
+      include: {
+        workoutPlans: {
+          include: {
+            workouts: {
+              include: {
+                exercises: true
+              }
+            }
+          }
+        }
+      }
+    });
   } catch (error) {
     console.error('Error in saveProgramToDatabase:', error);
     throw error;
@@ -295,14 +314,14 @@ export const createProgramSequentially = async (
     // Step 1: Get program structure
     const programStructureResponse = await sendMessage(formatProgramStructurePrompt(intakeData));
     const programStructure = parseAIResponse<ProgramStructure>(programStructureResponse, {
-      programName: '',
-      programDescription: '',
+      name: '',
+      description: '',
       phaseCount: 0,
       phaseDurations: [],
       phaseProgression: [],
       overallGoals: []
     });
-    if (!programStructure.programName) {
+    if (!programStructure.name) {
       throw new Error('Failed to generate program structure');
     }
 
@@ -316,7 +335,7 @@ export const createProgramSequentially = async (
       exerciseSelectionRules: {
         compoundToIsolationRatio: '2:1',
         exercisesPerWorkout: 6,
-        restPeriods: { default: '60-90 seconds' },
+        restPeriods: { default: 90 },
         setRanges: { default: 3 },
         repRanges: { default: 10 }
       }
@@ -330,9 +349,11 @@ export const createProgramSequentially = async (
     const workoutPlans: WorkoutPlan[] = [];
     // programStructure.phaseCount
     for (let phase = 0; phase < 1; phase++) {
+      console.log("prompt!",formatWorkoutDetailsPrompt(intakeData, programStructure, workoutStructure, phase));
       const workoutDetailsResponse = await sendMessage(
         formatWorkoutDetailsPrompt(intakeData, programStructure, workoutStructure, phase)
       );
+      console.log("🚀 ~ workoutDetailsResponse:", JSON.stringify(workoutDetailsResponse, null, 2))
       const workoutDetails = parseAIResponse<WorkoutPlan>(workoutDetailsResponse, {
         id: crypto.randomUUID(),
         workouts: [],
@@ -400,8 +421,8 @@ export const createProgramSequentially = async (
     // Construct the final program
     const program: Program = {
       id: crypto.randomUUID(),
-      name: programStructure.programName,
-      description: programStructure.programDescription,
+      name: programStructure.name,
+      description: programStructure.description,
       workoutPlans,
       user: {
         id: userId,
@@ -428,3 +449,14 @@ export const createProgramSequentially = async (
     return null;
   }
 };
+
+
+// "difficulty": string, // [${Object.values(Difficulty).join(', ')}]
+//             "movementPattern": string, // [${Object.values(MovementPattern).join(', ')}]
+//             "targetMuscles": string[], // [${Object.values(MuscleGroup).join(', ')}]
+//             "secondaryMuscles": string[], // [${Object.values(MuscleGroup).join(', ')}]
+//             "isCompound": boolean,
+//             "description": string,
+//             "instructions": string[],
+//             "commonMistakes": string[],
+//             "benefits": string[]

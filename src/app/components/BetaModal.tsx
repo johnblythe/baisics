@@ -6,6 +6,19 @@ interface BetaModalProps {
   onClose: () => void
 }
 
+const trackLeadConversion = () => {
+  if (typeof window !== 'undefined' && (window as any).gtag) {
+    (window as any).gtag('event', 'Pre-launch signups', {
+      'event_callback': function() {
+        console.log('Lead conversion tracked');
+      },
+      'event_timeout': 2000,
+    });
+  } else {
+    console.log('DEV MODE - Lead conversion tracked');
+  }
+}
+
 export default function BetaModal({ isOpen, onClose }: BetaModalProps) {
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
@@ -30,6 +43,8 @@ export default function BetaModal({ isOpen, onClose }: BetaModalProps) {
         throw new Error(data.error || 'Failed to join waitlist')
       }
       
+      // Track the conversion after successful submission
+      trackLeadConversion()
       setSubmitted(true)
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Something went wrong')

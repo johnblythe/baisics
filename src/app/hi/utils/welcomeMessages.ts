@@ -2,7 +2,7 @@ export const WELCOME_MESSAGES = [
   // Original message
   `Hey there! 👋 
 
-I'm excited to help create a fitness program that's perfectly tailored to you. Instead of filling out a rigid form, let's start with what matters most - your story and goals.
+I'm excited to help create a fitness program that's perfectly tailored to you. Let's start with what matters most - your story and goals.
 
 💭 Tell me about what brings you here today. What are you hoping to achieve? Feel free to share anything you think would help me design the best possible program for you, such as:
 
