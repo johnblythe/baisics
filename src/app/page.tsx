@@ -5,11 +5,28 @@ import Image from 'next/image'
 import { useState } from 'react'
 import BetaModal from './components/BetaModal'
 
+// Track when user opens the modal
+const trackGetStartedClick = () => {
+  if (typeof window !== 'undefined' && (window as any).gtag) {
+    (window as any).gtag('event', 'conversion', {
+      'send_to': 'G-2X1L89GZHR/signup',
+      'event_category': 'engagement',
+      'event_label': 'get_started',
+      'value': 1
+    });
+  } else {
+    console.log('DEV MODE - Get Started click tracked');
+  }
+}
+
 export default function LandingPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const handleGetStarted = (e: React.MouseEvent) => {
     e.preventDefault()
+    // Track the conversion
+    trackGetStartedClick()
+    // Open the modal
     setIsModalOpen(true)
   }
 
