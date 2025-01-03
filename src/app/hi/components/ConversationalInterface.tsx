@@ -187,20 +187,81 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
 
           setMessages(prev => [...prev, {
             role: "assistant",
-            content: "Workout structure is ready. Now detailing your exercises..."
+            content: "Workout structure is ready. Now creating your detailed program..."
           }]);
 
-          // Step 3: Get workout details
-          const detailsResponse = await fetch('/api/program-creation/details', {
+          // Step 3: Get workout details in parallel
+          const phase = 0;
+          const daysPerWeek = workoutStructure.daysPerWeek;
+
+          // Get phase details
+          const phaseResponse = await fetch('/api/program-creation/details/phase', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               intakeData: result.extractedData,
               programStructure,
-              workoutStructure
+              workoutStructure,
+              phase
             })
           });
-          const { workoutDetails } = await detailsResponse.json();
+          const { phaseDetails } = await phaseResponse.json();
+
+          // Get nutrition details
+          const nutritionResponse = await fetch('/api/program-creation/details/nutrition', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              intakeData: result.extractedData,
+              programStructure,
+              phase
+            })
+          });
+          const { nutrition } = await nutritionResponse.json();
+
+          // Get exercises for each day in parallel
+          const exercisePromises = Array.from({ length: daysPerWeek }, async (_, i) => {
+            // First get the workout focus
+            const focusResponse = await fetch('/api/program-creation/details/exercises/focus', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                intakeData: result.extractedData,
+                programStructure,
+                workoutStructure,
+                dayNumber: i + 1
+              })
+            });
+            const { workoutFocus } = await focusResponse.json();
+
+            // Then get the exercises for that focus
+            const exercisesResponse = await fetch('/api/program-creation/details/exercises/list', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                intakeData: result.extractedData,
+                programStructure,
+                workoutStructure,
+                workoutFocus
+              })
+            });
+            const { exercises } = await exercisesResponse.json();
+
+            return {
+              ...workoutFocus,
+              exercises: exercises.exercises
+            };
+          });
+
+          const workouts = await Promise.all(exercisePromises);
+
+          // Combine all the pieces
+          const workoutDetails = {
+            id: crypto.randomUUID(),
+            workouts,
+            ...phaseDetails,
+            nutrition
+          };
 
           // Final step: Construct and save program
           const program = {

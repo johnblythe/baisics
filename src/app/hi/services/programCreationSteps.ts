@@ -137,7 +137,79 @@ Please provide a response in the following JSON format:
   }];
 };
 
-const formatWorkoutDetailsPrompt = (
+const formatWorkoutFocusPrompt = (
+  intakeData: IntakeFormData,
+  programStructure: ProgramStructure,
+  workoutStructure: WorkoutStructure,
+  dayNumber: number
+): { role: string; content: string; }[] => {
+  // Only include relevant data for determining focus
+  const relevantData = {
+    goals: intakeData.trainingGoal,
+    experience: intakeData.experienceLevel,
+    preferences: intakeData.trainingPreferences,
+    daysPerWeek: workoutStructure.daysPerWeek,
+    splitType: workoutStructure.splitType,
+    distribution: workoutStructure.workoutDistribution
+  };
+
+  return [{
+    role: 'user',
+    content: `Create a workout focus for day ${dayNumber} of ${workoutStructure.daysPerWeek} based on:
+${JSON.stringify(relevantData, null, 2)}
+
+Provide a response ONLY in the following JSON format:
+{
+  "name": string,
+  "focus": string,
+  "warmup": {
+    "duration": number,
+    "activities": string[]
+  },
+  "cooldown": {
+    "duration": number,
+    "activities": string[]
+  },
+  "dayNumber": number,
+  "targetExerciseCount": number
+}`
+  }];
+};
+
+const formatExercisesForFocusPrompt = (
+  intakeData: IntakeFormData,
+  programStructure: ProgramStructure,
+  workoutStructure: WorkoutStructure,
+  workoutFocus: { focus: string; targetExerciseCount: number }
+): { role: string; content: string; }[] => {
+  // Only include relevant data for exercise selection
+  const relevantData = {
+    goals: intakeData.trainingGoal,
+    experience: intakeData.experienceLevel,
+    preferences: intakeData.trainingPreferences,
+    exerciseRules: workoutStructure.exerciseSelectionRules,
+    focus: workoutFocus.focus,
+    count: workoutFocus.targetExerciseCount
+  };
+
+  return [{
+    role: 'user',
+    content: `Create ${workoutFocus.targetExerciseCount} exercises for a ${workoutFocus.focus} focused workout based on:
+${JSON.stringify(relevantData, null, 2)}
+
+Provide a response ONLY in the following JSON format:
+{
+  "exercises": Array<{
+    "name": string,
+    "sets": number,
+    "reps": number,
+    "restPeriod": number
+  }>
+}`
+  }];
+};
+
+const formatPhaseDetailsPrompt = (
   intakeData: IntakeFormData,
   programStructure: ProgramStructure,
   workoutStructure: WorkoutStructure,
@@ -145,44 +217,39 @@ const formatWorkoutDetailsPrompt = (
 ): { role: string; content: string; }[] => {
   return [{
     role: 'user',
-    content: `Create detailed workouts for phase ${phase + 1} based on:
+    content: `Create phase details for phase ${phase + 1} based on:
 Client Data: ${JSON.stringify(intakeData, null, 2)}
 Program Structure: ${JSON.stringify(programStructure, null, 2)}
 Workout Structure: ${JSON.stringify(workoutStructure, null, 2)}
 
 Provide a response ONLY in the following JSON format:
 {
-  "id": string,
-  "workouts": Array<{
-    "name": string,
-    "exercises": Array<{
-      "name": string,
-      "sets": number,
-      "reps": number,
-      "restPeriod": number // in seconds
-    }>,
-    "focus": string,
-    "warmup": {
-      "duration": number,
-      "activities": string[]
-    },
-    "cooldown": {
-      "duration": number,
-      "activities": string[]
-    },
-    "dayNumber": number
-  }>,
   "phaseExplanation": string,
   "phaseExpectations": string,
   "phaseKeyPoints": string[],
-  "splitType": string,
-  "nutrition": {
-    "dailyCalories": number,
-    "macros": {
-      "protein": number,
-      "carbs": number,
-      "fats": number
-    }
+  "splitType": string
+}`
+  }];
+};
+
+const formatPhaseNutritionPrompt = (
+  intakeData: IntakeFormData,
+  programStructure: ProgramStructure,
+  phase: number
+): { role: string; content: string; }[] => {
+  return [{
+    role: 'user',
+    content: `Create nutrition plan for phase ${phase + 1} based on:
+Client Data: ${JSON.stringify(intakeData, null, 2)}
+Program Structure: ${JSON.stringify(programStructure, null, 2)}
+
+Provide a response ONLY in the following JSON format:
+{
+  "dailyCalories": number,
+  "macros": {
+    "protein": number,
+    "carbs": number,
+    "fats": number
   }
 }`
   }];
@@ -355,20 +422,57 @@ export const getWorkoutStructure = async (intakeData: IntakeFormData, programStr
   return parseAIResponse<WorkoutStructure>(response, defaultWorkoutStructure);
 };
 
-export const getWorkoutDetails = async (
+export const getWorkoutFocus = async (
+  intakeData: IntakeFormData,
+  programStructure: ProgramStructure,
+  workoutStructure: WorkoutStructure,
+  dayNumber: number
+) => {
+  const response = await sendMessage(formatWorkoutFocusPrompt(intakeData, programStructure, workoutStructure, dayNumber));
+  return parseAIResponse(response, {
+    name: '',
+    focus: '',
+    warmup: { duration: 0, activities: [] },
+    cooldown: { duration: 0, activities: [] },
+    dayNumber,
+    targetExerciseCount: workoutStructure.exerciseSelectionRules.exercisesPerWorkout
+  });
+};
+
+export const getExercisesForFocus = async (
+  intakeData: IntakeFormData,
+  programStructure: ProgramStructure,
+  workoutStructure: WorkoutStructure,
+  workoutFocus: { focus: string; targetExerciseCount: number }
+) => {
+  const response = await sendMessage(formatExercisesForFocusPrompt(intakeData, programStructure, workoutStructure, workoutFocus));
+  return parseAIResponse(response, {
+    exercises: []
+  });
+};
+
+export const getPhaseDetails = async (
   intakeData: IntakeFormData,
   programStructure: ProgramStructure,
   workoutStructure: WorkoutStructure,
   phase: number
 ) => {
-  const response = await sendMessage(formatWorkoutDetailsPrompt(intakeData, programStructure, workoutStructure, phase));
-  return parseAIResponse<WorkoutPlan>(response, defaultWorkoutPlan);
+  const response = await sendMessage(formatPhaseDetailsPrompt(intakeData, programStructure, workoutStructure, phase));
+  return parseAIResponse(response, {
+    phaseExplanation: '',
+    phaseExpectations: '',
+    phaseKeyPoints: [],
+    splitType: 'Full Body'
+  });
 };
 
-// Optional additional functions for future use
-export const getNutritionPlan = async (intakeData: IntakeFormData, programStructure: ProgramStructure) => {
-  const response = await sendMessage(formatNutritionPrompt(intakeData, programStructure));
-  return parseAIResponse<Nutrition>(response, {
+export const getPhaseNutrition = async (
+  intakeData: IntakeFormData,
+  programStructure: ProgramStructure,
+  phase: number
+) => {
+  const response = await sendMessage(formatPhaseNutritionPrompt(intakeData, programStructure, phase));
+  return parseAIResponse(response, {
     dailyCalories: 2000,
     macros: { protein: 150, carbs: 200, fats: 70 }
   });
