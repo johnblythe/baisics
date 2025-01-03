@@ -1,16 +1,17 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getSession } from '@/lib/auth';
+// import { getSession } from '@/lib/auth';
 
 export async function trackActivity(req: NextRequest) {
+  const userId = process.env.TEST_USER_ID;
   try {
-    const session = await getSession();
-    if (!session?.user?.id) return;
+    // const session = await getSession();
+    if (!userId) return;
 
     const currentProgram = await prisma.program.findFirst({
       where: {
-        createdBy: session.user.id,
+        createdBy: userId,
       },
       orderBy: {
         createdAt: 'desc',
@@ -22,7 +23,7 @@ export async function trackActivity(req: NextRequest) {
     // Track the activity
     await prisma.userActivity.create({
       data: {
-        userId: session.user.id,
+        userId: userId,
         programId: currentProgram.id,
         type: 'visit',
         metadata: {
