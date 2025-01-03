@@ -224,7 +224,7 @@ const parseAIResponse = <T>(response: SendMessageResponse, defaultValue: T): T =
   }
 };
 
-const saveProgramToDatabase = async (program: Program): Promise<void> => {
+export const saveProgramToDatabase = async (program: Program): Promise<void> => {
   try {
     if (!program?.name || !program?.user?.id) {
       throw new Error('Invalid program data');
@@ -241,9 +241,9 @@ const saveProgramToDatabase = async (program: Program): Promise<void> => {
           bodyFatPercentage: 0, // @todo
           muscleMassDistribution: "Balanced", // @todo
           dailyCalories: plan.nutrition.dailyCalories,
-          phaseExplanation: plan.phaseExplanation || '', // @todo
-          phaseExpectations: plan.phaseExpectations || '', // @todo
-          phaseKeyPoints: plan.phaseKeyPoints || [], // @todo
+          phaseExplanation: plan.phaseExplanation || '',
+          phaseExpectations: plan.phaseExpectations || '',
+          phaseKeyPoints: plan.phaseKeyPoints || [],
           proteinGrams: plan.nutrition.macros.protein,
           carbGrams: plan.nutrition.macros.carbs,
           fatGrams: plan.nutrition.macros.fats,
@@ -450,6 +450,10 @@ export const createProgramSequentially = async (
   }
 };
 
+// Main functions
+export const getProgramStructure = async (intakeData: IntakeFormData) => {
+  // ... rest of existing code ...
+};
 
 // "difficulty": string, // [${Object.values(Difficulty).join(', ')}]
 //             "movementPattern": string, // [${Object.values(MovementPattern).join(', ')}]
