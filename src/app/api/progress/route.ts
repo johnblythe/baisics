@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { sendMessage } from '@/utils/chat';
 import type { ContentBlock } from '@anthropic-ai/sdk/src/resources/messages.js';
-import type { Prisma } from '@prisma/client';
 
 type ImageAnalysis = {
   bodyFatPercentage: number;
@@ -195,16 +194,17 @@ export async function GET(req: Request) {
 }
 
 // DELETE /api/progress/photos/:id
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const userId = process.env.TEST_USER_ID;
+    const { id } = await req.json();
     if (!userId) {
       throw new Error('TEST_USER_ID environment variable is required');
     }
 
     await prisma.userImages.update({
       where: {
-        id: params.id,
+        id,
         userId
       },
       data: {
