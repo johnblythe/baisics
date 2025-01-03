@@ -24,6 +24,15 @@ export default function Header() {
               >
                 Dashboard
               </Link>
+              <div
+                className="text-gray-600 hover:text-indigo-600 font-medium transition-colors cursor-pointer relative group"
+                aria-label="Program Library - Coming Soon"
+              >
+                <span>Program Library</span>
+                <div className="absolute left-1/2 -translate-x-1/2 -bottom-8 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                  Coming soon!
+                </div>
+              </div>
               <Link
                 href="/account" 
                 className="text-gray-600 hover:text-indigo-600 font-medium transition-colors"

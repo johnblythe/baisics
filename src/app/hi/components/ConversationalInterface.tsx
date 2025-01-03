@@ -153,22 +153,155 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
       
       // enough data gathered to generate a program
       if (result.readyForProgram) {
-        // ...
-        setTimeout(() => {
-          setIsTyping(false);
-          setMessages(prev => [...prev, { 
-            role: "assistant", 
-            content: "Great! I have enough information to create your personalized program now. Let me put that together for you..." 
-          }]);
-          setIsGeneratingProgram(true);
-        }, 8000);
+        setIsTyping(false);
+        setMessages(prev => [...prev, { 
+          role: "assistant", 
+          content: "Great! I have enough information to create your personalized program now. Let me put that together for you..." 
+        }]);
+        setIsGeneratingProgram(true);
 
-        const programResult = await processUserMessage([...messages, userMessage], userId, result.extractedData, true);
-        if (programResult.success && programResult.program) {
-          setProgram(programResult.program);
-          // setInitialProgram(programResult.program);
+        try {
+          // Step 1: Get program structure
+          const structureResponse = await fetch('/api/program-creation/structure', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ intakeData: result.extractedData })
+          });
+          const { programStructure } = await structureResponse.json();
+
+          setMessages(prev => [...prev, {
+            role: "assistant",
+            content: "I've designed the overall program structure. Now creating your workout plan..."
+          }]);
+
+          // Step 2: Get workout structure
+          const workoutResponse = await fetch('/api/program-creation/workout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              intakeData: result.extractedData,
+              programStructure 
+            })
+          });
+          const { workoutStructure } = await workoutResponse.json();
+
+          setMessages(prev => [...prev, {
+            role: "assistant",
+            content: "Workout structure is ready. Now creating your detailed program..."
+          }]);
+
+          // Step 3: Get workout details in parallel
+          const phase = 0;
+          const daysPerWeek = workoutStructure.daysPerWeek;
+
+          // Get phase details
+          const phaseResponse = await fetch('/api/program-creation/details/phase', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              intakeData: result.extractedData,
+              programStructure,
+              workoutStructure,
+              phase
+            })
+          });
+          const { phaseDetails } = await phaseResponse.json();
+
+          // Get nutrition details
+          const nutritionResponse = await fetch('/api/program-creation/details/nutrition', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              intakeData: result.extractedData,
+              programStructure,
+              phase
+            })
+          });
+          const { nutrition } = await nutritionResponse.json();
+
+          // Get exercises for each day in parallel
+          const exercisePromises = Array.from({ length: daysPerWeek }, async (_, i) => {
+            // First get the workout focus
+            const focusResponse = await fetch('/api/program-creation/details/exercises/focus', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                intakeData: result.extractedData,
+                programStructure,
+                workoutStructure,
+                dayNumber: i + 1
+              })
+            });
+            const { workoutFocus } = await focusResponse.json();
+
+            // Then get the exercises for that focus
+            const exercisesResponse = await fetch('/api/program-creation/details/exercises/list', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                intakeData: result.extractedData,
+                programStructure,
+                workoutStructure,
+                workoutFocus
+              })
+            });
+            const { exercises } = await exercisesResponse.json();
+
+            return {
+              ...workoutFocus,
+              exercises: exercises.exercises
+            };
+          });
+
+          const workouts = await Promise.all(exercisePromises);
+
+          // Combine all the pieces
+          const workoutDetails = {
+            id: crypto.randomUUID(),
+            workouts,
+            ...phaseDetails,
+            nutrition
+          };
+
+          // Final step: Construct and save program
+          const program = {
+            id: crypto.randomUUID(),
+            name: programStructure.name,
+            description: programStructure.description,
+            workoutPlans: [workoutDetails],
+            user: {
+              id: userId,
+              email: user?.email || null,
+              password: null,
+              isPremium: false,
+              createdAt: new Date(),
+              updatedAt: new Date()
+            }
+          };
+
+          // Save program to database
+          const saveResponse = await fetch('/api/program-creation/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(program)
+          });
+
+          if (!saveResponse.ok) {
+            throw new Error('Failed to save program');
+          }
+
+          const { program: savedProgram } = await saveResponse.json();
+          setProgram(savedProgram);
           setIsGeneratingProgram(false);
-          router.replace(`/hi?userId=${userId}&programId=${programResult.program.id}`);
+          router.replace(`/hi?userId=${userId}&programId=${savedProgram.id}`);
+
+        } catch (error) {
+          console.error('Error generating program:', error);
+          setIsGeneratingProgram(false);
+          setMessages(prev => [...prev, {
+            role: "assistant",
+            content: "I encountered an error while creating your program. Please try again."
+          }]);
         }
       } else {
         // Just continue the conversation
@@ -178,7 +311,7 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
         }, Math.random() * 1000 + 500);
       }
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
