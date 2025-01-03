@@ -4,7 +4,7 @@ import { Message, ExtractedData, IntakeFormData, WorkoutPlan, Program } from "@/
 import { sendMessage } from "@/utils/chat";
 import { prisma } from "@/lib/prisma";
 // import { modifyPhase } from "./services/programCreation";
-import { createProgramSequentially } from "./services/sequentialProgramCreation";
+import { createProgramSequentially } from "./services/_sequentialProgramCreation";
 
 // Helper to convert extracted data to IntakeFormData format
 function convertToIntakeFormat(extractedData: any): IntakeFormData {
