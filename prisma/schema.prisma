@@ -78,6 +78,7 @@ model User {
   updatedAt DateTime @updatedAt @map("updated_at")
   name      String?
   image     String?
+  emailVerified DateTime? @map("email_verified")
 
   accounts     Account[]
   userImages   UserImages[]

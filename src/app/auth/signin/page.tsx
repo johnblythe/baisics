@@ -1,50 +1,76 @@
-'use client';
+"use client";
 
-import { signIn, useSession } from 'next-auth/react';
-import { FcGoogle } from 'react-icons/fc';
-import { BsTwitterX } from 'react-icons/bs';
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from "react";
+import { signInAction } from "../actions";
 
 export default function SignIn() {
-  const { data: session } = useSession();
-  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  useEffect(() => {
-    if (session) {
-      router.push('/dashboard');
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Form submitted with email:", email);
+    setIsLoading(true);
+    setError("");
+
+    try {
+      console.log("Attempting to sign in...");
+      await signInAction(email);
+      window.location.href = "/auth/verify-request";
+    } catch (err) {
+      console.error("Sign in error:", err);
+      setError("An unexpected error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
-  }, [session, router]);
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-xl shadow-lg">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white via-indigo-50/30 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <div className="max-w-md w-full space-y-8 p-8 bg-white dark:bg-gray-800 rounded-xl shadow-xl">
         <div className="text-center">
-          <h2 className="mt-6 text-3xl font-bold text-gray-900">
-            Welcome to Baisics
+          <h2 className="mt-6 text-3xl font-bold text-gray-900 dark:text-white">
+            Sign in to your account
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Sign in to start your fitness journey
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            Enter your email to receive a magic link
           </p>
         </div>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div className="rounded-md shadow-sm -space-y-px">
+            <div>
+              <label htmlFor="email-address" className="sr-only">
+                Email address
+              </label>
+              <input
+                id="email-address"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Email address"
+              />
+            </div>
+          </div>
 
-        <div className="mt-8 space-y-4">
-          <button
-            onClick={() => signIn('google')}
-            className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            <FcGoogle className="h-5 w-5 mr-2" />
-            Continue with Google
-          </button>
+          {error && (
+            <div className="text-red-500 text-sm text-center">{error}</div>
+          )}
 
-          <button
-            onClick={() => signIn('twitter')}
-            className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            <BsTwitterX className="h-5 w-5 mr-2" />
-            Continue with X
-          </button>
-        </div>
+          <div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? "Sending link..." : "Send magic link"}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
