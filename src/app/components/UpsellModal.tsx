@@ -19,8 +19,10 @@ type UpsellModalProps = {
 };
 
 export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEmail }: UpsellModalProps) {
-  const [email, setEmail] = useState(userEmail || "");
-  const [emailError, setEmailError] = useState("");
+  const [freeEmail, setFreeEmail] = useState(userEmail || "");
+  const [premiumEmail, setPremiumEmail] = useState(userEmail || "");
+  const [freeEmailError, setFreeEmailError] = useState("");
+  const [premiumEmailError, setPremiumEmailError] = useState("");
   const [showConfetti, setShowConfetti] = useState(false);
 
   const testimonials = [
@@ -65,8 +67,13 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
       throw new Error("No user ID found in URL");
     }
     const response = await updateUser(userId, { email, isPremium });
+
+    if (isPremium) {
+      window.location.href = `${process.env.STRIPE_LINK}?prefilled_email=${email}&utm_source=hi_upsell_modal&utm_medium=modal&utm_campaign=freemium&utm_email=${email}`;
+    }
+
     if (response.success) {
-      // setShowConfetti(true);
+      setShowConfetti(true);
       onEmailSubmit(email);
       onClose();
     }
@@ -118,39 +125,51 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
               </li>
               <li className="flex items-center">
                 <span className="text-green-500 mr-2">✓</span>
-                Customize it up to 3x
+                Request customizations
               </li>
               <li className="flex items-center">
                 <span className="text-green-500 mr-2">✓</span>
                 Access online or download to go
               </li>
             </ul>
+            <div className="space-y-2 mb-6">
+              <div className="font-medium text-gray-700 dark:text-gray-300 flex items-center">
+                <span className="bg-blue-50 dark:bg-gray-700 px-3 py-1 rounded-full text-sm">
+                  No credit card required
+                </span>
+              </div>
+              <div className="font-medium text-gray-700 dark:text-gray-300 flex items-center">
+                <span className="bg-blue-50 dark:bg-gray-700 px-3 py-1 rounded-full text-sm">
+                  No commitment
+                </span>
+              </div>
+            </div>
             <form onSubmit={(e) => {
               e.preventDefault();
-              if (validateEmail(email)) {
-                handleUpdateAnonUser(email);
+              if (validateEmail(freeEmail)) {
+                handleUpdateAnonUser(freeEmail);
               }
             }}>
               <input
                 type="email"
-                value={email}
+                value={freeEmail}
                 onChange={(e) => {
-                  setEmail(e.target.value);
-                  setEmailError("");
+                  setFreeEmail(e.target.value);
+                  setFreeEmailError("");
                 }}
                 onBlur={() => {
-                  if (!validateEmail(email) && email !== "") {
-                    setEmailError("Please enter a valid email address");
+                  if (!validateEmail(freeEmail) && freeEmail !== "") {
+                    setFreeEmailError("Please enter a valid email address");
                   }
                 }}
                 placeholder="Enter your email"
                 className={`w-full p-3 border rounded-lg mb-3 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 ${
-                  emailError ? "border-red-500 ring-1 ring-red-500 ring-opacity-50" : ""
-                } ${validateEmail(email) && email !== "" ? "border-green-500 ring-1 ring-green-500 ring-opacity-50" : ""}`}
+                  freeEmailError ? "border-red-500 ring-1 ring-red-500 ring-opacity-50" : ""
+                } ${validateEmail(freeEmail) && freeEmail !== "" ? "border-green-500 ring-1 ring-green-500 ring-opacity-50" : ""}`}
                 required
               />
-              {emailError && (
-                <p className="text-red-500 text-sm mb-3">{emailError}</p>
+              {freeEmailError && (
+                <p className="text-red-500 text-sm mb-3">{freeEmailError}</p>
               )}
               <button
                 type="submit"
@@ -159,7 +178,7 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
                 Get Free Access
               </button>
               <p className="text-center text-sm mt-3 text-gray-600 dark:text-gray-400">
-                Enjoy the full, multi-phased program at <u>no cost</u>!
+                Enjoy your custom program at <u>no cost</u>!
               </p>
             </form>
           </div>
@@ -182,11 +201,15 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
               </li>
               <li className="flex items-center">
                 <span className="text-green-500 mr-2">✓</span>
-                Unlimited program customizations
+                Unlimited custom programs
               </li>
               <li className="flex items-center">
                 <span className="text-green-500 mr-2">✓</span>
                 Personalized nutrition and meal planning
+              </li>
+              <li className="flex items-center">
+                <span className="text-green-500 mr-2">✓</span>
+                Workout planner & tracking
               </li>
               <li className="flex items-center">
                 <span className="text-green-500 mr-2">✓</span>
@@ -198,15 +221,51 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
               </li>
               <li className="flex items-center">
                 <span className="text-green-500 mr-2">✓</span>
-                Full access to the entire library of programs
+                Full access to the growing library of programs
+              </li>
+              <li className="flex items-center">
+                <span className="text-green-500 mr-2">✓</span>
+                And lots more! New features coming soon!
+              </li>
+              <li className="flex items-center">
+                <span className="text-green-500 mr-2">✓</span>
+                More affordable than even Planet Fitness!
               </li>
             </ul>
-            <button
-              onClick={() => handleUpdateAnonUser(email || "john@test.com", true)}
-              className="w-full bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 font-medium"
-            >
-              <strong>Upgrade Now - $19/month</strong>
-            </button>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              if (validateEmail(premiumEmail)) {
+                handleUpdateAnonUser(premiumEmail, true);
+              }
+            }}>
+              <input
+                type="email"
+                value={premiumEmail}
+                onChange={(e) => {
+                  setPremiumEmail(e.target.value);
+                  setPremiumEmailError("");
+                }}
+                onBlur={() => {
+                  if (!validateEmail(premiumEmail) && premiumEmail !== "") {
+                    setPremiumEmailError("Please enter a valid email address");
+                  }
+                }}
+                placeholder="Enter your email"
+                className={`w-full p-3 border rounded-lg mb-3 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 ${
+                  premiumEmailError ? "border-red-500 ring-1 ring-red-500 ring-opacity-50" : ""
+                } ${validateEmail(premiumEmail) && premiumEmail !== "" ? "border-green-500 ring-1 ring-green-500 ring-opacity-50" : ""}`}
+                required
+              />
+              {premiumEmailError && (
+                <p className="text-red-500 text-sm mb-3">{premiumEmailError}</p>
+              )}
+              <button
+                type="submit"
+                className="w-full bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 font-medium"
+              >
+                <strong>Upgrade Now - $9/month</strong>
+              </button>
+            </form>
             <p className="text-center text-sm mt-3 text-gray-600 dark:text-gray-400">
               Cancel anytime. Keep everything you&apos;ve built.
             </p>
