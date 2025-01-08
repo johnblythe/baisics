@@ -27,79 +27,80 @@ export default function Header() {
 
           {/* Navigation and Auth */}
           <div className="flex items-center gap-4">
-            <nav className="flex items-center gap-6">
-              <Link 
-                href="/dashboard"
-                className="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition-colors"
-              >
-                Dashboard
-              </Link>
-              <div
-                className="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition-colors cursor-pointer relative group"
-                aria-label="Program Library - Coming Soon"
-              >
-                <span>Program Library</span>
-                <div className="absolute left-1/2 -translate-x-1/2 -bottom-8 px-2 py-1 bg-gray-800 dark:bg-gray-700 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                  Coming soon!
-                </div>
-              </div>
-            </nav>
-
-            {/* Auth Section */}
             {session ? (
-              <Menu as="div" className="relative ml-3">
-                <Menu.Button className="flex items-center gap-2">
-                  {session.user?.image ? (
-                    <Image
-                      src={session.user.image}
-                      alt={session.user.name || 'User'}
-                      width={32}
-                      height={32}
-                      className="rounded-full"
-                    />
-                  ) : (
-                    <div className="w-8 h-8 rounded-full bg-indigo-600 dark:bg-indigo-500 flex items-center justify-center text-white">
-                      {session.user?.name?.[0] || session.user?.email?.[0] || 'U'}
+              <>
+                <nav className="flex items-center gap-6">
+                  <Link 
+                    href="/dashboard"
+                    className="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition-colors"
+                  >
+                    Dashboard
+                  </Link>
+                  <div
+                    className="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition-colors cursor-pointer relative group"
+                    aria-label="Program Library - Coming Soon"
+                  >
+                    <span>Program Library</span>
+                    <div className="absolute left-1/2 -translate-x-1/2 -bottom-8 px-2 py-1 bg-gray-800 dark:bg-gray-700 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                      Coming soon!
                     </div>
-                  )}
-                </Menu.Button>
-                <Transition
-                  as={Fragment}
-                  enter="transition ease-out duration-100"
-                  enterFrom="transform opacity-0 scale-95"
-                  enterTo="transform opacity-100 scale-100"
-                  leave="transition ease-in duration-75"
-                  leaveFrom="transform opacity-100 scale-100"
-                  leaveTo="transform opacity-0 scale-95"
-                >
-                  <Menu.Items className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 dark:ring-white dark:ring-opacity-10 focus:outline-none">
-                    <Menu.Item>
-                      {({ active }) => (
-                        <Link
-                          href="/account"
-                          className={`${
-                            active ? 'bg-gray-100 dark:bg-gray-700' : ''
-                          } block px-4 py-2 text-sm text-gray-700 dark:text-gray-200`}
-                        >
-                          Account Settings
-                        </Link>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <button
-                          onClick={() => signOut({ callbackUrl: '/' })}
-                          className={`${
-                            active ? 'bg-gray-100 dark:bg-gray-700' : ''
-                          } block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200`}
-                        >
-                          Logout
-                        </button>
-                      )}
-                    </Menu.Item>
-                  </Menu.Items>
-                </Transition>
-              </Menu>
+                  </div>
+                </nav>
+
+                <Menu as="div" className="relative ml-3">
+                  <Menu.Button className="flex items-center gap-2">
+                    {session.user?.image ? (
+                      <Image
+                        src={session.user.image}
+                        alt={session.user.name || 'User'}
+                        width={32}
+                        height={32}
+                        className="rounded-full"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-indigo-600 dark:bg-indigo-500 flex items-center justify-center text-white">
+                        {session.user?.name?.[0] || session.user?.email?.[0] || 'U'}
+                      </div>
+                    )}
+                  </Menu.Button>
+                  <Transition
+                    as={Fragment}
+                    enter="transition ease-out duration-100"
+                    enterFrom="transform opacity-0 scale-95"
+                    enterTo="transform opacity-100 scale-100"
+                    leave="transition ease-in duration-75"
+                    leaveFrom="transform opacity-100 scale-100"
+                    leaveTo="transform opacity-0 scale-95"
+                  >
+                    <Menu.Items className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 dark:ring-white dark:ring-opacity-10 focus:outline-none">
+                      <Menu.Item>
+                        {({ active }) => (
+                          <Link
+                            href="/account"
+                            className={`${
+                              active ? 'bg-gray-100 dark:bg-gray-700' : ''
+                            } block px-4 py-2 text-sm text-gray-700 dark:text-gray-200`}
+                          >
+                            Account Settings
+                          </Link>
+                        )}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <button
+                            onClick={() => signOut({ callbackUrl: '/' })}
+                            className={`${
+                              active ? 'bg-gray-100 dark:bg-gray-700' : ''
+                            } block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200`}
+                          >
+                            Logout
+                          </button>
+                        )}
+                      </Menu.Item>
+                    </Menu.Items>
+                  </Transition>
+                </Menu>
+              </>
             ) : (
               <div className="flex items-center gap-3">
                 <button
