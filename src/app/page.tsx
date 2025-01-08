@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useState } from 'react'
 import BetaModal from './components/BetaModal'
+import { signIn } from 'next-auth/react'
 
 // Track when user opens the modal
 const trackGetStartedClick = () => {
@@ -57,12 +58,12 @@ export default function LandingPage() {
 
             {/* CTA Buttons */}
             <div className="flex items-center gap-4">
-              <Link 
-                href="/login" 
-                className="text-gray-600 hover:text-gray-900 hidden"
-              >
-                Log in
-              </Link>
+            <button
+                  onClick={() => signIn()}
+                  className="inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  Log in
+                </button>
               <Link 
                 href="#"
                 onClick={handleGetStarted}

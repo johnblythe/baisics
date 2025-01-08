@@ -5,9 +5,11 @@ import { useSession, signIn, signOut } from 'next-auth/react';
 import Image from 'next/image';
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function Header() {
   const { data: session } = useSession();
+  const router = useRouter();
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-sm z-50 border-b border-gray-100">
@@ -57,7 +59,7 @@ export default function Header() {
                     />
                   ) : (
                     <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white">
-                      {session.user?.name?.[0] || 'U'}
+                      {session.user?.name?.[0] || session.user?.email?.[0] || 'U'}
                     </div>
                   )}
                 </Menu.Button>
@@ -86,12 +88,12 @@ export default function Header() {
                     <Menu.Item>
                       {({ active }) => (
                         <button
-                          onClick={() => signOut()}
+                          onClick={() => signOut({ callbackUrl: '/' })}
                           className={`${
                             active ? 'bg-gray-100' : ''
                           } block w-full text-left px-4 py-2 text-sm text-gray-700`}
                         >
-                          Sign out
+                          Logout
                         </button>
                       )}
                     </Menu.Item>
@@ -99,12 +101,20 @@ export default function Header() {
                 </Transition>
               </Menu>
             ) : (
-              <button
-                onClick={() => signIn()}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
-                Sign in
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => signIn()}
+                  className="inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  Log in
+                </button>
+                <button
+                  onClick={() => router.push('/hi')}
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  Get Started
+                </button>
+              </div>
             )}
           </div>
         </div>

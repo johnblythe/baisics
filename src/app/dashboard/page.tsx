@@ -6,17 +6,17 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, TooltipProps } from 'recharts';
-import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
-import { useDropzone } from 'react-dropzone';
+// import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
+// import { useDropzone } from 'react-dropzone';
 
 // Mock weight data - we'll replace this with real data later
 const mockWeightData = [
   { date: '2024-01-01', weight: 165 },
   { date: '2024-01-08', weight: 164.2 },
-  // { date: '2024-01-15', weight: 163.5 },
-  // { date: '2024-01-22', weight: 163.8 },
-  // { date: '2024-01-29', weight: 162.9 },
-  // { date: '2024-02-05', weight: 162.3 },
+  { date: '2024-01-15', weight: 163.5 },
+  { date: '2024-01-22', weight: 163.8 },
+  { date: '2024-01-29', weight: 162.9 },
+  { date: '2024-02-05', weight: 162.3 },
 ].map(entry => ({
   ...entry,
   displayDate: new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })

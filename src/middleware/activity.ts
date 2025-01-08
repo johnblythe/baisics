@@ -1,10 +1,17 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
-// import { getSession } from '@/lib/auth';
+import { auth } from '@/auth';
 
 export async function trackActivity(req: NextRequest) {
-  const userId = process.env.TEST_USER_ID;
+  const session = await auth();
+  if (!session) {
+    return NextResponse.json({ error: 'User not authenticated' });
+  }
+  const userId = session.user?.id;
+  if (!userId) {
+    return NextResponse.json({ error: 'User ID not found' });
+  }
   try {
     // const session = await getSession();
     if (!userId) return;

@@ -1,11 +1,16 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { auth } from '@/auth';
 
 export async function GET() {
   try {
-    const userId = process.env.TEST_USER_ID;
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ error: 'User not authenticated' });
+    }
+    const userId = session.user?.id;
     if (!userId) {
-      return NextResponse.json({ error: 'TEST_USER_ID environment variable is required' });
+      return NextResponse.json({ error: 'User ID not found' });
     }
 
     const program = await prisma.program.findFirst({
