@@ -108,26 +108,26 @@ export default function CheckInPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-grow bg-white pt-16">
+      <main className="flex-grow bg-white dark:bg-gray-900 pt-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="space-y-8">
             {/* Header */}
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Weekly Check-in</h1>
-              <p className="mt-2 text-sm text-gray-600">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Weekly Check-in</h1>
+              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
                 Track your progress and update your measurements
               </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* Body Stats Section */}
-              <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
                 <div className="p-6">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-6">Body Stats</h2>
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Body Stats</h2>
                   <div className="space-y-6">
                     <div className="grid grid-cols-2 gap-6">
                       <div>
-                        <label htmlFor="weight" className="block text-sm font-medium text-gray-700">
+                        <label htmlFor="weight" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                           Weight (lbs)
                         </label>
                         <input
@@ -136,11 +136,11 @@ export default function CheckInPage() {
                           step="0.1"
                           value={formData.weight || ''}
                           onChange={(e) => setFormData(prev => ({ ...prev, weight: e.target.value ? Number(e.target.value) : null }))}
-                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 sm:text-sm"
                         />
                       </div>
                       <div>
-                        <label htmlFor="bodyFat" className="block text-sm font-medium text-gray-700">
+                        <label htmlFor="bodyFat" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                           Body Fat %
                         </label>
                         <input
@@ -149,7 +149,7 @@ export default function CheckInPage() {
                           step="0.1"
                           value={formData.bodyFat || ''}
                           onChange={(e) => setFormData(prev => ({ ...prev, bodyFat: e.target.value ? Number(e.target.value) : null }))}
-                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 sm:text-sm"
                         />
                       </div>
                     </div>
@@ -158,16 +158,16 @@ export default function CheckInPage() {
               </div>
 
               {/* Body Measurements Section */}
-              <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
                 <div className="p-6">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-6">Body Measurements</h2>
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Body Measurements</h2>
                   <div className="space-y-6">
                     {/* Core Measurements */}
                     <div>
-                      <h3 className="text-sm font-medium text-gray-700 mb-4">Core</h3>
+                      <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">Core</h3>
                       <div className="grid grid-cols-3 gap-6">
                         <div>
-                          <label htmlFor="chest" className="block text-sm font-medium text-gray-700">
+                          <label htmlFor="chest" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                             Chest (in)
                           </label>
                           <input
@@ -176,11 +176,11 @@ export default function CheckInPage() {
                             step="0.25"
                             value={formData.chest || ''}
                             onChange={(e) => setFormData(prev => ({ ...prev, chest: e.target.value ? Number(e.target.value) : null }))}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 sm:text-sm"
                           />
                         </div>
                         <div>
-                          <label htmlFor="waist" className="block text-sm font-medium text-gray-700">
+                          <label htmlFor="waist" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                             Waist (in)
                           </label>
                           <input
@@ -189,11 +189,11 @@ export default function CheckInPage() {
                             step="0.25"
                             value={formData.waist || ''}
                             onChange={(e) => setFormData(prev => ({ ...prev, waist: e.target.value ? Number(e.target.value) : null }))}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 sm:text-sm"
                           />
                         </div>
                         <div>
-                          <label htmlFor="hips" className="block text-sm font-medium text-gray-700">
+                          <label htmlFor="hips" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                             Hips (in)
                           </label>
                           <input
@@ -202,7 +202,7 @@ export default function CheckInPage() {
                             step="0.25"
                             value={formData.hips || ''}
                             onChange={(e) => setFormData(prev => ({ ...prev, hips: e.target.value ? Number(e.target.value) : null }))}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 sm:text-sm"
                           />
                         </div>
                       </div>
@@ -210,11 +210,11 @@ export default function CheckInPage() {
 
                     {/* Arms */}
                     <div>
-                      <h3 className="text-sm font-medium text-gray-700 mb-4">Arms</h3>
+                      <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">Arms</h3>
                       <div className="grid grid-cols-2 gap-6">
                         <div className="space-y-4">
                           <div>
-                            <label htmlFor="bicepLeft" className="block text-sm font-medium text-gray-700">
+                            <label htmlFor="bicepLeft" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                               Left Bicep (in)
                             </label>
                             <input
@@ -223,11 +223,11 @@ export default function CheckInPage() {
                               step="0.25"
                               value={formData.bicepLeft || ''}
                               onChange={(e) => setFormData(prev => ({ ...prev, bicepLeft: e.target.value ? Number(e.target.value) : null }))}
-                              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 sm:text-sm"
                             />
                           </div>
                           <div>
-                            <label htmlFor="bicepLeftFlex" className="block text-sm font-medium text-gray-700">
+                            <label htmlFor="bicepLeftFlex" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                               Left Bicep Flexed (in)
                             </label>
                             <input
@@ -236,13 +236,13 @@ export default function CheckInPage() {
                               step="0.25"
                               value={formData.bicepLeftFlex || ''}
                               onChange={(e) => setFormData(prev => ({ ...prev, bicepLeftFlex: e.target.value ? Number(e.target.value) : null }))}
-                              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 sm:text-sm"
                             />
                           </div>
                         </div>
                         <div className="space-y-4">
                           <div>
-                            <label htmlFor="bicepRight" className="block text-sm font-medium text-gray-700">
+                            <label htmlFor="bicepRight" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                               Right Bicep (in)
                             </label>
                             <input
@@ -251,11 +251,11 @@ export default function CheckInPage() {
                               step="0.25"
                               value={formData.bicepRight || ''}
                               onChange={(e) => setFormData(prev => ({ ...prev, bicepRight: e.target.value ? Number(e.target.value) : null }))}
-                              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 sm:text-sm"
                             />
                           </div>
                           <div>
-                            <label htmlFor="bicepRightFlex" className="block text-sm font-medium text-gray-700">
+                            <label htmlFor="bicepRightFlex" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                               Right Bicep Flexed (in)
                             </label>
                             <input
@@ -264,7 +264,7 @@ export default function CheckInPage() {
                               step="0.25"
                               value={formData.bicepRightFlex || ''}
                               onChange={(e) => setFormData(prev => ({ ...prev, bicepRightFlex: e.target.value ? Number(e.target.value) : null }))}
-                              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 sm:text-sm"
                             />
                           </div>
                         </div>
@@ -273,11 +273,11 @@ export default function CheckInPage() {
 
                     {/* Legs */}
                     <div>
-                      <h3 className="text-sm font-medium text-gray-700 mb-4">Legs</h3>
+                      <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">Legs</h3>
                       <div className="grid grid-cols-2 gap-6">
                         <div className="space-y-4">
                           <div>
-                            <label htmlFor="thighLeft" className="block text-sm font-medium text-gray-700">
+                            <label htmlFor="thighLeft" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                               Left Thigh (in)
                             </label>
                             <input
@@ -286,11 +286,11 @@ export default function CheckInPage() {
                               step="0.25"
                               value={formData.thighLeft || ''}
                               onChange={(e) => setFormData(prev => ({ ...prev, thighLeft: e.target.value ? Number(e.target.value) : null }))}
-                              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 sm:text-sm"
                             />
                           </div>
                           <div>
-                            <label htmlFor="calfLeft" className="block text-sm font-medium text-gray-700">
+                            <label htmlFor="calfLeft" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                               Left Calf (in)
                             </label>
                             <input
@@ -299,13 +299,13 @@ export default function CheckInPage() {
                               step="0.25"
                               value={formData.calfLeft || ''}
                               onChange={(e) => setFormData(prev => ({ ...prev, calfLeft: e.target.value ? Number(e.target.value) : null }))}
-                              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 sm:text-sm"
                             />
                           </div>
                         </div>
                         <div className="space-y-4">
                           <div>
-                            <label htmlFor="thighRight" className="block text-sm font-medium text-gray-700">
+                            <label htmlFor="thighRight" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                               Right Thigh (in)
                             </label>
                             <input
@@ -314,11 +314,11 @@ export default function CheckInPage() {
                               step="0.25"
                               value={formData.thighRight || ''}
                               onChange={(e) => setFormData(prev => ({ ...prev, thighRight: e.target.value ? Number(e.target.value) : null }))}
-                              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 sm:text-sm"
                             />
                           </div>
                           <div>
-                            <label htmlFor="calfRight" className="block text-sm font-medium text-gray-700">
+                            <label htmlFor="calfRight" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                               Right Calf (in)
                             </label>
                             <input
@@ -327,7 +327,7 @@ export default function CheckInPage() {
                               step="0.25"
                               value={formData.calfRight || ''}
                               onChange={(e) => setFormData(prev => ({ ...prev, calfRight: e.target.value ? Number(e.target.value) : null }))}
-                              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                              className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 sm:text-sm"
                             />
                           </div>
                         </div>
@@ -338,13 +338,13 @@ export default function CheckInPage() {
               </div>
 
               {/* Wellness Section */}
-              <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
                 <div className="p-6">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-6">Wellness</h2>
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Wellness</h2>
                   <div className="space-y-6">
                     <div className="grid grid-cols-2 gap-6">
                       <div>
-                        <label htmlFor="sleepHours" className="block text-sm font-medium text-gray-700">
+                        <label htmlFor="sleepHours" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                           Sleep (hours)
                         </label>
                         <input
@@ -353,11 +353,11 @@ export default function CheckInPage() {
                           step="0.5"
                           value={formData.sleepHours || ''}
                           onChange={(e) => setFormData(prev => ({ ...prev, sleepHours: e.target.value ? Number(e.target.value) : null }))}
-                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 sm:text-sm"
                         />
                       </div>
                       <div>
-                        <label htmlFor="sleepQuality" className="block text-sm font-medium text-gray-700">
+                        <label htmlFor="sleepQuality" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                           Sleep Quality (1-10)
                         </label>
                         <input
@@ -367,14 +367,14 @@ export default function CheckInPage() {
                           max="10"
                           value={formData.sleepQuality || ''}
                           onChange={(e) => setFormData(prev => ({ ...prev, sleepQuality: e.target.value ? Number(e.target.value) : null }))}
-                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 sm:text-sm"
                         />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-6">
                       <div>
-                        <label htmlFor="energyLevel" className="block text-sm font-medium text-gray-700">
+                        <label htmlFor="energyLevel" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                           Energy Level (1-10)
                         </label>
                         <input
@@ -384,11 +384,11 @@ export default function CheckInPage() {
                           max="10"
                           value={formData.energyLevel || ''}
                           onChange={(e) => setFormData(prev => ({ ...prev, energyLevel: e.target.value ? Number(e.target.value) : null }))}
-                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 sm:text-sm"
                         />
                       </div>
                       <div>
-                        <label htmlFor="stressLevel" className="block text-sm font-medium text-gray-700">
+                        <label htmlFor="stressLevel" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                           Stress Level (1-10)
                         </label>
                         <input
@@ -398,14 +398,14 @@ export default function CheckInPage() {
                           max="10"
                           value={formData.stressLevel || ''}
                           onChange={(e) => setFormData(prev => ({ ...prev, stressLevel: e.target.value ? Number(e.target.value) : null }))}
-                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 sm:text-sm"
                         />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-6">
                       <div>
-                        <label htmlFor="soreness" className="block text-sm font-medium text-gray-700">
+                        <label htmlFor="soreness" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                           Soreness (1-10)
                         </label>
                         <input
@@ -415,11 +415,11 @@ export default function CheckInPage() {
                           max="10"
                           value={formData.soreness || ''}
                           onChange={(e) => setFormData(prev => ({ ...prev, soreness: e.target.value ? Number(e.target.value) : null }))}
-                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 sm:text-sm"
                         />
                       </div>
                       <div>
-                        <label htmlFor="recovery" className="block text-sm font-medium text-gray-700">
+                        <label htmlFor="recovery" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                           Recovery (1-10)
                         </label>
                         <input
@@ -429,7 +429,7 @@ export default function CheckInPage() {
                           max="10"
                           value={formData.recovery || ''}
                           onChange={(e) => setFormData(prev => ({ ...prev, recovery: e.target.value ? Number(e.target.value) : null }))}
-                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 sm:text-sm"
                         />
                       </div>
                     </div>
@@ -438,18 +438,18 @@ export default function CheckInPage() {
               </div>
 
               {/* Photos Section */}
-              <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
                 <div className="p-6">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-6">Progress Photos</h2>
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Progress Photos</h2>
                   <div className="grid grid-cols-2 gap-6">
                     {formData.photos.map((photo, index) => (
                       <div key={photo.type} className="space-y-2">
-                        <label className="block text-sm font-medium text-gray-700">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                           {photo.type.replace('_', ' ').toLowerCase()} view
                         </label>
                         <div className="relative">
                           {photo.file ? (
-                            <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
+                            <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700">
                               <img
                                 src={URL.createObjectURL(photo.file)}
                                 alt={`${photo.type} view`}
@@ -462,9 +462,9 @@ export default function CheckInPage() {
                                   newPhotos[index] = { ...photo, file: null };
                                   setFormData(prev => ({ ...prev, photos: newPhotos }));
                                 }}
-                                className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-sm hover:bg-gray-100"
+                                className="absolute top-2 right-2 bg-white dark:bg-gray-800 rounded-full p-1 shadow-sm hover:bg-gray-100 dark:hover:bg-gray-700"
                               >
-                                <svg className="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                               </button>
@@ -483,12 +483,12 @@ export default function CheckInPage() {
                                     setFormData(prev => ({ ...prev, photos: newPhotos }));
                                   }
                                 }}
-                                className="block w-full text-sm text-gray-500
+                                className="block w-full text-sm text-gray-500 dark:text-gray-400
                                   file:mr-4 file:py-2 file:px-4
                                   file:rounded-full file:border-0
                                   file:text-sm file:font-semibold
-                                  file:bg-indigo-50 file:text-indigo-700
-                                  hover:file:bg-indigo-100
+                                  file:bg-indigo-50 dark:file:bg-indigo-900/30 file:text-indigo-700 dark:file:text-indigo-300
+                                  hover:file:bg-indigo-100 dark:hover:file:bg-indigo-900/40
                                 "
                               />
                             </label>
@@ -501,9 +501,9 @@ export default function CheckInPage() {
               </div>
 
               {/* Notes Section */}
-              <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
                 <div className="p-6">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-6">Additional Notes</h2>
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Additional Notes</h2>
                   <div>
                     <label htmlFor="notes" className="sr-only">
                       Notes
@@ -514,7 +514,7 @@ export default function CheckInPage() {
                       value={formData.notes}
                       onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
                       placeholder="Any additional notes about your progress this week..."
-                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      className="block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 sm:text-sm"
                     />
                   </div>
                 </div>
@@ -525,7 +525,7 @@ export default function CheckInPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 dark:bg-indigo-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 dark:hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? 'Submitting...' : 'Submit Check-in'}
                 </button>

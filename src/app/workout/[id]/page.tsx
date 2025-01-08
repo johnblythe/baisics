@@ -66,24 +66,24 @@ const SetInput = ({
       <div 
         className={`relative p-4 rounded-xl transition-all duration-300 group
           ${log.isCompleted 
-            ? 'bg-green-50/50 border border-green-200' 
-            : 'bg-white border border-gray-200 hover:border-indigo-200 hover:shadow-lg'
+            ? 'bg-green-50/50 dark:bg-green-900/20 border border-green-200 dark:border-green-800' 
+            : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-indigo-200 dark:hover:border-indigo-700 hover:shadow-lg'
           }
           ${isResting ? 'scale-95 opacity-50' : 'scale-100 opacity-100'}
         `}
       >
-        <div className="absolute -inset-px bg-gradient-to-r from-indigo-500/5 via-purple-500/5 to-indigo-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <div className="absolute -inset-px bg-gradient-to-r from-indigo-500/5 via-purple-500/5 to-indigo-500/5 dark:from-indigo-400/5 dark:via-purple-400/5 dark:to-indigo-400/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         
         <div className="relative flex items-center gap-4">
           <div className="w-6">
             {log.isCompleted ? (
-              <CheckCircle className="w-5 h-5 text-green-600" />
+              <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-500" />
             ) : (
-              <Circle className="w-3 h-3 text-gray-300 fill-gray-300" />
+              <Circle className="w-3 h-3 text-gray-300 dark:text-gray-600 fill-gray-300 dark:fill-gray-600" />
             )}
           </div>
           
-          <span className="font-medium text-gray-900">Set {log.setNumber}</span>
+          <span className="font-medium text-gray-900 dark:text-white">Set {log.setNumber}</span>
           
           <div className="flex-1 flex items-center gap-4">
             <input
@@ -92,7 +92,7 @@ const SetInput = ({
               value={localWeight}
               onChange={(e) => setLocalWeight(e.target.value)}
               disabled={log.isCompleted}
-              className="w-24 px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder:text-gray-400 disabled:bg-gray-50 disabled:text-gray-900"
+              className="w-24 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent disabled:bg-gray-50 dark:disabled:bg-gray-800 disabled:text-gray-900 dark:disabled:text-gray-300"
             />
             <input
               type="number"
@@ -100,7 +100,7 @@ const SetInput = ({
               value={localReps}
               onChange={(e) => setLocalReps(e.target.value)}
               disabled={log.isCompleted}
-              className="w-24 px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder:text-gray-400 disabled:bg-gray-50 disabled:text-gray-900"
+              className="w-24 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent disabled:bg-gray-50 dark:disabled:bg-gray-800 disabled:text-gray-900 dark:disabled:text-gray-300"
             />
             <input
               type="text"
@@ -108,7 +108,7 @@ const SetInput = ({
               value={localNotes}
               onChange={(e) => setLocalNotes(e.target.value)}
               disabled={log.isCompleted}
-              className="flex-1 px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 placeholder:text-gray-400 disabled:bg-gray-50 disabled:text-gray-900"
+              className="flex-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent disabled:bg-gray-50 dark:disabled:bg-gray-800 disabled:text-gray-900 dark:disabled:text-gray-300"
             />
           </div>
           
@@ -120,7 +120,7 @@ const SetInput = ({
                 notes: localNotes,
                 isCompleted: false
               })}
-              className="opacity-0 group-hover:opacity-100 text-indigo-600 hover:text-indigo-800 transition-all duration-200"
+              className="opacity-0 group-hover:opacity-100 text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-all duration-200"
             >
               <Pencil className="w-5 h-5" />
             </button>
@@ -133,7 +133,7 @@ const SetInput = ({
                   notes: localNotes,
                   isCompleted: true
                 })}
-                className="px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors"
+                className="px-4 py-2 rounded-lg bg-indigo-600 dark:bg-indigo-500 text-white font-medium hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors"
               >
                 {log.isCompleted ? 'Update Set' : 'Complete Set'}
               </button>
@@ -147,10 +147,10 @@ const SetInput = ({
         <div className={`
           relative overflow-hidden transition-all duration-300 rounded-lg
           ${isResting 
-            ? 'h-64 my-6 bg-gradient-to-r from-indigo-50/30 via-transparent to-indigo-50/30' 
+            ? 'h-64 my-6 bg-gradient-to-r from-indigo-50/30 dark:from-indigo-900/20 via-transparent to-indigo-50/30 dark:to-indigo-900/20' 
             : log.restCompleted
-              ? 'py-2 my-2 bg-green-50 border border-green-200'
-              : 'py-2 my-2 bg-gray-50'
+              ? 'py-2 my-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
+              : 'py-2 my-2 bg-gray-50 dark:bg-gray-800'
           }
         `}>
           {isResting && (
@@ -161,22 +161,22 @@ const SetInput = ({
           <div className="relative z-10 flex items-center justify-center space-x-2">
             {isResting ? (
               <div className="relative flex flex-col items-center justify-center space-y-4 py-8">
-                <div className="text-6xl font-bold text-indigo-600">{restTimeRemaining}s</div>
-                <div className="text-xl text-gray-600">Rest Period</div>
+                <div className="text-6xl font-bold text-indigo-600 dark:text-indigo-400">{restTimeRemaining}s</div>
+                <div className="text-xl text-gray-600 dark:text-gray-300">Rest Period</div>
                 <button
                   onClick={() => {
                     onSkipRest?.();
                     onRestComplete?.();
                   }}
-                  className="mt-2 px-6 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-all duration-200 hover:scale-105 transform flex items-center gap-2"
+                  className="mt-2 px-6 py-2 rounded-lg bg-indigo-600 dark:bg-indigo-500 text-white font-medium hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200 hover:scale-105 transform flex items-center gap-2"
                 >
                   LFG <span className="animate-bounce">🚀</span>
                 </button>
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                {log.restCompleted && <CheckCircle className="w-4 h-4 text-green-600" />}
-                <div className="text-sm text-gray-500">
+                {log.restCompleted && <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-500" />}
+                <div className="text-sm text-gray-500 dark:text-gray-400">
                   Rest: {log.restCompleted ? 'Completed' : `${restTimeRemaining ?? '30'}s`}
                 </div>
               </div>
@@ -491,25 +491,19 @@ export default function WorkoutPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-grow bg-white pt-16">
+      <main className="flex-grow bg-white dark:bg-gray-900 pt-16">
         <div className="max-w-4xl mx-auto px-4 py-8">
           <div className="space-y-8">
-            <div className="relative overflow-hidden bg-white rounded-2xl border border-gray-200 shadow-sm">
-              {/* Background Texture */}
-              <div className="absolute inset-0">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.03),transparent_70%)]"></div>
-                <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(99,102,241,0.01)_25%,transparent_25%,transparent_75%,rgba(99,102,241,0.01)_75%,rgba(99,102,241,0.01))]" style={{ backgroundSize: '60px 60px' }}></div>
-              </div>
-
+            <div className="relative overflow-hidden bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
               <div className="relative p-6 space-y-6">
                 {/* Header */}
                 <div className="flex justify-between items-center">
-                  <h2 className="text-2xl font-bold text-gray-900">
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                     Exercise {currentExerciseIndex + 1} of {exercises.length}
                   </h2>
                   {restTimer !== null && (
-                    <div className="px-4 py-2 rounded-full bg-indigo-50 border border-indigo-100">
-                      <span className="text-lg font-semibold text-indigo-600">
+                    <div className="px-4 py-2 rounded-full bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800">
+                      <span className="text-lg font-semibold text-indigo-600 dark:text-indigo-400">
                         Rest: {restTimer}s
                       </span>
                     </div>
@@ -518,8 +512,8 @@ export default function WorkoutPage() {
 
                 {/* Exercise Info */}
                 <div className="space-y-2">
-                  <h3 className="text-xl font-semibold text-gray-900">{currentExercise.name}</h3>
-                  <p className="text-gray-600">
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{currentExercise.name}</h3>
+                  <p className="text-gray-600 dark:text-gray-400">
                     {currentExercise.sets} sets × {currentExercise.reps} reps
                   </p>
                 </div>
@@ -567,8 +561,8 @@ export default function WorkoutPage() {
                     disabled={currentExerciseIndex === 0}
                     className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
                       currentExerciseIndex === 0
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        ? 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                        : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                     }`}
                   >
                     Previous Exercise
@@ -579,14 +573,14 @@ export default function WorkoutPage() {
                       onClick={() => {
                         setCurrentExerciseIndex(prev => prev + 1);
                       }}
-                      className="px-6 py-3 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors"
+                      className="px-6 py-3 rounded-lg bg-indigo-600 dark:bg-indigo-500 text-white font-medium hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors"
                     >
                       Next Exercise
                     </button>
                   ) : (
                     <button
                       onClick={completeWorkout}
-                      className="px-6 py-3 rounded-lg bg-green-600 text-white font-medium hover:bg-green-700 transition-colors"
+                      className="px-6 py-3 rounded-lg bg-green-600 dark:bg-green-500 text-white font-medium hover:bg-green-700 dark:hover:bg-green-600 transition-colors"
                     >
                       Complete Workout
                     </button>

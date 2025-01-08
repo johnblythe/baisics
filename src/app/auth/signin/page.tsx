@@ -2,11 +2,18 @@
 
 import { useState } from "react";
 import { signInAction } from "../actions";
-
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const router = useRouter();
+  const session = useSession();
+
+  if (session) {
+    router.push("/dashboard");
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
