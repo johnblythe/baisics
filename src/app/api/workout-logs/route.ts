@@ -1,14 +1,17 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { Exercise } from '@prisma/client';
-
+import { auth } from '@/auth';
 export async function POST(request: Request) {
   try {
-    const userId = process.env.TEST_USER_ID;
-    if (!userId) {
-      throw new Error('TEST_USER_ID environment variable is required');
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ error: 'User not authenticated' });
     }
-
+    const userId = session.user?.id;
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID not found' });
+    }
     const body = await request.json();
     const { workoutId } = body;
 

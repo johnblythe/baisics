@@ -71,12 +71,16 @@ model PromptLog {
 
 model User {
   id        String   @id @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email     String?  @map("email") /// @TODO: make unique, not helpful during testing tho
+  email     String?  @unique @map("email")
   password  String?  @map("password")
   isPremium Boolean  @default(false) @map("is_premium")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+  name      String?
+  image     String?
+  emailVerified DateTime? @map("email_verified")
 
+  accounts     Account[]
   userImages   UserImages[]
   userIntakes  UserIntake[]
   promptLogs   PromptLog[]
@@ -86,6 +90,7 @@ model User {
   stats        UserStats[]
   checkIns     CheckIn[]
   activities   UserActivity[]
+  Session      Session[]
 
   @@index([email])
   @@map("users")
@@ -188,13 +193,13 @@ model Exercise {
 }
 
 model Program {
-  id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id           String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name         String
-  description  String?       @db.Text
-  createdBy    String        @map("created_by") @db.Uuid
-  createdAt    DateTime      @default(now()) @map("created_at")
-  updatedAt    DateTime      @updatedAt @map("updated_at")
-  user         User          @relation(fields: [createdBy], references: [id])
+  description  String?        @db.Text
+  createdBy    String         @map("created_by") @db.Uuid
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+  user         User           @relation(fields: [createdBy], references: [id])
   workoutPlans WorkoutPlan[]
   userImages   UserImages[]
   workoutLogs  WorkoutLog[]
@@ -370,17 +375,17 @@ model UserStats {
   cravings      Int?   @map("cravings") // 1-10 scale
 
   // Body Measurements
-  chest           Float? @map("chest")
-  waist           Float? @map("waist")
-  hips            Float? @map("hips")
-  bicepLeft       Float? @map("bicep_left")
-  bicepRight      Float? @map("bicep_right")
-  bicepLeftFlex   Float? @map("bicep_left_flex")
-  bicepRightFlex  Float? @map("bicep_right_flex")
-  thighLeft       Float? @map("thigh_left")
-  thighRight      Float? @map("thigh_right")
-  calfLeft        Float? @map("calf_left")
-  calfRight       Float? @map("calf_right")
+  chest          Float? @map("chest")
+  waist          Float? @map("waist")
+  hips           Float? @map("hips")
+  bicepLeft      Float? @map("bicep_left")
+  bicepRight     Float? @map("bicep_right")
+  bicepLeftFlex  Float? @map("bicep_left_flex")
+  bicepRightFlex Float? @map("bicep_right_flex")
+  thighLeft      Float? @map("thigh_left")
+  thighRight     Float? @map("thigh_right")
+  calfLeft       Float? @map("calf_left")
+  calfRight      Float? @map("calf_right")
 
   // Progress Photos
   photos ProgressPhoto[]
@@ -449,9 +454,9 @@ model UserActivity {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId    String   @map("user_id") @db.Uuid
   programId String   @map("program_id") @db.Uuid
-  type      String   // 'login', 'visit', etc.
+  type      String // 'login', 'visit', etc.
   timestamp DateTime @default(now())
-  metadata  Json?    // Additional data like device info, page visited, etc.
+  metadata  Json? // Additional data like device info, page visited, etc.
 
   user    User    @relation(fields: [userId], references: [id])
   program Program @relation(fields: [programId], references: [id])
@@ -460,4 +465,45 @@ model UserActivity {
   @@index([programId])
   @@index([type])
   @@map("user_activities")
+}
+
+model Account {
+  id                String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId            String  @map("user_id") @db.Uuid
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id") @db.Uuid
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
 }
