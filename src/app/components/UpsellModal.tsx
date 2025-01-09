@@ -66,10 +66,43 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
     if (!userId) {
       throw new Error("No user ID found in URL");
     }
-    const response = await updateUser(userId, { email, isPremium });
+
+    let purchaseSessionId;
+    if (isPremium) {
+      try {
+        const sessionResponse = await fetch('/api/purchase-sessions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId }),
+        });
+
+        if (!sessionResponse.ok) {
+          throw new Error('Failed to create purchase session');
+        }
+
+        const { sessionId } = await sessionResponse.json();
+        purchaseSessionId = sessionId;
+      } catch (error) {
+        console.error('Purchase session error:', error);
+        throw new Error('Failed to start purchase process');
+      }
+    }
+
+    const response = await updateUser(userId, { 
+      email,
+    });
 
     if (isPremium) {
-      window.location.href = `${process.env.STRIPE_LINK}?prefilled_email=${email}&utm_source=hi_upsell_modal&utm_medium=modal&utm_campaign=freemium&utm_email=${email}`;
+      window.open(
+        `${process.env.NEXT_PUBLIC_STRIPE_LINK}?` + 
+        new URLSearchParams({
+          prefilled_email: email,
+          utm_content: purchaseSessionId,
+        }).toString(),
+        '_blank'
+      );
     }
 
     if (response.success) {
@@ -175,7 +208,7 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
                 type="submit"
                 className="w-full bg-gray-600 text-white px-4 py-3 rounded-lg hover:bg-gray-700 font-medium"
               >
-                Get Free Access
+                Continue with Free Access
               </button>
               <p className="text-center text-sm mt-3 text-gray-600 dark:text-gray-400">
                 Enjoy your custom program at <u>no cost</u>!

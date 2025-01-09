@@ -2,6 +2,7 @@ import NextAuth from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "./lib/prisma"
 import ForwardEmail from "next-auth/providers/forwardemail"
+import CredentialsProvider from "next-auth/providers/credentials"
 
 const development = process.env.NODE_ENV === "development"
  
@@ -17,7 +18,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
       } : {
         host: process.env.EMAIL_SERVER_HOST,
-        // port: Number(process.env.EMAIL_SERVER_PORT)
         auth: {
           user: process.env.EMAIL_SERVER_USER,
           pass: process.env.EMAIL_SERVER_PASSWORD,
@@ -29,14 +29,56 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             console.log("🔑 Login Link:", url)
           }
         : undefined
-    })
+    }),
+    CredentialsProvider({
+      id: "credentials",
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "text" },
+        userId: { label: "User ID", type: "text" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.userId) {
+          return null;
+        }
+
+        const user = await prisma.user.findUnique({
+          where: { 
+            id: credentials.userId as string,
+          },
+        });
+
+        if (!user || user.email !== credentials.email) {
+          return null;
+        }
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          image: user.image,
+        };
+      },
+    }),
   ],
   adapter: PrismaAdapter(prisma),
-  // callbacks: {
-  //   async redirect({ url, baseUrl }) {
-  //     return url.startsWith(baseUrl) ? url : baseUrl
-  //   }
-  // },
+  session: {
+    strategy: "jwt",
+  },
+  callbacks: {
+    async jwt({ token, user, account }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string;
+      }
+      return session;
+    },
+  },
   pages: {
     signIn: '/auth/signin',
     error: '/auth/error',

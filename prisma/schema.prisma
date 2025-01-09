@@ -70,16 +70,21 @@ model PromptLog {
 }
 
 model User {
-  id        String   @id @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email     String?  @unique @map("email")
-  password  String?  @map("password")
-  isPremium Boolean  @default(false) @map("is_premium")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  name      String?
-  image     String?
+  id            String    @id @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email         String?   @unique @map("email")
+  password      String?   @map("password")
+  isPremium     Boolean   @default(false) @map("is_premium")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  name          String?
+  image         String?
   emailVerified DateTime? @map("email_verified")
-
+  
+  // Stripe-related fields
+  stripeCustomerId String?   @unique @map("stripe_customer_id")
+  stripeAuthToken  String?   @map("stripe_auth_token")
+  // subscription     Subscription?
+  
   accounts     Account[]
   userImages   UserImages[]
   userIntakes  UserIntake[]
@@ -90,7 +95,8 @@ model User {
   stats        UserStats[]
   checkIns     CheckIn[]
   activities   UserActivity[]
-  Session      Session[]
+  session      Session[]
+  purchaseSessions PurchaseSession[]
 
   @@index([email])
   @@map("users")
@@ -506,4 +512,17 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map("verification_tokens")
+}
+
+model PurchaseSession {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String    @map("user_id") @db.Uuid
+  status      String    @default("pending") // pending, completed, expired
+  createdAt   DateTime  @default(now()) @map("created_at")
+  completedAt DateTime? @map("completed_at")
+  expiresAt   DateTime  @map("expires_at")
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("purchase_sessions")
 }

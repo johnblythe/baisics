@@ -4,20 +4,19 @@ import { CheckInFormData } from "./page";
 import { prisma } from "@/lib/prisma";
 // import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
-
-const userId = process.env.TEST_USER_ID;
+import { auth } from '@/auth';
 
 export async function createCheckIn(formData: CheckInFormData) {
   try {
-    // const session = await auth();
-    if (!userId) {
+    const session = await auth();
+    if (!session) {
       throw new Error('Not authenticated');
     }
 
     // Get current program
     const program = await prisma.program.findFirst({
       where: {
-        createdBy: userId,
+        createdBy: session.user?.id,
         // Add any other conditions to get the active program
       },
       orderBy: {
@@ -32,7 +31,7 @@ export async function createCheckIn(formData: CheckInFormData) {
     // Create the check-in
     const checkIn = await prisma.checkIn.create({
       data: {
-        userId: userId,
+        userId: session.user?.id,
         programId: program.id,
         type: formData.type,
         notes: formData.notes,
@@ -42,7 +41,7 @@ export async function createCheckIn(formData: CheckInFormData) {
     // Create user stats
     await prisma.userStats.create({
       data: {
-        userId: userId,
+        userId: session.user?.id,
         programId: program.id,
         checkInId: checkIn.id,
         weight: formData.weight,
