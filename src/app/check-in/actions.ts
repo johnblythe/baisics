@@ -49,7 +49,7 @@ export async function createCheckIn(formData: CheckInFormData) {
         programId: program.id,
         checkInId: checkIn.id,
         weight: formData.weight,
-        bodyFat: formData.bodyFat,
+        // bodyFat: formData.bodyFat,
         notes: formData.statsNotes,
         
         // Body Measurements

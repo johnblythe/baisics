@@ -114,7 +114,7 @@ export async function POST(req: Request) {
           programId,
           checkInId: newCheckIn.id,
           weight: stats.weight,
-          bodyFat: stats.bodyFat,
+          // bodyFat: stats.bodyFat,
           notes: stats.notes,
           sleepHours: stats.sleepHours,
           sleepQuality: stats.sleepQuality,
