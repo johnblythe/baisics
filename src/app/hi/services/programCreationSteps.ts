@@ -164,7 +164,7 @@ Provide a response ONLY in the following JSON format:
   "focus": string,
   "warmup": {
     "duration": number,
-    "activities": string[]
+    "activities": string[] // specific activities
   },
   "cooldown": {
     "duration": number,
@@ -337,7 +337,6 @@ export const saveProgramToDatabase = async (program: Program): Promise<Program> 
     }
 
     const dbData = {
-      id: program.id,
       name: program.name,
       description: program.description || '',
       createdBy: program.user.id,

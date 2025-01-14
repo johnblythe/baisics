@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { sendMessage } from '@/utils/chat';
 import type { ContentBlock } from '@anthropic-ai/sdk/src/resources/messages.js';
+import { auth } from '@/auth';
 
 type ImageAnalysis = {
   bodyFatPercentage: number;
@@ -67,9 +68,13 @@ async function analyzeBodyComposition(images: { base64Data: string }[]): Promise
 // POST /api/progress/check-in
 export async function POST(req: Request) {
   try {
-    const userId = process.env.TEST_USER_ID;
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ error: 'User not authenticated' });
+    }
+    const userId = session.user?.id;
     if (!userId) {
-      throw new Error('TEST_USER_ID environment variable is required');
+      return NextResponse.json({ error: 'User ID not found' });
     }
 
     const data = await req.json();
@@ -109,7 +114,7 @@ export async function POST(req: Request) {
           programId,
           checkInId: newCheckIn.id,
           weight: stats.weight,
-          bodyFat: stats.bodyFat,
+          // bodyFat: stats.bodyFat,
           notes: stats.notes,
           sleepHours: stats.sleepHours,
           sleepQuality: stats.sleepQuality,
@@ -182,9 +187,13 @@ export async function POST(req: Request) {
 // GET /api/progress?programId=xxx
 export async function GET(req: Request) {
   try {
-    const userId = process.env.TEST_USER_ID;
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ error: 'User not authenticated' });
+    }
+    const userId = session.user?.id;
     if (!userId) {
-      throw new Error('TEST_USER_ID environment variable is required');
+      return NextResponse.json({ error: 'User ID not found' });
     }
 
     const { searchParams } = new URL(req.url);
@@ -222,11 +231,15 @@ export async function GET(req: Request) {
 // DELETE /api/progress/photos/:id
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const userId = process.env.TEST_USER_ID;
-    const { id } = await req.json();
-    if (!userId) {
-      throw new Error('TEST_USER_ID environment variable is required');
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ error: 'User not authenticated' });
     }
+    const userId = session.user?.id;
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID not found' });
+    }
+    const { id } = await req.json();
 
     await prisma.userImages.update({
       where: {

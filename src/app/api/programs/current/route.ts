@@ -1,11 +1,31 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { auth } from '@/auth';
+import { Program, CheckIn, WorkoutLog, UserActivity } from '@prisma/client';
+
+type ProgramWithRelations = Program & {
+  checkIns?: (CheckIn & {
+    stats: any[];
+    photos: {
+      id: string;
+      base64Data: string;
+      progressPhoto: { type: string }[];
+    }[];
+  })[];
+  workoutLogs?: WorkoutLog[];
+  activities?: UserActivity[];
+  workoutPlans?: any[];
+};
 
 export async function GET() {
   try {
-    const userId = process.env.TEST_USER_ID;
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ error: 'User not authenticated' }, { status: 401 });
+    }
+    const userId = session.user?.id;
     if (!userId) {
-      return NextResponse.json({ error: 'TEST_USER_ID environment variable is required' });
+      return NextResponse.json({ error: 'User ID not found' }, { status: 401 });
     }
 
     const program = await prisma.program.findFirst({
@@ -41,17 +61,17 @@ export async function GET() {
             stats: true,
             photos: {
               include: {
-                ProgressPhoto: true
+                progressPhoto: true
               }
             }
           }
         },
         activities: true,
       },
-    });
+    }) as ProgramWithRelations | null;
 
     if (!program) {
-      return NextResponse.json({ error: 'No program found' });
+      return NextResponse.json({ error: 'No program found' }, { status: 404 });
     }
 
     // Get user intake for initial weight if no check-ins
@@ -69,14 +89,14 @@ export async function GET() {
     const latestCheckIn = program.checkIns?.[0]; // Already ordered by desc
 
     // Determine weights
-    const startWeight = initialCheckIn?.stats?.[0]?.weight || userIntake?.weight;
+    const startWeight = initialCheckIn?.stats?.[0]?.weight || userIntake?.weight || 0;
     const currentWeight = latestCheckIn?.stats?.[0]?.weight || startWeight;
 
     // Get progress photos from latest check-in
     const progressPhotos = latestCheckIn?.photos?.map(photo => ({
       id: photo.id,
       url: photo.base64Data,
-      type: photo.ProgressPhoto?.[0]?.type || null
+      type: photo.progressPhoto?.[0]?.type || null
     })) || [];
 
     // Transform the data for the frontend
@@ -102,6 +122,6 @@ export async function GET() {
     return NextResponse.json(transformedProgram);
   } catch (error) {
     console.error('Error fetching program:', error);
-    return NextResponse.json({ error: 'Internal Server Error' });
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 } 

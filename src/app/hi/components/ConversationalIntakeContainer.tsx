@@ -76,7 +76,7 @@ function ConversationalIntakeContent() {
   }
 
   return (
-    <div className="container mx-auto max-w-7xl px-4 py-8 relative">
+    <>
       <ConversationalInterface 
         userId={userId} 
         user={user}
@@ -85,9 +85,10 @@ function ConversationalIntakeContent() {
       />
       
       {/* Admin Testing Corner */}
-      <div className="fixed bottom-4 right-4 opacity-50 hover:opacity-100 transition-opacity">
-        <Link
-          href="/hi"
+      {process.env.NODE_ENV === 'development' && (
+        <div className="fixed bottom-4 right-4 opacity-50 hover:opacity-100 transition-opacity">
+          <Link
+            href="/hi"
           onClick={(e) => {
             e.preventDefault();
             window.location.href = '/hi';
@@ -95,9 +96,10 @@ function ConversationalIntakeContent() {
           className="px-3 py-1 text-xs bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors"
         >
           New Session
-        </Link>
-      </div>
-    </div>
+          </Link>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -106,5 +108,5 @@ export default function ConversationalIntakeContainer() {
     <Suspense fallback={<div>Loading...</div>}>
       <ConversationalIntakeContent />
     </Suspense>
-  )
+  );
 } 
