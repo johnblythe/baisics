@@ -5,6 +5,7 @@ import { sendMessage } from "@/utils/chat";
 import { prisma } from "@/lib/prisma";
 // import { modifyPhase } from "./services/programCreation";
 import { createProgramSequentially } from "./services/_sequentialProgramCreation";
+import { extractionPrompt } from "@/utils/prompts/";
 
 // Helper to convert extracted data to IntakeFormData format
 function convertToIntakeFormat(extractedData: any): IntakeFormData {
@@ -94,38 +95,7 @@ export async function processUserMessage(
     }));
 
     // Log the extraction prompt
-    const extractionPrompt = `Based on our conversation, extract relevant information about:
-      - Sex*
-      - Training goals*
-      - Days available per week -- if unanswered, default to 3
-      - Time available per day -- if unanswered, default to 1 hour
-      - Age
-      - Weight*
-      - Height
-      - Training preferences
-      - Additional context/information (such as injuries, medications, preferences for equipment, dietary restrictions, etc.)
-
-      Information marked with an asterisk (*) is required. For each piece of information, provide a confidence score (0-1). Then, determine what information is still needed and formulate a natural follow-up question.
-
-      If you have high confidence (>0.75) in all required fields (sex, goals, weight), mark \`readyForProgram\` as true so that the next turn will be program creation.
-
-      Respond only with a JSON object in this format:
-      {
-        "extractedData": {
-          "gender": { "value": "...", "confidence": 0.0 },
-          "goals": { "value": "...", "confidence": 0.0 },
-          "daysPerWeek": { "value": "...", "confidence": 0.0 },
-          "timePerDay": { "value": "...", "confidence": 0.0 },
-          "age": { "value": "...", "confidence": 0.0 },
-          "weight": { "value": "...", "confidence": 0.0 },
-          "height": { "value": "...", "confidence": 0.0 },
-          "preferences": { "value": "...", "confidence": 0.0 },
-          "additionalInfo": { "value": "...", "confidence": 0.0 }
-        },
-        "nextQuestion": "...",
-        "readyForProgram": false
-      }`
-    ;
+    
 
     const result = await sendMessage([
       ...messageHistory,

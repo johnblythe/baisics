@@ -41,11 +41,6 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
 
   const router = useRouter();
   
-  // Add effect to notify parent of program changes
-  // useEffect(() => {
-  //   onProgramChange?.(program);
-  // }, [program, onProgramChange]);
-
   useEffect(() => {
     if (initialProgram) {
       setProgram(initialProgram);
@@ -67,7 +62,10 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
   }, [isUpsellOpen]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const messagesContainer = document.querySelector('.messages-container');
+    if (messagesContainer) {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
   };
 
   useEffect(() => {
@@ -653,7 +651,7 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
       ) : isGeneratingProgram ? (
         <GeneratingProgramTransition />
       ) : (
-        <div className="flex-1 overflow-y-auto p-8 space-y-8">
+        <div className="flex-1 overflow-y-auto p-8 space-y-8 messages-container">
           <AnimatePresence>
             {messages.map((message, index) => (
               <motion.div

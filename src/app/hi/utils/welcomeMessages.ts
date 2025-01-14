@@ -7,11 +7,11 @@ I'm excited to help create a fitness program that's perfectly tailored to you. L
 💭 Tell me about what brings you here today. What are you hoping to achieve? Feel free to share anything you think would help me design the best possible program for you, such as:
 
 • Your fitness goals
-• Current lifestyle and activity level
 • Any past experience with working out
 • Time constraints or preferences
 • Health considerations or injuries
 • What's worked (or hasn't worked) for you before
+• Age, height, sex, and weight
 
 Don't worry about structure - just share what's on your mind, and we'll figure out the perfect plan together!`,
 
@@ -22,9 +22,9 @@ Instead of a boring questionnaire, let's have a real conversation. What's motiva
 
 Some things that would help me understand you better:
 • What are your main fitness goals?
-• How active are you currently?
-• Have you worked out before?
+• Have you worked out before? What do you like, what do you dislike?
 • How much time can you commit?
+• Age, height, sex, and weight?
 • Any injuries or health concerns?
 
 Just chat naturally - I'm here to listen and create a program that fits YOUR life! 💪`,
@@ -36,11 +36,10 @@ I'm here to design a program specifically for you. To create the most effective 
 
 Please share your thoughts on:
 • Primary fitness objectives
-• Current activity levels
-• Exercise history
 • Schedule availability
+• Age, height, sex, and weight?
 • Physical considerations
-• Previous fitness experiences
+• Previous fitness experiences -- what do you like, what do you dislike?
 
 Your journey is unique, and your program should reflect that. Let's start with what matters most to you.`
 ];
