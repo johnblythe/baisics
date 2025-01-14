@@ -57,12 +57,12 @@ export default function LandingPage() {
 
             {/* CTA Buttons */}
             <div className="flex items-center gap-4">
-              <button
-                onClick={() => signIn()}
+            <button
+                  onClick={() => signIn()}
                 className="inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-900"
-              >
-                Log in
-              </button>
+                >
+                  Log in
+                </button>
               <Link 
                 href="#"
                 onClick={handleGetStarted}
@@ -169,7 +169,7 @@ export default function LandingPage() {
                 </div>
               </div>
             </div>
-
+            
             {/* Right Column - Image */}
             <div className="flex-1 w-full lg:w-auto">
               <div className="relative">
@@ -398,8 +398,8 @@ export default function LandingPage() {
             <div className="flex flex-col items-center justify-center mt-12">
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Cancel anytime. No questions asked.<br/>Need financial assistance? <a href="mailto:baisics.app@gmail.com" className="text-indigo-600 dark:text-indigo-400">Just ask.</a>
-              </p>
-            </div>
+                </p>
+              </div>
           </div>
         </main>
 
@@ -413,7 +413,7 @@ export default function LandingPage() {
                 <span className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">baisics</span>
               </div>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                &copy; {new Date().getFullYear()} baisics. All rights reserved. ♥️ from Indianapolis.
+                 &copy; {new Date().getFullYear()} baisics. All rights reserved. ♥️ from Indianapolis.
               </p>
             </div>
           </div>

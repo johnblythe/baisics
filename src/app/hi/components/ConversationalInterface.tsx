@@ -257,15 +257,15 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
 
           // Combine all the pieces
           const workoutDetails = {
-            id: crypto.randomUUID(),
             workouts,
             ...phaseDetails,
             nutrition
           };
 
           // Final step: Construct and save program
+          console.log("🚀 ~ handleInitialIntake ~ programStructure:", programStructure)
           const program = {
-            id: crypto.randomUUID(),
+            // id: programStructure.id, // TODO: does this actually get done?
             name: programStructure.name,
             description: programStructure.description,
             workoutPlans: [workoutDetails],
@@ -291,6 +291,7 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
           }
 
           const { program: savedProgram } = await saveResponse.json();
+          console.log("🚀 ~ handleInitialIntake ~ savedProgram:", savedProgram)
           setProgram(savedProgram);
           setIsGeneratingProgram(false);
           router.replace(`/hi?userId=${userId}&programId=${savedProgram.id}`);
@@ -575,7 +576,7 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
   const renderFormSection = () => {
     if (program) {
       return (
-        <form onSubmit={handleSubmit} className="p-8 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-b-xl">
+        <form onSubmit={handleSubmit} className="hidden p-8 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-b-xl">
           <div className="flex flex-col space-y-6">
             <textarea
               value={inputValue}

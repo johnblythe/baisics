@@ -5,9 +5,23 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { getLatestCheckIn } from '../check-in/actions';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, TooltipProps } from 'recharts';
+import { CheckIn, ProgressPhoto, UserImages, UserStats } from '@prisma/client';
 // import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
 // import { useDropzone } from 'react-dropzone';
+
+type CheckInWithPhotos = CheckIn & {
+  progressPhoto: (ProgressPhoto & {
+    userImage: {
+      id: string;
+      base64Data: string;
+      type: string | null;
+    };
+    userStats: UserStats | null;
+  })[];
+  stats: UserStats[];
+};
 
 // Mock weight data - we'll replace this with real data later
 const mockWeightData = [
@@ -82,7 +96,9 @@ export default function DashboardPage() {
   const router = useRouter();
   const [program, setProgram] = useState<Program | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [analyzingPhotoId, setAnalyzingPhotoId] = useState<string | null>(null);
   const [tooltipContent, setTooltipContent] = useState<{ x: number; y: number; content: React.ReactNode } | null>(null);
+  const [latestCheckIn, setLatestCheckIn] = useState<CheckInWithPhotos | null>(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -107,6 +123,21 @@ export default function DashboardPage() {
 
     fetchData();
   }, [router]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!program?.id) return;
+      
+      try {
+        const checkIn = await getLatestCheckIn(program.id);
+        setLatestCheckIn(checkIn);
+      } catch (error) {
+        console.error('Error fetching latest check-in:', error);
+      }
+    };
+
+    fetchData();
+  }, [program?.id]);
 
   const calculateProgramStats = (program: Program) => {
     const startDate = new Date(program.workoutLogs[0]?.completedAt || new Date());
@@ -282,7 +313,7 @@ export default function DashboardPage() {
                             {/* Weight Chart */}
                             <div className="h-48">
                               <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={mockWeightData} margin={{ top: 5, right: 5, bottom: 5, left: 0 }}>
+                                <LineChart data={mockWeightData} margin={{ top: 5, right: 5, bottom: 5, left: 35 }}>
                                   <XAxis 
                                     dataKey="displayDate" 
                                     tick={{ fontSize: 12, fill: 'var(--foreground)' }}
@@ -295,6 +326,7 @@ export default function DashboardPage() {
                                     tickLine={false}
                                     axisLine={false}
                                     width={30}
+                                    tickFormatter={(value: number) => Math.round(value).toString()}
                                   />
                                   <Tooltip
                                     wrapperStyle={{ outline: 'none' }}
@@ -306,7 +338,7 @@ export default function DashboardPage() {
                                       padding: '0.5rem',
                                       color: 'var(--foreground)'
                                     }}
-                                    formatter={(value: number) => [`${value} lbs`, 'Weight']}
+                                    formatter={(value: number) => [`${Math.round(value)} lbs`, 'Weight']}
                                     labelFormatter={(label) => label}
                                   />
                                   <Line 
@@ -465,28 +497,84 @@ export default function DashboardPage() {
                         <div className="space-y-3">
                           <div className="flex items-center justify-between">
                             <h2 className="text-sm font-medium text-gray-600 dark:text-gray-400">Photos</h2>
-                            {program.progressPhotos && program.progressPhotos.length > 0 && (
+                            {latestCheckIn?.progressPhoto && latestCheckIn.progressPhoto.length > 0 && (
                               <Link 
-                                href="/progress/photos"
+                                href="/check-in"
                                 className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
                               >
-                                View All →
+                                Add New Photos →
                               </Link>
                             )}
                           </div>
-                          
-                          {program.progressPhotos && program.progressPhotos.length > 0 ? (
+
+                          {latestCheckIn?.progressPhoto && latestCheckIn.progressPhoto.length > 0 ? (
                             <div className="grid grid-cols-3 gap-4">
-                              {program.progressPhotos.slice(0, 3).map((photo) => (
-                                <div key={photo.id} className="aspect-square rounded-lg bg-gray-100 dark:bg-gray-800 overflow-hidden relative group">
+                              {latestCheckIn.progressPhoto.slice(0, 3).map((photo) => (
+                                <div key={photo.id} className="aspect-square rounded-lg bg-gray-100 dark:bg-gray-800 overflow-hidden relative">
                                   <img 
-                                    src={photo.url} 
-                                    alt={`Progress photo - ${photo.type || 'Custom'} view`}
-                                    className="object-cover w-full h-full"
+                                    src={photo.userImage.base64Data} 
+                                    alt={`Progress photo - ${photo.userImage.type?.toLowerCase().replace('_', ' ') || 'custom'}`}
+                                    className="object-cover w-full h-full hover:opacity-75 transition-opacity duration-200"
                                   />
-                                  {photo.type && (
-                                    <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs py-1 px-2 text-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                      {photo.type.replace('_', ' ').toLowerCase()}
+                                  
+                                  {!photo.userStats?.bodyFatLow && (
+                                    <button
+                                      onClick={async () => {
+                                        try {
+                                          setAnalyzingPhotoId(photo.userImage.id);
+                                          const response = await fetch('/api/photos/analyze', {
+                                            method: 'POST',
+                                            headers: {
+                                              'Content-Type': 'application/json',
+                                            },
+                                            body: JSON.stringify({
+                                              photoIds: [photo.userImage.id],
+                                            }),
+                                          });
+
+                                          if (!response.ok) {
+                                            throw new Error('Failed to analyze photo');
+                                          }
+
+                                          // Refresh the page to show updated data
+                                          router.refresh();
+                                        } catch (error) {
+                                          console.error('Error analyzing photo:', error);
+                                        } finally {
+                                          setAnalyzingPhotoId(null);
+                                        }
+                                      }}
+                                      disabled={analyzingPhotoId === photo.userImage.id}
+                                      className="absolute top-2 right-2 px-3 py-1.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                      {analyzingPhotoId === photo.userImage.id ? (
+                                        <div className="flex items-center gap-2">
+                                          <div className="w-4 h-4 border-t-2 border-b-2 border-white rounded-full animate-spin" />
+                                          <span>Analyzing...</span>
+                                        </div>
+                                      ) : (
+                                        'Analyze'
+                                      )}
+                                    </button>
+                                  )}
+
+                                  <div className="absolute bottom-2 left-2 right-2 text-white text-xs py-1 px-2 text-center bg-black/50 rounded">
+                                    {photo.userImage.type?.toLowerCase().replace('_', ' ') || 'custom'}
+                                  </div>
+
+                                  {/* Stats Overlay */}
+                                  {photo.userStats && (
+                                    <div className="absolute inset-0 bg-black/80 opacity-0 hover:opacity-100 transition-opacity duration-200 flex flex-col justify-center items-center text-white p-4">
+                                      <div className="space-y-3 text-center">
+                                        <div>
+                                          <div className="text-sm text-gray-300">Body Fat Range</div>
+                                          <div className="font-medium">{photo.userStats.bodyFatLow}% - {photo.userStats.bodyFatHigh}%</div>
+                                        </div>
+                                        <div>
+                                          <div className="text-sm text-gray-300">Muscle Mass Distribution</div>
+                                          <div className="font-medium text-sm">{photo.userStats.muscleMassDistribution}</div>
+                                        </div>
+                                      </div>
                                     </div>
                                   )}
                                 </div>
