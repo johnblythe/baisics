@@ -9,14 +9,7 @@ const development = process.env.NODE_ENV === "development"
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     ForwardEmail({
-      server: development ? {
-        host: "localhost",
-        port: 4000,
-        auth: {
-          user: "",
-          pass: "",
-        }
-      } : {
+      server: {
         host: process.env.EMAIL_SERVER_HOST,
         auth: {
           user: process.env.EMAIL_SERVER_USER,

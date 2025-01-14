@@ -26,7 +26,7 @@ model UserImages {
   program       Program?        @relation(fields: [programId], references: [id])
   checkInId     String?         @map("check_in_id") @db.Uuid
   checkIn       CheckIn?        @relation(fields: [checkInId], references: [id])
-  ProgressPhoto ProgressPhoto[]
+  progressPhoto ProgressPhoto[]
 
   @@index([userId])
   @@map("user_images")
@@ -106,8 +106,8 @@ model WorkoutPlan {
   id                     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId                 String    @map("user_id") @db.Uuid
   programId              String    @map("program_id") @db.Uuid
-  bodyFatPercentage      Float?    @map("body_fat_percentage")
-  muscleMassDistribution String?   @map("muscle_mass_distribution") @db.Text
+  bodyFatPercentage   Float?    @map("body_fat_percentage") /// todo: remove
+  muscleMassDistribution String?   @map("muscle_mass_distribution") @db.Text /// todo: remove
   daysPerWeek            Int       @map("days_per_week")
   dailyCalories          Int       @map("daily_calories")
   proteinGrams           Int       @map("protein_grams")
@@ -359,7 +359,9 @@ model UserStats {
   checkInId String @map("check_in_id") @db.Uuid
 
   weight  Float?  @map("weight")
-  bodyFat Float?  @map("body_fat")
+  bodyFatLow Float?  @map("body_fat_low")
+  bodyFatHigh Float?  @map("body_fat_high")
+  muscleMassDistribution String?   @map("muscle_mass_distribution") @db.Text
   notes   String? @map("notes") @db.Text
 
   // Wellness Metrics
@@ -423,7 +425,7 @@ model CheckIn {
   program       Program         @relation(fields: [programId], references: [id])
   stats         UserStats[]
   photos        UserImages[]
-  ProgressPhoto ProgressPhoto[]
+  progressPhoto ProgressPhoto[]
 
   @@index([userId])
   @@index([programId])
@@ -440,7 +442,7 @@ model ProgressPhoto {
 
   checkIn     CheckIn    @relation(fields: [checkInId], references: [id])
   userImage   UserImages @relation(fields: [userImageId], references: [id])
-  UserStats   UserStats? @relation(fields: [userStatsId], references: [id])
+  userStats   UserStats? @relation(fields: [userStatsId], references: [id])
   userStatsId String?    @db.Uuid
 
   @@index([checkInId])

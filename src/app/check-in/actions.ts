@@ -1,10 +1,10 @@
 'use server';
 
-import { CheckInFormData } from "./page";
+import { CheckIn } from "./page";
 import { prisma } from "@/lib/prisma";
-// import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { auth } from '@/auth';
+import { CheckInFormData } from "./page";
 
 export async function createCheckIn(formData: CheckInFormData) {
   try {
@@ -13,10 +13,14 @@ export async function createCheckIn(formData: CheckInFormData) {
       throw new Error('Not authenticated');
     }
 
+    if (!session.user?.id) {
+      throw new Error('User ID not found');
+    }
+
     // Get current program
     const program = await prisma.program.findFirst({
       where: {
-        createdBy: session.user?.id,
+        createdBy: session.user.id,
         // Add any other conditions to get the active program
       },
       orderBy: {
@@ -73,16 +77,16 @@ export async function createCheckIn(formData: CheckInFormData) {
 
     // Handle photos
     for (const photo of formData.photos) {
-      if (photo.file) {
+      if (photo.file && photo.base64Data) {
         // Create UserImage first
         const userImage = await prisma.userImages.create({
           data: {
-            userId: userId,
+            userId: session.user.id,
             programId: program.id,
             checkInId: checkIn.id,
             fileName: photo.file.name,
             type: photo.type,
-            base64Data: await fileToBase64(photo.file),
+            base64Data: photo.base64Data,
           },
         });
 
@@ -108,22 +112,6 @@ export async function createCheckIn(formData: CheckInFormData) {
   }
 }
 
-// Helper function to convert File to base64
-async function fileToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      if (typeof reader.result === 'string') {
-        resolve(reader.result);
-      } else {
-        reject(new Error('Failed to convert file to base64'));
-      }
-    };
-    reader.onerror = error => reject(error);
-  });
-}
-
 export const getLatestCheckIn = async (programId: string) => {
   const checkIn = await prisma.checkIn.findFirst({
     where: {
@@ -131,9 +119,16 @@ export const getLatestCheckIn = async (programId: string) => {
     },
     include: {
       stats: true,
-      photos: { // we're only using these to know IF we got photos and how many
-        select: {
-          id: true,
+      progressPhoto: {
+        include: {
+          userImage: {
+            select: {
+              id: true,
+              base64Data: true,
+              type: true,
+            },
+          },
+          userStats: true,
         },
       },
     },
