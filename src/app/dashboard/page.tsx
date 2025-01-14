@@ -510,59 +510,73 @@ export default function DashboardPage() {
                           {latestCheckIn?.progressPhoto && latestCheckIn.progressPhoto.length > 0 ? (
                             <div className="grid grid-cols-3 gap-4">
                               {latestCheckIn.progressPhoto.slice(0, 3).map((photo) => (
-                                <div key={photo.id} className="aspect-square rounded-lg bg-gray-100 dark:bg-gray-800 overflow-hidden relative group">
+                                <div key={photo.id} className="aspect-square rounded-lg bg-gray-100 dark:bg-gray-800 overflow-hidden relative">
                                   <img 
                                     src={photo.userImage.base64Data} 
                                     alt={`Progress photo - ${photo.userImage.type?.toLowerCase().replace('_', ' ') || 'custom'}`}
-                                    className="object-cover w-full h-full"
+                                    className="object-cover w-full h-full hover:opacity-75 transition-opacity duration-200"
                                   />
-                                  <div className="absolute inset-0 flex flex-col justify-between p-2 bg-gradient-to-b from-black/0 via-black/0 to-black/50">
-                                    <div className="flex justify-end">
-                                      {!photo.userStats?.bodyFat && (
-                                        <button
-                                          onClick={async () => {
-                                            try {
-                                              setAnalyzingPhotoId(photo.userImage.id);
-                                              const response = await fetch('/api/photos/analyze', {
-                                                method: 'POST',
-                                                headers: {
-                                                  'Content-Type': 'application/json',
-                                                },
-                                                body: JSON.stringify({
-                                                  photoIds: [photo.userImage.id],
-                                                }),
-                                              });
+                                  
+                                  {!photo.userStats?.bodyFatLow && (
+                                    <button
+                                      onClick={async () => {
+                                        try {
+                                          setAnalyzingPhotoId(photo.userImage.id);
+                                          const response = await fetch('/api/photos/analyze', {
+                                            method: 'POST',
+                                            headers: {
+                                              'Content-Type': 'application/json',
+                                            },
+                                            body: JSON.stringify({
+                                              photoIds: [photo.userImage.id],
+                                            }),
+                                          });
 
-                                              if (!response.ok) {
-                                                throw new Error('Failed to analyze photo');
-                                              }
+                                          if (!response.ok) {
+                                            throw new Error('Failed to analyze photo');
+                                          }
 
-                                              // Refresh the page to show updated data
-                                              router.refresh();
-                                            } catch (error) {
-                                              console.error('Error analyzing photo:', error);
-                                            } finally {
-                                              setAnalyzingPhotoId(null);
-                                            }
-                                          }}
-                                          disabled={analyzingPhotoId === photo.userImage.id}
-                                          className="px-3 py-1.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                        >
-                                          {analyzingPhotoId === photo.userImage.id ? (
-                                            <div className="flex items-center gap-2">
-                                              <div className="w-4 h-4 border-t-2 border-b-2 border-white rounded-full animate-spin" />
-                                              <span>Analyzing...</span>
-                                            </div>
-                                          ) : (
-                                            'Analyze'
-                                          )}
-                                        </button>
+                                          // Refresh the page to show updated data
+                                          router.refresh();
+                                        } catch (error) {
+                                          console.error('Error analyzing photo:', error);
+                                        } finally {
+                                          setAnalyzingPhotoId(null);
+                                        }
+                                      }}
+                                      disabled={analyzingPhotoId === photo.userImage.id}
+                                      className="absolute top-2 right-2 px-3 py-1.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                      {analyzingPhotoId === photo.userImage.id ? (
+                                        <div className="flex items-center gap-2">
+                                          <div className="w-4 h-4 border-t-2 border-b-2 border-white rounded-full animate-spin" />
+                                          <span>Analyzing...</span>
+                                        </div>
+                                      ) : (
+                                        'Analyze'
                                       )}
-                                    </div>
-                                    <div className="text-white text-xs py-1 px-2 text-center">
-                                      {photo.userImage.type?.toLowerCase().replace('_', ' ') || 'custom'}
-                                    </div>
+                                    </button>
+                                  )}
+
+                                  <div className="absolute bottom-2 left-2 right-2 text-white text-xs py-1 px-2 text-center bg-black/50 rounded">
+                                    {photo.userImage.type?.toLowerCase().replace('_', ' ') || 'custom'}
                                   </div>
+
+                                  {/* Stats Overlay */}
+                                  {photo.userStats && (
+                                    <div className="absolute inset-0 bg-black/80 opacity-0 hover:opacity-100 transition-opacity duration-200 flex flex-col justify-center items-center text-white p-4">
+                                      <div className="space-y-3 text-center">
+                                        <div>
+                                          <div className="text-sm text-gray-300">Body Fat Range</div>
+                                          <div className="font-medium">{photo.userStats.bodyFatLow}% - {photo.userStats.bodyFatHigh}%</div>
+                                        </div>
+                                        <div>
+                                          <div className="text-sm text-gray-300">Muscle Mass Distribution</div>
+                                          <div className="font-medium text-sm">{photo.userStats.muscleMassDistribution}</div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
                               ))}
                             </div>
