@@ -5,8 +5,9 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn, useSession } from 'next-auth/react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { Suspense } from 'react';
 
-export default function PurchaseSuccessPage() {
+function PurchaseSuccess() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: session, status } = useSession();
@@ -126,3 +127,11 @@ export default function PurchaseSuccessPage() {
     </div>
   );
 } 
+
+export default function PurchaseSuccessPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PurchaseSuccess />
+    </Suspense>
+  );
+}
