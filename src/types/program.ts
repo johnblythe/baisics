@@ -5,7 +5,7 @@ export interface Program {
   name: string;
   description?: string;
   workoutPlans: WorkoutPlan[];
-  user: User;
+  user: Partial<User>;
   userImages?: UserImages[];
 }
 
