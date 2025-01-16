@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { WorkoutPlan } from '@/types/program';
 import { UpsellModal } from './UpsellModal';
-import { Target, Brain, Activity, Key, Dumbbell, Apple, ChartLine } from 'lucide-react';
+import { Target, Brain, Activity, Key, Dumbbell, Apple, ChartLine, Info } from 'lucide-react';
 import { formatRestPeriod } from '@/utils/formatters';
 import { Program } from '@/types/program';
 import { getUser } from '../start/actions';
@@ -18,7 +18,7 @@ type UploadedImage = {
 };
 
 // todo
-interface ExtendedWorkoutPlan extends WorkoutPlan {
+interface ExtendedWorkoutPlan extends Omit<WorkoutPlan, 'phaseExplanation' | 'phaseExpectations' | 'phaseKeyPoints'> {
   phaseExplanation?: string;
   phaseExpectations?: string;
   phaseKeyPoints?: string[];
@@ -41,6 +41,15 @@ export function WorkoutPlanDisplay({ program, userEmail: initialUserEmail, plan,
   const [isUpsellOpen, setIsUpsellOpen] = useState(false);
   const [userEmail, setUserEmail] = useState(initialUserEmail);
   const [user, setUser] = useState<User | null>(null);
+  const [expandedNotes, setExpandedNotes] = useState<string[]>([]);
+
+  const toggleNotes = (exerciseId: string) => {
+    setExpandedNotes(prev => 
+      prev.includes(exerciseId) 
+        ? prev.filter(id => id !== exerciseId)
+        : [...prev, exerciseId]
+    );
+  };
 
   const handleUpsell = () => {
     if (onRequestUpsell) {
@@ -133,14 +142,14 @@ export function WorkoutPlanDisplay({ program, userEmail: initialUserEmail, plan,
         {/* Phase Navigation */}
         <div className="border-b border-gray-200 dark:border-gray-700 p-6">
           <h3 className="font-bold text-xl text-gray-900 dark:text-white">Phase 1</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">lrem ipsuem</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{plan.phaseExplanation}</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 lg:p-8">
           {/* Phase Overview Section */}
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
             <div className="p-6 space-y-6">
-              <div className="flex items-start space-x-3">
+              <div className="flex items-start space-x-3 hidden">
                 <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg">
                   <Brain className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                 </div>
@@ -336,37 +345,47 @@ export function WorkoutPlanDisplay({ program, userEmail: initialUserEmail, plan,
 
               <div className="p-6 space-y-6">
                 {/* Warmup Section */}
-                {workout.warmup && (
-                  <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-700 p-4">
-                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-                      <svg 
-                        xmlns="http://www.w3.org/2000/svg" 
-                        className="h-5 w-5 text-indigo-600 dark:text-indigo-400" 
-                        viewBox="0 0 24 24" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        strokeWidth="2" 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round"
-                      >
-                        <path d="M12 2v4" />
-                        <path d="M12 18v4" />
-                        <path d="m4.93 4.93 2.83 2.83" />
-                        <path d="m16.24 16.24 2.83 2.83" />
-                        <path d="M2 12h4" />
-                        <path d="M18 12h4" />
-                        <path d="m4.93 19.07 2.83-2.83" />
-                        <path d="m16.24 7.76 2.83-2.83" />
-                      </svg>
-                      Warmup {workout.warmup.duration ? `(${workout.warmup.duration} mins)` : ''}
-                    </h4>
-                    <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                      {workout.warmup.activities?.map((activity, idx) => (
-                        <li key={`warmup-${workout.id}-${activity}-${idx}`}>{activity}</li>
-                      )) || <li key={`warmup-${workout.id}-default`}>General warmup</li>}
-                    </ul>
-                  </div>
-                )}
+                {workout.warmup && (() => {
+                  const warmupData = typeof workout.warmup === 'string' 
+                    ? JSON.parse(workout.warmup)
+                    : workout.warmup;
+                  
+                  return (
+                    <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-700 p-4">
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                        <svg 
+                          xmlns="http://www.w3.org/2000/svg" 
+                          className="h-5 w-5 text-indigo-600 dark:text-indigo-400" 
+                          viewBox="0 0 24 24" 
+                          fill="none" 
+                          stroke="currentColor" 
+                          strokeWidth="2" 
+                          strokeLinecap="round" 
+                          strokeLinejoin="round"
+                        >
+                          <path d="M12 2v4" />
+                          <path d="M12 18v4" />
+                          <path d="m4.93 4.93 2.83 2.83" />
+                          <path d="m16.24 16.24 2.83 2.83" />
+                          <path d="M2 12h4" />
+                          <path d="M18 12h4" />
+                          <path d="m4.93 19.07 2.83-2.83" />
+                          <path d="m16.24 7.76 2.83-2.83" />
+                        </svg>
+                        Warmup {warmupData.duration ? `(${warmupData.duration} mins)` : ''}
+                      </h4>
+                      <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                        {warmupData.activities?.length ? (
+                          warmupData.activities.map((activity: string, idx: number) => (
+                            <li key={`warmup-${workout.id}-${activity}-${idx}`}>{activity}</li>
+                          ))
+                        ) : (
+                          <li key={`warmup-${workout.id}-default`}>General warmup</li>
+                        )}
+                      </ul>
+                    </div>
+                  );
+                })()}
 
                 {/* Main Workout */}
                 <div>
@@ -380,45 +399,85 @@ export function WorkoutPlanDisplay({ program, userEmail: initialUserEmail, plan,
 
                   {/* Exercise Rows */}
                   <div className="space-y-2">
-                    {workout.exercises.map((exercise, exerciseIndex) => (
-                      <div
-                        key={`exercise-${workout.id}-${exercise.name}-${exerciseIndex}`}
-                        className="grid grid-cols-12 gap-4 p-4 rounded-lg border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
-                      >
-                        <div className="col-span-6 font-medium text-gray-900 dark:text-white">{exercise.name}</div>
-                        <div className="col-span-1 text-gray-600 dark:text-gray-400">{exercise.sets}</div>
-                        <div className="col-span-2 text-gray-600 dark:text-gray-400">{exercise.reps}</div>
-                        <div className="col-span-3 text-gray-600 dark:text-gray-400">{formatRestPeriod(typeof exercise.restPeriod === 'string' ? parseInt(exercise.restPeriod) : exercise.restPeriod)}</div>
-                      </div>
-                    ))}
+                    {workout.exercises.map((exercise, exerciseIndex) => {
+                      const exerciseId = exercise.id || `exercise-${workout.id}-${exercise.name}-${exerciseIndex}`;
+                      const isExpanded = expandedNotes.includes(exerciseId);
+                      
+                      return (
+                        <div
+                          key={exerciseId}
+                          className="rounded-lg border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                        >
+                          <div className="grid grid-cols-12 gap-4 p-4">
+                            <div className="col-span-6 font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                              {exercise.name}
+                              {exercise.notes && (
+                                <button
+                                  onClick={() => toggleNotes(exerciseId)}
+                                  className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                  aria-label={isExpanded ? "Hide exercise notes" : "Show exercise notes"}
+                                >
+                                  <Info className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                                </button>
+                              )}
+                            </div>
+                            <div className="col-span-1 text-gray-600 dark:text-gray-400">{exercise.sets}</div>
+                            <div className="col-span-2 text-gray-600 dark:text-gray-400">
+                              {exercise.measure?.value || '-'}
+                            </div>
+                            <div className="col-span-3 text-gray-600 dark:text-gray-400">{formatRestPeriod(typeof exercise.restPeriod === 'string' ? parseInt(exercise.restPeriod) : exercise.restPeriod)}</div>
+                          </div>
+                          
+                          {/* Expandable Notes Section */}
+                          {exercise.notes && isExpanded && (
+                            <>
+                              <div className="h-px bg-gray-100 dark:bg-gray-700" />
+                              <div className="p-4 text-sm text-gray-600 dark:text-gray-400">
+                                {exercise.notes}
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
 
                 {/* Cooldown Section */}
-                {workout.cooldown && (
-                  <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-700 p-4">
-                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-                      <svg 
-                        xmlns="http://www.w3.org/2000/svg" 
-                        className="h-5 w-5 text-indigo-600 dark:text-indigo-400" 
-                        viewBox="0 0 24 24" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        strokeWidth="2" 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round"
-                      >
-                        <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2" />
-                      </svg>
-                      Cooldown {workout.cooldown.duration ? `(${workout.cooldown.duration} mins)` : ''}
-                    </h4>
-                    <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                      {workout.cooldown.activities?.map((activity, idx) => (
-                        <li key={`cooldown-${workout.id}-${activity}-${idx}`}>{activity}</li>
-                      )) || <li key={`cooldown-${workout.id}-default`}>General cooldown</li>}
-                    </ul>
-                  </div>
-                )}
+                {workout.cooldown && (() => {
+                  const cooldownData = typeof workout.cooldown === 'string'
+                    ? JSON.parse(workout.cooldown)
+                    : workout.cooldown;
+                  
+                  return (
+                    <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-700 p-4">
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                        <svg 
+                          xmlns="http://www.w3.org/2000/svg" 
+                          className="h-5 w-5 text-indigo-600 dark:text-indigo-400" 
+                          viewBox="0 0 24 24" 
+                          fill="none" 
+                          stroke="currentColor" 
+                          strokeWidth="2" 
+                          strokeLinecap="round" 
+                          strokeLinejoin="round"
+                        >
+                          <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2" />
+                        </svg>
+                        Cooldown {cooldownData.duration ? `(${cooldownData.duration} mins)` : ''}
+                      </h4>
+                      <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                        {cooldownData.activities?.length ? (
+                          cooldownData.activities.map((activity: string, idx: number) => (
+                            <li key={`cooldown-${workout.id}-${activity}-${idx}`}>{activity}</li>
+                          ))
+                        ) : (
+                          <li key={`cooldown-${workout.id}-default`}>General cooldown</li>
+                        )}
+                      </ul>
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           ))}
