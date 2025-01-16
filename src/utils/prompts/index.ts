@@ -29,22 +29,22 @@ export const extractionPrompt = `
         "height": { "value": "...", "confidence": 0.0 },
         "workoutEnvironment": { 
           "value": {
-            "primary": "...",
+            "primary": "gym" | "home" | "travel" | "outdoors",
             "limitations": []
           },
           "confidence": 0.0
         },
         "equipmentAccess": {
           "value": {
-            "type": "...",
+            "type": "full-gym" | "minimal" | "bodyweight" | "specific",
             "available": []
           },
           "confidence": 0.0
         },
         "workoutStyle": {
           "value": {
-            "primary": "...",
-            "secondary": "..."
+            "primary": "strength" | "yoga" | "cardio" | "hybrid",
+            "secondary": "strength" | "yoga" | "cardio" | "hybrid"
           },
           "confidence": 0.0
         },
@@ -53,5 +53,6 @@ export const extractionPrompt = `
       },
       "nextQuestion": "...",
       "readyForProgram": false
-    }`
+    }
+`
   ;

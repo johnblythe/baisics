@@ -1,3 +1,5 @@
+import { IntakeFormData } from "@/types/user";
+
 export const formatRestPeriod = (rest: number): string => {
   // If no rest period provided, return default
   if (!rest) return '60s';
@@ -47,3 +49,35 @@ export const formatExerciseMeasure = (exercise: any) => {
     return '-';
   }
 }; 
+
+
+// Helper to convert extracted data to IntakeFormData format
+export const convertToIntakeFormat = (extractedData: any): IntakeFormData => {
+  return {
+    sex: extractedData.gender?.value || 'other',
+    trainingGoal: extractedData.goals?.value,
+    daysAvailable: parseInt(extractedData.daysPerWeek?.value) || 3,
+    dailyBudget: parseInt(extractedData.timePerDay?.value) || 60,
+    age: extractedData.age?.value ? parseInt(extractedData.age.value) : undefined,
+    weight: extractedData.weight?.value ? parseInt(extractedData.weight.value) : undefined,
+    height: extractedData.height?.value ? parseInt(extractedData.height.value) : undefined,
+    trainingPreferences: extractedData.preferences?.value ? 
+      extractedData.preferences.value.split(',').map((p: string) => p.trim()) : 
+      [],
+    workoutEnvironment: {
+      primary: extractedData.workoutEnvironment?.value?.primary || 'gym',
+      limitations: extractedData.workoutEnvironment?.value?.limitations || []
+    },
+    equipmentAccess: {
+      type: extractedData.equipmentAccess?.value?.type || 'full-gym',
+      available: extractedData.equipmentAccess?.value?.available || []
+    },
+    workoutStyle: {
+      primary: extractedData.workoutStyle?.value?.primary || 'strength',
+      secondary: extractedData.workoutStyle?.value?.secondary
+    },
+    additionalInfo: extractedData.additionalInfo?.value || '',
+    experienceLevel: extractedData.additionalInfo?.value?.toLowerCase().includes('experienced') ? 'intermediate' : 'beginner',
+    modificationRequest: extractedData.modificationRequest?.value || '',
+  };
+}

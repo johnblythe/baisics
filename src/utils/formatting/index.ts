@@ -11,7 +11,8 @@ export const formatUnderscoreDelimitedString = (str: string) => {
 };
 
 // Utility function to convert inches to feet and inches
-export const convertHeightToFeetAndInches = (heightInInches: number): string => {
+export const convertHeightToFeetAndInches = (heightInInches: number | undefined): string => {
+  if (!heightInInches) return 'Not specified';
   const feet = Math.floor(heightInInches / 12);
   const inches = heightInInches % 12;
   return inches === 0 ? `${feet}′` : `${feet}′ ${inches}″`;
