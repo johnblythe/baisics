@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import ReactConfetti from "react-confetti";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import TawkChat from "@/components/TawkChat";
@@ -98,12 +99,23 @@ interface TooltipItem {
 
 export default function DashboardPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [program, setProgram] = useState<Program | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [analyzingPhotoId, setAnalyzingPhotoId] = useState<string | null>(null);
   const [tooltipContent, setTooltipContent] = useState<{ x: number; y: number; content: React.ReactNode } | null>(null);
   const [latestCheckIn, setLatestCheckIn] = useState<CheckInWithPhotos | null>(null);
   const [weightData, setWeightData] = useState<WeightDataPoint[]>([]);
+  const [showConfetti, setShowConfetti] = useState(false);
+
+  useEffect(() => {
+    // Show confetti if new_user=true in search params
+    if (searchParams.get('new_user') === 'true') {
+      setShowConfetti(true);
+      const timer = setTimeout(() => setShowConfetti(false), 5000); // Hide after 5 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     async function fetchData() {
@@ -222,6 +234,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
+      {showConfetti && <ReactConfetti recycle={false} />}
       <Header />
       <main className="flex-grow bg-white dark:bg-gray-900 pt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
