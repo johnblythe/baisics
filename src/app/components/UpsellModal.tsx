@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { validateEmail } from "@/utils/forms/validation";
 import ReactConfetti from "react-confetti";
 import { updateUser } from '../start/actions';
+import { sendEmail } from '@/lib/email';
+import { welcomeFreeTemplate, welcomePremiumTemplate } from '@/lib/email/templates';
 
 /**
  * TODOs:
@@ -94,18 +96,27 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
       email,
     });
 
-    if (isPremium) {
-      window.open(
-        `${process.env.NEXT_PUBLIC_STRIPE_LINK}?` + 
-        new URLSearchParams({
-          prefilled_email: email,
-          utm_content: purchaseSessionId,
-        }).toString(),
-        '_blank'
-      );
-    }
-
     if (response.success) {
+      // Send welcome email
+      await sendEmail({
+        to: email,
+        subject: isPremium ? 'Welcome to Baisics Premium!' : 'Welcome to Baisics!',
+        html: isPremium 
+          ? welcomePremiumTemplate()
+          : welcomeFreeTemplate({ upgradeLink: process.env.NEXT_PUBLIC_STRIPE_LINK })
+      });
+
+      if (isPremium) {
+        window.open(
+          `${process.env.NEXT_PUBLIC_STRIPE_LINK}?` + 
+          new URLSearchParams({
+            prefilled_email: email,
+            utm_content: purchaseSessionId,
+          }).toString(),
+          '_blank'
+        );
+      }
+
       setShowConfetti(true);
       onEmailSubmit(email);
       onClose();
