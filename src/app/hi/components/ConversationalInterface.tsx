@@ -163,7 +163,7 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
           const structureResponse = await fetch('/api/program-creation/structure', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ intakeData: result.extractedData })
+            body: JSON.stringify({ intakeData: result.extractedData, userId })
           });
           const { programStructure } = await structureResponse.json();
 
@@ -178,7 +178,8 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
               intakeData: result.extractedData,
-              programStructure 
+              programStructure,
+              userId
             })
           });
           const { workoutStructure } = await workoutResponse.json();
@@ -200,7 +201,8 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
               intakeData: result.extractedData,
               programStructure,
               workoutStructure,
-              phase
+              phase,
+              userId
             })
           });
           const { phaseDetails } = await phaseResponse.json();
@@ -212,7 +214,8 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
             body: JSON.stringify({
               intakeData: result.extractedData,
               programStructure,
-              phase
+              phase,
+              userId
             })
           });
           const { nutrition } = await nutritionResponse.json();
@@ -227,7 +230,8 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
                 intakeData: result.extractedData,
                 programStructure,
                 workoutStructure,
-                dayNumber: i + 1
+                dayNumber: i + 1,
+                userId
               })
             });
             const { workoutFocus } = await focusResponse.json();
@@ -240,7 +244,8 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
                 intakeData: result.extractedData,
                 programStructure,
                 workoutStructure,
-                workoutFocus
+                workoutFocus,
+                userId
               })
             });
             const { exercises } = await exercisesResponse.json();

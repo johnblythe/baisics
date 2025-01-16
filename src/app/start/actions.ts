@@ -519,9 +519,8 @@ export async function preparePromptForAI(
       role: 'user',
       // @ts-ignore
       content: messageContent,
-    }]);
-    console.timeEnd('ai-response');
-
+    }], userId);
+    
     if (aiResponse.success) {
       console.time('save-prompt-log');
       await prisma.promptLog.create({

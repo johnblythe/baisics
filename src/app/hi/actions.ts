@@ -114,13 +114,16 @@ export async function processUserMessage(
     // Log the extraction prompt
     
 
-    const result = await sendMessage([
-      ...messageHistory,
-      {
-        role: 'user',
-        content: extractionPrompt
-      }
-    ]);
+    const result = await sendMessage(
+      [
+        ...messageHistory,
+        {
+          role: 'user',
+          content: extractionPrompt
+        }
+      ],
+      userId
+    );
 
     if (!result.success) {
       throw new Error('Failed to get response from Claude');

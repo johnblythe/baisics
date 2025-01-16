@@ -5,11 +5,12 @@ import { ProgramStructure } from '@/app/hi/services/programCreationSteps';
 
 export async function POST(request: Request) {
   try {
-    const { intakeData, programStructure, phase } = await request.json();
+    const { intakeData, programStructure, phase, userId } = await request.json();
     const nutrition = await getPhaseNutrition(
       intakeData as IntakeFormData,
       programStructure as ProgramStructure,
-      phase
+      phase,
+      userId
     );
     return NextResponse.json({ success: true, nutrition });
   } catch (error) {

@@ -411,13 +411,13 @@ export const saveProgramToDatabase = async (program: Program): Promise<Program> 
 };
 
 // Main functions
-export const getProgramStructure = async (intakeData: IntakeFormData) => {
-  const response = await sendMessage(formatProgramStructurePrompt(intakeData));
+export const getProgramStructure = async (intakeData: IntakeFormData, userId: string) => {
+  const response = await sendMessage(formatProgramStructurePrompt(intakeData), userId);
   return parseAIResponse<ProgramStructure>(response, defaultProgramStructure);
 };
 
-export const getWorkoutStructure = async (intakeData: IntakeFormData, programStructure: ProgramStructure) => {
-  const response = await sendMessage(formatWorkoutStructurePrompt(intakeData, programStructure));
+export const getWorkoutStructure = async (intakeData: IntakeFormData, programStructure: ProgramStructure, userId: string) => {
+  const response = await sendMessage(formatWorkoutStructurePrompt(intakeData, programStructure), userId);
   return parseAIResponse<WorkoutStructure>(response, defaultWorkoutStructure);
 };
 
@@ -425,9 +425,10 @@ export const getWorkoutFocus = async (
   intakeData: IntakeFormData,
   programStructure: ProgramStructure,
   workoutStructure: WorkoutStructure,
-  dayNumber: number
+  dayNumber: number,
+  userId: string
 ) => {
-  const response = await sendMessage(formatWorkoutFocusPrompt(intakeData, programStructure, workoutStructure, dayNumber));
+  const response = await sendMessage(formatWorkoutFocusPrompt(intakeData, programStructure, workoutStructure, dayNumber), userId);
   return parseAIResponse(response, {
     name: '',
     focus: '',
@@ -442,9 +443,10 @@ export const getExercisesForFocus = async (
   intakeData: IntakeFormData,
   programStructure: ProgramStructure,
   workoutStructure: WorkoutStructure,
-  workoutFocus: { focus: string; targetExerciseCount: number }
+  workoutFocus: { focus: string; targetExerciseCount: number },
+  userId: string
 ) => {
-  const response = await sendMessage(formatExercisesForFocusPrompt(intakeData, programStructure, workoutStructure, workoutFocus));
+  const response = await sendMessage(formatExercisesForFocusPrompt(intakeData, programStructure, workoutStructure, workoutFocus), userId);
   return parseAIResponse(response, {
     exercises: []
   });
@@ -454,9 +456,10 @@ export const getPhaseDetails = async (
   intakeData: IntakeFormData,
   programStructure: ProgramStructure,
   workoutStructure: WorkoutStructure,
-  phase: number
+  phase: number,
+  userId: string
 ) => {
-  const response = await sendMessage(formatPhaseDetailsPrompt(intakeData, programStructure, workoutStructure, phase));
+  const response = await sendMessage(formatPhaseDetailsPrompt(intakeData, programStructure, workoutStructure, phase), userId);
   return parseAIResponse(response, {
     phaseExplanation: '',
     phaseExpectations: '',
@@ -468,24 +471,28 @@ export const getPhaseDetails = async (
 export const getPhaseNutrition = async (
   intakeData: IntakeFormData,
   programStructure: ProgramStructure,
-  phase: number
+  phase: number,
+  userId: string
 ) => {
-  const response = await sendMessage(formatPhaseNutritionPrompt(intakeData, programStructure, phase));
+  const response = await sendMessage(formatPhaseNutritionPrompt(intakeData, programStructure, phase), userId);
   return parseAIResponse(response, {
     dailyCalories: 2000,
     macros: { protein: 150, carbs: 200, fats: 70 }
   });
 };
 
+// @todo: get this or something like it operational
 export const getFinalReview = async (
   intakeData: IntakeFormData,
   programStructure: ProgramStructure,
   workoutStructure: WorkoutStructure,
   workoutPlans: WorkoutPlan[],
-  nutritionPlan: Nutrition
+  nutritionPlan: Nutrition,
+  userId: string
 ) => {
   const response = await sendMessage(
-    formatFinalReviewPrompt(intakeData, programStructure, workoutStructure, workoutPlans, nutritionPlan)
+    formatFinalReviewPrompt(intakeData, programStructure, workoutStructure, workoutPlans, nutritionPlan),
+    userId
   );
   return parseAIResponse<ProgramReview>(response, {
     isComplete: false,
