@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import TawkChat from '@/components/TawkChat';
 import { createCheckIn } from './actions';
 
 interface Photo {
@@ -102,7 +103,7 @@ export default function CheckInPage() {
   const inputClasses = "mt-1 block w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent hover:border-gray-300 dark:hover:border-gray-600 transition-colors duration-200";
 
   return (
-    <div className="flex-grow">
+    <div className="flex-grow mt-20">
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="space-y-4">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Weekly Check-in</h1>
@@ -600,6 +601,7 @@ export default function CheckInPage() {
           </div>
         </form>
       </div>
+      <TawkChat />
       <Footer />
     </div>
   );

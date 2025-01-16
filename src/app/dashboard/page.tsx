@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import TawkChat from "@/components/TawkChat";
 import { getLatestCheckIn } from '../check-in/actions';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, TooltipProps } from 'recharts';
 import { CheckIn, ProgressPhoto, UserImages, UserStats } from '@prisma/client';
@@ -23,18 +24,21 @@ type CheckInWithPhotos = CheckIn & {
   stats: UserStats[];
 };
 
-// Mock weight data - we'll replace this with real data later
-const mockWeightData = [
-  { date: '2024-01-01', weight: 165 },
-  { date: '2024-01-08', weight: 164.2 },
-  { date: '2024-01-15', weight: 163.5 },
-  { date: '2024-01-22', weight: 163.8 },
-  { date: '2024-01-29', weight: 162.9 },
-  { date: '2024-02-05', weight: 162.3 },
-].map(entry => ({
-  ...entry,
-  displayDate: new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-}));
+interface WeightDataPoint {
+  date: string;
+  displayDate: string;
+  weight: number;
+}
+
+// Mock data for empty state visualization
+const mockEmptyStateData: WeightDataPoint[] = [
+  { date: '2024-01-01', displayDate: 'Jan 1', weight: 165 },
+  { date: '2024-01-08', displayDate: 'Jan 8', weight: 164.2 },
+  { date: '2024-01-15', displayDate: 'Jan 15', weight: 163.5 },
+  { date: '2024-01-22', displayDate: 'Jan 22', weight: 163.8 },
+  { date: '2024-01-29', displayDate: 'Jan 29', weight: 162.9 },
+  { date: '2024-02-05', displayDate: 'Feb 5', weight: 162.3 },
+];
 
 interface Program {
   id: string;
@@ -99,6 +103,7 @@ export default function DashboardPage() {
   const [analyzingPhotoId, setAnalyzingPhotoId] = useState<string | null>(null);
   const [tooltipContent, setTooltipContent] = useState<{ x: number; y: number; content: React.ReactNode } | null>(null);
   const [latestCheckIn, setLatestCheckIn] = useState<CheckInWithPhotos | null>(null);
+  const [weightData, setWeightData] = useState<WeightDataPoint[]>([]);
 
   useEffect(() => {
     async function fetchData() {
@@ -131,6 +136,23 @@ export default function DashboardPage() {
       try {
         const checkIn = await getLatestCheckIn(program.id);
         setLatestCheckIn(checkIn);
+
+        // Transform check-in data into weight data points
+        if (checkIn?.stats) {
+          const weightPoints = checkIn.stats
+            .filter(stat => typeof stat.weight === 'number') // Only include entries with non-null weight
+            .map(stat => ({
+              date: new Date(stat.createdAt).toISOString(),
+              displayDate: new Date(stat.createdAt).toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric' 
+              }),
+              weight: stat.weight as number // Safe to cast since we filtered for numbers
+            }))
+            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+          setWeightData(weightPoints);
+        }
       } catch (error) {
         console.error('Error fetching latest check-in:', error);
       }
@@ -138,6 +160,12 @@ export default function DashboardPage() {
 
     fetchData();
   }, [program?.id]);
+
+  const handleAskForHelp = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    // @ts-expect-error Tawk_API is not defined
+    void Tawk_API.toggle();
+  }
 
   const calculateProgramStats = (program: Program) => {
     const startDate = new Date(program.workoutLogs[0]?.completedAt || new Date());
@@ -212,6 +240,43 @@ export default function DashboardPage() {
                       {program.description && (
                         <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl">{program.description}</p>
                       )}
+                      
+                      {/* Helper Links */}
+                      <div className="flex items-center gap-6 pt-20">
+                        <Link
+                          href="/program/pdf"
+                          className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-white transition-colors"
+                        >
+                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M7 18H17V16H7V18Z" fill="currentColor"/>
+                            <path d="M17 14H7V12H17V14Z" fill="currentColor"/>
+                            <path d="M7 10H11V8H7V10Z" fill="currentColor"/>
+                            <path fillRule="evenodd" clipRule="evenodd" d="M6 2C4.34315 2 3 3.34315 3 5V19C3 20.6569 4.34315 22 6 22H18C19.6569 22 21 20.6569 21 19V9C21 5.13401 17.866 2 14 2H6ZM6 4H13V9H19V19C19 19.5523 18.5523 20 18 20H6C5.44772 20 5 19.5523 5 19V5C5 4.44772 5.44772 4 6 4ZM15 4.10002C16.6113 4.4271 17.9413 5.52906 18.584 7H15V4.10002Z" fill="currentColor"/>
+                          </svg>
+                          Download PDF
+                        </Link>
+                        <Link
+                          href="/hi"
+                          className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-white transition-colors"
+                        >
+                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 6V18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                            <path d="M6 12H18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          </svg>
+                          Create a new program
+                        </Link>
+                        <button
+                          onClick={handleAskForHelp}
+                          className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-white transition-colors"
+                        >
+                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" strokeWidth="2"/>
+                            <path d="M9 9C9 7.34315 10.3431 6 12 6C13.6569 6 15 7.34315 15 9C15 10.6569 13.6569 12 12 12V14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                            <circle cx="12" cy="17" r="1" fill="currentColor"/>
+                          </svg>
+                          Need help?
+                        </button>
+                      </div>
                     </div>
                   </div>
 
@@ -311,9 +376,12 @@ export default function DashboardPage() {
                             </div>
 
                             {/* Weight Chart */}
-                            <div className="h-48">
+                            <div className="h-48 relative">
                               <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={mockWeightData} margin={{ top: 5, right: 5, bottom: 5, left: 35 }}>
+                                <LineChart 
+                                  data={weightData.length > 0 ? weightData : mockEmptyStateData} 
+                                  margin={{ top: 5, right: 5, bottom: 5, left: 35 }}
+                                >
                                   <XAxis 
                                     dataKey="displayDate" 
                                     tick={{ fontSize: 12, fill: 'var(--foreground)' }}
@@ -351,9 +419,20 @@ export default function DashboardPage() {
                                   />
                                 </LineChart>
                               </ResponsiveContainer>
+                              
+                              {weightData.length === 0 && (
+                                <div className="absolute inset-0 backdrop-blur-[2px] bg-white/50 dark:bg-gray-900/50 flex items-center justify-center">
+                                  <div className="bg-white/95 dark:bg-gray-800/95 px-4 py-2 rounded-lg shadow-sm">
+                                    <p className="text-md font-semibold text-gray-600 dark:text-gray-400 text-center">
+                                      No weight data available yet.<br />
+                                      Complete your first check-in to start.
+                                    </p>
+                                  </div>
+                                </div>
+                              )}
                             </div>
 
-                            {mockWeightData.length <= 3 && (
+                            {weightData.length <= 3 && weightData.length > 0 && (
                               <p className="text-sm text-gray-500 dark:text-gray-400">
                                 Weight tracking becomes more meaningful after a few check-ins
                               </p>
@@ -735,6 +814,7 @@ export default function DashboardPage() {
           </div>
         </div>
       </main>
+      <TawkChat />
       <Footer />
     </div>
   );
