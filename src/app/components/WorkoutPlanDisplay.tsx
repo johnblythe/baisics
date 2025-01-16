@@ -37,16 +37,20 @@ interface WorkoutPlanDisplayProps {
   onDeleteImage?: (imageId: string) => Promise<void>;
 }
 
+// @TODO: data sent back and forth vs. stored and retrieved is slightly different shape
+// need to consolidate as a post-launch hygiene item
 const formatExerciseMeasure = (exercise: any) => {
   // If we have reps and it's not 0, show that
-  if (exercise.reps) {
-    return `${exercise.reps}`;
+  if (exercise.reps) { // db version
+    return `${exercise.reps || exercise.measure?.reps}`;
+  } else if (exercise.measure.type === 'reps') { // api version
+    return `${exercise.measure.value}`;
   }
 
   try {
-    const value = exercise.measureValue;
-    const type = exercise.measureType?.toLowerCase();
-    const unit = exercise.measureUnit;
+    const type = exercise.measureType ? exercise.measureType.toLowerCase() : exercise.measure?.type?.toLowerCase();
+    const unit = exercise.measureUnit || exercise.measure?.unit;
+    const value = exercise.measureValue || exercise.measure?.value;
 
   let finalReturn = '';
   switch (type) {
