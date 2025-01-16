@@ -3,6 +3,7 @@ import { validateEmail } from "@/utils/forms/validation";
 import ReactConfetti from "react-confetti";
 import { updateUser } from '../start/actions';
 import { welcomeFreeTemplate, welcomePremiumTemplate } from '@/lib/email/templates';
+import { adminSignupNotificationTemplate } from '@/lib/email/templates/admin';
 import { sendEmailAction } from "../hi/actions";
 import { User } from "@prisma/client";
 
@@ -83,6 +84,8 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
   const handleUpdateAnonUser = async (email: string, isPremium = false) => {
     try {
       const userId = new URLSearchParams(window.location.search).get('userId');
+      const programId = new URLSearchParams(window.location.search).get('programId');
+      
       if (!userId) {
         throw new Error("No user ID found in URL");
       }
@@ -117,15 +120,25 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
       });
 
       if (response.success) {
-        const programId = new URLSearchParams(window.location.search).get('programId');
-
-        // Send welcome email
+        // Send welcome email to user
         await sendEmailAction({
           to: email,
           subject: isPremium ? 'Welcome to Baisics Premium!' : 'Welcome to Baisics!',
           html: isPremium 
             ? welcomePremiumTemplate()
             : welcomeFreeTemplate({ upgradeLink: process.env.NEXT_PUBLIC_STRIPE_LINK, programLink: `${process.env.NEXT_PUBLIC_APP_URL}/hi?userId=${userId}&programId=${programId}` })
+        });
+
+        // Send admin notification
+        await sendEmailAction({
+          to: process.env.NEXT_PUBLIC_ADMIN_EMAIL!,
+          subject: `New ${isPremium ? 'Premium' : 'Free'} User Signup: ${email}`,
+          html: adminSignupNotificationTemplate({
+            userEmail: email,
+            isPremium,
+            userId,
+            programId: programId || undefined
+          })
         });
 
         if (isPremium) {
@@ -138,7 +151,6 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
             '_blank'
           );
         }
-
         setShowConfetti(true);
         onEmailSubmit(email);
         onClose();
@@ -226,52 +238,68 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
                 </span>
               </div>
             </div>
-            <form onSubmit={async (e) => {
-              e.preventDefault();
-              if (validateEmail(freeEmail)) {
-                try {
-                  setIsLoading(true);
-                  await handleUpdateAnonUser(freeEmail);
-                } catch (error) {
-                  console.error('Error:', error);
-                } finally {
-                  setIsLoading(false);
-                }
-              }
-            }}>
-              <input
-                type="email"
-                value={freeEmail}
-                onChange={(e) => {
-                  setFreeEmail(e.target.value);
-                  setFreeEmailError("");
-                }}
-                onBlur={() => {
-                  if (!validateEmail(freeEmail) && freeEmail !== "") {
-                    setFreeEmailError("Please enter a valid email address");
+            {user?.email ? (
+              <div className="text-center space-y-3">
+                <div className="bg-blue-50 dark:bg-gray-700/50 rounded-lg p-4">
+                  <p className="text-gray-600 dark:text-gray-400">
+                    You&apos;ve already started your free journey! 🎉
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                    Ready to unlock all features? Check out our Premium plan →
+                  </p>
+                </div>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Need to get back to your baisics dashboard?<br/><a href={`${process.env.NEXT_PUBLIC_APP_URL}/hi?userId=${user.id}`} className="text-indigo-600 dark:text-indigo-400 hover:underline">Log in here</a>
+                </p>
+              </div>
+            ) : (
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                if (validateEmail(freeEmail)) {
+                  try {
+                    setIsLoading(true);
+                    await handleUpdateAnonUser(freeEmail);
+                  } catch (error) {
+                    console.error('Error:', error);
+                  } finally {
+                    setIsLoading(false);
                   }
-                }}
-                disabled={isLoading}
-                placeholder="Enter your email"
-                className={`w-full p-3 border rounded-lg mb-3 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 ${
-                  freeEmailError ? "border-red-500 ring-1 ring-red-500 ring-opacity-50" : ""
-                } ${validateEmail(freeEmail) && freeEmail !== "" ? "border-green-500 ring-1 ring-green-500 ring-opacity-50" : ""}`}
-                required
-              />
-              {freeEmailError && (
-                <p className="text-red-500 text-sm mb-3">{freeEmailError}</p>
-              )}
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full px-4 py-2 text-white font-medium rounded-lg bg-gray-600  hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-              >
-                {isLoading ? <LoadingSpinner /> : 'Continue with Free Access'}
-              </button>
-              <p className="text-center text-sm mt-3 text-gray-600 dark:text-gray-400">
-                Enjoy your custom program at <u>no cost</u>!
-              </p>
-            </form>
+                }
+              }}>
+                <input
+                  type="email"
+                  value={freeEmail}
+                  onChange={(e) => {
+                    setFreeEmail(e.target.value);
+                    setFreeEmailError("");
+                  }}
+                  onBlur={() => {
+                    if (!validateEmail(freeEmail) && freeEmail !== "") {
+                      setFreeEmailError("Please enter a valid email address");
+                    }
+                  }}
+                  disabled={isLoading}
+                  placeholder="Enter your email"
+                  className={`w-full p-3 border rounded-lg mb-3 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 ${
+                    freeEmailError ? "border-red-500 ring-1 ring-red-500 ring-opacity-50" : ""
+                  } ${validateEmail(freeEmail) && freeEmail !== "" ? "border-green-500 ring-1 ring-green-500 ring-opacity-50" : ""}`}
+                  required
+                />
+                {freeEmailError && (
+                  <p className="text-red-500 text-sm mb-3">{freeEmailError}</p>
+                )}
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full px-4 py-2 text-white font-medium rounded-lg bg-gray-600  hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {isLoading ? <LoadingSpinner /> : 'Continue with Free Access'}
+                </button>
+                <p className="text-center text-sm mt-3 text-gray-600 dark:text-gray-400">
+                  Enjoy your custom program at <u>no cost</u>!
+                </p>
+              </form>
+            )}
           </div>
 
           {/* Premium Option */}

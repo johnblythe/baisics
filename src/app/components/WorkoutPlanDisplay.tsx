@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { WorkoutPlan } from '@/types/program';
-import { UpsellModal } from './UpsellModal';
 import { Target, Brain, Activity, Key, Dumbbell, Apple, ChartLine, Info } from 'lucide-react';
 import { formatRestPeriod } from '@/utils/formatters';
 import { Program } from '@/types/program';
@@ -45,21 +44,21 @@ export function WorkoutPlanDisplay({ program, userEmail: initialUserEmail, plan,
   const [isLoading, setIsLoading] = useState(false);
 
   // Fetch user data when component mounts or when userEmail changes
-  useEffect(() => {
-    const fetchUser = async () => {
-      const userId = new URLSearchParams(window.location.search).get('userId');
-      if (userId) {
-        const result = await getUser(userId);
-        console.log("🚀 ~ fetchUser ~ result:", result)
-        if (result.success && result.user) {
-          setUser(result.user);
-          setUserEmail(result.user.email);
-        }
-      }
-    };
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     const userId = new URLSearchParams(window.location.search).get('userId');
+  //     if (userId) {
+  //       const result = await getUser(userId);
+  //       console.log("🚀 ~ fetchUser ~ result:", result)
+  //       if (result.success && result.user) {
+  //         setUser(result.user);
+  //         setUserEmail(result.user.email);
+  //       }
+  //     }
+  //   };
 
-    fetchUser();
-  }, []);
+  //   fetchUser();
+  // }, []);
 
   const handleUpsell = () => {
     setIsLoading(true);
@@ -70,21 +69,6 @@ export function WorkoutPlanDisplay({ program, userEmail: initialUserEmail, plan,
     setIsLoading(false);
   };
 
-  const handleEmailSubmit = async (email: string) => {
-    setIsLoading(true);
-    try {
-      const userId = new URLSearchParams(window.location.search).get('userId');
-      if (userId) {
-        const result = await getUser(userId);
-        if (result.success && result.user) {
-          setUser(result.user);
-          setUserEmail(email);
-        }
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const toggleNotes = (exerciseId: string) => {
     setExpandedNotes(prev => 
