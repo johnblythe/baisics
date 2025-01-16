@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { validateEmail } from "@/utils/forms/validation";
 import ReactConfetti from "react-confetti";
 import { updateUser } from '../start/actions';
-import { sendEmail } from '@/lib/email';
 import { welcomeFreeTemplate, welcomePremiumTemplate } from '@/lib/email/templates';
+import { sendEmailAction } from "../hi/actions";
 
 /**
  * TODOs:
@@ -97,13 +97,15 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
     });
 
     if (response.success) {
+      const programId = new URLSearchParams(window.location.search).get('programId');
+
       // Send welcome email
-      await sendEmail({
+      await sendEmailAction({
         to: email,
         subject: isPremium ? 'Welcome to Baisics Premium!' : 'Welcome to Baisics!',
         html: isPremium 
           ? welcomePremiumTemplate()
-          : welcomeFreeTemplate({ upgradeLink: process.env.NEXT_PUBLIC_STRIPE_LINK })
+          : welcomeFreeTemplate({ upgradeLink: process.env.NEXT_PUBLIC_STRIPE_LINK, programLink: `${process.env.NEXT_PUBLIC_APP_URL}/hi?userId=${userId}&programId=${programId}` })
       });
 
       if (isPremium) {
@@ -144,7 +146,7 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
         {/* Stats Banner */}
         <div className="grid grid-cols-3 gap-4 mb-8 text-center">
           <div className="bg-blue-50 dark:bg-gray-700 p-4 rounded-lg">
-            <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">75%</div>
+            <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">>75%</div>
             <div className="text-sm">Better Results with Premium</div>
           </div>
           <div className="bg-blue-50 dark:bg-gray-700 p-4 rounded-lg">

@@ -261,7 +261,6 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
           };
 
           // Final step: Construct and save program
-          console.log("🚀 ~ handleInitialIntake ~ programStructure:", programStructure)
           const program = {
             // id: programStructure.id, // TODO: does this actually get done?
             name: programStructure.name,
@@ -288,11 +287,11 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
             throw new Error('Failed to save program');
           }
 
-          const { program: savedProgram } = await saveResponse.json();
+          const { program: savedProgram, programId } = await saveResponse.json();
           console.log("🚀 ~ handleInitialIntake ~ savedProgram:", savedProgram)
           setProgram(savedProgram);
           setIsGeneratingProgram(false);
-          router.replace(`/hi?userId=${userId}&programId=${savedProgram.id}`);
+          router.replace(`/hi?userId=${userId}&programId=${programId}`);
 
         } catch (error) {
           console.error('Error generating program:', error);

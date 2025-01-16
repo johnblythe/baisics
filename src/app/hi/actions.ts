@@ -3,9 +3,26 @@
 import { Message, ExtractedData, IntakeFormData, WorkoutPlan, Program } from "@/types";
 import { sendMessage } from "@/utils/chat";
 import { prisma } from "@/lib/prisma";
+import { sendEmail } from "@/lib/email";
 // import { modifyPhase } from "./services/programCreation";
 import { createProgramSequentially } from "./services/_sequentialProgramCreation";
 import { extractionPrompt } from "@/utils/prompts/";
+
+// New server action for sending emails
+export async function sendEmailAction(options: {
+  to: string | string[];
+  subject: string;
+  text?: string;
+  html?: string;
+}) {
+  try {
+    const result = await sendEmail(options);
+    return result;
+  } catch (error) {
+    console.error('Failed to send email:', error);
+    return { success: false, error: 'Failed to send email' };
+  }
+}
 
 // Helper to convert extracted data to IntakeFormData format
 function convertToIntakeFormat(extractedData: any): IntakeFormData {

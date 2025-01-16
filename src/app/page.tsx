@@ -4,6 +4,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useState } from 'react'
 import BetaModal from './components/BetaModal'
+import { useRouter } from 'next/navigation'
+import { useUser } from '@/hooks/useUser'
 
 // Track when user opens the modal
 const trackGetStartedClick = () => {
@@ -20,19 +22,26 @@ const trackGetStartedClick = () => {
 }
 
 export default function LandingPage() {
+  const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const { user } = useUser();
 
   const handleGetStarted = (e: React.MouseEvent) => {
     e.preventDefault()
     // Track the conversion
-    trackGetStartedClick()
-    // Open the modal
-    setIsModalOpen(true)
+    trackGetStartedClick();
+
+    if (process.env.NEXT_PUBLIC_WE_LIVE) {
+      router.push('/hi')
+    } else {
+      // Open the modal
+      setIsModalOpen(true)
+    }
   }
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
-      <BetaModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <BetaModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} user={user} />
       
       {/* Background Pattern */}
       {/* <div className="absolute inset-0 z-10">
