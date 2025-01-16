@@ -28,14 +28,7 @@ const transporter = nodemailer.createTransport(emailConfig);
 if (process.env.NODE_ENV !== 'production') {
   transporter.verify(function(error, success) {
     if (error) {
-      console.log('SMTP connection error:', error);
-    } else {
-      console.log('Server is ready to take our messages');
-      // Log auth config (remove in production)
-      console.log('Auth config:', {
-        user: emailConfig.auth.user,
-        passLength: emailConfig.auth.pass ? emailConfig.auth.pass.length : 0
-      });
+      console.error('SMTP connection error:', error);
     }
   });
 }

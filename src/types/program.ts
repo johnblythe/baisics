@@ -58,16 +58,18 @@ export interface Exercise {
   workoutId?: string;
   name: string;
   sets: number;
-  reps: number;
-  restPeriod: string;
-  exerciseLibraryId?: string;
-  category?: string;
-  difficulty?: string;
-  formCues?: string[];
-  modifications?: {
-    easier: string;
-    harder: string;
+  measure: {
+    type: 'reps' | 'time' | 'distance';
+    value: number;
+    unit?: 'seconds' | 'minutes' | 'meters' | 'km' | 'miles';
   };
+  restPeriod: number;  // in seconds
+  equipment: string[];
+  alternatives: string[];
+  category?: string;
+  exerciseLibraryId?: string;
+  intensity?: string;  // e.g. "moderate", "high", "RPE 8", "70% 1RM"
+  notes?: string;     // form cues, tempo guidance, or other trainer tips
 }
 
 export interface Nutrition {
@@ -82,35 +84,14 @@ export interface Nutrition {
 
 export interface WorkoutPlan {
   id: string;
-  nutrition: Nutrition;
   workouts: Workout[];
-  phaseExplanation?: string;
-  phaseExpectations?: string;
-  phaseKeyPoints?: string[];
+  nutrition: Nutrition;
+  phase?: number;
+  phaseExplanation: string;
+  phaseExpectations: string;
+  phaseKeyPoints: string[];
   splitType?: string;
-  // todo: user composition / profile / stats / etc
 }
-
-// export interface _WorkoutPlan {
-//   id: string;
-//   phase: number;
-//   bodyFatPercentage?: number;
-//   muscleMassDistribution?: string;
-//   dailyCalories?: number;
-//   proteinGrams?: number;
-//   carbGrams?: number;
-//   fatGrams?: number;
-//   mealTiming?: string[];
-//   progressionProtocol?: string[];
-//   daysPerWeek: number;
-//   workouts: Workout[];
-//   durationWeeks: number;
-//   phaseExplanation?: string;
-//   phaseExpectations?: string;
-//   phaseKeyPoints?: string[];
-//   createdAt?: Date;
-//   updatedAt?: Date;
-// }
 
 // Type guards
 export type ValidPhaseCount<T extends Phase[]> = T extends { length: 3 | 4 } ? T : never;
