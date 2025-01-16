@@ -15,6 +15,8 @@ interface ExtendedWorkoutPlan {
   workouts: Workout[];
   bodyFatPercentage?: number;
   muscleMassDistribution?: string;
+  phaseExpectations?: string;
+  phaseKeyPoints?: string[];
 }
 
 /**
@@ -120,6 +122,47 @@ export const generateWorkoutPDF = (program: Program): void => {
     yOffset += 7;
     doc.text(`Fats: ${plan.nutrition.macros.fats}g`, margin + 5, yOffset);
     yOffset += 12;
+
+    // Phase Overview Section
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Phase Overview', margin, yOffset);
+    yOffset += 10;
+
+    // What to Expect
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('What to Expect:', margin + 5, yOffset);
+    yOffset += 7;
+    doc.setFont('helvetica', 'normal');
+    const expectationsText = doc.splitTextToSize(
+      plan.phaseExpectations || "Clients should expect to learn proper machine setup, develop basic exercise form, and establish consistent workout habits while experiencing initial weight loss and energy improvements",
+      doc.internal.pageSize.width - 2 * (margin + 5)
+    );
+    doc.text(expectationsText, margin + 5, yOffset);
+    yOffset += (expectationsText.length * 7) + 10;
+
+    // Keys to Success
+    doc.setFont('helvetica', 'bold');
+    doc.text('Keys to Success:', margin + 5, yOffset-10);
+    // yOffset += 7;
+    doc.setFont('helvetica', 'normal');
+    const keyPoints = plan.phaseKeyPoints || [
+      "Machine exercises focus on controlled movements with 2 sets of 12-15 reps",
+      "10 minutes of steady-state cardio at moderate intensity follows each strength session",
+      "Rest periods of 30-60 seconds between exercises",
+      "Emphasis on proper breathing and machine adjustments",
+      "Progressive increase in weights as form improves"
+    ];
+    keyPoints.forEach((point: string) => {
+      const pointText = doc.splitTextToSize(`• ${point}`, doc.internal.pageSize.width - 2 * (margin + 10));
+      doc.text(pointText, margin + 10, yOffset);
+      yOffset += (pointText.length * 7) + 3;
+    });
+    
+    // Start new page for training schedule
+    doc.addPage();
+    yOffset = 20;
 
     // Training Schedule
     doc.setFontSize(14);

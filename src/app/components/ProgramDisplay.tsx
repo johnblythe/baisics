@@ -147,6 +147,7 @@ export function ProgramDisplay({
                 program={program}
                 plan={program.workoutPlans[activePlanIndex]} 
                 userEmail={userEmail || undefined}
+                user={user}
                 onRequestUpsell={onRequestUpsell}
                 onUploadImages={handleUploadImages}
                 onDeleteImage={handleDeleteImage}
