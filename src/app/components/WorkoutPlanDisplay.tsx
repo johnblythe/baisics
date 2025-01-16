@@ -37,6 +37,39 @@ interface WorkoutPlanDisplayProps {
   onDeleteImage?: (imageId: string) => Promise<void>;
 }
 
+const formatExerciseMeasure = (exercise: any) => {
+  // If we have reps and it's not 0, show that
+  if (exercise.reps) {
+    return `${exercise.reps}`;
+  }
+
+  try {
+    const value = exercise.measureValue;
+    const type = exercise.measureType?.toLowerCase();
+    const unit = exercise.measureUnit;
+
+  let finalReturn = '';
+  switch (type) {
+    case 'time':
+      if (unit === 'seconds') finalReturn = `${value}s`;
+      if (unit === 'minutes') finalReturn = `${value}m`;
+      finalReturn = `${value} ${unit || 's'}`
+    case 'distance':
+      if (unit === 'meters') finalReturn = `${value}m`;
+      if (unit === 'kilometers') finalReturn = `${value}km`;
+      finalReturn = `${value} ${unit || 'm'}`
+    default:
+      finalReturn = unit ? `${value} ${unit}` : value;
+  }
+
+  return finalReturn.toLowerCase();
+
+  } catch (error) {
+    console.error('Error formatting exercise measure:', error);
+    return '-';
+  }
+};
+
 export function WorkoutPlanDisplay({ program, userEmail: initialUserEmail, plan, onRequestUpsell, onUploadImages, onDeleteImage }: WorkoutPlanDisplayProps) {
   const [isUpsellOpen, setIsUpsellOpen] = useState(false);
   const [userEmail, setUserEmail] = useState(initialUserEmail);
@@ -423,7 +456,7 @@ export function WorkoutPlanDisplay({ program, userEmail: initialUserEmail, plan,
                             </div>
                             <div className="col-span-1 text-gray-600 dark:text-gray-400">{exercise.sets}</div>
                             <div className="col-span-2 text-gray-600 dark:text-gray-400">
-                              {exercise.measure?.value || '-'}
+                              {formatExerciseMeasure(exercise)}
                             </div>
                             <div className="col-span-3 text-gray-600 dark:text-gray-400">{formatRestPeriod(typeof exercise.restPeriod === 'string' ? parseInt(exercise.restPeriod) : exercise.restPeriod)}</div>
                           </div>
