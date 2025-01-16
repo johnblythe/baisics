@@ -3,7 +3,6 @@ import { WorkoutPlan } from '@/types/program';
 import { Target, Brain, Activity, Key, Dumbbell, Apple, ChartLine, Info } from 'lucide-react';
 import { formatRestPeriod } from '@/utils/formatters';
 import { Program } from '@/types/program';
-import { getUser } from '../start/actions';
 import { User } from '@prisma/client';
 import { generateWorkoutPDF } from '@/utils/pdf';
 
@@ -34,7 +33,7 @@ interface WorkoutPlanDisplayProps {
   onRequestUpsell?: () => void;
   onUploadImages?: (files: File[]) => Promise<void>;
   onDeleteImage?: (imageId: string) => Promise<void>;
-  user?: User;
+  user?: User | null;
 }
 
 export function WorkoutPlanDisplay({ program, userEmail: initialUserEmail, plan, onRequestUpsell, onUploadImages, onDeleteImage, user }: WorkoutPlanDisplayProps) {

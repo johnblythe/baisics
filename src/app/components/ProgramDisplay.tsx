@@ -2,6 +2,7 @@ import { Program } from '@/types';
 import { WorkoutPlanDisplay } from './WorkoutPlanDisplay';
 import { UpsellModal } from './UpsellModal';
 import { useEffect, useState } from 'react';
+import { User } from '@prisma/client';
 import { getUser } from '../start/actions';
 
 interface ProgramDisplayProps {

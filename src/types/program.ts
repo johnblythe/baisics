@@ -63,6 +63,7 @@ export interface Exercise {
     value: number;
     unit?: 'seconds' | 'minutes' | 'meters' | 'km' | 'miles';
   };
+  reps?: number;
   restPeriod: number;  // in seconds
   equipment: string[];
   alternatives: string[];

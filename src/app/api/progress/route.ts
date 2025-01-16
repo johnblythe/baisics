@@ -14,6 +14,8 @@ type AIMessage = {
   content: string;
 };
 
+const session = await auth();
+
 // Helper function to analyze body composition from images
 async function analyzeBodyComposition(images: { base64Data: string }[]): Promise<ImageAnalysis | null> {
   try {
@@ -33,12 +35,13 @@ async function analyzeBodyComposition(images: { base64Data: string }[]): Promise
 
     // Add the analysis prompt
     const prompt = "Please analyze these images and estimate body fat percentage and muscle mass distribution. Format your response as JSON with keys bodyFatPercentage (number) and muscleMassDistribution (string).";
+    const userId = session?.user?.id || '';
 
     // Send to AI for analysis
     const aiResponse = await sendMessage([{
       role: 'user',
       content: prompt,
-    }]);
+    }], userId);
 
     if (!aiResponse.success) {
       throw new Error('AI analysis failed');
