@@ -198,6 +198,20 @@ ${JSON.stringify(relevantData, null, 2)}
 
 Consider the workout environment (${intakeData.workoutEnvironment.primary}) and available equipment when designing the focus.
 
+The following exercise environments MUST be grouped separately and cannot be mixed within the same workout session:
+- Pool/Swimming exercises
+- Yoga/Flexibility focused exercises
+- Rock climbing
+- Any exercise requiring changing clothes or environment
+
+The following can be mixed within the same session:
+- Strength training with cardio equipment (treadmill, bike, rower)
+- Bodyweight exercises with equipment-based exercises
+- Different types of resistance training equipment
+
+If the workout includes exercises from different environments, they must be grouped together to minimize transitions, with a maximum of ONE environment change per workout (e.g., all gym exercises, then all pool exercises). 
+If there are environment shifts, make sure to note this in the workout's FOCUS field. Example: "Low-impact cardio conditioning. Beginning in the gym, ending in the pool."
+
 Provide a response ONLY in the following JSON format:
 {
   "name": string,
@@ -240,8 +254,21 @@ ${JSON.stringify(relevantData, null, 2)}
 
 Consider the workout environment (${intakeData.workoutEnvironment.primary}) and available equipment (${JSON.stringify(intakeData.equipmentAccess.available)}).
 
+The following exercise environments MUST be grouped separately and cannot be mixed within the same workout session:
+- Pool/Swimming exercises
+- Yoga/Flexibility focused exercises
+- Rock climbing
+- Any exercise requiring changing clothes or environment
+
+The following can be mixed within the same session:
+- Strength training with cardio equipment (treadmill, bike, rower)
+- Bodyweight exercises with equipment-based exercises
+- Different types of resistance training equipment
+
+If the workout includes exercises from different environments, they must be grouped together to minimize transitions, with a maximum of ONE environment change per workout (e.g., all gym exercises, then all pool exercises). Make sure 
+
 For time-based exercises, use 'seconds' for durations under 2 minutes, and 'minutes' for longer durations.
-For distance-based exercises, use 'meters' for distances under 1000m, and 'km' for longer distances.
+For distance-based exercises, use 'meters' for distances under 1000m, and 'miles' for longer distances.
 
 For each exercise:
 - Provide appropriate intensity guidance (RPE, percentage of max, or descriptive level)
@@ -253,6 +280,7 @@ Provide a response ONLY in the following JSON format:
   "exercises": Array<{
     "name": string,
     "sets": number,
+    "environment": "gym" | "pool" | "outdoor" | "yoga" | "rock-climbing" | "home" | "court" | "field" | "other",
     "measure": {
       "type": "reps" | "time" | "distance",
       "value": number,

@@ -151,14 +151,17 @@ export const generateWorkoutPDF = (program: Program): void => {
 
         // Warmup Section
         if (workout.warmup) {
+          const warmupData = typeof workout.warmup === 'string'
+            ? JSON.parse(workout.warmup)
+            : workout.warmup;
           doc.setFontSize(10);
           doc.setFont('helvetica', 'bold');
-          doc.text(`Warmup${workout.warmup.duration ? ` (${workout.warmup.duration} mins)` : ''}:`, margin + 5, yOffset);
+          doc.text(`Warmup${warmupData.duration ? ` (${warmupData.duration} mins)` : ''}:`, margin + 5, yOffset);
           yOffset += 5;
           
           doc.setFont('helvetica', 'normal');
-          if (workout.warmup.activities && workout.warmup.activities.length > 0) {
-            workout.warmup.activities.forEach(activity => {
+          if (warmupData.activities && warmupData.activities.length > 0) {
+            warmupData.activities.forEach((activity: string) => {
               doc.text(`• ${activity}`, margin + 10, yOffset);
               yOffset += 5;
             });
@@ -200,15 +203,19 @@ export const generateWorkoutPDF = (program: Program): void => {
 
         // Cooldown Section
         if (workout.cooldown) {
+          const cooldownData = typeof workout.cooldown === 'string'
+            ? JSON.parse(workout.cooldown)
+            : workout.cooldown;
+                  
           yOffset += 5;
           doc.setFontSize(10);
           doc.setFont('helvetica', 'bold');
-          doc.text(`Cooldown${workout.cooldown.duration ? ` (${workout.cooldown.duration} mins)` : ''}:`, margin + 5, yOffset);
+          doc.text(`Cooldown${cooldownData.duration ? ` (${cooldownData.duration} mins)` : ''}:`, margin + 5, yOffset);
           yOffset += 5;
           
           doc.setFont('helvetica', 'normal');
-          if (workout.cooldown.activities && workout.cooldown.activities.length > 0) {
-            workout.cooldown.activities.forEach(activity => {
+          if (cooldownData.activities && cooldownData.activities.length > 0) {
+            cooldownData.activities.forEach((activity: string) => {
               doc.text(`• ${activity}`, margin + 10, yOffset);
               yOffset += 5;
             });
