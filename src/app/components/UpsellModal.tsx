@@ -4,6 +4,7 @@ import ReactConfetti from "react-confetti";
 import { updateUser } from '../start/actions';
 import { welcomeFreeTemplate, welcomePremiumTemplate } from '@/lib/email/templates';
 import { sendEmailAction } from "../hi/actions";
+import { User } from "@prisma/client";
 
 /**
  * TODOs:
@@ -12,20 +13,32 @@ import { sendEmailAction } from "../hi/actions";
  * - more evidence based stats/upsell stuff (add citations?)
  */
 
-type UpsellModalProps = {
+interface UpsellModalProps {
   isOpen: boolean;
   onClose: () => void;
   onEmailSubmit: (email: string) => void;
   onPurchase: () => void;
   userEmail?: string | null;
-};
+  user?: User | null;
+}
 
-export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEmail }: UpsellModalProps) {
+const LoadingSpinner = () => (
+  <div className="flex items-center gap-2">
+    <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+    </svg>
+    <span>Processing...</span>
+  </div>
+);
+
+export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEmail, user }: UpsellModalProps) {
   const [freeEmail, setFreeEmail] = useState(userEmail || "");
   const [premiumEmail, setPremiumEmail] = useState(userEmail || "");
   const [freeEmailError, setFreeEmailError] = useState("");
   const [premiumEmailError, setPremiumEmailError] = useState("");
   const [showConfetti, setShowConfetti] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const testimonials = [
     { text: "Life changing! Truly.", author: "Addison W., Premium Member" },
@@ -63,65 +76,88 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
     }, 4000);
   };
 
+  /**
+   * @param email - the email address to update the user with
+   * @param isPremium - whether the user is upgrading to premium
+   */
   const handleUpdateAnonUser = async (email: string, isPremium = false) => {
-    const userId = new URLSearchParams(window.location.search).get('userId');
-    if (!userId) {
-      throw new Error("No user ID found in URL");
-    }
-
-    let purchaseSessionId;
-    if (isPremium) {
-      try {
-        const sessionResponse = await fetch('/api/purchase-sessions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ userId }),
-        });
-
-        if (!sessionResponse.ok) {
-          throw new Error('Failed to create purchase session');
-        }
-
-        const { sessionId } = await sessionResponse.json();
-        purchaseSessionId = sessionId;
-      } catch (error) {
-        console.error('Purchase session error:', error);
-        throw new Error('Failed to start purchase process');
+    try {
+      const userId = new URLSearchParams(window.location.search).get('userId');
+      if (!userId) {
+        throw new Error("No user ID found in URL");
       }
-    }
 
-    const response = await updateUser(userId, { 
-      email,
-    });
+      setIsLoading(true);
 
-    if (response.success) {
-      const programId = new URLSearchParams(window.location.search).get('programId');
+      let purchaseSessionId;
+      if (isPremium) {
+        try {
+          const sessionResponse = await fetch('/api/purchase-sessions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userId }),
+          });
 
-      // Send welcome email
-      await sendEmailAction({
-        to: email,
-        subject: isPremium ? 'Welcome to Baisics Premium!' : 'Welcome to Baisics!',
-        html: isPremium 
-          ? welcomePremiumTemplate()
-          : welcomeFreeTemplate({ upgradeLink: process.env.NEXT_PUBLIC_STRIPE_LINK, programLink: `${process.env.NEXT_PUBLIC_APP_URL}/hi?userId=${userId}&programId=${programId}` })
+          if (!sessionResponse.ok) {
+            throw new Error('Failed to create purchase session');
+          }
+
+          const { sessionId } = await sessionResponse.json();
+          purchaseSessionId = sessionId;
+        } catch (error) {
+          console.error('Purchase session error:', error);
+          throw new Error('Failed to start purchase process');
+        }
+      }
+
+      const response = await updateUser(userId, { 
+        email,
       });
 
-      if (isPremium) {
-        window.open(
-          `${process.env.NEXT_PUBLIC_STRIPE_LINK}?` + 
-          new URLSearchParams({
-            prefilled_email: email,
-            utm_content: purchaseSessionId,
-          }).toString(),
-          '_blank'
-        );
-      }
+      if (response.success) {
+        const programId = new URLSearchParams(window.location.search).get('programId');
 
-      setShowConfetti(true);
-      onEmailSubmit(email);
-      onClose();
+        // Send welcome email
+        await sendEmailAction({
+          to: email,
+          subject: isPremium ? 'Welcome to Baisics Premium!' : 'Welcome to Baisics!',
+          html: isPremium 
+            ? welcomePremiumTemplate()
+            : welcomeFreeTemplate({ upgradeLink: process.env.NEXT_PUBLIC_STRIPE_LINK, programLink: `${process.env.NEXT_PUBLIC_APP_URL}/hi?userId=${userId}&programId=${programId}` })
+        });
+
+        if (isPremium) {
+          window.open(
+            `${process.env.NEXT_PUBLIC_STRIPE_LINK}?` + 
+            new URLSearchParams({
+              prefilled_email: email,
+              utm_content: purchaseSessionId,
+            }).toString(),
+            '_blank'
+          );
+        }
+
+        setShowConfetti(true);
+        onEmailSubmit(email);
+        onClose();
+      } else if (response.error === 'EMAIL_EXISTS') {
+        if (isPremium) {
+          setPremiumEmailError("This email is already registered. Please upgrade, log in, or use a different email.");
+        } else {
+          setFreeEmailError("This email is already registered. Please upgrade, log in, or use a different email.");
+        }
+      }
+    } catch (error) {
+      console.error('Error updating user:', error);
+      if (isPremium) {
+        setPremiumEmailError("An error occurred. Please try again.");
+      } else {
+        setFreeEmailError("An error occurred. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -146,7 +182,7 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
         {/* Stats Banner */}
         <div className="grid grid-cols-3 gap-4 mb-8 text-center">
           <div className="bg-blue-50 dark:bg-gray-700 p-4 rounded-lg">
-            <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">>75%</div>
+            <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">{'>'}75%</div>
             <div className="text-sm">Better Results with Premium</div>
           </div>
           <div className="bg-blue-50 dark:bg-gray-700 p-4 rounded-lg">
@@ -190,10 +226,17 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
                 </span>
               </div>
             </div>
-            <form onSubmit={(e) => {
+            <form onSubmit={async (e) => {
               e.preventDefault();
               if (validateEmail(freeEmail)) {
-                handleUpdateAnonUser(freeEmail);
+                try {
+                  setIsLoading(true);
+                  await handleUpdateAnonUser(freeEmail);
+                } catch (error) {
+                  console.error('Error:', error);
+                } finally {
+                  setIsLoading(false);
+                }
               }
             }}>
               <input
@@ -208,6 +251,7 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
                     setFreeEmailError("Please enter a valid email address");
                   }
                 }}
+                disabled={isLoading}
                 placeholder="Enter your email"
                 className={`w-full p-3 border rounded-lg mb-3 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 ${
                   freeEmailError ? "border-red-500 ring-1 ring-red-500 ring-opacity-50" : ""
@@ -219,9 +263,10 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
               )}
               <button
                 type="submit"
-                className="w-full bg-gray-600 text-white px-4 py-3 rounded-lg hover:bg-gray-700 font-medium"
+                disabled={isLoading}
+                className="w-full px-4 py-2 text-white font-medium rounded-lg bg-gray-600  hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                Continue with Free Access
+                {isLoading ? <LoadingSpinner /> : 'Continue with Free Access'}
               </button>
               <p className="text-center text-sm mt-3 text-gray-600 dark:text-gray-400">
                 Enjoy your custom program at <u>no cost</u>!
@@ -242,7 +287,6 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
             <h3 className="text-2xl font-bold mb-4">Unlock Your Best Self</h3>
             <ul className="space-y-3 mb-6">
               <li className="flex items-center">
-                {/* <span className="text-green-500 mr-2">✓</span> */}
                 <strong><span className="font-extrabold underline">Everything</span> in Free, plus:</strong>
               </li>
               <li className="flex items-center">
@@ -278,10 +322,14 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
                 More affordable than even Planet Fitness!
               </li>
             </ul>
-            <form onSubmit={(e) => {
+            <form onSubmit={async (e) => {
               e.preventDefault();
               if (validateEmail(premiumEmail)) {
-                handleUpdateAnonUser(premiumEmail, true);
+                try {
+                  await handleUpdateAnonUser(premiumEmail, true);
+                } catch (error) {
+                  console.error('Error:', error);
+                }
               }
             }}>
               <input
@@ -307,9 +355,10 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
               )}
               <button
                 type="submit"
-                className="w-full bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 font-medium"
+                disabled={isLoading}
+                className="w-full px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                <strong>Upgrade Now - $9/month</strong>
+                {isLoading ? <LoadingSpinner /> : <strong>Upgrade Now - $9/month</strong>}
               </button>
             </form>
             <p className="text-center text-sm mt-3 text-gray-600 dark:text-gray-400">

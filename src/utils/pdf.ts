@@ -1,6 +1,6 @@
 import { jsPDF } from 'jspdf';
 import { Program, Workout, Exercise } from '@/types';
-import { formatRestPeriod } from '@/utils/formatters';
+import { formatRestPeriod, formatExerciseMeasure } from '@/utils/formatters';
 
 interface ExtendedWorkoutPlan {
   id: string;
@@ -34,12 +34,12 @@ export const generateWorkoutPDF = (program: Program): void => {
   doc.setFontSize(32);
   doc.setFont('helvetica', 'bold');
   doc.text('baisics', doc.internal.pageSize.width / 2, yOffset, { align: 'center' });
-  yOffset += 12;
+  yOffset += 6;
 
   // Tagline
   doc.setTextColor(107, 114, 128); // gray-500
   doc.setFontSize(14);
-  doc.setFont('helvetica', 'italic');
+  // doc.setFont('helvetica', 'italic');
   doc.text('fitness for the rest of us', doc.internal.pageSize.width / 2, yOffset, { align: 'center' });
   yOffset += 25;
 
@@ -192,7 +192,7 @@ export const generateWorkoutPDF = (program: Program): void => {
 
           doc.text(exercise.name, margin + 5, yOffset);
           doc.text(exercise.sets.toString(), margin + 90, yOffset);
-          doc.text(exercise.reps.toString(), margin + 110, yOffset);
+          doc.text(formatExerciseMeasure(exercise), margin + 110, yOffset);
           const restPeriodText = formatRestPeriod(typeof exercise.restPeriod === 'string' ? parseInt(exercise.restPeriod) : exercise.restPeriod);
           doc.text(restPeriodText, margin + 140, yOffset);
           yOffset += 7;

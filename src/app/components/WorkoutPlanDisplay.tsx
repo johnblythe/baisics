@@ -37,48 +37,54 @@ interface WorkoutPlanDisplayProps {
   onDeleteImage?: (imageId: string) => Promise<void>;
 }
 
-// @TODO: data sent back and forth vs. stored and retrieved is slightly different shape
-// need to consolidate as a post-launch hygiene item
-const formatExerciseMeasure = (exercise: any) => {
-  // If we have reps and it's not 0, show that
-  if (exercise.reps) { // db version
-    return `${exercise.reps || exercise.measure?.reps}`;
-  } else if (exercise.measure.type === 'reps') { // api version
-    return `${exercise.measure.value}`;
-  }
-
-  try {
-    const type = exercise.measureType ? exercise.measureType.toLowerCase() : exercise.measure?.type?.toLowerCase();
-    const unit = exercise.measureUnit || exercise.measure?.unit;
-    const value = exercise.measureValue || exercise.measure?.value;
-
-  let finalReturn = '';
-  switch (type) {
-    case 'time':
-      if (unit === 'seconds') finalReturn = `${value}s`;
-      if (unit === 'minutes') finalReturn = `${value}m`;
-      finalReturn = `${value} ${unit || 's'}`
-    case 'distance':
-      if (unit === 'meters') finalReturn = `${value}m`;
-      if (unit === 'kilometers') finalReturn = `${value}km`;
-      finalReturn = `${value} ${unit || 'm'}`
-    default:
-      finalReturn = unit ? `${value} ${unit}` : value;
-  }
-
-  return finalReturn.toLowerCase();
-
-  } catch (error) {
-    console.error('Error formatting exercise measure:', error);
-    return '-';
-  }
-};
-
 export function WorkoutPlanDisplay({ program, userEmail: initialUserEmail, plan, onRequestUpsell, onUploadImages, onDeleteImage }: WorkoutPlanDisplayProps) {
   const [isUpsellOpen, setIsUpsellOpen] = useState(false);
   const [userEmail, setUserEmail] = useState(initialUserEmail);
   const [user, setUser] = useState<User | null>(null);
   const [expandedNotes, setExpandedNotes] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Fetch user data when component mounts or when userEmail changes
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userId = new URLSearchParams(window.location.search).get('userId');
+      if (userId) {
+        const result = await getUser(userId);
+        console.log("🚀 ~ fetchUser ~ result:", result)
+        if (result.success && result.user) {
+          setUser(result.user);
+          setUserEmail(result.user.email);
+        }
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  const handleUpsell = () => {
+    setIsLoading(true);
+    if (onRequestUpsell) {
+      onRequestUpsell();
+    }
+    setIsUpsellOpen(true);
+    setIsLoading(false);
+  };
+
+  const handleEmailSubmit = async (email: string) => {
+    setIsLoading(true);
+    try {
+      const userId = new URLSearchParams(window.location.search).get('userId');
+      if (userId) {
+        const result = await getUser(userId);
+        if (result.success && result.user) {
+          setUser(result.user);
+          setUserEmail(email);
+        }
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const toggleNotes = (exerciseId: string) => {
     setExpandedNotes(prev => 
@@ -87,26 +93,6 @@ export function WorkoutPlanDisplay({ program, userEmail: initialUserEmail, plan,
         : [...prev, exerciseId]
     );
   };
-
-  const handleUpsell = () => {
-    if (onRequestUpsell) {
-      onRequestUpsell();
-    }
-  };
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      const userId = new URLSearchParams(window.location.search).get('userId');
-      if (userId) {
-        const result = await getUser(userId);
-        if (result.success && result.user) {
-          setUser(result.user);
-        }
-      }
-    };
-
-    fetchUser();
-  }, []);
 
   const { nutrition } = plan;
 
@@ -152,16 +138,25 @@ export function WorkoutPlanDisplay({ program, userEmail: initialUserEmail, plan,
               )}
             </div>
             <div className="flex items-center gap-4">
-              <button
-                onClick={() => generateWorkoutPDF(program)}
-                className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
-                Download PDF
-              </button>
-              {(!userEmail || !user?.isPremium) && (
+              {userEmail ? (
+                <button
+                  onClick={() => generateWorkoutPDF(program)}
+                  className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  Download PDF
+                </button>
+              ) : (
+                <button
+                  onClick={handleUpsell}
+                  className="px-6 py-2 rounded-lg bg-indigo-600 dark:bg-indigo-500 text-white font-medium hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors flex items-center gap-2 max-w-xs"
+                >
+                  ✨ Download PDF, share via email, or upgrade for more value!
+                </button>
+              )}
+              {userEmail && !user?.isPremium && (
                 <button
                   onClick={handleUpsell}
                   className="px-4 py-2 rounded-lg bg-indigo-600 dark:bg-indigo-500 text-white font-medium hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors"
@@ -254,11 +249,12 @@ export function WorkoutPlanDisplay({ program, userEmail: initialUserEmail, plan,
                   </div>
                 ))}
 
-                {!userEmail && (
+                  
+                {/* {!userEmail && (
                   <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
                     ✨ <button onClick={handleUpsell} className="text-indigo-600 dark:text-indigo-400 hover:underline">Upgrade to premium</button> for detailed meal plans
                   </p>
-                )}
+                )} */}
               </div>
             </div>
           </div>
@@ -460,7 +456,7 @@ export function WorkoutPlanDisplay({ program, userEmail: initialUserEmail, plan,
                             </div>
                             <div className="col-span-1 text-gray-600 dark:text-gray-400">{exercise.sets}</div>
                             <div className="col-span-2 text-gray-600 dark:text-gray-400">
-                              {formatExerciseMeasure(exercise)}
+                              {formatRestPeriod(typeof exercise.restPeriod === 'string' ? parseInt(exercise.restPeriod) : exercise.restPeriod)}
                             </div>
                             <div className="col-span-3 text-gray-600 dark:text-gray-400">{formatRestPeriod(typeof exercise.restPeriod === 'string' ? parseInt(exercise.restPeriod) : exercise.restPeriod)}</div>
                           </div>
@@ -470,7 +466,8 @@ export function WorkoutPlanDisplay({ program, userEmail: initialUserEmail, plan,
                             <>
                               <div className="h-px bg-gray-100 dark:bg-gray-700" />
                               <div className="p-4 text-sm text-gray-600 dark:text-gray-400">
-                                {exercise.notes}
+                                {exercise.notes}<br/>
+                                <a href={`https://www.youtube.com/results?search_query=${exercise.name} how to`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center mt-2 hover:text-indigo-600 dark:text-indigo-400 underline underline-offset-4 gap-1">Need a video? <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg></a>
                               </div>
                             </>
                           )}
@@ -519,17 +516,6 @@ export function WorkoutPlanDisplay({ program, userEmail: initialUserEmail, plan,
             </div>
           ))}
       </div>
-
-      <UpsellModal
-        isOpen={isUpsellOpen}
-        onClose={() => setIsUpsellOpen(false)}
-        onEmailSubmit={(email: string) => {
-          setUserEmail(email);
-          setIsUpsellOpen(false);
-        }}
-        onPurchase={() => setIsUpsellOpen(false)}
-        userEmail={userEmail}
-      />
     </div>
   );
 }
