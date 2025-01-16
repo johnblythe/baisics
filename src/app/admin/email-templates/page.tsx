@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { welcomeFreeTemplate, welcomePremiumTemplate } from '@/lib/email/templates';
+import { adminSignupNotificationTemplate, welcomeFreeTemplate, welcomePremiumTemplate } from '@/lib/email/templates';
 
 const templates = {
   'welcome-free': {
@@ -15,6 +15,21 @@ const templates = {
     name: 'Welcome (Premium)',
     render: welcomePremiumTemplate,
     parameters: {}
+  },
+  'admin-signup-notification': {
+    name: 'Admin Signup Notification',
+    render: () => adminSignupNotificationTemplate({
+      userEmail: 'test@test.com',
+      isPremium: true,
+      userId: '123',
+      programId: '456'
+    }),
+    parameters: {
+      userEmail: 'test@test.com',
+      isPremium: true,
+      userId: '123',
+      programId: '456'
+    }
   }
 } as const;
 
