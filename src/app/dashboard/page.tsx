@@ -10,6 +10,9 @@ import TawkChat from "@/components/TawkChat";
 import { getLatestCheckIn } from '../check-in/actions';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, TooltipProps } from 'recharts';
 import { CheckIn, ProgressPhoto, UserImages, UserStats } from '@prisma/client';
+import { DisclaimerBanner } from '@/components/DisclaimerBanner';
+import MainLayout from '@/app/components/layouts/MainLayout';
+
 // import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
 // import { useDropzone } from 'react-dropzone';
 
@@ -107,6 +110,12 @@ function DashboardContent() {
   const [latestCheckIn, setLatestCheckIn] = useState<CheckInWithPhotos | null>(null);
   const [weightData, setWeightData] = useState<WeightDataPoint[]>([]);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [showDisclaimer, setShowDisclaimer] = useState(true);
+
+  useEffect(() => {
+    const disclaimerAcknowledged = localStorage.getItem('disclaimerAcknowledged');
+    setShowDisclaimer(!disclaimerAcknowledged);
+  }, []);
 
   useEffect(() => {
     // Show confetti if new_user=true in search params
@@ -215,6 +224,7 @@ function DashboardContent() {
         <div className="flex items-center justify-center min-h-screen bg-white dark:bg-gray-900">
           <div className="w-6 h-6 border-t-2 border-blue-500 border-solid rounded-full animate-spin"></div>
         </div>
+        <TawkChat />
         <Footer />
       </>
     );
@@ -236,7 +246,14 @@ function DashboardContent() {
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
       {showConfetti && <ReactConfetti recycle={false} />}
       <Header />
-      <main className="flex-grow bg-white dark:bg-gray-900 pt-16">
+      {showDisclaimer && (
+        <DisclaimerBanner 
+          variant="banner"
+          persistKey="disclaimerAcknowledged"
+          onAcknowledge={() => setShowDisclaimer(false)}
+        />
+      )}
+      <main className="flex-grow bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
           <div className="space-y-8">
             {/* Welcome & Program Info Card */}
@@ -835,16 +852,19 @@ function DashboardContent() {
 
 export default function DashboardPage() {
   return (
-    <Suspense fallback={
-      <>
-        <Header />
-        <div className="flex items-center justify-center min-h-screen bg-white dark:bg-gray-900">
-          <div className="w-6 h-6 border-t-2 border-blue-500 border-solid rounded-full animate-spin"></div>
-        </div>
-        <Footer />
-      </>
-    }>
-      <DashboardContent />
-    </Suspense>
+    <MainLayout>
+      <Suspense fallback={
+        <>
+          <Header />
+          <div className="flex items-center justify-center min-h-screen bg-white dark:bg-gray-900">
+            <div className="w-6 h-6 border-t-2 border-blue-500 border-solid rounded-full animate-spin"></div>
+          </div>
+          <TawkChat />
+          <Footer />
+        </>
+      }>
+        <DashboardContent />
+      </Suspense>
+    </MainLayout>
   );
 } 
