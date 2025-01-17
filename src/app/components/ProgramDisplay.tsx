@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import { User } from '@prisma/client';
 import { getUser } from '../start/actions';
 import { DisclaimerBanner } from '@/components/DisclaimerBanner';
-import MainLayout from '@/app/components/layouts/MainLayout';
 
 interface ProgramDisplayProps {
   program: Program;
@@ -111,15 +110,16 @@ export function ProgramDisplay({
 
   return (
     <div className="space-y-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      {!userEmail && (
-        <DisclaimerBanner 
-          variant="inline" 
-          showDismiss={false}
-        />
-      )}
-      {/* Premium Upsell Banner */}
-      {userEmail && !user?.isPremium && (
-        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-2xl shadow-sm overflow-hidden">
+      {/* Program Overview */}
+
+      <DisclaimerBanner 
+        variant="inline" 
+        showAcknowledgeButton={false}
+      />
+      
+      {isExpanded && (
+        <>
+          {/* Active Workout Plan */}
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 relative">
             {!isPhaseUnlocked(activePlanIndex) && (
               <div className="absolute inset-0 backdrop-blur-sm bg-white/30 dark:bg-gray-800/30 rounded-xl z-10 flex justify-center">
@@ -159,7 +159,7 @@ export function ProgramDisplay({
               onDeleteImage={handleDeleteImage}
             />
           </div>
-        </div>
+        </>
       )}
 
       <UpsellModal

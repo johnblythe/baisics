@@ -1,5 +1,5 @@
 const disclaimer = `
-The information presented herein is in no way intended as medical advice or to serve as a substitute for medical counseling. The information should be used in conjunction with the guidance and care of your physician. Consult your physician before beginning this program as you would with any exercise and nutrition program. If you choose not to obtain the consent of your physician and/or work with your physician throughout the duration of your time consulting with Baisics, LLC you are agreeing to accept ...
+The information provided is not medical advice and should be used only in conjunction with your physician's guidance. Consult your physician before starting this or any exercise program. By proceeding without physician consultation, you accept full responsibility for your decisions and release Baisics, LLC from all liability. Results vary by individual, and exercise carries inherent risks which you acknowledge and accept.
 `
 
 const disclaimerSimple = `

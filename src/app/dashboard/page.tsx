@@ -113,7 +113,7 @@ function DashboardContent() {
   const [showDisclaimer, setShowDisclaimer] = useState(true);
 
   useEffect(() => {
-    const disclaimerAcknowledged = localStorage.getItem('disclaimerAcknowledged');
+    const disclaimerAcknowledged = localStorage.getItem('disclaimer-acknowledged');
     setShowDisclaimer(!disclaimerAcknowledged);
   }, []);
 
@@ -249,7 +249,8 @@ function DashboardContent() {
       {showDisclaimer && (
         <DisclaimerBanner 
           variant="banner"
-          persistKey="disclaimerAcknowledged"
+          showAcknowledgeButton={true}
+          persistKey="disclaimer-acknowledged"
           onAcknowledge={() => setShowDisclaimer(false)}
         />
       )}

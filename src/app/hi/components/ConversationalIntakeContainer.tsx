@@ -8,6 +8,8 @@ import { User } from "@prisma/client";
 import { ConversationalInterface } from "./ConversationalInterface";
 import Link from "next/link";
 import { Program } from "@/types";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
 
 function ConversationalIntakeContent() {
   const router = useRouter();
@@ -105,8 +107,10 @@ function ConversationalIntakeContent() {
 
 export default function ConversationalIntakeContainer() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <ConversationalIntakeContent />
-    </Suspense>
+    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
+      <main className="flex-grow bg-white dark:bg-gray-900">
+        <ConversationalIntakeContent />
+      </main>
+    </div>
   );
 } 
