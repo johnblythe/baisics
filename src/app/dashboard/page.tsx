@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import ReactConfetti from "react-confetti";
@@ -97,7 +97,7 @@ interface TooltipItem {
   text: string;
 }
 
-export default function DashboardPage() {
+function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [program, setProgram] = useState<Program | null>(null);
@@ -830,5 +830,21 @@ export default function DashboardPage() {
       <TawkChat />
       <Footer />
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={
+      <>
+        <Header />
+        <div className="flex items-center justify-center min-h-screen bg-white dark:bg-gray-900">
+          <div className="w-6 h-6 border-t-2 border-blue-500 border-solid rounded-full animate-spin"></div>
+        </div>
+        <Footer />
+      </>
+    }>
+      <DashboardContent />
+    </Suspense>
   );
 } 
