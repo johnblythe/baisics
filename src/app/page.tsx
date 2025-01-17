@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { useState } from 'react'
 import BetaModal from './components/BetaModal'
 import { useRouter } from 'next/navigation'
-import { useUser } from '@/hooks/useUser'
+import TawkChat from '@/components/TawkChat'
 
 // Track when user opens the modal
 const trackGetStartedClick = () => {
@@ -24,7 +24,6 @@ const trackGetStartedClick = () => {
 export default function LandingPage() {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const { user } = useUser();
 
   const handleGetStarted = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -41,7 +40,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
-      <BetaModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} user={user} />
+      <BetaModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       
       {/* Background Pattern */}
       {/* <div className="absolute inset-0 z-10">
@@ -691,6 +690,7 @@ export default function LandingPage() {
           </div>
         </footer>
       </div>
+      <TawkChat />
     </div>
   )
 } 

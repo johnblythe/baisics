@@ -3,7 +3,6 @@ import { WorkoutPlan } from '@/types/program';
 import { Target, Brain, Activity, Key, Dumbbell, Apple, ChartLine, Info } from 'lucide-react';
 import { formatRestPeriod } from '@/utils/formatters';
 import { Program } from '@/types/program';
-import { getUser } from '../start/actions';
 import { User } from '@prisma/client';
 import { generateWorkoutPDF } from '@/utils/pdf';
 
@@ -34,12 +33,12 @@ interface WorkoutPlanDisplayProps {
   onRequestUpsell?: () => void;
   onUploadImages?: (files: File[]) => Promise<void>;
   onDeleteImage?: (imageId: string) => Promise<void>;
+  user?: User | null;
 }
 
-export function WorkoutPlanDisplay({ program, userEmail: initialUserEmail, plan, onRequestUpsell, onUploadImages, onDeleteImage }: WorkoutPlanDisplayProps) {
+export function WorkoutPlanDisplay({ program, userEmail: initialUserEmail, plan, onRequestUpsell, onUploadImages, onDeleteImage, user }: WorkoutPlanDisplayProps) {
   const [isUpsellOpen, setIsUpsellOpen] = useState(false);
   const [userEmail, setUserEmail] = useState(initialUserEmail);
-  const [user, setUser] = useState<User | null>(null);
   const [expandedNotes, setExpandedNotes] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -122,7 +121,7 @@ export function WorkoutPlanDisplay({ program, userEmail: initialUserEmail, plan,
               )}
             </div>
             <div className="flex items-center gap-4">
-              {userEmail ? (
+              {user?.email || userEmail ? (
                 <button
                   onClick={() => generateWorkoutPDF(program)}
                   className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"

@@ -2,6 +2,7 @@ import { Program } from '@/types';
 import { WorkoutPlanDisplay } from './WorkoutPlanDisplay';
 import { UpsellModal } from './UpsellModal';
 import { useEffect, useState } from 'react';
+import { User } from '@prisma/client';
 import { getUser } from '../start/actions';
 
 interface ProgramDisplayProps {
@@ -147,6 +148,7 @@ export function ProgramDisplay({
                 program={program}
                 plan={program.workoutPlans[activePlanIndex]} 
                 userEmail={userEmail || undefined}
+                user={user}
                 onRequestUpsell={onRequestUpsell}
                 onUploadImages={handleUploadImages}
                 onDeleteImage={handleDeleteImage}

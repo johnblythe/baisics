@@ -241,7 +241,7 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
             {user?.email ? (
               <div className="text-center space-y-3">
                 <div className="bg-blue-50 dark:bg-gray-700/50 rounded-lg p-4">
-                  <p className="text-gray-600 dark:text-gray-400">
+                  <p className="text-gray-600 dark:text-white">
                     You&apos;ve already started your free journey! 🎉
                   </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">

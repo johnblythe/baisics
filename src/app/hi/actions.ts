@@ -7,6 +7,7 @@ import { sendEmail } from "@/lib/email";
 // import { modifyPhase } from "./services/programCreation";
 import { createProgramSequentially } from "./services/_sequentialProgramCreation";
 import { extractionPrompt } from "@/utils/prompts/";
+import { convertToIntakeFormat } from "@/utils/formatters";
 
 // New server action for sending emails
 export async function sendEmailAction(options: {
@@ -24,24 +25,7 @@ export async function sendEmailAction(options: {
   }
 }
 
-// Helper to convert extracted data to IntakeFormData format
-function convertToIntakeFormat(extractedData: any): IntakeFormData {
-  return {
-    sex: extractedData.gender?.value || 'other',
-    trainingGoal: extractedData.goals?.value,
-    daysAvailable: parseInt(extractedData.daysPerWeek?.value) || 3,
-    dailyBudget: parseInt(extractedData.timePerDay?.value) || 60,
-    age: extractedData.age?.value ? parseInt(extractedData.age.value) : undefined,
-    weight: extractedData.weight?.value ? parseInt(extractedData.weight.value) : undefined,
-    height: extractedData.height?.value ? parseInt(extractedData.height.value) : undefined,
-    trainingPreferences: extractedData.preferences?.value ? 
-      extractedData.preferences.value.split(',').map((p: string) => p.trim()) : 
-      [],
-    additionalInfo: extractedData.additionalInfo?.value || '',
-    experienceLevel: 'beginner', // Default value, could be extracted from conversation
-    modificationRequest: extractedData.modificationRequest?.value || '',
-  };
-}
+
 
 // @TODO: rename, clean up, etc
 // @TODO: i'm not sure this is properly keeping a continuation of the conversation since it chops out
