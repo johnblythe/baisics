@@ -179,14 +179,37 @@ model ExerciseLibrary {
   @@map("exercise_library")
 }
 
+enum ExerciseMeasureType {
+  REPS
+  TIME
+  DISTANCE
+  WEIGHT
+  BODY_WEIGHT
+}
+
+enum ExerciseMeasureUnit {
+  KG
+  LB
+  PERCENT
+  SECONDS
+  METERS
+  KILOMETERS
+}
+
 model Exercise {
   id                String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   workoutId         String          @map("workout_id") @db.Uuid
   exerciseLibraryId String          @map("exercise_library_id") @db.Uuid
   name              String          @map("name")
-  sets              Int
-  reps              Int
-  restPeriod        Int?            @map("rest_period")
+  sets              Int             @map("sets") @default(1)
+  reps              Int?            @map("reps")
+  restPeriod        Int            @map("rest_period") @default(0)
+  intensity         Int?            @map("intensity") @default(0)
+  measureType       ExerciseMeasureType         @map("measure_type") @default(REPS)
+  measureValue      Float?            @map("measure_value")
+  measureUnit       ExerciseMeasureUnit?         @map("measure_unit") @default(LB)
+  notes             String?         @map("notes") @db.Text
+
   workout           Workout         @relation(fields: [workoutId], references: [id], onDelete: Cascade)
   exerciseLibrary   ExerciseLibrary @relation(fields: [exerciseLibraryId], references: [id])
   exerciseLogs      ExerciseLog[]

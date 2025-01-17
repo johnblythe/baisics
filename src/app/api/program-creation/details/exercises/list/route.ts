@@ -5,12 +5,13 @@ import { ProgramStructure, WorkoutStructure } from '@/app/hi/services/programCre
 
 export async function POST(request: Request) {
   try {
-    const { intakeData, programStructure, workoutStructure, workoutFocus } = await request.json();
+    const { intakeData, programStructure, workoutStructure, workoutFocus, userId } = await request.json();
     const exercises = await getExercisesForFocus(
       intakeData as IntakeFormData,
       programStructure as ProgramStructure,
       workoutStructure as WorkoutStructure,
-      workoutFocus
+      workoutFocus,
+      userId
     );
     return NextResponse.json({ success: true, exercises });
   } catch (error) {

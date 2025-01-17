@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { CheckCircle, Pencil, Circle } from 'lucide-react';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import TawkChat from "@/components/TawkChat";
 
 interface Exercise {
   id: string;
@@ -591,6 +592,7 @@ export default function WorkoutPage() {
           </div>
         </div>
       </main>
+      <TawkChat />
       <Footer />
     </div>
   );

@@ -1,8 +1,9 @@
 import { Program } from '@/types';
 import { WorkoutPlanDisplay } from './WorkoutPlanDisplay';
 import { UpsellModal } from './UpsellModal';
-import { useState } from 'react';
-// import { generateWorkoutPDF } from '@/utils/pdf';
+import { useEffect, useState } from 'react';
+import { User } from '@prisma/client';
+import { getUser } from '../start/actions';
 
 interface ProgramDisplayProps {
   program: Program;
@@ -28,7 +29,7 @@ export function ProgramDisplay({
   const [isExpanded, setIsExpanded] = useState(true);
   const [uploadingImages, setUploadingImages] = useState(false);
   const [deletingImage, setDeletingImage] = useState(false);
-  
+  const [user, setUser] = useState<User | null>(null);
   const handleEmailSubmit = (email: string) => {
     setUserEmail(email);
     onCloseUpsell?.();
@@ -37,6 +38,22 @@ export function ProgramDisplay({
   const handlePurchase = () => {
     onCloseUpsell?.();
   };
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userId = new URLSearchParams(window.location.search).get('userId');
+      if (userId) {
+        const result = await getUser(userId);
+        console.log("🚀 ~ fetchUser ~ result:", result)
+        if (result.success && result.user) {
+          setUser(result.user);
+          setUserEmail(result.user.email);
+        }
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   const handleUploadImages = async (files: File[]) => {
     console.log('ProgramDisplay: handleUploadImages called with files:', files);
@@ -131,6 +148,7 @@ export function ProgramDisplay({
                 program={program}
                 plan={program.workoutPlans[activePlanIndex]} 
                 userEmail={userEmail || undefined}
+                user={user}
                 onRequestUpsell={onRequestUpsell}
                 onUploadImages={handleUploadImages}
                 onDeleteImage={handleDeleteImage}
@@ -146,6 +164,7 @@ export function ProgramDisplay({
         onEmailSubmit={handleEmailSubmit}
         onPurchase={handlePurchase}
         userEmail={userEmail}
+        user={user}
       />
     </div>
   );

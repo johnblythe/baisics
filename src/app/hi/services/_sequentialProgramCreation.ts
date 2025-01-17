@@ -312,7 +312,7 @@ export const createProgramSequentially = async (
 ): Promise<Program | null> => {
   try {
     // Step 1: Get program structure
-    const programStructureResponse = await sendMessage(formatProgramStructurePrompt(intakeData));
+    const programStructureResponse = await sendMessage(formatProgramStructurePrompt(intakeData), userId);
     const programStructure = parseAIResponse<ProgramStructure>(programStructureResponse, {
       name: '',
       description: '',
@@ -326,7 +326,7 @@ export const createProgramSequentially = async (
     }
 
     // Step 2: Get workout structure
-    const workoutStructureResponse = await sendMessage(formatWorkoutStructurePrompt(intakeData, programStructure));
+    const workoutStructureResponse = await sendMessage(formatWorkoutStructurePrompt(intakeData, programStructure), userId);
     const workoutStructure = parseAIResponse<WorkoutStructure>(workoutStructureResponse, {
       daysPerWeek: intakeData.daysAvailable || 3,
       sessionDuration: intakeData.dailyBudget || 60,
@@ -351,7 +351,8 @@ export const createProgramSequentially = async (
     for (let phase = 0; phase < 1; phase++) {
       console.log("prompt!",formatWorkoutDetailsPrompt(intakeData, programStructure, workoutStructure, phase));
       const workoutDetailsResponse = await sendMessage(
-        formatWorkoutDetailsPrompt(intakeData, programStructure, workoutStructure, phase)
+        formatWorkoutDetailsPrompt(intakeData, programStructure, workoutStructure, phase),
+        userId
       );
       console.log("🚀 ~ workoutDetailsResponse:", JSON.stringify(workoutDetailsResponse, null, 2))
       const workoutDetails = parseAIResponse<WorkoutPlan>(workoutDetailsResponse, {
