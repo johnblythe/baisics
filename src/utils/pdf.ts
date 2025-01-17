@@ -1,6 +1,7 @@
 import { jsPDF } from 'jspdf';
 import { Program, Workout, Exercise } from '@/types';
 import { formatRestPeriod, formatExerciseMeasure } from '@/utils/formatters';
+import { disclaimer, disclaimerSimple } from './disclaimer';
 
 interface ExtendedWorkoutPlan {
   id: string;
@@ -70,7 +71,7 @@ export const generateWorkoutPDF = (program: Program): void => {
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
   const disclaimerText = doc.splitTextToSize(
-    'The information presented herein is in no way intended as medical advice or to serve as a substitute for medical counseling. The information should be used in conjunction with the guidance and care of your physician. Consult your physician before beginning this program as you would with any exercise and nutrition program. If you choose not to obtain the consent of your physician and/or work with your physician throughout the duration of your time consulting with Baisics, LLC you are agreeing to accept full responsibility for your actions. By accepting your comprehensive fitness program, you recognize that despite all precautions on the part of Baisics, LLC, there are risks of injury or illness which can occur because of your use of the aforementioned information and you expressly assume such risks and waive, relinquish and release any claim which you may have against Baisics, LLC, or its affiliates as a result of any future physical injury or illness incurred in connection with, or as a result of, the use or misuse of your program.',
+    disclaimer,
     doc.internal.pageSize.width - 2 * margin
   );
   doc.text(disclaimerText, margin, yOffset);
@@ -78,7 +79,7 @@ export const generateWorkoutPDF = (program: Program): void => {
 
   doc.setFontSize(12);
   doc.setFont('helvetica', 'italic');
-  doc.text('In other words: talk to your doctor, and have fun with the program!', margin, yOffset);
+  doc.text(disclaimerSimple, margin, yOffset);
 
   // Start new page for program content
   doc.addPage();
