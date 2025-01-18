@@ -21,6 +21,7 @@ interface UpsellModalProps {
   onPurchase: () => void;
   userEmail?: string | null;
   user?: User | null;
+  onSuccessfulSubmit?: () => void;
 }
 
 const LoadingSpinner = () => (
@@ -33,9 +34,9 @@ const LoadingSpinner = () => (
   </div>
 );
 
-export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEmail, user }: UpsellModalProps) {
-  const [freeEmail, setFreeEmail] = useState(userEmail || "");
-  const [premiumEmail, setPremiumEmail] = useState(userEmail || "");
+export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEmail, user, onSuccessfulSubmit }: UpsellModalProps) {
+  const [freeEmail, setFreeEmail] = useState(userEmail || user?.email || "");
+  const [premiumEmail, setPremiumEmail] = useState(userEmail || user?.email || "");
   const [freeEmailError, setFreeEmailError] = useState("");
   const [premiumEmailError, setPremiumEmailError] = useState("");
   const [showConfetti, setShowConfetti] = useState(false);
@@ -126,6 +127,11 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
         setShowConfetti(true);
         onEmailSubmit(email);
 
+        // Trigger PDF generation for free users
+        if (!isPremium) {
+          onSuccessfulSubmit?.();
+        }
+
         // Handle Stripe redirect for premium users
         if (isPremium && purchaseSessionId) {
           const stripeUrl = `${process.env.NEXT_PUBLIC_STRIPE_LINK}?` + 
@@ -148,6 +154,11 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
             redirectButton.click();
             document.body.removeChild(redirectButton);
           }, 100);
+        } else {
+          // Close modal for free users after a short delay
+          setTimeout(() => {
+            onClose();
+          }, 1500); // Give time for confetti animation
         }
 
         // Non-critical path: Send emails asynchronously
@@ -173,8 +184,6 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
             })
           }).catch(error => console.error('Admin notification error:', error))
         ]);
-
-        onClose();
       } else if (response.error === 'EMAIL_EXISTS') {
         if (isPremium) {
           setPremiumEmailError("This email is already registered. Please upgrade, log in, or use a different email.");
@@ -407,7 +416,7 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
                 disabled={isLoading}
                 className="w-full px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                {isLoading ? <LoadingSpinner /> : <strong>Upgrade Now - $9/month</strong>}
+                {isLoading ? <LoadingSpinner /> : <strong>Upgrade Now - $10/month</strong>}
               </button>
             </form>
             <p className="text-center text-sm mt-3 text-gray-600 dark:text-gray-400">

@@ -8,8 +8,6 @@ import { User } from "@prisma/client";
 import { ConversationalInterface } from "./ConversationalInterface";
 import Link from "next/link";
 import { Program } from "@/types";
-import Footer from "@/components/Footer";
-import Header from "@/components/Header";
 
 function ConversationalIntakeContent() {
   const router = useRouter();

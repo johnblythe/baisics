@@ -8,7 +8,7 @@ import { ProgramDisplay } from "@/app/components/ProgramDisplay";
 import { GeneratingProgramTransition } from "./GeneratingProgramTransition";
 import { DataReviewTransition } from "./DataReviewTransition";
 import { Program, IntakeFormData } from "@/types";
-import { SAMPLE_PROFILES } from "@/app/components/IntakeForm";
+import { SAMPLE_PROFILES } from "@/utils/sampleUserPersonas";
 import { User } from "@prisma/client";
 import { getRandomWelcomeMessage } from "../utils/welcomeMessages";
 import { useRouter } from "next/navigation";
@@ -423,7 +423,9 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
       const message = `Hi! ${profile.additionalInfo} I'm ${profile.age} years old, ${profile.sex}, ${profile.weight} lbs, ${profile.height} inches tall. My main goal is ${profile.trainingGoal.replace('_', ' ')}. I can train ${profile.daysAvailable} days per week and have about ${profile.dailyBudget} minutes per session. I prefer ${profile.trainingPreferences.join(', ')} for workouts.`;
       
       setInputValue(message);
-      setCurrentProfileIndex((prev) => (prev + 1) % profiles.length);
+      setCurrentProfileIndex(() => Math.floor(Math.random() * profiles.length));
+      // incremental version
+      // setCurrentProfileIndex((prev) => (prev + 1) % profiles.length);
     }
 
     if ((e.key === 'd' || e.key === 'D') && e.shiftKey) {
@@ -674,7 +676,10 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
 
     // Original form for initial conversation
     return (
-      <form onSubmit={handleSubmit} className="p-8 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-b-xl">
+      <form 
+        onSubmit={handleSubmit}
+        className={`p-8 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-b-xl ${showDataReview || isGeneratingProgram ? 'hidden' : ''}`}
+      >
         <div className="flex flex-col space-y-6">
           <div className="relative">
             <textarea

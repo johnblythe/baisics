@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { WorkoutPlan } from '@/types/program';
 import { Target, Brain, Activity, Key, Dumbbell, Apple, ChartLine, Info } from 'lucide-react';
 import { formatExerciseMeasure, formatRestPeriod } from '@/utils/formatters';
@@ -36,11 +36,28 @@ interface WorkoutPlanDisplayProps {
   user?: User | null;
 }
 
-export function WorkoutPlanDisplay({ program, userEmail: initialUserEmail, plan, onRequestUpsell, onUploadImages, onDeleteImage, user }: WorkoutPlanDisplayProps) {
+export interface WorkoutPlanDisplayRef {
+  generateWorkoutPDF: (program: Program) => Promise<void>;
+}
+
+export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanDisplayProps>(({
+  program,
+  plan,
+  userEmail: initialUserEmail,
+  onRequestUpsell,
+  onUploadImages,
+  onDeleteImage,
+  user
+}, ref) => {
   const [isUpsellOpen, setIsUpsellOpen] = useState(false);
   const [userEmail, setUserEmail] = useState(initialUserEmail);
   const [expandedNotes, setExpandedNotes] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Keep userEmail in sync with prop changes
+  useEffect(() => {
+    setUserEmail(initialUserEmail);
+  }, [initialUserEmail]);
 
   // Fetch user data when component mounts or when userEmail changes
   // useEffect(() => {
@@ -79,6 +96,16 @@ export function WorkoutPlanDisplay({ program, userEmail: initialUserEmail, plan,
 
   const { nutrition } = plan;
 
+  useImperativeHandle(ref, () => ({
+    generateWorkoutPDF: async (program: Program) => {
+      try {
+        await generateWorkoutPDF(program);
+      } catch (error) {
+        console.error('Error generating PDF:', error);
+      }
+    }
+  }));
+
   return (
     <div className="space-y-8">
       {/* Premium Upsell Banner */}
@@ -93,7 +120,7 @@ export function WorkoutPlanDisplay({ program, userEmail: initialUserEmail, plan,
               </div>
               <div>
                 <h3 className="font-semibold text-lg">Unlock Your Full Potential</h3>
-                <p className="text-white/80">Get more customization, more tracking, more features, and more results for <span className="text-white font-bold">$9/month</span></p>
+                <p className="text-white/80">Get more customization, more tracking, more features, and more results for <span className="text-white font-bold">$10/month</span></p>
               </div>
             </div>
             <button
@@ -121,7 +148,7 @@ export function WorkoutPlanDisplay({ program, userEmail: initialUserEmail, plan,
               )}
             </div>
             <div className="flex items-center gap-4">
-              {user?.email || userEmail ? (
+              {userEmail ? (
                 <button
                   onClick={() => generateWorkoutPDF(program)}
                   className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
@@ -501,4 +528,6 @@ export function WorkoutPlanDisplay({ program, userEmail: initialUserEmail, plan,
       </div>
     </div>
   );
-}
+});
+
+WorkoutPlanDisplay.displayName = 'WorkoutPlanDisplay';

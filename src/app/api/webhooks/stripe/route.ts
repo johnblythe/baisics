@@ -46,9 +46,59 @@ export async function POST(req: Request) {
         break
       }
 
+      case 'invoice.payment_succeeded': {
+        const invoice = event.data.object as Stripe.Invoice
+        const customer = await stripe.customers.retrieve(invoice.customer as string)
+        const customerEmail = (customer as Stripe.Customer).email
+        if (!customerEmail) {
+          console.error("Customer email not found")
+          return NextResponse.json({ error: "Customer email not found" }, { status: 400 })
+        }
+        const user = await prisma.user.findUnique({
+          where: {
+            email: customerEmail,
+          },
+        })
+        if (!user) {
+          console.error("User not found")
+          return NextResponse.json({ error: "User not found" }, { status: 400 })
+        }
+        if (invoice.subscription) {
+          await prisma.subscription.update({
+            where: {
+              stripeSubscriptionId: invoice.subscription as string,
+              userId: user?.id,
+            },
+            data: {
+              status: 'ACTIVE',
+            },
+          })
+        }
+        break
+      }
+
       case 'customer.subscription.created':
       case 'customer.subscription.updated': {
         const subscription = event.data.object as Stripe.Subscription
+        // get teh customer
+        const customer = await stripe.customers.retrieve(subscription.customer as string)
+        const customerEmail = (customer as Stripe.Customer).email
+
+        if (!customerEmail) {
+          console.error("Customer email not found")
+          return NextResponse.json({ error: "Customer email not found" }, { status: 400 })
+        }
+
+        const user = await prisma.user.findUnique({
+          where: {
+            email: customerEmail,
+          },
+        })
+
+        if (!user) {
+          console.error("User not found")
+          return NextResponse.json({ error: "User not found" }, { status: 400 })
+        }
         
         await prisma.subscription.upsert({
           where: {
@@ -56,7 +106,7 @@ export async function POST(req: Request) {
           },
           create: {
             stripeSubscriptionId: subscription.id,
-            userId: subscription.metadata.userId,
+            userId: user.id,
             stripeCustomerId: subscription.customer as string,
             stripePriceId: subscription.items.data[0].price.id,
             status: mapStripeStatus(subscription.status),

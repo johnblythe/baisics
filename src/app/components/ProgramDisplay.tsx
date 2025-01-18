@@ -1,7 +1,7 @@
 import { Program } from '@/types';
 import { WorkoutPlanDisplay } from './WorkoutPlanDisplay';
 import { UpsellModal } from './UpsellModal';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { User } from '@prisma/client';
 import { getUser } from '../start/actions';
 import { DisclaimerBanner } from '@/components/DisclaimerBanner';
@@ -31,9 +31,34 @@ export function ProgramDisplay({
   const [uploadingImages, setUploadingImages] = useState(false);
   const [deletingImage, setDeletingImage] = useState(false);
   const [user, setUser] = useState<User | null>(null);
-  const handleEmailSubmit = (email: string) => {
+  const workoutPlanRef = useRef<any>(null);
+
+  const handleEmailSubmit = async (email: string) => {
     setUserEmail(email);
+    
+    // Immediately fetch and update user state
+    const userId = new URLSearchParams(window.location.search).get('userId');
+    if (userId) {
+      const result = await getUser(userId);
+      if (result.success && result.user) {
+        setUser(result.user);
+      }
+    }
+    
     onCloseUpsell?.();
+  };
+
+  const handleSuccessfulSubmit = async () => {
+    try {
+      // Wait for the next tick to ensure user state is updated
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      if (workoutPlanRef.current) {
+        await workoutPlanRef.current.generateWorkoutPDF(program);
+      }
+    } catch (error) {
+      console.error('Error handling successful submit:', error);
+    }
   };
 
   const handlePurchase = () => {
@@ -150,6 +175,7 @@ export function ProgramDisplay({
               </div>
             )}
             <WorkoutPlanDisplay 
+              ref={workoutPlanRef}
               program={program}
               plan={program.workoutPlans[activePlanIndex]} 
               userEmail={userEmail || undefined}
@@ -169,6 +195,7 @@ export function ProgramDisplay({
         onPurchase={handlePurchase}
         userEmail={userEmail}
         user={user}
+        onSuccessfulSubmit={handleSuccessfulSubmit}
       />
     </div>
   );

@@ -71,7 +71,7 @@ export default function LandingPage() {
             {/* CTA Buttons */}
             <div className="flex items-center gap-4">
               <Link 
-                href="/login" 
+                href="/auth/signin" 
                 className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hidden"
               >
                 Log in
