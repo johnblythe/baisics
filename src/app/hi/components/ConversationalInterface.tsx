@@ -367,7 +367,8 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
       fitness: "What types of workouts or sports have you done in the past, and what were your experiences with them?",
       preferences: "Are there specific exercises or types of movements you particularly enjoy or want to avoid?",
       nutrition: "Do you have any dietary restrictions or specific nutrition goals we should consider?",
-      recovery: "How would you describe your typical sleep patterns and stress levels?"
+      recovery: "How would you describe your typical sleep patterns and stress levels?",
+      other: "Anything else that needs correction or clarification?"
     };
     
     const selectedQuestions = topics.map(topic => topicQuestions[topic as keyof typeof topicQuestions]).join("\n\n");

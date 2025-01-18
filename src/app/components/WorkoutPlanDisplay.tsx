@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { WorkoutPlan } from '@/types/program';
 import { Target, Brain, Activity, Key, Dumbbell, Apple, ChartLine, Info } from 'lucide-react';
-import { formatRestPeriod } from '@/utils/formatters';
+import { formatExerciseMeasure, formatRestPeriod } from '@/utils/formatters';
 import { Program } from '@/types/program';
 import { User } from '@prisma/client';
 import { generateWorkoutPDF } from '@/utils/pdf';
@@ -439,7 +439,7 @@ export function WorkoutPlanDisplay({ program, userEmail: initialUserEmail, plan,
                             </div>
                             <div className="col-span-1 text-gray-600 dark:text-gray-400">{exercise.sets}</div>
                             <div className="col-span-2 text-gray-600 dark:text-gray-400">
-                              {formatRestPeriod(typeof exercise.restPeriod === 'string' ? parseInt(exercise.restPeriod) : exercise.restPeriod)}
+                              {formatExerciseMeasure(exercise)}
                             </div>
                             <div className="col-span-3 text-gray-600 dark:text-gray-400">{formatRestPeriod(typeof exercise.restPeriod === 'string' ? parseInt(exercise.restPeriod) : exercise.restPeriod)}</div>
                           </div>
