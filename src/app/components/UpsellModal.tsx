@@ -92,6 +92,7 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
 
       setIsLoading(true);
 
+      // Critical path: Create purchase session if premium
       let purchaseSessionId;
       if (isPremium) {
         try {
@@ -115,44 +116,64 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
         }
       }
 
+      // Critical path: Update user
       const response = await updateUser(userId, { 
         email,
       });
 
       if (response.success) {
-        // Send welcome email to user
-        await sendEmailAction({
-          to: email,
-          subject: isPremium ? 'Welcome to Baisics Premium!' : 'Welcome to Baisics!',
-          html: isPremium 
-            ? welcomePremiumTemplate()
-            : welcomeFreeTemplate({ upgradeLink: process.env.NEXT_PUBLIC_STRIPE_LINK, programLink: `${process.env.NEXT_PUBLIC_APP_URL}/hi?userId=${userId}&programId=${programId}` })
-        });
+        // Show success immediately
+        setShowConfetti(true);
+        onEmailSubmit(email);
 
-        // Send admin notification
-        await sendEmailAction({
-          to: process.env.NEXT_PUBLIC_ADMIN_EMAIL!,
-          subject: `New ${isPremium ? 'Premium' : 'Free'} User Signup: ${email}`,
-          html: adminSignupNotificationTemplate({
-            userEmail: email,
-            isPremium,
-            userId,
-            programId: programId || undefined
-          })
-        });
-
-        if (isPremium) {
-          window.open(
-            `${process.env.NEXT_PUBLIC_STRIPE_LINK}?` + 
+        // Handle Stripe redirect for premium users
+        if (isPremium && purchaseSessionId) {
+          const stripeUrl = `${process.env.NEXT_PUBLIC_STRIPE_LINK}?` + 
             new URLSearchParams({
               prefilled_email: email,
               utm_content: purchaseSessionId,
-            }).toString(),
-            '_blank'
-          );
+            }).toString();
+          
+          // Create a button to handle the redirect
+          const redirectButton = document.createElement('button');
+          redirectButton.style.display = 'none';
+          document.body.appendChild(redirectButton);
+          
+          redirectButton.onclick = () => {
+            window.location.href = stripeUrl;
+          };
+          
+          // Trigger the click after a short delay
+          setTimeout(() => {
+            redirectButton.click();
+            document.body.removeChild(redirectButton);
+          }, 100);
         }
-        setShowConfetti(true);
-        onEmailSubmit(email);
+
+        // Non-critical path: Send emails asynchronously
+        Promise.all([
+          // Welcome email
+          sendEmailAction({
+            to: email,
+            subject: isPremium ? 'Welcome to Baisics Premium!' : 'Welcome to Baisics!',
+            html: isPremium 
+              ? welcomePremiumTemplate()
+              : welcomeFreeTemplate({ upgradeLink: process.env.NEXT_PUBLIC_STRIPE_LINK, programLink: `${process.env.NEXT_PUBLIC_APP_URL}/hi?userId=${userId}&programId=${programId}` })
+          }).catch(error => console.error('Welcome email error:', error)),
+
+          // Admin notification
+          sendEmailAction({
+            to: process.env.NEXT_PUBLIC_ADMIN_EMAIL!,
+            subject: `New ${isPremium ? 'Premium' : 'Free'} User Signup: ${email}`,
+            html: adminSignupNotificationTemplate({
+              userEmail: email,
+              isPremium,
+              userId,
+              programId: programId || undefined
+            })
+          }).catch(error => console.error('Admin notification error:', error))
+        ]);
+
         onClose();
       } else if (response.error === 'EMAIL_EXISTS') {
         if (isPremium) {
