@@ -80,11 +80,6 @@ model User {
   image         String?
   emailVerified DateTime? @map("email_verified")
   
-  // Stripe-related fields
-  stripeCustomerId String?   @unique @map("stripe_customer_id")
-  stripeAuthToken  String?   @map("stripe_auth_token")
-  // subscription     Subscription?
-  
   accounts     Account[]
   userImages   UserImages[]
   userIntakes  UserIntake[]
@@ -97,7 +92,7 @@ model User {
   activities   UserActivity[]
   session      Session[]
   purchaseSessions PurchaseSession[]
-
+  subscription   Subscription?
   @@index([email])
   @@map("users")
 }
@@ -550,4 +545,31 @@ model PurchaseSession {
 
   @@index([userId])
   @@map("purchase_sessions")
+}
+
+
+model Subscription {
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId          String    @unique @db.Uuid @map("user_id")
+  stripeCustomerId String?  @unique @map("stripe_customer_id")
+  stripePriceId   String?  @map("stripe_price_id")
+  stripeSubscriptionId String? @unique @map("stripe_subscription_id")
+  status          SubscriptionStatus @map("status")
+  currentPeriodStart DateTime @map("current_period_start")
+  currentPeriodEnd   DateTime @map("current_period_end")
+  cancelAtPeriodEnd  Boolean @default(false) @map("cancel_at_period_end")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  user            User      @relation(fields: [userId], references: [id])
+  @@index([userId])
+  @@map("subscriptions")
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  UNPAID
+  TRIAL
 }
