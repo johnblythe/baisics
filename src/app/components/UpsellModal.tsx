@@ -21,6 +21,7 @@ interface UpsellModalProps {
   onPurchase: () => void;
   userEmail?: string | null;
   user?: User | null;
+  onSuccessfulSubmit?: () => void;
 }
 
 const LoadingSpinner = () => (
@@ -33,9 +34,9 @@ const LoadingSpinner = () => (
   </div>
 );
 
-export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEmail, user }: UpsellModalProps) {
-  const [freeEmail, setFreeEmail] = useState(userEmail || "");
-  const [premiumEmail, setPremiumEmail] = useState(userEmail || "");
+export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEmail, user, onSuccessfulSubmit }: UpsellModalProps) {
+  const [freeEmail, setFreeEmail] = useState(userEmail || user?.email || "");
+  const [premiumEmail, setPremiumEmail] = useState(userEmail || user?.email || "");
   const [freeEmailError, setFreeEmailError] = useState("");
   const [premiumEmailError, setPremiumEmailError] = useState("");
   const [showConfetti, setShowConfetti] = useState(false);
@@ -92,6 +93,7 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
 
       setIsLoading(true);
 
+      // Critical path: Create purchase session if premium
       let purchaseSessionId;
       if (isPremium) {
         try {
@@ -115,45 +117,73 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
         }
       }
 
+      // Critical path: Update user
       const response = await updateUser(userId, { 
         email,
       });
 
       if (response.success) {
-        // Send welcome email to user
-        await sendEmailAction({
-          to: email,
-          subject: isPremium ? 'Welcome to Baisics Premium!' : 'Welcome to Baisics!',
-          html: isPremium 
-            ? welcomePremiumTemplate()
-            : welcomeFreeTemplate({ upgradeLink: process.env.NEXT_PUBLIC_STRIPE_LINK, programLink: `${process.env.NEXT_PUBLIC_APP_URL}/hi?userId=${userId}&programId=${programId}` })
-        });
+        // Show success immediately
+        setShowConfetti(true);
+        onEmailSubmit(email);
 
-        // Send admin notification
-        await sendEmailAction({
-          to: process.env.NEXT_PUBLIC_ADMIN_EMAIL!,
-          subject: `New ${isPremium ? 'Premium' : 'Free'} User Signup: ${email}`,
-          html: adminSignupNotificationTemplate({
-            userEmail: email,
-            isPremium,
-            userId,
-            programId: programId || undefined
-          })
-        });
+        // Trigger PDF generation for free users
+        if (!isPremium) {
+          onSuccessfulSubmit?.();
+        }
 
-        if (isPremium) {
-          window.open(
-            `${process.env.NEXT_PUBLIC_STRIPE_LINK}?` + 
+        // Handle Stripe redirect for premium users
+        if (isPremium && purchaseSessionId) {
+          const stripeUrl = `${process.env.NEXT_PUBLIC_STRIPE_LINK}?` + 
             new URLSearchParams({
               prefilled_email: email,
               utm_content: purchaseSessionId,
-            }).toString(),
-            '_blank'
-          );
+            }).toString();
+          
+          // Create a button to handle the redirect
+          const redirectButton = document.createElement('button');
+          redirectButton.style.display = 'none';
+          document.body.appendChild(redirectButton);
+          
+          redirectButton.onclick = () => {
+            window.location.href = stripeUrl;
+          };
+          
+          // Trigger the click after a short delay
+          setTimeout(() => {
+            redirectButton.click();
+            document.body.removeChild(redirectButton);
+          }, 100);
+        } else {
+          // Close modal for free users after a short delay
+          setTimeout(() => {
+            onClose();
+          }, 1500); // Give time for confetti animation
         }
-        setShowConfetti(true);
-        onEmailSubmit(email);
-        onClose();
+
+        // Non-critical path: Send emails asynchronously
+        Promise.all([
+          // Welcome email
+          sendEmailAction({
+            to: email,
+            subject: isPremium ? 'Welcome to Baisics Premium!' : 'Welcome to Baisics!',
+            html: isPremium 
+              ? welcomePremiumTemplate()
+              : welcomeFreeTemplate({ upgradeLink: process.env.NEXT_PUBLIC_STRIPE_LINK, programLink: `${process.env.NEXT_PUBLIC_APP_URL}/hi?userId=${userId}&programId=${programId}` })
+          }).catch(error => console.error('Welcome email error:', error)),
+
+          // Admin notification
+          sendEmailAction({
+            to: process.env.NEXT_PUBLIC_ADMIN_EMAIL!,
+            subject: `New ${isPremium ? 'Premium' : 'Free'} User Signup: ${email}`,
+            html: adminSignupNotificationTemplate({
+              userEmail: email,
+              isPremium,
+              userId,
+              programId: programId || undefined
+            })
+          }).catch(error => console.error('Admin notification error:', error))
+        ]);
       } else if (response.error === 'EMAIL_EXISTS') {
         if (isPremium) {
           setPremiumEmailError("This email is already registered. Please upgrade, log in, or use a different email.");
@@ -386,7 +416,7 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
                 disabled={isLoading}
                 className="w-full px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                {isLoading ? <LoadingSpinner /> : <strong>Upgrade Now - $9/month</strong>}
+                {isLoading ? <LoadingSpinner /> : <strong>Upgrade Now - $10/month</strong>}
               </button>
             </form>
             <p className="text-center text-sm mt-3 text-gray-600 dark:text-gray-400">
