@@ -10,6 +10,10 @@ import TawkChat from "@/components/TawkChat";
 import { getLatestCheckIn } from '../check-in/actions';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, TooltipProps } from 'recharts';
 import { CheckIn, ProgressPhoto, UserImages, UserStats } from '@prisma/client';
+import { DisclaimerBanner } from '@/components/DisclaimerBanner';
+import MainLayout from '@/app/components/layouts/MainLayout';
+import { generateWorkoutPDF } from '@/utils/pdf';
+
 // import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
 // import { useDropzone } from 'react-dropzone';
 
@@ -107,6 +111,12 @@ function DashboardContent() {
   const [latestCheckIn, setLatestCheckIn] = useState<CheckInWithPhotos | null>(null);
   const [weightData, setWeightData] = useState<WeightDataPoint[]>([]);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [showDisclaimer, setShowDisclaimer] = useState(true);
+
+  useEffect(() => {
+    const disclaimerAcknowledged = localStorage.getItem('disclaimer-acknowledged');
+    setShowDisclaimer(!disclaimerAcknowledged);
+  }, []);
 
   useEffect(() => {
     // Show confetti if new_user=true in search params
@@ -215,6 +225,7 @@ function DashboardContent() {
         <div className="flex items-center justify-center min-h-screen bg-white dark:bg-gray-900">
           <div className="w-6 h-6 border-t-2 border-blue-500 border-solid rounded-full animate-spin"></div>
         </div>
+        <TawkChat />
         <Footer />
       </>
     );
@@ -236,7 +247,15 @@ function DashboardContent() {
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
       {showConfetti && <ReactConfetti recycle={false} />}
       <Header />
-      <main className="flex-grow bg-white dark:bg-gray-900 pt-16">
+      {showDisclaimer && (
+        <DisclaimerBanner 
+          variant="banner"
+          showAcknowledgeButton={true}
+          persistKey="disclaimer-acknowledged"
+          onAcknowledge={() => setShowDisclaimer(false)}
+        />
+      )}
+      <main className="flex-grow bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
           <div className="space-y-8">
             {/* Welcome & Program Info Card */}
@@ -256,8 +275,11 @@ function DashboardContent() {
                       
                       {/* Helper Links */}
                       <div className="flex items-center gap-6 pt-20">
-                        <Link
-                          href="/program/pdf"
+                        <button
+                          onClick={() => {
+                            // generateWorkoutPDF(program)
+                            console.log('clicked');
+                          }}
                           className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-white transition-colors"
                         >
                           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -267,7 +289,7 @@ function DashboardContent() {
                             <path fillRule="evenodd" clipRule="evenodd" d="M6 2C4.34315 2 3 3.34315 3 5V19C3 20.6569 4.34315 22 6 22H18C19.6569 22 21 20.6569 21 19V9C21 5.13401 17.866 2 14 2H6ZM6 4H13V9H19V19C19 19.5523 18.5523 20 18 20H6C5.44772 20 5 19.5523 5 19V5C5 4.44772 5.44772 4 6 4ZM15 4.10002C16.6113 4.4271 17.9413 5.52906 18.584 7H15V4.10002Z" fill="currentColor"/>
                           </svg>
                           Download PDF
-                        </Link>
+                        </button>
                         <Link
                           href="/hi"
                           className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-white transition-colors"
@@ -318,10 +340,8 @@ function DashboardContent() {
                                 {stats.isOverdue ? 'Overdue' : 'Due Today'}
                               </span>
                             </div>
-                            <button
-                              onClick={() => {
-                                router.push('/check-in');
-                              }}
+                            <Link
+                              href="/check-in"
                               className={`w-full px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                                 stats.isOverdue
                                   ? 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/50 border border-red-200 dark:border-red-800'
@@ -330,7 +350,7 @@ function DashboardContent() {
                             >
                               Start Weekly Check-in
                               <span className="text-xl">→</span>
-                            </button>
+                            </Link>
                             {stats.isOverdue && (
                               <p className="text-sm text-red-600 dark:text-red-400">
                                 Your check-in was due on Monday
@@ -372,6 +392,7 @@ function DashboardContent() {
                         {/* Weight and Activity Grid Row */}
                         <div className="flex gap-6">
                           {/* Weight Section */}
+                          
                           <div className="w-1/2 space-y-4">
                             <div>
                               <div className="flex items-center justify-between">
@@ -835,16 +856,19 @@ function DashboardContent() {
 
 export default function DashboardPage() {
   return (
-    <Suspense fallback={
-      <>
-        <Header />
-        <div className="flex items-center justify-center min-h-screen bg-white dark:bg-gray-900">
-          <div className="w-6 h-6 border-t-2 border-blue-500 border-solid rounded-full animate-spin"></div>
-        </div>
-        <Footer />
-      </>
-    }>
-      <DashboardContent />
-    </Suspense>
+    <MainLayout>
+      <Suspense fallback={
+        <>
+          <Header />
+          <div className="flex items-center justify-center min-h-screen bg-white dark:bg-gray-900">
+            <div className="w-6 h-6 border-t-2 border-blue-500 border-solid rounded-full animate-spin"></div>
+          </div>
+          <TawkChat />
+          <Footer />
+        </>
+      }>
+        <DashboardContent />
+      </Suspense>
+    </MainLayout>
   );
 } 

@@ -115,7 +115,6 @@ export async function processUserMessage(
 
     // @ts-ignore
     const aiResponse = JSON.parse(result.data?.content?.[0]?.text || '{}');
-    console.log("🚀 ~ aiResponse:", aiResponse)
 
     return {
       success: true,

@@ -326,8 +326,6 @@ export async function getUserProgram(userId: string, programId: string) {
         }
       }))
     }
-    console.log("🚀 ~ getUserProgram ~ finalProgram:", finalProgram)
-
     return { success: true, program: finalProgram };
   } catch (error) {
     console.error('Failed to fetch program:', error);

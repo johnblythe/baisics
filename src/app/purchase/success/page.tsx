@@ -13,7 +13,7 @@ function PurchaseSuccess() {
   const { data: session, status } = useSession();
   const [isProcessing, setIsProcessing] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  
   useEffect(() => {
     const processStripeReturn = async () => {
       try {
@@ -47,6 +47,15 @@ function PurchaseSuccess() {
           callbackUrl: '/dashboard'
         });
 
+
+        // middleware is fucking me
+        // remove for now or figure out how to set tokens here
+
+        // const token = await setToken({
+        //   token: result?.user?.id,
+        //   secret: process.env.NEXTAUTH_SECRET
+        // })
+
         if (result?.error) {
           throw new Error('Failed to sign in');
         }
@@ -68,7 +77,6 @@ function PurchaseSuccess() {
   useEffect(() => {
     if (session && !isProcessing) {
       router.push('/dashboard?new_user=true');
-
     }
   }, [session, isProcessing, router]);
 

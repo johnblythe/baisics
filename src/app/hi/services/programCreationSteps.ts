@@ -423,30 +423,12 @@ export const saveProgramToDatabase = async (program: Program): Promise<Program> 
       throw new Error('Invalid program data');
     }
 
-    console.log('Program to save:', {
-      name: program.name,
-      userId: program.user.id,
-      workoutPlansCount: program.workoutPlans.length,
-      firstPlan: program.workoutPlans[0] ? {
-        workoutsCount: program.workoutPlans[0].workouts.length,
-        firstWorkout: program.workoutPlans[0].workouts[0] ? {
-          exercisesCount: program.workoutPlans[0].workouts[0].exercises.length,
-          firstExercise: program.workoutPlans[0].workouts[0].exercises[0]
-        } : null
-      } : null
-    });
-
     const dbData = {
       name: program.name,
       description: program.description || '',
       createdBy: program.user.id,
       workoutPlans: {
         create: program.workoutPlans.map(plan => {
-          console.log('Processing plan:', {
-            workoutsCount: plan.workouts.length,
-            nutrition: plan.nutrition
-          });
-
           return {
             phase: 1, // @todo
             bodyFatPercentage: 0, // @todo
@@ -466,11 +448,6 @@ export const saveProgramToDatabase = async (program: Program): Promise<Program> 
             },
             workouts: {
               create: plan.workouts.map(workout => {
-                console.log('Processing workout:', {
-                  name: workout.name,
-                  exercisesCount: workout.exercises.length
-                });
-
                 return {
                   name: workout.name || '',
                   dayNumber: workout.dayNumber || 1,
@@ -479,18 +456,11 @@ export const saveProgramToDatabase = async (program: Program): Promise<Program> 
                   cooldown: JSON.stringify(workout.cooldown) || '',
                   exercises: {
                     create: workout.exercises.map(exercise => {
-                      console.log('Processing exercise:', {
-                        name: exercise.name,
-                        measure: exercise.measure,
-                        restPeriod: exercise.restPeriod
-                      });
-
                       // For backwards compatibility and DB constraints
                       const reps = exercise.measure.type === 'reps' ? Math.round(exercise.measure.value) : 0;
                       
                       // Convert measure type to enum
                       const measureType = exercise.measure.type.toUpperCase() as ExerciseMeasureType;
-                      console.log("🚀 ~ saveProgramToDatabase ~ measureType:", measureType)
                       
                       // Convert measure unit to enum
                       let measureUnit: ExerciseMeasureUnit | null = null;
@@ -533,10 +503,7 @@ export const saveProgramToDatabase = async (program: Program): Promise<Program> 
                             }
                           }
                         }
-                      };
-
-                      console.log('Full exercise data being saved:', JSON.stringify(exerciseData, null, 2));
-                      
+                      };                      
                       return exerciseData;
                     })
                   }
@@ -547,17 +514,6 @@ export const saveProgramToDatabase = async (program: Program): Promise<Program> 
         })
       }
     };
-
-    console.log('Attempting to save with dbData structure:', {
-      name: dbData.name,
-      workoutPlansCount: dbData.workoutPlans.create.length,
-      firstPlan: dbData.workoutPlans.create[0] ? {
-        workoutsCount: dbData.workoutPlans.create[0].workouts.create.length,
-        firstWorkout: dbData.workoutPlans.create[0].workouts.create[0] ? {
-          exercisesCount: dbData.workoutPlans.create[0].workouts.create[0].exercises.create.length
-        } : null
-      } : null
-    });
 
     const savedProgram = await prisma.program.create({
       data: dbData,
