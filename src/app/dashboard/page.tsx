@@ -13,7 +13,8 @@ import { CheckIn, ProgressPhoto, UserImages, UserStats } from '@prisma/client';
 import { DisclaimerBanner } from '@/components/DisclaimerBanner';
 import MainLayout from '@/app/components/layouts/MainLayout';
 import { generateWorkoutPDF } from '@/utils/pdf';
-
+import { getSession } from 'next-auth/react';
+import { WorkoutPlan as WorkoutPlanHiType } from '@/types/program';
 // import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
 // import { useDropzone } from 'react-dropzone';
 
@@ -274,9 +275,41 @@ function DashboardContent() {
                       {/* Helper Links */}
                       <div className="flex items-center gap-6 pt-20">
                         <button
-                          onClick={() => {
-                            // generateWorkoutPDF(program)
-                            console.log('clicked');
+                          onClick={async () => {
+                            // @todo: fix this hackery, consolidate types
+                            const session = await getSession();
+                            if (!session?.user?.id) return;
+                            const nutrition = {
+                              dailyCalories: program.workoutPlans[0].dailyCalories,
+                              macros: {
+                                protein: program.workoutPlans[0].proteinGrams,
+                                carbs: program.workoutPlans[0].carbGrams,
+                                fats: program.workoutPlans[0].fatGrams,
+                              }
+                            }
+
+                            const workoutPlan: WorkoutPlanHiType = {
+                              id: '',
+                              workouts: program.workoutPlans[0].workouts.map(workout => ({
+                                ...workout,
+                                day: workout.dayNumber
+                              })),
+                              nutrition: nutrition,
+                              phase: 0,
+                              phaseExplanation: '',
+                              phaseExpectations: '',
+                              phaseKeyPoints: [],
+                            }
+                            console.log('workoutPlan', workoutPlan);
+                            const transformedProgram = {
+                              ...program,
+                              workoutPlans: [workoutPlan],
+                              user: {
+                                id: session?.user?.id,
+                                email: session?.user?.email
+                              }
+                            }
+                            generateWorkoutPDF(transformedProgram)
                           }}
                           className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-white transition-colors"
                         >
@@ -505,11 +538,6 @@ function DashboardContent() {
                                   // Check for check-ins on any day
                                   const wasCheckIn = program.checkIns?.some(checkIn => {
                                     const checkInDate = new Date(checkIn.date);
-                                    console.log('Comparing dates:', {
-                                      date: date.toDateString(),
-                                      checkInDate: checkInDate.toDateString(),
-                                      checkIn
-                                    });
                                     return checkInDate.toDateString() === date.toDateString();
                                   });
 
