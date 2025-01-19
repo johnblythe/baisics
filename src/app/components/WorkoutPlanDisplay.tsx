@@ -466,7 +466,13 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
                             </div>
                             <div className="col-span-1 text-gray-600 dark:text-gray-400">{exercise.sets}</div>
                             <div className="col-span-2 text-gray-600 dark:text-gray-400">
-                              {formatExerciseMeasure(exercise)}
+                              {(() => {
+                                const formatted = formatExerciseMeasure(exercise);
+                                if (formatted.includes('reps')) {
+                                  return formatted.replace('reps', '');
+                                }
+                                return formatted;
+                              })()}
                             </div>
                             <div className="col-span-3 text-gray-600 dark:text-gray-400">{formatRestPeriod(typeof exercise.restPeriod === 'string' ? parseInt(exercise.restPeriod) : exercise.restPeriod)}</div>
                           </div>

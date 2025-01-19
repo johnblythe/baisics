@@ -12,14 +12,43 @@ export const formatRestPeriod = (rest: number): string => {
   const seconds = rest % 60;
   
   return seconds > 0 ? `${minutes}m ${seconds}s` : `${minutes}m`;
-}; 
+};
+
+// more of a getter tbh
+export const formatExerciseUnit = (
+  exercise: any,
+  format: 'short' | 'long' = 'short',
+  style: 'lower' | 'upper' | 'mixed' = 'lower'
+) => {
+  let unit = '';
+  if (exercise.measureUnit) {
+    unit = exercise.measureUnit;
+  } else if (exercise.measure?.unit) {
+    unit = exercise.measure.unit;
+  }
+
+  if (style === 'lower') {
+    unit = unit.toLowerCase();
+  } else if (style === 'upper') {
+    unit = unit.toUpperCase();
+  } else if (style === 'mixed') {
+    unit = unit.toLowerCase();
+    unit = unit.charAt(0).toUpperCase() + unit.slice(1);
+  }
+
+  if (format === 'short') {
+    return unit.slice(0, 1);
+  } else {
+    return unit;
+  }
+}
 
 export const formatExerciseMeasure = (exercise: any) => {
   // If we have reps and it's not 0, show that
   if (exercise.reps) { // db version
-    return `${exercise.reps || exercise.measure?.reps}`;
+    return `${exercise.reps || exercise.measure?.reps} reps`;
   } else if (exercise.measure?.type === 'reps') { // api version
-    return `${exercise.measure.value}`;
+    return `${exercise.measure.value} reps`;
   }
 
   try {
@@ -37,6 +66,7 @@ export const formatExerciseMeasure = (exercise: any) => {
       case 'distance':
         if (unit === 'meters') finalReturn = `${value}m`;
         if (unit === 'kilometers') finalReturn = `${value}km`;
+        if (unit === 'miles') finalReturn = `${value}mi`;
         finalReturn = `${value} ${unit || 'm'}`
         break;
       default:

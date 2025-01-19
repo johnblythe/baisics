@@ -132,7 +132,6 @@ function DashboardContent() {
       try {
         const response = await fetch('/api/programs/current');
         const data = await response.json();
-        console.log("🚀 ~ fetchData ~ data:", data)
         
         if (!data) {
           // router.push('/hi');
@@ -246,7 +245,6 @@ function DashboardContent() {
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
       {showConfetti && <ReactConfetti recycle={false} />}
-      <Header />
       {showDisclaimer && (
         <DisclaimerBanner 
           variant="banner"
@@ -848,8 +846,6 @@ function DashboardContent() {
           </div>
         </div>
       </main>
-      <TawkChat />
-      <Footer />
     </div>
   );
 }
