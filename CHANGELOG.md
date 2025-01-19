@@ -5,92 +5,100 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.0.4] - 2025-01-17
-
+## [Unreleased]
 ### Added
-- Disclaimer banner for user agreements
-- Support chat widget integration
-- Confetti animation for first dashboard visit
-- Admin notification emails for new user signups
-
-### Changed
-- Improved check-in components and layout uniformity
-- Enhanced PDF generation and exercise groupings
-- Refined upsell modal presentation
-- Updated exercise measure formatting
+- Stripe webhook integration and middleware
+- Enhanced payment link security
+- Subscription validation system
+- Program review tweaking
+- Improved reps display on workout interface
 
 ### Fixed
-- Resolved repetition computation issues
-- Fixed PDF generation bugs
-- Addressed warmup/cooldown data issues
+- Payment link popup protection issues
+- Database unique constraints
 
-## [0.0.3] - 2025-01-08
-
+## [0.0.4] - 2025-01-17
 ### Added
-- Dark mode support across the application
-- Magic link authentication system
-- Basic email flows and templates
-- Admin email management
-- Progress pictures and stats visualization
-- Google Analytics tracking
+- Disclaimer banner and components
+- Support chat widget integration
+- Review step for program creation
+- Admin notification system for signups
+- Exercise video listings
+- Confetti animations for achievements
 
 ### Changed
-- Improved dashboard UI and navigation
-- Enhanced program creation workflow
-- Updated landing page with dark mode support
+- Enhanced PDF generation and exercise groupings
+- Improved exercise measure formatting
+- Updated layout and content page uniformity
+
+### Fixed
+- Repetition computation issues
+- PDF generation bugs
+- Warmup/cooldown data handling
+
+## [0.0.3] - 2025-01-08
+### Added
+- Magic link authentication
+- Dark mode implementation
+- Basic email flows and templates
+- Admin email management
+- Progress picture stats
+- Body composition assessment
+
+### Changed
+- Improved authentication flow
+- Enhanced upsell experience
+- Updated landing page styling
 
 ### Fixed
 - Authentication sign-in issues
-- Various build preparation fixes
-- Error boundary improvements
+- Build preparation fixes
+- Header display issues
 
 ## [0.0.2] - 2024-12-30
-
 ### Added
-- GitHub-style activity graph on dashboard
-- Basic check-in capabilities
-- Macro tracking in "Next Up" section
-- Privacy and Terms pages
-- Navigation components
-- Rest period animations and timing
-- Workout logging interface
+- Complete workout interface
+- Exercise logging system
+- Rest period animations
+- Set completion tracking
+- Dashboard improvements
+- Activity tracking
+- Progress pictures
+- Weight check-ins
 
 ### Changed
-- Improved dashboard layout and styling
-- Enhanced workout and exercise logging UX
-- Refined program name and description saving
-- Updated SEO metadata in layout
+- Enhanced dashboard UI
+- Improved workout logging UX
+- Updated navigation system
 
 ### Fixed
-- Program URL search parameter issues
-- Various mobile responsiveness issues
-- Text color inconsistencies
+- Program name and description saving
+- Exercise logging cleanup
+- Various UI/UX improvements
 
 ## [0.0.1] - 2024-11-05
-
 ### Added
 - Initial project setup
 - Basic landing page
-- Exercise library with generator
-- User profile management
-- Image upload functionality
-- PDF generation capability
-- Initial workout planning system
+- Image upload with dropzone
+- Body composition analysis using AI
+- Base64 image handling
 - Basic intake form
-- Lead generation system
-- Freemium/premium user differentiation
+- Initial workout planning
+- Exercise library foundation
 
 ### Changed
-- Improved prompt engineering for workout generation
-- Enhanced user profile components
-- Refined intake form flow
+- Improved prompt engineering
+- Enhanced data handling
+- Refined intake process
 
 ### Fixed
-- Image upload and handling issues
-- User settings persistence
-- Download link functionality
+- Body fat percentage calculation issues
+- Image upload handling
+- Basic data flow
 
-[0.0.4]: https://github.com/johnblythe/baisics/compare/v0.0.3...HEAD
+[Unreleased]: https://github.com/johnblythe/baisics/compare/v0.0.4...HEAD
+[0.0.4]: https://github.com/johnblythe/baisics/compare/v0.0.3...v0.0.4
 [0.0.3]: https://github.com/johnblythe/baisics/compare/v0.0.2...v0.0.3
 [0.0.2]: https://github.com/johnblythe/baisics/compare/v0.0.1...v0.0.2
 [0.0.1]: https://github.com/johnblythe/baisics/releases/tag/v0.0.1 
