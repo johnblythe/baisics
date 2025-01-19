@@ -60,7 +60,7 @@ interface Program {
   }[];
   checkIns?: {
     id: string;
-    createdAt: string;
+    date: string;
     type: 'initial' | 'progress' | 'end';
   }[];
   activities?: {
@@ -502,9 +502,14 @@ function DashboardContent() {
                                     return logDate.toDateString() === date.toDateString();
                                   });
 
-                                  // Check if it was a check-in day (Monday)
-                                  const wasCheckIn = date.getDay() === 1 && program.checkIns?.some(checkIn => {
-                                    const checkInDate = new Date(checkIn.createdAt);
+                                  // Check for check-ins on any day
+                                  const wasCheckIn = program.checkIns?.some(checkIn => {
+                                    const checkInDate = new Date(checkIn.date);
+                                    console.log('Comparing dates:', {
+                                      date: date.toDateString(),
+                                      checkInDate: checkInDate.toDateString(),
+                                      checkIn
+                                    });
                                     return checkInDate.toDateString() === date.toDateString();
                                   });
 
@@ -531,7 +536,7 @@ function DashboardContent() {
                                   const tooltipItems: TooltipItem[] = [];
                                   if (wasCheckIn) {
                                     const checkIn = program.checkIns?.find(c => {
-                                      const checkInDate = new Date(c.createdAt);
+                                      const checkInDate = new Date(c.date);
                                       return checkInDate.toDateString() === date.toDateString();
                                     });
                                     tooltipItems.push({
@@ -824,13 +829,13 @@ function DashboardContent() {
                               Completed {new Date(log.completedAt).toLocaleDateString()}
                             </p>
                           </div>
-                          <Link
+                          {/* <Link
                             href={`/workout-log/${log.id}`}
                             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all duration-200"
                           >
                             View Details
                             <span className="opacity-0 group-hover/item:opacity-100 transition-opacity">→</span>
-                          </Link>
+                          </Link> */}
                         </div>
                       ))}
                     </div>

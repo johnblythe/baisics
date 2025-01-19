@@ -105,10 +105,13 @@ export async function GET() {
       startWeight,
       currentWeight,
       progressPhotos,
-      checkIns: program.checkIns?.map(checkIn => ({
-        ...checkIn,
-        createdAt: checkIn.createdAt.toISOString(),
-      })) || [],
+      checkIns: program.checkIns?.map(checkIn => {
+        return {
+          ...checkIn,
+          date: checkIn.date.toISOString(),
+          createdAt: checkIn.createdAt.toISOString(),
+        };
+      }) || [],
       workoutLogs: program.workoutLogs?.map(log => ({
         ...log,
         completedAt: log.completedAt?.toISOString(),

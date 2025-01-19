@@ -81,15 +81,16 @@ function CheckInPageContent() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/check-in', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ ...formData, checkInDate }),
-      });
+      const response = await createCheckIn(formData);
+      // const response = await fetch('/api/check-in', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({ ...formData, checkInDate }),
+      // });
 
-      if (!response.ok) {
+      if (!response.success) {
         throw new Error('Failed to submit check-in');
       }
 
