@@ -8,6 +8,7 @@ import { MessageParam } from '@anthropic-ai/sdk/src/resources/messages.js';
 import { User, UserImages } from '@prisma/client';
 import { fileToBase64 } from '@/utils/fileHandling';
 import { IntakeFormData } from '@/types';
+import { Prisma } from '@prisma/client';
 // Add new types for the form data
 export type TrainingGoal = 'weight loss' | 'maintenance' | 'body recomposition' | 'strength gains' | 'weight gain' | 'muscle building' | 'other';
 export type Sex = 'man' | 'woman' | 'other';
@@ -109,13 +110,22 @@ export async function createNewUser({ userId, email }: { userId: string, email: 
   }
 }
 
-export async function updateUser(userId: string, data: Partial<User>) {
-  const user = await prisma.user.update({
-    where: { id: userId },
-    data,
-  });
-
-  return { success: true, user };
+export async function updateUser(userId: string, data: { email?: string }): Promise<{ success: boolean; user?: User; error?: string }> {
+  try {
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data
+    });
+    return { success: true, user };
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === 'P2002') {
+        return { success: false, error: 'EMAIL_EXISTS' };
+      }
+    }
+    console.error('Error updating user:', error);
+    return { success: false, error: 'UNKNOWN_ERROR' };
+  }
 } 
 
 export async function createAnonUser(userId: string) {
@@ -316,8 +326,6 @@ export async function getUserProgram(userId: string, programId: string) {
         }
       }))
     }
-    console.log("🚀 ~ getUserProgram ~ finalProgram:", finalProgram)
-
     return { success: true, program: finalProgram };
   } catch (error) {
     console.error('Failed to fetch program:', error);
@@ -519,9 +527,8 @@ export async function preparePromptForAI(
       role: 'user',
       // @ts-ignore
       content: messageContent,
-    }]);
-    console.timeEnd('ai-response');
-
+    }], userId);
+    
     if (aiResponse.success) {
       console.time('save-prompt-log');
       await prisma.promptLog.create({

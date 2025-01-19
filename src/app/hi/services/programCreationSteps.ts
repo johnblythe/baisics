@@ -2,6 +2,7 @@ import { IntakeFormData, Program, Nutrition, WorkoutPlan } from "@/types";
 import { sendMessage } from "@/utils/chat";
 import type { ContentBlock } from '@anthropic-ai/sdk/src/resources/messages.js';
 import { prisma } from '@/lib/prisma';
+import { ExerciseMeasureUnit, ExerciseMeasureType, Exercise, ExerciseLibrary } from '@prisma/client';
 
 export interface ProgramStructure {
   name: string;
@@ -15,14 +16,28 @@ export interface ProgramStructure {
 export interface WorkoutStructure {
   daysPerWeek: number;
   sessionDuration: number;
-  splitType: string;
+  workoutStyle: {
+    primary: string;    // 'strength', 'yoga', 'cardio', 'hybrid'
+    secondary?: string;
+  };
   workoutDistribution: string[];
   exerciseSelectionRules: {
-    compoundToIsolationRatio: string;
     exercisesPerWorkout: number;
-    restPeriods: { [key: string]: number };
-    setRanges: { [key: string]: number };
-    repRanges: { [key: string]: number };
+    defaultRestPeriod: number;  // in seconds
+    preferredMeasureType?: 'reps' | 'time' | 'distance';  // optional default based on style
+    // @NOTE: could be helpful in the future for more complex program creation
+    // intensity: {
+    //   type: string;           // 'weight-based', 'perceived-effort', 'heart-rate', 'time-based'
+    //   parameters: {
+    //     [key: string]: number | string;
+    //   };
+    // };
+    // structureType: {
+    //   format: string;         // 'sets-reps', 'time-based', 'flow-based', 'distance-based'
+    //   details: {
+    //     [key: string]: number | string;
+    //   };
+    // };
   };
 }
 
@@ -67,14 +82,14 @@ const defaultProgramStructure: ProgramStructure = {
 const defaultWorkoutStructure: WorkoutStructure = {
   daysPerWeek: 3,
   sessionDuration: 60,
-  splitType: 'Full Body',
+  workoutStyle: {
+    primary: 'strength'
+  },
   workoutDistribution: [],
   exerciseSelectionRules: {
-    compoundToIsolationRatio: '2:1',
     exercisesPerWorkout: 6,
-    restPeriods: { default: 90 },
-    setRanges: { default: 3 },
-    repRanges: { default: 10 }
+    defaultRestPeriod: 90,
+    preferredMeasureType: 'reps'
   }
 };
 
@@ -85,6 +100,7 @@ const defaultWorkoutPlan: WorkoutPlan = {
     dailyCalories: 2000,
     macros: { protein: 150, carbs: 200, fats: 70 }
   },
+  phase: 1,
   phaseExplanation: '',
   phaseExpectations: '',
   phaseKeyPoints: [],
@@ -117,21 +133,41 @@ const formatWorkoutStructurePrompt = (
   return [{
     role: 'user',
     content: `Based on the following client data and program structure, create a workout structure:
-Client Data: ${JSON.stringify(intakeData, null, 2)}
+Client Data: 
+${JSON.stringify({
+  ...intakeData,
+  workoutEnvironment: intakeData.workoutEnvironment,
+  equipmentAccess: intakeData.equipmentAccess,
+  workoutStyle: intakeData.workoutStyle
+}, null, 2)}
+
 Program Structure: ${JSON.stringify(programStructure, null, 2)}
+
+Consider the workout environment (${intakeData.workoutEnvironment.primary}), available equipment (${intakeData.equipmentAccess.type}), and preferred style (${intakeData.workoutStyle.primary}).
 
 Please provide a response in the following JSON format:
 {
   "daysPerWeek": number,
   "sessionDuration": number,
-  "splitType": string,
+  "workoutStyle": {
+    "primary": string,    // should align with client's preference
+    "secondary": string   // optional
+  },
   "workoutDistribution": string[],
   "exerciseSelectionRules": {
-    "compoundToIsolationRatio": string,
     "exercisesPerWorkout": number,
-    "restPeriods": { "default": number },
-    "setRanges": { "default": number },
-    "repRanges": { "default": number }
+    "intensity": {
+      "type": string,     // 'weight-based', 'perceived-effort', 'heart-rate', 'time-based'
+      "parameters": {
+        // Appropriate parameters based on workout style and environment
+      }
+    },
+    "structureType": {
+      "format": string,   // 'sets-reps', 'time-based', 'flow-based', 'distance-based'
+      "details": {
+        // Structure details appropriate for the format
+      }
+    }
   }
 }`
   }];
@@ -143,14 +179,16 @@ const formatWorkoutFocusPrompt = (
   workoutStructure: WorkoutStructure,
   dayNumber: number
 ): { role: string; content: string; }[] => {
-  // Only include relevant data for determining focus
+  // Include relevant context for determining focus
   const relevantData = {
     goals: intakeData.trainingGoal,
     experience: intakeData.experienceLevel,
     preferences: intakeData.trainingPreferences,
+    environment: intakeData.workoutEnvironment,
+    equipment: intakeData.equipmentAccess,
+    style: workoutStructure.workoutStyle,
     daysPerWeek: workoutStructure.daysPerWeek,
-    splitType: workoutStructure.splitType,
-    distribution: workoutStructure.workoutDistribution
+    workoutDistribution: workoutStructure.workoutDistribution
   };
 
   return [{
@@ -158,20 +196,37 @@ const formatWorkoutFocusPrompt = (
     content: `Create a workout focus for day ${dayNumber} of ${workoutStructure.daysPerWeek} based on:
 ${JSON.stringify(relevantData, null, 2)}
 
+Consider the workout environment (${intakeData.workoutEnvironment.primary}) and available equipment when designing the focus.
+
+The following exercise environments MUST be grouped separately and cannot be mixed within the same workout session:
+- Pool/Swimming exercises
+- Yoga/Flexibility focused exercises
+- Rock climbing
+- Any exercise requiring changing clothes or environment
+
+The following can be mixed within the same session:
+- Strength training with cardio equipment (treadmill, bike, rower)
+- Bodyweight exercises with equipment-based exercises
+- Different types of resistance training equipment
+
+If the workout includes exercises from different environments, they must be grouped together to minimize transitions, with a maximum of ONE environment change per workout (e.g., all gym exercises, then all pool exercises). 
+If there are environment shifts, make sure to note this in the workout's FOCUS field. Example: "Low-impact cardio conditioning. Beginning in the gym, ending in the pool."
+
 Provide a response ONLY in the following JSON format:
 {
   "name": string,
   "focus": string,
   "warmup": {
     "duration": number,
-    "activities": string[] // specific activities
+    "activities": string[] // specific activities suitable for the environment
   },
   "cooldown": {
     "duration": number,
-    "activities": string[]
+    "activities": string[] // specific activities suitable for the environment
   },
   "dayNumber": number,
-  "targetExerciseCount": number
+  "targetExerciseCount": number,
+  "structureType": string // matches workoutStructure.exerciseSelectionRules.structureType.format
 }`
   }];
 };
@@ -182,14 +237,14 @@ const formatExercisesForFocusPrompt = (
   workoutStructure: WorkoutStructure,
   workoutFocus: { focus: string; targetExerciseCount: number }
 ): { role: string; content: string; }[] => {
-  // Only include relevant data for exercise selection
   const relevantData = {
     goals: intakeData.trainingGoal,
     experience: intakeData.experienceLevel,
     preferences: intakeData.trainingPreferences,
-    exerciseRules: workoutStructure.exerciseSelectionRules,
-    focus: workoutFocus.focus,
-    count: workoutFocus.targetExerciseCount
+    environment: intakeData.workoutEnvironment,
+    equipment: intakeData.equipmentAccess,
+    style: workoutStructure.workoutStyle,
+    exerciseCount: workoutFocus.targetExerciseCount
   };
 
   return [{
@@ -197,13 +252,45 @@ const formatExercisesForFocusPrompt = (
     content: `Create ${workoutFocus.targetExerciseCount} exercises for a ${workoutFocus.focus} focused workout based on:
 ${JSON.stringify(relevantData, null, 2)}
 
+Consider the workout environment (${intakeData.workoutEnvironment.primary}) and available equipment (${JSON.stringify(intakeData.equipmentAccess.available)}).
+
+The following exercise environments MUST be grouped separately and cannot be mixed within the same workout session:
+- Pool/Swimming exercises
+- Yoga/Flexibility focused exercises
+- Rock climbing
+- Any exercise requiring changing clothes or environment
+
+The following can be mixed within the same session:
+- Strength training with cardio equipment (treadmill, bike, rower)
+- Bodyweight exercises with equipment-based exercises
+- Different types of resistance training equipment
+
+If the workout includes exercises from different environments, they must be grouped together to minimize transitions, with a maximum of ONE environment change per workout (e.g., all gym exercises, then all pool exercises). Make sure 
+
+For time-based exercises, use 'seconds' for durations under 2 minutes, and 'minutes' for longer durations.
+For distance-based exercises, use 'meters' for distances under 1000m, and 'miles' for longer distances.
+
+For each exercise:
+- Provide appropriate intensity guidance (RPE, percentage of max, or descriptive level)
+- Include important form cues, tempo guidance, or other trainer tips in the notes
+- Consider the user's experience level when providing guidance
+
 Provide a response ONLY in the following JSON format:
 {
   "exercises": Array<{
     "name": string,
     "sets": number,
-    "reps": number,
-    "restPeriod": number
+    "environment": "gym" | "pool" | "outdoor" | "yoga" | "rock-climbing" | "home" | "court" | "field" | "other",
+    "measure": {
+      "type": "reps" | "time" | "distance",
+      "value": number,
+      "unit"?: "seconds" | "minutes" | "meters" | "km" | "miles"
+    },
+    "restPeriod": number,  // in seconds
+    "equipment": string[], // required equipment from the available list
+    "alternatives": string[], // alternative exercises if equipment unavailable
+    "intensity"?: string,  // suggested intensity level (RPE, percentage, or descriptive)
+    "notes"?: string      // form cues, tempo guidance, or other important tips
   }>
 }`
   }];
@@ -341,50 +428,90 @@ export const saveProgramToDatabase = async (program: Program): Promise<Program> 
       description: program.description || '',
       createdBy: program.user.id,
       workoutPlans: {
-        create: program.workoutPlans.map(plan => ({
-          phase: 1, // @todo
-          bodyFatPercentage: 0, // @todo
-          muscleMassDistribution: "Balanced", // @todo
-          dailyCalories: plan.nutrition.dailyCalories,
-          phaseExplanation: plan.phaseExplanation || '',
-          phaseExpectations: plan.phaseExpectations || '',
-          phaseKeyPoints: plan.phaseKeyPoints || [],
-          proteinGrams: plan.nutrition.macros.protein,
-          carbGrams: plan.nutrition.macros.carbs,
-          fatGrams: plan.nutrition.macros.fats,
-          daysPerWeek: plan.workouts.length,
-          user: { 
-            connect: { 
-              id: program.user.id
-            } 
-          },
-          workouts: {
-            create: plan.workouts.map(workout => ({
-              name: workout.name || '',
-              dayNumber: workout.dayNumber || 1,
-              focus: workout.focus || '',
-              warmup: JSON.stringify(workout.warmup) || '',
-              cooldown: JSON.stringify(workout.cooldown) || '',
-              exercises: {
-                create: workout.exercises.map(exercise => ({
-                  name: exercise.name,
-                  sets: exercise.sets,
-                  reps: exercise.reps,
-                  restPeriod: Number(exercise.restPeriod),
-                  exerciseLibrary: {
-                    connectOrCreate: {
-                      where: { name: exercise.name },
-                      create: {
-                        name: exercise.name,
-                        category: exercise.category || 'default',
+        create: program.workoutPlans.map(plan => {
+          return {
+            phase: 1, // @todo
+            bodyFatPercentage: 0, // @todo
+            muscleMassDistribution: "Balanced", // @todo
+            dailyCalories: plan.nutrition.dailyCalories,
+            phaseExplanation: plan.phaseExplanation || '',
+            phaseExpectations: plan.phaseExpectations || '',
+            phaseKeyPoints: plan.phaseKeyPoints || [],
+            proteinGrams: plan.nutrition.macros.protein,
+            carbGrams: plan.nutrition.macros.carbs,
+            fatGrams: plan.nutrition.macros.fats,
+            daysPerWeek: plan.workouts.length,
+            user: { 
+              connect: { 
+                id: program.user.id
+              } 
+            },
+            workouts: {
+              create: plan.workouts.map(workout => {
+                return {
+                  name: workout.name || '',
+                  dayNumber: workout.dayNumber || 1,
+                  focus: workout.focus || '',
+                  warmup: JSON.stringify(workout.warmup) || '',
+                  cooldown: JSON.stringify(workout.cooldown) || '',
+                  exercises: {
+                    create: workout.exercises.map(exercise => {
+                      // For backwards compatibility and DB constraints
+                      const reps = exercise.measure.type === 'reps' ? Math.round(exercise.measure.value) : 0;
+                      
+                      // Convert measure type to enum
+                      const measureType = exercise.measure.type.toUpperCase() as ExerciseMeasureType;
+                      
+                      // Convert measure unit to enum
+                      let measureUnit: ExerciseMeasureUnit | null = null;
+                      if (exercise.measure.unit) {
+                        switch (exercise.measure.unit) {
+                          case 'seconds':
+                            measureUnit = 'SECONDS';
+                            break;
+                          case 'minutes':
+                            measureUnit = 'SECONDS'; // Convert to seconds for consistency
+                            exercise.measure.value *= 60;
+                            break;
+                          case 'meters':
+                            measureUnit = 'METERS';
+                            break;
+                          case 'km':
+                            measureUnit = 'KILOMETERS';
+                            break;
+                          default:
+                            measureUnit = null;
+                        }
                       }
-                    }
+                      
+                      const exerciseData = {
+                        name: exercise.name,
+                        sets: exercise.sets,
+                        reps: reps,
+                        restPeriod: Math.round(exercise.restPeriod),
+                        measureType: measureType as ExerciseMeasureType,
+                        measureValue: exercise.measure.value,
+                        measureUnit: measureUnit as ExerciseMeasureUnit,
+                        intensity: 0, // Default to 0 since we'll store the description in notes
+                        notes: `${exercise.intensity || ''} ${exercise.notes || ''}`.trim() || null,
+                        exerciseLibrary: {
+                          connectOrCreate: {
+                            where: { name: exercise.name },
+                            create: {
+                              name: exercise.name,
+                              category: exercise.category || 'default'
+                            }
+                          }
+                        }
+                      };                      
+                      return exerciseData;
+                    })
                   }
-                }))
-              }
-            }))
-          }
-        }))
+                };
+              })
+            }
+          };
+        })
       }
     };
 
@@ -406,18 +533,28 @@ export const saveProgramToDatabase = async (program: Program): Promise<Program> 
     return savedProgram as unknown as Program;
   } catch (error) {
     console.error('Error in saveProgramToDatabase:', error);
+    if (error instanceof Error) {
+      console.error('Error details:', {
+        name: error.name,
+        message: error.message,
+        stack: error.stack,
+        code: (error as any).code,
+        meta: (error as any).meta,
+        target: (error as any).target
+      });
+    }
     throw error;
   }
 };
 
 // Main functions
-export const getProgramStructure = async (intakeData: IntakeFormData) => {
-  const response = await sendMessage(formatProgramStructurePrompt(intakeData));
+export const getProgramStructure = async (intakeData: IntakeFormData, userId: string) => {
+  const response = await sendMessage(formatProgramStructurePrompt(intakeData), userId);
   return parseAIResponse<ProgramStructure>(response, defaultProgramStructure);
 };
 
-export const getWorkoutStructure = async (intakeData: IntakeFormData, programStructure: ProgramStructure) => {
-  const response = await sendMessage(formatWorkoutStructurePrompt(intakeData, programStructure));
+export const getWorkoutStructure = async (intakeData: IntakeFormData, programStructure: ProgramStructure, userId: string) => {
+  const response = await sendMessage(formatWorkoutStructurePrompt(intakeData, programStructure), userId);
   return parseAIResponse<WorkoutStructure>(response, defaultWorkoutStructure);
 };
 
@@ -425,9 +562,10 @@ export const getWorkoutFocus = async (
   intakeData: IntakeFormData,
   programStructure: ProgramStructure,
   workoutStructure: WorkoutStructure,
-  dayNumber: number
+  dayNumber: number,
+  userId: string
 ) => {
-  const response = await sendMessage(formatWorkoutFocusPrompt(intakeData, programStructure, workoutStructure, dayNumber));
+  const response = await sendMessage(formatWorkoutFocusPrompt(intakeData, programStructure, workoutStructure, dayNumber), userId);
   return parseAIResponse(response, {
     name: '',
     focus: '',
@@ -442,9 +580,10 @@ export const getExercisesForFocus = async (
   intakeData: IntakeFormData,
   programStructure: ProgramStructure,
   workoutStructure: WorkoutStructure,
-  workoutFocus: { focus: string; targetExerciseCount: number }
+  workoutFocus: { focus: string; targetExerciseCount: number },
+  userId: string
 ) => {
-  const response = await sendMessage(formatExercisesForFocusPrompt(intakeData, programStructure, workoutStructure, workoutFocus));
+  const response = await sendMessage(formatExercisesForFocusPrompt(intakeData, programStructure, workoutStructure, workoutFocus), userId);
   return parseAIResponse(response, {
     exercises: []
   });
@@ -454,9 +593,10 @@ export const getPhaseDetails = async (
   intakeData: IntakeFormData,
   programStructure: ProgramStructure,
   workoutStructure: WorkoutStructure,
-  phase: number
+  phase: number,
+  userId: string
 ) => {
-  const response = await sendMessage(formatPhaseDetailsPrompt(intakeData, programStructure, workoutStructure, phase));
+  const response = await sendMessage(formatPhaseDetailsPrompt(intakeData, programStructure, workoutStructure, phase), userId);
   return parseAIResponse(response, {
     phaseExplanation: '',
     phaseExpectations: '',
@@ -468,24 +608,28 @@ export const getPhaseDetails = async (
 export const getPhaseNutrition = async (
   intakeData: IntakeFormData,
   programStructure: ProgramStructure,
-  phase: number
+  phase: number,
+  userId: string
 ) => {
-  const response = await sendMessage(formatPhaseNutritionPrompt(intakeData, programStructure, phase));
+  const response = await sendMessage(formatPhaseNutritionPrompt(intakeData, programStructure, phase), userId);
   return parseAIResponse(response, {
     dailyCalories: 2000,
     macros: { protein: 150, carbs: 200, fats: 70 }
   });
 };
 
+// @todo: get this or something like it operational
 export const getFinalReview = async (
   intakeData: IntakeFormData,
   programStructure: ProgramStructure,
   workoutStructure: WorkoutStructure,
   workoutPlans: WorkoutPlan[],
-  nutritionPlan: Nutrition
+  nutritionPlan: Nutrition,
+  userId: string
 ) => {
   const response = await sendMessage(
-    formatFinalReviewPrompt(intakeData, programStructure, workoutStructure, workoutPlans, nutritionPlan)
+    formatFinalReviewPrompt(intakeData, programStructure, workoutStructure, workoutPlans, nutritionPlan),
+    userId
   );
   return parseAIResponse<ProgramReview>(response, {
     isComplete: false,

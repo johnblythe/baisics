@@ -4,6 +4,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useState } from 'react'
 import BetaModal from './components/BetaModal'
+import { useRouter } from 'next/navigation'
+import TawkChat from '@/components/TawkChat'
 
 // Track when user opens the modal
 const trackGetStartedClick = () => {
@@ -20,19 +22,31 @@ const trackGetStartedClick = () => {
 }
 
 export default function LandingPage() {
+  const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const handleGetStarted = (e: React.MouseEvent) => {
     e.preventDefault()
     // Track the conversion
-    trackGetStartedClick()
-    // Open the modal
-    setIsModalOpen(true)
+    trackGetStartedClick();
+
+    if (process.env.NEXT_PUBLIC_WE_LIVE) {
+      router.push('/hi')
+    } else {
+      // Open the modal
+      setIsModalOpen(true)
+    }
   }
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
       <BetaModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      
+      {/* Background Pattern */}
+      {/* <div className="absolute inset-0 z-10">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.03),transparent_70%)] dark:bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.08),transparent_70%)]"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(99,102,241,0.01)_25%,transparent_25%,transparent_75%,rgba(99,102,241,0.01)_75%,rgba(99,102,241,0.01))] dark:bg-[linear-gradient(45deg,rgba(99,102,241,0.03)_25%,transparent_25%,transparent_75%,rgba(99,102,241,0.03)_75%,rgba(99,102,241,0.03))]" style={{ backgroundSize: '60px 60px' }}></div>
+      </div> */}
       
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm z-50 border-b border-gray-100 dark:border-gray-800">
@@ -57,7 +71,7 @@ export default function LandingPage() {
             {/* CTA Buttons */}
             <div className="flex items-center gap-4">
               <Link 
-                href="/login" 
+                href="/auth/signin" 
                 className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hidden"
               >
                 Log in
@@ -79,12 +93,6 @@ export default function LandingPage() {
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Hero Section */}
           <div className="relative flex flex-col lg:flex-row items-center justify-between py-12 lg:py-20 gap-8 lg:gap-12">
-            {/* Background Texture */}
-            <div className="absolute inset-0 -mx-4 sm:-mx-6 lg:-mx-8">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.03),transparent_70%)] dark:bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.08),transparent_70%)]"></div>
-              <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(99,102,241,0.01)_25%,transparent_25%,transparent_75%,rgba(99,102,241,0.01)_75%,rgba(99,102,241,0.01))] dark:bg-[linear-gradient(45deg,rgba(99,102,241,0.03)_25%,transparent_25%,transparent_75%,rgba(99,102,241,0.03)_75%,rgba(99,102,241,0.03))]" style={{ backgroundSize: '60px 60px' }}></div>
-            </div>
-
             {/* Left Column - Text Content */}
             <div className="flex-1 space-y-8">
               <div className="space-y-2">
@@ -111,7 +119,7 @@ export default function LandingPage() {
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                     </span>
-                    <span>Over 1,000 programs created</span>
+                    <span>Hundreds of custom programs created</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="flex h-2 w-2 relative">
@@ -682,6 +690,7 @@ export default function LandingPage() {
           </div>
         </footer>
       </div>
+      <TawkChat />
     </div>
   )
 } 

@@ -4,10 +4,11 @@ import { IntakeFormData } from '@/types';
 
 export async function POST(request: Request) {
   try {
-    const { intakeData, programStructure } = await request.json();
+    const { intakeData, programStructure, userId } = await request.json();
     const workoutStructure = await getWorkoutStructure(
       intakeData as IntakeFormData,
-      programStructure as ProgramStructure
+      programStructure as ProgramStructure,
+      userId
     );
     return NextResponse.json({ success: true, workoutStructure });
   } catch (error) {

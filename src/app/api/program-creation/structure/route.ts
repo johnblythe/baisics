@@ -4,8 +4,8 @@ import { IntakeFormData } from '@/types';
 
 export async function POST(request: Request) {
   try {
-    const { intakeData } = await request.json();
-    const programStructure = await getProgramStructure(intakeData as IntakeFormData);
+    const { intakeData, userId } = await request.json();
+    const programStructure = await getProgramStructure(intakeData as IntakeFormData, userId);
     return NextResponse.json({ success: true, programStructure });
   } catch (error) {
     console.error('Error in program structure creation:', error);

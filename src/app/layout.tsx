@@ -16,6 +16,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://baisics.app'),
   title: "baisics | Your Personal AI Fitness Trainer",
   description: "Get your personalized workout and nutrition plan in 2 minutes. No cookie-cutter programs, no expensive trainers. Start free or unlock premium features. AI-powered fitness training and meal plans customized for your goals.",
   keywords: [

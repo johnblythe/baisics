@@ -3,27 +3,29 @@
 import { Message, ExtractedData, IntakeFormData, WorkoutPlan, Program } from "@/types";
 import { sendMessage } from "@/utils/chat";
 import { prisma } from "@/lib/prisma";
+import { sendEmail } from "@/lib/email";
 // import { modifyPhase } from "./services/programCreation";
 import { createProgramSequentially } from "./services/_sequentialProgramCreation";
+import { extractionPrompt } from "@/utils/prompts/";
+import { convertToIntakeFormat } from "@/utils/formatters";
 
-// Helper to convert extracted data to IntakeFormData format
-function convertToIntakeFormat(extractedData: any): IntakeFormData {
-  return {
-    sex: extractedData.gender?.value || 'other',
-    trainingGoal: extractedData.goals?.value,
-    daysAvailable: parseInt(extractedData.daysPerWeek?.value) || 3,
-    dailyBudget: parseInt(extractedData.timePerDay?.value) || 60,
-    age: extractedData.age?.value ? parseInt(extractedData.age.value) : undefined,
-    weight: extractedData.weight?.value ? parseInt(extractedData.weight.value) : undefined,
-    height: extractedData.height?.value ? parseInt(extractedData.height.value) : undefined,
-    trainingPreferences: extractedData.preferences?.value ? 
-      extractedData.preferences.value.split(',').map((p: string) => p.trim()) : 
-      [],
-    additionalInfo: extractedData.additionalInfo?.value || '',
-    experienceLevel: 'beginner', // Default value, could be extracted from conversation
-    modificationRequest: extractedData.modificationRequest?.value || '',
-  };
+// New server action for sending emails
+export async function sendEmailAction(options: {
+  to: string | string[];
+  subject: string;
+  text?: string;
+  html?: string;
+}) {
+  try {
+    const result = await sendEmail(options);
+    return result;
+  } catch (error) {
+    console.error('Failed to send email:', error);
+    return { success: false, error: 'Failed to send email' };
+  }
 }
+
+
 
 // @TODO: rename, clean up, etc
 // @TODO: i'm not sure this is properly keeping a continuation of the conversation since it chops out
@@ -94,46 +96,18 @@ export async function processUserMessage(
     }));
 
     // Log the extraction prompt
-    const extractionPrompt = `Based on our conversation, extract relevant information about:
-      - Sex*
-      - Training goals*
-      - Days available per week -- if unanswered, default to 3
-      - Time available per day -- if unanswered, default to 1 hour
-      - Age
-      - Weight*
-      - Height
-      - Training preferences
-      - Additional context/information (such as injuries, medications, preferences for equipment, dietary restrictions, etc.)
+    
 
-      Information marked with an asterisk (*) is required. For each piece of information, provide a confidence score (0-1). Then, determine what information is still needed and formulate a natural follow-up question.
-
-      If you have high confidence (>0.75) in all required fields (sex, goals, weight), mark \`readyForProgram\` as true so that the next turn will be program creation.
-
-      Respond only with a JSON object in this format:
-      {
-        "extractedData": {
-          "gender": { "value": "...", "confidence": 0.0 },
-          "goals": { "value": "...", "confidence": 0.0 },
-          "daysPerWeek": { "value": "...", "confidence": 0.0 },
-          "timePerDay": { "value": "...", "confidence": 0.0 },
-          "age": { "value": "...", "confidence": 0.0 },
-          "weight": { "value": "...", "confidence": 0.0 },
-          "height": { "value": "...", "confidence": 0.0 },
-          "preferences": { "value": "...", "confidence": 0.0 },
-          "additionalInfo": { "value": "...", "confidence": 0.0 }
-        },
-        "nextQuestion": "...",
-        "readyForProgram": false
-      }`
-    ;
-
-    const result = await sendMessage([
-      ...messageHistory,
-      {
-        role: 'user',
-        content: extractionPrompt
-      }
-    ]);
+    const result = await sendMessage(
+      [
+        ...messageHistory,
+        {
+          role: 'user',
+          content: extractionPrompt
+        }
+      ],
+      userId
+    );
 
     if (!result.success) {
       throw new Error('Failed to get response from Claude');
@@ -141,7 +115,6 @@ export async function processUserMessage(
 
     // @ts-ignore
     const aiResponse = JSON.parse(result.data?.content?.[0]?.text || '{}');
-    console.log("🚀 ~ aiResponse:", aiResponse)
 
     return {
       success: true,

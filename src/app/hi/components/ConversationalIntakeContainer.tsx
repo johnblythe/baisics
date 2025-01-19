@@ -105,8 +105,10 @@ function ConversationalIntakeContent() {
 
 export default function ConversationalIntakeContainer() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <ConversationalIntakeContent />
-    </Suspense>
+    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
+      <main className="flex-grow bg-white dark:bg-gray-900">
+        <ConversationalIntakeContent />
+      </main>
+    </div>
   );
 } 

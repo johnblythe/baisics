@@ -17,6 +17,12 @@ type AIMessage = {
 // Helper function to analyze body composition from images
 async function analyzeBodyComposition(images: { base64Data: string }[]): Promise<ImageAnalysis | null> {
   try {
+    const session = await auth();
+    const userId = session?.user?.id;
+    if (!userId) {
+      throw new Error('User not authenticated');
+    }
+
     const imageMessages = images.map(image => {
       const base64String = image.base64Data.split(',')[1];
       const mediaType = image.base64Data.split(';')[0].split(':')[1];
@@ -38,7 +44,7 @@ async function analyzeBodyComposition(images: { base64Data: string }[]): Promise
     const aiResponse = await sendMessage([{
       role: 'user',
       content: prompt,
-    }]);
+    }], userId);
 
     if (!aiResponse.success) {
       throw new Error('AI analysis failed');
