@@ -688,7 +688,7 @@ function DashboardContent() {
                                     className="object-cover w-full h-full hover:opacity-75 transition-opacity duration-200"
                                   />
                                   
-                                  {!photo.userStats && (
+                                  {!photo.userStats?.bodyFatLow && !photo.userStats?.bodyFatHigh && (
                                     <button
                                       onClick={async () => {
                                         try {
@@ -734,7 +734,7 @@ function DashboardContent() {
                                   </div>
 
                                   {/* Stats Overlay */}
-                                  {photo.userStats && (
+                                  {photo.userStats?.bodyFatHigh && photo.userStats?.bodyFatLow && (
                                     <div className="absolute inset-0 bg-black/80 opacity-0 hover:opacity-100 transition-opacity duration-200 flex flex-col justify-center items-center text-white p-4">
                                       <div className="space-y-3 text-center">
                                         <div>
