@@ -54,6 +54,17 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
   const [expandedNotes, setExpandedNotes] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Initialize expandedNotes with first exercise's ID
+  useEffect(() => {
+    if (plan.workouts.length > 0 && plan.workouts[0].exercises.length > 0) {
+      const firstExercise = plan.workouts[0].exercises[0];
+      const firstExerciseId = firstExercise.id || `exercise-${plan.workouts[0].id}-${firstExercise.name}-0`;
+      if (firstExercise.notes) {
+        setExpandedNotes([firstExerciseId]);
+      }
+    }
+  }, [plan.workouts]);
+
   // Keep userEmail in sync with prop changes
   useEffect(() => {
     setUserEmail(initialUserEmail);
@@ -457,10 +468,13 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
                               {exercise.notes && (
                                 <button
                                   onClick={() => toggleNotes(exerciseId)}
-                                  className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                  className="group relative p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                                   aria-label={isExpanded ? "Hide exercise notes" : "Show exercise notes"}
                                 >
                                   <Info className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                                  <span className="invisible group-hover:visible absolute left-1/2 -translate-x-1/2 -top-10 w-64 px-2 py-1 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-md whitespace-nowrap">
+                                    Click to view exercise notes and video
+                                  </span>
                                 </button>
                               )}
                             </div>

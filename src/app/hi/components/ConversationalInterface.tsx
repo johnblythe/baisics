@@ -66,7 +66,7 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
   const [isGeneratingProgram, setIsGeneratingProgram] = useState(false);
   const [isUpsellOpen, setIsUpsellOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [currentProfileIndex, setCurrentProfileIndex] = useState(0);
+  const [currentProfileIndex, setCurrentProfileIndex] = useState(Math.floor(Math.random() * Object.keys(SAMPLE_PROFILES).length));
   const [isSaving, setIsSaving] = useState(false);
   const [showDataReview, setShowDataReview] = useState(false);
 
@@ -208,6 +208,24 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
       role: "assistant", 
       content: "Great! I'll create your personalized program now. Let me put that together for you..." 
     }]);
+
+    // save the user's intake data
+    try {
+      const intakeResponse = await fetch(`/api/user/${userId}/intake`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(extractedData)
+      });
+
+      if (!intakeResponse.ok) {
+        throw new Error('Failed to save intake data');
+      }
+
+      await intakeResponse.json();
+    } catch (error) {
+      console.error('Error saving intake data:', error);
+      // Continue with program creation even if intake save fails
+    }
 
     try {
       // Step 1: Get program structure
