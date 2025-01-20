@@ -122,7 +122,7 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
       {/* Premium Upsell Banner */}
       {userEmail && !user?.isPremium && (
         <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-2xl shadow-sm overflow-hidden">
-          <div className="p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div className="p-4 sm:p-2 flex flex-col sm:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-white/10 rounded-lg">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -198,10 +198,10 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{plan.phaseExplanation}</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 lg:p-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-6 px-1 lg:p-8">
           {/* Phase Overview Section */}
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
-            <div className="p-6 space-y-6">
+            <div className="p-2 space-y-2 lg:p-6 lg:space-y-6">
               <div className="flex items-start space-x-3 hidden">
                 <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg">
                   <Brain className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
@@ -251,7 +251,7 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
 
           {/* Nutrition Section */}
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
-            <div className="p-6 space-y-6">
+            <div className="p-2 space-y-2 lg:p-6 lg:space-y-6">
               <div className="flex items-center gap-2">
                 <Apple className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                 <h3 className="font-semibold text-gray-900 dark:text-white">Nutrition</h3>
@@ -282,7 +282,7 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
 
           {/* Body Composition Section */}
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
-            <div className="p-6 space-y-6">
+            <div className="p-4 space-y-4 lg:p-6 lg:space-y-6">
               <div className="flex items-center gap-2">
                 <ChartLine className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                 <h3 className="font-semibold text-gray-900 dark:text-white">Body Composition</h3>
@@ -336,7 +336,7 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
 
           {/* Progress Stats Section */}
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
-            <div className="p-6 space-y-6">
+            <div className="p-4 space-y-4 lg:p-6 lg:space-y-6">
               <div className="flex items-center gap-2">
                 <Target className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                 <h3 className="font-semibold text-gray-900 dark:text-white">Progress Stats</h3>
@@ -397,7 +397,7 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
                 )}
               </div>
 
-              <div className="p-6 space-y-6">
+              <div className="p-2 space-y-2 lg:p-6 lg:space-y-6">
                 {/* Warmup Section */}
                 {workout.warmup && (() => {
                   const warmupData = typeof workout.warmup === 'string' 
