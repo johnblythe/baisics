@@ -3,15 +3,115 @@ import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 import { Program, CheckIn, WorkoutLog, UserActivity } from '@prisma/client';
 
-type ProgramWithRelations = Program & {
-  checkIns?: (CheckIn & {
-    stats: any[];
+interface CheckInStat {
+  id: string;
+  weight: number;
+  bodyFatPercentage?: number;
+  bodyFatLow?: number;
+  bodyFatHigh?: number;
+  muscleMassDistribution?: string;
+  createdAt: string;
+}
+
+interface ProgressPhotoData {
+  id: string;
+  type: 'FRONT' | 'BACK' | 'SIDE_LEFT' | 'SIDE_RIGHT' | 'CUSTOM' | null;
+  userStats: {
+    bodyFatLow: number;
+    bodyFatHigh: number;
+    muscleMassDistribution: string;
+  } | null;
+}
+
+interface CheckInPhoto {
+  id: string;
+  base64Data: string;
+  progressPhoto: ProgressPhotoData[];
+}
+
+interface CheckInData {
+  id: string;
+  createdAt: string;
+  date: string;
+  notes: string | null;
+  programId: string;
+  type: 'initial' | 'progress' | 'end';
+  userId: string;
+  stats: CheckInStat[];
+  photos: CheckInPhoto[];
+}
+
+export interface TransformedProgram {
+  id: string;
+  name: string;
+  description: string | null;
+  createdBy: string;
+  startWeight: number;
+  currentWeight: number;
+  checkIns?: {
+    id: string;
+    date: string;
+    createdAt: string;
+    notes: string | null;
+    programId: string;
+    type: 'initial' | 'progress' | 'end';
+    userId: string;
     photos: {
       id: string;
       base64Data: string;
-      progressPhoto: { type: string }[];
+      progressPhoto: {
+        id: string;
+        type: 'FRONT' | 'BACK' | 'SIDE_LEFT' | 'SIDE_RIGHT' | 'CUSTOM' | null;
+        userStats: {
+          bodyFatLow: number;
+          bodyFatHigh: number;
+          muscleMassDistribution: string;
+        } | null;
+      }[];
     }[];
-  })[];
+    stats: {
+      id: string;
+      weight: number;
+      bodyFatPercentage?: number;
+      bodyFatLow?: number;
+      bodyFatHigh?: number;
+      muscleMassDistribution?: string;
+      createdAt: string;
+    }[];
+  }[];
+  workoutLogs?: {
+    id: string;
+    workoutId: string;
+    completedAt: string | null;
+    status: string;
+  }[];
+  activities?: {
+    id: string;
+    timestamp: string;
+    type: string;
+    metadata?: {
+      path?: string;
+      userAgent?: string;
+    };
+  }[];
+  workoutPlans?: {
+    id: string;
+    workouts: {
+      id: string;
+      name: string;
+      dayNumber: number;
+      focus: string;
+      exercises: any[]; // Define proper Exercise type if needed
+    }[];
+    proteinGrams: number;
+    carbGrams: number;
+    fatGrams: number;
+    dailyCalories: number;
+  }[];
+}
+
+export type ProgramWithRelations = Program & {
+  checkIns?: CheckInData[];
   workoutLogs?: WorkoutLog[];
   activities?: UserActivity[];
   workoutPlans?: any[];
@@ -104,22 +204,32 @@ export async function GET() {
       ...program,
       startWeight,
       currentWeight,
-      progressPhotos,
-      checkIns: program.checkIns?.map(checkIn => {
-        return {
-          ...checkIn,
-          date: checkIn.date.toISOString(),
-          createdAt: checkIn.createdAt.toISOString(),
-        };
-      }) || [],
+      checkIns: program.checkIns?.map(checkIn => ({
+        ...checkIn,
+        date: checkIn.date,
+        createdAt: checkIn.createdAt,
+        photos: checkIn.photos?.map(photo => ({
+          id: photo.id,
+          base64Data: photo.base64Data,
+          progressPhoto: photo.progressPhoto.map(pp => ({
+            id: pp.id,
+            type: pp.type,
+            userStats: pp.userStats
+          }))
+        })) || [],
+        stats: checkIn.stats.map(stat => ({
+          ...stat,
+          createdAt: stat.createdAt
+        }))
+      })) || [],
       workoutLogs: program.workoutLogs?.map(log => ({
         ...log,
-        completedAt: log.completedAt?.toISOString(),
+        completedAt: log.completedAt
       })) || [],
       activities: program.activities?.map(activity => ({
         ...activity,
-        timestamp: activity.timestamp.toISOString(),
-      })) || [],
+        timestamp: activity.timestamp
+      })) || []
     };
 
     return NextResponse.json(transformedProgram);

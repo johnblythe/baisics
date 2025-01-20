@@ -7,7 +7,6 @@ import ReactConfetti from "react-confetti";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import TawkChat from "@/components/TawkChat";
-import { getLatestCheckIn } from '../check-in/actions';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, TooltipProps } from 'recharts';
 import { CheckIn, ProgressPhoto, UserImages, UserStats } from '@prisma/client';
 import { DisclaimerBanner } from '@/components/DisclaimerBanner';
@@ -15,20 +14,11 @@ import MainLayout from '@/app/components/layouts/MainLayout';
 import { generateWorkoutPDF } from '@/utils/pdf';
 import { getSession } from 'next-auth/react';
 import { WorkoutPlan as WorkoutPlanHiType } from '@/types/program';
+import { ProgramWithRelations, TransformedProgram } from '../api/programs/current/route';
 // import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
 // import { useDropzone } from 'react-dropzone';
 
-type CheckInWithPhotos = CheckIn & {
-  progressPhoto: (ProgressPhoto & {
-    userImage: {
-      id: string;
-      base64Data: string;
-      type: string | null;
-    };
-    userStats: UserStats | null;
-  })[];
-  stats: UserStats[];
-};
+type CheckInWithPhotos = ProgramWithRelations['checkIns']
 
 interface WeightDataPoint {
   date: string;
@@ -102,14 +92,31 @@ interface TooltipItem {
   text: string;
 }
 
+interface TransformedProgressPhoto {
+  id: string;
+  userImage: {
+    id: string;
+    base64Data: string;
+    type: 'FRONT' | 'BACK' | 'SIDE_LEFT' | 'SIDE_RIGHT' | 'CUSTOM' | null;
+  };
+  type: 'FRONT' | 'BACK' | 'SIDE_LEFT' | 'SIDE_RIGHT' | 'CUSTOM' | null;
+  userStats: {
+    bodyFatLow: number;
+    bodyFatHigh: number;
+    muscleMassDistribution: string;
+  } | null;
+}
+
 function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [program, setProgram] = useState<Program | null>(null);
+  const [program, setProgram] = useState<TransformedProgram | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [analyzingPhotoId, setAnalyzingPhotoId] = useState<string | null>(null);
   const [tooltipContent, setTooltipContent] = useState<{ x: number; y: number; content: React.ReactNode } | null>(null);
   const [latestCheckIn, setLatestCheckIn] = useState<CheckInWithPhotos | null>(null);
+  const [progressPhotos, setProgressPhotos] = useState<TransformedProgressPhoto[]>([]);
+  const [checkIns, setCheckIns] = useState<ProgramWithRelations['checkIns']>([]);
   const [weightData, setWeightData] = useState<WeightDataPoint[]>([]);
   const [showConfetti, setShowConfetti] = useState(false);
   const [showDisclaimer, setShowDisclaimer] = useState(true);
@@ -155,28 +162,50 @@ function DashboardContent() {
     const fetchData = async () => {
       if (!program?.id) return;
       
-      try {
-        const checkIn = await getLatestCheckIn(program.id);
-        setLatestCheckIn(checkIn);
+      if (program.checkIns) {
+        setCheckIns(program.checkIns);
+        
+        // Transform check-ins into progress photos with their associated stats
+        const allPhotos = program.checkIns.flatMap(checkIn => {
+          // Get the stats for this check-in
+          const checkInStats = checkIn.stats[0]; // Assuming first stat entry has the relevant data
+          
+          // Map each photo in this check-in
+          return checkIn.photos.map(photo => ({
+            id: photo.id,
+            userImage: {
+              id: photo.id,
+              base64Data: photo.base64Data,
+              type: photo.progressPhoto[0]?.type
+            },
+            type: photo.progressPhoto[0]?.type,
+            // Connect the check-in's stats with the photo's stats
+            userStats: photo.progressPhoto[0]?.userStats || {
+              bodyFatLow: checkInStats?.bodyFatLow || null,
+              bodyFatHigh: checkInStats?.bodyFatHigh || null,
+              muscleMassDistribution: checkInStats?.muscleMassDistribution || null
+            }
+          }));
+        });
 
-        // Transform check-in data into weight data points
-        if (checkIn?.stats) {
-          const weightPoints = checkIn.stats
-            .filter(stat => typeof stat.weight === 'number') // Only include entries with non-null weight
-            .map(stat => ({
-              date: new Date(stat.createdAt).toISOString(),
-              displayDate: new Date(stat.createdAt).toLocaleDateString('en-US', { 
-                month: 'short', 
-                day: 'numeric' 
-              }),
-              weight: stat.weight as number // Safe to cast since we filtered for numbers
-            }))
-            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        setProgressPhotos(allPhotos);
+        console.log("🚀 ~ fetchData ~ allPhotos:", allPhotos)
 
-          setWeightData(weightPoints);
-        }
-      } catch (error) {
-        console.error('Error fetching latest check-in:', error);
+        // Weight data stays the same since it's already using check-in stats
+        const weightPoints = program.checkIns
+          .flatMap(checkIn => checkIn.stats)
+          .filter(stat => typeof stat.weight === 'number')
+          .map(stat => ({
+            date: stat.createdAt,
+            displayDate: new Date(stat.createdAt).toLocaleDateString('en-US', { 
+              month: 'short', 
+              day: 'numeric' 
+            }),
+            weight: stat.weight
+          }))
+          .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+        setWeightData(weightPoints);
       }
     };
 
@@ -190,7 +219,7 @@ function DashboardContent() {
   }
 
   const calculateProgramStats = (program: Program) => {
-    const startDate = new Date(program.workoutLogs[0]?.completedAt || new Date());
+    const startDate = new Date(program.workoutLogs?.[0]?.completedAt || new Date());
     const weeksPassed = Math.floor((new Date().getTime() - startDate.getTime()) / (7 * 24 * 60 * 60 * 1000));
     
     // Calculate next check-in (every Monday)
@@ -236,8 +265,8 @@ function DashboardContent() {
   }
 
   // Find the next workout to do (basic logic - can be enhanced)
-  const completedWorkoutIds = new Set(program.workoutLogs.map(log => log.workoutId));
-  const nextWorkout = program.workoutPlans[0]?.workouts.find(workout => 
+  const completedWorkoutIds = new Set(program.workoutLogs?.map(log => log.workoutId) || []);
+  const nextWorkout = program.workoutPlans?.[0]?.workouts.find(workout => 
     !completedWorkoutIds.has(workout.id)
   );
 
@@ -530,7 +559,8 @@ function DashboardContent() {
                                   date.setDate(date.getDate() - (83 - i));
                                   
                                   // Find activities for this date
-                                  const hadWorkout = program.workoutLogs.some(log => {
+                                  const hadWorkout = program.workoutLogs?.some(log => {
+                                    // @ts-ignore
                                     const logDate = new Date(log.completedAt);
                                     return logDate.toDateString() === date.toDateString();
                                   });
@@ -641,27 +671,25 @@ function DashboardContent() {
                         <div className="space-y-3">
                           <div className="flex items-center justify-between">
                             <h2 className="text-sm font-medium text-gray-600 dark:text-gray-400">Photos</h2>
-                            {latestCheckIn?.progressPhoto && latestCheckIn.progressPhoto.length > 0 && (
-                              <Link 
-                                href="/check-in"
-                                className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
-                              >
-                                Add New Photos →
-                              </Link>
-                            )}
+                            <Link 
+                              href="/check-in"
+                              className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
+                            >
+                              Add New Photos →
+                            </Link>
                           </div>
 
-                          {latestCheckIn?.progressPhoto && latestCheckIn.progressPhoto.length > 0 ? (
+                          {progressPhotos.length > 0 ? (
                             <div className="grid grid-cols-3 gap-4">
-                              {latestCheckIn.progressPhoto.slice(0, 3).map((photo) => (
+                              {progressPhotos.map((photo) => (
                                 <div key={photo.id} className="aspect-square rounded-lg bg-gray-100 dark:bg-gray-800 overflow-hidden relative">
                                   <img 
                                     src={photo.userImage.base64Data} 
-                                    alt={`Progress photo - ${photo.userImage.type?.toLowerCase().replace('_', ' ') || 'custom'}`}
+                                    alt={`Progress photo - ${photo.type?.toLowerCase().replace('_', ' ') || 'custom'}`}
                                     className="object-cover w-full h-full hover:opacity-75 transition-opacity duration-200"
                                   />
                                   
-                                  {!photo.userStats?.bodyFatLow && (
+                                  {!photo.userStats?.bodyFatLow && !photo.userStats?.bodyFatHigh && (
                                     <button
                                       onClick={async () => {
                                         try {
@@ -703,11 +731,11 @@ function DashboardContent() {
                                   )}
 
                                   <div className="absolute bottom-2 left-2 right-2 text-white text-xs py-1 px-2 text-center bg-black/50 rounded">
-                                    {photo.userImage.type?.toLowerCase().replace('_', ' ') || 'custom'}
+                                    {photo.type?.toLowerCase().replace('_', ' ') || 'custom'}
                                   </div>
 
                                   {/* Stats Overlay */}
-                                  {photo.userStats && (
+                                  {photo.userStats?.bodyFatHigh && photo.userStats?.bodyFatLow && (
                                     <div className="absolute inset-0 bg-black/80 opacity-0 hover:opacity-100 transition-opacity duration-200 flex flex-col justify-center items-center text-white p-4">
                                       <div className="space-y-3 text-center">
                                         <div>

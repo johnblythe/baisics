@@ -455,13 +455,13 @@ model ProgressPhoto {
   checkInId   String    @map("check_in_id") @db.Uuid
   userImageId String    @map("user_image_id") @db.Uuid
   type        PhotoType @map("type")
+  userStatsId String?    @db.Uuid @map("user_stats_id")
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
 
   checkIn     CheckIn    @relation(fields: [checkInId], references: [id])
   userImage   UserImages @relation(fields: [userImageId], references: [id])
   userStats   UserStats? @relation(fields: [userStatsId], references: [id])
-  userStatsId String?    @db.Uuid
 
   @@index([checkInId])
   @@index([userImageId])
