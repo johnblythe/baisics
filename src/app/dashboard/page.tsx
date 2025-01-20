@@ -14,7 +14,7 @@ import MainLayout from '@/app/components/layouts/MainLayout';
 import { generateWorkoutPDF } from '@/utils/pdf';
 import { getSession } from 'next-auth/react';
 import { WorkoutPlan as WorkoutPlanHiType } from '@/types/program';
-import { ProgramWithRelations } from '../api/programs/current/route';
+import { ProgramWithRelations, TransformedProgram } from '../api/programs/current/route';
 // import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
 // import { useDropzone } from 'react-dropzone';
 
@@ -110,7 +110,7 @@ interface TransformedProgressPhoto {
 function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [program, setProgram] = useState<ProgramWithRelations | null>(null);
+  const [program, setProgram] = useState<TransformedProgram | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [analyzingPhotoId, setAnalyzingPhotoId] = useState<string | null>(null);
   const [tooltipContent, setTooltipContent] = useState<{ x: number; y: number; content: React.ReactNode } | null>(null);
@@ -265,8 +265,8 @@ function DashboardContent() {
   }
 
   // Find the next workout to do (basic logic - can be enhanced)
-  const completedWorkoutIds = new Set(program.workoutLogs.map(log => log.workoutId));
-  const nextWorkout = program.workoutPlans[0]?.workouts.find(workout => 
+  const completedWorkoutIds = new Set(program.workoutLogs?.map(log => log.workoutId) || []);
+  const nextWorkout = program.workoutPlans?.[0]?.workouts.find(workout => 
     !completedWorkoutIds.has(workout.id)
   );
 
@@ -559,7 +559,8 @@ function DashboardContent() {
                                   date.setDate(date.getDate() - (83 - i));
                                   
                                   // Find activities for this date
-                                  const hadWorkout = program.workoutLogs.some(log => {
+                                  const hadWorkout = program.workoutLogs?.some(log => {
+                                    // @ts-ignore
                                     const logDate = new Date(log.completedAt);
                                     return logDate.toDateString() === date.toDateString();
                                   });
