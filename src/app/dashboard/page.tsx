@@ -165,24 +165,33 @@ function DashboardContent() {
       if (program.checkIns) {
         setCheckIns(program.checkIns);
         
-        // Collect all progress photos across all check-ins
-        const allPhotos = program.checkIns.flatMap(checkIn => 
-          checkIn.photos.map(photo => ({
+        // Transform check-ins into progress photos with their associated stats
+        const allPhotos = program.checkIns.flatMap(checkIn => {
+          // Get the stats for this check-in
+          const checkInStats = checkIn.stats[0]; // Assuming first stat entry has the relevant data
+          
+          // Map each photo in this check-in
+          return checkIn.photos.map(photo => ({
             id: photo.id,
             userImage: {
               id: photo.id,
               base64Data: photo.base64Data,
-              type: photo.progressPhoto[0]?.type || null
+              type: photo.progressPhoto[0]?.type
             },
-            type: photo.progressPhoto[0]?.type || null,
-            userStats: photo.progressPhoto[0]?.userStats || null
-          }))
-        );
+            type: photo.progressPhoto[0]?.type,
+            // Connect the check-in's stats with the photo's stats
+            userStats: photo.progressPhoto[0]?.userStats || {
+              bodyFatLow: checkInStats?.bodyFatLow || null,
+              bodyFatHigh: checkInStats?.bodyFatHigh || null,
+              muscleMassDistribution: checkInStats?.muscleMassDistribution || null
+            }
+          }));
+        });
+
         setProgressPhotos(allPhotos);
         console.log("🚀 ~ fetchData ~ allPhotos:", allPhotos)
 
-
-        // Transform all check-in stats into weight data points
+        // Weight data stays the same since it's already using check-in stats
         const weightPoints = program.checkIns
           .flatMap(checkIn => checkIn.stats)
           .filter(stat => typeof stat.weight === 'number')
@@ -209,7 +218,7 @@ function DashboardContent() {
     void Tawk_API.toggle();
   }
 
-  const calculateProgramStats = (program: ProgramWithRelations) => {
+  const calculateProgramStats = (program: Program) => {
     const startDate = new Date(program.workoutLogs?.[0]?.completedAt || new Date());
     const weeksPassed = Math.floor((new Date().getTime() - startDate.getTime()) / (7 * 24 * 60 * 60 * 1000));
     

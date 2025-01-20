@@ -3,32 +3,9 @@ import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 import { Program, CheckIn, WorkoutLog, UserActivity } from '@prisma/client';
 
-// Let's define proper types for the stats and photos
-interface UserStat {
-  id: string;
-  weight: number;
-  createdAt: Date;
-  // Add other stat fields as needed
-}
-
-interface ProgressPhotoType {
-  id: string;
-  type: 'FRONT' | 'BACK' | 'SIDE_LEFT' | 'SIDE_RIGHT' | 'CUSTOM' | null;
-  userImage: {
-    id: string;
-    base64Data: string;
-    type: string | null;
-  };
-  userStats: {
-    bodyFatLow: number;
-    bodyFatHigh: number;
-    muscleMassDistribution: string;
-  } | null;
-}
-
 export type ProgramWithRelations = Program & {
   checkIns?: (CheckIn & {
-    stats: UserStat[];
+    stats: any[];
     photos: {
       id: string;
       base64Data: string;
@@ -45,20 +22,7 @@ export type ProgramWithRelations = Program & {
   })[];
   workoutLogs?: WorkoutLog[];
   activities?: UserActivity[];
-  workoutPlans?: {
-    id: string;
-    workouts: {
-      id: string;
-      name: string;
-      dayNumber: number;
-      focus: string;
-      exercises: any[]; // Define proper Exercise type if needed
-    }[];
-    proteinGrams: number;
-    carbGrams: number;
-    fatGrams: number;
-    dailyCalories: number;
-  }[];
+  workoutPlans?: any[];
 };
 
 export async function GET() {
@@ -152,15 +116,14 @@ export async function GET() {
         ...checkIn,
         date: checkIn.date.toISOString(),
         createdAt: checkIn.createdAt.toISOString(),
-        progressPhoto: checkIn.photos?.map(photo => ({
+        photos: checkIn.photos?.map(photo => ({
           id: photo.id,
-          userImage: {
-            id: photo.id,
-            base64Data: photo.base64Data,
-            type: photo.progressPhoto?.[0]?.type || null
-          },
-          type: photo.progressPhoto?.[0]?.type || null,
-          userStats: null
+          base64Data: photo.base64Data,
+          progressPhoto: photo.progressPhoto.map(pp => ({
+            id: pp.id,
+            type: pp.type,
+            userStats: pp.userStats
+          }))
         })) || [],
         stats: checkIn.stats.map(stat => ({
           ...stat,
