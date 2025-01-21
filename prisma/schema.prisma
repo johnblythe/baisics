@@ -374,7 +374,7 @@ model UserStats {
   id        String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId    String @map("user_id") @db.Uuid
   programId String @map("program_id") @db.Uuid
-  checkInId String @map("check_in_id") @db.Uuid
+  checkInId String @map("check_in_id") @db.Uuid @unique
 
   weight  Float?  @map("weight")
   bodyFatLow Float?  @map("body_fat_low")

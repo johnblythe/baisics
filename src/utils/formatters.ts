@@ -7,11 +7,14 @@ export const formatRestPeriod = (rest: number): string => {
   // If rest period is less than 60 seconds
   if (rest < 60) return `${rest}s`;
 
-  // Convert to minutes and seconds
-  const minutes = Math.floor(rest / 60);
-  const seconds = rest % 60;
-  
-  return seconds > 0 ? `${minutes}m ${seconds}s` : `${minutes}m`;
+  return formatSecondsToMinutes(rest);
+};
+
+// simple helper to format seconds to minutes
+export const formatSecondsToMinutes = (seconds: number): string => {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes} min${remainingSeconds ? ` ${remainingSeconds} s` : ''}`;
 };
 
 // more of a getter tbh
@@ -44,6 +47,7 @@ export const formatExerciseUnit = (
 }
 
 export const formatExerciseMeasure = (exercise: any) => {
+  console.log("🚀 ~ formatExerciseMeasure ~ exercise:", exercise)
   // If we have reps and it's not 0, show that
   if (exercise.reps) { // db version
     return `${exercise.reps || exercise.measure?.reps} reps`;
@@ -53,20 +57,41 @@ export const formatExerciseMeasure = (exercise: any) => {
 
   try {
     const type = exercise.measureType ? exercise.measureType.toLowerCase() : exercise.measure?.type?.toLowerCase();
-    const unit = exercise.measureUnit || exercise.measure?.unit;
+    const unit = exercise.measureUnit?.toLowerCase() || exercise.measure?.unit?.toLowerCase();
     const value = exercise.measureValue || exercise.measure?.value;
 
     let finalReturn = '';
+
     switch (type) {
       case 'time':
-        if (unit === 'seconds') finalReturn = `${value}s`;
-        if (unit === 'minutes') finalReturn = `${value}m`;
+        if (unit === 'seconds') {
+          if (value > 60) {
+            finalReturn = `${formatSecondsToMinutes(value)}`;
+            break;
+          } else {
+            finalReturn = `${value}s`;
+            break;
+          }
+        }
+        if (unit === 'minutes') {
+          finalReturn = `${value}m`;
+          break;
+        }
         finalReturn = `${value} ${unit || 's'}`
         break;
       case 'distance':
-        if (unit === 'meters') finalReturn = `${value}m`;
-        if (unit === 'kilometers') finalReturn = `${value}km`;
-        if (unit === 'miles') finalReturn = `${value}mi`;
+        if (unit === 'meters') {
+          finalReturn = `${value}m`;
+          break;
+        }
+        if (unit === 'kilometers') {
+          finalReturn = `${value}km`;
+          break;
+        }
+        if (unit === 'miles') {
+          finalReturn = `${value}mi`;
+          break;
+        }
         finalReturn = `${value} ${unit || 'm'}`
         break;
       default:

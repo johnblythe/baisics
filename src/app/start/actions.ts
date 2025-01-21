@@ -360,7 +360,7 @@ export async function deleteWorkoutPlan(userId: string) {
 const prepareWorkoutPlanObject = async (phases: PhasesData[]) => {
   const workouts = await Promise.all(phases.map(async (phase) => 
     phase.trainingPlan.workouts.map((workout: Workout) => ({
-      dayNumber: workout.day,
+      dayNumber: workout.dayNumber,
       exercises: {
         create: workout.exercises.map((exercise: Exercise) => ({
           name: exercise.name,
