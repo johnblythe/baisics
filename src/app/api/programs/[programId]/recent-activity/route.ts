@@ -41,16 +41,17 @@ export async function GET(
       return NextResponse.json({ error: 'Program not found' }, { status: 404 });
     }
 
-    const recentActivity = program.workoutLogs?.map(log => {
+    const recentActivity = program.workoutLogs.map(log => {
       const workout = program.workoutPlans?.[0]?.workouts.find(w => w.id === log.workoutId);
       return {
         id: log.id,
         workoutId: log.workoutId,
         workoutName: workout?.name || 'Unknown workout',
         dayNumber: workout?.dayNumber || 0,
+        focus: workout?.focus || '',
         completedAt: log.completedAt,
       };
-    }) || [];
+    });
 
     return NextResponse.json(recentActivity);
   } catch (error) {

@@ -2,17 +2,11 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 
-type Params = {
-  params: {
-    programId: string;
-  };
-};
-
 export async function GET(
   req: Request,
-  context: Promise<Params>
-): Promise<NextResponse> {
-  const { params } = await context;
+  { params }: { params: Promise<{ programId: string }> }
+) {
+  const { programId } = await params;
   
   try {
     const session = await auth();
@@ -22,13 +16,16 @@ export async function GET(
 
     const program = await prisma.program.findFirst({
       where: { 
-        id: params.programId,
+        id: programId,
         createdBy: session.user.id,
       },
       include: {
         workoutPlans: {
           include: {
             workouts: {
+              orderBy: {
+                dayNumber: 'asc',
+              },
               include: {
                 exercises: true,
               },
@@ -39,6 +36,10 @@ export async function GET(
           where: {
             status: 'completed',
           },
+          orderBy: {
+            completedAt: 'desc',
+          },
+          take: 1, // We only need the most recent one
         },
       },
     });
@@ -47,28 +48,38 @@ export async function GET(
       return NextResponse.json({ error: 'Program not found' }, { status: 404 });
     }
 
-    const completedWorkoutIds = new Set(program.workoutLogs?.map(log => log.workoutId));
-    const nextWorkout = program.workoutPlans?.[0]?.workouts.find(
-      workout => !completedWorkoutIds.has(workout.id)
-    );
+    // Get the ordered sequence of workouts
+    const workoutSequence = program.workoutPlans[0]?.workouts || [];
+    if (workoutSequence.length === 0) {
+      return NextResponse.json({ error: 'No workouts found in program' }, { status: 404 });
+    }
 
-    const response = {
-      workout: nextWorkout ? {
+    // Get the most recently completed workout
+    const lastWorkoutLog = program.workoutLogs[0];
+    
+    // Find the index of the last completed workout in our sequence
+    const lastWorkoutIndex = lastWorkoutLog 
+      ? workoutSequence.findIndex(w => w.id === lastWorkoutLog.workoutId)
+      : -1;
+
+    // Get the next workout in the sequence (loop back to start if needed)
+    const nextWorkoutIndex = lastWorkoutIndex === -1 
+      ? 0 // Start with first workout if no logs exist
+      : (lastWorkoutIndex + 1) % workoutSequence.length; // Loop back to 0 if we hit the end
+
+    const nextWorkout = workoutSequence[nextWorkoutIndex];
+
+    return NextResponse.json({
+      nextWorkout: {
         id: nextWorkout.id,
         name: nextWorkout.name,
         dayNumber: nextWorkout.dayNumber,
         focus: nextWorkout.focus,
-        exerciseCount: nextWorkout.exercises.length,
-      } : null,
-      nutrition: {
-        proteinGrams: program.workoutPlans?.[0]?.proteinGrams || 0,
-        carbGrams: program.workoutPlans?.[0]?.carbGrams || 0,
-        fatGrams: program.workoutPlans?.[0]?.fatGrams || 0,
-        dailyCalories: program.workoutPlans?.[0]?.dailyCalories || 0,
+        exerciseCount: nextWorkout.exercises.length
       },
-    };
-
-    return NextResponse.json(response);
+      totalWorkouts: workoutSequence.length,
+      lastCompletedAt: lastWorkoutLog?.completedAt || null
+    });
   } catch (error) {
     console.error('Error fetching current workout:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

@@ -127,6 +127,25 @@ function DashboardContent() {
       daysUntilNext: number;
     };
   } | null>(null);
+  const [recentActivity, setRecentActivity] = useState<{
+    id: string;
+    workoutId: string;
+    workoutName: string;
+    dayNumber: number;
+    focus: string;
+    completedAt: string;
+  }[]>([]);
+  const [currentWorkout, setCurrentWorkout] = useState<{
+    nextWorkout: {
+      id: string;
+      name: string;
+      dayNumber: number;
+      focus: string;
+      exerciseCount: number;
+    };
+    totalWorkouts: number;
+    lastCompletedAt: string | null;
+  } | null>(null);
 
   useEffect(() => {
     const disclaimerAcknowledged = localStorage.getItem('disclaimer-acknowledged');
@@ -150,11 +169,13 @@ function DashboardContent() {
         
         const { id: programId } = await latestResponse.json();
 
-        const [overview, stats, weightData, progressPhotos] = await Promise.all([
+        const [overview, stats, weightData, progressPhotos, activity, currentWorkout] = await Promise.all([
           fetch(`/api/programs/${programId}/overview`).then(r => r.json()),
           fetch(`/api/programs/${programId}/stats`).then(r => r.json()),
           fetch(`/api/programs/${programId}/weight-tracking`).then(r => r.json()),
-          fetch(`/api/programs/${programId}/progress-photos`).then(r => r.json())
+          fetch(`/api/programs/${programId}/progress-photos`).then(r => r.json()),
+          fetch(`/api/programs/${programId}/recent-activity`).then(r => r.json()),
+          fetch(`/api/programs/${programId}/current-workout`).then(r => r.json())
         ]);
 
         console.log('Progress Photos Response:', progressPhotos);
@@ -175,6 +196,8 @@ function DashboardContent() {
         setProgramStats(stats);
         setWeightData(weightData.weightHistory || mockEmptyStateData);
         setProgressPhotos(progressPhotos || []);
+        setRecentActivity(activity);
+        setCurrentWorkout(currentWorkout);
 
       } catch (error) {
         console.error('Failed to fetch program:', error);
@@ -765,24 +788,28 @@ function DashboardContent() {
 
                     {/* Next Workout and Macros - 1/4 width */}
                     <div className="w-1/4 space-y-8">
-                      {nextWorkout ? (
+                      {currentWorkout?.nextWorkout ? (
                         <div className="space-y-4">
                           <h2 className="text-sm font-medium text-gray-600 dark:text-gray-400">Next Workout</h2>
-                          <div className="space-y-4">
-                            <div className="space-y-2">
-                              <p className="text-lg font-semibold text-gray-900 dark:text-white">Day {nextWorkout.dayNumber} - {nextWorkout.name}</p>
-                              <p className="text-gray-600 dark:text-gray-400">Focus: {nextWorkout.focus}</p>
-                              <p className="text-gray-600 dark:text-gray-400">{nextWorkout.exercises.length} exercises</p>
-                            </div>
-                            
-                            <Link 
-                              href={`/workout/${nextWorkout.id}`}
-                              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-indigo-600 dark:bg-indigo-500 text-white font-medium hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200 hover:scale-[1.02] hover:-translate-y-0.5"
-                            >
-                              Begin Workout
-                              <span className="text-indigo-200">→</span>
-                            </Link>
+                          <div className="space-y-2">
+                            <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                              Day {currentWorkout.nextWorkout.dayNumber} - {currentWorkout.nextWorkout.name}
+                            </p>
+                            <p className="text-gray-600 dark:text-gray-400">
+                              Focus: {currentWorkout.nextWorkout.focus}
+                            </p>
+                            <p className="text-gray-600 dark:text-gray-400">
+                              {currentWorkout.nextWorkout.exerciseCount} exercises
+                            </p>
                           </div>
+                          
+                          <Link 
+                            href={`/workout/${currentWorkout.nextWorkout.id}`}
+                            className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-indigo-600 dark:bg-indigo-500 text-white font-medium hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200 hover:scale-[1.02] hover:-translate-y-0.5"
+                          >
+                            Begin Workout
+                            <span className="text-indigo-200">→</span>
+                          </Link>
                         </div>
                       ) : (
                         <div className="space-y-4">
