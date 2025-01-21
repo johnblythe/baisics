@@ -49,7 +49,7 @@ export async function GET(
         workoutName: workout?.name || 'Unknown workout',
         dayNumber: workout?.dayNumber || 0,
         focus: workout?.focus || '',
-        completedAt: log.completedAt,
+        completedAt: log.completedAt
       };
     });
 

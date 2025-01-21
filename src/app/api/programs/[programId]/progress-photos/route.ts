@@ -22,7 +22,15 @@ export async function GET(
       include: {
         checkIns: {
           include: {
-            photos: true,
+            photos: {
+              include: {
+                progressPhoto: {
+                  include: {
+                    userStats: true,
+                  },
+                },
+              },
+            },
           },
           orderBy: {
             createdAt: 'desc',
@@ -31,23 +39,40 @@ export async function GET(
       },
     });
 
+    console.log('Program check-ins:', JSON.stringify(program?.checkIns, null, 2));
+
     if (!program) {
       return NextResponse.json([], { status: 200 });
     }
 
-    console.log('Raw program data:', JSON.stringify(program, null, 2));
-
     const photos = program.checkIns?.flatMap(checkIn => 
-      checkIn.photos.map(photo => ({
-        id: photo.id,
-        base64Data: photo.base64Data,
-        type: photo.type || null,
-        userStats: null,
-        createdAt: checkIn.createdAt
-      }))
+      checkIn.photos.map(photo => {
+        console.log('Processing photo:', {
+          id: photo.id,
+          hasProgressPhoto: !!photo.progressPhoto,
+          hasUserStats: !!photo.progressPhoto?.[0]?.userStats,
+          stats: photo.progressPhoto?.[0]?.userStats
+        });
+        
+        return {
+          id: photo.id,
+          base64Data: photo.base64Data,
+          type: photo.type || null,
+          userStats: photo.progressPhoto?.[0]?.userStats ? {
+            bodyFatLow: photo.progressPhoto?.[0]?.userStats.bodyFatLow,
+            bodyFatHigh: photo.progressPhoto?.[0]?.userStats.bodyFatHigh,
+            muscleMassDistribution: photo.progressPhoto?.[0]?.userStats.muscleMassDistribution
+          } : null,
+          createdAt: checkIn.createdAt
+        };
+      })
     ) || [];
 
-    console.log('Transformed photos:', JSON.stringify(photos, null, 2));
+    console.log('Transformed photos:', photos.map(p => ({
+      id: p.id,
+      hasStats: !!p.userStats,
+      stats: p.userStats
+    })));
 
     return NextResponse.json(photos);
   } catch (error) {

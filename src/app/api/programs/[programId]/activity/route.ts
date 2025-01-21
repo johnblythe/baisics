@@ -2,17 +2,11 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 
-type Params = {
-  params: {
-    programId: string;
-  };
-};
-
 export async function GET(
   req: Request,
-  context: Promise<Params>
-): Promise<NextResponse> {
-  const { params } = await context;
+  { params }: { params: Promise<{ programId: string }> }
+) {
+  const { programId } = await params;
   
   try {
     const session = await auth();
@@ -20,42 +14,37 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get last 84 days (12 weeks) of activity
+    // Get 12 weeks of data
     const startDate = new Date();
-    startDate.setDate(startDate.getDate() - 84);
+    startDate.setDate(startDate.getDate() - (12 * 7)); // 12 weeks ago
 
     const program = await prisma.program.findFirst({
       where: { 
-        id: params.programId,
+        id: programId,
         createdBy: session.user.id,
       },
       include: {
         workoutLogs: {
           where: {
             completedAt: {
-              gte: startDate,
-            },
-            status: 'completed',
+              gte: startDate
+            }
           },
+          select: {
+            id: true,
+            completedAt: true,
+          }
         },
         checkIns: {
           where: {
-            createdAt: {
-              gte: startDate,
-            },
+            date: {
+              gte: startDate
+            }
           },
-        },
-        activities: {
-          where: {
-            timestamp: {
-              gte: startDate,
-            },
-          },
-        },
-        workoutPlans: {
-          include: {
-            workouts: true,
-          },
+          select: {
+            id: true,
+            date: true,
+          }
         },
       },
     });
@@ -64,61 +53,30 @@ export async function GET(
       return NextResponse.json({ error: 'Program not found' }, { status: 404 });
     }
 
-    // Create a map of activities by date
-    const activityMap = new Map<string, {
-      date: string;
-      activities: {
-        type: 'check-in' | 'workout' | 'visit';
-        metadata?: {
-          workoutName?: string;
-          checkInType?: string;
-          path?: string;
-        };
-      }[];
-    }>();
+    // Mock visit data for now
+    const mockVisits = Array.from({ length: 10 }, () => ({
+      date: new Date(
+        startDate.getTime() + Math.random() * (Date.now() - startDate.getTime())
+      ).toISOString(),
+      type: 'visit' as const
+    }));
 
-    // Add workout logs
-    program.workoutLogs?.forEach(log => {
-      if (!log.completedAt) return;
-      const date = new Date(log.completedAt).toISOString().split('T')[0];
-      const workout = program.workoutPlans?.[0]?.workouts.find(w => w.id === log.workoutId);
-      
-      if (!activityMap.has(date)) {
-        activityMap.set(date, { date, activities: [] });
-      }
-      activityMap.get(date)?.activities.push({
-        type: 'workout',
-        metadata: { workoutName: workout?.name },
-      });
-    });
+    // Combine all activities
+    const activities = [
+      ...program.workoutLogs.map(log => ({
+        date: log.completedAt.toISOString(),
+        type: 'workout' as const
+      })),
+      ...program.checkIns.map(checkIn => ({
+        date: checkIn.date.toISOString(),
+        type: 'check-in' as const
+      })),
+      ...mockVisits
+    ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-    // Add check-ins
-    program.checkIns?.forEach(checkIn => {
-      const date = new Date(checkIn.createdAt).toISOString().split('T')[0];
-      if (!activityMap.has(date)) {
-        activityMap.set(date, { date, activities: [] });
-      }
-      activityMap.get(date)?.activities.push({
-        type: 'check-in',
-        metadata: { checkInType: checkIn.type },
-      });
-    });
-
-    // Add visits/activities
-    program.activities?.forEach(activity => {
-      const date = new Date(activity.timestamp).toISOString().split('T')[0];
-      if (!activityMap.has(date)) {
-        activityMap.set(date, { date, activities: [] });
-      }
-      activityMap.get(date)?.activities.push({
-        type: 'visit',
-        metadata: { path: activity.metadata?.path },
-      });
-    });
-
-    return NextResponse.json(Array.from(activityMap.values()));
+    return NextResponse.json(activities);
   } catch (error) {
-    console.error('Error fetching activity data:', error);
+    console.error('Error fetching activity:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 } 

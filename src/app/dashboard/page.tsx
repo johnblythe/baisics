@@ -105,6 +105,11 @@ interface TransformedProgressPhoto {
   createdAt: string;
 }
 
+type Activity = {
+  date: string;
+  type: 'workout' | 'check-in' | 'visit';
+};
+
 function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -146,6 +151,7 @@ function DashboardContent() {
     totalWorkouts: number;
     lastCompletedAt: string | null;
   } | null>(null);
+  const [activities, setActivities] = useState<Activity[]>([]);
 
   useEffect(() => {
     const disclaimerAcknowledged = localStorage.getItem('disclaimer-acknowledged');
@@ -169,13 +175,14 @@ function DashboardContent() {
         
         const { id: programId } = await latestResponse.json();
 
-        const [overview, stats, weightData, progressPhotos, activity, currentWorkout] = await Promise.all([
+        const [overview, stats, weightData, progressPhotos, activity, currentWorkout, activities] = await Promise.all([
           fetch(`/api/programs/${programId}/overview`).then(r => r.json()),
           fetch(`/api/programs/${programId}/stats`).then(r => r.json()),
           fetch(`/api/programs/${programId}/weight-tracking`).then(r => r.json()),
           fetch(`/api/programs/${programId}/progress-photos`).then(r => r.json()),
           fetch(`/api/programs/${programId}/recent-activity`).then(r => r.json()),
-          fetch(`/api/programs/${programId}/current-workout`).then(r => r.json())
+          fetch(`/api/programs/${programId}/current-workout`).then(r => r.json()),
+          fetch(`/api/programs/${programId}/activity`).then(r => r.json())
         ]);
 
         console.log('Progress Photos Response:', progressPhotos);
@@ -198,6 +205,9 @@ function DashboardContent() {
         setProgressPhotos(progressPhotos || []);
         setRecentActivity(activity);
         setCurrentWorkout(currentWorkout);
+        setActivities(activities);
+
+        console.log('Recent activity response:', activity);
 
       } catch (error) {
         console.error('Failed to fetch program:', error);
@@ -268,6 +278,9 @@ function DashboardContent() {
   );
 
   // const stats = calculateProgramStats(program);
+
+  console.log('Program workout logs:', program.workoutLogs);
+  console.log('Recent activity state:', recentActivity);
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
@@ -551,7 +564,7 @@ function DashboardContent() {
                               <span className="text-sm text-gray-500 dark:text-gray-400">Last 12 weeks</span>
                             </div>
                             <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4">
-                              <div className="grid grid-cols-12 gap-1 relative">
+                              <div className="grid grid-cols-12 gap-2">
                                 {tooltipContent && (
                                   <div 
                                     className="fixed px-2 py-1 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded whitespace-pre pointer-events-none min-w-[150px] z-[60]"
@@ -564,77 +577,27 @@ function DashboardContent() {
                                     {tooltipContent.content}
                                   </div>
                                 )}
-                                {[...Array(84)].map((_, i) => {
-                                  // Calculate the date for this cell (going backwards from today)
+                                {Array.from({ length: 96 }).map((_, i) => {
                                   const date = new Date();
-                                  date.setDate(date.getDate() - (83 - i));
+                                  date.setDate(date.getDate() - (95 - i)); // 96 days ago to today
+                                  const dateStr = date.toISOString().split('T')[0];
                                   
-                                  // Find activities for this date
-                                  const hadWorkout = program.workoutLogs?.some(log => {
-                                    // @ts-ignore
-                                    const logDate = new Date(log.completedAt);
-                                    return logDate.toDateString() === date.toDateString();
-                                  });
+                                  const dayActivities = activities.filter(a => 
+                                    a.date.startsWith(dateStr)
+                                  );
 
-                                  // Check for check-ins on any day
-                                  const wasCheckIn = program.checkIns?.some(checkIn => {
-                                    const checkInDate = new Date(checkIn.date);
-                                    return checkInDate.toDateString() === date.toDateString();
-                                  });
-
-                                  // Check if user logged in
-                                  const activities = program.activities?.filter(activity => {
-                                    const activityDate = new Date(activity.timestamp);
-                                    return activityDate.toDateString() === date.toDateString();
-                                  }) || [];
-
-                                  // Determine cell color based on activity
-                                  let cellColor = 'bg-gray-200 dark:bg-gray-700'; // default: no activity
-                                  let intensity = 'opacity-100';
-
-                                  if (wasCheckIn) {
-                                    cellColor = 'bg-green-500 dark:bg-green-600'; // check-in
-                                  } else if (hadWorkout) {
-                                    cellColor = 'bg-indigo-500 dark:bg-indigo-600'; // workout
-                                  } else if (activities.length > 0) {
-                                    cellColor = 'bg-blue-300 dark:bg-blue-500'; // visit
-                                    intensity = activities.length > 1 ? 'opacity-100' : 'opacity-70';
-                                  }
-
-                                  // Create activity description for tooltip
-                                  const tooltipItems: TooltipItem[] = [];
-                                  if (wasCheckIn) {
-                                    const checkIn = program.checkIns?.find(c => {
-                                      const checkInDate = new Date(c.date);
-                                      return checkInDate.toDateString() === date.toDateString();
-                                    });
-                                    tooltipItems.push({
-                                      type: 'check-in',
-                                      text: `Check-in completed${checkIn?.type ? ` (${checkIn.type})` : ''}`
-                                    });
-                                  }
-                                  if (hadWorkout) {
-                                    const workout = program.workoutLogs.find(log => {
-                                      const logDate = new Date(log.completedAt);
-                                      return logDate.toDateString() === date.toDateString();
-                                    });
-                                    const workoutName = program.workoutPlans[0]?.workouts.find(w => w.id === workout?.workoutId)?.name;
-                                    tooltipItems.push({
-                                      type: 'workout',
-                                      text: `Workout completed: ${workoutName || 'Unknown workout'}`
-                                    });
-                                  }
-                                  if (activities.length > 0) {
-                                    tooltipItems.push({
-                                      type: 'visit',
-                                      text: `${activities.length} visit${activities.length > 1 ? 's' : ''}`
-                                    });
-                                  }
+                                  const classes = dayActivities.length > 0
+                                    ? dayActivities.some(a => a.type === 'check-in')
+                                      ? 'bg-green-500 dark:bg-green-400'
+                                      : dayActivities.some(a => a.type === 'workout')
+                                        ? 'bg-indigo-500 dark:bg-indigo-400'
+                                        : 'bg-blue-400 dark:bg-blue-300'
+                                    : 'bg-gray-100 dark:bg-gray-800';
 
                                   return (
                                     <div
                                       key={i}
-                                      className={`aspect-square rounded-sm ${cellColor} ${intensity} transition-all duration-200 hover:scale-110 cursor-help`}
+                                      className={`aspect-square rounded-sm ${classes} transition-all duration-200 hover:scale-110 cursor-help`}
                                       onMouseEnter={(e) => {
                                         const rect = e.currentTarget.getBoundingClientRect();
                                         setTooltipContent({
@@ -648,9 +611,13 @@ function DashboardContent() {
                                                 day: 'numeric',
                                                 year: 'numeric'
                                               })}
-                                              {tooltipItems.length > 0 ? (
-                                                tooltipItems.map((item, idx) => (
-                                                  <div key={idx} className="mt-1 text-gray-200">{item.text}</div>
+                                              {dayActivities.length > 0 ? (
+                                                dayActivities.map((activity, idx) => (
+                                                  <div key={idx} className="mt-1 text-gray-200">
+                                                    {activity.type === 'check-in' && 'Check-in completed'}
+                                                    {activity.type === 'workout' && 'Workout completed'}
+                                                    {activity.type === 'visit' && 'Site visit'}
+                                                  </div>
                                                 ))
                                               ) : (
                                                 <div className="mt-1 text-gray-400">No activity</div>
@@ -692,71 +659,78 @@ function DashboardContent() {
 
                           {progressPhotos.length > 0 ? (
                             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                              {progressPhotos.map((photo) => (
-                                <div 
-                                  key={photo.id}
-                                  className="relative aspect-square rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 group hover:border-indigo-500 dark:hover:border-indigo-400 transition-colors"
-                                >
-                                  <Image
-                                    src={photo.base64Data}
-                                    alt="Progress photo"
-                                    fill
-                                    className="object-cover"
-                                  />
-                                  {(photo.userStats?.bodyFatHigh || photo.userStats?.bodyFatLow) ? (
-                                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity p-4">
-                                      <div className="text-white space-y-2">
-                                        <p>Body Fat: {photo.userStats.bodyFatLow || '?'}-{photo.userStats.bodyFatHigh || '?'}%</p>
-                                        <p>Mass Distribution: {photo.userStats.muscleMassDistribution}</p>
-                                      </div>
-                                    </div>
-                                  ) : (
-                                    <button
-                                      onClick={async () => {
-                                        try {
-                                          setAnalyzingPhotoId(photo.id);
-                                          const response = await fetch('/api/photos/analyze', {
-                                            method: 'POST',
-                                            headers: {
-                                              'Content-Type': 'application/json',
-                                            },
-                                            body: JSON.stringify({
-                                              photoIds: [photo.id],
-                                            }),
-                                          });
-
-                                          if (!response.ok) {
-                                            throw new Error('Failed to analyze photo');
-                                          }
-
-                                          router.refresh();
-                                        } catch (error) {
-                                          console.error('Error analyzing photo:', error);
-                                        } finally {
-                                          setAnalyzingPhotoId(null);
-                                        }
-                                      }}
-                                      disabled={analyzingPhotoId === photo.id}
-                                      className="absolute top-2 right-2 px-3 py-1.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                      {analyzingPhotoId === photo.id ? (
-                                        <div className="flex items-center gap-2">
-                                          <div className="w-4 h-4 border-t-2 border-b-2 border-white rounded-full animate-spin" />
-                                          <span>Analyzing...</span>
+                              {progressPhotos.map((photo) => {
+                                console.log('Rendering photo:', {
+                                  id: photo.id,
+                                  hasStats: !!photo.userStats,
+                                  stats: photo.userStats
+                                });
+                                return (
+                                  <div 
+                                    key={photo.id}
+                                    className="relative aspect-square rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 group hover:border-indigo-500 dark:hover:border-indigo-400 transition-colors"
+                                  >
+                                    <Image
+                                      src={photo.base64Data}
+                                      alt="Progress photo"
+                                      fill
+                                      className="object-cover"
+                                    />
+                                    {(photo.userStats?.bodyFatHigh || photo.userStats?.bodyFatLow) ? (
+                                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity p-4">
+                                        <div className="text-white space-y-2">
+                                          <p>Body Fat: {photo.userStats.bodyFatLow || '?'}-{photo.userStats.bodyFatHigh || '?'}%</p>
+                                          <p>Mass Distribution: {photo.userStats.muscleMassDistribution}</p>
                                         </div>
-                                      ) : (
-                                        'Analyze'
-                                      )}
-                                    </button>
-                                  )}
-                                  <div className="absolute top-2 right-2 text-xs font-medium text-white bg-black/50 px-2 py-1 rounded">
-                                    {photo.type?.replace('_', ' ').toLowerCase() || 'Custom'}
+                                      </div>
+                                    ) : (
+                                      <button
+                                        onClick={async () => {
+                                          try {
+                                            setAnalyzingPhotoId(photo.id);
+                                            const response = await fetch('/api/photos/analyze', {
+                                              method: 'POST',
+                                              headers: {
+                                                'Content-Type': 'application/json',
+                                              },
+                                              body: JSON.stringify({
+                                                photoIds: [photo.id],
+                                              }),
+                                            });
+
+                                            if (!response.ok) {
+                                              throw new Error('Failed to analyze photo');
+                                            }
+
+                                            router.refresh();
+                                          } catch (error) {
+                                            console.error('Error analyzing photo:', error);
+                                          } finally {
+                                            setAnalyzingPhotoId(null);
+                                          }
+                                        }}
+                                        disabled={analyzingPhotoId === photo.id}
+                                        className="absolute top-2 right-2 px-3 py-1.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                      >
+                                        {analyzingPhotoId === photo.id ? (
+                                          <div className="flex items-center gap-2">
+                                            <div className="w-4 h-4 border-t-2 border-b-2 border-white rounded-full animate-spin" />
+                                            <span>Analyzing...</span>
+                                          </div>
+                                        ) : (
+                                          'Analyze'
+                                        )}
+                                      </button>
+                                    )}
+                                    <div className="absolute top-2 right-2 text-xs font-medium text-white bg-black/50 px-2 py-1 rounded">
+                                      {photo.type?.replace('_', ' ').toLowerCase() || 'Custom'}
+                                    </div>
+                                    <div className="absolute bottom-2 left-2 text-xs font-medium text-white bg-black/50 px-2 py-1 rounded">
+                                      {new Date(photo.createdAt).toLocaleDateString()}
+                                    </div>
                                   </div>
-                                  <div className="absolute bottom-2 left-2 text-xs font-medium text-white bg-black/50 px-2 py-1 rounded">
-                                    {new Date(photo.createdAt).toLocaleDateString()}
-                                  </div>
-                                </div>
-                              ))}
+                                );
+                              })}
                             </div>
                           ) : (
                             <div 
@@ -888,23 +862,23 @@ function DashboardContent() {
               <div className="relative overflow-hidden bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
                 <div className="p-6 lg:p-8 space-y-6">
                   <h2 className="text-sm font-medium text-gray-600 dark:text-gray-400">Recent Activity</h2>
-                  {program.workoutLogs.length > 0 ? (
+                  {recentActivity.length > 0 ? (
                     <div className="space-y-4">
-                      {program.workoutLogs.slice(0, 5).map((log) => (
+                      {recentActivity.map((activity) => (
                         <div 
-                          key={log.id} 
+                          key={activity.id} 
                           className="group/item flex items-center justify-between p-4 rounded-xl border border-gray-100 dark:border-gray-700 hover:border-indigo-200 dark:hover:border-indigo-600 hover:shadow-lg transition-all duration-200"
                         >
                           <div className="space-y-1">
                             <p className="font-medium text-gray-900 dark:text-white">
-                              Workout Day {program.workoutPlans[0]?.workouts.find((w: Workout) => w.id === log.workoutId)?.dayNumber}
+                              Day {activity.dayNumber} - {activity.workoutName}
                             </p>
                             <p className="text-sm text-gray-500 dark:text-gray-400">
-                              Completed {new Date(log.completedAt).toLocaleDateString()}
+                              Completed {new Date(activity.completedAt).toLocaleDateString()}
                             </p>
                           </div>
                           {/* <Link
-                            href={`/workout-log/${log.id}`}
+                            href={`/workout-log/${activity.id}`}
                             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all duration-200"
                           >
                             View Details
