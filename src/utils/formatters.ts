@@ -47,7 +47,6 @@ export const formatExerciseUnit = (
 }
 
 export const formatExerciseMeasure = (exercise: any) => {
-  console.log("🚀 ~ formatExerciseMeasure ~ exercise:", exercise)
   // If we have reps and it's not 0, show that
   if (exercise.reps) { // db version
     return `${exercise.reps || exercise.measure?.reps} reps`;

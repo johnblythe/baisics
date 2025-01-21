@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Progress photo stats display and updating functionality
+- Activity chart on dashboard
+- Recent activity display
+
+### Changed
+- Refactored dashboard to use simpler types and more API routes
+- Improved mobile UX on /hi page
+- Updated upsell modal for mobile devices
+- Enhanced first workout display UX
+
+### Fixed
+- Dashboard type system cleanup and improvements
+- Progress photos display and update mechanism
+- User intake improvements
+
 ## [0.0.5] - 2025-01-25
 
 ### Added

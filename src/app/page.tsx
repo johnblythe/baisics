@@ -690,7 +690,7 @@ export default function LandingPage() {
           </div>
         </footer>
       </div>
-      <TawkChat />
+      {/* <TawkChat /> */}
     </div>
   )
 } 
