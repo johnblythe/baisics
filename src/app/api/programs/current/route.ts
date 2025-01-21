@@ -45,45 +45,32 @@ export interface TransformedProgram {
   id: string;
   name: string;
   description: string | null;
-  createdBy: string;
-  startWeight: number;
-  currentWeight: number;
+  workoutPlans: {
+    id: string;
+    proteinGrams: number;
+    carbGrams: number;
+    fatGrams: number;
+    dailyCalories: number;
+    workouts: {
+      id: string;
+      name: string;
+      dayNumber: number;
+      focus: string;
+      exercises: any[];
+    }[];
+  }[];
+  workoutLogs: WorkoutLog[];
+  currentWeight?: number;
+  startWeight?: number;
+  progressPhotos: {
+    id: string;
+    url: string;
+    type: 'FRONT' | 'BACK' | 'SIDE_LEFT' | 'SIDE_RIGHT' | 'CUSTOM' | null;
+  }[];
   checkIns?: {
     id: string;
     date: string;
-    createdAt: string;
-    notes: string | null;
-    programId: string;
     type: 'initial' | 'progress' | 'end';
-    userId: string;
-    photos: {
-      id: string;
-      base64Data: string;
-      progressPhoto: {
-        id: string;
-        type: 'FRONT' | 'BACK' | 'SIDE_LEFT' | 'SIDE_RIGHT' | 'CUSTOM' | null;
-        userStats: {
-          bodyFatLow: number;
-          bodyFatHigh: number;
-          muscleMassDistribution: string;
-        } | null;
-      }[];
-    }[];
-    stats: {
-      id: string;
-      weight: number;
-      bodyFatPercentage?: number;
-      bodyFatLow?: number;
-      bodyFatHigh?: number;
-      muscleMassDistribution?: string;
-      createdAt: string;
-    }[];
-  }[];
-  workoutLogs?: {
-    id: string;
-    workoutId: string;
-    completedAt: string | null;
-    status: string;
   }[];
   activities?: {
     id: string;
@@ -93,20 +80,6 @@ export interface TransformedProgram {
       path?: string;
       userAgent?: string;
     };
-  }[];
-  workoutPlans?: {
-    id: string;
-    workouts: {
-      id: string;
-      name: string;
-      dayNumber: number;
-      focus: string;
-      exercises: any[]; // Define proper Exercise type if needed
-    }[];
-    proteinGrams: number;
-    carbGrams: number;
-    fatGrams: number;
-    dailyCalories: number;
   }[];
 }
 
@@ -229,7 +202,15 @@ export async function GET() {
       activities: program.activities?.map(activity => ({
         ...activity,
         timestamp: activity.timestamp
-      })) || []
+      })) || [],
+      workoutPlans: program.workoutPlans?.map(plan => ({
+        ...plan,
+        workouts: plan.workouts.map(workout => ({
+          ...workout,
+          exercises: workout.exercises
+        }))
+      })) || [],
+      progressPhotos
     };
 
     return NextResponse.json(transformedProgram);
