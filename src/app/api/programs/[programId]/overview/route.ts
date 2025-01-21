@@ -24,6 +24,9 @@ interface ProgramOverview {
         sets: number;
         reps: number | null;
         notes: string | null;
+        measureType: string | null;
+        measureUnit: string | null;
+        measureValue: number | null;
       }[];
     }[];
   }[];
@@ -71,6 +74,9 @@ export async function GET(
                     sets: true,
                     reps: true,
                     notes: true,
+                    measureType: true,
+                    measureUnit: true,
+                    measureValue: true,
                   }
                 }
               }

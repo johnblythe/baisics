@@ -11,3 +11,5 @@ interface UserStatsResponse {
     // etc
   };
 } 
+
+export type { UserStatsResponse };

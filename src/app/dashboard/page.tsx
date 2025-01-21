@@ -39,6 +39,9 @@ interface ProgramOverview {
         sets: number;
         reps: number | null;
         notes: string | null;
+        measureType: string | null;
+        measureUnit: string | null;
+        measureValue: number | null;
       }[];
     }[];
   }[];
@@ -76,10 +79,10 @@ interface ProgressPhoto {
   createdAt: string;
 }
 
-interface Activity {
-  date: string;
-  type: 'workout' | 'check-in' | 'visit';
-}
+// interface Activity {
+//   date: string;
+//   type: 'workout' | 'check-in' | 'visit';
+// }
 
 interface RecentActivity {
   id: string;
@@ -112,7 +115,7 @@ interface TooltipContent {
 type CheckInWithPhotos = ProgramWithRelations['checkIns']
 
 // Mock data for empty state visualization
-const mockEmptyStateData: WeightDataPoint[] = [
+const mockEmptyStateData: WeightData['weightHistory'] = [
   { date: '2024-01-01', displayDate: 'Jan 1', weight: 165 },
   { date: '2024-01-08', displayDate: 'Jan 8', weight: 164.2 },
   { date: '2024-01-15', displayDate: 'Jan 15', weight: 163.5 },
@@ -201,9 +204,7 @@ function DashboardContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [analyzingPhotoId, setAnalyzingPhotoId] = useState<string | null>(null);
   const [tooltipContent, setTooltipContent] = useState<TooltipContent | null>(null);
-  const [latestCheckIn, setLatestCheckIn] = useState<CheckInWithPhotos | null>(null);
   const [progressPhotos, setProgressPhotos] = useState<TransformedProgressPhoto[]>([]);
-  const [checkIns, setCheckIns] = useState<ProgramWithRelations['checkIns']>([]);
   const [weightData, setWeightData] = useState<WeightData>({ currentWeight: 0, startWeight: 0, weightHistory: [] });
   const [showConfetti, setShowConfetti] = useState(false);
   const [showDisclaimer, setShowDisclaimer] = useState(true);
@@ -268,35 +269,7 @@ function DashboardContent() {
     void Tawk_API.toggle();
   }
 
-  // const calculateProgramStats = (program: Program) => {
-  //   const startDate = new Date(program.workoutLogs?.[0]?.completedAt || new Date());
-  //   const weeksPassed = Math.floor((new Date().getTime() - startDate.getTime()) / (7 * 24 * 60 * 60 * 1000));
-    
-  //   // Calculate next check-in (every Monday)
-  //   const today = new Date();
-  //   const lastMonday = new Date(today);
-  //   lastMonday.setDate(lastMonday.getDate() - ((lastMonday.getDay() + 6) % 7)); // Previous Monday
-  //   const nextMonday = new Date(today);
-  //   nextMonday.setDate(nextMonday.getDate() + ((1 + 7 - nextMonday.getDay()) % 7)); // Next Monday
-    
-  //   const isCheckInDay = today.getDay() === 1; // Is it Monday?
-  //   const isOverdue = today > lastMonday && today < nextMonday && !isCheckInDay; // Is it after Monday but before next Monday?
-  //   const daysUntilCheckIn = Math.ceil((nextMonday.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    
-  //   return {
-  //     weekNumber: weeksPassed + 1,
-  //     daysUntilCheckIn,
-  //     completedWorkouts: program.workoutLogs.length,
-  //     nextCheckInDate: nextMonday.toLocaleDateString('en-US', { 
-  //       weekday: 'long',
-  //       month: 'short',
-  //       day: 'numeric'
-  //     }),
-  //     isCheckInDay,
-  //     isOverdue
-  //   };
-  // };
-
+ 
   if (isLoading) {
     return (
       <>
@@ -321,6 +294,47 @@ function DashboardContent() {
   const nextWorkout = program?.workoutPlans?.[0]?.workouts?.find(workout => 
     !completedWorkoutIds.has(workout.id)
   );
+
+  // Add transformation helper
+  const transformToHiType = (plan: WorkoutPlan): WorkoutPlanHiType => ({
+    id: '', // Generated or passed separately
+    workouts: plan.workouts.map(w => ({
+      ...w,
+    })),
+    nutrition: {
+      dailyCalories: plan.dailyCalories,
+      macros: {
+        protein: plan.proteinGrams,
+        carbs: plan.carbGrams,
+        fats: plan.fatGrams
+      }
+    },
+    phase: 0,
+    phaseExplanation: '',
+    phaseExpectations: '',
+    phaseKeyPoints: []
+  });
+
+  // Update PDF generation section
+  const workoutPlan = transformToHiType(program.workoutPlans[0]);
+
+  // Update macros display section to handle both structures
+  const getMacros = (plan: WorkoutPlan | WorkoutPlanHiType) => {
+    if ('proteinGrams' in plan) {
+      return {
+        protein: plan.proteinGrams,
+        carbs: plan.carbGrams,
+        fats: plan.fatGrams,
+        calories: plan.dailyCalories
+      };
+    }
+    return {
+      protein: plan.nutrition.macros.protein,
+      carbs: plan.nutrition.macros.carbs,
+      fats: plan.nutrition.macros.fats,
+      calories: plan.nutrition.dailyCalories
+    };
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
@@ -358,36 +372,18 @@ function DashboardContent() {
                             // @todo: fix this hackery, consolidate types
                             const session = await getSession();
                             if (!session?.user?.id) return;
-                            const nutrition = {
-                              dailyCalories: program.workoutPlans[0].dailyCalories,
-                              macros: {
-                                protein: program.workoutPlans[0].proteinGrams,
-                                carbs: program.workoutPlans[0].carbGrams,
-                                fats: program.workoutPlans[0].fatGrams,
-                              }
-                            }
-
-                            const workoutPlan: WorkoutPlanHiType = {
-                              id: '',
-                              workouts: program.workoutPlans[0].workouts.map(workout => ({
-                                ...workout,
-                                day: workout.dayNumber
-                              })),
-                              nutrition: nutrition,
-                              phase: 0,
-                              phaseExplanation: '',
-                              phaseExpectations: '',
-                              phaseKeyPoints: [],
-                            }
+                            
+                            const pdfWorkoutPlan = transformToHiType(program.workoutPlans[0]);
                             const transformedProgram = {
                               ...program,
-                              workoutPlans: [workoutPlan],
+                              workoutPlans: [pdfWorkoutPlan],
                               user: {
-                                id: session?.user?.id,
-                                email: session?.user?.email
+                                id: session.user.id,
+                                email: session.user.email
                               }
-                            }
-                            generateWorkoutPDF(transformedProgram)
+                            };
+                            
+                            generateWorkoutPDF(transformedProgram);
                           }}
                           className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-white transition-colors"
                         >
@@ -817,7 +813,7 @@ function DashboardContent() {
                                 <span className="text-gray-600 dark:text-gray-400">Protein</span>
                               </div>
                               <span className="font-medium text-gray-900 dark:text-white">
-                                {program.workoutPlans[0].proteinGrams}g
+                                {getMacros(program.workoutPlans[0]).protein}g
                               </span>
                             </div>
                             <div className="flex items-center justify-between">
@@ -826,7 +822,7 @@ function DashboardContent() {
                                 <span className="text-gray-600 dark:text-gray-400">Carbs</span>
                               </div>
                               <span className="font-medium text-gray-900 dark:text-white">
-                                {program.workoutPlans[0].carbGrams}g
+                                {getMacros(program.workoutPlans[0]).carbs}g
                               </span>
                             </div>
                             <div className="flex items-center justify-between">
@@ -835,13 +831,13 @@ function DashboardContent() {
                                 <span className="text-gray-600 dark:text-gray-400">Fat</span>
                               </div>
                               <span className="font-medium text-gray-900 dark:text-white">
-                                {program.workoutPlans[0].fatGrams}g
+                                {getMacros(program.workoutPlans[0]).fats}g
                               </span>
                             </div>
                             <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700">
                               <span className="text-gray-600 dark:text-gray-400">Daily Calories</span>
                               <span className="font-medium text-gray-900 dark:text-white">
-                                {program.workoutPlans[0].dailyCalories}
+                                {getMacros(program.workoutPlans[0]).calories}
                               </span>
                             </div>
                           </div>

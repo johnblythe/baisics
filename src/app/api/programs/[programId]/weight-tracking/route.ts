@@ -49,7 +49,7 @@ export async function GET(
     const userIntake = await prisma.userIntake.findFirst({
       where: { userId: session.user.id },
       orderBy: { createdAt: 'desc' },
-      select: { weight: true },
+      select: { weight: true, createdAt: true },
     });
 
     const initialCheckIn = program.checkIns?.find(c => c.type === 'initial');
@@ -71,22 +71,23 @@ export async function GET(
       }))
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
+      // grab the user's intake data to plop into the front of the history
+      const firstWeight = userIntake?.weight;
+      if (firstWeight) {
+        weightHistory?.unshift({
+          date: new Date(userIntake.createdAt),
+          displayDate: new Date(userIntake.createdAt).toLocaleDateString('en-US', {
+            month: 'short', day: 'numeric'
+          }),
+          weight: firstWeight
+        });
+      }
+
     const response: WeightTrackingResponse = {
       currentWeight,
       startWeight,
       weightHistory: weightHistory || [],
     };
-
-    console.log('Weight tracking response:', {
-      currentWeight,
-      startWeight,
-      weightHistory: weightHistory?.length,
-      firstWeight: weightHistory?.[0],
-      checkInsCount: program.checkIns?.length,
-      initialCheckIn: !!initialCheckIn,
-      latestCheckIn: !!latestCheckIn,
-      userIntake: !!userIntake
-    });
 
     return NextResponse.json(response);
   } catch (error) {
