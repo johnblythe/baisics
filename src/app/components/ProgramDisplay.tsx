@@ -134,7 +134,7 @@ export function ProgramDisplay({
   };
 
   return (
-    <div className="space-y-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <div className="space-y-6 px-2 md:px-6 lg:px-8 max-w-7xl mx-auto">
       {/* Program Overview */}
 
       <DisclaimerBanner 
@@ -145,7 +145,7 @@ export function ProgramDisplay({
       {isExpanded && (
         <>
           {/* Active Workout Plan */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 relative">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-0 md:px-6 lg:p-6 relative">
             {!isPhaseUnlocked(activePlanIndex) && (
               <div className="absolute inset-0 backdrop-blur-sm bg-white/30 dark:bg-gray-800/30 rounded-xl z-10 flex justify-center">
                 <div className="text-center p-6 max-w-md mt-40">

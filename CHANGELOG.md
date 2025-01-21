@@ -5,7 +5,50 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.0.6] - 2025-01-21
+
+### Added
+- Progress photo stats display and updating functionality
+- Activity chart on dashboard
+- Recent activity display
+
+### Changed
+- Refactored dashboard to use simpler types and more API routes
+- Improved mobile UX on /hi page
+- Updated upsell modal for mobile devices
+- Enhanced first workout display UX
+
+### Fixed
+- Dashboard type system cleanup and improvements
+- Progress photos display and update mechanism
+- User intake improvements
+
+## [0.0.5] - 2025-01-20
+
+### Added
+- Enhanced check-in system with comprehensive stats tracking
+- Wellness metrics tracking (sleep, energy, stress levels)
+- Detailed body measurements tracking
+- Progress photo management with type categorization
+- Image upload functionality in conversational interface
+- Workout logging system with status tracking
+- Email verification system
+- Stripe integration preparation
+
+### Changed
+- Improved exercise schema with intensity and measurement types
+- Enhanced user profile with additional fields
+- Updated landing page with new value propositions
+- Refined program modification request handling
+- Improved database indexing for better performance
+
+### Fixed
+- Database constraints and foreign key relationships
+- Workout plan optional fields handling
+- Image upload error handling
+- Program modification error handling
+
+## [0.0.4] - 2025-01-17
 ### Added
 - Stripe webhook integration and middleware
 - Enhanced payment link security
@@ -97,7 +140,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Image upload handling
 - Basic data flow
 
-[Unreleased]: https://github.com/johnblythe/baisics/compare/v0.0.4...HEAD
+[0.0.5]: https://github.com/johnblythe/baisics/compare/v0.0.4...HEAD
 [0.0.4]: https://github.com/johnblythe/baisics/compare/v0.0.3...v0.0.4
 [0.0.3]: https://github.com/johnblythe/baisics/compare/v0.0.2...v0.0.3
 [0.0.2]: https://github.com/johnblythe/baisics/compare/v0.0.1...v0.0.2

@@ -16,6 +16,7 @@ interface Photo {
 
 export interface CheckIn {
   id?: string;
+  date: string;
   type?: 'initial' | 'progress' | 'end';
   weight: number | null;
   bodyFat: number | null;
@@ -47,6 +48,7 @@ export type CheckInFormData = CheckIn;
 function CheckInPageContent() {
   const router = useRouter();
   const [formData, setFormData] = useState<CheckIn>({
+    date: new Date().toISOString().split('T')[0],
     weight: null,
     bodyFat: null,
     chest: null,
@@ -76,20 +78,27 @@ function CheckInPageContent() {
     return lastMonday.toISOString().split('T')[0];
   });
 
+  // Update formData when checkInDate changes
+  React.useEffect(() => {
+    setFormData(prev => ({ ...prev, date: checkInDate }));
+  }, [checkInDate]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/check-in', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ ...formData, checkInDate }),
-      });
+      const response = await createCheckIn(formData);
+      
+      // const response = await fetch('/api/check-in', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({ ...formData, checkInDate }),
+      // });
 
-      if (!response.ok) {
+      if (!response.success) {
         throw new Error('Failed to submit check-in');
       }
 
@@ -105,7 +114,6 @@ function CheckInPageContent() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
-      <Header />
       <main className="flex-grow bg-white dark:bg-gray-900">
         <div className="max-w-4xl mx-auto px-4 py-8">
           {/* Header title area */}
@@ -606,8 +614,6 @@ function CheckInPageContent() {
           </form>
         </div>
       </main>
-      <TawkChat />
-      <Footer />
     </div>
   );
 } 
