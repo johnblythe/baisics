@@ -109,7 +109,7 @@ export const formatExerciseMeasure = (exercise: any) => {
 export const convertToIntakeFormat = (extractedData: any): IntakeFormData => {
   return {
     sex: extractedData.gender?.value || 'other',
-    trainingGoal: extractedData.goals?.value,
+    trainingGoal: Array.isArray(extractedData.goals?.value) ? extractedData.goals.value.join(', ') : extractedData.goals?.value,
     daysAvailable: parseInt(extractedData.daysPerWeek?.value) || 3,
     dailyBudget: parseInt(extractedData.timePerDay?.value) || 60,
     age: extractedData.age?.value ? parseInt(extractedData.age.value) : undefined,
