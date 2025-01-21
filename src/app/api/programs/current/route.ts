@@ -205,7 +205,7 @@ export async function GET() {
       })) || [],
       workoutPlans: program.workoutPlans?.map(plan => ({
         ...plan,
-        workouts: plan.workouts.map(workout => ({
+        workouts: plan.workouts.map((workout: any) => ({
           ...workout,
           exercises: workout.exercises
         }))
