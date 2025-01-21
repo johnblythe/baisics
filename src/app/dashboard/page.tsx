@@ -15,6 +15,7 @@ import { generateWorkoutPDF } from '@/utils/pdf';
 import { getSession } from 'next-auth/react';
 import { WorkoutPlan as WorkoutPlanHiType } from '@/types/program';
 import { ProgramWithRelations, TransformedProgram } from '../api/programs/current/route';
+import Image from 'next/image';
 // import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
 // import { useDropzone } from 'react-dropzone';
 
@@ -94,17 +95,14 @@ interface TooltipItem {
 
 interface TransformedProgressPhoto {
   id: string;
-  userImage: {
-    id: string;
-    base64Data: string;
-    type: 'FRONT' | 'BACK' | 'SIDE_LEFT' | 'SIDE_RIGHT' | 'CUSTOM' | null;
-  };
+  base64Data: string;
   type: 'FRONT' | 'BACK' | 'SIDE_LEFT' | 'SIDE_RIGHT' | 'CUSTOM' | null;
   userStats: {
-    bodyFatLow: number;
-    bodyFatHigh: number;
-    muscleMassDistribution: string;
+    bodyFatLow: number | null;
+    bodyFatHigh: number | null;
+    muscleMassDistribution: string | null;
   } | null;
+  createdAt: string;
 }
 
 function DashboardContent() {
@@ -120,6 +118,15 @@ function DashboardContent() {
   const [weightData, setWeightData] = useState<WeightDataPoint[]>([]);
   const [showConfetti, setShowConfetti] = useState(false);
   const [showDisclaimer, setShowDisclaimer] = useState(true);
+  const [programStats, setProgramStats] = useState<{
+    completedWorkouts: number;
+    checkIn: {
+      nextDate: string;
+      isCheckInDay: boolean;
+      isOverdue: boolean;
+      daysUntilNext: number;
+    };
+  } | null>(null);
 
   useEffect(() => {
     const disclaimerAcknowledged = localStorage.getItem('disclaimer-acknowledged');
@@ -138,18 +145,39 @@ function DashboardContent() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch('/api/programs/current');
-        const data = await response.json();
+        const latestResponse = await fetch('/api/programs/latest');
+        if (!latestResponse.ok) return;
         
-        if (!data) {
-          // router.push('/hi');
-          return;
-        }
+        const { id: programId } = await latestResponse.json();
 
-        setProgram(data);
+        const [overview, stats, weightData, progressPhotos] = await Promise.all([
+          fetch(`/api/programs/${programId}/overview`).then(r => r.json()),
+          fetch(`/api/programs/${programId}/stats`).then(r => r.json()),
+          fetch(`/api/programs/${programId}/weight-tracking`).then(r => r.json()),
+          fetch(`/api/programs/${programId}/progress-photos`).then(r => r.json())
+        ]);
+
+        console.log('Progress Photos Response:', progressPhotos);
+
+        setProgram({
+          id: programId,
+          name: overview.name,
+          description: overview.description,
+          workoutPlans: overview.workoutPlans,
+          workoutLogs: [],
+          progressPhotos: [],
+          currentWeight: undefined,
+          startWeight: undefined,
+          checkIns: [],
+          activities: []
+        });
+
+        setProgramStats(stats);
+        setWeightData(weightData.weightHistory || mockEmptyStateData);
+        setProgressPhotos(progressPhotos || []);
+
       } catch (error) {
         console.error('Failed to fetch program:', error);
-        // router.push('/hi');
       } finally {
         setIsLoading(false);
       }
@@ -158,94 +186,40 @@ function DashboardContent() {
     fetchData();
   }, [router]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!program?.id) return;
-      
-      if (program.checkIns) {
-        setCheckIns(program.checkIns);
-        
-        // Transform check-ins into progress photos with their associated stats
-        const allPhotos = program.checkIns.flatMap(checkIn => {
-          // Get the stats for this check-in
-          const checkInStats = checkIn.stats[0]; // Assuming first stat entry has the relevant data
-          
-          // Map each photo in this check-in
-          return checkIn.photos.map(photo => ({
-            id: photo.id,
-            userImage: {
-              id: photo.id,
-              base64Data: photo.base64Data,
-              type: photo.progressPhoto[0]?.type
-            },
-            type: photo.progressPhoto[0]?.type,
-            // Connect the check-in's stats with the photo's stats
-            userStats: photo.progressPhoto[0]?.userStats || {
-              bodyFatLow: checkInStats?.bodyFatLow || null,
-              bodyFatHigh: checkInStats?.bodyFatHigh || null,
-              muscleMassDistribution: checkInStats?.muscleMassDistribution || null
-            }
-          }));
-        });
-
-        setProgressPhotos(allPhotos);
-        console.log("🚀 ~ fetchData ~ allPhotos:", allPhotos)
-
-        // Weight data stays the same since it's already using check-in stats
-        const weightPoints = program.checkIns
-          .flatMap(checkIn => checkIn.stats)
-          .filter(stat => typeof stat.weight === 'number')
-          .map(stat => ({
-            date: stat.createdAt,
-            displayDate: new Date(stat.createdAt).toLocaleDateString('en-US', { 
-              month: 'short', 
-              day: 'numeric' 
-            }),
-            weight: stat.weight
-          }))
-          .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
-        setWeightData(weightPoints);
-      }
-    };
-
-    fetchData();
-  }, [program?.id]);
-
   const handleAskForHelp = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     // @ts-expect-error Tawk_API is not defined
     void Tawk_API.toggle();
   }
 
-  const calculateProgramStats = (program: Program) => {
-    const startDate = new Date(program.workoutLogs?.[0]?.completedAt || new Date());
-    const weeksPassed = Math.floor((new Date().getTime() - startDate.getTime()) / (7 * 24 * 60 * 60 * 1000));
+  // const calculateProgramStats = (program: Program) => {
+  //   const startDate = new Date(program.workoutLogs?.[0]?.completedAt || new Date());
+  //   const weeksPassed = Math.floor((new Date().getTime() - startDate.getTime()) / (7 * 24 * 60 * 60 * 1000));
     
-    // Calculate next check-in (every Monday)
-    const today = new Date();
-    const lastMonday = new Date(today);
-    lastMonday.setDate(lastMonday.getDate() - ((lastMonday.getDay() + 6) % 7)); // Previous Monday
-    const nextMonday = new Date(today);
-    nextMonday.setDate(nextMonday.getDate() + ((1 + 7 - nextMonday.getDay()) % 7)); // Next Monday
+  //   // Calculate next check-in (every Monday)
+  //   const today = new Date();
+  //   const lastMonday = new Date(today);
+  //   lastMonday.setDate(lastMonday.getDate() - ((lastMonday.getDay() + 6) % 7)); // Previous Monday
+  //   const nextMonday = new Date(today);
+  //   nextMonday.setDate(nextMonday.getDate() + ((1 + 7 - nextMonday.getDay()) % 7)); // Next Monday
     
-    const isCheckInDay = today.getDay() === 1; // Is it Monday?
-    const isOverdue = today > lastMonday && today < nextMonday && !isCheckInDay; // Is it after Monday but before next Monday?
-    const daysUntilCheckIn = Math.ceil((nextMonday.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  //   const isCheckInDay = today.getDay() === 1; // Is it Monday?
+  //   const isOverdue = today > lastMonday && today < nextMonday && !isCheckInDay; // Is it after Monday but before next Monday?
+  //   const daysUntilCheckIn = Math.ceil((nextMonday.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
     
-    return {
-      weekNumber: weeksPassed + 1,
-      daysUntilCheckIn,
-      completedWorkouts: program.workoutLogs.length,
-      nextCheckInDate: nextMonday.toLocaleDateString('en-US', { 
-        weekday: 'long',
-        month: 'short',
-        day: 'numeric'
-      }),
-      isCheckInDay,
-      isOverdue
-    };
-  };
+  //   return {
+  //     weekNumber: weeksPassed + 1,
+  //     daysUntilCheckIn,
+  //     completedWorkouts: program.workoutLogs.length,
+  //     nextCheckInDate: nextMonday.toLocaleDateString('en-US', { 
+  //       weekday: 'long',
+  //       month: 'short',
+  //       day: 'numeric'
+  //     }),
+  //     isCheckInDay,
+  //     isOverdue
+  //   };
+  // };
 
   if (isLoading) {
     return (
@@ -270,7 +244,7 @@ function DashboardContent() {
     !completedWorkoutIds.has(workout.id)
   );
 
-  const stats = calculateProgramStats(program);
+  // const stats = calculateProgramStats(program);
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
@@ -381,29 +355,29 @@ function DashboardContent() {
                       {/* Week Number */}
                       <div className="flex items-center justify-between">
                         <span className="text-gray-600 dark:text-gray-400">Week</span>
-                        <span className="font-semibold text-gray-900 dark:text-white">Week {stats.weekNumber}</span>
+                        <span className="font-semibold text-gray-900 dark:text-white">Week {programStats?.completedWorkouts || 0}</span>
                       </div>
 
                       {/* Completed Workouts */}
                       <div className="flex items-center justify-between">
                         <span className="text-gray-600 dark:text-gray-400">Workouts Completed</span>
-                        <span className="font-semibold text-gray-900 dark:text-white">{stats.completedWorkouts}</span>
+                        <span className="font-semibold text-gray-900 dark:text-white">{programStats?.completedWorkouts || 0}</span>
                       </div>
 
                       {/* Next Check-in */}
                       <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
-                        {(stats.isCheckInDay || stats.isOverdue) ? (
+                        {programStats?.checkIn ? (
                           <div className="space-y-3">
                             <div className="flex items-center justify-between">
                               <span className="text-gray-600 dark:text-gray-400">Weekly Check-in</span>
-                              <span className={`text-sm font-medium ${stats.isOverdue ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'}`}>
-                                {stats.isOverdue ? 'Overdue' : 'Due Today'}
+                              <span className={`text-sm font-medium ${programStats.checkIn.isOverdue ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'}`}>
+                                {programStats.checkIn.isOverdue ? 'Overdue' : 'Due Today'}
                               </span>
                             </div>
                             <Link
                               href="/check-in"
                               className={`w-full px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
-                                stats.isOverdue
+                                programStats.checkIn.isOverdue
                                   ? 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/50 border border-red-200 dark:border-red-800'
                                   : 'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/50 border border-amber-200 dark:border-amber-800'
                               }`}
@@ -411,7 +385,7 @@ function DashboardContent() {
                               Start Weekly Check-in
                               <span className="text-xl">→</span>
                             </Link>
-                            {stats.isOverdue && (
+                            {programStats.checkIn.isOverdue && (
                               <p className="text-sm text-red-600 dark:text-red-400">
                                 Your check-in was due on Monday
                               </p>
@@ -421,14 +395,28 @@ function DashboardContent() {
                           <>
                             <div className="flex items-center justify-between mb-1">
                               <span className="text-gray-600 dark:text-gray-400">Next Check-in</span>
-                              <span className="text-sm text-indigo-600 dark:text-indigo-400 font-medium">{stats.nextCheckInDate}</span>
+                              <span className="text-sm text-indigo-600 dark:text-indigo-400 font-medium">{programStats?.checkIn ? (
+                                <>
+                                  {new Date(programStats.checkIn.nextDate).toLocaleDateString('en-US', {
+                                    weekday: 'long',
+                                    month: 'short',
+                                    day: 'numeric'
+                                  })}
+                                  {programStats.checkIn.isCheckInDay && (
+                                    <span className="ml-2 text-sm text-green-600">(Today!)</span>
+                                  )}
+                                  {programStats.checkIn.isOverdue && (
+                                    <span className="ml-2 text-sm text-red-600">(Overdue)</span>
+                                  )}
+                                </>
+                              ) : 'Not scheduled'}</span>
                             </div>
                             <p className="text-sm text-gray-500 dark:text-gray-400">
-                              {stats.daysUntilCheckIn === 0 
+                              {programStats?.checkIn?.daysUntilNext === 0 
                                 ? "Today" 
-                                : stats.daysUntilCheckIn === 1 
+                                : programStats?.checkIn?.daysUntilNext === 1 
                                   ? "Tomorrow" 
-                                  : `in ${stats.daysUntilCheckIn} days`}
+                                  : `in ${programStats?.checkIn?.daysUntilNext} days`}
                             </p>
                           </>
                         )}
@@ -451,8 +439,8 @@ function DashboardContent() {
                       <div className="mt-4 space-y-6">
                         {/* Weight and Activity Grid Row */}
                         <div className="flex gap-6">
-                          {/* Weight Section */}
                           
+                          {/* Weight Section TODO */}
                           <div className="w-1/2 space-y-4">
                             <div>
                               <div className="flex items-center justify-between">
@@ -680,27 +668,37 @@ function DashboardContent() {
                           </div>
 
                           {progressPhotos.length > 0 ? (
-                            <div className="grid grid-cols-3 gap-4">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                               {progressPhotos.map((photo) => (
-                                <div key={photo.id} className="aspect-square rounded-lg bg-gray-100 dark:bg-gray-800 overflow-hidden relative">
-                                  <img 
-                                    src={photo.userImage.base64Data} 
-                                    alt={`Progress photo - ${photo.type?.toLowerCase().replace('_', ' ') || 'custom'}`}
-                                    className="object-cover w-full h-full hover:opacity-75 transition-opacity duration-200"
+                                <div 
+                                  key={photo.id}
+                                  className="relative aspect-square rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 group hover:border-indigo-500 dark:hover:border-indigo-400 transition-colors"
+                                >
+                                  <Image
+                                    src={photo.base64Data}
+                                    alt="Progress photo"
+                                    fill
+                                    className="object-cover"
                                   />
-                                  
-                                  {!photo.userStats?.bodyFatLow && !photo.userStats?.bodyFatHigh && (
+                                  {(photo.userStats?.bodyFatHigh || photo.userStats?.bodyFatLow) ? (
+                                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity p-4">
+                                      <div className="text-white space-y-2">
+                                        <p>Body Fat: {photo.userStats.bodyFatLow || '?'}-{photo.userStats.bodyFatHigh || '?'}%</p>
+                                        <p>Mass Distribution: {photo.userStats.muscleMassDistribution}</p>
+                                      </div>
+                                    </div>
+                                  ) : (
                                     <button
                                       onClick={async () => {
                                         try {
-                                          setAnalyzingPhotoId(photo.userImage.id);
+                                          setAnalyzingPhotoId(photo.id);
                                           const response = await fetch('/api/photos/analyze', {
                                             method: 'POST',
                                             headers: {
                                               'Content-Type': 'application/json',
                                             },
                                             body: JSON.stringify({
-                                              photoIds: [photo.userImage.id],
+                                              photoIds: [photo.id],
                                             }),
                                           });
 
@@ -708,7 +706,6 @@ function DashboardContent() {
                                             throw new Error('Failed to analyze photo');
                                           }
 
-                                          // Refresh the page to show updated data
                                           router.refresh();
                                         } catch (error) {
                                           console.error('Error analyzing photo:', error);
@@ -716,10 +713,10 @@ function DashboardContent() {
                                           setAnalyzingPhotoId(null);
                                         }
                                       }}
-                                      disabled={analyzingPhotoId === photo.userImage.id}
+                                      disabled={analyzingPhotoId === photo.id}
                                       className="absolute top-2 right-2 px-3 py-1.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
-                                      {analyzingPhotoId === photo.userImage.id ? (
+                                      {analyzingPhotoId === photo.id ? (
                                         <div className="flex items-center gap-2">
                                           <div className="w-4 h-4 border-t-2 border-b-2 border-white rounded-full animate-spin" />
                                           <span>Analyzing...</span>
@@ -729,26 +726,12 @@ function DashboardContent() {
                                       )}
                                     </button>
                                   )}
-
-                                  <div className="absolute bottom-2 left-2 right-2 text-white text-xs py-1 px-2 text-center bg-black/50 rounded">
-                                    {photo.type?.toLowerCase().replace('_', ' ') || 'custom'}
+                                  <div className="absolute top-2 right-2 text-xs font-medium text-white bg-black/50 px-2 py-1 rounded">
+                                    {photo.type?.replace('_', ' ').toLowerCase() || 'Custom'}
                                   </div>
-
-                                  {/* Stats Overlay */}
-                                  {photo.userStats?.bodyFatHigh && photo.userStats?.bodyFatLow && (
-                                    <div className="absolute inset-0 bg-black/80 opacity-0 hover:opacity-100 transition-opacity duration-200 flex flex-col justify-center items-center text-white p-4">
-                                      <div className="space-y-3 text-center">
-                                        <div>
-                                          <div className="text-sm text-gray-300">Body Fat Range</div>
-                                          <div className="font-medium">{photo.userStats.bodyFatLow}% - {photo.userStats.bodyFatHigh}%</div>
-                                        </div>
-                                        <div>
-                                          <div className="text-sm text-gray-300">Muscle Mass Distribution</div>
-                                          <div className="font-medium text-sm">{photo.userStats.muscleMassDistribution}</div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  )}
+                                  <div className="absolute bottom-2 left-2 text-xs font-medium text-white bg-black/50 px-2 py-1 rounded">
+                                    {new Date(photo.createdAt).toLocaleDateString()}
+                                  </div>
                                 </div>
                               ))}
                             </div>
@@ -835,25 +818,33 @@ function DashboardContent() {
                                 <div className="w-2 h-2 rounded-full bg-indigo-500 dark:bg-indigo-400"></div>
                                 <span className="text-gray-600 dark:text-gray-400">Protein</span>
                               </div>
-                              <span className="font-medium text-gray-900 dark:text-white">{program.workoutPlans[0].proteinGrams}g</span>
+                              <span className="font-medium text-gray-900 dark:text-white">
+                                {program.workoutPlans[0].proteinGrams}g
+                              </span>
                             </div>
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 rounded-full bg-blue-500 dark:bg-blue-400"></div>
                                 <span className="text-gray-600 dark:text-gray-400">Carbs</span>
                               </div>
-                              <span className="font-medium text-gray-900 dark:text-white">{program.workoutPlans[0].carbGrams}g</span>
+                              <span className="font-medium text-gray-900 dark:text-white">
+                                {program.workoutPlans[0].carbGrams}g
+                              </span>
                             </div>
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 rounded-full bg-purple-500 dark:bg-purple-400"></div>
                                 <span className="text-gray-600 dark:text-gray-400">Fat</span>
                               </div>
-                              <span className="font-medium text-gray-900 dark:text-white">{program.workoutPlans[0].fatGrams}g</span>
+                              <span className="font-medium text-gray-900 dark:text-white">
+                                {program.workoutPlans[0].fatGrams}g
+                              </span>
                             </div>
                             <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700">
                               <span className="text-gray-600 dark:text-gray-400">Daily Calories</span>
-                              <span className="font-medium text-gray-900 dark:text-white">{program.workoutPlans[0].dailyCalories}</span>
+                              <span className="font-medium text-gray-900 dark:text-white">
+                                {program.workoutPlans[0].dailyCalories}
+                              </span>
                             </div>
                           </div>
                         </div>

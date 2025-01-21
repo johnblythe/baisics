@@ -22,15 +22,7 @@ export async function GET(
       include: {
         checkIns: {
           include: {
-            photos: {
-              include: {
-                progressPhoto: {
-                  include: {
-                    userStats: true,
-                  },
-                },
-              },
-            },
+            photos: true,
           },
           orderBy: {
             createdAt: 'desc',
@@ -40,18 +32,22 @@ export async function GET(
     });
 
     if (!program) {
-      return NextResponse.json({ error: 'Program not found' }, { status: 404 });
+      return NextResponse.json([], { status: 200 });
     }
 
-    const photos = program.checkIns?.flatMap(checkIn =>
+    console.log('Raw program data:', JSON.stringify(program, null, 2));
+
+    const photos = program.checkIns?.flatMap(checkIn => 
       checkIn.photos.map(photo => ({
         id: photo.id,
         base64Data: photo.base64Data,
-        type: photo.progressPhoto[0]?.type || null,
-        userStats: photo.progressPhoto[0]?.userStats || null,
-        createdAt: checkIn.createdAt,
+        type: photo.type || null,
+        userStats: null,
+        createdAt: checkIn.createdAt
       }))
     ) || [];
+
+    console.log('Transformed photos:', JSON.stringify(photos, null, 2));
 
     return NextResponse.json(photos);
   } catch (error) {

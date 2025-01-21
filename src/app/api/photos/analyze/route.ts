@@ -123,65 +123,64 @@ export async function POST(request: Request) {
 
     // Analyze the photos
     const analysis = await analyzeBodyComposition(photos);
-    console.log("🚀 ~ POST ~ analysis:", analysis)
     if (!analysis) {
       return NextResponse.json({ error: 'Analysis failed' }, { status: 500 });
     }
 
     // Create or update progress photos with analysis
+    // @TODO: this will overwrite one another if there's a batch of pics, the last one will be the one that's saved
+    // consider adding analysis at the image level instead or making it more sophisticated to do holistic analysis
+    // across N photos for 1 checkin/stats
     await prisma.$transaction(async (tx) => {
       for (const photo of photos) {
         if (!photo.checkInId || !photo.programId) continue;
 
-        const existingStats = photo.progressPhoto[0]?.userStats;
+        // const existingStats = photo.progressPhoto[0]?.userStats;
+        const checkInId = photo.checkInId;
+        if (!checkInId) {
+          console.error('No checkInId found for photo:', photo.id);
+          return NextResponse.json({ error: 'No checkInId found for photo' }, { status: 400 });
+        }
 
         // Create or update UserStats
-        let userStats;
-        if (existingStats) {
-          // Update existing stats
-          userStats = await tx.userStats.update({
-            where: { id: existingStats.id },
-            data: {
+        const userStats = await tx.userStats.upsert({
+          where: {checkInId,},
+          update: {
               bodyFatHigh: analysis.bodyFatPercentageHigh,
               bodyFatLow: analysis.bodyFatPercentageLow,
               muscleMassDistribution: analysis.muscleMassDistribution,
             },
-          });
-        } else {
-          // Create new stats
-          userStats = await tx.userStats.create({
-            data: {
-              userId,
-              programId: photo.programId,
-              checkInId: photo.checkInId,
-              bodyFatHigh: analysis.bodyFatPercentageHigh,
-              bodyFatLow: analysis.bodyFatPercentageLow,
-              muscleMassDistribution: analysis.muscleMassDistribution,
-            },
-          });
-        }
+          create: {
+            userId,
+            programId: photo.programId,
+            checkInId: photo.checkInId,
+            bodyFatHigh: analysis.bodyFatPercentageHigh,
+            bodyFatLow: analysis.bodyFatPercentageLow,
+            muscleMassDistribution: analysis.muscleMassDistribution,
+          }
+        });
 
         const existingPhoto = photo.progressPhoto[0];
-
-        // Create or update ProgressPhoto
-        if (existingPhoto) {
-          await tx.progressPhoto.update({
-            where: { id: existingPhoto.id },
-            data: {
-              userStatsId: userStats.id,
-              type: (analysis.photoType as PhotoType) || PhotoType.CUSTOM
-            }
-          });
-        } else {
-          await tx.progressPhoto.create({
-            data: {
-              checkInId: photo.checkInId,
-              userImageId: photo.id,
-              type: (analysis.photoType as PhotoType) || PhotoType.CUSTOM,
-              userStatsId: userStats.id
-            }
-          });
+        if (!existingPhoto) {
+          console.error('No existing photo found for:', photo.id);
+          return NextResponse.json({ error: 'No existing photo found for' }, { status: 400 });
         }
+
+        // @TODO
+        // Create or update ProgressPhoto
+        await tx.progressPhoto.upsert({
+          where: { id: existingPhoto.id },
+          update: {
+            userStatsId: userStats.id,
+            type: (analysis.photoType as PhotoType) || PhotoType.CUSTOM
+          },
+          create: {
+            checkInId: photo.checkInId,
+            userImageId: photo.id,
+            type: (analysis.photoType as PhotoType) || PhotoType.CUSTOM,
+            userStatsId: userStats.id
+          }
+        });
       }
     });
 
