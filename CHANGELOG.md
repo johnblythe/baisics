@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fixed the extraction prompt to handle multiple training goals
-- Other misc items found
+- Other misc items found 
 
 ## [0.0.6] - 2025-01-21
 
