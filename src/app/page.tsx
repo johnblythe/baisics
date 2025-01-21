@@ -30,7 +30,7 @@ export default function LandingPage() {
     // Track the conversion
     trackGetStartedClick();
 
-    if (process.env.NEXT_PUBLIC_WE_LIVE) {
+    if (process.env.NEXT_PUBLIC_WE_LIVE === 'true') {
       router.push('/hi')
     } else {
       // Open the modal
