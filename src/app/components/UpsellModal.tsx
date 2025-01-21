@@ -206,9 +206,9 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto">
       {showConfetti && <ReactConfetti />}
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-8 max-w-4xl w-full">
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto my-4">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
@@ -237,7 +237,24 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-8">
+        {/* Testimonial -- Mobile only */}
+        <div className="sm:hidden my-8 text-center">
+          <p className="italic text-gray-600 dark:text-gray-400">
+            &quot;{testimonials[currentTestimonialIndex].text}&quot;
+          </p>
+          <p className="mt-2 font-medium">- {testimonials[currentTestimonialIndex].author}</p>
+          <div className="flex justify-center mt-4">
+            {testimonials.map((_, index) => (
+              <span
+                key={index}
+                onClick={() => resetCurrentTestimonialIndex(index)}
+                className={`h-2 w-2 mx-1 rounded-full cursor-pointer ${index === currentTestimonialIndex ? 'bg-blue-600' : 'bg-gray-300'}`}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Free Option */}
           <div className="p-6 border rounded-xl">
             <div className="bg-gray-100 dark:bg-gray-700 inline-block px-3 py-1 rounded-full text-sm mb-4">Free Access</div>

@@ -24,7 +24,7 @@ export const workoutProgramSchema = {
     trainingPlan: {
       daysPerWeek: "number",
       workouts: [{
-        day: "number",
+        dayNumber: "number",
         exercises: [{
           name: "string",
           sets: "number",

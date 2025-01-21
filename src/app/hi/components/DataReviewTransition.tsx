@@ -147,7 +147,7 @@ export function DataReviewTransition({ intakeData, onConfirm, onRequestMore }: D
             <div>
               <h3 className="text-xl font-semibold text-blue-900 dark:text-blue-100 mb-2">Don&apos;t sweat it!</h3>
               <p className="text-blue-800/80 dark:text-gray-300 leading-relaxed">
-                There&apos;s no commitment yet, you can request changes if needed. You can also upgrade and make as many programs as you&apos;d like.
+                We can make changes to your program if needed. You can also upgrade and make as many programs as you&apos;d like.
               </p>
             </div>
           </div>

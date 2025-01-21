@@ -39,6 +39,7 @@ export async function createCheckIn(formData: CheckInFormData) {
         programId: program.id,
         type: formData.type,
         notes: formData.notes,
+        date: formData.date ? new Date(formData.date) : new Date(),
       },
     });
 

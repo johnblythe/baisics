@@ -54,6 +54,17 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
   const [expandedNotes, setExpandedNotes] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Initialize expandedNotes with first exercise's ID
+  useEffect(() => {
+    if (plan.workouts.length > 0 && plan.workouts[0].exercises.length > 0) {
+      const firstExercise = plan.workouts[0].exercises[0];
+      const firstExerciseId = firstExercise.id || `exercise-${plan.workouts[0].id}-${firstExercise.name}-0`;
+      if (firstExercise.notes) {
+        setExpandedNotes([firstExerciseId]);
+      }
+    }
+  }, [plan.workouts]);
+
   // Keep userEmail in sync with prop changes
   useEffect(() => {
     setUserEmail(initialUserEmail);
@@ -111,7 +122,7 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
       {/* Premium Upsell Banner */}
       {userEmail && !user?.isPremium && (
         <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-2xl shadow-sm overflow-hidden">
-          <div className="p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div className="p-4 sm:p-2 flex flex-col sm:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-white/10 rounded-lg">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -187,10 +198,10 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{plan.phaseExplanation}</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 lg:p-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-6 px-1 lg:p-8">
           {/* Phase Overview Section */}
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
-            <div className="p-6 space-y-6">
+            <div className="p-2 space-y-2 lg:p-6 lg:space-y-6">
               <div className="flex items-start space-x-3 hidden">
                 <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg">
                   <Brain className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
@@ -240,7 +251,7 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
 
           {/* Nutrition Section */}
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
-            <div className="p-6 space-y-6">
+            <div className="p-2 space-y-2 lg:p-6 lg:space-y-6">
               <div className="flex items-center gap-2">
                 <Apple className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                 <h3 className="font-semibold text-gray-900 dark:text-white">Nutrition</h3>
@@ -271,7 +282,7 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
 
           {/* Body Composition Section */}
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
-            <div className="p-6 space-y-6">
+            <div className="p-4 space-y-4 lg:p-6 lg:space-y-6">
               <div className="flex items-center gap-2">
                 <ChartLine className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                 <h3 className="font-semibold text-gray-900 dark:text-white">Body Composition</h3>
@@ -325,7 +336,7 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
 
           {/* Progress Stats Section */}
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
-            <div className="p-6 space-y-6">
+            <div className="p-4 space-y-4 lg:p-6 lg:space-y-6">
               <div className="flex items-center gap-2">
                 <Target className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                 <h3 className="font-semibold text-gray-900 dark:text-white">Progress Stats</h3>
@@ -386,7 +397,7 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
                 )}
               </div>
 
-              <div className="p-6 space-y-6">
+              <div className="p-2 space-y-2 lg:p-6 lg:space-y-6">
                 {/* Warmup Section */}
                 {workout.warmup && (() => {
                   const warmupData = typeof workout.warmup === 'string' 
@@ -457,16 +468,25 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
                               {exercise.notes && (
                                 <button
                                   onClick={() => toggleNotes(exerciseId)}
-                                  className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                  className="group relative p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                                   aria-label={isExpanded ? "Hide exercise notes" : "Show exercise notes"}
                                 >
                                   <Info className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                                  <span className="invisible group-hover:visible absolute left-1/2 -translate-x-1/2 -top-10 w-64 px-2 py-1 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-md whitespace-nowrap">
+                                    Click to view exercise notes and video
+                                  </span>
                                 </button>
                               )}
                             </div>
                             <div className="col-span-1 text-gray-600 dark:text-gray-400">{exercise.sets}</div>
                             <div className="col-span-2 text-gray-600 dark:text-gray-400">
-                              {formatExerciseMeasure(exercise)}
+                              {(() => {
+                                const formatted = formatExerciseMeasure(exercise);
+                                if (formatted.includes('reps')) {
+                                  return formatted.replace('reps', '');
+                                }
+                                return formatted;
+                              })()}
                             </div>
                             <div className="col-span-3 text-gray-600 dark:text-gray-400">{formatRestPeriod(typeof exercise.restPeriod === 'string' ? parseInt(exercise.restPeriod) : exercise.restPeriod)}</div>
                           </div>

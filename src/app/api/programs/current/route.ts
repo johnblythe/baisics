@@ -3,15 +3,88 @@ import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 import { Program, CheckIn, WorkoutLog, UserActivity } from '@prisma/client';
 
-type ProgramWithRelations = Program & {
-  checkIns?: (CheckIn & {
-    stats: any[];
-    photos: {
+interface CheckInStat {
+  id: string;
+  weight: number;
+  bodyFatPercentage?: number;
+  bodyFatLow?: number;
+  bodyFatHigh?: number;
+  muscleMassDistribution?: string;
+  createdAt: string;
+}
+
+interface ProgressPhotoData {
+  id: string;
+  type: 'FRONT' | 'BACK' | 'SIDE_LEFT' | 'SIDE_RIGHT' | 'CUSTOM' | null;
+  userStats: {
+    bodyFatLow: number;
+    bodyFatHigh: number;
+    muscleMassDistribution: string;
+  } | null;
+}
+
+interface CheckInPhoto {
+  id: string;
+  base64Data: string;
+  progressPhoto: ProgressPhotoData[];
+}
+
+interface CheckInData {
+  id: string;
+  createdAt: string;
+  date: string;
+  notes: string | null;
+  programId: string;
+  type: 'initial' | 'progress' | 'end';
+  userId: string;
+  stats: CheckInStat[];
+  photos: CheckInPhoto[];
+}
+
+export interface TransformedProgram {
+  id: string;
+  name: string;
+  description: string | null;
+  workoutPlans: {
+    id: string;
+    proteinGrams: number;
+    carbGrams: number;
+    fatGrams: number;
+    dailyCalories: number;
+    workouts: {
       id: string;
-      base64Data: string;
-      progressPhoto: { type: string }[];
+      name: string;
+      dayNumber: number;
+      focus: string;
+      exercises: any[];
     }[];
-  })[];
+  }[];
+  workoutLogs: WorkoutLog[];
+  currentWeight?: number;
+  startWeight?: number;
+  progressPhotos: {
+    id: string;
+    url: string;
+    type: 'FRONT' | 'BACK' | 'SIDE_LEFT' | 'SIDE_RIGHT' | 'CUSTOM' | null;
+  }[];
+  checkIns?: {
+    id: string;
+    date: string;
+    type: 'initial' | 'progress' | 'end';
+  }[];
+  activities?: {
+    id: string;
+    timestamp: string;
+    type: string;
+    metadata?: {
+      path?: string;
+      userAgent?: string;
+    };
+  }[];
+}
+
+export type ProgramWithRelations = Program & {
+  checkIns?: CheckInData[];
   workoutLogs?: WorkoutLog[];
   activities?: UserActivity[];
   workoutPlans?: any[];
@@ -104,19 +177,40 @@ export async function GET() {
       ...program,
       startWeight,
       currentWeight,
-      progressPhotos,
       checkIns: program.checkIns?.map(checkIn => ({
         ...checkIn,
-        createdAt: checkIn.createdAt.toISOString(),
+        date: checkIn.date,
+        createdAt: checkIn.createdAt,
+        photos: checkIn.photos?.map(photo => ({
+          id: photo.id,
+          base64Data: photo.base64Data,
+          progressPhoto: photo.progressPhoto.map(pp => ({
+            id: pp.id,
+            type: pp.type,
+            userStats: pp.userStats
+          }))
+        })) || [],
+        stats: checkIn.stats.map(stat => ({
+          ...stat,
+          createdAt: stat.createdAt
+        }))
       })) || [],
       workoutLogs: program.workoutLogs?.map(log => ({
         ...log,
-        completedAt: log.completedAt?.toISOString(),
+        completedAt: log.completedAt
       })) || [],
       activities: program.activities?.map(activity => ({
         ...activity,
-        timestamp: activity.timestamp.toISOString(),
+        timestamp: activity.timestamp
       })) || [],
+      workoutPlans: program.workoutPlans?.map(plan => ({
+        ...plan,
+        workouts: plan.workouts.map((workout: any) => ({
+          ...workout,
+          exercises: workout.exercises
+        }))
+      })) || [],
+      progressPhotos
     };
 
     return NextResponse.json(transformedProgram);
