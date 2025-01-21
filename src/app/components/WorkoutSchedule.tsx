@@ -1,7 +1,7 @@
 type WorkoutPlan = {
   daysPerWeek: number;
   workouts: Array<{
-    day: number;
+    dayNumber: number;
     exercises: Array<{
       name: string;
       sets: number;
@@ -32,7 +32,7 @@ export default function WorkoutSchedule({ workoutPlan }: WorkoutScheduleProps) {
   const workoutMap = new Map();
   workoutPlan.workouts.forEach((workout, index) => {
     // Assuming workouts start on Monday, adjust as needed
-    workoutMap.set(workout.day - 1, `Workout ${index + 1}`);
+    workoutMap.set(workout.dayNumber - 1, `Workout ${index + 1}`);
   });
 
   return (

@@ -3,7 +3,7 @@ import { User, UserImages } from "@prisma/client";
 export interface Program {
   id: string;
   name: string;
-  description?: string;
+  description?: string | null;
   workoutPlans: WorkoutPlan[];
   user: Partial<User>;
   userImages?: UserImages[];
@@ -38,7 +38,6 @@ export interface TrainingPlan {
 export interface Workout {
   id?: string;
   name?: string;
-  day: number;
   dayNumber: number;
   workoutPlanId?: string;
   exercises: Exercise[];
@@ -63,6 +62,9 @@ export interface Exercise {
     value: number;
     unit?: 'seconds' | 'minutes' | 'meters' | 'km' | 'miles';
   };
+  measureType?: string;
+  measureUnit?: string;
+  measureValue?: number;
   reps?: number;
   restPeriod: number;  // in seconds
   equipment: string[];

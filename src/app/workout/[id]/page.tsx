@@ -548,24 +548,29 @@ export default function WorkoutPage() {
                 </div>
 
                 {/* Exercise Info */}
-                <div className="space-y-2">
-                  <h3 className="text-3xl font-bold text-gray-900 dark:text-white">{currentExercise.name}</h3>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    {currentExercise.sets} sets × {formatExerciseMeasure(currentExercise)}
-                  </p>
-                  {currentExercise.notes && (
-                    <div className="p-4 text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-700">
-                      {currentExercise.notes}<br/>
-                      <a href={`https://www.youtube.com/results?search_query=${currentExercise.name} how to`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center mt-2 hover:text-indigo-600 dark:text-indigo-400 underline underline-offset-4 gap-1">
-                        Need a video? <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-                      </a>
-                    </div>
-                  )}
-                </div>
+                {currentExercise ? (
+                  <div className="space-y-2">
+                    <h3 className="text-3xl font-bold text-gray-900 dark:text-white">
+                      {currentExercise.name}
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400">
+                      {currentExercise.sets} sets × {formatExerciseMeasure(currentExercise)}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <h3 className="text-3xl font-bold text-gray-900 dark:text-white">
+                      Select an exercise
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400">
+                      Choose an exercise from the list to begin
+                    </p>
+                  </div>
+                )}
 
                 {/* Sets */}
                 <div className="space-y-1">
-                  {currentExercise.logs.map((log, setIndex) => {
+                  {currentExercise?.logs.map((log, setIndex) => {
                     const previousSet = setIndex > 0 ? currentExercise.logs[setIndex - 1] : null;
                     const isLastSetOfWorkout = currentExerciseIndex === exercises.length - 1 && 
                       setIndex === currentExercise.logs.length - 1;
