@@ -8,7 +8,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import TawkChat from "@/components/TawkChat";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, TooltipProps } from 'recharts';
-import { CheckIn, ProgressPhoto, UserImages, UserStats } from '@prisma/client';
 import { DisclaimerBanner } from '@/components/DisclaimerBanner';
 import MainLayout from '@/app/components/layouts/MainLayout';
 import { generateWorkoutPDF } from '@/utils/pdf';
@@ -16,16 +15,101 @@ import { getSession } from 'next-auth/react';
 import { WorkoutPlan as WorkoutPlanHiType } from '@/types/program';
 import { ProgramWithRelations, TransformedProgram } from '../api/programs/current/route';
 import Image from 'next/image';
-// import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
-// import { useDropzone } from 'react-dropzone';
+
+// Types for our API responses
+interface ProgramOverview {
+  id: string;
+  name: string;
+  description: string | null;
+  startDate: Date;
+  workoutPlans: {
+    id: string;
+    proteinGrams: number;
+    carbGrams: number;
+    fatGrams: number;
+    dailyCalories: number;
+    workouts: {
+      id: string;
+      name: string;
+      dayNumber: number;
+      focus: string;
+      exercises: {
+        id: string;
+        name: string;
+        sets: number;
+        reps: number | null;
+        notes: string | null;
+      }[];
+    }[];
+  }[];
+}
+
+interface ProgramStats {
+  completedWorkouts: number;
+  checkIn: {
+    nextDate: string;
+    isCheckInDay: boolean;
+    isOverdue: boolean;
+    daysUntilNext: number;
+  };
+}
+
+interface WeightData {
+  currentWeight: number;
+  startWeight: number;
+  weightHistory: {
+    date: string;
+    displayDate: string;
+    weight: number;
+  }[];
+}
+
+interface ProgressPhoto {
+  id: string;
+  base64Data: string;
+  type: 'FRONT' | 'BACK' | 'SIDE_LEFT' | 'SIDE_RIGHT' | 'CUSTOM' | null;
+  userStats: {
+    bodyFatLow: number | null;
+    bodyFatHigh: number | null;
+    muscleMassDistribution: string | null;
+  } | null;
+  createdAt: string;
+}
+
+interface Activity {
+  date: string;
+  type: 'workout' | 'check-in' | 'visit';
+}
+
+interface RecentActivity {
+  id: string;
+  workoutId: string;
+  workoutName: string;
+  dayNumber: number;
+  focus: string;
+  completedAt: string;
+}
+
+interface CurrentWorkout {
+  nextWorkout: {
+    id: string;
+    name: string;
+    dayNumber: number;
+    focus: string;
+    exerciseCount: number;
+  };
+  totalWorkouts: number;
+  lastCompletedAt: string | null;
+}
+
+// Component state types
+interface TooltipContent {
+  x: number;
+  y: number;
+  content: React.ReactNode;
+}
 
 type CheckInWithPhotos = ProgramWithRelations['checkIns']
-
-interface WeightDataPoint {
-  date: string;
-  displayDate: string;
-  weight: number;
-}
 
 // Mock data for empty state visualization
 const mockEmptyStateData: WeightDataPoint[] = [
@@ -113,44 +197,19 @@ type Activity = {
 function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [program, setProgram] = useState<TransformedProgram | null>(null);
+  const [program, setProgram] = useState<ProgramOverview | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [analyzingPhotoId, setAnalyzingPhotoId] = useState<string | null>(null);
-  const [tooltipContent, setTooltipContent] = useState<{ x: number; y: number; content: React.ReactNode } | null>(null);
+  const [tooltipContent, setTooltipContent] = useState<TooltipContent | null>(null);
   const [latestCheckIn, setLatestCheckIn] = useState<CheckInWithPhotos | null>(null);
   const [progressPhotos, setProgressPhotos] = useState<TransformedProgressPhoto[]>([]);
   const [checkIns, setCheckIns] = useState<ProgramWithRelations['checkIns']>([]);
-  const [weightData, setWeightData] = useState<WeightDataPoint[]>([]);
+  const [weightData, setWeightData] = useState<WeightData>({ currentWeight: 0, startWeight: 0, weightHistory: [] });
   const [showConfetti, setShowConfetti] = useState(false);
   const [showDisclaimer, setShowDisclaimer] = useState(true);
-  const [programStats, setProgramStats] = useState<{
-    completedWorkouts: number;
-    checkIn: {
-      nextDate: string;
-      isCheckInDay: boolean;
-      isOverdue: boolean;
-      daysUntilNext: number;
-    };
-  } | null>(null);
-  const [recentActivity, setRecentActivity] = useState<{
-    id: string;
-    workoutId: string;
-    workoutName: string;
-    dayNumber: number;
-    focus: string;
-    completedAt: string;
-  }[]>([]);
-  const [currentWorkout, setCurrentWorkout] = useState<{
-    nextWorkout: {
-      id: string;
-      name: string;
-      dayNumber: number;
-      focus: string;
-      exerciseCount: number;
-    };
-    totalWorkouts: number;
-    lastCompletedAt: string | null;
-  } | null>(null);
+  const [programStats, setProgramStats] = useState<ProgramStats | null>(null);
+  const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
+  const [currentWorkout, setCurrentWorkout] = useState<CurrentWorkout | null>(null);
   const [activities, setActivities] = useState<Activity[]>([]);
 
   useEffect(() => {
@@ -175,39 +234,23 @@ function DashboardContent() {
         
         const { id: programId } = await latestResponse.json();
 
-        const [overview, stats, weightData, progressPhotos, activity, currentWorkout, activities] = await Promise.all([
-          fetch(`/api/programs/${programId}/overview`).then(r => r.json()),
-          fetch(`/api/programs/${programId}/stats`).then(r => r.json()),
-          fetch(`/api/programs/${programId}/weight-tracking`).then(r => r.json()),
-          fetch(`/api/programs/${programId}/progress-photos`).then(r => r.json()),
-          fetch(`/api/programs/${programId}/recent-activity`).then(r => r.json()),
-          fetch(`/api/programs/${programId}/current-workout`).then(r => r.json()),
-          fetch(`/api/programs/${programId}/activity`).then(r => r.json())
+        const [overview, stats, weightDataResponse, progressPhotos, activity, currentWorkout, activities] = await Promise.all([
+          fetch(`/api/programs/${programId}/overview`).then(r => r.json()) as Promise<ProgramOverview>,
+          fetch(`/api/programs/${programId}/stats`).then(r => r.json()) as Promise<ProgramStats>,
+          fetch(`/api/programs/${programId}/weight-tracking`).then(r => r.json()) as Promise<WeightData>,
+          fetch(`/api/programs/${programId}/progress-photos`).then(r => r.json()) as Promise<ProgressPhoto[]>,
+          fetch(`/api/programs/${programId}/recent-activity`).then(r => r.json()) as Promise<RecentActivity[]>,
+          fetch(`/api/programs/${programId}/current-workout`).then(r => r.json()) as Promise<CurrentWorkout>,
+          fetch(`/api/programs/${programId}/activity`).then(r => r.json()) as Promise<Activity[]>
         ]);
 
-        console.log('Progress Photos Response:', progressPhotos);
-
-        setProgram({
-          id: programId,
-          name: overview.name,
-          description: overview.description,
-          workoutPlans: overview.workoutPlans,
-          workoutLogs: [],
-          progressPhotos: [],
-          currentWeight: undefined,
-          startWeight: undefined,
-          checkIns: [],
-          activities: []
-        });
-
+        setProgram(overview);
         setProgramStats(stats);
-        setWeightData(weightData.weightHistory || mockEmptyStateData);
+        setWeightData(weightDataResponse);
         setProgressPhotos(progressPhotos || []);
         setRecentActivity(activity);
         setCurrentWorkout(currentWorkout);
         setActivities(activities);
-
-        console.log('Recent activity response:', activity);
 
       } catch (error) {
         console.error('Failed to fetch program:', error);
@@ -272,15 +315,12 @@ function DashboardContent() {
   }
 
   // Find the next workout to do (basic logic - can be enhanced)
-  const completedWorkoutIds = new Set(program.workoutLogs?.map(log => log.workoutId) || []);
-  const nextWorkout = program.workoutPlans?.[0]?.workouts.find(workout => 
+  const completedWorkoutIds = new Set(
+    program?.workoutPlans?.[0]?.workouts?.map(w => w.id) || []
+  );
+  const nextWorkout = program?.workoutPlans?.[0]?.workouts?.find(workout => 
     !completedWorkoutIds.has(workout.id)
   );
-
-  // const stats = calculateProgramStats(program);
-
-  console.log('Program workout logs:', program.workoutLogs);
-  console.log('Recent activity state:', recentActivity);
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
@@ -339,7 +379,6 @@ function DashboardContent() {
                               phaseExpectations: '',
                               phaseKeyPoints: [],
                             }
-                            console.log('workoutPlan', workoutPlan);
                             const transformedProgram = {
                               ...program,
                               workoutPlans: [workoutPlan],
@@ -476,19 +515,21 @@ function DashboardContent() {
                         {/* Weight and Activity Grid Row */}
                         <div className="flex gap-6">
                           
-                          {/* Weight Section TODO */}
+                          {/* Weight Section */}
                           <div className="w-1/2 space-y-4">
                             <div>
                               <div className="flex items-center justify-between">
                                 <span className="text-gray-600 dark:text-gray-400">Current Weight</span>
                                 <span className="text-2xl font-semibold text-gray-900 dark:text-white">
-                                  {program.currentWeight ? `${program.currentWeight} lbs` : '–'}
+                                  {weightData.currentWeight ? `${weightData.currentWeight} lbs` : '–'}
                                 </span>
                               </div>
-                              {program.startWeight && (
+                              {weightData.startWeight > 0 && (
                                 <div className="flex items-center justify-between mt-1">
                                   <span className="text-sm text-gray-500 dark:text-gray-400">Starting Weight</span>
-                                  <span className="text-sm text-gray-500 dark:text-gray-400">{program.startWeight} lbs</span>
+                                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                                    {weightData.startWeight} lbs
+                                  </span>
                                 </div>
                               )}
                             </div>
@@ -497,7 +538,7 @@ function DashboardContent() {
                             <div className="h-48 relative">
                               <ResponsiveContainer width="100%" height="100%">
                                 <LineChart 
-                                  data={weightData.length > 0 ? weightData : mockEmptyStateData} 
+                                  data={weightData.weightHistory.length > 0 ? weightData.weightHistory : mockEmptyStateData} 
                                   margin={{ top: 5, right: 5, bottom: 5, left: 35 }}
                                 >
                                   <XAxis 
@@ -538,7 +579,7 @@ function DashboardContent() {
                                 </LineChart>
                               </ResponsiveContainer>
                               
-                              {weightData.length === 0 && (
+                              {weightData.weightHistory.length === 0 && (
                                 <div className="absolute inset-0 backdrop-blur-[2px] bg-white/50 dark:bg-gray-900/50 flex items-center justify-center">
                                   <div className="bg-white/95 dark:bg-gray-800/95 px-4 py-2 rounded-lg shadow-sm">
                                     <p className="text-md font-semibold text-gray-600 dark:text-gray-400 text-center">
@@ -550,7 +591,7 @@ function DashboardContent() {
                               )}
                             </div>
 
-                            {weightData.length <= 3 && weightData.length > 0 && (
+                            {weightData.weightHistory.length <= 3 && weightData.weightHistory.length > 0 && (
                               <p className="text-sm text-gray-500 dark:text-gray-400">
                                 Weight tracking becomes more meaningful after a few check-ins
                               </p>
@@ -579,12 +620,12 @@ function DashboardContent() {
                                 )}
                                 {Array.from({ length: 96 }).map((_, i) => {
                                   const date = new Date();
-                                  date.setDate(date.getDate() - (95 - i)); // 96 days ago to today
+                                  date.setDate(date.getDate() - (95 - i));
                                   const dateStr = date.toISOString().split('T')[0];
                                   
-                                  const dayActivities = activities.filter(a => 
+                                  const dayActivities = activities?.filter(a => 
                                     a.date.startsWith(dateStr)
-                                  );
+                                  ) || [];
 
                                   const classes = dayActivities.length > 0
                                     ? dayActivities.some(a => a.type === 'check-in')
@@ -659,78 +700,34 @@ function DashboardContent() {
 
                           {progressPhotos.length > 0 ? (
                             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                              {progressPhotos.map((photo) => {
-                                console.log('Rendering photo:', {
-                                  id: photo.id,
-                                  hasStats: !!photo.userStats,
-                                  stats: photo.userStats
-                                });
-                                return (
-                                  <div 
-                                    key={photo.id}
-                                    className="relative aspect-square rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 group hover:border-indigo-500 dark:hover:border-indigo-400 transition-colors"
-                                  >
-                                    <Image
-                                      src={photo.base64Data}
-                                      alt="Progress photo"
-                                      fill
-                                      className="object-cover"
-                                    />
-                                    {(photo.userStats?.bodyFatHigh || photo.userStats?.bodyFatLow) ? (
-                                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity p-4">
-                                        <div className="text-white space-y-2">
-                                          <p>Body Fat: {photo.userStats.bodyFatLow || '?'}-{photo.userStats.bodyFatHigh || '?'}%</p>
-                                          <p>Mass Distribution: {photo.userStats.muscleMassDistribution}</p>
-                                        </div>
-                                      </div>
-                                    ) : (
-                                      <button
-                                        onClick={async () => {
-                                          try {
-                                            setAnalyzingPhotoId(photo.id);
-                                            const response = await fetch('/api/photos/analyze', {
-                                              method: 'POST',
-                                              headers: {
-                                                'Content-Type': 'application/json',
-                                              },
-                                              body: JSON.stringify({
-                                                photoIds: [photo.id],
-                                              }),
-                                            });
-
-                                            if (!response.ok) {
-                                              throw new Error('Failed to analyze photo');
-                                            }
-
-                                            router.refresh();
-                                          } catch (error) {
-                                            console.error('Error analyzing photo:', error);
-                                          } finally {
-                                            setAnalyzingPhotoId(null);
-                                          }
-                                        }}
-                                        disabled={analyzingPhotoId === photo.id}
-                                        className="absolute top-2 right-2 px-3 py-1.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                      >
-                                        {analyzingPhotoId === photo.id ? (
-                                          <div className="flex items-center gap-2">
-                                            <div className="w-4 h-4 border-t-2 border-b-2 border-white rounded-full animate-spin" />
-                                            <span>Analyzing...</span>
-                                          </div>
-                                        ) : (
-                                          'Analyze'
+                              {progressPhotos.map((photo) => (
+                                <div 
+                                  key={photo.id}
+                                  className="relative aspect-square rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-400 transition-colors"
+                                >
+                                  <Image
+                                    src={photo.base64Data}
+                                    alt="Progress photo"
+                                    width={300}
+                                    height={300}
+                                    className="object-cover"
+                                  />
+                                  {(photo.userStats?.bodyFatHigh || photo.userStats?.bodyFatLow) && (
+                                    <div className="absolute inset-0 bg-black/60 opacity-0 hover:opacity-100 transition-opacity p-4">
+                                      <div className="text-white space-y-2">
+                                        <p className="font-medium">
+                                          Body Fat: {photo.userStats.bodyFatLow}-{photo.userStats.bodyFatHigh}%
+                                        </p>
+                                        {photo.userStats.muscleMassDistribution && (
+                                          <p className="text-sm">
+                                            {photo.userStats.muscleMassDistribution}
+                                          </p>
                                         )}
-                                      </button>
-                                    )}
-                                    <div className="absolute top-2 right-2 text-xs font-medium text-white bg-black/50 px-2 py-1 rounded">
-                                      {photo.type?.replace('_', ' ').toLowerCase() || 'Custom'}
+                                      </div>
                                     </div>
-                                    <div className="absolute bottom-2 left-2 text-xs font-medium text-white bg-black/50 px-2 py-1 rounded">
-                                      {new Date(photo.createdAt).toLocaleDateString()}
-                                    </div>
-                                  </div>
-                                );
-                              })}
+                                  )}
+                                </div>
+                              ))}
                             </div>
                           ) : (
                             <div 
@@ -810,7 +807,7 @@ function DashboardContent() {
                       )}
 
                       {/* Daily Macros */}
-                      {program.workoutPlans[0] && (
+                      {program?.workoutPlans?.[0] && (
                         <div className="space-y-4">
                           <h2 className="text-sm font-medium text-gray-600 dark:text-gray-400">Daily Macros</h2>
                           <div className="space-y-3">

@@ -22,8 +22,7 @@ interface ProgramOverview {
         id: string;
         name: string;
         sets: number;
-        reps: number;
-        weight: number | null;
+        reps: number | null;
         notes: string | null;
       }[];
     }[];

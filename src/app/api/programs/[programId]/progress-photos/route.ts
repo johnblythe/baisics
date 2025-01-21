@@ -39,7 +39,6 @@ export async function GET(
       },
     });
 
-    console.log('Program check-ins:', JSON.stringify(program?.checkIns, null, 2));
 
     if (!program) {
       return NextResponse.json([], { status: 200 });
@@ -47,13 +46,6 @@ export async function GET(
 
     const photos = program.checkIns?.flatMap(checkIn => 
       checkIn.photos.map(photo => {
-        console.log('Processing photo:', {
-          id: photo.id,
-          hasProgressPhoto: !!photo.progressPhoto,
-          hasUserStats: !!photo.progressPhoto?.[0]?.userStats,
-          stats: photo.progressPhoto?.[0]?.userStats
-        });
-        
         return {
           id: photo.id,
           base64Data: photo.base64Data,
@@ -67,12 +59,6 @@ export async function GET(
         };
       })
     ) || [];
-
-    console.log('Transformed photos:', photos.map(p => ({
-      id: p.id,
-      hasStats: !!p.userStats,
-      stats: p.userStats
-    })));
 
     return NextResponse.json(photos);
   } catch (error) {

@@ -64,7 +64,7 @@ export async function GET(
     // Combine all activities
     const activities = [
       ...program.workoutLogs.map(log => ({
-        date: log.completedAt.toISOString(),
+        date: log.completedAt ? log.completedAt.toISOString() : '',
         type: 'workout' as const
       })),
       ...program.checkIns.map(checkIn => ({
