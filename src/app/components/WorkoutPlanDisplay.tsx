@@ -5,6 +5,7 @@ import { formatExerciseMeasure, formatRestPeriod } from '@/utils/formatters';
 import { Program } from '@/types/program';
 import { User } from '@prisma/client';
 import { generateWorkoutPDF } from '@/utils/pdf';
+import { MacrosGuideModal } from './MacrosGuideModal';
 
 type UploadedImage = {
   id: string;
@@ -50,6 +51,7 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
   user
 }, ref) => {
   const [isUpsellOpen, setIsUpsellOpen] = useState(false);
+  const [isMacrosGuideOpen, setIsMacrosGuideOpen] = useState(false);
   const [userEmail, setUserEmail] = useState(initialUserEmail);
   const [expandedNotes, setExpandedNotes] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -122,9 +124,9 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
       {/* Premium Upsell Banner */}
       {userEmail && !user?.isPremium && (
         <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-2xl shadow-sm overflow-hidden">
-          <div className="p-4 sm:p-2 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div className="md:p-4 p-2 flex flex-col sm:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-white/10 rounded-lg">
+              <div className="p-6 bg-white/10 rounded-lg">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
@@ -252,9 +254,21 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
           {/* Nutrition Section */}
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
             <div className="p-2 space-y-2 lg:p-6 lg:space-y-6">
-              <div className="flex items-center gap-2">
-                <Apple className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                <h3 className="font-semibold text-gray-900 dark:text-white">Nutrition</h3>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Apple className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                  <h3 className="font-semibold text-gray-900 dark:text-white">Nutrition</h3>
+                </div>
+                <button
+                  onClick={() => setIsMacrosGuideOpen(true)}
+                  className="group relative p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  aria-label="Nutrition information"
+                >
+                  <Info className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                  <div className="invisible group-hover:visible absolute left-1/2 -translate-x-1/2 -top-12 w-64 px-4 py-2 bg-gray-900 dark:bg-gray-700 text-white text-sm rounded-lg whitespace-normal z-10">
+                    Click for a quick guide to counting macros
+                  </div>
+                </button>
               </div>
 
               <div className="space-y-3">
@@ -546,6 +560,12 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
             </div>
           ))}
       </div>
+
+      {/* Add the MacrosGuideModal */}
+      <MacrosGuideModal 
+        isOpen={isMacrosGuideOpen}
+        onClose={() => setIsMacrosGuideOpen(false)}
+      />
     </div>
   );
 });
