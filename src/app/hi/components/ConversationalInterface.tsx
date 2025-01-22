@@ -431,34 +431,34 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
       e.preventDefault();
       handleSubmit(e as unknown as React.FormEvent);
     }
-    
-    if ((e.key === 'p' || e.key === 'P') && (e.shiftKey)) {
-      e.preventDefault();
-      const profiles = Object.values(SAMPLE_PROFILES);
-      const profile = profiles[currentProfileIndex];
-      
-      const message = `Hi! ${profile.additionalInfo} I'm ${profile.age} years old, ${profile.sex}, ${profile.weight} lbs, ${profile.height} inches tall. My main goal is ${profile.trainingGoal.replace('_', ' ')}. I can train ${profile.daysAvailable} days per week and have about ${profile.dailyBudget} minutes per session. I prefer ${profile.trainingPreferences.join(', ')} for workouts.`;
-      
-      setInputValue(message);
-      setCurrentProfileIndex(() => Math.floor(Math.random() * profiles.length));
-      // incremental version
-      // setCurrentProfileIndex((prev) => (prev + 1) % profiles.length);
+
+    // Check for test=true in URL params
+    let isTest = false;
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      isTest = urlParams.get('test') === 'true';
     }
 
-    if ((e.key === 'd' || e.key === 'D') && e.shiftKey) {
-      e.preventDefault();
-      loadDemoProgram();
+    if (isTest) {      
+      if ((e.key === 'p' || e.key === 'P') && (e.shiftKey)) {
+        e.preventDefault();
+        const profiles = Object.values(SAMPLE_PROFILES);
+        const profile = profiles[currentProfileIndex];
+        
+        const message = `Hi! ${profile.additionalInfo} I'm ${profile.age} years old, ${profile.sex}, ${profile.weight} lbs, ${profile.height} inches tall. My main goal is ${profile.trainingGoal.replace('_', ' ')}. I can train ${profile.daysAvailable} days per week and have about ${profile.dailyBudget} minutes per session. I prefer ${profile.trainingPreferences.join(', ')} for workouts.`;
+        
+        setInputValue(message);
+        setCurrentProfileIndex(() => Math.floor(Math.random() * profiles.length));
+        // incremental version
+        // setCurrentProfileIndex((prev) => (prev + 1) % profiles.length);
+      }
+
+      if ((e.key === 'd' || e.key === 'D') && e.shiftKey) {
+        e.preventDefault();
+        loadDemoProgram();
+      }
     }
   };
-
-  // todo: can likely remove
-  // const handleOpenUpsellModal = () => {
-  //   setIsUpsellOpen(true);
-  // };
-
-  // const handleCloseUpsellModal = () => {
-  //   setIsUpsellOpen(false);
-  // };
 
   const handleSaveProgram = async () => {
     if (!program) return;
@@ -708,7 +708,7 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
               autoFocus={true}
               className="w-full p-4 border rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none transition-all duration-300"
             />
-            <div className="absolute bottom-2 right-2 text-xs text-gray-400 space-x-4">
+            <div className="absolute bottom-2 right-2 text-xs text-gray-400 space-x-4 hidden">
               <span>⌘ + Return</span>
               <span className="opacity-50">⌥P for sample</span>
               {!program && <span className="opacity-50">⇧D for demo program</span>}
