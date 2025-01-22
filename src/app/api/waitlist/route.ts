@@ -4,7 +4,8 @@ import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
   try {
-    const { email, cookie } = await req.json()
+    const { email, source } = await req.json()
+    const cookie = req.headers.get('cookie')
 
     // Basic validation
     if (!email || !email.includes('@')) {
@@ -24,8 +25,7 @@ export async function POST(req: Request) {
       },
       create: {
         email,
-        source: 'landing_page',
-        // status: 'active',
+        source: source || 'landing_page',
         cookie,
       },
     })

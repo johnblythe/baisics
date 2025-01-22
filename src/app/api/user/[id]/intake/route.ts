@@ -78,13 +78,11 @@ export async function POST(
 ) {
   try {
     const {id: userId} = await params;
-    console.log("🚀 ~ userId:", userId)
     if (!userId) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
 
     const payload = (await request.json()) as IntakePayload;
-    console.log("🚀 ~ payload:", payload)
 
     // Store extra data as JSON in additionalInfo
     const extraData = {
@@ -118,7 +116,6 @@ export async function POST(
       trainingPreferences,
       additionalInfo: JSON.stringify(extraData),
     };
-    console.log("🚀 ~ intakeData:", intakeData)
 
     const savedIntake = await prisma.userIntake.upsert({
       where: { userId },

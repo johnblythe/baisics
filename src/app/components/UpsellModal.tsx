@@ -93,30 +93,6 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
 
       setIsLoading(true);
 
-      // Critical path: Create purchase session if premium
-      let purchaseSessionId;
-      if (isPremium) {
-        try {
-          const sessionResponse = await fetch('/api/purchase-sessions', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ userId }),
-          });
-
-          if (!sessionResponse.ok) {
-            throw new Error('Failed to create purchase session');
-          }
-
-          const { sessionId } = await sessionResponse.json();
-          purchaseSessionId = sessionId;
-        } catch (error) {
-          console.error('Purchase session error:', error);
-          throw new Error('Failed to start purchase process');
-        }
-      }
-
       // Critical path: Update user
       const response = await updateUser(userId, { 
         email,
@@ -127,46 +103,38 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
         setShowConfetti(true);
         onEmailSubmit(email);
 
-        // Trigger PDF generation for free users
-        if (!isPremium) {
-          onSuccessfulSubmit?.();
+        // Trigger PDF generation for all users now
+        onSuccessfulSubmit?.();
+
+        // Store premium waitlist info if premium
+        if (isPremium) {
+          try {
+            await fetch('/api/waitlist', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ 
+                email,
+                source: 'premium_waitlist',
+                status: 'active',
+              })
+            });
+          } catch (error) {
+            console.error('Error adding to premium waitlist:', error);
+            // Don't throw - this is non-critical
+          }
         }
 
-        // Handle Stripe redirect for premium users
-        if (isPremium && purchaseSessionId) {
-          const stripeUrl = `${process.env.NEXT_PUBLIC_STRIPE_LINK}?` + 
-            new URLSearchParams({
-              prefilled_email: email,
-              utm_content: purchaseSessionId,
-            }).toString();
-          
-          // Create a button to handle the redirect
-          const redirectButton = document.createElement('button');
-          redirectButton.style.display = 'none';
-          document.body.appendChild(redirectButton);
-          
-          redirectButton.onclick = () => {
-            window.location.href = stripeUrl;
-          };
-          
-          // Trigger the click after a short delay
-          setTimeout(() => {
-            redirectButton.click();
-            document.body.removeChild(redirectButton);
-          }, 100);
-        } else {
-          // Close modal for free users after a short delay
-          setTimeout(() => {
-            onClose();
-          }, 1500); // Give time for confetti animation
-        }
+        // Close modal after a short delay for all users
+        setTimeout(() => {
+          onClose();
+        }, 1500); // Give time for confetti animation
 
         // Non-critical path: Send emails asynchronously
         Promise.all([
           // Welcome email
           sendEmailAction({
             to: email,
-            subject: isPremium ? 'Welcome to Baisics Premium!' : 'Welcome to Baisics!',
+            subject: isPremium ? 'Welcome to Baisics Premium Waitlist!' : 'Welcome to Baisics!',
             html: isPremium 
               ? welcomePremiumTemplate()
               : welcomeFreeTemplate({ upgradeLink: process.env.NEXT_PUBLIC_STRIPE_LINK, programLink: `${process.env.NEXT_PUBLIC_APP_URL}/hi?userId=${userId}&programId=${programId}` })
@@ -175,7 +143,7 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
           // Admin notification
           sendEmailAction({
             to: process.env.NEXT_PUBLIC_ADMIN_EMAIL!,
-            subject: `New ${isPremium ? 'Premium' : 'Free'} User Signup: ${email}`,
+            subject: `New ${isPremium ? 'Premium Waitlist' : 'Free'} User Signup: ${email}`,
             html: adminSignupNotificationTemplate({
               userEmail: email,
               isPremium,
@@ -186,9 +154,9 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
         ]);
       } else if (response.error === 'EMAIL_EXISTS') {
         if (isPremium) {
-          setPremiumEmailError("This email is already registered. Please upgrade, log in, or use a different email.");
+          setPremiumEmailError("This email is already registered. Please log in or use a different email.");
         } else {
-          setFreeEmailError("This email is already registered. Please upgrade, log in, or use a different email.");
+          setFreeEmailError("This email is already registered. Please log in or use a different email.");
         }
       }
     } catch (error) {
@@ -326,7 +294,7 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
                     }
                   }}
                   disabled={isLoading}
-                  placeholder="Enter your email"
+                  placeholder="Enter your email for your free program"
                   className={`w-full p-3 border rounded-lg mb-3 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 ${
                     freeEmailError ? "border-red-500 ring-1 ring-red-500 ring-opacity-50" : ""
                   } ${validateEmail(freeEmail) && freeEmail !== "" ? "border-green-500 ring-1 ring-green-500 ring-opacity-50" : ""}`}
@@ -353,10 +321,10 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
           <div className="p-6 border rounded-xl bg-blue-50 dark:bg-gray-700 relative overflow-hidden">
             <div className="flex justify-between items-center mb-4">
               <span className="bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-medium">
-              💪 Premium Access
+                💪 Premium Access
               </span>
               <span className="bg-yellow-400 text-gray-900 px-4 py-1 rounded-full text-sm font-extrabold">
-                MOST POPULAR
+                COMING SOON
               </span>
             </div>
             <h3 className="text-2xl font-bold mb-4">Unlock Your Best Self</h3>
@@ -390,11 +358,7 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
               </li>
               <li className="flex items-center">
                 <span className="text-green-500 mr-2">✓</span>
-                And lots more! New features coming soon!
-              </li>
-              <li className="flex items-center">
-                <span className="text-green-500 mr-2">✓</span>
-                More affordable than even Planet Fitness!
+                And more to come!
               </li>
             </ul>
             <form onSubmit={async (e) => {
@@ -407,6 +371,16 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
                 }
               }
             }}>
+              <div className="bg-indigo-100 dark:bg-indigo-900/50 p-4 rounded-lg mb-4">
+                <p className="text-sm text-indigo-800 dark:text-indigo-200">
+                  🚀 <b>Launching soon!</b> Sign up to:
+                </p>
+                <ul className="text-sm text-indigo-700 dark:text-indigo-300 mt-2 space-y-1">
+                  <li>&bull; Be the first to know when we launch</li>
+                  <li>&bull; Receive exclusive early-bird pricing</li>
+                  <li>&bull; Limited spots in Beta, don&apos;t miss out!</li>
+                </ul>
+              </div>
               <input
                 type="email"
                 value={premiumEmail}
@@ -419,7 +393,7 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
                     setPremiumEmailError("Please enter a valid email address");
                   }
                 }}
-                placeholder="Enter your email"
+                placeholder="Here&apos;s my email, pick me!"
                 className={`w-full p-3 border rounded-lg mb-3 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 ${
                   premiumEmailError ? "border-red-500 ring-1 ring-red-500 ring-opacity-50" : ""
                 } ${validateEmail(premiumEmail) && premiumEmail !== "" ? "border-green-500 ring-1 ring-green-500 ring-opacity-50" : ""}`}
@@ -433,11 +407,11 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
                 disabled={isLoading}
                 className="w-full px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                {isLoading ? <LoadingSpinner /> : <strong>Upgrade Now - $10/month</strong>}
+                {isLoading ? <LoadingSpinner /> : <strong>Notify me when premium launches! 🚀</strong>}
               </button>
             </form>
             <p className="text-center text-sm mt-3 text-gray-600 dark:text-gray-400">
-              Cancel anytime. Keep everything you&apos;ve built.
+              Get your free program now, upgrade when we launch!
             </p>
           </div>
         </div>
