@@ -107,7 +107,9 @@ export async function POST(
     const intakeData = {
       userId,
       sex: mapGenderToSex(payload.gender.value),
-      trainingGoal: payload.goals.value,
+      trainingGoal: Array.isArray(payload.goals.value) 
+        ? payload.goals.value.join(',') 
+        : payload.goals.value,
       daysAvailable: parseInt(payload.daysPerWeek.value),
       dailyBudget: parseInt(payload.timePerDay.value),
       age: parseInt(payload.age.value),
