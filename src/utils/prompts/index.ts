@@ -86,7 +86,7 @@ Weight must be between 50-500 lbs (23-227 kg). Accepted formats:
 Invalid weights will result in confidence=0
 Sex must be explicitly stated as "male", "female", or "other"
 Training goals must be one or more of:
-• muscle_gain
+• muscle gain
 • fat loss
 • strength
 • endurance

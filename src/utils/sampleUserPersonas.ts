@@ -1,12 +1,12 @@
 export type Sex = 'man' | 'woman' | 'other' | 'male' | 'female';
 export type TrainingGoal = 
-  | 'muscle_gain'
-  | 'fat_loss'
+  | 'muscle gain'
+  | 'fat loss'
   | 'strength'
   | 'endurance'
   | 'health'
   | 'mobility'
-  | 'athletic_performance'
+  | 'athletic performance'
   | 'rehabilitation';
 
 export type TrainingPreference = 
@@ -46,7 +46,7 @@ export interface UserProfile {
 export const SAMPLE_PROFILES: Record<string, UserProfile> = {
   sarahChen: {
     sex: "female",
-    trainingGoal: "fat_loss",
+    trainingGoal: "fat loss",
     daysAvailable: 3,
     trainingPreferences: ["machines", "low impact", "home workouts"],
     age: 31,
@@ -58,7 +58,7 @@ export const SAMPLE_PROFILES: Record<string, UserProfile> = {
   
   marcusThompson: {
     sex: "male",
-    trainingGoal: "athletic_performance",
+    trainingGoal: "athletic performance",
     daysAvailable: 5,
     trainingPreferences: ["free weights", "plyometrics", "functional training"],
     age: 42,
@@ -94,7 +94,7 @@ export const SAMPLE_PROFILES: Record<string, UserProfile> = {
 
   alexRivera: {
     sex: "male",
-    trainingGoal: "muscle_gain",
+    trainingGoal: "muscle gain",
     daysAvailable: 4,
     trainingPreferences: ["free weights", "machines", "resistance"],
     age: 23,
@@ -142,7 +142,7 @@ export const SAMPLE_PROFILES: Record<string, UserProfile> = {
 
   miguelTorres: {
     sex: "male",
-    trainingGoal: "fat_loss",
+    trainingGoal: "fat loss",
     daysAvailable: 3,
     trainingPreferences: ["high intensity", "group classes", "functional training"],
     age: 38,
@@ -166,7 +166,7 @@ export const SAMPLE_PROFILES: Record<string, UserProfile> = {
 
   jamesOConnor: {
     sex: "male",
-    trainingGoal: "muscle_gain",
+    trainingGoal: "muscle gain",
     daysAvailable: 5,
     trainingPreferences: ["free weights", "resistance", "machines"],
     age: 32,
@@ -190,7 +190,7 @@ export const SAMPLE_PROFILES: Record<string, UserProfile> = {
 
   thomasWilson: {
     sex: "male",
-    trainingGoal: "fat_loss",
+    trainingGoal: "fat loss",
     daysAvailable: 3,
     trainingPreferences: ["machines", "low impact", "swimming"],
     age: 58,
@@ -202,7 +202,7 @@ export const SAMPLE_PROFILES: Record<string, UserProfile> = {
 
   kellyNguyen: {
     sex: "female",
-    trainingGoal: "athletic_performance",
+    trainingGoal: "athletic performance",
     daysAvailable: 6,
     trainingPreferences: ["plyometrics", "free weights", "running"],
     age: 25,
@@ -225,7 +225,7 @@ export const SAMPLE_PROFILES: Record<string, UserProfile> = {
   },
   athleteProfile: {
     sex: "male" as Sex,
-    trainingGoal: "muscle_gain" as TrainingGoal,
+    trainingGoal: "muscle gain" as TrainingGoal,
     daysAvailable: 5,
     trainingPreferences: [
       "resistance",
@@ -242,7 +242,7 @@ export const SAMPLE_PROFILES: Record<string, UserProfile> = {
   },
   beginnerProfile: {
     sex: "female" as Sex,
-    trainingGoal: "weight_loss" as TrainingGoal,
+    trainingGoal: "weight loss" as TrainingGoal,
     daysAvailable: 3,
     trainingPreferences: ["machines", "cardio", "yoga"] as TrainingPreference[],
     age: 35,
