@@ -362,7 +362,6 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
       }
 
       const { program: savedProgram, programId } = await saveResponse.json();
-      console.log("🚀 ~ handleInitialIntake ~ savedProgram:", savedProgram)
       setProgram(savedProgram);
       setIsGeneratingProgram(false);
       router.replace(`/hi?userId=${userId}&programId=${programId}`);
