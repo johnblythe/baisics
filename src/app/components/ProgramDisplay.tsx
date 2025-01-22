@@ -70,7 +70,6 @@ export function ProgramDisplay({
       const userId = new URLSearchParams(window.location.search).get('userId');
       if (userId) {
         const result = await getUser(userId);
-        console.log("🚀 ~ fetchUser ~ result:", result)
         if (result.success && result.user) {
           setUser(result.user);
           setUserEmail(result.user.email);
