@@ -20,16 +20,22 @@ export async function sendMessage(
       max_tokens: 4096,
     });
 
+    if (!userId) {
+      console.warn('No userId provided for prompt logging');
+      return { success: true, data: response };
+    }
+
     await prisma.promptLog.create({
       data: {
-        userId: userId || '',
-        success: response.type === 'message' ? true : false,
         prompt: JSON.stringify(messages),
         response: JSON.stringify(response.content),
+        success: response.type === 'message' ? true : false,
         model: process.env.SONNET_MODEL!,
         inputTokens: response.usage?.input_tokens,
         outputTokens: response.usage?.output_tokens,
-        // user: { connect: { id: userId } },
+        user: {
+          connect: { id: userId }
+        }
       }
     });
 

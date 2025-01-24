@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
-import { v4 as uuidv4 } from "uuid";
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { createAnonUser, getUser, getUserProgram } from "../../start/actions";
+import { getUser, getUserProgram } from "../../start/actions";
 import { User } from "@prisma/client";
 import { ConversationalInterface } from "./ConversationalInterface";
 import Link from "next/link";
@@ -16,13 +15,10 @@ function ConversationalIntakeContent() {
   const [user, setUser] = useState<User | null>(null);
   const [program, setProgram] = useState<Program | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isInitialized, setIsInitialized] = useState(false);
 
-  // fist-time initialization from URL
+  // Only handle URL parameters, don't create new users
   useEffect(() => {
-    if (isInitialized) return;
-
-    const initializeUser = async () => {
+    const initializeFromUrl = async () => {
       const urlUserId = searchParams.get("userId");
       const urlProgramId = searchParams.get("programId");
       
@@ -40,31 +36,15 @@ function ConversationalIntakeContent() {
             }
           }
         }
-      } else {
-        const newUserId = uuidv4();
-        const result = await createAnonUser(newUserId);
-        if (result.success && result.user) {
-          setUserId(result.user.id);
-          setUser(result.user);
-          router.replace(`/hi?userId=${result.user.id}`);
-        }
       }
       setIsLoading(false);
-      setIsInitialized(true);
     };
 
-    initializeUser();
-  }, 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  []);
+    initializeFromUrl();
+  }, [searchParams]);
 
   const handleProgramChange = (newProgram: Program | null) => {
     setProgram(newProgram);
-    // if (newProgram?.id && userId) {
-    //   // Use replace instead of push to avoid refresh
-    //   const newUrl = `/hi?userId=${userId}&programId=${newProgram.id}`;
-    //   router.replace(newUrl);
-    // }
   };
 
   if (isLoading) {
@@ -89,13 +69,13 @@ function ConversationalIntakeContent() {
         <div className="fixed bottom-4 right-4 opacity-50 hover:opacity-100 transition-opacity">
           <Link
             href="/hi"
-          onClick={(e) => {
-            e.preventDefault();
-            window.location.href = '/hi';
-          }}
-          className="px-3 py-1 text-xs bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors"
-        >
-          New Session
+            onClick={(e) => {
+              e.preventDefault();
+              window.location.href = '/hi';
+            }}
+            className="px-3 py-1 text-xs bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors"
+          >
+            New Session
           </Link>
         </div>
       )}
