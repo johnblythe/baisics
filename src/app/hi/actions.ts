@@ -73,11 +73,13 @@ export async function processUserMessage(
       // Save confidence scores in prompt log for analysis
       await prisma.promptLog.create({
         data: {
-          userId,
           prompt: 'Initial intake analysis',
           response: JSON.stringify(extractedData?.confidence || {}),
           model: process.env.SONNET_MODEL!,
-          success: true
+          success: true,
+          user: {
+            connect: { id: userId }
+          }
         }
       });
 

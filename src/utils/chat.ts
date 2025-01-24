@@ -25,19 +25,19 @@ export async function sendMessage(
       return { success: true, data: response };
     }
 
-    await prisma.promptLog.create({
-      data: {
-        prompt: JSON.stringify(messages),
-        response: JSON.stringify(response.content),
-        success: response.type === 'message' ? true : false,
-        model: process.env.SONNET_MODEL!,
-        inputTokens: response.usage?.input_tokens,
-        outputTokens: response.usage?.output_tokens,
-        user: {
-          connect: { id: userId }
-        }
-      }
-    });
+    // await prisma.promptLog.create({
+    //   data: {
+    //     prompt: JSON.stringify(messages),
+    //     response: JSON.stringify(response.content),
+    //     success: response.type === 'message' ? true : false,
+    //     model: process.env.SONNET_MODEL!,
+    //     inputTokens: response.usage?.input_tokens,
+    //     outputTokens: response.usage?.output_tokens,
+    //     user: {
+    //       connect: { id: userId }
+    //     }
+    //   }
+    // });
 
     return { success: true, data: response }
   } catch (error) {

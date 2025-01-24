@@ -734,7 +734,7 @@ export function ConversationalInterface({ userId, user, initialProgram, onProgra
             disabled={!inputValue.trim() || isTyping}
             className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-lg rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:-translate-y-0.5"
           >
-            {!extractedData && !messages ? "Share Your Story" : "Tell me more"}
+            {!extractedData || !messages ? "Share Your Story" : "Tell me more"}
           </button>
         </div>
       </form>
@@ -742,65 +742,68 @@ export function ConversationalInterface({ userId, user, initialProgram, onProgra
   };
 
   return (
-    <div className={`flex flex-col min-h-[80vh] bg-gradient-to-b from-white via-indigo-50/30 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-xl shadow-xl ${program ? 'max-w-full' : 'max-w-3xl mx-auto'}`}>
-      {program ? (
-        <ProgramDisplay 
-          program={program} 
-          userEmail={localUser?.email}
-          onRequestUpsell={() => setIsUpsellOpen(!isUpsellOpen)}
-          isUpsellOpen={isUpsellOpen}
-          onCloseUpsell={() => setIsUpsellOpen(false)}
-          onUploadImages={handleUploadImages}
-          onDeleteImage={handleDeleteImage}
-        />
-      ) : showDataReview && extractedData ? (
-        <DataReviewTransition
-          intakeData={extractedData}
-          onConfirm={handleDataReviewConfirm}
-          onRequestMore={handleRequestMoreDetails}
-        />
-      ) : isGeneratingProgram ? (
-        <GeneratingProgramTransition />
-      ) : (
-        <div className="flex-1 overflow-y-auto p-8 space-y-8 messages-container">
-          <AnimatePresence>
-            {messages.map((message, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className={`flex ${message.role === "assistant" ? "justify-start" : "justify-end"}`}
-              >
-                <div
-                  className={`max-w-[85%] p-6 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 ${
-                    message.role === "assistant"
-                      ? "bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700"
-                      : "bg-gradient-to-r from-indigo-600 to-purple-600 text-white"
-                  }`}
-                >
-                  <p className="whitespace-pre-wrap text-lg leading-relaxed">{message.content}</p>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-          
-          {isTyping && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex items-center space-x-2 text-indigo-600"
-            >
-              <div className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce" />
-              <div className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }} />
-              <div className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce" style={{ animationDelay: "0.4s" }} />
-            </motion.div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
-      )}
 
-      {renderFormSection()}
-    </div>
+      <div className={`flex flex-col min-h-[80vh] bg-gradient-to-b from-white via-indigo-50/30 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-xl shadow-xl ${program ? 'max-w-full' : 'max-w-3xl mx-auto'}`}>
+     
+        {program ? (
+          <ProgramDisplay 
+            program={program} 
+            userEmail={localUser?.email}
+            onRequestUpsell={() => setIsUpsellOpen(!isUpsellOpen)}
+            isUpsellOpen={isUpsellOpen}
+            onCloseUpsell={() => setIsUpsellOpen(false)}
+            onUploadImages={handleUploadImages}
+            onDeleteImage={handleDeleteImage}
+          />
+        ) : showDataReview && extractedData ? (
+          <DataReviewTransition
+            intakeData={extractedData}
+            onConfirm={handleDataReviewConfirm}
+            onRequestMore={handleRequestMoreDetails}
+          />
+        ) : isGeneratingProgram ? (
+          <GeneratingProgramTransition />
+        ) : (
+          <div className="flex-1 overflow-y-auto p-8 space-y-8 messages-container relative">
+            <AnimatePresence>
+              {messages.map((message, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className={`flex ${message.role === "assistant" ? "justify-start" : "justify-end"}`}
+                >
+                  <div
+                    className={`max-w-[85%] p-6 rounded-2xl shadow-lg transition-all duration-300 hover:-translate-y-0.5 ${
+                      message.role === "assistant"
+                        ? "bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-750 shadow-lg border-2 border-gray-200 dark:border-gray-700"
+                        : "bg-gradient-to-br from-indigo-600 to-purple-700 text-white shadow-xl shadow-indigo-500/25"
+                    }`}
+                  >
+                    <p className={`whitespace-pre-wrap text-lg leading-relaxed ${message.role === "assistant" ? "text-gray-800 dark:text-gray-100" : "text-white"}`}>{message.content}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+            
+            {isTyping && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex items-center space-x-2 text-indigo-600 dark:text-indigo-400"
+              >
+                <div className="w-2.5 h-2.5 bg-current rounded-full animate-bounce" />
+                <div className="w-2.5 h-2.5 bg-current rounded-full animate-bounce" style={{ animationDelay: "0.2s" }} />
+                <div className="w-2.5 h-2.5 bg-current rounded-full animate-bounce" style={{ animationDelay: "0.4s" }} />
+              </motion.div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+        )}
+
+        {renderFormSection()}
+      </div>
+
   );
 } 
