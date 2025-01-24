@@ -56,19 +56,20 @@ interface ConversationalInterfaceProps {
   onProgramChange?: (program: Program | null) => void;
 }
 
-export function ConversationalInterface({ userId, user, initialProgram }: ConversationalInterfaceProps) {
+export function ConversationalInterface({ userId, user, initialProgram, onProgramChange }: ConversationalInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [extractedData, setExtractedData] = useState<IntakeFormData | null>(null);
   const [program, setProgram] = useState<Program | null>(null);
-  // const [initialProgram, setInitialProgram] = useState<Program | null>(null);
   const [isGeneratingProgram, setIsGeneratingProgram] = useState(false);
   const [isUpsellOpen, setIsUpsellOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [currentProfileIndex, setCurrentProfileIndex] = useState(Math.floor(Math.random() * Object.keys(SAMPLE_PROFILES).length));
   const [isSaving, setIsSaving] = useState(false);
   const [showDataReview, setShowDataReview] = useState(false);
+  const [localUserId, setLocalUserId] = useState(userId);
+  const [localUser, setLocalUser] = useState(user);
 
   const router = useRouter();
   
@@ -133,7 +134,7 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
     setIsGeneratingProgram(true);
     const result = await processModificationRequest(
       [...messages, userMessage],
-      userId,
+      localUserId,
       program,
       inputValue
     );
@@ -171,7 +172,7 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
   };
 
   // Work on getting the right data from the user to generate a program
-  const handleInitialIntake = async (userMessage: Message) => {
+  const handleInitialIntake = async (userMessage: Message, userId: string) => {
     const result = await processUserMessage([...messages, userMessage], userId);
         
     if (result.success) {
@@ -211,7 +212,7 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
 
     // save the user's intake data
     try {
-      const intakeResponse = await fetch(`/api/user/${userId}/intake`, {
+      const intakeResponse = await fetch(`/api/user/${localUserId}/intake`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(extractedData)
@@ -232,7 +233,7 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
       const structureResponse = await fetch('/api/program-creation/structure', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ intakeData: extractedData, userId })
+        body: JSON.stringify({ intakeData: extractedData, userId: localUserId })
       });
       const { programStructure } = await structureResponse.json();
 
@@ -248,7 +249,7 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
         body: JSON.stringify({ 
           intakeData: extractedData,
           programStructure,
-          userId
+          userId: localUserId
         })
       });
       const { workoutStructure } = await workoutResponse.json();
@@ -271,7 +272,7 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
           programStructure,
           workoutStructure,
           phase,
-          userId
+          userId: localUserId
         })
       });
       const { phaseDetails } = await phaseResponse.json();
@@ -284,7 +285,7 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
           intakeData: extractedData,
           programStructure,
           phase,
-          userId
+          userId: localUserId
         })
       });
       const { nutrition } = await nutritionResponse.json();
@@ -300,7 +301,7 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
             programStructure,
             workoutStructure,
             dayNumber: i + 1,
-            userId
+            userId: localUserId
           })
         });
         const { workoutFocus } = await focusResponse.json();
@@ -314,7 +315,7 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
             programStructure,
             workoutStructure,
             workoutFocus,
-            userId
+            userId: localUserId
           })
         });
         const { exercises } = await exercisesResponse.json();
@@ -341,8 +342,8 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
         description: programStructure.description,
         workoutPlans: [workoutDetails],
         user: {
-          id: userId,
-          email: user?.email || null,
+          id: localUserId,
+          email: localUser?.email || null,
           password: null,
           isPremium: false,
           createdAt: new Date(),
@@ -364,7 +365,7 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
       const { program: savedProgram, programId } = await saveResponse.json();
       setProgram(savedProgram);
       setIsGeneratingProgram(false);
-      router.replace(`/hi?userId=${userId}&programId=${programId}`);
+      router.replace(`/hi?userId=${localUserId}&programId=${programId}`);
 
     } catch (error) {
       console.error('Error generating program:', error);
@@ -407,10 +408,24 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
     setIsTyping(true);
 
     try {
+      // Initialize user if this is their first message and they don't have a user ID
+      const newUserId = uuidv4();
+      if (!localUserId) {
+        const result = await createAnonUser(newUserId);
+        if (result.success && result.user) {
+          setLocalUserId(result.user.id);
+          setLocalUser(result.user);
+          router.replace(`/hi?userId=${result.user.id}`);
+        } else {
+          throw new Error("Failed to create new user");
+        }
+      }
+
       if (program) {
         await handleProgramModification(userMessage, program);
       } else {
-        await handleInitialIntake(userMessage);
+        // Pass the local user ID that we just created or already had
+        await handleInitialIntake(userMessage, newUserId);
       }
     } catch (error) {
       console.error("Failed to send message:", error);
@@ -466,7 +481,7 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
     setIsSaving(true);
     try {
       // @ts-ignore
-      const savedProgram = await createNewProgram(program, userId);
+      const savedProgram = await createNewProgram(program, localUserId);
       if (savedProgram) {
         // @ts-ignore
         setProgram(savedProgram);
@@ -487,7 +502,7 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
   };
 
   const demoUser = async () => {
-    if (!userId) {
+    if (!localUserId) {
       const newUserId = uuidv4();
       const result = await createAnonUser(newUserId);
       if (result.success && result.user) {
@@ -496,9 +511,9 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
       throw new Error('Failed to create anonymous user');
     }
 
-    const result = await getUser(userId);
+    const result = await getUser(localUserId);
     if (!result.success || !result.user) {
-      const createResult = await createAnonUser(userId);
+      const createResult = await createAnonUser(localUserId);
       if (!createResult.success || !createResult.user) {
         throw new Error('Failed to create/get user');
       }
@@ -540,11 +555,11 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
           id: `draft-${Date.now()}`,
           name: exampleProgram.programName,
           description: exampleProgram.programDescription,
-          createdBy: userId,
+          createdBy: localUserId,
           createdAt: new Date(),
           updatedAt: new Date(),
           user: {
-            id: userId,
+            id: localUserId,
             email: user?.email || "",
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -553,7 +568,7 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
           },
           workoutPlans: exampleProgram.phases.map(phase => ({
             id: `phase-${phase.phase}`,
-            userId,
+            userId: localUserId,
             programId: `draft-${Date.now()}`,
             phase: phase.phase,
             bodyFatPercentage: phase.bodyComposition.bodyFatPercentage,
@@ -616,7 +631,7 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
             resolve({
               fileName: file.name,
               base64Data: reader.result as string,
-              userId: userId,
+              userId: localUserId,
               programId: program?.id,
             });
           };
@@ -703,7 +718,7 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Share your fitness journey and goals..."
+              placeholder={!extractedData && !messages ? "Share your fitness journey and goals..." : "Keep the info coming!"}
               rows={4}
               autoFocus={true}
               className="w-full p-4 border rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none transition-all duration-300"
@@ -719,7 +734,7 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
             disabled={!inputValue.trim() || isTyping}
             className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-lg rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:-translate-y-0.5"
           >
-            Share Your Story
+            {!extractedData || !messages ? "Share Your Story" : "Tell me more"}
           </button>
         </div>
       </form>
@@ -727,65 +742,68 @@ export function ConversationalInterface({ userId, user, initialProgram }: Conver
   };
 
   return (
-    <div className={`flex flex-col min-h-[80vh] bg-gradient-to-b from-white via-indigo-50/30 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-xl shadow-xl ${program ? 'max-w-full' : 'max-w-3xl mx-auto'}`}>
-      {program ? (
-        <ProgramDisplay 
-          program={program} 
-          userEmail={user?.email}
-          onRequestUpsell={() => setIsUpsellOpen(!isUpsellOpen)}
-          isUpsellOpen={isUpsellOpen}
-          onCloseUpsell={() => setIsUpsellOpen(false)}
-          onUploadImages={handleUploadImages}
-          onDeleteImage={handleDeleteImage}
-        />
-      ) : showDataReview && extractedData ? (
-        <DataReviewTransition
-          intakeData={extractedData}
-          onConfirm={handleDataReviewConfirm}
-          onRequestMore={handleRequestMoreDetails}
-        />
-      ) : isGeneratingProgram ? (
-        <GeneratingProgramTransition />
-      ) : (
-        <div className="flex-1 overflow-y-auto p-8 space-y-8 messages-container">
-          <AnimatePresence>
-            {messages.map((message, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className={`flex ${message.role === "assistant" ? "justify-start" : "justify-end"}`}
-              >
-                <div
-                  className={`max-w-[85%] p-6 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 ${
-                    message.role === "assistant"
-                      ? "bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700"
-                      : "bg-gradient-to-r from-indigo-600 to-purple-600 text-white"
-                  }`}
-                >
-                  <p className="whitespace-pre-wrap text-lg leading-relaxed">{message.content}</p>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-          
-          {isTyping && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex items-center space-x-2 text-indigo-600"
-            >
-              <div className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce" />
-              <div className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }} />
-              <div className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce" style={{ animationDelay: "0.4s" }} />
-            </motion.div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
-      )}
 
-      {renderFormSection()}
-    </div>
+      <div className={`flex flex-col min-h-[80vh] bg-gradient-to-b from-white via-indigo-50/30 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-xl shadow-xl ${program ? 'max-w-full' : 'max-w-3xl mx-auto'}`}>
+     
+        {program ? (
+          <ProgramDisplay 
+            program={program} 
+            userEmail={localUser?.email}
+            onRequestUpsell={() => setIsUpsellOpen(!isUpsellOpen)}
+            isUpsellOpen={isUpsellOpen}
+            onCloseUpsell={() => setIsUpsellOpen(false)}
+            onUploadImages={handleUploadImages}
+            onDeleteImage={handleDeleteImage}
+          />
+        ) : showDataReview && extractedData ? (
+          <DataReviewTransition
+            intakeData={extractedData}
+            onConfirm={handleDataReviewConfirm}
+            onRequestMore={handleRequestMoreDetails}
+          />
+        ) : isGeneratingProgram ? (
+          <GeneratingProgramTransition />
+        ) : (
+          <div className="flex-1 overflow-y-auto p-8 space-y-8 messages-container relative">
+            <AnimatePresence>
+              {messages.map((message, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className={`flex ${message.role === "assistant" ? "justify-start" : "justify-end"}`}
+                >
+                  <div
+                    className={`max-w-[85%] p-6 rounded-2xl shadow-lg transition-all duration-300 hover:-translate-y-0.5 ${
+                      message.role === "assistant"
+                        ? "bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-750 shadow-lg border-2 border-gray-200 dark:border-gray-700"
+                        : "bg-gradient-to-br from-indigo-600 to-purple-700 text-white shadow-xl shadow-indigo-500/25"
+                    }`}
+                  >
+                    <p className={`whitespace-pre-wrap text-lg leading-relaxed ${message.role === "assistant" ? "text-gray-800 dark:text-gray-100" : "text-white"}`}>{message.content}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+            
+            {isTyping && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex items-center space-x-2 text-indigo-600 dark:text-indigo-400"
+              >
+                <div className="w-2.5 h-2.5 bg-current rounded-full animate-bounce" />
+                <div className="w-2.5 h-2.5 bg-current rounded-full animate-bounce" style={{ animationDelay: "0.2s" }} />
+                <div className="w-2.5 h-2.5 bg-current rounded-full animate-bounce" style={{ animationDelay: "0.4s" }} />
+              </motion.div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+        )}
+
+        {renderFormSection()}
+      </div>
+
   );
 } 
