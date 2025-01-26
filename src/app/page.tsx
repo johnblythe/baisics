@@ -670,7 +670,7 @@ export default function LandingPage() {
             </div>
             <div className="flex flex-col items-center justify-center mt-12">
               <p className="text-sm text-gray-600 dark:text-gray-300">
-                Cancel anytime. No questions asked.<br/>Need financial assistance? <a href="mailto:baisics.app@gmail.com" className="text-indigo-600 dark:text-indigo-400">Just ask.</a>
+                Cancel anytime. No questions asked.<br/>Need financial assistance? <a href="mailto:john@baisics.app" className="text-indigo-600 dark:text-indigo-400">Just ask.</a>
               </p>
             </div>
           </div>
