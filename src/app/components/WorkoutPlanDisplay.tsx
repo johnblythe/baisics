@@ -476,7 +476,7 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
                           key={exerciseId}
                           className="group relative overflow-hidden rounded-lg border border-gray-100 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-200"
                         >
-                          <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 via-transparent to-purple-50/50 dark:from-indigo-900/30 dark:via-transparent dark:to-purple-900/30 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 via-transparent to-purple-50/50 dark:from-indigo-900/30 dark:via-transparent dark:to-purple-900/30 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                           <div className="relative grid grid-cols-12 gap-4 p-4">
                             <div className="col-span-6 font-medium text-gray-900 dark:text-white flex items-center gap-2">
                               {exercise.name}
