@@ -106,7 +106,7 @@ export const createEmailLayout = ({
       display: inline-block;
       padding: 12px 24px;
       background: linear-gradient(to right, #4f46e5, #7c3aed);
-      color: #ffffff;
+      color: #ffffff !important;
       text-decoration: none;
       border-radius: 8px;
       font-weight: 500;
@@ -152,7 +152,7 @@ export const createEmailLayout = ({
       <tr>
         <td class="content">
           ${content}
-          ${!skipCTA && callToAction ? `
+          ${callToAction ? `
           <a href="${callToAction.url}" class="button">
             ${callToAction.text}
           </a>

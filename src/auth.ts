@@ -3,6 +3,8 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "./lib/prisma"
 import ForwardEmail from "next-auth/providers/forwardemail"
 import CredentialsProvider from "next-auth/providers/credentials"
+import { sendEmail } from "./lib/email"
+import { magicLinkTemplate } from "./lib/email/templates/magic-link"
 
 const development = process.env.NODE_ENV === "development"
  
@@ -17,11 +19,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
       },
       from: development ? "noreply@localhost" : process.env.EMAIL_FROM,
-      sendVerificationRequest: development
-        ? ({ url }) => {
-            console.log("🔑 Login Link:", url)
-          }
-        : undefined
+      sendVerificationRequest: async ({ identifier: email, url }) => {
+        if (development) {
+          console.log("🔑 Login Link:", url)
+        }
+        
+        const emailHtml = magicLinkTemplate({ signInLink: url })
+        await sendEmail({
+          to: email,
+          subject: 'Sign in to Baisics',
+          html: emailHtml
+        })
+      }
     }),
     CredentialsProvider({
       id: "credentials",
