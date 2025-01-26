@@ -8,6 +8,8 @@ interface EmailLayoutProps {
   };
 }
 
+const skipCTA = true;
+
 export const createEmailLayout = ({
   subject,
   preheader = '',
@@ -150,7 +152,7 @@ export const createEmailLayout = ({
       <tr>
         <td class="content">
           ${content}
-          ${callToAction ? `
+          ${!skipCTA && callToAction ? `
           <a href="${callToAction.url}" class="button">
             ${callToAction.text}
           </a>

@@ -71,7 +71,7 @@ function ConversationalIntakeContent() {
             href="/hi"
             onClick={(e) => {
               e.preventDefault();
-              window.location.href = '/hi';
+              window.location.href = '/hi?test=true';
             }}
             className="px-3 py-1 text-xs bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors"
           >

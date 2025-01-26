@@ -231,6 +231,24 @@ Provide a response ONLY in the following JSON format:
   }];
 };
 
+// Add these type definitions at the top of the file
+type ExerciseCategory = 'primary' | 'secondary' | 'isolation' | 'other';
+
+const exerciseCategoryOrder: Record<ExerciseCategory, number> = {
+  primary: 1,
+  secondary: 2,
+  isolation: 3,
+  other: 4
+};
+
+const sortExercises = (exercises: any[]): any[] => {
+  return [...exercises].sort((a, b) => {
+    const categoryA = a.category || 'other';
+    const categoryB = b.category || 'other';
+    return exerciseCategoryOrder[categoryB as ExerciseCategory] - exerciseCategoryOrder[categoryA as ExerciseCategory];
+  });
+};
+
 const formatExercisesForFocusPrompt = (
   intakeData: IntakeFormData,
   programStructure: ProgramStructure,
@@ -254,6 +272,34 @@ ${JSON.stringify(relevantData, null, 2)}
 
 Consider the workout environment (${intakeData.workoutEnvironment.primary}) and available equipment (${JSON.stringify(intakeData.equipmentAccess.available)}).
 
+!!CRITICAL - Exercise Order Requirements!!:
+IF the exercises require weights or machines, any sort of gym equipment: the exercises MUST be returned in the following order. 
+If a category is not needed for this workout, skip it and move to the next:
+
+1. PRIMARY/COMPOUND LIFTS FIRST:
+   - Any Squat variations (Back Squat, Front Squat)
+   - Any Deadlift variations (Conventional, Sumo)
+   - Bench Press variations
+   - Overhead Press variations
+   - Barbell Row variations
+   
+2. SECONDARY/VARIATION LIFTS NEXT:
+   - Split Squats, Lunges
+   - Romanian Deadlifts, Good Mornings
+   - Incline/Decline Press variations
+   - Push Press, Arnold Press variations
+   - Dumbbell Rows, Meadows Rows
+   
+3. ISOLATION/ACCESSORY WORK LAST:
+   - Leg Extensions, Calf Raises
+   - Back Extensions, Core Work
+   - Lateral Raises, Face Pulls
+   - Bicep/Tricep Isolation work
+
+This order is MANDATORY for all workouts using gym equipment.
+Primary lifts must be first, followed by secondary variations, with isolation work at the end. The exercises array must maintain this sequence.
+
+Environment Requirements:
 The following exercise environments MUST be grouped separately and cannot be mixed within the same workout session:
 - Pool/Swimming exercises
 - Yoga/Flexibility focused exercises
@@ -265,7 +311,7 @@ The following can be mixed within the same session:
 - Bodyweight exercises with equipment-based exercises
 - Different types of resistance training equipment
 
-If the workout includes exercises from different environments, they must be grouped together to minimize transitions, with a maximum of ONE environment change per workout (e.g., all gym exercises, then all pool exercises). Make sure 
+If the workout includes exercises from different environments, they must be grouped together to minimize transitions, with a maximum of ONE environment change per workout (e.g., all gym exercises, then all pool exercises).
 
 For time-based exercises, use 'seconds' for durations under 2 minutes, and 'minutes' for longer durations.
 For distance-based exercises, use 'meters' for distances under 1000m, and 'miles' for longer distances.
@@ -280,6 +326,7 @@ Provide a response ONLY in the following JSON format:
   "exercises": Array<{
     "name": string,
     "sets": number,
+    "category": "primary" | "secondary" | "isolation" | "other",
     "environment": "gym" | "pool" | "outdoor" | "yoga" | "rock-climbing" | "home" | "court" | "field" | "other",
     "measure": {
       "type": "reps" | "time" | "distance",
@@ -584,9 +631,13 @@ export const getExercisesForFocus = async (
   userId: string
 ) => {
   const response = await sendMessage(formatExercisesForFocusPrompt(intakeData, programStructure, workoutStructure, workoutFocus), userId);
-  return parseAIResponse(response, {
-    exercises: []
-  });
+  const parsedResponse = parseAIResponse(response, { exercises: [] });
+  
+  // Sort the exercises before returning
+  return {
+    ...parsedResponse,
+    exercises: sortExercises(parsedResponse.exercises)
+  };
 };
 
 export const getPhaseDetails = async (
