@@ -376,10 +376,11 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
                   🚀 <b>Launching soon!</b> Sign up to:
                 </p>
                 <ul className="text-sm text-indigo-700 dark:text-indigo-300 mt-2 space-y-1">
-                  <li>&bull; Be the first to know when we launch</li>
-                  <li>&bull; Receive exclusive early-bird pricing</li>
-                  <li>&bull; Limited spots in Beta, don&apos;t miss out!</li>
+                  <li>&bull; Be the first in line</li>
+                  <li>&bull; Receive exclusive, early-bird pricing</li>
+                  <li>&bull; Upgrade your results!</li>
                 </ul>
+                <p className="text-sm text-indigo-700 dark:text-indigo-300 mt-2 underline underline-offset-4">Limited spots in Beta, don&apos;t miss out!</p>
               </div>
               <input
                 type="email"
