@@ -248,6 +248,7 @@ export default function WorkoutPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [workoutStarted, setWorkoutStarted] = useState(false);
   const [workoutLog, setWorkoutLog] = useState<any>(null);
+  const [showCompletion, setShowCompletion] = useState(false);
 
   // Function to find first incomplete exercise/set
   const findFirstIncompletePosition = (exercises: ExerciseWithLogs[]) => {
@@ -405,7 +406,8 @@ export default function WorkoutPage() {
       );
 
       if (allSetsCompleted && currentExerciseIndex < exercises.length - 1) {
-        setCurrentExerciseIndex(prev => prev + 1);
+        // setCurrentExerciseIndex(prev => prev + 1);
+        console.log('All sets completed, moving to next exercise -- ', currentExerciseIndex + 1);
       }
 
       // Only parse JSON if we have content
@@ -426,7 +428,6 @@ export default function WorkoutPage() {
     }
   };
 
-  // @todo: add a loading state
   const completeWorkout = async () => {
     try {
       const response = await fetch(`/api/workout-logs/${workoutLog.id}/complete`, {
@@ -437,7 +438,10 @@ export default function WorkoutPage() {
         throw new Error('Failed to complete workout');
       }
 
-      router.push('/dashboard');
+      setShowCompletion(true);
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 2500);
     } catch (error) {
       console.error('Failed to complete workout:', error);
       // Optionally handle error UI feedback
@@ -450,6 +454,24 @@ export default function WorkoutPage() {
         <Header />
         <div className="flex items-center justify-center min-h-screen">
           <div className="w-6 h-6 border-t-2 border-blue-500 border-solid rounded-full animate-spin"></div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  if (showCompletion) {
+    return (
+      <>
+        <Header />
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center space-y-4 p-8 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg max-w-md mx-auto">
+            <div className="flex justify-center">
+              <CheckCircle className="w-16 h-16 text-green-500 dark:text-green-400" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Workout Complete! 🎉</h2>
+            <p className="text-gray-600 dark:text-gray-400">Great job! You&apos;ve completed your workout. Redirecting to dashboard...</p>
+          </div>
         </div>
         <Footer />
       </>

@@ -50,7 +50,6 @@ export default function RestPeriodIndicator({
     </div>
   );
 }
-
 /* Future implementation reference:
 interface RestPeriodState {
   isCountingDown: boolean;
