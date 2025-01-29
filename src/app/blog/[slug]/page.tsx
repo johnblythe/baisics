@@ -24,7 +24,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: `${post.title} | Baisics Blog`,
-    description: post.excerpt,
+    description: post.metaDescription || post.excerpt,
+    keywords: post.keywords,
   }
 }
 
@@ -40,6 +41,8 @@ function getBlogPost(slug: string) {
       title: data.title,
       date: data.date,
       excerpt: data.excerpt,
+      metaDescription: data.metaDescription,
+      keywords: data.keywords,
     }
   } catch (error) {
     return null
@@ -57,25 +60,25 @@ async function BlogPostContent({ params }: Props) {
 
   return (
     <main className="flex-grow bg-background">
-        <article className="container max-w-4xl mx-auto px-4 py-12">
-          <header className="mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">{post.title}</h1>
-            <time className="text-muted-foreground text-sm block">
-              {new Date(post.date).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
-            </time>
-          </header>
-          
-          <div className="max-w-none text-foreground">
-            <MDXContent source={mdxSource} />
-          </div>
-        </article>
-      </main>
+      <article className="container max-w-4xl mx-auto px-4 py-12">
+        <header className="mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">{post.title}</h1>
+          <time className="text-muted-foreground text-sm block">
+            {new Date(post.date).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })}
+          </time>
+        </header>
+        
+        <div className="max-w-none text-foreground">
+          <MDXContent source={mdxSource} />
+        </div>
+      </article>
+    </main>
   )
-} 
+}
 
 export default function BlogPost({ params }: Props) {
   return (

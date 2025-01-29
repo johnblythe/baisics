@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 import fs from 'fs'
 import path from 'path'
 import Link from 'next/link'
+import MainLayout from '@/app/components/layouts/MainLayout'
 
 export const metadata: Metadata = {
   title: 'Blog | Baisics',
@@ -59,7 +60,7 @@ async function getBlogPosts(): Promise<BlogPost[]> {
   )
 }
 
-export default async function BlogPage() {
+async function BlogPageContent() {
   const posts = await getBlogPosts()
 
   return (
@@ -95,3 +96,11 @@ export default async function BlogPage() {
     </div>
   )
 } 
+
+export default function BlogPage() {
+  return (
+    <MainLayout>
+      <BlogPageContent />
+    </MainLayout>
+  )
+}
