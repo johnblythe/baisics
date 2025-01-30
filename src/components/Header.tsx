@@ -17,7 +17,7 @@ export default function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center gap-3">
-            <Link href="/dashboard" className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+            <Link href={session ? "/dashboard" : "/"} className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
               baisics
             </Link>
             <span className="hidden sm:block text-sm text-gray-500 dark:text-gray-400 border-l border-gray-200 dark:border-gray-700 pl-3">
