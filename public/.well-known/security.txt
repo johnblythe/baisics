@@ -1,0 +1,11 @@
+# Security Policy for baisics.app
+Contact: mailto:john@baisics.app
+Expires: 2025-01-01T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://baisics.app/.well-known/security.txt
+Policy: https://baisics.app/security-policy
+Hiring: https://baisics.app/careers
+
+# Please report security issues responsibly
+# We aim to respond to security reports within 24 hours
+# Thank you for helping keep baisics secure! 
