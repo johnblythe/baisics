@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "vercel-build": "prisma generate && prisma migrate deploy && next build && npm run generate-sitemap",
+    "vercel-build": "prisma generate && prisma migrate deploy && next build && npm run sitemap",
     "sitemap": "ts-node scripts/generate-sitemap.ts",
     "format": "prettier --write ."
   },
