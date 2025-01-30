@@ -1,4 +1,4 @@
-const generateSitemapFn = require('../src/utils/generateSitemap');
+const generateSitemapFn = require('../utils/generateSitemap');
 
 // Generate sitemap
 generateSitemapFn()
