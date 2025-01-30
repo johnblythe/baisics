@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { CheckCircle, Pencil, Circle } from 'lucide-react';
+import { CheckCircle, Pencil, Circle, PlayCircle } from 'lucide-react';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import TawkChat from "@/components/TawkChat";
 import { formatExerciseMeasure, formatExerciseUnit } from '@/utils/formatters';
-import { ExerciseMeasureType } from '@prisma/client';
+// import { ExerciseMeasureType } from '@prisma/client';
+import RestPeriodIndicator from '@/app/components/RestPeriodIndicator';
 
 interface Exercise {
   id: string;
@@ -20,6 +21,7 @@ interface Exercise {
     unit: string;
     type: string;
   };
+    videoUrl?: string;
 }
 
 interface SetLog {
@@ -28,7 +30,6 @@ interface SetLog {
   reps: number;
   notes?: string;
   isCompleted?: boolean;
-  restCompleted?: boolean;
 }
 
 interface ExerciseWithLogs extends Exercise {
@@ -42,11 +43,6 @@ const SetInput = ({
   exercise,
   onComplete, 
   onUpdate,
-  isResting,
-  restTimeRemaining,
-  onSkipRest,
-  showRestIndicator,
-  onRestComplete,
   isActive,
   previousSetWeight,
   isLastSetOfWorkout
@@ -55,80 +51,127 @@ const SetInput = ({
   exercise: Exercise;
   onComplete: (data: Partial<SetLog>) => void;
   onUpdate: (data: Partial<SetLog>) => void;
-  isResting?: boolean;
-  restTimeRemaining?: number;
-  onSkipRest?: () => void;
-  showRestIndicator?: boolean;
-  onRestComplete?: () => void;
   isActive?: boolean;
   previousSetWeight?: number;
   isLastSetOfWorkout?: boolean;
 }) => {
   const [localWeight, setLocalWeight] = useState(
-    exercise.measureType !== 'REPS' ? '0' : (log.weight?.toString() || previousSetWeight?.toString() || '')
+    log.weight?.toString() || previousSetWeight?.toString() || ''
   );
   const [localReps, setLocalReps] = useState(log.reps?.toString() || '');
   const [localNotes, setLocalNotes] = useState(log.notes || '');
   
   // Update local state when log prop changes
   useEffect(() => {
-    setLocalWeight(exercise.measureType !== 'REPS' ? '0' : (log.weight?.toString() || previousSetWeight?.toString() || ''));
+    setLocalWeight(log.weight?.toString() || previousSetWeight?.toString() || '');
     setLocalReps(log.reps?.toString() || '');
     setLocalNotes(log.notes || '');
-  }, [log, exercise, previousSetWeight]);
+  }, [log, previousSetWeight]);
   
   const canComplete = localWeight && localReps;
 
   return (
     <div className="space-y-2">
       <div 
-        className={`relative p-4 rounded-xl transition-all duration-300 group
+        className={`relative p-4 rounded-2xl transition-all duration-300 group
           ${log.isCompleted 
-            ? 'bg-green-50/50 dark:bg-green-900/20 border border-green-200 dark:border-green-800' 
-            : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-indigo-200 dark:hover:border-indigo-700 hover:shadow-lg'
+            ? 'bg-green-50/50 dark:bg-green-900/20 border-2 border-green-200/50 dark:border-green-800/50' 
+            : isActive
+              ? 'bg-white dark:bg-gray-800 border-2 border-indigo-200/50 dark:border-indigo-800/50 shadow-lg shadow-indigo-500/10'
+              : 'bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700'
           }
-          ${isResting ? 'scale-95 opacity-50' : 'scale-100 opacity-100'}
-          ${isActive && !!showRestIndicator ? 'border-indigo-200 dark:border-indigo-700 shadow-lg' : ''}
         `}
       >
-        <div className={`absolute -inset-px bg-gradient-to-r from-indigo-500/5 via-purple-500/5 to-indigo-500/5 dark:from-indigo-400/5 dark:via-purple-400/5 dark:to-indigo-400/5 rounded-xl transition-opacity duration-500 ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
+        <div className={`absolute -inset-px rounded-2xl transition-opacity duration-500 bg-gradient-to-r
+          ${log.isCompleted
+            ? 'from-green-100/10 via-green-50/5 to-green-100/10 dark:from-green-900/10 dark:via-green-800/5 dark:to-green-900/10'
+            : isActive
+              ? 'from-indigo-100/20 via-violet-50/10 to-indigo-100/20 dark:from-indigo-900/20 dark:via-violet-800/10 dark:to-indigo-900/20 opacity-100'
+              : 'from-gray-50/10 to-gray-100/10 dark:from-gray-800/10 dark:to-gray-700/10 opacity-0 group-hover:opacity-100'
+          }`} 
+        />
         
-        <div className="relative flex items-center gap-4">
-          <div className="w-6">
-            {log.isCompleted ? (
-              <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-500" />
-            ) : (
-              <Circle className="w-3 h-3 text-gray-300 dark:text-gray-600 fill-gray-300 dark:fill-gray-600" />
-            )}
+        <div className="relative flex items-center gap-6">
+          <div className="flex items-center gap-4">
+            <div className="w-6">
+              {log.isCompleted ? (
+                <CheckCircle className="w-5 h-5 text-green-500 dark:text-green-400" />
+              ) : (
+                <Circle className={`w-3 h-3 ${isActive ? 'text-indigo-400 dark:text-indigo-300 fill-indigo-400/20 dark:fill-indigo-300/20' : 'text-gray-300 dark:text-gray-600 fill-gray-300/20 dark:fill-gray-600/20'}`} />
+              )}
+            </div>
+            
+            <span className={`font-medium ${isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-400'}`}>
+              Set {log.setNumber}
+            </span>
           </div>
           
-          <span className="font-medium text-gray-900 dark:text-white">Set {log.setNumber}</span>
-          
           <div className="flex-1 flex items-center gap-4">
-            <input
-              type="number"
-              placeholder="Weight"
-              value={localWeight}
-              onChange={(e) => setLocalWeight(e.target.value)}
-              disabled={log.isCompleted}
-              className="w-24 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent disabled:bg-gray-50 dark:disabled:bg-gray-800 disabled:text-gray-900 dark:disabled:text-gray-300"
-            />
-            <input
-              type="number"
-              placeholder={formatExerciseUnit(exercise, 'long', 'mixed')}
-              value={Number(localReps) > 0 ? localReps : ''}
-              onChange={(e) => setLocalReps(e.target.value)}
-              disabled={log.isCompleted}
-              className="w-24 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent disabled:bg-gray-50 dark:disabled:bg-gray-800 disabled:text-gray-900 dark:disabled:text-gray-300"
-            />
-            <input
-              type="text"
-              placeholder="Notes"
-              value={localNotes}
-              onChange={(e) => setLocalNotes(e.target.value)}
-              disabled={log.isCompleted}
-              className="flex-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent disabled:bg-gray-50 dark:disabled:bg-gray-800 disabled:text-gray-900 dark:disabled:text-gray-300"
-            />
+            <div className="relative group/input">
+              <input
+                type="number"
+                placeholder="Weight"
+                value={localWeight}
+                onChange={(e) => setLocalWeight(e.target.value)}
+                disabled={log.isCompleted || !isActive}
+                className={`w-24 px-3 py-2 rounded-xl text-sm transition-all duration-200
+                  ${log.isCompleted
+                    ? 'bg-green-50/50 dark:bg-green-900/20 border border-green-200/50 dark:border-green-800/50 text-green-700 dark:text-green-300'
+                    : isActive
+                      ? 'bg-white dark:bg-gray-800 border border-indigo-200 dark:border-indigo-700 focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 dark:focus:ring-indigo-400/20'
+                      : 'bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700'
+                  }
+                  disabled:opacity-60 disabled:cursor-not-allowed
+                `}
+              />
+              <div className="absolute -top-2 left-2 px-1 text-xs font-medium text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-800">
+                Weight
+              </div>
+            </div>
+
+            <div className="relative group/input">
+              <input
+                type="number"
+                placeholder={formatExerciseUnit(exercise, 'long', 'mixed')}
+                value={Number(localReps) > 0 ? localReps : ''}
+                onChange={(e) => setLocalReps(e.target.value)}
+                disabled={log.isCompleted || !isActive}
+                className={`w-24 px-3 py-2 rounded-xl text-sm transition-all duration-200
+                  ${log.isCompleted
+                    ? 'bg-green-50/50 dark:bg-green-900/20 border border-green-200/50 dark:border-green-800/50 text-green-700 dark:text-green-300'
+                    : isActive
+                      ? 'bg-white dark:bg-gray-800 border border-indigo-200 dark:border-indigo-700 focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 dark:focus:ring-indigo-400/20'
+                      : 'bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700'
+                  }
+                  disabled:opacity-60 disabled:cursor-not-allowed
+                `}
+              />
+              <div className="absolute -top-2 left-2 px-1 text-xs font-medium text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-800">
+                {formatExerciseUnit(exercise, 'long', 'mixed')}
+              </div>
+            </div>
+
+            <div className="relative group/input flex-1">
+              <input
+                type="text"
+                placeholder="Add notes..."
+                value={localNotes}
+                onChange={(e) => setLocalNotes(e.target.value)}
+                disabled={log.isCompleted || !isActive}
+                className={`w-full px-3 py-2 rounded-xl text-sm transition-all duration-200
+                  ${log.isCompleted
+                    ? 'bg-green-50/50 dark:bg-green-900/20 border border-green-200/50 dark:border-green-800/50 text-green-700 dark:text-green-300'
+                    : isActive
+                      ? 'bg-white dark:bg-gray-800 border border-indigo-200 dark:border-indigo-700 focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 dark:focus:ring-indigo-400/20'
+                      : 'bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700'
+                  }
+                  disabled:opacity-60 disabled:cursor-not-allowed
+                `}
+              />
+              <div className="absolute -top-2 left-2 px-1 text-xs font-medium text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-800">
+                Notes
+              </div>
+            </div>
           </div>
           
           {log.isCompleted ? (
@@ -139,12 +182,12 @@ const SetInput = ({
                 notes: localNotes,
                 isCompleted: false
               })}
-              className="opacity-0 group-hover:opacity-100 text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-all duration-200"
+              className="opacity-0 group-hover:opacity-100 text-indigo-500 dark:text-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300 transition-all duration-200"
             >
               <Pencil className="w-5 h-5" />
             </button>
           ) : (
-            canComplete && (
+            isActive && canComplete && (
               <button
                 onClick={() => onComplete({
                   weight: Number(localWeight),
@@ -152,81 +195,14 @@ const SetInput = ({
                   notes: localNotes,
                   isCompleted: true
                 })}
-                className="px-4 py-2 rounded-lg bg-indigo-600 dark:bg-indigo-500 text-white font-medium hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors"
+                className="px-4 py-2 rounded-xl bg-indigo-600 dark:bg-indigo-500 text-white text-sm font-medium hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors shadow-lg shadow-indigo-500/20"
               >
-                {log.isCompleted ? 'Update Set' : 'Complete Set'}
+                Complete Set
               </button>
             )
           )}
         </div>
       </div>
-
-      {/* Rest Period Indicator */}
-      {showRestIndicator && (
-        <div className={`
-          relative overflow-hidden transition-all duration-300 rounded-lg
-          ${isResting 
-            ? 'h-64 my-6 bg-gradient-to-r from-indigo-50/30 dark:from-indigo-900/20 via-transparent to-indigo-50/30 dark:to-indigo-900/20' 
-            : log.restCompleted
-              ? 'py-2 my-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
-              : 'py-2 my-2 bg-gray-50 dark:bg-gray-800'
-          }
-        `}>
-          {isResting && (
-            <div className="absolute inset-0 w-full h-full">
-              {isLastSetOfWorkout ? (
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                  <div className="text-6xl mb-4">🎉</div>
-                  <h3 className="text-2xl font-bold text-indigo-600 dark:text-indigo-400 mb-2">
-                    Amazing Work!
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300 mb-6">
-                    You&apos;ve crushed your last set and conquored this workout. Way to go!
-                  </p>
-                  <button
-                    onClick={() => {
-                      onSkipRest?.();
-                      onRestComplete?.();
-                    }}
-                    className="px-8 py-3 rounded-lg bg-green-600 dark:bg-green-500 text-white font-medium hover:bg-green-700 dark:hover:bg-green-600 transition-all duration-200 hover:scale-105 transform flex items-center gap-2 shadow-lg"
-                  >
-                    Complete Workout <span className="animate-pulse">💪</span>
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <FloatingEmojis />
-                  <div className="relative z-10 flex items-center justify-center space-x-2">
-                    <div className="relative flex flex-col items-center justify-center space-y-4 py-8">
-                      <div className="text-6xl font-bold text-indigo-600 dark:text-indigo-400">{restTimeRemaining}s</div>
-                      <div className="text-xl text-gray-600 dark:text-gray-300">Rest Period</div>
-                      <button
-                        onClick={() => {
-                          onSkipRest?.();
-                          onRestComplete?.();
-                        }}
-                        className="mt-2 px-6 py-2 rounded-lg bg-indigo-600 dark:bg-indigo-500 text-white font-medium hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200 hover:scale-105 transform flex items-center gap-2"
-                      >
-                        LFG <span className="animate-bounce">🚀</span>
-                      </button>
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-          )}
-          <div className="relative z-10 flex items-center justify-center space-x-2">
-            {!isResting && (
-              <div className="flex items-center gap-2">
-                {log.restCompleted && <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-500" />}
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Rest: {log.restCompleted ? 'Completed' : `${restTimeRemaining ?? '30'}s`}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 };
@@ -270,10 +246,9 @@ export default function WorkoutPage() {
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [exercises, setExercises] = useState<ExerciseWithLogs[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [restTimer, setRestTimer] = useState<number | null>(null);
   const [workoutStarted, setWorkoutStarted] = useState(false);
   const [workoutLog, setWorkoutLog] = useState<any>(null);
-  const [activeRestSet, setActiveRestSet] = useState<number | null>(null);
+  const [showCompletion, setShowCompletion] = useState(false);
 
   // Function to find first incomplete exercise/set
   const findFirstIncompletePosition = (exercises: ExerciseWithLogs[]) => {
@@ -358,15 +333,12 @@ export default function WorkoutPage() {
                   weight: existingSet.weight,
                   notes: existingSet.notes || '',
                   isCompleted: !!existingSet.completedAt,
-                  // Only mark rest as completed if this set is completed
-                  restCompleted: !!existingSet.completedAt
                 } : {
                   setNumber: i + 1,
                   reps: exercise.reps,
                   weight: undefined,
                   notes: '',
                   isCompleted: false,
-                  restCompleted: false
                 };
               }),
             };
@@ -434,7 +406,8 @@ export default function WorkoutPage() {
       );
 
       if (allSetsCompleted && currentExerciseIndex < exercises.length - 1) {
-        setCurrentExerciseIndex(prev => prev + 1);
+        // setCurrentExerciseIndex(prev => prev + 1);
+        console.log('All sets completed, moving to next exercise -- ', currentExerciseIndex + 1);
       }
 
       // Only parse JSON if we have content
@@ -455,45 +428,6 @@ export default function WorkoutPage() {
     }
   };
 
-  const startRestTimer = (duration: number, setIndex: number) => {
-    setRestTimer(duration);
-    setActiveRestSet(setIndex);
-    const timer = setInterval(() => {
-      setRestTimer(prev => {
-        if (prev === null || prev <= 1) {
-          clearInterval(timer);
-          setActiveRestSet(null);
-          // Mark the current set's rest as completed
-          setExercises(prevExercises => {
-            const newExercises = [...prevExercises];
-            const currentExercise = newExercises[currentExerciseIndex];
-            if (setIndex >= 0 && setIndex < currentExercise.logs.length) {
-              currentExercise.logs[setIndex] = {
-                ...currentExercise.logs[setIndex],
-                restCompleted: true
-              };
-            }
-            return newExercises;
-          });
-
-          // Check if this was the last set and all sets are completed
-          const currentExercise = exercises[currentExerciseIndex];
-          const isLastSet = setIndex === currentExercise.logs.length - 1;
-          const allSetsCompleted = currentExercise.logs.every(log => log.isCompleted);
-          
-          // If this was the last set's rest period and all sets are done, move to next exercise
-          if (isLastSet && allSetsCompleted && currentExerciseIndex < exercises.length - 1) {
-            setCurrentExerciseIndex(prev => prev + 1);
-          }
-
-          return null;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  };
-
-  // @todo: add a loading state
   const completeWorkout = async () => {
     try {
       const response = await fetch(`/api/workout-logs/${workoutLog.id}/complete`, {
@@ -504,7 +438,10 @@ export default function WorkoutPage() {
         throw new Error('Failed to complete workout');
       }
 
-      router.push('/dashboard');
+      setShowCompletion(true);
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 2500);
     } catch (error) {
       console.error('Failed to complete workout:', error);
       // Optionally handle error UI feedback
@@ -523,6 +460,24 @@ export default function WorkoutPage() {
     );
   }
 
+  if (showCompletion) {
+    return (
+      <>
+        <Header />
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center space-y-4 p-8 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg max-w-md mx-auto">
+            <div className="flex justify-center">
+              <CheckCircle className="w-16 h-16 text-green-500 dark:text-green-400" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Workout Complete! 🎉</h2>
+            <p className="text-gray-600 dark:text-gray-400">Great job! You&apos;ve completed your workout. Redirecting to dashboard...</p>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
   const currentExercise = exercises[currentExerciseIndex];
 
   return (
@@ -532,42 +487,56 @@ export default function WorkoutPage() {
         <div className="max-w-4xl mx-auto px-4 py-8">
           <div className="space-y-8">
             <div className="relative overflow-hidden bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
-              <div className="relative p-6 space-y-6">
-                {/* Header */}
-                <div className="flex justify-between items-center">
-                  <h2 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-4">
-                    Exercise {currentExerciseIndex + 1} of {exercises.length}
-                  </h2>
-                  {restTimer !== null && (
-                    <div className="px-4 py-2 rounded-full bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800">
-                      <span className="text-lg font-semibold text-indigo-600 dark:text-indigo-400">
-                        Rest: {restTimer}s
-                      </span>
+              {/* Exercise Header Section */}
+              <div className="relative">
+                {/* Background gradient */}
+                <div className="absolute inset-0 bg-gradient-to-r from-indigo-50/80 via-white to-indigo-50/80 dark:from-indigo-950/50 dark:via-gray-800 dark:to-indigo-950/50" />
+                
+                <div className="relative px-6 py-6 border-b border-gray-200 dark:border-gray-700/80">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                      Exercise {currentExerciseIndex + 1} of {exercises.length}
+                    </span>
+                    {currentExercise && (
+                      <a
+                        href={`https://www.youtube.com/results?search_query=${currentExercise.name} how to`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors"
+                      >
+                        <PlayCircle className="w-4 h-4" />
+                        <span className="text-sm font-medium">Form Videos</span>
+                      </a>
+                    )}
+                  </div>
+
+                  {currentExercise ? (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-3">
+                        <h3 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-indigo-500 to-indigo-600 dark:from-indigo-400 dark:via-indigo-300 dark:to-indigo-400">
+                          {currentExercise.name}
+                        </h3>
+                        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/50 border border-indigo-100 dark:border-indigo-800">
+                          <span className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">
+                            {currentExercise.sets} sets of {formatExerciseMeasure(currentExercise)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <h3 className="text-3xl font-bold text-gray-900 dark:text-white">
+                        Select an exercise
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-400">
+                        Choose an exercise from the list to begin
+                      </p>
                     </div>
                   )}
                 </div>
+              </div>
 
-                {/* Exercise Info */}
-                {currentExercise ? (
-                  <div className="space-y-2">
-                    <h3 className="text-3xl font-bold text-gray-900 dark:text-white">
-                      {currentExercise.name}
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-400">
-                      {currentExercise.sets} sets × {formatExerciseMeasure(currentExercise)}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    <h3 className="text-3xl font-bold text-gray-900 dark:text-white">
-                      Select an exercise
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-400">
-                      Choose an exercise from the list to begin
-                    </p>
-                  </div>
-                )}
-
+              <div className="relative p-6 space-y-6">
                 {/* Sets */}
                 <div className="space-y-1">
                   {currentExercise?.logs.map((log, setIndex) => {
@@ -576,40 +545,25 @@ export default function WorkoutPage() {
                       setIndex === currentExercise.logs.length - 1;
                     
                     return (
-                      <SetInput
-                        key={setIndex}
-                        log={log}
-                        exercise={currentExercise}
-                        previousSetWeight={previousSet?.weight}
-                        isLastSetOfWorkout={isLastSetOfWorkout}
-                        isActive={!log.isCompleted && !log.restCompleted && setIndex === currentExercise.logs.findIndex(l => !l.isCompleted)}
-                        onComplete={(data) => {
-                          updateSet(currentExerciseIndex, setIndex, data);
-                          // Start rest timer for this specific set
-                          startRestTimer(currentExercise.restPeriod || 30, setIndex);
-                        }}
-                        onUpdate={(data) => updateSet(currentExerciseIndex, setIndex, data)}
-                        isResting={activeRestSet === setIndex}
-                        restTimeRemaining={activeRestSet === setIndex ? restTimer ?? undefined : undefined}
-                        onSkipRest={() => {
-                          setRestTimer(null);
-                          setActiveRestSet(null);
-                        }}
-                        showRestIndicator={true}
-                        onRestComplete={() => {
-                          setExercises(prevExercises => {
-                            const newExercises = [...prevExercises];
-                            const currentExercise = newExercises[currentExerciseIndex];
-                            if (setIndex >= 0 && setIndex < currentExercise.logs.length) {
-                              currentExercise.logs[setIndex] = {
-                                ...currentExercise.logs[setIndex],
-                                restCompleted: true
-                              };
-                            }
-                            return newExercises;
-                          });
-                        }}
-                      />
+                      <React.Fragment key={setIndex}>
+                        <SetInput
+                          log={log}
+                          exercise={currentExercise}
+                          previousSetWeight={previousSet?.weight}
+                          isLastSetOfWorkout={isLastSetOfWorkout}
+                          isActive={!log.isCompleted && setIndex === currentExercise.logs.findIndex(l => !l.isCompleted)}
+                          onComplete={(data) => updateSet(currentExerciseIndex, setIndex, data)}
+                          onUpdate={(data) => updateSet(currentExerciseIndex, setIndex, data)}
+                        />
+                        {/* Show rest period indicator after each set except the last one */}
+                        {setIndex < currentExercise.logs.length - 1 && (
+                          <RestPeriodIndicator
+                            restPeriod={currentExercise.restPeriod}
+                            isCompleted={log.isCompleted}
+                            isActive={log.isCompleted && !currentExercise.logs[setIndex + 1].isCompleted}
+                          />
+                        )}
+                      </React.Fragment>
                     );
                   })}
                 </div>
@@ -619,7 +573,7 @@ export default function WorkoutPage() {
                   <button
                     onClick={() => setCurrentExerciseIndex(prev => prev - 1)}
                     disabled={currentExerciseIndex === 0}
-                    className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
+                    className={`px-6 py-3 rounded-xl font-medium transition-all duration-200 ${
                       currentExerciseIndex === 0
                         ? 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'
                         : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
@@ -633,14 +587,14 @@ export default function WorkoutPage() {
                       onClick={() => {
                         setCurrentExerciseIndex(prev => prev + 1);
                       }}
-                      className="px-6 py-3 rounded-lg bg-indigo-600 dark:bg-indigo-500 text-white font-medium hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors"
+                      className="px-6 py-3 rounded-xl bg-indigo-600 dark:bg-indigo-500 text-white font-medium hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors shadow-lg shadow-indigo-500/20"
                     >
                       Next Exercise
                     </button>
                   ) : (
                     <button
                       onClick={completeWorkout}
-                      className="px-6 py-3 rounded-lg bg-green-600 dark:bg-green-500 text-white font-medium hover:bg-green-700 dark:hover:bg-green-600 transition-colors"
+                      className="px-6 py-3 rounded-xl bg-green-600 dark:bg-green-500 text-white font-medium hover:bg-green-700 dark:hover:bg-green-600 transition-colors shadow-lg shadow-green-500/20"
                     >
                       Complete Workout
                     </button>

@@ -16,10 +16,10 @@ export const welcomeFreeTemplate = ({ upgradeLink, programLink }: WelcomeEmailDa
     subject: 'Welcome to Baisics!',
     preheader: 'Your fitness journey begins now',
     content,
-    callToAction: upgradeLink ? {
-      text: 'Upgrade to Premium',
-      url: upgradeLink
-    } : undefined
+    // callToAction: upgradeLink ? {
+    //   text: 'Upgrade to Premium',
+    //   url: upgradeLink
+    // } : undefined
   });
 };
 

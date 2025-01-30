@@ -48,20 +48,23 @@ function SummaryCard({ title, items }: { title: string; items: string[] }) {
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white dark:bg-gray-800 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow border border-gray-100 dark:border-gray-700"
+      className="group relative"
     >
-      <h3 className="font-semibold mb-3 text-gray-900 dark:text-gray-100">{title}</h3>
-      <ul className="space-y-2">
-        {items.map((item, idx) => (
-          <li 
-            key={idx} 
-            className="text-sm text-gray-600 dark:text-gray-300 flex items-center space-x-2"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 dark:bg-blue-500"></span>
-            <span>{item}</span>
-          </li>
-        ))}
-      </ul>
+      <div className="absolute -inset-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 rounded-lg opacity-0 blur-xl transition duration-500 group-hover:opacity-30 dark:group-hover:opacity-20"></div>
+      <div className="relative bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-200">
+        <h3 className="font-semibold text-gray-900 dark:text-white mb-4">{title}</h3>
+        <ul className="space-y-3">
+          {items.map((item, idx) => (
+            <li 
+              key={idx} 
+              className="flex items-center gap-2 text-gray-600 dark:text-gray-300"
+            >
+              <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 dark:bg-indigo-400 flex-shrink-0"></div>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
     </motion.div>
   );
 }
@@ -125,19 +128,24 @@ export function DataReviewTransition({ intakeData, onConfirm, onRequestMore }: D
       animate={{ opacity: 1 }}
       className="max-w-4xl mx-auto p-6 space-y-8"
     >
-      <div className="text-center space-y-2">
-        <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Review Your Information</h2>
-        <p className="text-gray-600 dark:text-gray-400 text-lg">
+      <div className="relative space-y-2">
+        <div className="h-0.5 w-12 bg-indigo-600/30 dark:bg-indigo-400/30 mb-4"></div>
+        <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 uppercase">Review & Confirm</p>
+        <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Review Your Information</h2>
+        <p className="text-lg text-gray-600 dark:text-gray-400">
           Let&apos;s make sure we have everything right before creating your program.
         </p>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {summaryCards.map((card, idx) => (
+        {summaryCards.slice(0, 4).map((card, idx) => (
           <SummaryCard key={idx} title={card.title} items={card.items} />
         ))}
+        
+        {/* Style & Experience and Don't Sweat It in the same row */}
+        <SummaryCard title={summaryCards[4].title} items={summaryCards[4].items} />
         <motion.div 
-          className="md:col-span-2 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700 rounded-xl p-6 shadow-lg border border-blue-100 dark:border-gray-600"
+          className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-gray-800 dark:to-gray-700 rounded-xl p-6 shadow-lg border border-indigo-100 dark:border-gray-600"
           whileHover={{ scale: 1.01 }}
         >
           <div className="flex items-start space-x-4">
@@ -145,8 +153,8 @@ export function DataReviewTransition({ intakeData, onConfirm, onRequestMore }: D
               <span className="text-2xl">💪</span>
             </div>
             <div>
-              <h3 className="text-xl font-semibold text-blue-900 dark:text-blue-100 mb-2">Don&apos;t sweat it!</h3>
-              <p className="text-blue-800/80 dark:text-gray-300 leading-relaxed">
+              <h3 className="text-xl font-semibold text-indigo-900 dark:text-indigo-100 mb-2">Don&apos;t sweat it!</h3>
+              <p className="text-indigo-800/80 dark:text-gray-300 leading-relaxed">
                 We can make changes to your program if needed. You can also upgrade and make as many programs as you&apos;d like.
               </p>
             </div>
@@ -165,7 +173,7 @@ export function DataReviewTransition({ intakeData, onConfirm, onRequestMore }: D
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={onConfirm}
-                className="w-full sm:w-auto px-8 py-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors text-lg font-semibold shadow-sm hover:shadow-md"
+                className="w-full sm:w-auto px-8 py-4 bg-indigo-600 dark:bg-indigo-500 text-white rounded-xl hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200 text-lg font-medium shadow-sm hover:shadow-md hover:-translate-y-0.5 transform"
               >
                 🚀 Looks good, let&apos;s go!
               </motion.button>
@@ -177,7 +185,7 @@ export function DataReviewTransition({ intakeData, onConfirm, onRequestMore }: D
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setShowTopics(true)}
-                className="w-full sm:w-auto px-8 py-4 transition-colors font-medium text-sm"
+                className="w-full sm:w-auto px-8 py-4 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors font-medium text-sm"
               >
                 📝 I&apos;d like to add or change some details
               </motion.button>

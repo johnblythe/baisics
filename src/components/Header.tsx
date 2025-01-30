@@ -36,6 +36,12 @@ export default function Header() {
                   >
                     Dashboard
                   </Link>
+                  <Link
+                    href="/blog"
+                    className="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition-colors"
+                  >
+                    Blog
+                  </Link>
                   <div
                     className="text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition-colors cursor-pointer relative group"
                     aria-label="Program Library - Coming Soon"
@@ -109,6 +115,12 @@ export default function Header() {
                 >
                   Log in
                 </button>
+                <Link
+                  href="/blog"
+                  className="inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-900"
+                >
+                  Blog
+                </Link>
                 <button
                   onClick={() => router.push('/hi')}
                   className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 dark:bg-indigo-500 hover:bg-indigo-700 dark:hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-900"

@@ -308,8 +308,6 @@ export async function getUserProgram(userId: string, programId: string) {
       return { success: false, error: 'Program not found' };
     }
 
-    console.log("🚀 ~ getUserProgram ~ program:", program)
-
     // todo: this is a temp hack, need to fix this
     // will eventually refactor models to have nutrition as a separate model
     const finalProgram = {
