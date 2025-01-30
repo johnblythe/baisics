@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Home page -->
+  <url>
+    <loc>https://baisics.app</loc>
+    <lastmod>2025-01-30T03:25:33.968Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <!-- Static pages -->
+
+  <url>
+    <loc>https://baisics.app</loc>
+    <lastmod>2025-01-30T03:25:33.950Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://baisics.app/blog</loc>
+    <lastmod>2025-01-30T03:25:33.951Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://baisics.app/hi</loc>
+    <lastmod>2025-01-30T03:25:33.951Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://baisics.app/privacy</loc>
+    <lastmod>2025-01-30T03:25:33.951Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://baisics.app/start</loc>
+    <lastmod>2025-01-30T03:25:33.951Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://baisics.app/terms</loc>
+    <lastmod>2025-01-30T03:25:33.951Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Content pages -->
+
+  <url>
+    <loc>https://baisics.app/blog/complete-guide-to-movements</loc>
+    <lastmod>2025-01-30T01:08:56.594Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://baisics.app/blog/compound-vs-isolation-exercises</loc>
+    <lastmod>2025-01-30T01:08:56.595Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://baisics.app/blog/ultimate-program-design-guide</loc>
+    <lastmod>2025-01-30T01:08:56.612Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://baisics.app/blog/ultimate-sustainable-fat-loss-guide</loc>
+    <lastmod>2025-01-30T01:08:56.613Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset>
