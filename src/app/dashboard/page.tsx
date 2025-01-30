@@ -901,12 +901,9 @@ export default function DashboardPage() {
     <MainLayout>
       <Suspense fallback={
         <>
-          <Header />
           <div className="flex items-center justify-center min-h-screen bg-white dark:bg-gray-900">
             <div className="w-6 h-6 border-t-2 border-blue-500 border-solid rounded-full animate-spin"></div>
           </div>
-          <TawkChat />
-          <Footer />
         </>
       }>
         <DashboardContent />

@@ -56,17 +56,17 @@ const SetInput = ({
   isLastSetOfWorkout?: boolean;
 }) => {
   const [localWeight, setLocalWeight] = useState(
-    exercise.measureType !== 'REPS' ? '0' : (log.weight?.toString() || previousSetWeight?.toString() || '')
+    log.weight?.toString() || previousSetWeight?.toString() || ''
   );
   const [localReps, setLocalReps] = useState(log.reps?.toString() || '');
   const [localNotes, setLocalNotes] = useState(log.notes || '');
   
   // Update local state when log prop changes
   useEffect(() => {
-    setLocalWeight(exercise.measureType !== 'REPS' ? '0' : (log.weight?.toString() || previousSetWeight?.toString() || ''));
+    setLocalWeight(log.weight?.toString() || previousSetWeight?.toString() || '');
     setLocalReps(log.reps?.toString() || '');
     setLocalNotes(log.notes || '');
-  }, [log, exercise, previousSetWeight]);
+  }, [log, previousSetWeight]);
   
   const canComplete = localWeight && localReps;
 
@@ -518,7 +518,7 @@ export default function WorkoutPage() {
                         </h3>
                         <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/50 border border-indigo-100 dark:border-indigo-800">
                           <span className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">
-                            {currentExercise.sets} sets of {currentExercise.reps} {formatExerciseUnit(currentExercise, 'short', 'mixed')}
+                            {currentExercise.sets} sets of {formatExerciseMeasure(currentExercise)}
                           </span>
                         </div>
                       </div>
