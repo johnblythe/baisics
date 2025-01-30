@@ -24,6 +24,7 @@ const trackGetStartedClick = () => {
 export default function LandingPage() {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const handleGetStarted = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -45,7 +46,7 @@ export default function LandingPage() {
       {/* Background Pattern */}
       {/* <div className="absolute inset-0 z-10">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.03),transparent_70%)] dark:bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.08),transparent_70%)]"></div>
-        <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(99,102,241,0.01)_25%,transparent_25%,transparent_75%,rgba(99,102,241,0.01)_75%,rgba(99,102,241,0.01))] dark:bg-[linear-gradient(45deg,rgba(99,102,241,0.03)_25%,transparent_25%,transparent_75%,rgba(99,102,241,0.03)_75%,rgba(99,102,241,0.03))]" style={{ backgroundSize: '60px 60px' }}></div>
+        <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(99,102,241,0.01)_25%,transparent_25%,transparent_75%,rgba(99,102,241,0.01))] dark:bg-[linear-gradient(45deg,rgba(99,102,241,0.03)_25%,transparent_25%,transparent_75%,rgba(99,102,241,0.03)_75%,rgba(99,102,241,0.03))]" style={{ backgroundSize: '60px 60px' }}></div>
       </div> */}
       
       {/* Header */}
@@ -62,27 +63,76 @@ export default function LandingPage() {
               </span>
             </div>
 
-            {/* Navigation */}
-            <nav className="hidden md:flex items-center gap-8">
-              <Link href="#features" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">Features</Link>
-              <Link href="#pricing" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">Pricing</Link>
-            </nav>
-
-            {/* CTA Buttons */}
             <div className="flex items-center gap-4">
-              <Link 
-                href="/auth/signin" 
-                className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hidden"
-              >
-                Log in
-              </Link>
-              <Link 
-                href="#"
-                onClick={handleGetStarted}
-                className="inline-block px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 transition-colors"
-              >
-                Get Started
-              </Link>
+              {/* Desktop Navigation */}
+              <nav className="hidden md:flex items-center gap-6">
+                <Link href="#features" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">Features</Link>
+                <Link href="#pricing" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">Pricing</Link>
+                <Link href="/blog" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">Blog</Link>
+              </nav>
+
+              {/* Mobile Navigation */}
+              <div className="md:hidden relative">
+                <button 
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  className="p-2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
+                  aria-label="Toggle menu"
+                >
+                  {isMenuOpen ? (
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  ) : (
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                  )}
+                </button>
+
+                {/* Mobile Menu Dropdown */}
+                {isMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-48 py-2 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-100 dark:border-gray-700">
+                    <Link 
+                      href="#features" 
+                      className="block px-4 py-2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Features
+                    </Link>
+                    <Link 
+                      href="#pricing" 
+                      className="block px-4 py-2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Pricing
+                    </Link>
+                    <Link 
+                      href="/blog" 
+                      className="block px-4 py-2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Blog
+                    </Link>
+                  </div>
+                )}
+              </div>
+
+              {/* CTA Buttons */}
+              <div className="flex items-center gap-4">
+                <Link 
+                  href="/auth/signin" 
+                  className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hidden"
+                >
+                  Log in
+                </Link>
+                <Link 
+                  href="#"
+                  onClick={handleGetStarted}
+                  className="inline-block px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 transition-colors"
+                >
+                  Get Started
+                </Link>
+              </div>
             </div>
           </div>
         </div>
