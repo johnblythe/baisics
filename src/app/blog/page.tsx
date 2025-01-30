@@ -104,7 +104,7 @@ function getCategories(posts: BlogPost[]): BlogCategory[] {
   const categories = new Map<string, number>()
   
   posts.forEach(post => {
-    if (post.frontmatter.categories) {
+    if (post.frontmatter.categories && post.frontmatter.published) {
       post.frontmatter.categories.forEach(category => {
         const count = categories.get(category) || 0
         categories.set(category, count + 1)
@@ -123,15 +123,19 @@ function getTags(posts: BlogPost[]): BlogTag[] {
   const tags = new Map<string, number>()
   
   posts.forEach(post => {
-    if (post.frontmatter.tags) {
+    if (post.frontmatter.tags && post.frontmatter.published) {
       post.frontmatter.tags.forEach(tag => {
         const count = tags.get(tag) || 0
         tags.set(tag, count + 1)
       })
     }
   })
+
+  // trim tags to 25%
+  const tagsArray = Array.from(tags.entries())
+  const trimmedTags = tagsArray.slice(0, Math.floor(tagsArray.length * 0.25))
   
-  return Array.from(tags.entries()).map(([name, count]) => ({
+  return trimmedTags.map(([name, count]) => ({
     name,
     slug: name.toLowerCase().replace(/\s+/g, '-'),
     count
@@ -152,7 +156,7 @@ async function BlogPageContent() {
             <div className="mb-8">
               <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Categories</h2>
               <ul className="space-y-2">
-                {categories.map(category => (
+                {categories.filter(category => category.count > 0 && category.name !== 'Uncategorized').map(category => (
                   <li key={category.slug}>
                     <Link 
                       href={`/blog/category/${category.slug}`}
@@ -175,7 +179,7 @@ async function BlogPageContent() {
                     href={`/blog/tag/${tag.slug}`}
                     className="inline-block bg-gray-100 dark:bg-gray-800 hover:bg-blue-100 dark:hover:bg-blue-900 text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-400 rounded-full px-3 py-1 text-sm"
                   >
-                    {tag.name} ({tag.count})
+                    {tag.name}
                   </Link>
                 ))}
               </div>
@@ -188,12 +192,12 @@ async function BlogPageContent() {
           <h1 className="text-4xl font-bold mb-8 text-gray-900 dark:text-gray-100">Blog</h1>
           
           {/* Featured Posts */}
-          {posts.some(post => post.frontmatter.featured) && (
+          {posts.some(post => post.frontmatter.featured && post.frontmatter.published) && (
             <div className="mb-12">
               <h2 className="text-2xl font-semibold mb-6 text-gray-900 dark:text-gray-100">Featured Articles</h2>
               <div className="grid gap-8 md:grid-cols-2">
                 {posts
-                  .filter(post => post.frontmatter.featured)
+                  .filter(post => post.frontmatter.featured && post.frontmatter.published)
                   .map((post) => (
                     <article 
                       key={post.slug} 
