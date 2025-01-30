@@ -8,13 +8,14 @@ import { MDXContent } from '@/components/MDXContent'
 import MainLayout from '@/app/components/layouts/MainLayout'
 
 type Props = {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const post = getBlogPost(params.slug)
+  const { slug } = await params
+  const post = getBlogPost(slug)
   
   if (!post) {
     return {
@@ -50,7 +51,8 @@ function getBlogPost(slug: string) {
 }
 
 async function BlogPostContent({ params }: Props) {
-  const post = getBlogPost(params.slug)
+  const { slug } = await params
+  const post = getBlogPost(slug)
 
   if (!post) {
     notFound()
