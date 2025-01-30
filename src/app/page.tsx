@@ -238,19 +238,30 @@ export default function LandingPage() {
                 <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 rounded-2xl opacity-20 blur-xl group-hover:opacity-30 transition duration-500"></div>
                 
                 {/* Main image container */}
-                <div className="relative w-full aspect-[3/4] rounded-xl overflow-hidden shadow-2xl">
-                  <Image
-                    src="/lp/gym-hero.png"
-                    alt="Woman checking her fitness app while working out with dumbbells"
-                    fill
-                    className="object-cover hover:scale-105 transition-transform duration-700"
-                    priority
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    quality={90}
-                  />
+                <div className="relative w-full aspect-[16/9] sm:aspect-[3/4] rounded-xl overflow-hidden shadow-2xl">
+                  <picture>
+                    <source
+                      type="image/webp"
+                      srcSet="/lp/gym-hero.webp"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 40vw"
+                    />
+                    <Image
+                      src="/lp/gym-hero.png"
+                      alt="Woman checking her fitness app while working out with dumbbells"
+                      fill
+                      className="object-cover"
+                      priority
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 40vw"
+                      quality={75}
+                      loading="eager"
+                      fetchPriority="high"
+                      placeholder="blur"
+                      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQdHx0fHRsdHSIeHx8dIigjJCUmJSQkIiYoLS0tKCEiMkExMC47PDw+QUJBRkFGR0ZHS0f/2wBDAR"
+                    />
+                  </picture>
                   
-                  {/* Overlay gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-indigo-900/20 via-transparent to-transparent"></div>
+                  {/* Optimized overlay gradient - using opacity classes instead of rgba */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-indigo-900/10 to-transparent"></div>
                 </div>
                 
                 {/* Decorative dots */}
@@ -392,13 +403,23 @@ export default function LandingPage() {
                 <div className="flex-1">
                   <div className="relative">
                     <div className="absolute -inset-4 bg-indigo-50/50 dark:bg-indigo-900/30 rounded-lg rotate-2"></div>
-                    <Image
-                      src="/lp/ai-helper.webp"
-                      alt="Fitness data visualization and workout planning illustration"
-                      width={500}
-                      height={500}
-                      className="relative w-full rounded-lg"
-                    />
+                    <picture>
+                      <source
+                        type="image/webp"
+                        srcSet="/lp/ai-helper-opt.webp"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 500px"
+                      />
+                      <Image
+                        src="/lp/ai-helper.jpg"
+                        alt="Fitness data visualization and workout planning illustration"
+                        width={500}
+                        height={500}
+                        className="relative w-full rounded-lg"
+                        quality={75}
+                        loading="eager"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 500px"
+                      />
+                    </picture>
                   </div>
                 </div>
               </div>
@@ -438,13 +459,23 @@ export default function LandingPage() {
                 <div className="flex-1">
                   <div className="relative">
                     <div className="absolute -inset-4 bg-white/50 dark:bg-gray-800/50 rounded-xl rotate-2 backdrop-blur-sm"></div>
-                    <Image
-                      src="/lp/clarity.webp"
-                      alt="Dynamic fitness collage showing workout and nutrition tracking"
-                      width={500}
-                      height={500}
-                      className="relative w-full rounded-lg shadow-lg"
-                    />
+                    <picture>
+                      <source
+                        type="image/webp"
+                        srcSet="/lp/clarity-opt.webp"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 500px"
+                      />
+                      <Image
+                        src="/lp/clarity.webp"
+                        alt="Dynamic fitness collage showing workout and nutrition tracking"
+                        width={500}
+                        height={500}
+                        className="relative w-full rounded-lg shadow-lg"
+                        quality={75}
+                        loading="lazy"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 500px"
+                      />
+                    </picture>
                   </div>
                 </div>
               </div>
@@ -512,14 +543,23 @@ export default function LandingPage() {
                 <div className="flex-1">
                   <div className="relative">
                     <div className="absolute -inset-4 bg-white/50 dark:bg-gray-800/50 rounded-xl rotate-2 backdrop-blur-sm"></div>
-                    <Image
-                      src="/lp/all-in-one.webp"
-                      alt="Futuristic AI-powered fitness technology visualization"
-                      width={500}
-                      height={500}
-                      className="relative w-full rounded-lg shadow-lg"
-                      priority
-                    />
+                    <picture>
+                      <source
+                        type="image/webp"
+                        srcSet="/lp/all-in-one-opt.webp"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 500px"
+                      />
+                      <Image
+                        src="/lp/all-in-one.webp"
+                        alt="Futuristic AI-powered fitness technology visualization"
+                        width={500}
+                        height={500}
+                        className="relative w-full rounded-lg shadow-lg"
+                        quality={75}
+                        loading="lazy"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 500px"
+                      />
+                    </picture>
                   </div>
                 </div>
               </div>
