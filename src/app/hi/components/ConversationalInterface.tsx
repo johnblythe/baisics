@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import { Message } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { processUserMessage, processModificationRequest, saveDemoIntake } from "../actions";
@@ -54,9 +54,10 @@ interface ConversationalInterfaceProps {
   user: User | null;
   initialProgram?: Program | null;
   onProgramChange?: (program: Program | null) => void;
+  preventNavigation?: boolean;
 }
 
-export function ConversationalInterface({ userId, user, initialProgram, onProgramChange }: ConversationalInterfaceProps) {
+export const ConversationalInterface = forwardRef<ConversationalIntakeRef, ConversationalInterfaceProps>(({ userId, user, initialProgram, onProgramChange, preventNavigation }, ref) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -172,8 +173,8 @@ export function ConversationalInterface({ userId, user, initialProgram, onProgra
   };
 
   // Work on getting the right data from the user to generate a program
-  const handleInitialIntake = async (userMessage: Message, userId: string) => {
-    const result = await processUserMessage([...messages, userMessage], userId);
+  const handleInitialIntake = async (userMessage: Message, _: string) => {
+    const result = await processUserMessage([...messages, userMessage], localUserId);
         
     if (result.success) {
       if (result.extractedData) {
@@ -209,6 +210,24 @@ export function ConversationalInterface({ userId, user, initialProgram, onProgra
       role: "assistant", 
       content: "Great! I'll create your personalized program now. Let me put that together for you..." 
     }]);
+
+    // Create user if we don't have one
+    if (!localUserId) {
+      const newUserId = uuidv4();
+      const result = await createAnonUser(newUserId);
+      if (result.success && result.user) {
+        setLocalUserId(result.user.id);
+        setLocalUser(result.user);
+      } else {
+        console.error('Failed to create anonymous user');
+        setIsGeneratingProgram(false);
+        setMessages(prev => [...prev, {
+          role: "assistant",
+          content: "I encountered an error while creating your program. Please try again."
+        }]);
+        return;
+      }
+    }
 
     // save the user's intake data
     try {
@@ -400,45 +419,51 @@ export function ConversationalInterface({ userId, user, initialProgram, onProgra
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (!inputValue.trim()) return;
 
-    const userMessage: Message = { role: "user", content: inputValue };
+    const userMessage: Message = {
+      role: "user",
+      content: inputValue,
+    };
+
+    // Add user message immediately
     setMessages(prev => [...prev, userMessage]);
     setInputValue("");
     setIsTyping(true);
 
-    try {
-      // Initialize user if this is their first message and they don't have a user ID
+    // Create user if we don't have one and we're in the landing page flow
+    if (preventNavigation && !localUserId) {
       const newUserId = uuidv4();
-      if (!localUserId) {
-        const result = await createAnonUser(newUserId);
-        if (result.success && result.user) {
-          setLocalUserId(result.user.id);
-          setLocalUser(result.user);
-          router.replace(`/hi?userId=${result.user.id}`);
-        } else {
-          throw new Error("Failed to create new user");
-        }
-      }
-
-      if (program) {
-        await handleProgramModification(userMessage, program);
+      const result = await createAnonUser(newUserId);
+      if (result.success && result.user) {
+        setLocalUserId(result.user.id);
+        setLocalUser(result.user);
       } else {
-        // Pass the local user ID that we just created or already had
-        await handleInitialIntake(userMessage, newUserId);
-      }
-    } catch (error) {
-      console.error("Failed to send message:", error);
-      setMessages(prev => [
-        ...prev,
-        {
+        console.error('Failed to create anonymous user');
+        setIsTyping(false);
+        setMessages(prev => [...prev, {
           role: "assistant",
-          content: "I'm sorry, I encountered an error. Please try again.",
-        },
-      ]);
-      setIsTyping(false);
-      setIsGeneratingProgram(false);
+          content: "I encountered an error. Please try again."
+        }]);
+        return;
+      }
     }
+
+    // If we have a program, handle as modification request
+    if (program) {
+      await handleProgramModification(userMessage, program);
+      return;
+    }
+
+    // Handle initial intake
+    if (!preventNavigation) {
+      router.push(`/hi?message=${encodeURIComponent(userMessage.content)}`);
+      return;
+    }
+
+    // If preventNavigation is true, handle the conversation in place
+    await handleInitialIntake(userMessage, localUserId);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -688,6 +713,17 @@ export function ConversationalInterface({ userId, user, initialProgram, onProgra
     );
   };
 
+  // Expose the prefillAndSubmit method through the ref
+  useImperativeHandle(ref, () => ({
+    prefillAndSubmit: (message: string) => {
+      setInputValue(message);
+      // Use requestAnimationFrame to ensure the input value is set before submitting
+      requestAnimationFrame(() => {
+        handleSubmit({ preventDefault: () => {} } as React.FormEvent);
+      });
+    }
+  }));
+
   return (
 
       <div className={`flex flex-col min-h-[80vh] bg-gradient-to-b from-white via-indigo-50/30 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-xl shadow-xl ${program ? 'max-w-full' : 'max-w-3xl mx-auto'}`}>
@@ -751,4 +787,6 @@ export function ConversationalInterface({ userId, user, initialProgram, onProgra
       </div>
 
   );
-} 
+});
+
+ConversationalInterface.displayName = 'ConversationalInterface'; 
