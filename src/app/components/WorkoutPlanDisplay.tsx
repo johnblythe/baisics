@@ -7,15 +7,6 @@ import { User } from '@prisma/client';
 import { generateWorkoutPDF } from '@/utils/pdf';
 import { MacrosGuideModal } from './MacrosGuideModal';
 
-type UploadedImage = {
-  id: string;
-  sessionId: string;
-  fileName: string;
-  base64Data: string;
-  createdAt: Date;
-  aiDescription?: string;
-};
-
 // todo
 interface ExtendedWorkoutPlan extends Omit<WorkoutPlan, 'phaseExplanation' | 'phaseExpectations' | 'phaseKeyPoints'> {
   phaseExplanation?: string;
@@ -32,8 +23,6 @@ interface WorkoutPlanDisplayProps {
   plan: ExtendedWorkoutPlan;
   userEmail?: string | null;
   onRequestUpsell?: () => void;
-  onUploadImages?: (files: File[]) => Promise<void>;
-  onDeleteImage?: (imageId: string) => Promise<void>;
   user?: User | null;
 }
 
@@ -46,8 +35,6 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
   plan,
   userEmail: initialUserEmail,
   onRequestUpsell,
-  onUploadImages,
-  onDeleteImage,
   user
 }, ref) => {
   const [isUpsellOpen, setIsUpsellOpen] = useState(false);

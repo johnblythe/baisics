@@ -7,7 +7,10 @@ import { WorkoutFileResponse, WorkoutFileError } from '@/utils/prompts/workoutFi
 interface UploadState {
   status: 'idle' | 'uploading' | 'processing' | 'success' | 'error';
   error?: string;
-  result?: WorkoutFileResponse;
+  result?: {
+    parsed: WorkoutFileResponse;
+    saved: any; // Using any for now since we don't have the Prisma types
+  };
 }
 
 export function WorkoutFileUpload() {
@@ -27,7 +30,6 @@ export function WorkoutFileUpload() {
         reader.onerror = reject;
         reader.readAsDataURL(file);
       });
-      console.log("🚀 ~ onDrop ~ fileContent:", fileContent)
 
       setState({ status: 'processing' });
 
@@ -45,8 +47,7 @@ export function WorkoutFileUpload() {
         throw new Error(error.reason);
       }
 
-      const result = data as WorkoutFileResponse;
-      setState({ status: 'success', result });
+      setState({ status: 'success', result: data });
 
     } catch (error) {
       setState({ 
@@ -98,7 +99,7 @@ export function WorkoutFileUpload() {
 
       {state.status === 'processing' && (
         <div className="text-center py-4">
-          <p className="text-sm text-gray-600">Processing with Claude...</p>
+          <p className="text-sm text-gray-600">Processing...</p>
         </div>
       )}
 
@@ -113,13 +114,14 @@ export function WorkoutFileUpload() {
           {/* Program Overview */}
           <div className="rounded-lg border border-green-200 bg-green-50 p-4">
             <h3 className="font-medium text-green-800">
-              Successfully Processed Program
+              Successfully Processed and Saved Program
             </h3>
             <div className="mt-2 space-y-2 text-sm text-green-700">
-              <p><span className="font-medium">Name:</span> {state.result.program.name}</p>
-              <p><span className="font-medium">Description:</span> {state.result.program.description}</p>
-              <p><span className="font-medium">Workouts:</span> {state.result.workouts.length}</p>
-              <p><span className="font-medium">Days per week:</span> {state.result.workoutPlan.daysPerWeek}</p>
+              <p><span className="font-medium">Name:</span> {state.result.parsed.program.name}</p>
+              <p><span className="font-medium">Description:</span> {state.result.parsed.program.description}</p>
+              <p><span className="font-medium">Workouts:</span> {state.result.parsed.workouts.length}</p>
+              <p><span className="font-medium">Days per week:</span> {state.result.parsed.workoutPlan.daysPerWeek}</p>
+              <p><span className="font-medium">Database ID:</span> {state.result.saved.id}</p>
             </div>
           </div>
 
@@ -127,12 +129,12 @@ export function WorkoutFileUpload() {
           <div className="rounded-lg border border-gray-200 bg-white p-4">
             <h4 className="font-medium text-gray-800">Workout Plan</h4>
             <div className="mt-2 space-y-2 text-sm">
-              <p><span className="font-medium">Split Type:</span> {state.result.workoutPlan.splitType}</p>
-              <p><span className="font-medium">Phase:</span> {state.result.workoutPlan.phase}</p>
+              <p><span className="font-medium">Split Type:</span> {state.result.parsed.workoutPlan.splitType}</p>
+              <p><span className="font-medium">Phase:</span> {state.result.parsed.workoutPlan.phase}</p>
               <div className="mt-2">
                 <p className="font-medium">Phase Key Points:</p>
                 <ul className="list-disc pl-5 mt-1">
-                  {state.result.workoutPlan.phaseKeyPoints.map((point, i) => (
+                  {state.result.parsed.workoutPlan.phaseKeyPoints.map((point, i) => (
                     <li key={i}>{point}</li>
                   ))}
                 </ul>
@@ -143,7 +145,7 @@ export function WorkoutFileUpload() {
           {/* Individual Workouts */}
           <div className="space-y-4">
             <h4 className="font-medium text-gray-800">Workouts</h4>
-            {state.result.workouts.map((workout, i) => (
+            {state.result.parsed.workouts.map((workout, i) => (
               <div key={i} className="rounded-lg border border-gray-200 bg-white p-4">
                 <div className="flex justify-between items-start">
                   <h5 className="font-medium">{workout.name}</h5>

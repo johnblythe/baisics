@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { workoutFilePrompt } from '@/utils/prompts/workoutFileProcessing';
 import { sendMessage } from '@/utils/chat';
+import { prisma } from '@/lib/prisma';
+import fs from 'fs/promises';
+import path from 'path';
 
 const ALLOWED_FILE_TYPES = [
   'application/pdf',
@@ -10,6 +13,16 @@ const ALLOWED_FILE_TYPES = [
 ];
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const UPLOADS_DIR = path.join(process.cwd(), 'uploads', 'programs');
+
+// Ensure uploads directory exists
+async function ensureUploadsDir() {
+  try {
+    await fs.access(UPLOADS_DIR);
+  } catch {
+    await fs.mkdir(UPLOADS_DIR, { recursive: true });
+  }
+}
 
 function validateFileType(base64String: string): { valid: boolean; mimeType: string | null; error?: string } {
   try {
@@ -74,6 +87,12 @@ export async function POST(request: Request) {
     // Extract just the base64 data without the data URL prefix
     const base64Data = file.split(',')[1];
 
+    // Save the raw file
+    await ensureUploadsDir();
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const rawFilePath = path.join(UPLOADS_DIR, `${timestamp}_${fileName}`);
+    await fs.writeFile(rawFilePath, base64Data, 'base64');
+
     // Send to Claude with our prompt
     const messages = [{
       role: 'user',
@@ -118,16 +137,120 @@ export async function POST(request: Request) {
 
     try {
       const parsed = JSON.parse(content);
-      return NextResponse.json(parsed);
+      console.log("Parsed response from Claude:", JSON.stringify(parsed, null, 2));
+      console.log("Workouts with exercises:", parsed.workouts.map(w => ({
+        name: w.name,
+        exercises: w.exercises
+      })));
+      
+      // Get or create test user
+      let testUser = await prisma.user.findFirst({
+        where: { email: 'test@example.com' }
+      });
+
+      if (!testUser) {
+        testUser = await prisma.user.create({
+          data: {
+            email: 'test@example.com',
+            name: 'Test User'
+          }
+        });
+      }
+
+      // Save to database
+      const savedProgram = await prisma.program.create({
+        data: {
+          name: parsed.program?.name || 'Imported Workout Program',
+          description: parsed.program?.description || '',
+          createdBy: testUser.id, // Use the actual user ID
+          workoutPlans: {
+            create: {
+              phase: parsed.workoutPlan?.phase || 1,
+              phaseExplanation: parsed.workoutPlan?.phaseExplanation || '',
+              phaseExpectations: parsed.workoutPlan?.phaseExpectations || '',
+              phaseKeyPoints: parsed.workoutPlan?.phaseKeyPoints || [],
+              progressionProtocol: parsed.workoutPlan?.progressionProtocol || [],
+              daysPerWeek: parsed.workoutPlan?.daysPerWeek || 1,
+              splitType: parsed.workoutPlan?.splitType || 'Full Body',
+              // Default nutrition values until we implement proper nutrition parsing
+              dailyCalories: 2000,
+              proteinGrams: 150,
+              carbGrams: 200,
+              fatGrams: 70,
+              user: {
+                connect: {
+                  id: testUser.id // Use the same user ID
+                }
+              },
+              workouts: {
+                create: (parsed.workouts || []).map((workout: any) => ({
+                  name: workout.name || 'Workout',
+                  focus: workout.focus || '',
+                  dayNumber: workout.dayNumber || 1,
+                  warmup: workout.warmup || '',
+                  cooldown: workout.cooldown || '',
+                  exercises: {
+                    create: (workout.exercises || []).map((exercise: any) => ({
+                      name: exercise.name || 'Exercise',
+                      sets: exercise.sets || 1,
+                      reps: exercise.measure?.type === 'REPS' ? exercise.measure.value : null,
+                      restPeriod: exercise.restPeriod || 60,
+                      intensity: exercise.intensity || 0,
+                      measureType: exercise.measure?.type || 'REPS',
+                      measureValue: exercise.measure?.value || 0,
+                      measureUnit: exercise.measure?.unit,
+                      notes: exercise.notes || '',
+                      exerciseLibrary: {
+                        connectOrCreate: {
+                          where: { name: exercise.name || 'Exercise' },
+                          create: {
+                            name: exercise.name || 'Exercise',
+                            category: exercise.category || 'default',
+                            difficulty: 'BEGINNER',
+                            movementPattern: 'PUSH',
+                            equipment: [],
+                            targetMuscles: [],
+                            secondaryMuscles: []
+                          }
+                        }
+                      }
+                    }))
+                  }
+                }))
+              }
+            }
+          }
+        },
+        include: {
+          workoutPlans: {
+            include: {
+              workouts: {
+                include: {
+                  exercises: true
+                }
+              }
+            }
+          }
+        }
+      });
+
+      // Return both the parsed data and the saved program
+      return NextResponse.json({
+        parsed,
+        saved: savedProgram
+      });
+
     } catch (error) {
+      console.error('Error saving to database:', error);
       return NextResponse.json({
         error: true,
-        reason: 'Failed to parse response',
-        details: ['Claude returned invalid JSON']
+        reason: 'Failed to save to database',
+        details: [error instanceof Error ? error.message : 'Unknown error']
       });
     }
 
   } catch (error) {
+    console.error('Server error:', error);
     return NextResponse.json({
       error: true,
       reason: 'Server error',
