@@ -5,7 +5,6 @@ import { useEffect, useState, useRef } from 'react';
 import { User } from '@prisma/client';
 import { getUser } from '../start/actions';
 import { DisclaimerBanner } from '@/components/DisclaimerBanner';
-
 interface ProgramDisplayProps {
   program: Program;
   userEmail?: string | null;

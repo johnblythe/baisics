@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation'
 import ConversationalIntakeContainer, { ConversationalIntakeRef } from '../hi/components/ConversationalIntakeContainer'
 import TestimonialScroller from './TestimonialScroller'
 import GoalCTAs from './GoalCTAs'
+import Header from '@/components/Header'
 
 // Rotating headlines
 const ROTATING_HEADLINES = [
@@ -16,7 +17,7 @@ const ROTATING_HEADLINES = [
   'Your Goal Weight',
   'Your Fitness Journey',
   'Your Best Self',
-  'Your Personalized Nutrition',
+  'Your Nutrition Plan',
   'Your Gym Buddy',
   'Your Goal Weight',
   'Your Fitness Journey',
@@ -90,101 +91,9 @@ export default function LandingPage() {
     <div className="min-h-screen bg-white dark:bg-gray-900">
       <BetaModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       
-      {/* Background Pattern */}
-      {/* <div className="absolute inset-0 z-10">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.03),transparent_70%)] dark:bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.08),transparent_70%)]"></div>
-        <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(99,102,241,0.01)_25%,transparent_25%,transparent_75%,rgba(99,102,241,0.01))] dark:bg-[linear-gradient(45deg,rgba(99,102,241,0.03)_25%,transparent_25%,transparent_75%,rgba(99,102,241,0.03)_75%,rgba(99,102,241,0.03))]" style={{ backgroundSize: '60px 60px' }}></div>
-      </div> */}
+      {/* Use the Header component */}
+      <Header />
       
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm z-50 border-b border-gray-100 dark:border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <div className="flex-shrink-0 flex items-center gap-3">
-              <Link href="/" className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
-                baisics
-              </Link>
-              <span className="hidden sm:block text-sm text-gray-500 dark:text-gray-400 border-l border-gray-200 dark:border-gray-700 pl-3">
-                fitness for the rest of us
-              </span>
-            </div>
-
-            <div className="flex items-center gap-4">
-              {/* Desktop Navigation */}
-              <nav className="hidden md:flex items-center gap-6">
-                <Link href="#features" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">Features</Link>
-                <Link href="#pricing" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">Pricing</Link>
-                <Link href="/blog" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">Blog</Link>
-              </nav>
-
-              {/* Mobile Navigation */}
-              <div className="md:hidden relative">
-                <button 
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
-                  className="p-2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
-                  aria-label="Toggle menu"
-                >
-                  {isMenuOpen ? (
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  ) : (
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                  )}
-                </button>
-
-                {/* Mobile Menu Dropdown */}
-                {isMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-48 py-2 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-100 dark:border-gray-700">
-                    <Link 
-                      href="#features" 
-                      className="block px-4 py-2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Features
-                    </Link>
-                    <Link 
-                      href="#pricing" 
-                      className="block px-4 py-2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Pricing
-                    </Link>
-                    <Link 
-                      href="/blog" 
-                      className="block px-4 py-2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Blog
-                    </Link>
-                  </div>
-                )}
-              </div>
-
-              {/* CTA Buttons */}
-              <div className="flex items-center gap-4">
-                <Link 
-                  href="/auth/signin" 
-                  className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hidden"
-                >
-                  Log in
-                </Link>
-                <Link 
-                  href="#"
-                  onClick={handleGetStarted}
-                  className="inline-block px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 transition-colors"
-                >
-                  Get Started
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
-
       {/* Add padding to account for fixed header */}
       <div className="pt-16">
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -201,7 +110,7 @@ export default function LandingPage() {
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900 dark:text-white space-y-2">
                   <div className="relative h-[1.2em] overflow-hidden">
                     <span 
-                      className={`absolute w-full transition-all duration-200 ease-in-out
+                      className={`absolute w-full transition-all duration-200 ease-in-out lg:text-5xl sm:text-4xl text-3xl
                         ${direction === 'enter' 
                           ? (isAnimating ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100') 
                           : (isAnimating ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100')
@@ -237,12 +146,15 @@ export default function LandingPage() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                 </span>
-                <span className="text-sm text-gray-600 dark:text-gray-300">Hundreds of custom programs created</span>
+                <span className="text-sm text-gray-600 dark:text-gray-300">Thousands of custom programs created</span>
+                <span className="text-sm text-gray-600 dark:text-gray-300">Exercise library with hundreds of variations</span>
+                <span className="text-sm text-gray-600 dark:text-gray-300">Growing library of curated workout programs</span>
+                <span className="text-sm text-gray-600 dark:text-gray-300">Body comp assessment and tracking</span>
               </div>
             </div>
 
             {/* Right Column - Conversational Interface */}
-            <div className="flex-1 w-full lg:w-auto min-h-[600px] relative">
+            <div className="flex-1 w-full lg:w-auto min-h-[700px] relative">
               <div className="sticky top-24">
                 <div className="relative">
                   {/* Background gradient effects */}
@@ -250,11 +162,13 @@ export default function LandingPage() {
                   <div className="absolute -inset-4 bg-gradient-to-bl from-indigo-100 via-purple-100 to-indigo-100 dark:from-indigo-900/20 dark:via-purple-900/20 dark:to-indigo-900/20 rounded-2xl -rotate-1 scale-105 opacity-50"></div>
                   
                   {/* Conversational Interface */}
-                  <div className="relative bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 conversational-interface">
-                    <ConversationalIntakeContainer 
-                      ref={chatRef}
-                      preventNavigation={true}
-                    />
+                  <div className="relative bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 conversational-interface h-max-[800px] overflow-hidden">
+                    <div className="h-full">
+                      <ConversationalIntakeContainer 
+                        ref={chatRef}
+                        preventNavigation={true}
+                      />
+                    </div>
                   </div>
 
                   {/* Decorative elements */}

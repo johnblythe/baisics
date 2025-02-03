@@ -12,10 +12,10 @@ import { SAMPLE_PROFILES } from "@/utils/sampleUserPersonas";
 import { User } from "@prisma/client";
 import { getRandomWelcomeMessage } from "../utils/welcomeMessages";
 import { useRouter } from "next/navigation";
-import { uploadImages, deleteImage, type ImageUpload } from "@/app/start/actions";
 import { createAnonUser, getUser } from "@/app/start/actions";
 import { v4 as uuidv4 } from "uuid";
 import exampleProgram from '../utils/example.json';
+import { ConversationalIntakeRef } from './ConversationalIntakeContainer';
 
 // Add type for example program phase
 interface ExamplePhase {
@@ -384,7 +384,7 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
       const { program: savedProgram, programId } = await saveResponse.json();
       setProgram(savedProgram);
       setIsGeneratingProgram(false);
-      router.replace(`/hi?userId=${localUserId}&programId=${programId}`);
+      router.replace(`/program/review?userId=${localUserId}&programId=${programId}`);
 
     } catch (error) {
       console.error('Error generating program:', error);
@@ -695,10 +695,10 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
               autoFocus={true}
               className="w-full p-4 border rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none transition-all duration-300"
             />
-            <div className="absolute bottom-2 right-2 text-xs text-gray-400 space-x-4 hidden">
-              <span>⌘ + Return</span>
-              <span className="opacity-50">⌥P for sample</span>
-              {!program && <span className="opacity-50">⇧D for demo program</span>}
+            <div className="hidden lg:block absolute bottom-2 right-2 text-xs text-gray-400 space-x-4">
+              <span>⌘ + Return to send</span>
+              <span className="hidden opacity-50">⌥P for sample</span>
+              {!program && <span className="hidden opacity-50">⇧D for demo program</span>}
             </div>
           </div>
           <button
@@ -713,7 +713,7 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
     );
   };
 
-  // Expose the prefillAndSubmit method through the ref
+  // Expose the prefillAndSubmit me1d through the ref
   useImperativeHandle(ref, () => ({
     prefillAndSubmit: (message: string) => {
       setInputValue(message);
@@ -725,8 +725,7 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
   }));
 
   return (
-
-      <div className={`flex flex-col min-h-[80vh] bg-gradient-to-b from-white via-indigo-50/30 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-xl shadow-xl ${program ? 'max-w-full' : 'max-w-3xl mx-auto'}`}>
+      <div className={`flex flex-col h-full bg-gradient-to-b from-white via-indigo-50/30 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-xl shadow-xl ${program ? 'max-w-full' : 'max-w-3xl mx-auto'}`}>
      
         {program ? (
           <ProgramDisplay 
@@ -785,7 +784,6 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
 
         {renderFormSection()}
       </div>
-
   );
 });
 
