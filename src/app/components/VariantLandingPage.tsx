@@ -141,15 +141,35 @@ export default function LandingPage() {
               </div>
 
               {/* Social Proof */}
-              <div className="flex items-center gap-2">
-                <span className="flex h-2 w-2 relative">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                </span>
-                <span className="text-sm text-gray-600 dark:text-gray-300">Thousands of custom programs created</span>
-                <span className="text-sm text-gray-600 dark:text-gray-300">Exercise library with hundreds of variations</span>
-                <span className="text-sm text-gray-600 dark:text-gray-300">Growing library of curated workout programs</span>
-                <span className="text-sm text-gray-600 dark:text-gray-300">Body comp assessment and tracking</span>
+              <div className="flex flex-col space-y-3">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-2 w-2 relative">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                  </span>
+                  <span className="text-sm text-gray-600 dark:text-gray-300">Thousands of custom programs created</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="flex h-2 w-2 relative">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                  </span>
+                  <span className="text-sm text-gray-600 dark:text-gray-300">Exercise library with hundreds of variations</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="flex h-2 w-2 relative">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                  </span>
+                  <span className="text-sm text-gray-600 dark:text-gray-300">Growing library of curated workout programs</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="flex h-2 w-2 relative">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                  </span>
+                  <span className="text-sm text-gray-600 dark:text-gray-300">Body comp assessment and tracking</span>
+                </div>
               </div>
             </div>
 
