@@ -8,6 +8,19 @@ import { BlogPost, BlogCategory, BlogTag, BlogPostFrontmatter } from '@/types/bl
 export const metadata: Metadata = {
   title: 'Blog | Baisics',
   description: 'Read our latest articles about fitness, health, and wellness.',
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      noimageindex: false,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 }
 
 async function getBlogPosts(): Promise<BlogPost[]> {
