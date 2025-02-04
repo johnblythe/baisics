@@ -4,7 +4,7 @@ const prettier = require('prettier')
 const path = require('path')
 const matter = require('gray-matter')
 
-const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN || 'https://baisics.app'
+const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN || 'https://www.baisics.app'
 
 async function generateSitemap() {
   // Import globby dynamically
