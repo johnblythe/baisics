@@ -5,6 +5,9 @@ const nextConfig = {
       bodySizeLimit: '10mb',
     }
   },
+  images: {
+    domains: ['images.unsplash.com'],
+  },
 }
 
 module.exports = nextConfig 

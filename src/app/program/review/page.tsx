@@ -13,6 +13,21 @@ function ProgramReviewContent() {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isUpsellOpen, setIsUpsellOpen] = useState(false);
+
+  // Add escape key handler
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isUpsellOpen) {
+        setIsUpsellOpen(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleEscapeKey);
+    return () => {
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, [isUpsellOpen]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -85,12 +100,13 @@ function ProgramReviewContent() {
       <ProgramDisplay 
         //@ts-ignore
         program={program}
-        userEmail={user.email}
-        onRequestUpsell={() => {}}
-        isUpsellOpen={false}
-        onCloseUpsell={() => {}}
+        userEmail={user?.email}
+        onRequestUpsell={() => setIsUpsellOpen(!isUpsellOpen)}
+        isUpsellOpen={isUpsellOpen}
+        onCloseUpsell={() => setIsUpsellOpen(false)}
       />
     </div>
+    
   );
 }
 

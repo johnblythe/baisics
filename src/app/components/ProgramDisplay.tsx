@@ -46,8 +46,8 @@ export function ProgramDisplay({
       // Wait for the next tick to ensure user state is updated
       await new Promise(resolve => setTimeout(resolve, 100));
       
-      if (workoutPlanRef.current) {
-        await workoutPlanRef.current.generateWorkoutPDF(program);
+      if (workoutPlanRef.current && program.id) {
+        await workoutPlanRef.current.generateWorkoutPDF(program.id);
       }
     } catch (error) {
       console.error('Error handling successful submit:', error);

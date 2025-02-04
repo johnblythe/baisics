@@ -16,6 +16,7 @@ import { createAnonUser, getUser } from "@/app/start/actions";
 import { v4 as uuidv4 } from "uuid";
 import exampleProgram from '../utils/example.json';
 import { ConversationalIntakeRef } from './ConversationalIntakeContainer';
+import { sendGTMEvent } from "@next/third-parties/google";
 
 // Add type for example program phase
 interface ExamplePhase {
@@ -419,6 +420,8 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    sendGTMEvent({ event: 'message sent', value: inputValue.trim() })
     
     if (!inputValue.trim()) return;
 

@@ -212,6 +212,7 @@ function DashboardContent() {
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
   const [currentWorkout, setCurrentWorkout] = useState<CurrentWorkout | null>(null);
   const [activities, setActivities] = useState<Activity[]>([]);
+  const [session, setSession] = useState<any | null>(null);
 
   useEffect(() => {
     const disclaimerAcknowledged = localStorage.getItem('disclaimer-acknowledged');
@@ -263,13 +264,29 @@ function DashboardContent() {
     fetchData();
   }, [router]);
 
+  useEffect(() => {
+    async function fetchSession() {
+      const session = await getSession();
+      setSession(session);
+    }
+    fetchSession();
+  }, []);
+
   const handleAskForHelp = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     // @ts-expect-error Tawk_API is not defined
     void Tawk_API.toggle();
   }
 
- 
+  const handleDownloadPDF = async () => {
+    if (!program?.id || !session?.user?.id) return;
+    try {
+      await generateWorkoutPDF(program.id);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    }
+  };
+
   if (isLoading) {
     return (
       <>
@@ -368,23 +385,7 @@ function DashboardContent() {
                       {/* Helper Links */}
                       <div className="flex items-center gap-6 pt-20">
                         <button
-                          onClick={async () => {
-                            // @todo: fix this hackery, consolidate types
-                            const session = await getSession();
-                            if (!session?.user?.id) return;
-                            
-                            const pdfWorkoutPlan = transformToHiType(program.workoutPlans[0]);
-                            const transformedProgram = {
-                              ...program,
-                              workoutPlans: [pdfWorkoutPlan],
-                              user: {
-                                id: session.user.id,
-                                email: session.user.email
-                              }
-                            };
-                            
-                            generateWorkoutPDF(transformedProgram);
-                          }}
+                          onClick={handleDownloadPDF}
                           className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-white transition-colors"
                         >
                           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

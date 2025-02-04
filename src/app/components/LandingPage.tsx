@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { useState } from 'react'
 import BetaModal from '../components/BetaModal'
 import { useRouter } from 'next/navigation'
+import { sendGTMEvent } from '@next/third-parties/google'
 // import TawkChat from '@/components/TawkChat'
 
 // Track when user opens the modal
@@ -28,6 +29,7 @@ export default function LandingPage() {
 
   const handleGetStarted = (e: React.MouseEvent) => {
     e.preventDefault()
+    sendGTMEvent({ event: 'buttonClicked', value: 'getStarted' })
     // Track the conversion
     trackGetStartedClick();
 
