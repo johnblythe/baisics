@@ -29,7 +29,7 @@ export default function LandingPage() {
 
   const handleGetStarted = (e: React.MouseEvent) => {
     e.preventDefault()
-    sendGTMEvent({ event: 'buttonClicked', value: 'getStarted' })
+    sendGTMEvent({ event: 'button clicked', value: 'getStarted' })
     // Track the conversion
     trackGetStartedClick();
 

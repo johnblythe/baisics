@@ -385,6 +385,7 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
       const { program: savedProgram, programId } = await saveResponse.json();
       setProgram(savedProgram);
       setIsGeneratingProgram(false);
+      sendGTMEvent({ event: 'program created successfully', value: savedProgram })
       router.replace(`/program/review?userId=${localUserId}&programId=${programId}`);
 
     } catch (error) {
@@ -421,7 +422,7 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    sendGTMEvent({ event: 'message sent', value: inputValue.trim() })
+    sendGTMEvent({ event: 'chat message sent', value: inputValue.trim() })
     
     if (!inputValue.trim()) return;
 
