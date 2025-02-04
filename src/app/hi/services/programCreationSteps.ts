@@ -3,6 +3,8 @@ import { sendMessage } from "@/utils/chat";
 import type { ContentBlock } from '@anthropic-ai/sdk/src/resources/messages.js';
 import { prisma } from '@/lib/prisma';
 import { ExerciseMeasureUnit, ExerciseMeasureType, Exercise, ExerciseLibrary } from '@prisma/client';
+import { sendEmail } from '@/lib/email';
+import { adminProgramCreationTemplate } from '@/lib/email/templates';
 
 export interface ProgramStructure {
   name: string;
@@ -573,9 +575,50 @@ export const saveProgramToDatabase = async (program: Program): Promise<Program> 
               }
             }
           }
-        }
+        },
+        user: true
       }
     });
+
+    // Send admin notification email
+    try {
+      await sendEmail({
+        to: process.env.NEXT_PUBLIC_ADMIN_EMAIL!,
+        subject: `New Program Created: ${savedProgram.name}`,
+        html: adminProgramCreationTemplate({
+          programId: savedProgram.id,
+          programName: savedProgram.name,
+          programDescription: savedProgram.description || '',
+          userId: savedProgram.createdBy,
+          userEmail: savedProgram.user?.email,
+          // @ts-ignore
+          workoutPlans: savedProgram.workoutPlans.map(plan => ({
+            phase: plan.phase,
+            daysPerWeek: plan.daysPerWeek,
+            dailyCalories: plan.dailyCalories,
+            proteinGrams: plan.proteinGrams,
+            carbGrams: plan.carbGrams,
+            fatGrams: plan.fatGrams,
+            phaseExplanation: plan.phaseExplanation,
+            workouts: plan.workouts.map(workout => ({
+              name: workout.name,
+              focus: workout.focus,
+              exercises: workout.exercises.map(exercise => ({
+                name: exercise.name,
+                sets: exercise.sets,
+                reps: exercise.reps,
+                measureType: exercise.measureType,
+                measureValue: exercise.measureValue,
+                measureUnit: exercise.measureUnit
+              }))
+            }))
+          }))
+        })
+      });
+    } catch (error) {
+      // Log but don't throw - email notification is non-critical
+      console.error('Failed to send program creation notification:', error);
+    }
 
     return savedProgram as unknown as Program;
   } catch (error) {

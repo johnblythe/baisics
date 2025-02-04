@@ -14,7 +14,7 @@ export function MacrosGuideModal({ isOpen, onClose }: MacrosGuideModalProps) {
 
       {/* Modal container */}
       <div className="fixed inset-0 flex items-center justify-center p-4">
-        <Dialog.Panel className="relative w-full max-w-3xl rounded-2xl bg-white dark:bg-gray-800 shadow-xl overflow-y-auto max-h-[90vh]">
+        <Dialog.Panel className="relative w-full max-w-4xl rounded-2xl bg-white dark:bg-gray-800 shadow-xl overflow-y-auto max-h-[90vh]">
           {/* Header with gradient */}
           <div className="relative overflow-hidden rounded-t-2xl">
             <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 opacity-10" />
