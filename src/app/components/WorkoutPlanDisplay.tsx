@@ -7,7 +7,6 @@ import { User } from '@prisma/client';
 import { generateWorkoutPDF } from '@/utils/pdf';
 import { MacrosGuideModal } from './MacrosGuideModal';
 import { getMacros } from '@/utils/formatting';
-import { DocumentArrowDownIcon } from '@heroicons/react/24/outline';
 // todo
 interface ExtendedWorkoutPlan extends Omit<WorkoutPlan, 'phaseExplanation' | 'phaseExpectations' | 'phaseKeyPoints'> {
   phaseExplanation?: string;

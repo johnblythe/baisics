@@ -1,6 +1,7 @@
 import { jsPDF } from 'jspdf';
 import { formatRestPeriod, formatExerciseMeasure } from '@/utils/formatters';
 import { disclaimer, disclaimerSimple } from './disclaimer';
+import { Exercise, WorkoutPlan } from '@/types/program';
 
 // interface ExtendedWorkoutPlan {
 //   id: string;
@@ -90,7 +91,7 @@ export const generateWorkoutPDF = async (programId: string): Promise<void> => {
     yOffset = 20;
 
     // Phases
-    transformedProgram.workoutPlans.forEach((plan, phaseIndex) => {
+    transformedProgram.workoutPlans.forEach((plan: WorkoutPlan, phaseIndex: number) => {
       // Phase Overview Section
       doc.setFontSize(16);
       doc.setFont('helvetica', 'bold');
@@ -218,7 +219,7 @@ export const generateWorkoutPDF = async (programId: string): Promise<void> => {
 
           // Exercises
           doc.setFont('helvetica', 'normal');
-          workout.exercises.forEach((exercise) => {
+          workout.exercises.forEach((exercise: Exercise) => {
             if (yOffset > doc.internal.pageSize.height - 20) {
               doc.addPage();
               yOffset = 20;
