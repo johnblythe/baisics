@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import GoogleAnalytics from "@/components/GoogleAnalytics";
+// import GoogleAnalytics from "@/components/GoogleAnalytics";
+import { GoogleAnalytics } from '@next/third-parties/google'
 import Providers from "@/components/Providers";
 import { GoogleTagManager } from '@next/third-parties/google'
 // import JsonLd from "@/components/JsonLd";
@@ -92,7 +93,6 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <head>
-        <GoogleAnalytics />
         {/* <JsonLd /> */}
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
@@ -101,6 +101,7 @@ export default async function RootLayout({
           {children}
         </Providers>
       </body>
+      <GoogleAnalytics gaId={process.env.GA_MEASUREMENT_ID || ""} />
     </html>
   );
 }

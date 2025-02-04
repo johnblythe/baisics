@@ -6,7 +6,6 @@ import { useState, useEffect, useRef } from 'react'
 import BetaModal from '../components/BetaModal'
 import { useRouter } from 'next/navigation'
 import ConversationalIntakeContainer, { ConversationalIntakeRef } from '../hi/components/ConversationalIntakeContainer'
-import TestimonialScroller from './TestimonialScroller'
 import GoalCTAs from './GoalCTAs'
 import Header from '@/components/Header'
 
