@@ -13,7 +13,7 @@ export interface EmailOptions {
 }
 
 const emailConfig = {
-  host: 'smtp.forwardemail.net',
+  host: process.env.SMTP_HOST,
   port: 465,
   secure: true,
   auth: {

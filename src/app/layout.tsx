@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import GoogleAnalytics from "@/components/GoogleAnalytics";
+// import GoogleAnalytics from "@/components/GoogleAnalytics";
+import { GoogleAnalytics } from '@next/third-parties/google'
 import Providers from "@/components/Providers";
+import { GoogleTagManager } from '@next/third-parties/google'
 // import JsonLd from "@/components/JsonLd";
 
 const geistSans = localFont({
@@ -86,17 +88,20 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const gtmId = process.env.GTM_ID;
+
   return (
     <html lang="en">
       <head>
-        <GoogleAnalytics />
         {/* <JsonLd /> */}
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        {gtmId && <GoogleTagManager gtmId={gtmId} />}
         <Providers>
           {children}
         </Providers>
       </body>
+      <GoogleAnalytics gaId={process.env.GA_MEASUREMENT_ID || ""} />
     </html>
   );
 }

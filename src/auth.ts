@@ -12,10 +12,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     ForwardEmail({
       server: {
-        host: process.env.EMAIL_SERVER_HOST,
+        host: process.env.SMTP_HOST,
         auth: {
-          user: process.env.EMAIL_SERVER_USER,
-          pass: process.env.EMAIL_SERVER_PASSWORD,
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASSWORD,
         }
       },
       from: development ? "noreply@localhost" : process.env.EMAIL_FROM,

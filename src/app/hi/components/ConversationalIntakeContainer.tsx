@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef, useImperativeHandle, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getUser, getUserProgram } from "../../start/actions";
 import { User } from "@prisma/client";
@@ -8,7 +8,39 @@ import { ConversationalInterface } from "./ConversationalInterface";
 import Link from "next/link";
 import { Program } from "@/types";
 
-function ConversationalIntakeContent() {
+// Define the ref type
+export interface ConversationalIntakeRef {
+  prefillAndSubmit: (message: string) => void;
+}
+
+interface ConversationalIntakeContainerProps {
+  userId?: string;
+  preventNavigation?: boolean;
+}
+
+const ConversationalIntakeContainer = forwardRef<ConversationalIntakeRef, ConversationalIntakeContainerProps>(
+  ({ userId: propUserId, preventNavigation }, ref) => {
+    const chatRef = useRef<ConversationalIntakeRef>(null);
+
+    useImperativeHandle(ref, () => ({
+      prefillAndSubmit: (message: string) => {
+        chatRef.current?.prefillAndSubmit(message);
+      }
+    }));
+
+    return <ConversationalIntakeContent chatRef={chatRef} userId={propUserId} preventNavigation={preventNavigation} />;
+  }
+);
+
+ConversationalIntakeContainer.displayName = 'ConversationalIntakeContainer';
+
+interface ConversationalIntakeContentProps {
+  chatRef: React.RefObject<ConversationalIntakeRef>;
+  userId?: string;
+  preventNavigation?: boolean;
+}
+
+function ConversationalIntakeContent({ chatRef, userId: propUserId, preventNavigation }: ConversationalIntakeContentProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [userId, setUserId] = useState<string>("");
@@ -20,15 +52,16 @@ function ConversationalIntakeContent() {
   useEffect(() => {
     const initializeFromUrl = async () => {
       const urlUserId = searchParams.get("userId");
-      const urlProgramId = searchParams.get("programId");
       
-      if (urlUserId) {
+      if (propUserId) {
+        setUserId(propUserId);
+      } else if (urlUserId) {
         setUserId(urlUserId);
         const result = await getUser(urlUserId);
         if (result.success && result.user) {
           setUser(result.user);
           
-          // If we have a programId, load the program
+          const urlProgramId = searchParams.get("programId");
           if (urlProgramId) {
             const programResult = await getUserProgram(urlUserId, urlProgramId);
             if (programResult.success && programResult.program) {
@@ -41,7 +74,7 @@ function ConversationalIntakeContent() {
     };
 
     initializeFromUrl();
-  }, [searchParams]);
+  }, [searchParams, propUserId]);
 
   const handleProgramChange = (newProgram: Program | null) => {
     setProgram(newProgram);
@@ -62,10 +95,12 @@ function ConversationalIntakeContent() {
         user={user}
         initialProgram={program}
         onProgramChange={handleProgramChange}
+        ref={chatRef}
+        preventNavigation={preventNavigation}
       />
       
       {/* Admin Testing Corner */}
-      {process.env.NODE_ENV === 'development' && (
+      {process.env.NODE_ENV === 'development' && !preventNavigation && (
         <div className="fixed bottom-4 right-4 opacity-50 hover:opacity-100 transition-opacity">
           <Link
             href="/hi"
@@ -83,12 +118,4 @@ function ConversationalIntakeContent() {
   );
 }
 
-export default function ConversationalIntakeContainer() {
-  return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
-      <main className="flex-grow bg-white dark:bg-gray-900">
-        <ConversationalIntakeContent />
-      </main>
-    </div>
-  );
-} 
+export default ConversationalIntakeContainer; 
