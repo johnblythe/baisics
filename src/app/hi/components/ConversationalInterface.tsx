@@ -460,12 +460,6 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
       return;
     }
 
-    // Handle initial intake
-    if (!preventNavigation) {
-      router.push(`/hi?message=${encodeURIComponent(userMessage.content)}`);
-      return;
-    }
-
     // If preventNavigation is true, handle the conversation in place
     await handleInitialIntake(userMessage, localUserId);
   };
