@@ -29,7 +29,9 @@ async function generateSitemap() {
     '!src/app/purchase/**',   // Purchase flows
     '!src/app/auth/**',       // Auth pages
     '!src/app/api/**',        // API routes
-    '!src/app/admin/**'       // Admin routes
+    '!src/app/admin/**',       // Admin routes
+    '!src/app/test/**',  // Test pages
+    '!src/app/program/**'  // Program pages
   ])
 
   // Get all MDX files from content directory
