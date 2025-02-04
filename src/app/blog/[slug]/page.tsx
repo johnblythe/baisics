@@ -14,36 +14,44 @@ type Props = {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params
-  const post = getBlogPost(slug)
-  
-  if (!post) {
-    return {
-      title: 'Post Not Found | Baisics',
-      robots: {
-        index: false,
-        follow: true,
-      },
+  try {
+    const { slug } = await params
+    const post = getBlogPost(slug)
+    
+    if (!post) {
+      return {
+        title: 'Post Not Found | Baisics',
+        robots: {
+          index: false,
+          follow: true,
+        },
+      }
     }
-  }
 
-  return {
-    title: `${post.title} | Baisics Blog`,
-    description: post.metaDescription || post.excerpt,
-    keywords: post.keywords,
-    robots: {
-      index: true,
-      follow: true,
-      nocache: false,
-      googleBot: {
+    return {
+      title: `${post.title} | Baisics Blog`,
+      description: post.metaDescription || post.excerpt,
+      keywords: post.keywords,
+      robots: {
         index: true,
         follow: true,
-        noimageindex: false,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
+        nocache: false,
+        googleBot: {
+          index: true,
+          follow: true,
+          noimageindex: false,
+          'max-video-preview': -1,
+          'max-image-preview': 'large',
+          'max-snippet': -1,
+        },
       },
-    },
+    }
+  } catch(error) {
+    console.error('Error generating metadata:', error)
+    return {
+      title: 'Error | Baisics Blog',
+      robots: { index: false, follow: true },
+    }
   }
 }
 
