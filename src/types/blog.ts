@@ -1,3 +1,5 @@
+import { ReactNode } from 'react';
+
 export interface BlogPostFrontmatter {
   title: string;
   date: string;
@@ -8,6 +10,11 @@ export interface BlogPostFrontmatter {
   categories: string[];
   tags: string[];
   keywords?: string[];
+  relatedLinks?: ReactNode[];  // For fields that can contain JSX
+  benefits?: ReactNode[];      // For fields that can contain JSX
+  tips?: ReactNode[];         // For fields that can contain JSX
+  warnings?: ReactNode[];     // For fields that can contain JSX
+  steps?: ReactNode[];       // For fields that can contain JSX
 }
 
 export interface BlogPost {

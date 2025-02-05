@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { NextResponse } from 'next/server';
 import { workoutFilePrompt } from '@/utils/prompts/workoutFileProcessing';
 import { sendMessage } from '@/utils/chat';
@@ -137,11 +138,6 @@ export async function POST(request: Request) {
 
     try {
       const parsed = JSON.parse(content);
-      console.log("Parsed response from Claude:", JSON.stringify(parsed, null, 2));
-      console.log("Workouts with exercises:", parsed.workouts.map(w => ({
-        name: w.name,
-        exercises: w.exercises
-      })));
       
       // Get or create test user
       let testUser = await prisma.user.findFirst({

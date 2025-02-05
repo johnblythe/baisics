@@ -15,13 +15,27 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const categoryName = slug
-    .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ')
-
+  .split('-')
+  .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+  .join(' ')
+  
+  
   return {
     title: `${categoryName} Articles | Baisics Blog`,
     description: `Read our articles about ${categoryName.toLowerCase()} on the Baisics blog.`,
+    robots: {
+      index: true,
+      follow: true,
+      nocache: false,
+      googleBot: {
+        index: true,
+        follow: true,
+        noimageindex: false,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
   }
 }
 
@@ -29,90 +43,57 @@ async function getBlogPosts(categorySlug: string): Promise<BlogPost[]> {
   const blogDir = path.join(process.cwd(), 'src/content/blog')
   const directories = fs.readdirSync(blogDir)
   
-  const posts = directories.map(dir => {
-    const fullPath = path.join(blogDir, dir, 'index.mdx')
+  const posts = await Promise.all(directories.map(async dir => {
+    const fullPath = path.join(blogDir, dir, 'index.tsx')
+    if (!fs.existsSync(fullPath)) {
+      return null
+    }
+
     const fileContents = fs.readFileSync(fullPath, 'utf8')
     
-    const frontmatterRegex = /---\r?\n([\s\S]*?)\r?\n---/
+    // Extract frontmatter from export const frontmatter: BlogPostFrontmatter = {...}
+    const frontmatterRegex = /export\s+const\s+frontmatter\s*:\s*BlogPostFrontmatter\s*=\s*({[\s\S]*?})/
     const match = frontmatterRegex.exec(fileContents)
     
     if (!match) {
-      throw new Error('No frontmatter found')
+      console.error(`No frontmatter match found in ${dir}`)
+      return null
     }
 
-    const frontmatterString = match[1]
-    const frontmatter: BlogPostFrontmatter = {
-      title: '',
-      date: '',
-      excerpt: '',
-      published: true,
-      featured: false,
-      categories: [],
-      tags: [],
-      keywords: []
-    }
-
-    // Parse frontmatter line by line
-    const lines = frontmatterString.split('\n')
-    let currentKey = ''
-    let isInArray = false
-    
-    for (const line of lines) {
-      const trimmedLine = line.trim()
-      if (!trimmedLine) continue
-
-      if (!trimmedLine.startsWith('-')) {
-        isInArray = false
-        const [key, ...values] = trimmedLine.split(':')
-        currentKey = key.trim()
-        const value = values.join(':').trim()
-
-        if (!value) {
-          // This is an array start
-          isInArray = true
-          continue
-        }
-
-        if (value === 'true' || value === 'false') {
-          (frontmatter[currentKey as keyof BlogPostFrontmatter] as boolean) = value === 'true'
-        } else {
-          (frontmatter[currentKey as keyof BlogPostFrontmatter] as string) = value
-        }
-      } else if (isInArray) {
-        // This is an array item
-        const value = trimmedLine.substring(1).trim()
-        if (value && Array.isArray(frontmatter[currentKey as keyof BlogPostFrontmatter])) {
-          (frontmatter[currentKey as keyof BlogPostFrontmatter] as string[]).push(value)
-        }
+    try {
+      // Parse the frontmatter object
+      const frontmatterString = match[1]
+      const frontmatter = eval(`(${frontmatterString})`)
+      
+      return {
+        slug: dir,
+        frontmatter,
       }
+    } catch (error) {
+      console.error(`Error parsing frontmatter for ${dir}:`, error)
+      return null
     }
+  }))
+
+  const validPosts = posts.filter((post): post is BlogPost => post !== null)
+
+  // Normalize the category slug for comparison
+  const normalizedCategorySlug = categorySlug.toLowerCase().replace(/-/g, ' ')
     
-    return {
-      slug: dir,
-      frontmatter,
-    }
-  })
-
-  const categoryName = categorySlug
-    .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ')
-
-  console.log("Looking for category:", categoryName)
-  
-  const filteredPosts = posts
+  const filteredPosts = validPosts
     .filter(post => {
-      console.log("Post categories:", post.frontmatter.categories)
-      return post.frontmatter.published && 
-        post.frontmatter.categories.some((category: string) => 
-          category.toLowerCase() === categoryName.toLowerCase()
-        )
+      const isPublished = post.frontmatter.published
+      const hasCategory = post.frontmatter.categories.some((category: string) => {
+        const normalizedCategory = category.toLowerCase()
+        const matches = normalizedCategory === normalizedCategorySlug
+        return matches
+      })
+
+      return isPublished && hasCategory
     })
     .sort((a, b) => 
       new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime()
     )
-
-  console.log("Found posts:", filteredPosts.length)
   return filteredPosts
 }
 
@@ -129,7 +110,6 @@ async function CategoryPageContent({ params }: Props) {
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
   
-  console.log("🚀 ~ CategoryPageContent ~ categoryName:", categoryName)
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">

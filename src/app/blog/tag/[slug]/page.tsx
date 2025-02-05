@@ -3,7 +3,7 @@ import fs from 'fs'
 import path from 'path'
 import Link from 'next/link'
 import MainLayout from '@/app/components/layouts/MainLayout'
-import { BlogPost } from '@/types/blog'
+import { BlogPost, BlogPostFrontmatter } from '@/types/blog'
 import { notFound } from 'next/navigation'
 
 type Props = {
@@ -22,6 +22,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${tagName} Articles | Baisics Blog`,
     description: `Read our articles tagged with ${tagName.toLowerCase()} on the Baisics blog.`,
+    robots: {
+      index: true,
+      follow: true,
+      nocache: false,
+      googleBot: {
+        index: true,
+        follow: true,
+        noimageindex: false,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
   }
 }
 
@@ -29,71 +42,38 @@ async function getBlogPosts(tagSlug: string): Promise<BlogPost[]> {
   const blogDir = path.join(process.cwd(), 'src/content/blog')
   const directories = fs.readdirSync(blogDir)
   
-  const posts = directories.map(dir => {
-    const fullPath = path.join(blogDir, dir, 'index.mdx')
-    const fileContents = fs.readFileSync(fullPath, 'utf8')
-    
-    const frontmatterRegex = /---\r?\n([\s\S]*?)\r?\n---/
-    const match = frontmatterRegex.exec(fileContents)
-    
-    if (!match) {
-      throw new Error('No frontmatter found')
+  const posts = await Promise.all(directories.map(async dir => {
+    try {
+      const { frontmatter } = await import(`@/content/blog/${dir}/index.tsx`)
+      if (!frontmatter.published) {
+        return null
+      }
+      return {
+        slug: dir,
+        frontmatter: frontmatter as BlogPostFrontmatter
+      }
+    } catch (error) {
+      console.error(`Error loading blog post ${dir}:`, error)
+      return null
     }
+  }))
 
-    const frontmatterString = match[1]
-    
-    const frontmatter = {
-      title: '',
-      date: '',
-      excerpt: '',
-      published: true,
-      featured: false,
-      categories: [],
-      tags: [],
-      keywords: [],
-      ...Object.fromEntries(
-        frontmatterString.split('\n').map(line => {
-          const [key, ...values] = line.split(':')
-          const value = values.join(':').trim()
-          
-          if (value.startsWith('[') || value.startsWith('-')) {
-            return [
-              key.trim(), 
-              value.replace(/[\[\]]/g, '')
-                .split('-')
-                .map(item => item.trim())
-                .filter(Boolean)
-            ]
-          }
-          
-          if (value === 'true' || value === 'false') {
-            return [key.trim(), value === 'true']
-          }
-          
-          return [key.trim(), value.replace(/^"(.*)"$/, '$1')]
-        })
-      )
-    }
-    
-    return {
-      slug: dir,
-      frontmatter,
-    }
-  })
+  const validPosts = posts.filter((post): post is BlogPost => post !== null)
 
-  const tagName = tagSlug
-    .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ')
-
-  return posts
+  // Normalize the tag slug for comparison
+  const normalizedTagSlug = tagSlug.toLowerCase().replace(/-/g, ' ')
+  
+  const filteredPosts = validPosts
     .filter(post => 
-      post.frontmatter.published && 
-      post.frontmatter.tags.map((tag: string) => tag.toLowerCase()).includes(tagName.toLowerCase())
+      post.frontmatter.tags.some((tag: string) => 
+        tag.toLowerCase() === normalizedTagSlug
+      )
     )
     .sort((a, b) => 
       new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime()
     )
+
+  return filteredPosts
 }
 
 async function TagPageContent({ params }: Props) {

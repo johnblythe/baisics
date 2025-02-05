@@ -6,7 +6,7 @@ import { Program } from '@/types/program';
 import { User } from '@prisma/client';
 import { generateWorkoutPDF } from '@/utils/pdf';
 import { MacrosGuideModal } from './MacrosGuideModal';
-
+import { getMacros } from '@/utils/formatting';
 // todo
 interface ExtendedWorkoutPlan extends Omit<WorkoutPlan, 'phaseExplanation' | 'phaseExpectations' | 'phaseKeyPoints'> {
   phaseExplanation?: string;
@@ -27,7 +27,7 @@ interface WorkoutPlanDisplayProps {
 }
 
 export interface WorkoutPlanDisplayRef {
-  generateWorkoutPDF: (program: Program) => Promise<void>;
+  generateWorkoutPDF: (programId: string, userId: string) => Promise<void>;
 }
 
 export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanDisplayProps>(({
@@ -94,12 +94,24 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
     );
   };
 
-  const { nutrition } = plan;
+  // @TODO come back and fix types
+  // const nutrition = {
+  //   // @ts-ignore
+  //   dailyCalories: plan.dailyCalories,
+  //   // @ts-ignore
+  //   proteinGrams: plan.proteinGrams,
+  //   // @ts-ignore
+  //   carbGrams: plan.carbGrams,
+  //   // @ts-ignore
+  //   fatGrams: plan.fatGrams
+  // }
+
+  const nutrition = getMacros(plan as WorkoutPlan);  
 
   useImperativeHandle(ref, () => ({
-    generateWorkoutPDF: async (program: Program) => {
+    generateWorkoutPDF: async (programId: string, userId: string) => {
       try {
-        await generateWorkoutPDF(program);
+        await generateWorkoutPDF(programId);
       } catch (error) {
         console.error('Error generating PDF:', error);
       }
@@ -150,7 +162,7 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
             <div className="flex items-center gap-4">
               {userEmail ? (
                 <button
-                  onClick={() => generateWorkoutPDF(program)}
+                  onClick={() => generateWorkoutPDF(program.id)}
                   className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -260,10 +272,10 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
 
               <div className="space-y-3">
                 {[
-                  { id: 'calories', label: 'Daily Calories', value: `${nutrition?.dailyCalories} kcals` },
-                  { id: 'protein', label: 'Protein', value: `${nutrition?.macros?.protein}g` },
-                  { id: 'carbs', label: 'Carbs', value: `${nutrition?.macros?.carbs}g` },
-                  { id: 'fats', label: 'Fats', value: `${nutrition?.macros?.fats}g` }
+                  { id: 'calories', label: 'Daily Calories', value: `${nutrition?.calories} kcals` },
+                  { id: 'protein', label: 'Protein', value: `${nutrition?.protein}g` },
+                  { id: 'carbs', label: 'Carbs', value: `${nutrition?.carbs}g` },
+                  { id: 'fats', label: 'Fats', value: `${nutrition?.fats}g` }
                 ].map((item) => (
                   <div key={item.id} className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-700">
                     <span className="text-gray-600 dark:text-gray-300">{item.label}</span>
