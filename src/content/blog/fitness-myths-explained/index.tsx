@@ -144,7 +144,7 @@ Adherence: Usually excellent`}
       </BlogSection>
 
       <BlogSection>
-        <h2 className="text-3xl font-bold mb-4">4. Lifting Weights Doesn't Make You Bulky</h2>
+        <h2 className="text-3xl font-bold mb-4">4. Lifting Weights Doesn&apos;t Make You Bulky</h2>
 
         <h3 className="text-2xl font-semibold mb-4">The Reality of Muscle Growth</h3>
         <p className="mb-4">
@@ -168,7 +168,7 @@ Women: ~50% of these rates`}
       </BlogSection>
 
       <BlogSection>
-        <h2 className="text-3xl font-bold mb-4">5. More Meals Don't "Boost" Metabolism</h2>
+        <h2 className="text-3xl font-bold mb-4">5. More Meals Don&apos;t &ldquo;Boost&rdquo; Metabolism</h2>
 
         <h3 className="text-2xl font-semibold mb-4">The Truth About Meal Timing</h3>
         <BlogList items={[
@@ -189,7 +189,7 @@ Women: ~50% of these rates`}
       </BlogSection>
 
       <BlogSection>
-        <h2 className="text-3xl font-bold mb-4">6. Soreness Doesn't Equal Progress</h2>
+        <h2 className="text-3xl font-bold mb-4">6. Soreness Doesn&apos;t Equal Progress</h2>
 
         <h3 className="text-2xl font-semibold mb-4">Understanding Muscle Soreness</h3>
         <p className="mb-4">
@@ -243,7 +243,7 @@ Basic Routine:
       </BlogSection>
 
       <BlogSection>
-        <h2 className="text-3xl font-bold mb-4">8. Fat Loss Isn't Linear</h2>
+        <h2 className="text-3xl font-bold mb-4">8. Fat Loss Isn&apos;t Linear</h2>
 
         <h3 className="text-2xl font-semibold mb-4">The Reality of Fat Loss</h3>
         <p className="mb-4">

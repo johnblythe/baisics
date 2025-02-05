@@ -46,7 +46,7 @@ export default function BreakingThroughStrengthPlateaus() {
       </p>
 
       <p className="mb-6">
-        Strength plateaus are a natural part of training, but they don't have to be permanent. This guide 
+        Strength plateaus are a natural part of training, but they don&apos;t have to be permanent. This guide 
         shows you exactly how to identify the cause of your plateau and implement effective solutions.
       </p>
 
@@ -278,7 +278,7 @@ export default function BreakingThroughStrengthPlateaus() {
         <h2 className="text-3xl font-bold mb-4">Expert Tips</h2>
         
         <BlogQuote author="Dr. Mike Israetel">
-          Sometimes taking one step back in volume can lead to two steps forward in strength. Don't be afraid to reduce volume temporarily.
+          Sometimes taking one step back in volume can lead to two steps forward in strength. Don&apos;t be afraid to reduce volume temporarily.
         </BlogQuote>
 
         <BlogQuote author="Chad Wesley Smith">

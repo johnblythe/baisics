@@ -39,13 +39,13 @@ export default function ProteinTimingMyth() {
   return (
     <BlogPost frontmatter={frontmatter}>
       <p className="italic">
-        The post-workout "anabolic window" has been a hot topic in fitness for years. But what does the 
-        science actually say about protein timing? Let's separate fact from fiction.
+        The post-workout &ldquo;anabolic window&rdquo; has been a hot topic in fitness for years. But what does the 
+        science actually say about protein timing? Let&apos;s separate fact from fiction.
       </p>
 
       <p className="mb-6">
         For decades, gym-goers have rushed to consume protein immediately after workouts, believing they 
-        would miss out on gains if they didn't hit the mythical "anabolic window." Recent research has 
+        would miss out on gains if they didn&apos;t hit the mythical &ldquo;anabolic window.&rdquo; Recent research has 
         shed new light on this practice, revealing some surprising findings about protein timing and 
         muscle growth.
       </p>
@@ -212,13 +212,13 @@ Result: Window much wider than previously thought`}
       <BlogSection>
         <h2 className="text-3xl font-bold mb-4">Common Myths Debunked</h2>
 
-        <h3 className="text-2xl font-semibold mb-4">Myth 1: "The Anabolic Window is 30 Minutes"</h3>
+        <h3 className="text-2xl font-semibold mb-4">Myth 1: &ldquo;The Anabolic Window is 30 Minutes&rdquo;</h3>
         <p className="mb-4">Truth: Research shows the window is several hours</p>
 
-        <h3 className="text-2xl font-semibold mt-6 mb-4">Myth 2: "You Must Have a Shake Immediately"</h3>
+        <h3 className="text-2xl font-semibold mt-6 mb-4">Myth 2: &ldquo;You Must Have a Shake Immediately&rdquo;</h3>
         <p className="mb-4">Truth: Whole food sources work fine</p>
 
-        <h3 className="text-2xl font-semibold mt-6 mb-4">Myth 3: "Missing the Window Kills Gains"</h3>
+        <h3 className="text-2xl font-semibold mt-6 mb-4">Myth 3: &ldquo;Missing the Window Kills Gains&rdquo;</h3>
         <p className="mb-4">Truth: Total daily intake matters most</p>
       </BlogSection>
 
@@ -260,7 +260,7 @@ Result: Window much wider than previously thought`}
         <h2 className="text-3xl font-bold mb-4">Expert Opinions</h2>
         
         <BlogQuote author="Dr. Brad Schoenfeld">
-          The anabolic window is more like a barn door – it's a lot wider than we once thought.
+          The anabolic window is more like a barn door – it&apos;s a lot wider than we once thought.
         </BlogQuote>
 
         <BlogQuote author="Alan Aragon">
@@ -280,12 +280,12 @@ Result: Window much wider than previously thought`}
           <>Training consistency (<Link href="/blog/compound-vs-isolation-exercises">learn about compound exercises</Link>)</>
         ]} />
 
-        <h3 className="text-2xl font-semibold mt-6 mb-4">Don't Stress About:</h3>
+        <h3 className="text-2xl font-semibold mt-6 mb-4">Don&apos;t Stress About:</h3>
         <BlogList items={[
           "Exact post-workout timing",
           "Protein type specifics",
           "Supplement timing",
-          "Missing the \"window\""
+          "Missing the &ldquo;window&rdquo;"
         ]} />
       </BlogSection>
 
@@ -294,7 +294,7 @@ Result: Window much wider than previously thought`}
         
         <p className="mb-4">
           The concept of a narrow anabolic window has been largely debunked by modern research. While 
-          protein timing isn't irrelevant, it's far less important than:
+          protein timing isn&apos;t irrelevant, it&apos;s far less important than:
         </p>
         <BlogList items={[
           "Meeting daily protein requirements",
@@ -306,13 +306,13 @@ Result: Window much wider than previously thought`}
 
         <p className="mt-4 mb-4">
           For most people, focusing on these fundamentals will yield better results than stressing about 
-          precise protein timing. The "window of opportunity" for protein consumption is much wider than 
+          precise protein timing. The &ldquo;window of opportunity&rdquo; for protein consumption is much wider than 
           previously thought, giving you more flexibility in your nutrition planning.
         </p>
 
         <p className="mb-4">
           Remember: Consistency in your overall approach matters more than perfection in timing. Focus on 
-          the basics first, and only worry about precise timing if you've already optimized everything else.
+          the basics first, and only worry about precise timing if you&apos;ve already optimized everything else.
         </p>
 
         <p className="mt-6 italic">

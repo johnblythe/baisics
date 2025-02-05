@@ -64,7 +64,7 @@ export default function WeightLossPlateausGuide() {
         <h3 className="text-2xl font-semibold mb-4">1. Metabolic Adaptation</h3>
         <p className="mb-4">
           Your body is smarter than you think. As you lose weight, your metabolism naturally slows down 
-          – a phenomenon known as "metabolic adaptation" or "adaptive thermogenesis."
+          – a phenomenon known as &ldquo;metabolic adaptation&rdquo; or &ldquo;adaptive thermogenesis.&rdquo;
         </p>
 
         <div className="mb-6">
