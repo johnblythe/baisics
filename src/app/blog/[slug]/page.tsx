@@ -1,11 +1,7 @@
 import { Metadata } from 'next'
-import fs from 'fs'
-import path from 'path'
-import matter from 'gray-matter'
 import { notFound } from 'next/navigation'
-import { serialize } from 'next-mdx-remote/serialize'
-import { MDXContent } from '@/components/MDXContent'
 import MainLayout from '@/app/components/layouts/MainLayout'
+import { BlogPostFrontmatter } from '@/types/blog'
 
 type Props = {
   params: Promise<{
@@ -13,9 +9,21 @@ type Props = {
   }>
 }
 
+async function getBlogPost(slug: string) {
+  try {
+    const BlogPost = await import(`@/content/blog/${slug}/index.tsx`)
+    return {
+      default: BlogPost.default,
+      frontmatter: BlogPost.frontmatter as BlogPostFrontmatter
+    }
+  } catch (error) {
+    return null
+  }
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const post = getBlogPost(slug)
+  const post = await getBlogPost(slug)
   
   if (!post) {
     return {
@@ -28,9 +36,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   return {
-    title: `${post.title} | Baisics Blog`,
-    description: post.metaDescription || post.excerpt,
-    keywords: post.keywords,
+    title: `${post.frontmatter.title} | Baisics Blog`,
+    description: post.frontmatter.metaDescription || post.frontmatter.excerpt,
+    keywords: post.frontmatter.keywords,
     robots: {
       index: true,
       follow: true,
@@ -47,62 +55,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-function getBlogPost(slug: string) {
-  try {
-    const fullPath = path.join(process.cwd(), 'src/content/blog', slug, 'index.mdx')
-    const fileContents = fs.readFileSync(fullPath, 'utf8')
-    const { data, content } = matter(fileContents)
-    
-    return {
-      slug,
-      content,
-      title: data.title,
-      date: data.date,
-      excerpt: data.excerpt,
-      metaDescription: data.metaDescription,
-      keywords: data.keywords,
-    }
-  } catch (error) {
-    return null
-  }
-}
-
-async function BlogPostContent({ params }: Props) {
+export default async function BlogPost({ params }: Props) {
   const { slug } = await params
-  const post = getBlogPost(slug)
+  const post = await getBlogPost(slug)
 
   if (!post) {
     notFound()
   }
 
-  const mdxSource = await serialize(post.content)
+  const PostContent = post.default
 
-  return (
-    <main className="flex-grow bg-background">
-      <article className="container max-w-4xl mx-auto px-4 py-12">
-        <header className="mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">{post.title}</h1>
-          <time className="text-muted-foreground text-sm block">
-            {new Date(post.date).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            })}
-          </time>
-        </header>
-        
-        <div className="max-w-none text-foreground">
-          <MDXContent source={mdxSource} />
-        </div>
-      </article>
-    </main>
-  )
-}
-
-export default function BlogPost({ params }: Props) {
   return (
     <MainLayout>
-      <BlogPostContent params={params} />
+      <main className="flex-grow bg-background">
+        <PostContent />
+      </main>
     </MainLayout>
   )
 }
