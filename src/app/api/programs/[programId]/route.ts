@@ -1,13 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-
+import { auth } from "@/auth";
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ programId: string }> }
 ) {
   try {
     const { programId } = await params;
-    const userId = request.nextUrl.searchParams.get("userId");
+    let userId = request.nextUrl.searchParams.get("userId");
+    if (!userId) {
+      const session = await auth();
+      userId = session?.user?.id ?? null;
+    }
 
     if (!userId) {
       return NextResponse.json(

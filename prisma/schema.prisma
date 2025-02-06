@@ -225,6 +225,7 @@ model Program {
   createdBy    String         @map("created_by") @db.Uuid
   createdAt    DateTime       @default(now()) @map("created_at")
   updatedAt    DateTime       @updatedAt @map("updated_at")
+  source       String?        @map("source") /// such as 'uploaded', 'ai', etc.
   user         User           @relation(fields: [createdBy], references: [id])
   workoutPlans WorkoutPlan[]
   userImages   UserImages[]

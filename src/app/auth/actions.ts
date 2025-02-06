@@ -6,6 +6,7 @@ export async function signInAction(email: string) {
   return signIn("forwardemail", {
     email,
     redirect: false,
-    callbackUrl: "/auth/verify-request"
+    // callbackUrl: "/auth/verify-request"
+    callbackUrl: "/dashboard"
   });
 } 

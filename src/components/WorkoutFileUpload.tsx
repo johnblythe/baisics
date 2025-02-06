@@ -9,11 +9,17 @@ interface UploadState {
   error?: string;
   result?: {
     parsed: WorkoutFileResponse;
-    saved: any; // Using any for now since we don't have the Prisma types
+    file: string;
+    fileName: string;
   };
 }
 
-export function WorkoutFileUpload() {
+interface WorkoutFileUploadProps {
+  onSuccess?: (result: WorkoutFileResponse & { file: string; fileName: string }) => void;
+  className?: string;
+}
+
+export function WorkoutFileUpload({ onSuccess, className = '' }: WorkoutFileUploadProps) {
   const [state, setState] = useState<UploadState>({ status: 'idle' });
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
@@ -37,7 +43,11 @@ export function WorkoutFileUpload() {
       const response = await fetch('/api/programs/import', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ file: fileContent, fileName: file.name }),
+        body: JSON.stringify({ 
+          file: fileContent, 
+          fileName: file.name,
+          autoSave: false // Never auto-save, we'll handle that in the modal
+        }),
       });
 
       const data = await response.json();
@@ -47,7 +57,22 @@ export function WorkoutFileUpload() {
         throw new Error(error.reason);
       }
 
-      setState({ status: 'success', result: data });
+      setState({ 
+        status: 'success', 
+        result: {
+          parsed: data.parsed,
+          file: fileContent,
+          fileName: file.name
+        }
+      });
+      
+      if (onSuccess) {
+        onSuccess({
+          ...data.parsed,
+          file: fileContent,
+          fileName: file.name
+        });
+      }
 
     } catch (error) {
       setState({ 
@@ -55,7 +80,7 @@ export function WorkoutFileUpload() {
         error: error instanceof Error ? error.message : 'An unknown error occurred' 
       });
     }
-  }, []);
+  }, [onSuccess]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -68,23 +93,23 @@ export function WorkoutFileUpload() {
   });
 
   return (
-    <div className="space-y-4">
+    <div className={`space-y-4 ${className}`}>
       <div
         {...getRootProps()}
         className={`
           border-2 border-dashed rounded-lg p-8 text-center cursor-pointer
           transition-colors duration-200
-          ${isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'}
+          ${isDragActive ? 'border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/20' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'}
         `}
       >
         <input {...getInputProps()} />
         <div className="space-y-2">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 dark:text-gray-300">
             {isDragActive
               ? 'Drop the file here...'
               : 'Drag & drop a workout file, or click to select'}
           </p>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
             Supports PDF and image files
           </p>
         </div>
@@ -93,99 +118,25 @@ export function WorkoutFileUpload() {
       {/* Status Display */}
       {state.status === 'uploading' && (
         <div className="text-center py-4">
-          <p className="text-sm text-gray-600">Uploading file...</p>
+          <div className="inline-flex items-center gap-2">
+            <div className="w-4 h-4 border-2 border-indigo-600 dark:border-indigo-400 border-t-transparent rounded-full animate-spin" />
+            <p className="text-sm text-gray-600 dark:text-gray-300">Uploading file...</p>
+          </div>
         </div>
       )}
 
       {state.status === 'processing' && (
         <div className="text-center py-4">
-          <p className="text-sm text-gray-600">Processing...</p>
+          <div className="inline-flex items-center gap-2">
+            <div className="w-4 h-4 border-2 border-indigo-600 dark:border-indigo-400 border-t-transparent rounded-full animate-spin" />
+            <p className="text-sm text-gray-600 dark:text-gray-300">Processing file...</p>
+          </div>
         </div>
       )}
 
       {state.status === 'error' && (
-        <div className="text-center py-4 text-red-600">
+        <div className="text-center py-4 text-red-600 dark:text-red-400">
           <p className="text-sm">{state.error}</p>
-        </div>
-      )}
-
-      {state.status === 'success' && state.result && (
-        <div className="space-y-6">
-          {/* Program Overview */}
-          <div className="rounded-lg border border-green-200 bg-green-50 p-4">
-            <h3 className="font-medium text-green-800">
-              Successfully Processed and Saved Program
-            </h3>
-            <div className="mt-2 space-y-2 text-sm text-green-700">
-              <p><span className="font-medium">Name:</span> {state.result.parsed.program.name}</p>
-              <p><span className="font-medium">Description:</span> {state.result.parsed.program.description}</p>
-              <p><span className="font-medium">Workouts:</span> {state.result.parsed.workouts.length}</p>
-              <p><span className="font-medium">Days per week:</span> {state.result.parsed.workoutPlan.daysPerWeek}</p>
-              <p><span className="font-medium">Database ID:</span> {state.result.saved.id}</p>
-            </div>
-          </div>
-
-          {/* Workout Plan Details */}
-          <div className="rounded-lg border border-gray-200 bg-white p-4">
-            <h4 className="font-medium text-gray-800">Workout Plan</h4>
-            <div className="mt-2 space-y-2 text-sm">
-              <p><span className="font-medium">Split Type:</span> {state.result.parsed.workoutPlan.splitType}</p>
-              <p><span className="font-medium">Phase:</span> {state.result.parsed.workoutPlan.phase}</p>
-              <div className="mt-2">
-                <p className="font-medium">Phase Key Points:</p>
-                <ul className="list-disc pl-5 mt-1">
-                  {state.result.parsed.workoutPlan.phaseKeyPoints.map((point, i) => (
-                    <li key={i}>{point}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          {/* Individual Workouts */}
-          <div className="space-y-4">
-            <h4 className="font-medium text-gray-800">Workouts</h4>
-            {state.result.parsed.workouts.map((workout, i) => (
-              <div key={i} className="rounded-lg border border-gray-200 bg-white p-4">
-                <div className="flex justify-between items-start">
-                  <h5 className="font-medium">{workout.name}</h5>
-                  <span className="text-sm text-gray-500">Day {workout.dayNumber}</span>
-                </div>
-                <p className="text-sm text-gray-600 mt-1">{workout.focus}</p>
-                
-                {/* Exercises */}
-                <div className="mt-4 space-y-3">
-                  {workout.exercises.map((exercise, j) => (
-                    <div key={j} className="text-sm border-l-2 border-gray-200 pl-3">
-                      <div className="flex justify-between">
-                        <span className="font-medium">{exercise.name}</span>
-                        <span className="text-gray-500">{exercise.category}</span>
-                      </div>
-                      <div className="text-gray-600 space-y-1 mt-1">
-                        <p>Sets: {exercise.sets}</p>
-                        <p>
-                          {exercise.measure.type}: {exercise.measure.value}
-                          {exercise.measure.unit ? ` ${exercise.measure.unit}` : ''}
-                        </p>
-                        <p>Rest: {exercise.restPeriod}s</p>
-                        {exercise.notes && (
-                          <p className="text-gray-500 italic">{exercise.notes}</p>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Raw JSON for Development */}
-          <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-            <h4 className="font-medium text-gray-800 mb-2">Raw Response (Development Only)</h4>
-            <pre className="text-xs overflow-auto max-h-96">
-              {JSON.stringify(state.result, null, 2)}
-            </pre>
-          </div>
         </div>
       )}
     </div>
