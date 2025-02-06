@@ -15,6 +15,7 @@ import { getSession } from 'next-auth/react';
 import { WorkoutPlan as WorkoutPlanHiType } from '@/types/program';
 import { ProgramWithRelations, TransformedProgram } from '../api/programs/current/route';
 import Image from 'next/image';
+import { WorkoutUploadModal } from '@/components/WorkoutUploadModal';
 
 // Types for our API responses
 interface ProgramOverview {
@@ -213,6 +214,7 @@ function DashboardContent() {
   const [currentWorkout, setCurrentWorkout] = useState<CurrentWorkout | null>(null);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [session, setSession] = useState<any | null>(null);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
   useEffect(() => {
     const disclaimerAcknowledged = localStorage.getItem('disclaimer-acknowledged');
@@ -405,6 +407,21 @@ function DashboardContent() {
                             <path d="M6 12H18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                           </svg>
                           Create a new program
+                        </Link>
+                        <Link
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setIsUploadModalOpen(true);
+                          }}
+                          className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-white transition-colors"
+                        >
+                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 16V4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                            <path d="M7 9L12 4L17 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M20 16V18C20 19.1046 19.1046 20 18 20H6C4.89543 20 4 19.1046 4 18V16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          </svg>
+                          Upload a program
                         </Link>
                         <button
                           onClick={handleAskForHelp}
@@ -890,6 +907,11 @@ function DashboardContent() {
                 </div>
               </div>
             </div>
+
+            <WorkoutUploadModal
+              isOpen={isUploadModalOpen}
+              onClose={() => setIsUploadModalOpen(false)}
+            />
           </div>
         </div>
       </main>
