@@ -47,6 +47,7 @@ interface ProgramOverview {
       }[];
     }[];
   }[];
+  createdAt?: Date;
 }
 
 interface ProgramStats {
@@ -153,6 +154,7 @@ interface Program {
       userAgent?: string;
     };
   }[];
+  createdAt?: Date;
 }
 
 interface WorkoutPlan {
@@ -396,8 +398,16 @@ function DashboardContent() {
                     <div className="space-y-2">
                       {program && allPrograms.length > 0 ? (
                         <ProgramSelector 
-                          currentProgram={program}
-                          programs={allPrograms}
+                          currentProgram={{
+                            id: program.id,
+                            name: program.name,
+                            createdAt: program.startDate
+                          }}
+                          programs={allPrograms.map(p => ({
+                            id: p.id,
+                            name: p.name,
+                            createdAt: p.createdAt!
+                          }))}
                         />
                       ) : (
                         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{program.name}</h1>
