@@ -1,0 +1,40 @@
+# https://www.baisics.app robots.txt
+
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://www.baisics.app/sitemap.xml
+
+# Disallow admin and api routes
+Disallow: /api/*
+Disallow: /admin/*
+Disallow: /auth/*
+
+# Prevent indexing of development routes
+Disallow: /_next/*
+Disallow: /static/*
+
+# Rate limiting
+Crawl-delay: 1
+
+# Block specific bots known for aggressive crawling
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: MJ12bot
+Crawl-delay: 10
+
+User-agent: SemrushBot
+Crawl-delay: 10
+
+# Additional helpful directives
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: Google-Extended
+Allow: / 

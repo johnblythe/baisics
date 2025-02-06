@@ -7,6 +7,8 @@ export interface Program {
   workoutPlans: WorkoutPlan[];
   user: Partial<User>;
   userImages?: UserImages[];
+  createdAt?: Date;
+  startDate?: Date;
 }
 
 // used in /start

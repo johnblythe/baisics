@@ -1,7 +1,6 @@
 'use client'
 
 import Script from 'next/script'
-import { useEffect } from 'react'
 
 const GA_MEASUREMENT_ID = 'G-2X1L89GZHR'
 

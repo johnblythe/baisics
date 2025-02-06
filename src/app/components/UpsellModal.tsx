@@ -6,6 +6,7 @@ import { welcomeFreeTemplate, welcomePremiumTemplate } from '@/lib/email/templat
 import { adminSignupNotificationTemplate } from '@/lib/email/templates/admin';
 import { sendEmailAction } from "../hi/actions";
 import { User } from "@prisma/client";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 /**
  * TODOs:
@@ -90,6 +91,13 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
       if (!userId) {
         throw new Error("No user ID found in URL");
       }
+      
+      sendGTMEvent({ event: 'signup - upsell modal', value: {
+        email,
+        isPremium,
+        userId: new URLSearchParams(window.location.search).get('userId'),
+        programId: new URLSearchParams(window.location.search).get('programId'),
+      } })
 
       setIsLoading(true);
 

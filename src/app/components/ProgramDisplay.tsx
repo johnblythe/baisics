@@ -5,15 +5,12 @@ import { useEffect, useState, useRef } from 'react';
 import { User } from '@prisma/client';
 import { getUser } from '../start/actions';
 import { DisclaimerBanner } from '@/components/DisclaimerBanner';
-
 interface ProgramDisplayProps {
   program: Program;
   userEmail?: string | null;
   onRequestUpsell: () => void;
   isUpsellOpen?: boolean;
   onCloseUpsell?: () => void;
-  onUploadImages?: (files: File[]) => Promise<void>;
-  onDeleteImage?: (imageId: string) => Promise<void>;
 }
 
 export function ProgramDisplay({ 
@@ -22,14 +19,10 @@ export function ProgramDisplay({
   onRequestUpsell,
   isUpsellOpen = false,
   onCloseUpsell,
-  onUploadImages,
-  onDeleteImage
 }: ProgramDisplayProps) {
   const [activePlanIndex, setActivePlanIndex] = useState(0);
   const [userEmail, setUserEmail] = useState(initialUserEmail);
   const [isExpanded, setIsExpanded] = useState(true);
-  const [uploadingImages, setUploadingImages] = useState(false);
-  const [deletingImage, setDeletingImage] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const workoutPlanRef = useRef<any>(null);
 
@@ -53,8 +46,8 @@ export function ProgramDisplay({
       // Wait for the next tick to ensure user state is updated
       await new Promise(resolve => setTimeout(resolve, 100));
       
-      if (workoutPlanRef.current) {
-        await workoutPlanRef.current.generateWorkoutPDF(program);
+      if (workoutPlanRef.current && program.id) {
+        await workoutPlanRef.current.generateWorkoutPDF(program.id);
       }
     } catch (error) {
       console.error('Error handling successful submit:', error);
@@ -79,38 +72,6 @@ export function ProgramDisplay({
 
     fetchUser();
   }, []);
-
-  const handleUploadImages = async (files: File[]) => {
-    console.log('ProgramDisplay: handleUploadImages called with files:', files);
-    if (!onUploadImages) {
-      console.warn('ProgramDisplay: onUploadImages prop is not provided');
-      return;
-    }
-    setUploadingImages(true);
-    try {
-      console.log('ProgramDisplay: Calling parent onUploadImages function');
-      await onUploadImages(files);
-      console.log('ProgramDisplay: Upload completed successfully');
-    } catch (error) {
-      console.error('ProgramDisplay: Error uploading images:', error);
-      // Optionally add error handling UI here
-      throw error; // Re-throw to let parent components handle the error
-    } finally {
-      setUploadingImages(false);
-    }
-  };
-
-  const handleDeleteImage = async (imageId: string) => {
-    if (!onDeleteImage) return;
-    setDeletingImage(true);
-    try {
-      await onDeleteImage(imageId);
-    } catch (error) {
-      console.error('Error deleting image:', error);
-    } finally {
-      setDeletingImage(false);
-    }
-  };
 
   if (!program) {
     return (
@@ -180,8 +141,6 @@ export function ProgramDisplay({
               userEmail={userEmail || undefined}
               user={user}
               onRequestUpsell={onRequestUpsell}
-              onUploadImages={handleUploadImages}
-              onDeleteImage={handleDeleteImage}
             />
           </div>
         </>
