@@ -16,6 +16,7 @@ import { WorkoutPlan as WorkoutPlanHiType } from '@/types/program';
 import { ProgramWithRelations, TransformedProgram } from '../../api/programs/current/route';
 import Image from 'next/image';
 import { WorkoutUploadModal } from '@/components/WorkoutUploadModal';
+import { ProgramSelector } from '@/components/ProgramSelector';
 
 // Types for our API responses
 interface ProgramOverview {
@@ -215,6 +216,7 @@ function DashboardContent() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [session, setSession] = useState<any | null>(null);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [allPrograms, setAllPrograms] = useState<Program[]>([]);
 
   useEffect(() => {
     const disclaimerAcknowledged = localStorage.getItem('disclaimer-acknowledged');
@@ -271,6 +273,20 @@ function DashboardContent() {
       setSession(session);
     }
     fetchSession();
+  }, []);
+
+  useEffect(() => {
+    async function fetchAllPrograms() {
+      try {
+        const response = await fetch('/api/programs');
+        const programs = await response.json();
+        setAllPrograms(programs);
+      } catch (error) {
+        console.error('Failed to fetch all programs:', error);
+      }
+    }
+
+    fetchAllPrograms();
   }, []);
 
   const handleAskForHelp = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -378,7 +394,14 @@ function DashboardContent() {
                   {/* Program Info */}
                   <div className="flex-1 space-y-4">
                     <div className="space-y-2">
-                      <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{program.name}</h1>
+                      {program && allPrograms.length > 0 ? (
+                        <ProgramSelector 
+                          currentProgram={program}
+                          programs={allPrograms}
+                        />
+                      ) : (
+                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{program.name}</h1>
+                      )}
                       {program.description && (
                         <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl">{program.description}</p>
                       )}
