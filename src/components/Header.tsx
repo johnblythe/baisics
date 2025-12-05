@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useSession, signIn } from 'next-auth/react';
+import { useSession, signIn, signOut } from 'next-auth/react';
 import Image from 'next/image';
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment, useState } from 'react';
@@ -101,7 +101,7 @@ export default function Header() {
                       <Menu.Item>
                         {({ active }) => (
                           <button
-                            onClick={() => router.push('/')}
+                            onClick={() => signOut({ callbackUrl: '/' })}
                             className={`${
                               active ? 'bg-gray-100 dark:bg-gray-700' : ''
                             } block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200`}

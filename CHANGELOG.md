@@ -24,6 +24,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `convertToIntakeFormat` updated to handle both legacy (confidence scores) and new (direct values) formats
 - Updated Stripe API version to 2025-02-24.acacia
 
+## SLATED
+
+- Add nutrition parsing from uploaded file
+- Add nutrition tracking
+- Program library
+- Program search
+- Edit workouts
+
+## [0.1.4] - 2025-02-06
+
+### Added
+- Upload workouts from file
+- Create new program
+- Choose program
+
 ## [0.1.3] - 2025-02-04
 
 ### Added
