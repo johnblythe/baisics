@@ -12,6 +12,8 @@ import {
   CheckCircle,
 } from 'lucide-react';
 import MainLayout from '@/app/components/layouts/MainLayout';
+import ProgramGenerationProgress from '@/components/ProgramGenerationProgress';
+import { useProgramGeneration } from '@/hooks/useProgramGeneration';
 
 type ProgramType = 'similar' | 'new_focus' | 'fresh_start';
 
@@ -30,22 +32,25 @@ interface UserData {
   };
 }
 
-interface GenerationStatus {
-  stage: string;
-  progress: number;
-}
-
 export default function NewProgramCreation({ userId }: { userId: string }) {
   const router = useRouter();
   const [step, setStep] = useState<'loading' | 'select' | 'generating' | 'complete'>('loading');
   const [userData, setUserData] = useState<UserData | null>(null);
-  const [selectedType, setSelectedType] = useState<ProgramType | null>(null);
-  const [generationStatus, setGenerationStatus] = useState<GenerationStatus>({
-    stage: 'Initializing...',
-    progress: 0,
-  });
   const [error, setError] = useState<string | null>(null);
   const [newProgramId, setNewProgramId] = useState<string | null>(null);
+
+  const { generate, progress, isGenerating } = useProgramGeneration({
+    onComplete: (result) => {
+      if (result.savedProgram?.id) {
+        setNewProgramId(result.savedProgram.id);
+        setStep('complete');
+      }
+    },
+    onError: (errorMsg) => {
+      setError(errorMsg);
+      setStep('select');
+    },
+  });
 
   // Fetch user data on mount
   useEffect(() => {
@@ -63,7 +68,6 @@ export default function NewProgramCreation({ userId }: { userId: string }) {
           profile: data.profile,
         });
       } else {
-        // No existing data, that's ok
         setUserData({ hasExistingPrograms: false });
       }
       setStep('select');
@@ -75,69 +79,25 @@ export default function NewProgramCreation({ userId }: { userId: string }) {
   };
 
   const handleGenerateProgram = async (type: ProgramType) => {
-    setSelectedType(type);
     setStep('generating');
     setError(null);
 
-    // Simulate progress stages
-    const stages = [
-      { stage: 'Analyzing your profile...', progress: 10 },
-      { stage: 'Designing program structure...', progress: 30 },
-      { stage: 'Creating workouts...', progress: 50 },
-      { stage: 'Calculating nutrition...', progress: 70 },
-      { stage: 'Finalizing program...', progress: 90 },
-    ];
-
-    let currentStage = 0;
-    const progressInterval = setInterval(() => {
-      if (currentStage < stages.length) {
-        setGenerationStatus(stages[currentStage]);
-        currentStage++;
-      }
-    }, 2000);
-
-    try {
-      const response = await fetch('/api/programs/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          context: {
-            generationType: type,
-            previousPrograms: userData?.recentProgram
-              ? [userData.recentProgram]
-              : undefined,
-          },
-          // If no existing profile, use defaults
-          intakeData: userData?.profile || {
-            trainingGoal: 'general fitness',
-            daysAvailable: 3,
-            experienceLevel: 'beginner',
-            workoutEnvironment: { primary: 'gym' },
-            equipmentAccess: { type: 'full-gym', available: [] },
-            workoutStyle: { primary: 'strength' },
-            weight: 150,
-            sex: 'other',
-          },
-        }),
-      });
-
-      clearInterval(progressInterval);
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to generate program');
-      }
-
-      const data = await response.json();
-      setGenerationStatus({ stage: 'Program ready!', progress: 100 });
-      setNewProgramId(data.savedProgram?.id);
-      setStep('complete');
-    } catch (err) {
-      clearInterval(progressInterval);
-      console.error('Generation failed:', err);
-      setError(err instanceof Error ? err.message : 'Generation failed');
-      setStep('select');
-    }
+    generate({
+      context: {
+        generationType: type,
+        previousPrograms: userData?.recentProgram ? [userData.recentProgram] : undefined,
+      },
+      intakeData: userData?.profile || {
+        trainingGoal: 'general fitness',
+        daysAvailable: 3,
+        experienceLevel: 'beginner',
+        workoutEnvironment: { primary: 'gym' },
+        equipmentAccess: { type: 'full-gym', available: [] },
+        workoutStyle: { primary: 'strength' },
+        weight: 150,
+        sex: 'other',
+      },
+    });
   };
 
   const programTypes = [
@@ -179,30 +139,8 @@ export default function NewProgramCreation({ userId }: { userId: string }) {
     return (
       <MainLayout>
         <div className="min-h-screen flex items-center justify-center p-4">
-          <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 text-center">
-            <div className="relative w-24 h-24 mx-auto mb-6">
-              <div className="absolute inset-0 rounded-full border-4 border-gray-200 dark:border-gray-700" />
-              <div
-                className="absolute inset-0 rounded-full border-4 border-indigo-600 border-t-transparent animate-spin"
-                style={{ animationDuration: '1.5s' }}
-              />
-              <Dumbbell className="absolute inset-0 m-auto w-10 h-10 text-indigo-600" />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              Generating Your Program
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
-              {generationStatus.stage}
-            </p>
-            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-              <div
-                className="bg-indigo-600 h-2 rounded-full transition-all duration-500"
-                style={{ width: `${generationStatus.progress}%` }}
-              />
-            </div>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
-              This usually takes 15-30 seconds
-            </p>
+          <div className="max-w-lg w-full bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
+            <ProgramGenerationProgress progress={progress} />
           </div>
         </div>
       </MainLayout>

@@ -105,33 +105,59 @@ export const formatExerciseMeasure = (exercise: any) => {
 }; 
 
 
+// Helper to get value from either old format (with .value wrapper) or new format (direct)
+const getValue = (field: any): any => {
+  if (field === null || field === undefined) return null;
+  // Old format: { value: X, confidence: Y }
+  if (typeof field === 'object' && 'value' in field) return field.value;
+  // New format: direct value
+  return field;
+};
+
 // Helper to convert extracted data to IntakeFormData format
+// Supports both old format (with confidence scores) and new simplified format
 export const convertToIntakeFormat = (extractedData: any): IntakeFormData => {
+  const gender = getValue(extractedData.gender);
+  const goals = getValue(extractedData.goals);
+  const daysPerWeek = getValue(extractedData.daysPerWeek);
+  const timePerDay = getValue(extractedData.timePerDay);
+  const age = getValue(extractedData.age);
+  const weight = getValue(extractedData.weight);
+  const height = getValue(extractedData.height);
+  const preferences = getValue(extractedData.preferences);
+  const workoutEnv = getValue(extractedData.workoutEnvironment) || extractedData.workoutEnvironment;
+  const equipment = getValue(extractedData.equipmentAccess) || extractedData.equipmentAccess;
+  const style = getValue(extractedData.workoutStyle) || extractedData.workoutStyle;
+  const additionalInfo = getValue(extractedData.additionalInfo);
+  const experienceLevel = getValue(extractedData.experienceLevel);
+
   return {
-    sex: extractedData.gender?.value || 'other',
-    trainingGoal: Array.isArray(extractedData.goals?.value) ? extractedData.goals.value.join(', ') : extractedData.goals?.value,
-    daysAvailable: parseInt(extractedData.daysPerWeek?.value) || 3,
-    dailyBudget: parseInt(extractedData.timePerDay?.value) || 60,
-    age: extractedData.age?.value ? parseInt(extractedData.age.value) : undefined,
-    weight: extractedData.weight?.value ? parseInt(extractedData.weight.value) : undefined,
-    height: extractedData.height?.value ? parseInt(extractedData.height.value) : undefined,
-    trainingPreferences: extractedData.preferences?.value ? 
-      extractedData.preferences.value.split(',').map((p: string) => p.trim()) : 
-      [],
+    sex: gender || 'other',
+    trainingGoal: Array.isArray(goals) ? goals.join(', ') : goals || '',
+    daysAvailable: parseInt(daysPerWeek) || 3,
+    dailyBudget: parseInt(timePerDay) || 60,
+    age: age ? parseInt(age) : undefined,
+    weight: weight ? parseInt(weight) : undefined,
+    height: height ? parseInt(height) : undefined,
+    trainingPreferences: Array.isArray(preferences)
+      ? preferences
+      : preferences
+        ? String(preferences).split(',').map((p: string) => p.trim())
+        : [],
     workoutEnvironment: {
-      primary: extractedData.workoutEnvironment?.value?.primary || 'gym',
-      limitations: extractedData.workoutEnvironment?.value?.limitations || []
+      primary: workoutEnv?.primary || 'gym',
+      limitations: workoutEnv?.limitations || []
     },
     equipmentAccess: {
-      type: extractedData.equipmentAccess?.value?.type || 'full-gym',
-      available: extractedData.equipmentAccess?.value?.available || []
+      type: equipment?.type || 'full-gym',
+      available: equipment?.available || []
     },
     workoutStyle: {
-      primary: extractedData.workoutStyle?.value?.primary || 'strength',
-      secondary: extractedData.workoutStyle?.value?.secondary
+      primary: style?.primary || 'strength',
+      secondary: style?.secondary
     },
-    additionalInfo: extractedData.additionalInfo?.value || '',
-    experienceLevel: extractedData.additionalInfo?.value?.toLowerCase().includes('experienced') ? 'intermediate' : 'beginner',
-    modificationRequest: extractedData.modificationRequest?.value || '',
+    additionalInfo: additionalInfo || '',
+    experienceLevel: experienceLevel || (additionalInfo?.toLowerCase?.().includes('experienced') ? 'intermediate' : 'beginner'),
+    modificationRequest: getValue(extractedData.modificationRequest) || '',
   };
 }

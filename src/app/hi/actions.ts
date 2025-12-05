@@ -73,11 +73,11 @@ export async function processUserMessage(
         }
       });
 
-      // Save confidence scores in prompt log for analysis
+      // Log intake for debugging (no longer tracking confidence scores)
       await prisma.promptLog.create({
         data: {
-          prompt: 'Initial intake analysis',
-          response: JSON.stringify(extractedData?.confidence || {}),
+          prompt: 'Program generation started',
+          response: JSON.stringify({ intakeData: intakeData }),
           model: process.env.SONNET_MODEL!,
           success: true,
           user: {

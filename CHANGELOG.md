@@ -10,12 +10,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Unified program generation service (`src/services/programGeneration/`) that consolidates all program creation into 1-2 AI calls instead of 6-10 sequential calls
 - New `/api/programs/generate` endpoint for all program generation flows
+- Streaming generation endpoint (`/api/programs/generate/stream`) with Server-Sent Events for real-time progress updates
+- `ProgramGenerationProgress` component showing visual progress through generation stages
+- `useProgramGeneration` React hook for consuming streaming generation
 - `/dashboard/new-program` page with program type selection (similar, new focus, fresh start)
 - Zod validation schemas for generated programs
 - Implementation plan document for v2 roadmap
 
 ### Changed
 - `/hi` conversational flow now uses unified generation service (faster generation)
+- Simplified extraction prompt: removed confidence scores, now just tracks required vs optional fields
+- `/dashboard/new-program` now shows real-time progress during generation
+- `convertToIntakeFormat` updated to handle both legacy (confidence scores) and new (direct values) formats
 - Updated Stripe API version to 2025-02-24.acacia
 
 ## [0.1.3] - 2025-02-04
