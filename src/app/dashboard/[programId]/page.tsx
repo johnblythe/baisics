@@ -17,6 +17,8 @@ import { ProgramWithRelations, TransformedProgram } from '../../api/programs/cur
 import Image from 'next/image';
 import { WorkoutUploadModal } from '@/components/WorkoutUploadModal';
 import { ProgramSelector } from '@/components/ProgramSelector';
+import { PhotoComparison } from '@/components/PhotoComparison';
+import { ProgramCard } from '@/components/share/ProgramCard';
 
 // Types for our API responses
 interface ProgramOverview {
@@ -218,6 +220,9 @@ function DashboardContent() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [session, setSession] = useState<any | null>(null);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [shareData, setShareData] = useState<any>(null);
   const [allPrograms, setAllPrograms] = useState<Program[]>([]);
 
   useEffect(() => {
@@ -459,6 +464,24 @@ function DashboardContent() {
                             <path fillRule="evenodd" clipRule="evenodd" d="M6 2C4.34315 2 3 3.34315 3 5V19C3 20.6569 4.34315 22 6 22H18C19.6569 22 21 20.6569 21 19V9C21 5.13401 17.866 2 14 2H6ZM6 4H13V9H19V19C19 19.5523 18.5523 20 18 20H6C5.44772 20 5 19.5523 5 19V5C5 4.44772 5.44772 4 6 4ZM15 4.10002C16.6113 4.4271 17.9413 5.52906 18.584 7H15V4.10002Z" fill="currentColor"/>
                           </svg>
                           Download PDF
+                        </button>
+                        <button
+                          onClick={async () => {
+                            try {
+                              const res = await fetch(`/api/share/program?programId=${program.id}`);
+                              const data = await res.json();
+                              setShareData(data);
+                              setIsShareModalOpen(true);
+                            } catch (err) {
+                              console.error('Failed to load share data:', err);
+                            }
+                          }}
+                          className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-white transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                          </svg>
+                          Share Program
                         </button>
                         <Link
                           href="/hi"
@@ -774,12 +797,25 @@ function DashboardContent() {
                         <div className="space-y-3">
                           <div className="flex items-center justify-between">
                             <h2 className="text-sm font-medium text-gray-600 dark:text-gray-400">Photos</h2>
-                            <Link 
-                              href="/check-in"
-                              className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
-                            >
-                              Add New Photos →
-                            </Link>
+                            <div className="flex items-center gap-4">
+                              {progressPhotos.length >= 2 && (
+                                <button
+                                  onClick={() => setIsCompareModalOpen(true)}
+                                  className="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 inline-flex items-center gap-1"
+                                >
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                  </svg>
+                                  Compare Progress
+                                </button>
+                              )}
+                              <Link
+                                href="/check-in"
+                                className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
+                              >
+                                Add New Photos →
+                              </Link>
+                            </div>
                           </div>
 
                           {progressPhotos.length > 0 ? (
@@ -1044,6 +1080,22 @@ function DashboardContent() {
               isOpen={isUploadModalOpen}
               onClose={() => setIsUploadModalOpen(false)}
             />
+
+            <PhotoComparison
+              programId={program.id}
+              isOpen={isCompareModalOpen}
+              onClose={() => setIsCompareModalOpen(false)}
+            />
+
+            {isShareModalOpen && shareData && (
+              <ProgramCard
+                data={shareData}
+                onClose={() => {
+                  setIsShareModalOpen(false);
+                  setShareData(null);
+                }}
+              />
+            )}
           </div>
         </div>
       </main>

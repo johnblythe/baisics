@@ -9,6 +9,7 @@ import TawkChat from "@/components/TawkChat";
 import { formatExerciseMeasure, formatExerciseUnit } from '@/utils/formatters';
 // import { ExerciseMeasureType } from '@prisma/client';
 import RestPeriodIndicator from '@/app/components/RestPeriodIndicator';
+import ExerciseSwapModal from '@/components/ExerciseSwapModal';
 
 interface Exercise {
   id: string;
@@ -249,6 +250,7 @@ export default function WorkoutPage() {
   const [workoutStarted, setWorkoutStarted] = useState(false);
   const [workoutLog, setWorkoutLog] = useState<any>(null);
   const [showCompletion, setShowCompletion] = useState(false);
+  const [swapModalOpen, setSwapModalOpen] = useState(false);
 
   // Function to find first incomplete exercise/set
   const findFirstIncompletePosition = (exercises: ExerciseWithLogs[]) => {
@@ -498,15 +500,26 @@ export default function WorkoutPage() {
                       Exercise {currentExerciseIndex + 1} of {exercises.length}
                     </span>
                     {currentExercise && (
-                      <a
-                        href={`https://www.youtube.com/results?search_query=${currentExercise.name} how to`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors"
-                      >
-                        <PlayCircle className="w-4 h-4" />
-                        <span className="text-sm font-medium">Form Videos</span>
-                      </a>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setSwapModalOpen(true)}
+                          className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/50 transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                          </svg>
+                          <span className="text-sm font-medium">Swap</span>
+                        </button>
+                        <a
+                          href={`https://www.youtube.com/results?search_query=${currentExercise.name} how to`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors"
+                        >
+                          <PlayCircle className="w-4 h-4" />
+                          <span className="text-sm font-medium">Form Videos</span>
+                        </a>
+                      </div>
                     )}
                   </div>
 
@@ -607,6 +620,23 @@ export default function WorkoutPage() {
       </main>
       <TawkChat />
       <Footer />
+
+      {currentExercise && (
+        <ExerciseSwapModal
+          isOpen={swapModalOpen}
+          onClose={() => setSwapModalOpen(false)}
+          exerciseId={currentExercise.id}
+          exerciseName={currentExercise.name}
+          onSwap={(newExercise) => {
+            // Update the exercise in state
+            setExercises(prev => prev.map((ex, idx) =>
+              idx === currentExerciseIndex
+                ? { ...ex, name: newExercise.name }
+                : ex
+            ));
+          }}
+        />
+      )}
     </div>
   );
 } 

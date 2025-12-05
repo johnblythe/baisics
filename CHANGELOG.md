@@ -20,6 +20,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Smart Program Continuation UI when program is complete (similar, new focus, fresh start options)
 - Check-in feedback service (`src/services/checkInFeedback/`) for informing program generation with user history
 - Working rest timer in `RestPeriodIndicator` with countdown, play/pause, and reset controls
+- Progress photos comparison feature with side-by-side and slider overlay views
+- Weekly summary emails with workout stats, weight progress, and streak tracking
+- Exercise swap feature to substitute exercises mid-workout with similar alternatives
+- Social sharing: shareable program cards, OG image generation, achievement sharing
+- Coach Mode: trainer dashboard, client management, invite system (`/coach/dashboard`)
+- Program template library with 7 popular templates (Starting Strength, PPL, 5/3/1, PHUL, etc.)
+- Public share page for programs (`/share/[programId]`) with social meta tags
 
 ### Changed
 - `/hi` conversational flow now uses unified generation service (faster generation)
@@ -32,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Program generation now uses weight trends, wellness metrics, and body measurements from check-ins
 - MainLayout uses proper flex structure with sticky footer behavior
 - Workout page set inputs stack vertically on mobile
+- Database schema: added `CoachClient` model and `isCoach` field on User for coach mode
 
 ### Fixed
 - Removed outdated TODO comments in WorkoutPlanDisplay
