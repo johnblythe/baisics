@@ -91,7 +91,7 @@ const SetInput = ({
           }`} 
         />
         
-        <div className="relative flex items-center gap-6">
+        <div className="relative flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
           <div className="flex items-center gap-4">
             <div className="w-6">
               {log.isCompleted ? (
@@ -106,7 +106,7 @@ const SetInput = ({
             </span>
           </div>
           
-          <div className="flex-1 flex items-center gap-4">
+          <div className="flex-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pl-10 sm:pl-0">
             <div className="relative group/input">
               <input
                 type="number"
@@ -114,7 +114,7 @@ const SetInput = ({
                 value={localWeight}
                 onChange={(e) => setLocalWeight(e.target.value)}
                 disabled={log.isCompleted || !isActive}
-                className={`w-24 px-3 py-2 rounded-xl text-sm transition-all duration-200
+                className={`w-full sm:w-24 px-3 py-2 rounded-xl text-sm transition-all duration-200
                   ${log.isCompleted
                     ? 'bg-green-50/50 dark:bg-green-900/20 border border-green-200/50 dark:border-green-800/50 text-green-700 dark:text-green-300'
                     : isActive
@@ -136,7 +136,7 @@ const SetInput = ({
                 value={Number(localReps) > 0 ? localReps : ''}
                 onChange={(e) => setLocalReps(e.target.value)}
                 disabled={log.isCompleted || !isActive}
-                className={`w-24 px-3 py-2 rounded-xl text-sm transition-all duration-200
+                className={`w-full sm:w-24 px-3 py-2 rounded-xl text-sm transition-all duration-200
                   ${log.isCompleted
                     ? 'bg-green-50/50 dark:bg-green-900/20 border border-green-200/50 dark:border-green-800/50 text-green-700 dark:text-green-300'
                     : isActive

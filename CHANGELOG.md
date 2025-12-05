@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Working rest timer in `RestPeriodIndicator` with countdown, play/pause, and reset controls
+
+### Changed
+- Dashboard responsive layout improvements (stacking on mobile, responsive widths)
+- MainLayout now uses proper flex structure with sticky footer behavior
+- Activity legend in dashboard wraps properly on mobile
+- Workout page set inputs stack vertically on mobile
+
+### Fixed
+- Stripe API version updated to 2025-02-24.acacia
+- Removed outdated TODO comments in WorkoutPlanDisplay
+
 ## [0.1.3] - 2025-02-04
 
 ### Added
