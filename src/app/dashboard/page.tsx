@@ -403,17 +403,17 @@ function DashboardContent() {
                 {/* Welcome Text */}
                 <h2 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-4">Welcome to your dashboard</h2>
 
-                <div className="flex items-start justify-between gap-8">
+                <div className="flex flex-col lg:flex-row items-start justify-between gap-6 lg:gap-8">
                   {/* Program Info */}
-                  <div className="flex-1 space-y-4">
+                  <div className="flex-1 space-y-4 w-full lg:w-auto">
                     <div className="space-y-2">
-                      <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{program.name}</h1>
+                      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{program.name}</h1>
                       {program.description && (
-                        <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl">{program.description}</p>
+                        <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 max-w-2xl">{program.description}</p>
                       )}
-                      
+
                       {/* Helper Links */}
-                      <div className="flex items-center gap-6 pt-20">
+                      <div className="flex flex-wrap items-center gap-4 sm:gap-6 pt-6 lg:pt-12">
                         <button
                           onClick={handleDownloadPDF}
                           className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-white transition-colors"
@@ -452,7 +452,7 @@ function DashboardContent() {
                   </div>
 
                   {/* Stats */}
-                  <div className="flex-shrink-0 w-72 bg-gray-50/50 dark:bg-gray-800/50 rounded-xl p-4 space-y-4 border border-gray-100 dark:border-gray-700">
+                  <div className="flex-shrink-0 w-full sm:w-72 bg-gray-50/50 dark:bg-gray-800/50 rounded-xl p-4 space-y-4 border border-gray-100 dark:border-gray-700">
                     <div className="space-y-3">
                       {/* Week Number */}
                       <div className="flex items-center justify-between">
@@ -534,16 +534,16 @@ function DashboardContent() {
               <div className="absolute -inset-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 rounded-lg opacity-0 blur-xl transition duration-500 group-hover:opacity-30 dark:group-hover:opacity-20"></div>
               <div className="relative overflow-hidden bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
                 <div className="p-6 lg:p-8">
-                  <div className="flex gap-8">
-                    {/* Progress Section - 3/4 width */}
-                    <div className="w-3/4">
+                  <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+                    {/* Progress Section - 3/4 width on desktop */}
+                    <div className="w-full lg:w-3/4">
                       <h2 className="text-sm font-medium text-gray-600 dark:text-gray-400">Progress</h2>
                       <div className="mt-4 space-y-6">
                         {/* Weight and Activity Grid Row */}
-                        <div className="flex gap-6">
-                          
+                        <div className="flex flex-col md:flex-row gap-6">
+
                           {/* Weight Section */}
-                          <div className="w-1/2 space-y-4">
+                          <div className="w-full md:w-1/2 space-y-4">
                             <div>
                               <div className="flex items-center justify-between">
                                 <span className="text-gray-600 dark:text-gray-400">Current Weight</span>
@@ -626,7 +626,7 @@ function DashboardContent() {
                           </div>
 
                           {/* Activity Grid */}
-                          <div className="w-1/2 space-y-4">
+                          <div className="w-full md:w-1/2 space-y-4">
                             <div className="flex items-center justify-between">
                               <span className="text-gray-600 dark:text-gray-400">Activity</span>
                               <span className="text-sm text-gray-500 dark:text-gray-400">Last 12 weeks</span>
@@ -699,15 +699,23 @@ function DashboardContent() {
                                   );
                                 })}
                               </div>
-                              <div className="mt-2 flex items-center justify-end gap-2 text-sm">
-                                <span className="text-gray-600 dark:text-gray-400">No activity</span>
-                                <div className="w-3 h-3 rounded-sm bg-gray-200 dark:bg-gray-700" />
-                                <div className="w-3 h-3 rounded-sm bg-blue-300 dark:bg-blue-500" />
-                                <span className="text-gray-600 dark:text-gray-400">Visit</span>
-                                <div className="w-3 h-3 rounded-sm bg-indigo-500 dark:bg-indigo-600" />
-                                <span className="text-gray-600 dark:text-gray-400">Workout</span>
-                                <div className="w-3 h-3 rounded-sm bg-green-500 dark:bg-green-600" />
-                                <span className="text-gray-600 dark:text-gray-400">Check-in</span>
+                              <div className="mt-2 flex flex-wrap items-center justify-end gap-x-2 gap-y-1 text-xs sm:text-sm">
+                                <div className="flex items-center gap-1">
+                                  <div className="w-3 h-3 rounded-sm bg-gray-200 dark:bg-gray-700" />
+                                  <span className="text-gray-600 dark:text-gray-400">None</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <div className="w-3 h-3 rounded-sm bg-blue-300 dark:bg-blue-500" />
+                                  <span className="text-gray-600 dark:text-gray-400">Visit</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <div className="w-3 h-3 rounded-sm bg-indigo-500 dark:bg-indigo-600" />
+                                  <span className="text-gray-600 dark:text-gray-400">Workout</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <div className="w-3 h-3 rounded-sm bg-green-500 dark:bg-green-600" />
+                                  <span className="text-gray-600 dark:text-gray-400">Check-in</span>
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -784,8 +792,8 @@ function DashboardContent() {
                       </div>
                     </div>
 
-                    {/* Next Workout and Macros - 1/4 width */}
-                    <div className="w-1/4 space-y-8">
+                    {/* Next Workout and Macros - 1/4 width on desktop */}
+                    <div className="w-full lg:w-1/4 space-y-6 lg:space-y-8">
                       {currentWorkout?.nextWorkout ? (
                         <div className="space-y-4">
                           <h2 className="text-sm font-medium text-gray-600 dark:text-gray-400">Next Workout</h2>
