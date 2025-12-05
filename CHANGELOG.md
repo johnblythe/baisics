@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Unified program generation service (`src/services/programGeneration/`) that consolidates all program creation into 1-2 AI calls instead of 6-10 sequential calls
+- New `/api/programs/generate` endpoint for all program generation flows
+- `/dashboard/new-program` page with program type selection (similar, new focus, fresh start)
+- Zod validation schemas for generated programs
+- Implementation plan document for v2 roadmap
+
+### Changed
+- `/hi` conversational flow now uses unified generation service (faster generation)
+- Updated Stripe API version to 2025-02-24.acacia
+
 ## [0.1.3] - 2025-02-04
 
 ### Added

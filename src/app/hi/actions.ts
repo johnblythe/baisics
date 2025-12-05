@@ -4,10 +4,13 @@ import { Message, ExtractedData, IntakeFormData, WorkoutPlan, Program } from "@/
 import { sendMessage } from "@/utils/chat";
 import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/email";
-// import { modifyPhase } from "./services/programCreation";
-import { createProgramSequentially } from "./services/_sequentialProgramCreation";
 import { extractionPrompt } from "@/utils/prompts/";
 import { convertToIntakeFormat } from "@/utils/formatters";
+import {
+  generateProgram,
+  saveProgramToDatabase,
+  convertIntakeToProfile,
+} from "@/services/programGeneration";
 
 // New server action for sending emails
 export async function sendEmailAction(options: {
@@ -39,7 +42,7 @@ export async function processUserMessage(
   try {
     if (generateProgramDirectly) {
       const intakeData = convertToIntakeFormat(extractedData);
-      
+
       // Save intake data using existing UserIntake model
       await prisma.userIntake.upsert({
         where: { userId },
@@ -83,9 +86,38 @@ export async function processUserMessage(
         }
       });
 
-      // Generate program using new service
-      const program = await createProgramSequentially(intakeData, userId);
-      
+      // Generate program using unified service (1-2 AI calls instead of 6-10)
+      const profile = convertIntakeToProfile(intakeData);
+      const result = await generateProgram({
+        userId,
+        profile,
+        context: { generationType: 'new' },
+      });
+
+      if (!result.success || !result.program) {
+        throw new Error(result.error || 'Failed to generate program');
+      }
+
+      // Save to database
+      const savedProgram = await saveProgramToDatabase(result.program, userId);
+
+      // Fetch the full program for return
+      const program = await prisma.program.findUnique({
+        where: { id: savedProgram.id },
+        include: {
+          workoutPlans: {
+            include: {
+              workouts: {
+                include: {
+                  exercises: true
+                }
+              }
+            }
+          },
+          user: true
+        }
+      });
+
       return {
         success: true,
         program
