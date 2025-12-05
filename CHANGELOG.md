@@ -20,6 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Smart Program Continuation UI when program is complete (similar, new focus, fresh start options)
 - Check-in feedback service (`src/services/checkInFeedback/`) for informing program generation with user history
 - Working rest timer in `RestPeriodIndicator` with countdown, play/pause, and reset controls
+- Progress photos comparison feature with side-by-side and slider overlay views
+- Weekly summary emails with workout stats, weight progress, and streak tracking
+- Exercise swap feature to substitute exercises mid-workout with similar alternatives
 
 ### Changed
 - `/hi` conversational flow now uses unified generation service (faster generation)
