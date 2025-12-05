@@ -367,6 +367,36 @@ function DashboardContent() {
       <main className="flex-grow bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
           <div className="space-y-8">
+            {/* Quick Workout Start Card */}
+            {currentWorkout?.nextWorkout && (
+              <div className="group relative">
+                <div className="absolute -inset-1 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 rounded-2xl opacity-75 blur group-hover:opacity-100 transition duration-300"></div>
+                <div className="relative bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-6 lg:p-8 text-white">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div className="space-y-2">
+                      <p className="text-indigo-200 text-sm font-medium">Ready to train?</p>
+                      <h2 className="text-2xl font-bold">
+                        Day {currentWorkout.nextWorkout.dayNumber}: {currentWorkout.nextWorkout.name}
+                      </h2>
+                      <p className="text-indigo-100">
+                        {currentWorkout.nextWorkout.focus} • {currentWorkout.nextWorkout.exerciseCount} exercises
+                      </p>
+                    </div>
+                    <Link
+                      href={`/workout/${currentWorkout.nextWorkout.id}`}
+                      className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-white text-indigo-600 font-semibold rounded-xl hover:bg-indigo-50 transition-all duration-200 hover:scale-[1.02] shadow-lg"
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Start Workout
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Welcome & Program Info Card */}
             <div className="relative overflow-hidden bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
               <div className="relative p-6 lg:p-8">
@@ -788,25 +818,87 @@ function DashboardContent() {
                           </Link>
                         </div>
                       ) : (
-                        <div className="space-y-4">
-                          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Program Complete! 🎉</h2>
-                          <p className="text-lg text-gray-600 dark:text-gray-300">
-                            You&apos;ve completed all workouts in this program. What&apos;s next?
-                          </p>
-                          <div className="flex flex-wrap gap-4">
-                            <Link 
-                              href="/hi"
-                              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-indigo-600 dark:bg-indigo-500 text-white font-medium hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200 hover:scale-[1.02] hover:-translate-y-0.5"
+                        <div className="space-y-6">
+                          <div>
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                              Program Complete!
+                              <span className="text-3xl">🎉</span>
+                            </h2>
+                            <p className="text-gray-600 dark:text-gray-300 mt-2">
+                              Great work finishing <span className="font-medium">{program.name}</span>! Choose your next step:
+                            </p>
+                          </div>
+
+                          {/* Smart Continuation Options */}
+                          <div className="grid gap-3">
+                            {/* Similar Program */}
+                            <Link
+                              href="/dashboard/new-program?type=similar"
+                              className="group flex items-center gap-4 p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-600 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 transition-all"
                             >
-                              Start a New Program
-                              <span className="text-indigo-200">→</span>
+                              <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center">
+                                <svg className="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                              </div>
+                              <div className="flex-1">
+                                <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
+                                  Continue with Similar Program
+                                </h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                  Keep the momentum - same style, increased intensity
+                                </p>
+                              </div>
+                              <svg className="w-5 h-5 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
                             </Link>
-                            <button 
-                              className="px-6 py-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200 hover:scale-[1.02] hover:-translate-y-0.5"
-                              onClick={() => {/* TODO: Implement restart program */}}
+
+                            {/* New Focus */}
+                            <Link
+                              href="/dashboard/new-program?type=new_focus"
+                              className="group flex items-center gap-4 p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-600 hover:bg-purple-50/50 dark:hover:bg-purple-900/20 transition-all"
                             >
-                              Restart Current Program
-                            </button>
+                              <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center">
+                                <svg className="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                              </div>
+                              <div className="flex-1">
+                                <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400">
+                                  Try a New Focus
+                                </h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                  Shift goals - strength, cardio, mobility, or hypertrophy
+                                </p>
+                              </div>
+                              <svg className="w-5 h-5 text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </Link>
+
+                            {/* Fresh Start */}
+                            <Link
+                              href="/hi"
+                              className="group flex items-center gap-4 p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-green-300 dark:hover:border-green-600 hover:bg-green-50/50 dark:hover:bg-green-900/20 transition-all"
+                            >
+                              <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/50 flex items-center justify-center">
+                                <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                </svg>
+                              </div>
+                              <div className="flex-1">
+                                <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400">
+                                  Fresh Start with Full Intake
+                                </h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                  Update your profile and get a completely new program
+                                </p>
+                              </div>
+                              <svg className="w-5 h-5 text-gray-400 group-hover:text-green-600 dark:group-hover:text-green-400 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </Link>
                           </div>
                         </div>
                       )}

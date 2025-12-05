@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Quick Workout Start card at top of dashboard with prominent "Start Workout" button
+- Smart Program Continuation UI when program is complete (similar, new focus, fresh start options)
+- Check-in feedback loop for program generation (`src/services/checkInFeedback/`)
+- Program generation now uses weight trends, wellness metrics, and body measurements to inform workout design
+- AI recommendations generated from check-in data (sleep, stress, soreness levels)
+
+
+### Fixed
+- Stripe API version updated to 2025-02-24.acacia
 - Working rest timer in `RestPeriodIndicator` with countdown, play/pause, and reset controls
 
 ### Changed
