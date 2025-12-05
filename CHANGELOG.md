@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implementation plan document for v2 roadmap
 - Quick Workout Start card at top of dashboard with prominent "Start Workout" button
 - Smart Program Continuation UI when program is complete (similar, new focus, fresh start options)
+- Check-in feedback service (`src/services/checkInFeedback/`) for informing program generation with user history
+- Working rest timer in `RestPeriodIndicator` with countdown, play/pause, and reset controls
 
 ### Changed
 - `/hi` conversational flow now uses unified generation service (faster generation)
@@ -27,6 +29,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated Stripe API version to 2025-02-24.acacia
 - Dashboard responsive layout improvements (stacking on mobile, responsive widths)
 - Activity legend in dashboard wraps properly on mobile
+- Program generation now uses weight trends, wellness metrics, and body measurements from check-ins
+- MainLayout uses proper flex structure with sticky footer behavior
+- Workout page set inputs stack vertically on mobile
+
+### Fixed
+- Removed outdated TODO comments in WorkoutPlanDisplay
 
 ## SLATED
 

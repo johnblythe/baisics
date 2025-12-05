@@ -3,6 +3,7 @@ import { Difficulty, MovementPattern, MuscleGroup } from "@prisma/client";
 import { sendMessage } from "@/utils/chat";
 import type { ContentBlock } from '@anthropic-ai/sdk/src/resources/messages.js';
 import { prisma } from '@/lib/prisma';
+import { getCheckInFeedback, formatCheckInFeedbackForPrompt } from '@/services/checkInFeedback';
 
 interface SendMessageResponse {
   success: boolean;
@@ -55,11 +56,15 @@ interface ProgramReview {
 }
 
 // Prompt formatting functions
-const formatProgramStructurePrompt = (intakeData: IntakeFormData): { role: string; content: string; }[] => {
+const formatProgramStructurePrompt = (intakeData: IntakeFormData, checkInFeedback?: string): { role: string; content: string; }[] => {
+  const feedbackSection = checkInFeedback
+    ? `\n\n${checkInFeedback}\n\nUse this progress data to inform the program design. Adjust intensity, volume, or focus based on the user's actual progress and feedback.`
+    : '';
+
   return [{
     role: 'user',
     content: `Based on the following client data, create a program structure:
-${JSON.stringify(intakeData, null, 2)}
+${JSON.stringify(intakeData, null, 2)}${feedbackSection}
 
 Please provide a response in the following JSON format:
 {
@@ -104,14 +109,19 @@ const formatWorkoutDetailsPrompt = (
   intakeData: IntakeFormData,
   programStructure: ProgramStructure,
   workoutStructure: WorkoutStructure,
-  phase: number
+  phase: number,
+  checkInFeedback?: string
 ): { role: string; content: string; }[] => {
+  const feedbackSection = checkInFeedback
+    ? `\n      Progress Feedback: ${checkInFeedback}\n      Consider this feedback when selecting exercises and setting intensity levels.`
+    : '';
+
   return [{
     role: 'user',
     content: `Create detailed workouts for phase ${phase + 1} based on:
       Client Data: ${JSON.stringify(intakeData, null, 2)}
       Program Structure: ${JSON.stringify(programStructure, null, 2)}
-      Workout Structure: ${JSON.stringify(workoutStructure, null, 2)}
+      Workout Structure: ${JSON.stringify(workoutStructure, null, 2)}${feedbackSection}
 
       Provide a response ONLY in the following JSON format:
       {
@@ -311,8 +321,22 @@ export const createProgramSequentially = async (
   userId: string
 ): Promise<Program | null> => {
   try {
+    // Step 0: Fetch check-in feedback to inform program generation
+    const checkInContext = await getCheckInFeedback(userId);
+    const checkInFeedback = checkInContext.hasHistory
+      ? formatCheckInFeedbackForPrompt(checkInContext)
+      : undefined;
+
+    if (checkInContext.hasHistory) {
+      console.log('Using check-in feedback for program generation:', {
+        checkInCount: checkInContext.summary?.checkInCount,
+        weightTrend: checkInContext.summary?.weight.trend,
+        recommendations: checkInContext.recommendations,
+      });
+    }
+
     // Step 1: Get program structure
-    const programStructureResponse = await sendMessage(formatProgramStructurePrompt(intakeData), userId);
+    const programStructureResponse = await sendMessage(formatProgramStructurePrompt(intakeData, checkInFeedback), userId);
     const programStructure = parseAIResponse<ProgramStructure>(programStructureResponse, {
       name: '',
       description: '',
@@ -349,9 +373,9 @@ export const createProgramSequentially = async (
     const workoutPlans: WorkoutPlan[] = [];
     // programStructure.phaseCount
     for (let phase = 0; phase < 1; phase++) {
-      console.log("prompt!",formatWorkoutDetailsPrompt(intakeData, programStructure, workoutStructure, phase));
+      console.log("prompt!",formatWorkoutDetailsPrompt(intakeData, programStructure, workoutStructure, phase, checkInFeedback));
       const workoutDetailsResponse = await sendMessage(
-        formatWorkoutDetailsPrompt(intakeData, programStructure, workoutStructure, phase),
+        formatWorkoutDetailsPrompt(intakeData, programStructure, workoutStructure, phase, checkInFeedback),
         userId
       );
       console.log("🚀 ~ workoutDetailsResponse:", JSON.stringify(workoutDetailsResponse, null, 2))
