@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `/dashboard/new-program` page with program type selection (similar, new focus, fresh start)
 - Zod validation schemas for generated programs
 - Implementation plan document for v2 roadmap
+- Quick Workout Start card at top of dashboard with prominent "Start Workout" button
+- Smart Program Continuation UI when program is complete (similar, new focus, fresh start options)
 
 ### Changed
 - `/hi` conversational flow now uses unified generation service (faster generation)
@@ -23,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `/dashboard/new-program` now shows real-time progress during generation
 - `convertToIntakeFormat` updated to handle both legacy (confidence scores) and new (direct values) formats
 - Updated Stripe API version to 2025-02-24.acacia
+- Dashboard responsive layout improvements (stacking on mobile, responsive widths)
+- Activity legend in dashboard wraps properly on mobile
 
 ## SLATED
 
