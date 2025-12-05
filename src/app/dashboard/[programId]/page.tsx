@@ -18,6 +18,7 @@ import Image from 'next/image';
 import { WorkoutUploadModal } from '@/components/WorkoutUploadModal';
 import { ProgramSelector } from '@/components/ProgramSelector';
 import { PhotoComparison } from '@/components/PhotoComparison';
+import { ProgramCard } from '@/components/share/ProgramCard';
 
 // Types for our API responses
 interface ProgramOverview {
@@ -220,6 +221,8 @@ function DashboardContent() {
   const [session, setSession] = useState<any | null>(null);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [shareData, setShareData] = useState<any>(null);
   const [allPrograms, setAllPrograms] = useState<Program[]>([]);
 
   useEffect(() => {
@@ -461,6 +464,24 @@ function DashboardContent() {
                             <path fillRule="evenodd" clipRule="evenodd" d="M6 2C4.34315 2 3 3.34315 3 5V19C3 20.6569 4.34315 22 6 22H18C19.6569 22 21 20.6569 21 19V9C21 5.13401 17.866 2 14 2H6ZM6 4H13V9H19V19C19 19.5523 18.5523 20 18 20H6C5.44772 20 5 19.5523 5 19V5C5 4.44772 5.44772 4 6 4ZM15 4.10002C16.6113 4.4271 17.9413 5.52906 18.584 7H15V4.10002Z" fill="currentColor"/>
                           </svg>
                           Download PDF
+                        </button>
+                        <button
+                          onClick={async () => {
+                            try {
+                              const res = await fetch(`/api/share/program?programId=${program.id}`);
+                              const data = await res.json();
+                              setShareData(data);
+                              setIsShareModalOpen(true);
+                            } catch (err) {
+                              console.error('Failed to load share data:', err);
+                            }
+                          }}
+                          className="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-white transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                          </svg>
+                          Share Program
                         </button>
                         <Link
                           href="/hi"
@@ -1065,6 +1086,16 @@ function DashboardContent() {
               isOpen={isCompareModalOpen}
               onClose={() => setIsCompareModalOpen(false)}
             />
+
+            {isShareModalOpen && shareData && (
+              <ProgramCard
+                data={shareData}
+                onClose={() => {
+                  setIsShareModalOpen(false);
+                  setShareData(null);
+                }}
+              />
+            )}
           </div>
         </div>
       </main>
