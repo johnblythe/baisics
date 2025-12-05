@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Check-in feedback loop for program generation (`src/services/checkInFeedback/`)
+- Program generation now uses weight trends, wellness metrics, and body measurements to inform workout design
+- AI recommendations generated from check-in data (sleep, stress, soreness levels)
+
+### Fixed
+- Stripe API version updated to 2025-02-24.acacia
+
 ## [0.1.3] - 2025-02-04
 
 ### Added
