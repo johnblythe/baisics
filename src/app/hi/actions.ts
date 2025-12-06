@@ -148,7 +148,12 @@ export async function processUserMessage(
     }
 
     // @ts-ignore
-    const aiResponse = JSON.parse(result.data?.content?.[0]?.text || '{}');
+    let responseText = result.data?.content?.[0]?.text || '{}';
+
+    // Strip markdown code blocks if present (Claude sometimes wraps JSON despite instructions)
+    responseText = responseText.replace(/^```(?:json)?\s*\n?/i, '').replace(/\n?```\s*$/i, '').trim();
+
+    const aiResponse = JSON.parse(responseText);
 
     return {
       success: true,

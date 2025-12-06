@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(gh issue list:*)",
+      "Bash(gh auth status:*)",
+      "Bash(gh issue create --title \"[Gap 1] Unified Generation Service\" --body \"$(cat <<''EOF''\n## Problem\nTwo competing program creation flows (`/hi` conversational, `/dashboard/new-program` wizard) with duplicated logic and broken endpoints. The new-program flow calls nonexistent API endpoints.\n\n## Solution\n- Create `src/services/programGeneration/` with single entry point\n- One service handles: new users, returning users, program modifications\n- 1-2 AI calls max using Claude''s JSON mode\n- Shared types, no duplication\n\n## Files to create/modify\n- `src/services/programGeneration/index.ts` - Main service\n- `src/services/programGeneration/prompts.ts` - Generation prompts\n- `src/services/programGeneration/types.ts` - Shared types\n- `src/app/api/programs/generate/route.ts` - Unified endpoint\n- Delete redundant/broken endpoints in `/api/program-creation/*`\n\n## Acceptance criteria\n- [ ] Single `/api/programs/generate` endpoint works for all cases\n- [ ] Generation completes in <30 seconds\n- [ ] Both `/hi` and `/dashboard/new-program` use same service\n- [ ] No duplicate type definitions\n\n## Sprint\nSprint 1: Core Generation\nEOF\n)\" --label \"enhancement\")",
+      "Bash(gh issue create:*)",
+      "Bash(git checkout:*)",
+      "Bash(git pull:*)",
+      "Bash(mkdir:*)",
+      "Bash(npx tsc:*)",
+      "Bash(test:*)",
+      "Bash(git add:*)",
+      "Bash(gh pr view:*)",
+      "Bash(git commit:*)",
+      "Skill(frontend-design)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

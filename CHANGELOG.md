@@ -8,6 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Landing page variants (v2, v2a, v2b, v2d) with distinct color palettes for A/B testing (#101)
+- Coach mode database migration
+- Test plan document for QA workflow
+
+### Fixed
+- Wired up unified program generation service to ConversationalInterface - was calling old 6-7 endpoint flow
+- Fixed stale userId bug in handleDataReviewConfirm - React state async issue causing empty userId in redirects
+- Fixed JSON parsing for Claude Sonnet 4 responses - strips markdown code blocks before parsing
+- Removed redundant intake save - unified service already handles it
+- Updated Supabase ports to 5433X range to avoid conflicts with other local projects
+
+### Changed
+- Updated Claude model names from `-latest` aliases to specific versions (claude-sonnet-4-20250514)
+
+### Previously Added
 - Unified program generation service (`src/services/programGeneration/`) that consolidates all program creation into 1-2 AI calls instead of 6-10 sequential calls
 - New `/api/programs/generate` endpoint for all program generation flows
 - Streaming generation endpoint (`/api/programs/generate/stream`) with Server-Sent Events for real-time progress updates

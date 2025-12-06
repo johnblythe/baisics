@@ -455,7 +455,12 @@ const parseAIResponse = <T>(response: SendMessageResponse, defaultValue: T): T =
           : '';
       
       if (content) {
-        return JSON.parse(content) as T;
+        // Strip markdown code blocks if present (Claude sometimes wraps JSON despite instructions)
+        const cleanedContent = content
+          .replace(/^```(?:json)?\s*\n?/i, '')
+          .replace(/\n?```\s*$/i, '')
+          .trim();
+        return JSON.parse(cleanedContent) as T;
       }
     }
     return defaultValue;

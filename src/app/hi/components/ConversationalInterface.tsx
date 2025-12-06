@@ -207,16 +207,20 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
 
     setShowDataReview(false);
     setIsGeneratingProgram(true);
-    setMessages(prev => [...prev, { 
-      role: "assistant", 
-      content: "Great! I'll create your personalized program now. Let me put that together for you..." 
+    setMessages(prev => [...prev, {
+      role: "assistant",
+      content: "Great! I'll create your personalized program now. Let me put that together for you..."
     }]);
 
+    // Track the actual userId to use (React state updates are async)
+    let activeUserId = localUserId;
+
     // Create user if we don't have one
-    if (!localUserId) {
+    if (!activeUserId) {
       const newUserId = uuidv4();
       const result = await createAnonUser(newUserId);
       if (result.success && result.user) {
+        activeUserId = result.user.id;
         setLocalUserId(result.user.id);
         setLocalUser(result.user);
       } else {
@@ -230,163 +234,23 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
       }
     }
 
-    // save the user's intake data
     try {
-      const intakeResponse = await fetch(`/api/user/${localUserId}/intake`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(extractedData)
-      });
+      // Use unified generation service (1-2 AI calls instead of 6-7)
+      const result = await processUserMessage(
+        messages,
+        activeUserId,
+        extractedData,
+        true // generateProgramDirectly
+      );
 
-      if (!intakeResponse.ok) {
-        throw new Error('Failed to save intake data');
+      if (!result.success || !result.program) {
+        throw new Error('Failed to generate program');
       }
 
-      await intakeResponse.json();
-    } catch (error) {
-      console.error('Error saving intake data:', error);
-      // Continue with program creation even if intake save fails
-    }
-
-    try {
-      // Step 1: Get program structure
-      const structureResponse = await fetch('/api/program-creation/structure', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ intakeData: extractedData, userId: localUserId })
-      });
-      const { programStructure } = await structureResponse.json();
-
-      setMessages(prev => [...prev, {
-        role: "assistant",
-        content: "I've designed the overall program structure. Now creating your workout plan..."
-      }]);
-
-      // Step 2: Get workout structure
-      const workoutResponse = await fetch('/api/program-creation/workout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          intakeData: extractedData,
-          programStructure,
-          userId: localUserId
-        })
-      });
-      const { workoutStructure } = await workoutResponse.json();
-
-      setMessages(prev => [...prev, {
-        role: "assistant",
-        content: "Workout structure is ready. Now creating your detailed program..."
-      }]);
-
-      // Step 3: Get workout details in parallel
-      const phase = 0;
-      const daysPerWeek = workoutStructure.daysPerWeek;
-
-      // Get phase details
-      const phaseResponse = await fetch('/api/program-creation/details/phase', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          intakeData: extractedData,
-          programStructure,
-          workoutStructure,
-          phase,
-          userId: localUserId
-        })
-      });
-      const { phaseDetails } = await phaseResponse.json();
-
-      // Get nutrition details
-      const nutritionResponse = await fetch('/api/program-creation/details/nutrition', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          intakeData: extractedData,
-          programStructure,
-          phase,
-          userId: localUserId
-        })
-      });
-      const { nutrition } = await nutritionResponse.json();
-
-      // Get exercises for each day in parallel
-      const exercisePromises = Array.from({ length: daysPerWeek }, async (_, i) => {
-        // First get the workout focus
-        const focusResponse = await fetch('/api/program-creation/details/exercises/focus', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            intakeData: extractedData,
-            programStructure,
-            workoutStructure,
-            dayNumber: i + 1,
-            userId: localUserId
-          })
-        });
-        const { workoutFocus } = await focusResponse.json();
-
-        // Then get the exercises for that focus
-        const exercisesResponse = await fetch('/api/program-creation/details/exercises/list', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            intakeData: extractedData,
-            programStructure,
-            workoutStructure,
-            workoutFocus,
-            userId: localUserId
-          })
-        });
-        const { exercises } = await exercisesResponse.json();
-
-        return {
-          ...workoutFocus,
-          exercises: exercises.exercises
-        };
-      });
-
-      const workouts = await Promise.all(exercisePromises);
-
-      // Combine all the pieces
-      const workoutDetails = {
-        workouts,
-        ...phaseDetails,
-        nutrition
-      };
-
-      // Final step: Construct and save program
-      const program = {
-        // id: programStructure.id, // TODO: does this actually get done?
-        name: programStructure.name,
-        description: programStructure.description,
-        workoutPlans: [workoutDetails],
-        user: {
-          id: localUserId,
-          email: localUser?.email || null,
-          password: null,
-          isPremium: false,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        }
-      };
-
-      // Save program to database
-      const saveResponse = await fetch('/api/program-creation/save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(program)
-      });
-
-      if (!saveResponse.ok) {
-        throw new Error('Failed to save program');
-      }
-
-      const { program: savedProgram, programId } = await saveResponse.json();
-      setProgram(savedProgram);
+      setProgram(result.program);
       setIsGeneratingProgram(false);
-      sendGTMEvent({ event: 'program created successfully', value: savedProgram })
-      router.replace(`/program/review?userId=${localUserId}&programId=${programId}`);
+      sendGTMEvent({ event: 'program created successfully', value: result.program });
+      router.replace(`/program/review?userId=${activeUserId}&programId=${result.program.id}`);
 
     } catch (error) {
       console.error('Error generating program:', error);

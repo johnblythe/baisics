@@ -28,7 +28,7 @@ RULES:
 4. Keep responses conversational and friendly
 5. Summarize what you understood before asking the next question
 
-Respond with JSON only:
+Respond with ONLY the JSON object below. Do NOT wrap in markdown code blocks. Do NOT include any text before or after the JSON:
 {
   "extractedData": {
     "gender": "male" | "female" | "other" | null,
