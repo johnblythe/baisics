@@ -13,8 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - System prompt guardrails tell model to treat user data as DATA not instructions
   - Logging for suspicious input monitoring
   - 19 unit tests for sanitization logic
+  - Fixed false positives: "Respond with" alone no longer triggers (must have suspicious suffix)
 
 ### Added
+- Exercise `sortOrder` field to guarantee display order in database queries
 - Streaming program generation with real-time progress UI
   - `useStreamingGeneration` hook for consuming SSE stream
   - Progress bar and stage-by-stage completion in GeneratingProgramTransition
@@ -28,6 +30,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Test plan document for QA workflow
 
 ### Fixed
+- Exercise ordering now persists correctly - added `sortOrder` DB field and `orderBy` to all queries (#108)
+- Normalize invalid AI measure types (circuit, rounds) to valid values before validation
+- TawkChat only loads in production (no more chat widget in dev)
 - Exercise ordering in generated programs - added emphatic prompt rules with examples (#108)
 - Returning user flow not recognizing existing data - now passes existing intake to extraction prompt (#107)
 - Session loading race condition in ConversationalIntakeContainer

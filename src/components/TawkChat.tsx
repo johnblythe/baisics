@@ -3,6 +3,11 @@
 import Script from 'next/script';
 
 export default function TawkChat() {
+  // Only load Tawk chat in production
+  if (process.env.NODE_ENV !== 'production') {
+    return null;
+  }
+
   return (
     <Script id="tawk-script" strategy="lazyOnload">
       {`

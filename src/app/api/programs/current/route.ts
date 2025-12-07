@@ -113,7 +113,7 @@ export async function GET() {
           include: {
             workouts: {
               include: {
-                exercises: true,
+                exercises: { orderBy: { sortOrder: 'asc' } },
               },
             },
           },

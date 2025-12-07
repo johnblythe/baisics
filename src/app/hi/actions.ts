@@ -109,7 +109,7 @@ export async function processUserMessage(
             include: {
               workouts: {
                 include: {
-                  exercises: true
+                  exercises: { orderBy: { sortOrder: 'asc' } }
                 }
               }
             }

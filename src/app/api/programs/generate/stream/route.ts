@@ -144,6 +144,19 @@ export async function POST(request: Request) {
           // Parse JSON
           const programData = JSON.parse(responseText);
 
+          // Normalize measure types - map invalid values to valid ones
+          const validMeasureTypes = ['reps', 'time', 'distance'];
+          for (const phase of programData.phases || []) {
+            for (const workout of phase.workouts || []) {
+              for (const exercise of workout.exercises || []) {
+                if (exercise.measure && !validMeasureTypes.includes(exercise.measure.type)) {
+                  // Map circuit, rounds, etc. to reps
+                  exercise.measure.type = 'reps';
+                }
+              }
+            }
+          }
+
           // Validate
           const validation = validateProgram(programData);
           if (!validation.success) {
@@ -231,7 +244,7 @@ async function saveProgramToDatabase(
               warmup: JSON.stringify(workout.warmup),
               cooldown: JSON.stringify(workout.cooldown),
               exercises: {
-                create: workout.exercises.map((exercise) => {
+                create: workout.exercises.map((exercise, exerciseIndex) => {
                   const reps = exercise.measure.type === 'reps' ? Math.round(exercise.measure.value) : 0;
                   const measureType = exercise.measure.type.toUpperCase() as ExerciseMeasureType;
 
@@ -268,6 +281,7 @@ async function saveProgramToDatabase(
                     measureValue,
                     measureUnit,
                     intensity: 0,
+                    sortOrder: exerciseIndex,
                     notes: `${exercise.intensity || ''} ${exercise.notes || ''}`.trim() || null,
                     exerciseLibrary: {
                       connectOrCreate: {

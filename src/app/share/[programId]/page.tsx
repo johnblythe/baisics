@@ -52,7 +52,7 @@ export default async function SharePage({ params }: PageProps) {
         include: {
           workouts: {
             include: {
-              exercises: true,
+              exercises: { orderBy: { sortOrder: 'asc' } },
             },
           },
         },

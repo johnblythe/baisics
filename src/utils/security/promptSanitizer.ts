@@ -28,10 +28,10 @@ const INJECTION_PATTERNS = [
   /\[system\]/i,
   /\[assistant\]/i,
 
-  // Output manipulation
-  /respond\s+(only\s+)?with/i,
+  // Output manipulation (more specific to avoid false positives)
+  /respond\s+(only\s+)?with\s+(json|xml|code|the\s+following|exactly|the\s+word|only)/i,
   /output\s+(only\s+)?the\s+following/i,
-  /say\s+(exactly|only)/i,
+  /say\s+(exactly|only)\s+(this|what|the)/i,
   /print\s+(your|the)\s+(system|prompt|instructions)/i,
 
   // System prompt extraction

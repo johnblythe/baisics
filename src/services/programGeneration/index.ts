@@ -376,7 +376,7 @@ export async function saveProgramToDatabase(
               warmup: JSON.stringify(workout.warmup),
               cooldown: JSON.stringify(workout.cooldown),
               exercises: {
-                create: workout.exercises.map((exercise) => {
+                create: workout.exercises.map((exercise, exerciseIndex) => {
                   const reps = exercise.measure.type === 'reps' ? Math.round(exercise.measure.value) : 0;
 
                   const measureType = exercise.measure.type.toUpperCase() as ExerciseMeasureType;
@@ -414,6 +414,7 @@ export async function saveProgramToDatabase(
                     measureValue,
                     measureUnit,
                     intensity: 0,
+                    sortOrder: exerciseIndex,
                     notes: `${exercise.intensity || ''} ${exercise.notes || ''}`.trim() || null,
                     exerciseLibrary: {
                       connectOrCreate: {

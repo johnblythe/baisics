@@ -509,13 +509,13 @@ export const saveProgramToDatabase = async (program: Program): Promise<Program> 
                   warmup: JSON.stringify(workout.warmup) || '',
                   cooldown: JSON.stringify(workout.cooldown) || '',
                   exercises: {
-                    create: workout.exercises.map(exercise => {
+                    create: workout.exercises.map((exercise, exerciseIndex) => {
                       // For backwards compatibility and DB constraints
                       const reps = exercise.measure.type === 'reps' ? Math.round(exercise.measure.value) : 0;
-                      
+
                       // Convert measure type to enum
                       const measureType = exercise.measure.type.toUpperCase() as ExerciseMeasureType;
-                      
+
                       // Convert measure unit to enum
                       let measureUnit: ExerciseMeasureUnit | null = null;
                       if (exercise.measure.unit) {
@@ -537,7 +537,7 @@ export const saveProgramToDatabase = async (program: Program): Promise<Program> 
                             measureUnit = null;
                         }
                       }
-                      
+
                       const exerciseData = {
                         name: exercise.name,
                         sets: exercise.sets,
@@ -547,6 +547,7 @@ export const saveProgramToDatabase = async (program: Program): Promise<Program> 
                         measureValue: exercise.measure.value,
                         measureUnit: measureUnit as ExerciseMeasureUnit,
                         intensity: 0, // Default to 0 since we'll store the description in notes
+                        sortOrder: exerciseIndex,
                         notes: `${exercise.intensity || ''} ${exercise.notes || ''}`.trim() || null,
                         exerciseLibrary: {
                           connectOrCreate: {
@@ -557,7 +558,7 @@ export const saveProgramToDatabase = async (program: Program): Promise<Program> 
                             }
                           }
                         }
-                      };                      
+                      };
                       return exerciseData;
                     })
                   }
@@ -576,7 +577,7 @@ export const saveProgramToDatabase = async (program: Program): Promise<Program> 
           include: {
             workouts: {
               include: {
-                exercises: true
+                exercises: { orderBy: { sortOrder: 'asc' } }
               }
             }
           }

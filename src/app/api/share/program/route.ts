@@ -21,7 +21,7 @@ export async function GET(request: Request) {
           include: {
             workouts: {
               include: {
-                exercises: true,
+                exercises: { orderBy: { sortOrder: 'asc' } },
               },
             },
           },
