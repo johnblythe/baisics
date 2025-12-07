@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+- Add prompt injection protection for user-provided inputs (#115)
+  - Sanitization utility filters known injection patterns (instruction override, role hijacking, prompt extraction)
+  - System prompt guardrails tell model to treat user data as DATA not instructions
+  - Logging for suspicious input monitoring
+  - 19 unit tests for sanitization logic
+
 ### Added
 - Vitest testing framework with integration tests for exercise ordering (#108)
 - `npm run test:integration` script for running API integration tests

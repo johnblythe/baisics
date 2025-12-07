@@ -13,6 +13,7 @@ import type {
 } from './types';
 import { validateProgram, generatedProgramSchema } from './schema';
 import { SYSTEM_PROMPT, buildGenerationPrompt, buildContinuationPrompt } from './prompts';
+import { sanitizeUserProfile, sanitizeInput, logSuspiciousInput } from '@/utils/security/promptSanitizer';
 
 /**
  * Unified Program Generation Service
@@ -42,8 +43,55 @@ export async function generateProgram(
   const { userId, profile, context } = options;
 
   try {
-    // Build the generation prompt
-    const prompt = buildGenerationPrompt(profile, context);
+    // Sanitize user input to prevent prompt injection
+    const { sanitizedProfile, wasModified, riskReport } = sanitizeUserProfile(profile);
+
+    // Log any suspicious inputs
+    for (const report of riskReport) {
+      if (report.riskLevel !== 'low') {
+        logSuspiciousInput(userId, report.field, report.riskLevel, report.flaggedPatterns);
+      }
+    }
+
+    // Sanitize context fields if present
+    let sanitizedContext: GenerationContext | undefined = context;
+    if (context) {
+      let contextModified = false;
+      let sanitizedMods = context.modifications;
+      let sanitizedCheckInNotes = context.recentCheckIn?.notes;
+
+      if (context.modifications) {
+        const modResult = sanitizeInput(context.modifications, 'modifications');
+        if (modResult.wasModified) {
+          sanitizedMods = modResult.sanitized;
+          contextModified = true;
+          if (modResult.riskLevel !== 'low') {
+            logSuspiciousInput(userId, 'modifications', modResult.riskLevel, modResult.flaggedPatterns);
+          }
+        }
+      }
+
+      if (context.recentCheckIn?.notes) {
+        const notesResult = sanitizeInput(context.recentCheckIn.notes, 'checkInNotes');
+        if (notesResult.wasModified) {
+          sanitizedCheckInNotes = notesResult.sanitized;
+          contextModified = true;
+        }
+      }
+
+      if (contextModified) {
+        sanitizedContext = {
+          ...context,
+          modifications: sanitizedMods,
+          recentCheckIn: context.recentCheckIn
+            ? { ...context.recentCheckIn, notes: sanitizedCheckInNotes }
+            : undefined,
+        };
+      }
+    }
+
+    // Build the generation prompt with sanitized inputs
+    const prompt = buildGenerationPrompt(sanitizedProfile as UserProfile, sanitizedContext);
 
     // Call Claude
     const response = await anthropic.messages.create({
