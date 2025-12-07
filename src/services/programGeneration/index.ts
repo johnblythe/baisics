@@ -146,6 +146,10 @@ export async function generateProgram(
 
     const program = validation.data!;
 
+    // Sort exercises by category to ensure correct ordering
+    // This guarantees primary → secondary → isolation regardless of AI output
+    sortExercisesByCategory(program);
+
     // Check if response was truncated and we need more phases
     if (response.stop_reason === 'max_tokens') {
       const expectedPhases = profile.experienceLevel === 'beginner' ? 1 :
@@ -312,6 +316,30 @@ function attemptJsonRepair(json: string): string {
   repaired += '}'.repeat(Math.max(0, openBraces));
 
   return repaired;
+}
+
+/**
+ * Sort exercises by category to ensure correct workout ordering
+ * Primary compounds first, then secondary, then isolation/accessories
+ */
+const CATEGORY_ORDER: Record<string, number> = {
+  primary: 1,
+  secondary: 2,
+  isolation: 3,
+  cardio: 4,
+  flexibility: 5,
+};
+
+function sortExercisesByCategory(program: GeneratedProgram): void {
+  for (const phase of program.phases) {
+    for (const workout of phase.workouts) {
+      workout.exercises.sort((a, b) => {
+        const orderA = CATEGORY_ORDER[a.category] ?? 99;
+        const orderB = CATEGORY_ORDER[b.category] ?? 99;
+        return orderA - orderB;
+      });
+    }
+  }
 }
 
 /**

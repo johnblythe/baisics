@@ -15,6 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 19 unit tests for sanitization logic
 
 ### Added
+- Streaming program generation with real-time progress UI
+  - `useStreamingGeneration` hook for consuming SSE stream
+  - Progress bar and stage-by-stage completion in GeneratingProgramTransition
+  - `/api/programs/generate/stream` endpoint now used by `/hi` flow
+- Post-processing sort for exercise ordering - guarantees primary → secondary → isolation (#108)
 - Vitest testing framework with integration tests for exercise ordering (#108)
 - `npm run test:integration` script for running API integration tests
 - JSON repair function for handling truncated AI responses

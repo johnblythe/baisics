@@ -17,6 +17,8 @@ import { v4 as uuidv4 } from "uuid";
 import exampleProgram from '../utils/example.json';
 import { ConversationalIntakeRef } from './ConversationalIntakeContainer';
 import { sendGTMEvent } from "@next/third-parties/google";
+import { useStreamingGeneration, GenerationProgress } from "@/hooks/useStreamingGeneration";
+import { convertToIntakeFormat } from "@/utils/formatters";
 
 // Add type for example program phase
 interface ExamplePhase {
@@ -74,8 +76,40 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
   const [localUserId, setLocalUserId] = useState(userId);
   const [localUser, setLocalUser] = useState(user);
   const isReturningUser = !!initialExtractedData;
+  const [generationProgress, setGenerationProgress] = useState<GenerationProgress | undefined>(undefined);
 
   const router = useRouter();
+
+  // Streaming generation hook
+  const { generate: generateStreaming, isGenerating: isStreamGenerating } = useStreamingGeneration({
+    onProgress: (progress) => {
+      setGenerationProgress(progress);
+    },
+    onComplete: (result) => {
+      if (result.success && result.savedProgram) {
+        setProgram(result.program);
+        setIsGeneratingProgram(false);
+        sendGTMEvent({ event: 'program created successfully', value: result.savedProgram });
+
+        // Navigate to appropriate page
+        const isAuthenticated = localUser?.email;
+        if (isAuthenticated) {
+          router.replace(`/dashboard/${result.savedProgram.id}`);
+        } else {
+          router.replace(`/program/review?userId=${localUserId}&programId=${result.savedProgram.id}`);
+        }
+      }
+    },
+    onError: (error) => {
+      console.error('Generation error:', error);
+      setIsGeneratingProgram(false);
+      setGenerationProgress(undefined);
+      setMessages(prev => [...prev, {
+        role: "assistant",
+        content: "I encountered an error while creating your program. Please try again."
+      }]);
+    },
+  });
 
   useEffect(() => {
     if (initialProgram) {
@@ -222,6 +256,7 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
 
     setShowDataReview(false);
     setIsGeneratingProgram(true);
+    setGenerationProgress({ stage: 'idle', message: 'Starting...', progress: 0 });
     setMessages(prev => [...prev, {
       role: "assistant",
       content: "Great! I'll create your personalized program now. Let me put that together for you..."
@@ -241,6 +276,7 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
       } else {
         console.error('Failed to create anonymous user');
         setIsGeneratingProgram(false);
+        setGenerationProgress(undefined);
         setMessages(prev => [...prev, {
           role: "assistant",
           content: "I encountered an error while creating your program. Please try again."
@@ -249,39 +285,13 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
       }
     }
 
-    try {
-      // Use unified generation service (1-2 AI calls instead of 6-7)
-      const result = await processUserMessage(
-        messages,
-        activeUserId,
-        extractedData,
-        true // generateProgramDirectly
-      );
-
-      if (!result.success || !result.program) {
-        throw new Error('Failed to generate program');
-      }
-
-      setProgram(result.program);
-      setIsGeneratingProgram(false);
-      sendGTMEvent({ event: 'program created successfully', value: result.program });
-
-      // Authenticated users go to dashboard, anonymous go to review page
-      const isAuthenticated = localUser?.email;
-      if (isAuthenticated) {
-        router.replace(`/dashboard/${result.program.id}`);
-      } else {
-        router.replace(`/program/review?userId=${activeUserId}&programId=${result.program.id}`);
-      }
-
-    } catch (error) {
-      console.error('Error generating program:', error);
-      setIsGeneratingProgram(false);
-      setMessages(prev => [...prev, {
-        role: "assistant",
-        content: "I encountered an error while creating your program. Please try again."
-      }]);
-    }
+    // Convert extractedData to intake format and use streaming generation
+    const intakeData = convertToIntakeFormat(extractedData);
+    generateStreaming({
+      userId: activeUserId,
+      intakeData,
+      context: { generationType: 'new' as const },
+    });
   };
 
   const handleRequestMoreDetails = (topics: string[]) => {
@@ -626,7 +636,7 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
             onRequestMore={handleRequestMoreDetails}
           />
         ) : isGeneratingProgram ? (
-          <GeneratingProgramTransition />
+          <GeneratingProgramTransition progress={generationProgress} />
         ) : (
           <div className="flex-1 overflow-y-auto p-8 space-y-8 messages-container relative">
             <AnimatePresence>
