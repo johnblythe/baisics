@@ -8,11 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Vitest testing framework with integration tests for exercise ordering (#108)
+- `npm run test:integration` script for running API integration tests
+- JSON repair function for handling truncated AI responses
 - Landing page variants (v2, v2a, v2b, v2d) with distinct color palettes for A/B testing (#101)
 - Coach mode database migration
 - Test plan document for QA workflow
 
 ### Fixed
+- Exercise ordering in generated programs - added emphatic prompt rules with examples (#108)
+- Returning user flow not recognizing existing data - now passes existing intake to extraction prompt (#107)
+- Session loading race condition in ConversationalIntakeContainer
+- JSON truncation for multi-phase programs - increased max_tokens and added repair logic
 - Wired up unified program generation service to ConversationalInterface - was calling old 6-7 endpoint flow
 - Fixed stale userId bug in handleDataReviewConfirm - React state async issue causing empty userId in redirects
 - Fixed JSON parsing for Claude Sonnet 4 responses - strips markdown code blocks before parsing

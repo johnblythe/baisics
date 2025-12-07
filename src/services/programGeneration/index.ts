@@ -24,7 +24,7 @@ import { SYSTEM_PROMPT, buildGenerationPrompt, buildContinuationPrompt } from '.
  */
 
 const MODEL = process.env.SONNET_MODEL || 'claude-sonnet-4-20250514';
-const MAX_TOKENS = 8192; // Increased for full program generation
+const MAX_TOKENS = 16384; // Higher limit for multi-phase programs
 
 export interface GenerateProgramOptions {
   userId: string;
@@ -73,6 +73,13 @@ export async function generateProgram(
     }
     responseText = responseText.trim();
 
+    // Check for truncation BEFORE parsing
+    if (response.stop_reason === 'max_tokens') {
+      console.warn('Response truncated due to max_tokens - attempting to repair JSON');
+      // Try to repair truncated JSON by closing open brackets
+      responseText = attemptJsonRepair(responseText);
+    }
+
     // Parse JSON
     let programData: unknown;
     try {
@@ -91,8 +98,7 @@ export async function generateProgram(
 
     const program = validation.data!;
 
-    // Check if response was truncated (stop_reason === 'max_tokens')
-    // If so, make continuation call for remaining phases
+    // Check if response was truncated and we need more phases
     if (response.stop_reason === 'max_tokens') {
       const expectedPhases = profile.experienceLevel === 'beginner' ? 1 :
         profile.experienceLevel === 'intermediate' ? 2 : 3;
@@ -168,6 +174,96 @@ async function continueGeneration(
     console.error('Continuation generation failed:', error);
     return null;
   }
+}
+
+/**
+ * Attempt to repair truncated JSON by closing open brackets/braces
+ * This is a best-effort repair for max_tokens truncation
+ */
+function attemptJsonRepair(json: string): string {
+  let repaired = json.trim();
+
+  // Count open brackets/braces
+  let openBraces = 0;
+  let openBrackets = 0;
+  let inString = false;
+  let escapeNext = false;
+
+  for (const char of repaired) {
+    if (escapeNext) {
+      escapeNext = false;
+      continue;
+    }
+    if (char === '\\') {
+      escapeNext = true;
+      continue;
+    }
+    if (char === '"') {
+      inString = !inString;
+      continue;
+    }
+    if (inString) continue;
+
+    if (char === '{') openBraces++;
+    if (char === '}') openBraces--;
+    if (char === '[') openBrackets++;
+    if (char === ']') openBrackets--;
+  }
+
+  // If we're in a string, close it
+  if (inString) {
+    repaired += '"';
+  }
+
+  // Remove trailing incomplete content (partial key/value)
+  // Find last complete structure
+  const lastCompleteIndex = Math.max(
+    repaired.lastIndexOf('}'),
+    repaired.lastIndexOf(']'),
+    repaired.lastIndexOf('"')
+  );
+
+  if (lastCompleteIndex > 0) {
+    // Check if there's trailing incomplete content
+    const trailing = repaired.slice(lastCompleteIndex + 1).trim();
+    if (trailing && !trailing.match(/^[,\}\]]/)) {
+      repaired = repaired.slice(0, lastCompleteIndex + 1);
+    }
+  }
+
+  // Close remaining open brackets/braces
+  // Recount after potential truncation
+  openBraces = 0;
+  openBrackets = 0;
+  inString = false;
+  escapeNext = false;
+
+  for (const char of repaired) {
+    if (escapeNext) {
+      escapeNext = false;
+      continue;
+    }
+    if (char === '\\') {
+      escapeNext = true;
+      continue;
+    }
+    if (char === '"') {
+      inString = !inString;
+      continue;
+    }
+    if (inString) continue;
+
+    if (char === '{') openBraces++;
+    if (char === '}') openBraces--;
+    if (char === '[') openBrackets++;
+    if (char === ']') openBrackets--;
+  }
+
+  // Close arrays then objects
+  repaired += ']'.repeat(Math.max(0, openBrackets));
+  repaired += '}'.repeat(Math.max(0, openBraces));
+
+  return repaired;
 }
 
 /**

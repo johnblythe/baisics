@@ -4,7 +4,7 @@ import { Message, ExtractedData, IntakeFormData, WorkoutPlan, Program } from "@/
 import { sendMessage } from "@/utils/chat";
 import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/email";
-import { extractionPrompt } from "@/utils/prompts/";
+import { buildExtractionPrompt } from "@/utils/prompts/";
 import { convertToIntakeFormat } from "@/utils/formatters";
 import {
   generateProgram,
@@ -129,15 +129,15 @@ export async function processUserMessage(
       content: m.content
     }));
 
-    // Log the extraction prompt
-    
+    // Build extraction prompt with existing data for returning users (#107)
+    const prompt = buildExtractionPrompt(extractedData);
 
     const result = await sendMessage(
       [
         ...messageHistory,
         {
           role: 'user',
-          content: extractionPrompt
+          content: prompt
         }
       ],
       userId

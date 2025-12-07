@@ -34,9 +34,9 @@
 - [- ] Coach mode toggle (if applicable)
 
 ## 7. Returning User - New Program (3 min)
-- [ ] `/dashboard/new-program` flow
-- [ N] Creates second program
-- [ ] Can switch between programs
+- [ x] `/dashboard/new-program` flow
+- [ x] Creates second program
+- [ x] Can switch between programs
 
 ---
 

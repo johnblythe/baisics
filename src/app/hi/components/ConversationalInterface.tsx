@@ -54,15 +54,16 @@ interface ConversationalInterfaceProps {
   userId: string;
   user: User | null;
   initialProgram?: Program | null;
+  initialExtractedData?: IntakeFormData | null;
   onProgramChange?: (program: Program | null) => void;
   preventNavigation?: boolean;
 }
 
-export const ConversationalInterface = forwardRef<ConversationalIntakeRef, ConversationalInterfaceProps>(({ userId, user, initialProgram, onProgramChange, preventNavigation }, ref) => {
+export const ConversationalInterface = forwardRef<ConversationalIntakeRef, ConversationalInterfaceProps>(({ userId, user, initialProgram, initialExtractedData, onProgramChange, preventNavigation }, ref) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [extractedData, setExtractedData] = useState<IntakeFormData | null>(null);
+  const [extractedData, setExtractedData] = useState<IntakeFormData | null>(initialExtractedData || null);
   const [program, setProgram] = useState<Program | null>(null);
   const [isGeneratingProgram, setIsGeneratingProgram] = useState(false);
   const [isUpsellOpen, setIsUpsellOpen] = useState(false);
@@ -72,14 +73,25 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
   const [showDataReview, setShowDataReview] = useState(false);
   const [localUserId, setLocalUserId] = useState(userId);
   const [localUser, setLocalUser] = useState(user);
+  const isReturningUser = !!initialExtractedData;
 
   const router = useRouter();
-  
+
   useEffect(() => {
     if (initialProgram) {
       setProgram(initialProgram);
     }
   }, [initialProgram]);
+
+  // Set custom welcome message for returning users (#107)
+  useEffect(() => {
+    if (isReturningUser && messages.length === 0) {
+      setMessages([{
+        role: 'assistant',
+        content: `Good to see you again! Last time we set you up with ${initialExtractedData?.daysPerWeek} days a week focused on ${initialExtractedData?.goals}. Ready for something new, or want to keep building on that?`
+      }]);
+    }
+  }, [isReturningUser, initialExtractedData, messages.length]);
 
   // Add escape key handler
   useEffect(() => {
@@ -103,7 +115,9 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
   };
 
   useEffect(() => {
-    // Initial welcome message with typing effect
+    // Initial welcome message with typing effect (skip for returning users - they get custom message)
+    if (isReturningUser) return;
+
     setIsTyping(true);
     setTimeout(() => {
       setMessages([
@@ -114,7 +128,7 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
       ]);
       setIsTyping(false);
     }, 1000);
-  }, []);
+  }, [isReturningUser]);
   
   useEffect(() => {
     if (isGeneratingProgram) {
@@ -175,7 +189,8 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
 
   // Work on getting the right data from the user to generate a program
   const handleInitialIntake = async (userMessage: Message, _: string) => {
-    const result = await processUserMessage([...messages, userMessage], localUserId);
+    // Pass existing extractedData so returning users don't get asked redundant questions (#107)
+    const result = await processUserMessage([...messages, userMessage], localUserId, extractedData);
         
     if (result.success) {
       if (result.extractedData) {
@@ -250,7 +265,14 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
       setProgram(result.program);
       setIsGeneratingProgram(false);
       sendGTMEvent({ event: 'program created successfully', value: result.program });
-      router.replace(`/program/review?userId=${activeUserId}&programId=${result.program.id}`);
+
+      // Authenticated users go to dashboard, anonymous go to review page
+      const isAuthenticated = localUser?.email;
+      if (isAuthenticated) {
+        router.replace(`/dashboard/${result.program.id}`);
+      } else {
+        router.replace(`/program/review?userId=${activeUserId}&programId=${result.program.id}`);
+      }
 
     } catch (error) {
       console.error('Error generating program:', error);
