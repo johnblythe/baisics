@@ -27,7 +27,7 @@ export async function GET(
                 dayNumber: 'asc',
               },
               include: {
-                exercises: true,
+                exercises: { orderBy: { sortOrder: 'asc' } },
               },
             },
           },

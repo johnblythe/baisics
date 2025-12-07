@@ -31,7 +31,7 @@ export async function GET(request: Request, { params }: RouteParams) {
                   include: {
                     workouts: {
                       include: {
-                        exercises: true,
+                        exercises: { orderBy: { sortOrder: 'asc' } },
                       },
                     },
                   },

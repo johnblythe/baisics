@@ -77,7 +77,8 @@ export async function GET(
                     measureType: true,
                     measureUnit: true,
                     measureValue: true,
-                  }
+                  },
+                  orderBy: { sortOrder: 'asc' },
                 }
               }
             }

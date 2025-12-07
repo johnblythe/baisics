@@ -7,7 +7,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+- Add prompt injection protection for user-provided inputs (#115)
+  - Sanitization utility filters known injection patterns (instruction override, role hijacking, prompt extraction)
+  - System prompt guardrails tell model to treat user data as DATA not instructions
+  - Logging for suspicious input monitoring
+  - 19 unit tests for sanitization logic
+  - Fixed false positives: "Respond with" alone no longer triggers (must have suspicious suffix)
+
 ### Added
+- Exercise `sortOrder` field to guarantee display order in database queries
+- Streaming program generation with real-time progress UI
+  - `useStreamingGeneration` hook for consuming SSE stream
+  - Progress bar and stage-by-stage completion in GeneratingProgramTransition
+  - `/api/programs/generate/stream` endpoint now used by `/hi` flow
+- Post-processing sort for exercise ordering - guarantees primary → secondary → isolation (#108)
+- Vitest testing framework with integration tests for exercise ordering (#108)
+- `npm run test:integration` script for running API integration tests
+- JSON repair function for handling truncated AI responses
+- Landing page variants (v2, v2a, v2b, v2d) with distinct color palettes for A/B testing (#101)
+- Coach mode database migration
+- Test plan document for QA workflow
+
+### Fixed
+- Exercise ordering now persists correctly - added `sortOrder` DB field and `orderBy` to all queries (#108)
+- Normalize invalid AI measure types (circuit, rounds) to valid values before validation
+- TawkChat only loads in production (no more chat widget in dev)
+- Exercise ordering in generated programs - added emphatic prompt rules with examples (#108)
+- Returning user flow not recognizing existing data - now passes existing intake to extraction prompt (#107)
+- Session loading race condition in ConversationalIntakeContainer
+- JSON truncation for multi-phase programs - increased max_tokens and added repair logic
+- Wired up unified program generation service to ConversationalInterface - was calling old 6-7 endpoint flow
+- Fixed stale userId bug in handleDataReviewConfirm - React state async issue causing empty userId in redirects
+- Fixed JSON parsing for Claude Sonnet 4 responses - strips markdown code blocks before parsing
+- Removed redundant intake save - unified service already handles it
+- Updated Supabase ports to 5433X range to avoid conflicts with other local projects
+
+### Changed
+- Updated Claude model names from `-latest` aliases to specific versions (claude-sonnet-4-20250514)
+
+### Previously Added
 - Unified program generation service (`src/services/programGeneration/`) that consolidates all program creation into 1-2 AI calls instead of 6-10 sequential calls
 - New `/api/programs/generate` endpoint for all program generation flows
 - Streaming generation endpoint (`/api/programs/generate/stream`) with Server-Sent Events for real-time progress updates

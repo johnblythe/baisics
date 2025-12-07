@@ -13,6 +13,7 @@ import type {
 } from './types';
 import { validateProgram, generatedProgramSchema } from './schema';
 import { SYSTEM_PROMPT, buildGenerationPrompt, buildContinuationPrompt } from './prompts';
+import { sanitizeUserProfile, sanitizeInput, logSuspiciousInput } from '@/utils/security/promptSanitizer';
 
 /**
  * Unified Program Generation Service
@@ -24,7 +25,7 @@ import { SYSTEM_PROMPT, buildGenerationPrompt, buildContinuationPrompt } from '.
  */
 
 const MODEL = process.env.SONNET_MODEL || 'claude-sonnet-4-20250514';
-const MAX_TOKENS = 8192; // Increased for full program generation
+const MAX_TOKENS = 16384; // Higher limit for multi-phase programs
 
 export interface GenerateProgramOptions {
   userId: string;
@@ -42,8 +43,55 @@ export async function generateProgram(
   const { userId, profile, context } = options;
 
   try {
-    // Build the generation prompt
-    const prompt = buildGenerationPrompt(profile, context);
+    // Sanitize user input to prevent prompt injection
+    const { sanitizedProfile, wasModified, riskReport } = sanitizeUserProfile(profile);
+
+    // Log any suspicious inputs
+    for (const report of riskReport) {
+      if (report.riskLevel !== 'low') {
+        logSuspiciousInput(userId, report.field, report.riskLevel, report.flaggedPatterns);
+      }
+    }
+
+    // Sanitize context fields if present
+    let sanitizedContext: GenerationContext | undefined = context;
+    if (context) {
+      let contextModified = false;
+      let sanitizedMods = context.modifications;
+      let sanitizedCheckInNotes = context.recentCheckIn?.notes;
+
+      if (context.modifications) {
+        const modResult = sanitizeInput(context.modifications, 'modifications');
+        if (modResult.wasModified) {
+          sanitizedMods = modResult.sanitized;
+          contextModified = true;
+          if (modResult.riskLevel !== 'low') {
+            logSuspiciousInput(userId, 'modifications', modResult.riskLevel, modResult.flaggedPatterns);
+          }
+        }
+      }
+
+      if (context.recentCheckIn?.notes) {
+        const notesResult = sanitizeInput(context.recentCheckIn.notes, 'checkInNotes');
+        if (notesResult.wasModified) {
+          sanitizedCheckInNotes = notesResult.sanitized;
+          contextModified = true;
+        }
+      }
+
+      if (contextModified) {
+        sanitizedContext = {
+          ...context,
+          modifications: sanitizedMods,
+          recentCheckIn: context.recentCheckIn
+            ? { ...context.recentCheckIn, notes: sanitizedCheckInNotes }
+            : undefined,
+        };
+      }
+    }
+
+    // Build the generation prompt with sanitized inputs
+    const prompt = buildGenerationPrompt(sanitizedProfile as UserProfile, sanitizedContext);
 
     // Call Claude
     const response = await anthropic.messages.create({
@@ -73,6 +121,13 @@ export async function generateProgram(
     }
     responseText = responseText.trim();
 
+    // Check for truncation BEFORE parsing
+    if (response.stop_reason === 'max_tokens') {
+      console.warn('Response truncated due to max_tokens - attempting to repair JSON');
+      // Try to repair truncated JSON by closing open brackets
+      responseText = attemptJsonRepair(responseText);
+    }
+
     // Parse JSON
     let programData: unknown;
     try {
@@ -91,8 +146,11 @@ export async function generateProgram(
 
     const program = validation.data!;
 
-    // Check if response was truncated (stop_reason === 'max_tokens')
-    // If so, make continuation call for remaining phases
+    // Sort exercises by category to ensure correct ordering
+    // This guarantees primary → secondary → isolation regardless of AI output
+    sortExercisesByCategory(program);
+
+    // Check if response was truncated and we need more phases
     if (response.stop_reason === 'max_tokens') {
       const expectedPhases = profile.experienceLevel === 'beginner' ? 1 :
         profile.experienceLevel === 'intermediate' ? 2 : 3;
@@ -171,6 +229,120 @@ async function continueGeneration(
 }
 
 /**
+ * Attempt to repair truncated JSON by closing open brackets/braces
+ * This is a best-effort repair for max_tokens truncation
+ */
+function attemptJsonRepair(json: string): string {
+  let repaired = json.trim();
+
+  // Count open brackets/braces
+  let openBraces = 0;
+  let openBrackets = 0;
+  let inString = false;
+  let escapeNext = false;
+
+  for (const char of repaired) {
+    if (escapeNext) {
+      escapeNext = false;
+      continue;
+    }
+    if (char === '\\') {
+      escapeNext = true;
+      continue;
+    }
+    if (char === '"') {
+      inString = !inString;
+      continue;
+    }
+    if (inString) continue;
+
+    if (char === '{') openBraces++;
+    if (char === '}') openBraces--;
+    if (char === '[') openBrackets++;
+    if (char === ']') openBrackets--;
+  }
+
+  // If we're in a string, close it
+  if (inString) {
+    repaired += '"';
+  }
+
+  // Remove trailing incomplete content (partial key/value)
+  // Find last complete structure
+  const lastCompleteIndex = Math.max(
+    repaired.lastIndexOf('}'),
+    repaired.lastIndexOf(']'),
+    repaired.lastIndexOf('"')
+  );
+
+  if (lastCompleteIndex > 0) {
+    // Check if there's trailing incomplete content
+    const trailing = repaired.slice(lastCompleteIndex + 1).trim();
+    if (trailing && !trailing.match(/^[,\}\]]/)) {
+      repaired = repaired.slice(0, lastCompleteIndex + 1);
+    }
+  }
+
+  // Close remaining open brackets/braces
+  // Recount after potential truncation
+  openBraces = 0;
+  openBrackets = 0;
+  inString = false;
+  escapeNext = false;
+
+  for (const char of repaired) {
+    if (escapeNext) {
+      escapeNext = false;
+      continue;
+    }
+    if (char === '\\') {
+      escapeNext = true;
+      continue;
+    }
+    if (char === '"') {
+      inString = !inString;
+      continue;
+    }
+    if (inString) continue;
+
+    if (char === '{') openBraces++;
+    if (char === '}') openBraces--;
+    if (char === '[') openBrackets++;
+    if (char === ']') openBrackets--;
+  }
+
+  // Close arrays then objects
+  repaired += ']'.repeat(Math.max(0, openBrackets));
+  repaired += '}'.repeat(Math.max(0, openBraces));
+
+  return repaired;
+}
+
+/**
+ * Sort exercises by category to ensure correct workout ordering
+ * Primary compounds first, then secondary, then isolation/accessories
+ */
+const CATEGORY_ORDER: Record<string, number> = {
+  primary: 1,
+  secondary: 2,
+  isolation: 3,
+  cardio: 4,
+  flexibility: 5,
+};
+
+function sortExercisesByCategory(program: GeneratedProgram): void {
+  for (const phase of program.phases) {
+    for (const workout of phase.workouts) {
+      workout.exercises.sort((a, b) => {
+        const orderA = CATEGORY_ORDER[a.category] ?? 99;
+        const orderB = CATEGORY_ORDER[b.category] ?? 99;
+        return orderA - orderB;
+      });
+    }
+  }
+}
+
+/**
  * Save generated program to database
  */
 export async function saveProgramToDatabase(
@@ -204,7 +376,7 @@ export async function saveProgramToDatabase(
               warmup: JSON.stringify(workout.warmup),
               cooldown: JSON.stringify(workout.cooldown),
               exercises: {
-                create: workout.exercises.map((exercise) => {
+                create: workout.exercises.map((exercise, exerciseIndex) => {
                   const reps = exercise.measure.type === 'reps' ? Math.round(exercise.measure.value) : 0;
 
                   const measureType = exercise.measure.type.toUpperCase() as ExerciseMeasureType;
@@ -242,6 +414,7 @@ export async function saveProgramToDatabase(
                     measureValue,
                     measureUnit,
                     intensity: 0,
+                    sortOrder: exerciseIndex,
                     notes: `${exercise.intensity || ''} ${exercise.notes || ''}`.trim() || null,
                     exerciseLibrary: {
                       connectOrCreate: {

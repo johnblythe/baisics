@@ -295,10 +295,10 @@ export async function getUserProgram(userId: string, programId: string) {
                 dayNumber: 'asc',
               },
               include: {
-                exercises: true,
+                exercises: { orderBy: { sortOrder: 'asc' } },
               }
             }
-          } 
+          }
         },
         user: true,
       },
@@ -431,7 +431,7 @@ export async function createNewProgram(programData: ProgramData, userId: string)
           include: {
             workouts: {
               include: {
-                exercises: true
+                exercises: { orderBy: { sortOrder: 'asc' } }
               }
             }
           }

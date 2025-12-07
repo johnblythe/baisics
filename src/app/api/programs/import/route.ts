@@ -188,7 +188,7 @@ export async function POST(request: Request) {
                   warmup: workout.warmup || '',
                   cooldown: workout.cooldown || '',
                   exercises: {
-                    create: (workout.exercises || []).map((exercise: any) => ({
+                    create: (workout.exercises || []).map((exercise: any, exerciseIndex: number) => ({
                       name: exercise.name || 'Exercise',
                       sets: exercise.sets || 1,
                       reps: exercise.measure?.type === 'REPS' ? exercise.measure.value : null,
@@ -197,6 +197,7 @@ export async function POST(request: Request) {
                       measureType: exercise.measure?.type || 'REPS',
                       measureValue: exercise.measure?.value || 0,
                       measureUnit: exercise.measure?.unit,
+                      sortOrder: exerciseIndex,
                       notes: exercise.notes || '',
                       exerciseLibrary: {
                         connectOrCreate: {
@@ -224,7 +225,7 @@ export async function POST(request: Request) {
             include: {
               workouts: {
                 include: {
-                  exercises: true
+                  exercises: { orderBy: { sortOrder: 'asc' } }
                 }
               }
             }

@@ -26,6 +26,7 @@ export async function GET(
           include: {
             exerciseLibrary: true,
           },
+          orderBy: { sortOrder: 'asc' },
         },
         workoutLogs: {
           where: {

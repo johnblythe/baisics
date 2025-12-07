@@ -14,9 +14,31 @@ import {
 } from '@/services/programGeneration';
 import { validateProgram } from '@/services/programGeneration/schema';
 import { SYSTEM_PROMPT, buildGenerationPrompt } from '@/services/programGeneration/prompts';
+import { sanitizeUserProfile, sanitizeInput, logSuspiciousInput } from '@/utils/security/promptSanitizer';
 
 const MODEL = process.env.SONNET_MODEL || 'claude-sonnet-4-20250514';
-const MAX_TOKENS = 8192;
+const MAX_TOKENS = 16384; // Higher limit for multi-phase programs
+
+// Exercise category ordering
+const CATEGORY_ORDER: Record<string, number> = {
+  primary: 1,
+  secondary: 2,
+  isolation: 3,
+  cardio: 4,
+  flexibility: 5,
+};
+
+function sortExercisesByCategory(program: GeneratedProgram): void {
+  for (const phase of program.phases) {
+    for (const workout of phase.workouts) {
+      workout.exercises.sort((a, b) => {
+        const orderA = CATEGORY_ORDER[a.category] ?? 99;
+        const orderB = CATEGORY_ORDER[b.category] ?? 99;
+        return orderA - orderB;
+      });
+    }
+  }
+}
 
 /**
  * POST /api/programs/generate/stream
@@ -26,17 +48,27 @@ const MAX_TOKENS = 8192;
  */
 export async function POST(request: Request) {
   const session = await auth();
-  if (!session?.user?.id) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+
+  let body: any;
+  try {
+    body = await request.json();
+  } catch {
+    return new Response(JSON.stringify({ error: 'Invalid request body' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  // Allow userId from session OR from body (for anonymous /hi flow)
+  const userId = session?.user?.id || body.userId;
+  if (!userId) {
+    return new Response(JSON.stringify({ error: 'Missing userId' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' },
     });
   }
 
-  const userId = session.user.id;
-
   try {
-    const body = await request.json();
     const { profile, intakeData, context } = body;
 
     // Convert legacy intake format if needed
@@ -59,6 +91,14 @@ export async function POST(request: Request) {
       modifications: context?.modifications,
     };
 
+    // Sanitize user input to prevent prompt injection
+    const { sanitizedProfile, riskReport } = sanitizeUserProfile(userProfile);
+    for (const report of riskReport) {
+      if (report.riskLevel !== 'low') {
+        logSuspiciousInput(userId, report.field, report.riskLevel, report.flaggedPatterns);
+      }
+    }
+
     // Create streaming response
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
@@ -71,7 +111,7 @@ export async function POST(request: Request) {
           // Stage 1: Analyzing profile
           sendEvent('progress', { stage: 'analyzing', message: 'Analyzing your profile...', progress: 10 });
 
-          const prompt = buildGenerationPrompt(userProfile, generationContext);
+          const prompt = buildGenerationPrompt(sanitizedProfile as UserProfile, generationContext);
 
           // Stage 2: Generating program
           sendEvent('progress', { stage: 'generating', message: 'Designing your program...', progress: 20 });
@@ -104,6 +144,19 @@ export async function POST(request: Request) {
           // Parse JSON
           const programData = JSON.parse(responseText);
 
+          // Normalize measure types - map invalid values to valid ones
+          const validMeasureTypes = ['reps', 'time', 'distance'];
+          for (const phase of programData.phases || []) {
+            for (const workout of phase.workouts || []) {
+              for (const exercise of workout.exercises || []) {
+                if (exercise.measure && !validMeasureTypes.includes(exercise.measure.type)) {
+                  // Map circuit, rounds, etc. to reps
+                  exercise.measure.type = 'reps';
+                }
+              }
+            }
+          }
+
           // Validate
           const validation = validateProgram(programData);
           if (!validation.success) {
@@ -111,6 +164,9 @@ export async function POST(request: Request) {
           }
 
           const program = validation.data!;
+
+          // Sort exercises by category (primary → secondary → isolation)
+          sortExercisesByCategory(program);
 
           sendEvent('progress', { stage: 'saving', message: 'Saving your program...', progress: 85 });
 
@@ -188,7 +244,7 @@ async function saveProgramToDatabase(
               warmup: JSON.stringify(workout.warmup),
               cooldown: JSON.stringify(workout.cooldown),
               exercises: {
-                create: workout.exercises.map((exercise) => {
+                create: workout.exercises.map((exercise, exerciseIndex) => {
                   const reps = exercise.measure.type === 'reps' ? Math.round(exercise.measure.value) : 0;
                   const measureType = exercise.measure.type.toUpperCase() as ExerciseMeasureType;
 
@@ -225,6 +281,7 @@ async function saveProgramToDatabase(
                     measureValue,
                     measureUnit,
                     intensity: 0,
+                    sortOrder: exerciseIndex,
                     notes: `${exercise.intensity || ''} ${exercise.notes || ''}`.trim() || null,
                     exerciseLibrary: {
                       connectOrCreate: {
