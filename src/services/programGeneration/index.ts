@@ -233,7 +233,7 @@ async function continueGeneration(
  * Attempt to repair truncated JSON by closing open brackets/braces
  * This is a best-effort repair for max_tokens truncation
  */
-function attemptJsonRepair(json: string): string {
+export function attemptJsonRepair(json: string): string {
   let repaired = json.trim();
 
   // Count open brackets/braces
