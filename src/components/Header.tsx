@@ -18,222 +18,229 @@ export default function Header() {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm z-50 border-b border-gray-100 dark:border-gray-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <div className="flex-shrink-0 flex items-center gap-3">
-            <Link href={session ? "/dashboard" : "/"} className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
-              baisics
+      <header
+        className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-md z-50 border-b border-[#F1F5F9]"
+        style={{ fontFamily: "'Outfit', sans-serif" }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16 lg:h-20">
+            {/* Logo */}
+            <Link href={session ? "/dashboard" : "/"} className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-[#FF6B6B] rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">B</span>
+              </div>
+              <span className="font-bold text-xl text-[#0F172A]">baisics</span>
+              <span className="hidden sm:block text-sm text-[#94A3B8] border-l border-[#E2E8F0] pl-3 ml-1">
+                fitness for the rest of us
+              </span>
             </Link>
-            <span className="hidden sm:block text-sm text-gray-500 dark:text-gray-400 border-l border-gray-200 dark:border-gray-700 pl-3">
-              fitness for the rest of us
-            </span>
-          </div>
 
-          <div className="flex items-center gap-4">
-            {session ? (
-              <>
-                {/* Desktop Navigation - Authenticated */}
-                <nav className="hidden md:flex items-center gap-6">
-                  <Link 
-                    href="/dashboard"
-                    className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
-                  >
-                    Dashboard
-                  </Link>
-                  <Link 
-                    href="/blog" 
-                    className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
-                  >
-                    Blog
-                  </Link>
-                  <div
-                    className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white cursor-pointer relative group"
-                    aria-label="Program Library - Coming Soon"
-                  >
-                    <span>Program Library</span>
-                    <div className="absolute left-1/2 -translate-x-1/2 -bottom-8 px-2 py-1 bg-gray-800 dark:bg-gray-700 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                      Coming soon!
+            <div className="flex items-center gap-4">
+              {session ? (
+                <>
+                  {/* Desktop Navigation - Authenticated */}
+                  <nav className="hidden md:flex items-center gap-6">
+                    <Link
+                      href="/dashboard"
+                      className="text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors"
+                    >
+                      Dashboard
+                    </Link>
+                    <Link
+                      href="/blog"
+                      className="text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors"
+                    >
+                      Blog
+                    </Link>
+                    <div
+                      className="text-sm font-medium text-[#94A3B8] cursor-default relative group"
+                      aria-label="Program Library - Coming Soon"
+                    >
+                      <span>Program Library</span>
+                      <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 px-2 py-1 bg-[#0F172A] text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                        Coming soon!
+                      </div>
                     </div>
+                  </nav>
+
+                  {/* User Menu - Authenticated */}
+                  <Menu as="div" className="relative ml-3">
+                    <Menu.Button className="flex items-center gap-2">
+                      {session.user?.image ? (
+                        <Image
+                          src={session.user.image}
+                          alt={session.user.name || 'User'}
+                          width={36}
+                          height={36}
+                          className="rounded-full border-2 border-[#F1F5F9]"
+                        />
+                      ) : (
+                        <div className="w-9 h-9 rounded-full bg-[#FF6B6B] flex items-center justify-center text-white font-semibold">
+                          {session.user?.name?.[0] || session.user?.email?.[0] || 'U'}
+                        </div>
+                      )}
+                    </Menu.Button>
+                    <Transition
+                      as={Fragment}
+                      enter="transition ease-out duration-100"
+                      enterFrom="transform opacity-0 scale-95"
+                      enterTo="transform opacity-100 scale-100"
+                      leave="transition ease-in duration-75"
+                      leaveFrom="transform opacity-100 scale-100"
+                      leaveTo="transform opacity-0 scale-95"
+                    >
+                      <Menu.Items className="absolute right-0 mt-2 w-48 origin-top-right rounded-xl bg-white py-1 shadow-lg ring-1 ring-[#E2E8F0] focus:outline-none">
+                        <Menu.Item>
+                          {({ active }) => (
+                            <Link
+                              href="/account"
+                              className={`${
+                                active ? 'bg-[#F8FAFC]' : ''
+                              } block px-4 py-2.5 text-sm text-[#475569] font-medium`}
+                            >
+                              Account Settings
+                            </Link>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <button
+                              onClick={() => signOut({ callbackUrl: '/' })}
+                              className={`${
+                                active ? 'bg-[#F8FAFC]' : ''
+                              } block w-full text-left px-4 py-2.5 text-sm text-[#475569] font-medium`}
+                            >
+                              Logout
+                            </button>
+                          )}
+                        </Menu.Item>
+                      </Menu.Items>
+                    </Transition>
+                  </Menu>
+
+                  {/* Mobile Menu Button - Authenticated */}
+                  <div className="md:hidden">
+                    <button
+                      onClick={() => setIsMenuOpen(!isMenuOpen)}
+                      className="p-2 text-[#475569] hover:text-[#0F172A]"
+                      aria-label="Toggle menu"
+                    >
+                      {isMenuOpen ? (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      ) : (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                      )}
+                    </button>
+
+                    {/* Mobile Menu Dropdown - Authenticated */}
+                    {isMenuOpen && (
+                      <div className="absolute right-4 mt-2 w-48 py-2 bg-white rounded-xl shadow-lg border border-[#F1F5F9]">
+                        <Link
+                          href="/dashboard"
+                          className="block px-4 py-2.5 text-sm font-medium text-[#475569] hover:bg-[#F8FAFC]"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          Dashboard
+                        </Link>
+                        <Link
+                          href="/blog"
+                          className="block px-4 py-2.5 text-sm font-medium text-[#475569] hover:bg-[#F8FAFC]"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          Blog
+                        </Link>
+                        <div className="block px-4 py-2.5 text-sm font-medium text-[#94A3B8]">
+                          Program Library (Soon!)
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </nav>
+                </>
+              ) : (
+                <>
+                  {/* Desktop Navigation - Public */}
+                  <nav className="hidden md:flex items-center gap-6">
+                    <Link href="#features" className="text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors">
+                      Features
+                    </Link>
+                    <Link href="#pricing" className="text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors">
+                      Pricing
+                    </Link>
+                    <Link href="/blog" className="text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors">
+                      Blog
+                    </Link>
+                  </nav>
 
-                {/* User Menu - Authenticated */}
-                <Menu as="div" className="relative ml-3">
-                  <Menu.Button className="flex items-center gap-2">
-                    {session.user?.image ? (
-                      <Image
-                        src={session.user.image}
-                        alt={session.user.name || 'User'}
-                        width={32}
-                        height={32}
-                        className="rounded-full"
-                      />
-                    ) : (
-                      <div className="w-8 h-8 rounded-full bg-indigo-600 dark:bg-indigo-500 flex items-center justify-center text-white">
-                        {session.user?.name?.[0] || session.user?.email?.[0] || 'U'}
+                  {/* Mobile Menu Button - Public */}
+                  <div className="md:hidden relative">
+                    <button
+                      onClick={() => setIsMenuOpen(!isMenuOpen)}
+                      className="p-2 text-[#475569] hover:text-[#0F172A]"
+                      aria-label="Toggle menu"
+                    >
+                      {isMenuOpen ? (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      ) : (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                      )}
+                    </button>
+
+                    {/* Mobile Menu Dropdown - Public */}
+                    {isMenuOpen && (
+                      <div className="absolute right-0 mt-2 w-48 py-2 bg-white rounded-xl shadow-lg border border-[#F1F5F9]">
+                        <Link
+                          href="#features"
+                          className="block px-4 py-2.5 text-sm font-medium text-[#475569] hover:bg-[#F8FAFC]"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          Features
+                        </Link>
+                        <Link
+                          href="#pricing"
+                          className="block px-4 py-2.5 text-sm font-medium text-[#475569] hover:bg-[#F8FAFC]"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          Pricing
+                        </Link>
+                        <Link
+                          href="/blog"
+                          className="block px-4 py-2.5 text-sm font-medium text-[#475569] hover:bg-[#F8FAFC]"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          Blog
+                        </Link>
                       </div>
                     )}
-                  </Menu.Button>
-                  <Transition
-                    as={Fragment}
-                    enter="transition ease-out duration-100"
-                    enterFrom="transform opacity-0 scale-95"
-                    enterTo="transform opacity-100 scale-100"
-                    leave="transition ease-in duration-75"
-                    leaveFrom="transform opacity-100 scale-100"
-                    leaveTo="transform opacity-0 scale-95"
-                  >
-                    <Menu.Items className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 dark:ring-white dark:ring-opacity-10 focus:outline-none">
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link
-                            href="/account"
-                            className={`${
-                              active ? 'bg-gray-100 dark:bg-gray-700' : ''
-                            } block px-4 py-2 text-sm text-gray-700 dark:text-gray-200`}
-                          >
-                            Account Settings
-                          </Link>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <button
-                            onClick={() => signOut({ callbackUrl: '/' })}
-                            className={`${
-                              active ? 'bg-gray-100 dark:bg-gray-700' : ''
-                            } block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200`}
-                          >
-                            Logout
-                          </button>
-                        )}
-                      </Menu.Item>
-                    </Menu.Items>
-                  </Transition>
-                </Menu>
+                  </div>
 
-                {/* Mobile Menu Button - Authenticated */}
-                <div className="md:hidden">
-                  <button 
-                    onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    className="p-2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
-                    aria-label="Toggle menu"
-                  >
-                    {isMenuOpen ? (
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    ) : (
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                      </svg>
-                    )}
-                  </button>
-
-                  {/* Mobile Menu Dropdown - Authenticated */}
-                  {isMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-48 py-2 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-100 dark:border-gray-700">
-                      <Link 
-                        href="/dashboard" 
-                        className="block px-4 py-2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        Dashboard
-                      </Link>
-                      <Link 
-                        href="/blog" 
-                        className="block px-4 py-2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        Blog
-                      </Link>
-                      <div 
-                        className="block px-4 py-2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700 cursor-not-allowed"
-                      >
-                        Program Library (Soon!)
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </>
-            ) : (
-              <>
-                {/* Desktop Navigation - Public */}
-                <nav className="hidden md:flex items-center gap-6">
-                  <Link href="#features" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">Features</Link>
-                  <Link href="#pricing" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">Pricing</Link>
-                  <Link href="/blog" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">Blog</Link>
-                </nav>
-
-                {/* Mobile Menu Button - Public */}
-                <div className="md:hidden relative">
-                  <button 
-                    onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    className="p-2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
-                    aria-label="Toggle menu"
-                  >
-                    {isMenuOpen ? (
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    ) : (
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                      </svg>
-                    )}
-                  </button>
-
-                  {/* Mobile Menu Dropdown - Public */}
-                  {isMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-48 py-2 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-100 dark:border-gray-700">
-                      <Link 
-                        href="#features" 
-                        className="block px-4 py-2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        Features
-                      </Link>
-                      <Link 
-                        href="#pricing" 
-                        className="block px-4 py-2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        Pricing
-                      </Link>
-                      <Link 
-                        href="/blog" 
-                        className="block px-4 py-2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        Blog
-                      </Link>
-                    </div>
-                  )}
-                </div>
-
-                {/* CTA Buttons - Public */}
-                <div className="flex items-center gap-4">
-                  <button
-                    onClick={() => signIn()}
-                    className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
-                  >
-                    Log in
-                  </button>
-                  <Link 
-                    href="#"
-                    onClick={handleGetStarted}
-                    className="inline-block px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 transition-colors"
-                  >
-                    Get Started
-                  </Link>
-                </div>
-              </>
-            )}
+                  {/* CTA Buttons - Public */}
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => signIn()}
+                      className="hidden sm:block text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors"
+                    >
+                      Log in
+                    </button>
+                    <button
+                      onClick={handleGetStarted}
+                      className="px-5 py-2.5 text-sm font-semibold text-white bg-[#0F172A] rounded-lg hover:bg-[#1E293B] transition-colors"
+                    >
+                      Get Started
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
   );
-} 
+}

@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- StreamingPhasePreview component shows phases as they generate with expandable workouts
+- Design preview page (`/hi/design-preview`) for testing UI states without real generation
+- Streaming parser utility for incremental JSON parsing
+
+### Changed
+- Redesigned `/hi` flow to match v2a design system (Outfit font, white bg, navy/coral palette)
+  - Updated Header, Footer, MainLayout with consistent styling
+  - Simplified DataReviewTransition to 4 condensed cards with better CTA hierarchy
+  - GeneratingProgramTransition shows real-time phase previews during generation
+  - ConversationalInterface uses white card styling with coral accents
+
+### Fixed
+- Streaming SSE "Controller already closed" error - added guard flag
+- React closure bug in useStreamingGeneration - use refs to avoid stale options
+- Dark background void between content and footer in MainLayout
+
 ### Security
 - Add prompt injection protection for user-provided inputs (#115)
   - Sanitization utility filters known injection patterns (instruction override, role hijacking, prompt extraction)
