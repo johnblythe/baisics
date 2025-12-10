@@ -1,6 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { StreamingPhasePreview } from "./StreamingPhasePreview";
+import type { ValidatedPhase } from "@/services/programGeneration/schema";
 
 interface GenerationProgress {
   stage: string;
@@ -8,121 +10,224 @@ interface GenerationProgress {
   progress: number;
 }
 
-interface GeneratingProgramTransitionProps {
-  progress?: GenerationProgress;
+interface ProgramMeta {
+  name: string;
+  description: string;
+  totalWeeks: number;
 }
 
-const STAGE_ORDER = ['analyzing', 'generating', 'processing', 'validating', 'saving', 'complete'];
+interface GeneratingProgramTransitionProps {
+  progress?: GenerationProgress;
+  phases?: ValidatedPhase[];
+  programMeta?: ProgramMeta | null;
+}
 
-const STAGE_INFO: Record<string, { title: string; description: string }> = {
-  idle: { title: 'Starting...', description: 'Preparing to build your program' },
-  analyzing: { title: 'Analyzing Profile', description: 'Understanding your goals and preferences' },
-  generating: { title: 'Designing Program', description: 'Creating your personalized workout plan' },
-  processing: { title: 'Building Workouts', description: 'Structuring exercises and progressions' },
-  validating: { title: 'Quality Check', description: 'Ensuring everything is perfect' },
-  saving: { title: 'Saving Program', description: 'Almost there!' },
-  complete: { title: 'Complete!', description: 'Your program is ready' },
-  error: { title: 'Error', description: 'Something went wrong' },
-};
-
-export function GeneratingProgramTransition({ progress }: GeneratingProgramTransitionProps) {
+export function GeneratingProgramTransition({
+  progress,
+  phases = [],
+  programMeta,
+}: GeneratingProgramTransitionProps) {
   const currentStage = progress?.stage || 'analyzing';
-  const currentStageIndex = STAGE_ORDER.indexOf(currentStage);
+  const hasPhases = phases.length > 0;
+  const progressPercent = progress?.progress || 5;
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] p-8">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-2xl mx-auto text-center space-y-8"
+    <>
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
+      `}</style>
+
+      <div
+        className="relative min-h-[70vh] flex flex-col items-center justify-center p-6 md:p-10"
+        style={{ fontFamily: "'Outfit', sans-serif" }}
       >
-        <div className="space-y-2">
-          <div className="h-0.5 w-12 bg-indigo-600/30 dark:bg-indigo-400/30 mx-auto mb-4"></div>
-          <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 uppercase">Building Your Program</p>
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-            {STAGE_INFO[currentStage]?.title || 'Creating Your Program'}
-          </h2>
-        </div>
-
-        {/* Progress bar */}
-        <div className="w-full max-w-md mx-auto">
-          <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-            <motion.div
-              className="h-full bg-gradient-to-r from-indigo-500 to-purple-500"
-              initial={{ width: 0 }}
-              animate={{ width: `${progress?.progress || 10}%` }}
-              transition={{ duration: 0.5 }}
-            />
-          </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-            {progress?.progress || 0}% complete
-          </p>
-        </div>
-
-        <div className="relative">
-          <div className="absolute -inset-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 rounded-lg opacity-0 blur-xl transition duration-500 group-hover:opacity-30 dark:group-hover:opacity-20"></div>
-          <div className="relative bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-8 space-y-4">
-            {STAGE_ORDER.slice(0, -1).map((stage, index) => {
-              const isComplete = index < currentStageIndex;
-              const isCurrent = stage === currentStage;
-              const isPending = index > currentStageIndex;
-              const info = STAGE_INFO[stage];
-
-              return (
-                <motion.div
-                  key={stage}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="flex items-center gap-4"
-                >
-                  <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    isComplete ? 'bg-green-500' :
-                    isCurrent ? 'bg-indigo-500' :
-                    'bg-gray-300 dark:bg-gray-600'
-                  }`}>
-                    {isComplete ? (
-                      <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                    ) : isCurrent ? (
-                      <motion.div
-                        animate={{ scale: [1, 1.2, 1] }}
-                        transition={{ duration: 1, repeat: Infinity }}
-                        className="w-2 h-2 rounded-full bg-white"
-                      />
-                    ) : (
-                      <div className="w-2 h-2 rounded-full bg-gray-400 dark:bg-gray-500" />
-                    )}
-                  </div>
-                  <div className="text-left">
-                    <span className={`block ${
-                      isComplete ? 'text-green-600 dark:text-green-400' :
-                      isCurrent ? 'text-indigo-600 dark:text-indigo-400 font-medium' :
-                      'text-gray-400 dark:text-gray-500'
-                    }`}>
-                      {info.title}
-                    </span>
-                    {isCurrent && (
-                      <span className="text-sm text-gray-500 dark:text-gray-400">
-                        {progress?.message || info.description}
-                      </span>
-                    )}
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
+        {/* Background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#F8FAFC] to-white" />
 
         <motion.div
-          animate={{ opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="text-gray-500 dark:text-gray-400 text-sm"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="relative z-10 w-full max-w-2xl mx-auto"
         >
-          This usually takes 30-60 seconds
+          {hasPhases ? (
+            /* Phases ready - show them */
+            <div className="space-y-8">
+              {/* Header */}
+              <div className="text-center space-y-4">
+                <motion.div
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#FFE5E5] text-[#EF5350] rounded-full text-sm font-semibold"
+                >
+                  {currentStage !== 'complete' ? (
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                      className="w-4 h-4 border-2 border-[#FFB8B8] border-t-[#FF6B6B] rounded-full"
+                    />
+                  ) : (
+                    <svg className="w-4 h-4 text-[#FF6B6B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                  {currentStage === 'complete' ? 'Program Complete' : 'Building Your Program'}
+                </motion.div>
+
+                <h1 className="text-3xl md:text-4xl font-extrabold text-[#0F172A] tracking-tight">
+                  {phases.length} Phase{phases.length > 1 ? 's' : ''} Ready
+                </h1>
+
+                {currentStage !== 'complete' && (
+                  <p className="text-[#475569]">More phases generating...</p>
+                )}
+              </div>
+
+              {/* Progress bar */}
+              <div className="max-w-md mx-auto">
+                <div className="h-2 bg-[#F1F5F9] rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-gradient-to-r from-[#FF6B6B] to-[#EF5350] rounded-full"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progressPercent}%` }}
+                    transition={{ duration: 0.4 }}
+                  />
+                </div>
+                <div className="flex justify-between mt-2 text-sm text-[#94A3B8]" style={{ fontFamily: "'Space Mono', monospace" }}>
+                  <span>{progressPercent}%</span>
+                  <span>{progress?.message || ''}</span>
+                </div>
+              </div>
+
+              {/* Phase cards */}
+              <StreamingPhasePreview
+                phases={phases}
+                programMeta={programMeta}
+                isGenerating={currentStage !== 'complete' && currentStage !== 'error'}
+              />
+            </div>
+          ) : (
+            /* Loading state - no phases yet */
+            <div className="text-center space-y-10">
+              {/* Animated loader */}
+              <div className="relative w-32 h-32 mx-auto">
+                {/* Outer ring */}
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
+                  className="absolute inset-0"
+                >
+                  <svg viewBox="0 0 100 100" className="w-full h-full">
+                    <circle
+                      cx="50" cy="50" r="46"
+                      fill="none"
+                      stroke="#F1F5F9"
+                      strokeWidth="4"
+                    />
+                    <circle
+                      cx="50" cy="50" r="46"
+                      fill="none"
+                      stroke="url(#coralGradient)"
+                      strokeWidth="4"
+                      strokeDasharray="70 220"
+                      strokeLinecap="round"
+                    />
+                    <defs>
+                      <linearGradient id="coralGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#FF6B6B" />
+                        <stop offset="100%" stopColor="#EF5350" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                </motion.div>
+
+                {/* Center content */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center">
+                    <span
+                      className="text-3xl font-bold text-[#0F172A] tabular-nums"
+                      style={{ fontFamily: "'Space Mono', monospace" }}
+                    >
+                      {progressPercent}%
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Title */}
+              <div className="space-y-3">
+                <h1 className="text-3xl md:text-4xl font-extrabold text-[#0F172A] tracking-tight">
+                  Creating Your Program
+                </h1>
+                <motion.p
+                  key={progress?.message}
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-lg text-[#475569]"
+                >
+                  {progress?.message || 'Analyzing your profile...'}
+                </motion.p>
+              </div>
+
+              {/* Progress bar */}
+              <div className="max-w-sm mx-auto">
+                <div className="h-2 bg-[#F1F5F9] rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-gradient-to-r from-[#FF6B6B] to-[#EF5350] rounded-full"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progressPercent}%` }}
+                    transition={{ duration: 0.5 }}
+                  />
+                </div>
+              </div>
+
+              {/* Steps card */}
+              <div className="max-w-md mx-auto">
+                <div className="bg-white rounded-2xl border-2 border-[#F1F5F9] p-6">
+                  <p
+                    className="text-xs text-[#94A3B8] uppercase tracking-wider mb-5"
+                    style={{ fontFamily: "'Space Mono', monospace" }}
+                  >
+                    What&apos;s happening
+                  </p>
+                  <div className="space-y-4">
+                    {[
+                      { label: 'Analyzing your goals', threshold: 10 },
+                      { label: 'Designing workout structure', threshold: 30 },
+                      { label: 'Selecting exercises', threshold: 50 },
+                      { label: 'Calculating nutrition', threshold: 70 },
+                    ].map((step, i) => {
+                      const isDone = progressPercent > step.threshold;
+                      return (
+                        <div key={i} className="flex items-center gap-3">
+                          <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
+                            isDone ? 'bg-[#FFE5E5]' : 'bg-[#F8FAFC]'
+                          }`}>
+                            {isDone ? (
+                              <svg className="w-3.5 h-3.5 text-[#FF6B6B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
+                            ) : (
+                              <div className="w-2 h-2 rounded-full bg-[#94A3B8]" />
+                            )}
+                          </div>
+                          <span className={`text-sm font-medium ${isDone ? 'text-[#0F172A]' : 'text-[#94A3B8]'}`}>
+                            {step.label}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-sm text-[#94A3B8]">
+                Your phases will appear as they&apos;re generated
+              </p>
+            </div>
+          )}
         </motion.div>
-      </motion.div>
-    </div>
+      </div>
+    </>
   );
-} 
+}

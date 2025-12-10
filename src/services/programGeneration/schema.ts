@@ -199,3 +199,15 @@ export function validateGenerationRequest(data: unknown): {
   }
   return { success: false, errors: result.error };
 }
+
+export function validatePhase(data: unknown): {
+  success: boolean;
+  data?: ValidatedPhase;
+  errors?: z.ZodError;
+} {
+  const result = phaseSchema.safeParse(data);
+  if (result.success) {
+    return { success: true, data: result.data };
+  }
+  return { success: false, errors: result.error };
+}

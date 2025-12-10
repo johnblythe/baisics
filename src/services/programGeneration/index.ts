@@ -9,6 +9,7 @@ import type {
   UserProfile,
   GenerationContext,
   GeneratedProgram,
+  GeneratedPhase,
   GenerationResult,
 } from './types';
 import { validateProgram, generatedProgramSchema } from './schema';
@@ -527,4 +528,4 @@ export function convertIntakeToProfile(intake: any): UserProfile {
 }
 
 // Re-export types
-export type { UserProfile, GenerationContext, GeneratedProgram, GenerationResult };
+export type { UserProfile, GenerationContext, GeneratedProgram, GeneratedPhase, GenerationResult };
