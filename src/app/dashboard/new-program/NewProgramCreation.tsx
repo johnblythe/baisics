@@ -10,6 +10,7 @@ import {
   RefreshCw,
   ArrowRight,
   CheckCircle,
+  Sparkles,
 } from 'lucide-react';
 import MainLayout from '@/app/components/layouts/MainLayout';
 import ProgramGenerationProgress from '@/components/ProgramGenerationProgress';
@@ -52,7 +53,6 @@ export default function NewProgramCreation({ userId }: { userId: string }) {
     },
   });
 
-  // Fetch user data on mount
   useEffect(() => {
     fetchUserData();
   }, []);
@@ -128,8 +128,8 @@ export default function NewProgramCreation({ userId }: { userId: string }) {
   if (step === 'loading') {
     return (
       <MainLayout>
-        <div className="min-h-screen flex items-center justify-center">
-          <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="w-8 h-8 border-2 border-[#F1F5F9] border-t-[#FF6B6B] rounded-full animate-spin" />
         </div>
       </MainLayout>
     );
@@ -138,8 +138,8 @@ export default function NewProgramCreation({ userId }: { userId: string }) {
   if (step === 'generating') {
     return (
       <MainLayout>
-        <div className="min-h-screen flex items-center justify-center p-4">
-          <div className="max-w-lg w-full bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
+        <div className="flex items-center justify-center min-h-[60vh] p-4">
+          <div className="max-w-lg w-full bg-white rounded-2xl border border-[#F1F5F9] shadow-lg p-8">
             <ProgramGenerationProgress progress={progress} />
           </div>
         </div>
@@ -150,20 +150,20 @@ export default function NewProgramCreation({ userId }: { userId: string }) {
   if (step === 'complete' && newProgramId) {
     return (
       <MainLayout>
-        <div className="min-h-screen flex items-center justify-center p-4">
-          <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 text-center">
-            <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="w-10 h-10 text-green-600 dark:text-green-400" />
+        <div className="flex items-center justify-center min-h-[60vh] p-4">
+          <div className="max-w-md w-full bg-white rounded-2xl border border-[#F1F5F9] shadow-lg p-8 text-center">
+            <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <CheckCircle className="w-10 h-10 text-green-500" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            <h2 className="text-2xl font-bold text-[#0F172A] mb-2">
               Program Created!
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-8">
-              Your personalized fitness program is ready. Let's get started!
+            <p className="text-[#475569] mb-8">
+              Your personalized fitness program is ready. Let&apos;s get started!
             </p>
             <Link
               href={`/dashboard/${newProgramId}`}
-              className="inline-flex items-center justify-center gap-2 w-full px-6 py-3 bg-indigo-600 text-white font-medium rounded-xl hover:bg-indigo-700 transition-colors"
+              className="inline-flex items-center justify-center gap-2 w-full px-6 py-3 bg-[#FF6B6B] text-white font-semibold rounded-xl hover:bg-[#EF5350] transition-colors shadow-lg shadow-[#FF6B6B]/25"
             >
               View Your Program
               <ArrowRight className="w-4 h-4" />
@@ -176,71 +176,82 @@ export default function NewProgramCreation({ userId }: { userId: string }) {
 
   return (
     <MainLayout>
-      <div className="min-h-screen py-12 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-              Create New Program
-            </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-400">
-              Choose how you'd like to start your next fitness journey
-            </p>
+      <div className="max-w-4xl mx-auto px-4 py-12">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <div className="w-16 h-16 bg-[#0F172A] rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <Sparkles className="w-8 h-8 text-white" />
           </div>
+          <h1 className="text-3xl font-bold text-[#0F172A] mb-4">
+            Create New Program
+          </h1>
+          <p className="text-lg text-[#475569]">
+            Choose how you&apos;d like to start your next fitness journey
+          </p>
+        </div>
 
-          {error && (
-            <div className="mb-8 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-300 text-center">
-              {error}
-            </div>
-          )}
+        {/* Error */}
+        {error && (
+          <div className="mb-8 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-center">
+            {error}
+          </div>
+        )}
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {programTypes.map(({ type, icon: Icon, title, description, disabled, disabledReason }) => (
-              <button
-                key={type}
-                onClick={() => !disabled && handleGenerateProgram(type)}
-                disabled={disabled}
-                className={`relative p-6 rounded-2xl border-2 text-left transition-all duration-200 ${
+        {/* Program Type Cards */}
+        <div className="grid md:grid-cols-3 gap-6">
+          {programTypes.map(({ type, icon: Icon, title, description, disabled, disabledReason }) => (
+            <button
+              key={type}
+              onClick={() => !disabled && handleGenerateProgram(type)}
+              disabled={disabled}
+              className={`relative p-6 rounded-2xl border-2 text-left transition-all duration-200 ${
+                disabled
+                  ? 'border-[#F1F5F9] bg-[#F8FAFC] opacity-60 cursor-not-allowed'
+                  : 'border-[#F1F5F9] bg-white hover:border-[#FF6B6B] hover:shadow-lg cursor-pointer group'
+              }`}
+            >
+              <div
+                className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-colors ${
                   disabled
-                    ? 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 opacity-60 cursor-not-allowed'
-                    : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-indigo-500 dark:hover:border-indigo-400 hover:shadow-lg cursor-pointer'
+                    ? 'bg-[#F1F5F9]'
+                    : 'bg-[#0F172A] group-hover:bg-[#FF6B6B]'
                 }`}
               >
-                <div
-                  className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${
+                <Icon
+                  className={`w-6 h-6 ${
                     disabled
-                      ? 'bg-gray-100 dark:bg-gray-700'
-                      : 'bg-indigo-100 dark:bg-indigo-900/30'
+                      ? 'text-[#94A3B8]'
+                      : 'text-white'
                   }`}
-                >
-                  <Icon
-                    className={`w-6 h-6 ${
-                      disabled
-                        ? 'text-gray-400 dark:text-gray-500'
-                        : 'text-indigo-600 dark:text-indigo-400'
-                    }`}
-                  />
+                />
+              </div>
+              <h3 className="text-lg font-semibold text-[#0F172A] mb-2">
+                {title}
+              </h3>
+              <p className="text-sm text-[#475569]">
+                {disabled ? disabledReason : description}
+              </p>
+              {!disabled && (
+                <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <ArrowRight className="w-5 h-5 text-[#FF6B6B]" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  {title}
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {disabled ? disabledReason : description}
-                </p>
-              </button>
-            ))}
-          </div>
+              )}
+            </button>
+          ))}
+        </div>
 
-          <div className="mt-12 text-center">
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-              Want more control over your program?
-            </p>
-            <Link
-              href="/hi"
-              className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
-            >
-              Use the conversational intake instead →
-            </Link>
-          </div>
+        {/* Alternative CTA */}
+        <div className="mt-12 text-center">
+          <p className="text-sm text-[#94A3B8] mb-3">
+            Want more control over your program?
+          </p>
+          <Link
+            href="/hi"
+            className="inline-flex items-center gap-2 text-[#FF6B6B] hover:text-[#EF5350] font-medium transition-colors"
+          >
+            Use the conversational intake instead
+            <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
       </div>
     </MainLayout>

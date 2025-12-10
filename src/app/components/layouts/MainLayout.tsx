@@ -8,9 +8,9 @@ export default function MainLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="flex flex-col min-h-screen bg-white">
+    <div className="flex flex-col min-h-screen bg-white font-outfit">
       <Header />
-      <main className="flex-grow pt-16 lg:pt-20 bg-gradient-to-b from-[#F8FAFC] to-white">
+      <main className="flex-grow pt-16 lg:pt-20">
         {children}
       </main>
       <TawkChat />
