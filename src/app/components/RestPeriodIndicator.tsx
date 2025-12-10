@@ -24,7 +24,6 @@ export default function RestPeriodIndicator({
   const isCountingDown = timeRemaining !== null && timeRemaining > 0;
   const timerComplete = timeRemaining === 0;
 
-  // Countdown effect
   useEffect(() => {
     if (!isRunning || timeRemaining === null || timeRemaining <= 0) return;
 
@@ -72,55 +71,55 @@ export default function RestPeriodIndicator({
 
   return (
     <div className={`
-      relative overflow-hidden transition-all duration-300
+      relative overflow-hidden transition-all duration-300 rounded-lg
       ${isCountingDown || timerComplete
-        ? 'py-4 my-2 bg-gradient-to-r from-indigo-50/80 via-transparent to-indigo-50/80 dark:from-indigo-900/30 dark:to-indigo-900/30'
+        ? 'py-4 my-2 bg-[#FFE5E5]'
         : isActive
-          ? 'py-3 my-2 bg-gradient-to-r from-indigo-50/50 via-transparent to-indigo-50/50 dark:from-indigo-900/20 dark:to-indigo-900/20'
+          ? 'py-3 my-2 bg-[#F8FAFC]'
           : isCompleted
-            ? 'py-2 my-1 bg-gradient-to-r from-green-50/30 via-transparent to-green-50/30 dark:from-green-900/10 dark:to-green-900/10'
-            : 'py-2 my-1 bg-gradient-to-r from-gray-50/30 via-transparent to-gray-50/30 dark:from-gray-800/30 dark:to-gray-800/30'
+            ? 'py-2 my-1 bg-green-50'
+            : 'py-2 my-1 bg-[#F8FAFC]'
       }
       ${className}
     `}>
       {/* Progress bar for active timer */}
       {isCountingDown && (
         <div
-          className="absolute inset-0 bg-indigo-100 dark:bg-indigo-800/30 transition-all duration-1000 ease-linear"
+          className="absolute inset-0 bg-[#FF6B6B]/20 transition-all duration-1000 ease-linear"
           style={{ width: `${progressPercent}%` }}
         />
       )}
 
       <div className="relative z-10 flex items-center justify-center gap-3">
         {/* Timer display */}
-        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/90 dark:bg-gray-800/90 border shadow-sm ${
+        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border shadow-sm ${
           timerComplete
-            ? 'border-green-300 dark:border-green-700'
+            ? 'border-green-300'
             : isCountingDown
-              ? 'border-indigo-300 dark:border-indigo-600'
-              : 'border-gray-200/50 dark:border-gray-700/50'
+              ? 'border-[#FF6B6B]'
+              : 'border-[#F1F5F9]'
         }`}>
           <Clock className={`w-4 h-4 ${
             timerComplete
-              ? 'text-green-500 dark:text-green-400'
+              ? 'text-green-500'
               : isCountingDown
-                ? 'text-indigo-500 dark:text-indigo-400 animate-pulse'
+                ? 'text-[#FF6B6B] animate-pulse'
                 : isActive
-                  ? 'text-indigo-500 dark:text-indigo-400'
+                  ? 'text-[#FF6B6B]'
                   : isCompleted
-                    ? 'text-green-500 dark:text-green-400'
-                    : 'text-gray-400 dark:text-gray-500'
+                    ? 'text-green-500'
+                    : 'text-[#94A3B8]'
           }`} />
           <div className={`text-sm font-medium ${
             timerComplete
-              ? 'text-green-600 dark:text-green-400'
+              ? 'text-green-600'
               : isCountingDown
-                ? 'text-indigo-700 dark:text-indigo-300 tabular-nums'
+                ? 'text-[#0F172A] tabular-nums'
                 : isActive
-                  ? 'text-indigo-600 dark:text-indigo-400'
+                  ? 'text-[#0F172A]'
                   : isCompleted
-                    ? 'text-green-600 dark:text-green-400'
-                    : 'text-gray-500 dark:text-gray-400'
+                    ? 'text-green-600'
+                    : 'text-[#475569]'
           }`}>
             {timerComplete
               ? 'Rest complete!'
@@ -136,7 +135,7 @@ export default function RestPeriodIndicator({
             {!isCountingDown && !timerComplete && (
               <button
                 onClick={startTimer}
-                className="p-1.5 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-200 dark:hover:bg-indigo-800/50 transition-colors"
+                className="p-2 rounded-full bg-[#FF6B6B] text-white hover:bg-[#EF5350] transition-colors shadow-sm"
                 aria-label="Start rest timer"
               >
                 <Play className="w-4 h-4" />
@@ -145,7 +144,7 @@ export default function RestPeriodIndicator({
             {isCountingDown && isRunning && (
               <button
                 onClick={pauseTimer}
-                className="p-1.5 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-200 dark:hover:bg-indigo-800/50 transition-colors"
+                className="p-2 rounded-full bg-[#0F172A] text-white hover:bg-[#1E293B] transition-colors shadow-sm"
                 aria-label="Pause timer"
               >
                 <Pause className="w-4 h-4" />
@@ -154,7 +153,7 @@ export default function RestPeriodIndicator({
             {isCountingDown && !isRunning && (
               <button
                 onClick={resumeTimer}
-                className="p-1.5 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-200 dark:hover:bg-indigo-800/50 transition-colors"
+                className="p-2 rounded-full bg-[#FF6B6B] text-white hover:bg-[#EF5350] transition-colors shadow-sm"
                 aria-label="Resume timer"
               >
                 <Play className="w-4 h-4" />
@@ -163,7 +162,7 @@ export default function RestPeriodIndicator({
             {(isCountingDown || timerComplete) && (
               <button
                 onClick={resetTimer}
-                className="p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                className="p-2 rounded-full bg-[#F1F5F9] text-[#475569] hover:bg-[#E2E8F0] transition-colors"
                 aria-label="Reset timer"
               >
                 <RotateCcw className="w-4 h-4" />
@@ -174,4 +173,4 @@ export default function RestPeriodIndicator({
       </div>
     </div>
   );
-} 
+}

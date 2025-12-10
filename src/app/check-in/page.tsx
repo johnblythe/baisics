@@ -2,11 +2,8 @@
 
 import React, { Suspense, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Footer from '@/components/Footer';
-import TawkChat from '@/components/TawkChat';
 import { createCheckIn } from './actions';
-import MainLayout from '@/app/components/layouts/MainLayout';
-import Header from '@/components/Header';
+import { Camera, Scale, Ruler, Heart, FileText, Calendar, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface Photo {
   type: 'FRONT' | 'BACK' | 'SIDE_LEFT' | 'SIDE_RIGHT' | 'CUSTOM';
@@ -45,6 +42,48 @@ export interface CheckIn {
 
 export type CheckInFormData = CheckIn;
 
+// Collapsible section component
+const CollapsibleSection = ({
+  title,
+  icon: Icon,
+  children,
+  defaultOpen = true
+}: {
+  title: string;
+  icon: React.ElementType;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  return (
+    <div className="bg-white rounded-2xl border border-[#F1F5F9] shadow-sm overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full px-6 py-4 flex items-center justify-between hover:bg-[#F8FAFC] transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-[#0F172A] rounded-xl flex items-center justify-center">
+            <Icon className="w-5 h-5 text-white" />
+          </div>
+          <h2 className="text-lg font-semibold text-[#0F172A]">{title}</h2>
+        </div>
+        {isOpen ? (
+          <ChevronUp className="w-5 h-5 text-[#94A3B8]" />
+        ) : (
+          <ChevronDown className="w-5 h-5 text-[#94A3B8]" />
+        )}
+      </button>
+      {isOpen && (
+        <div className="px-6 pb-6 pt-2">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+};
+
 function CheckInPageContent() {
   const router = useRouter();
   const [formData, setFormData] = useState<CheckIn>({
@@ -74,11 +113,10 @@ function CheckInPageContent() {
   const [checkInDate, setCheckInDate] = useState(() => {
     const today = new Date();
     const lastMonday = new Date(today);
-    lastMonday.setDate(lastMonday.getDate() - ((lastMonday.getDay() + 6) % 7)); // Previous Monday
+    lastMonday.setDate(lastMonday.getDate() - ((lastMonday.getDay() + 6) % 7));
     return lastMonday.toISOString().split('T')[0];
   });
 
-  // Update formData when checkInDate changes
   React.useEffect(() => {
     setFormData(prev => ({ ...prev, date: checkInDate }));
   }, [checkInDate]);
@@ -89,14 +127,6 @@ function CheckInPageContent() {
 
     try {
       const response = await createCheckIn(formData);
-      
-      // const response = await fetch('/api/check-in', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({ ...formData, checkInDate }),
-      // });
 
       if (!response.success) {
         throw new Error('Failed to submit check-in');
@@ -110,528 +140,453 @@ function CheckInPageContent() {
     }
   };
 
-  const inputClasses = "mt-1 block w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent hover:border-gray-300 dark:hover:border-gray-600 transition-colors duration-200";
+  const inputClasses = "mt-1 block w-full px-3 py-2.5 rounded-lg border border-[#F1F5F9] bg-white text-[#0F172A] placeholder:text-[#94A3B8] focus:ring-2 focus:ring-[#FF6B6B]/20 focus:border-[#FF6B6B] hover:border-[#94A3B8] transition-colors duration-200";
+  const labelClasses = "block text-sm font-medium text-[#475569] mb-1";
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
-      <main className="flex-grow bg-white dark:bg-gray-900">
-        <div className="max-w-4xl mx-auto px-4 py-8">
-          {/* Header title area */}
-          <div className="space-y-4">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Weekly Check-in</h1>
-            <p className="text-gray-600 dark:text-gray-400">Track your progress and update your measurements</p>
+    <div className="max-w-4xl mx-auto px-4 py-8">
+      {/* Page Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-[#0F172A] mb-2">Weekly Check-in</h1>
+        <p className="text-[#475569]">Track your progress and update your measurements</p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Date Picker Section */}
+        <CollapsibleSection title="Check-in Date" icon={Calendar}>
+          <div className="max-w-xs">
+            <input
+              type="date"
+              value={checkInDate}
+              onChange={(e) => setCheckInDate(e.target.value)}
+              className={inputClasses}
+            />
+          </div>
+        </CollapsibleSection>
+
+        {/* Body Stats Section */}
+        <CollapsibleSection title="Body Stats" icon={Scale}>
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="weight" className={labelClasses}>Weight (lbs)</label>
+              <input
+                type="number"
+                id="weight"
+                step="0.1"
+                value={formData.weight || ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, weight: e.target.value ? Number(e.target.value) : null }))}
+                className={inputClasses}
+              />
+            </div>
+            <div>
+              <label htmlFor="bodyFat" className={labelClasses}>Body Fat %</label>
+              <input
+                type="number"
+                id="bodyFat"
+                step="0.1"
+                value={formData.bodyFat || ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, bodyFat: e.target.value ? Number(e.target.value) : null }))}
+                className={inputClasses}
+              />
+            </div>
+          </div>
+        </CollapsibleSection>
+
+        {/* Body Measurements Section */}
+        <CollapsibleSection title="Body Measurements" icon={Ruler} defaultOpen={false}>
+          <div className="space-y-6">
+            {/* Core Measurements */}
+            <div>
+              <h3 className="font-['Space_Mono'] text-xs uppercase tracking-wider text-[#94A3B8] mb-4">Core</h3>
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label htmlFor="chest" className={labelClasses}>Chest (in)</label>
+                  <input
+                    type="number"
+                    id="chest"
+                    step="0.25"
+                    value={formData.chest || ''}
+                    onChange={(e) => setFormData(prev => ({ ...prev, chest: e.target.value ? Number(e.target.value) : null }))}
+                    className={inputClasses}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="waist" className={labelClasses}>Waist (in)</label>
+                  <input
+                    type="number"
+                    id="waist"
+                    step="0.25"
+                    value={formData.waist || ''}
+                    onChange={(e) => setFormData(prev => ({ ...prev, waist: e.target.value ? Number(e.target.value) : null }))}
+                    className={inputClasses}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="hips" className={labelClasses}>Hips (in)</label>
+                  <input
+                    type="number"
+                    id="hips"
+                    step="0.25"
+                    value={formData.hips || ''}
+                    onChange={(e) => setFormData(prev => ({ ...prev, hips: e.target.value ? Number(e.target.value) : null }))}
+                    className={inputClasses}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Arms */}
+            <div>
+              <h3 className="font-['Space_Mono'] text-xs uppercase tracking-wider text-[#94A3B8] mb-4">Arms</h3>
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div>
+                    <label htmlFor="bicepLeft" className={labelClasses}>Left Bicep (in)</label>
+                    <input
+                      type="number"
+                      id="bicepLeft"
+                      step="0.25"
+                      value={formData.bicepLeft || ''}
+                      onChange={(e) => setFormData(prev => ({ ...prev, bicepLeft: e.target.value ? Number(e.target.value) : null }))}
+                      className={inputClasses}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="bicepLeftFlex" className={labelClasses}>Left Bicep Flexed (in)</label>
+                    <input
+                      type="number"
+                      id="bicepLeftFlex"
+                      step="0.25"
+                      value={formData.bicepLeftFlex || ''}
+                      onChange={(e) => setFormData(prev => ({ ...prev, bicepLeftFlex: e.target.value ? Number(e.target.value) : null }))}
+                      className={inputClasses}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <label htmlFor="bicepRight" className={labelClasses}>Right Bicep (in)</label>
+                    <input
+                      type="number"
+                      id="bicepRight"
+                      step="0.25"
+                      value={formData.bicepRight || ''}
+                      onChange={(e) => setFormData(prev => ({ ...prev, bicepRight: e.target.value ? Number(e.target.value) : null }))}
+                      className={inputClasses}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="bicepRightFlex" className={labelClasses}>Right Bicep Flexed (in)</label>
+                    <input
+                      type="number"
+                      id="bicepRightFlex"
+                      step="0.25"
+                      value={formData.bicepRightFlex || ''}
+                      onChange={(e) => setFormData(prev => ({ ...prev, bicepRightFlex: e.target.value ? Number(e.target.value) : null }))}
+                      className={inputClasses}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Legs */}
+            <div>
+              <h3 className="font-['Space_Mono'] text-xs uppercase tracking-wider text-[#94A3B8] mb-4">Legs</h3>
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div>
+                    <label htmlFor="thighLeft" className={labelClasses}>Left Thigh (in)</label>
+                    <input
+                      type="number"
+                      id="thighLeft"
+                      step="0.25"
+                      value={formData.thighLeft || ''}
+                      onChange={(e) => setFormData(prev => ({ ...prev, thighLeft: e.target.value ? Number(e.target.value) : null }))}
+                      className={inputClasses}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="calfLeft" className={labelClasses}>Left Calf (in)</label>
+                    <input
+                      type="number"
+                      id="calfLeft"
+                      step="0.25"
+                      value={formData.calfLeft || ''}
+                      onChange={(e) => setFormData(prev => ({ ...prev, calfLeft: e.target.value ? Number(e.target.value) : null }))}
+                      className={inputClasses}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <label htmlFor="thighRight" className={labelClasses}>Right Thigh (in)</label>
+                    <input
+                      type="number"
+                      id="thighRight"
+                      step="0.25"
+                      value={formData.thighRight || ''}
+                      onChange={(e) => setFormData(prev => ({ ...prev, thighRight: e.target.value ? Number(e.target.value) : null }))}
+                      className={inputClasses}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="calfRight" className={labelClasses}>Right Calf (in)</label>
+                    <input
+                      type="number"
+                      id="calfRight"
+                      step="0.25"
+                      value={formData.calfRight || ''}
+                      onChange={(e) => setFormData(prev => ({ ...prev, calfRight: e.target.value ? Number(e.target.value) : null }))}
+                      className={inputClasses}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </CollapsibleSection>
+
+        {/* Wellness Section */}
+        <CollapsibleSection title="Wellness" icon={Heart}>
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <label htmlFor="sleepHours" className={labelClasses}>Sleep (hours)</label>
+                <input
+                  type="number"
+                  id="sleepHours"
+                  step="0.5"
+                  value={formData.sleepHours || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, sleepHours: e.target.value ? Number(e.target.value) : null }))}
+                  className={inputClasses}
+                />
+              </div>
+              <div>
+                <label htmlFor="sleepQuality" className={labelClasses}>Sleep Quality (1-10)</label>
+                <input
+                  type="number"
+                  id="sleepQuality"
+                  min="1"
+                  max="10"
+                  value={formData.sleepQuality || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, sleepQuality: e.target.value ? Number(e.target.value) : null }))}
+                  className={inputClasses}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <label htmlFor="energyLevel" className={labelClasses}>Energy Level (1-10)</label>
+                <input
+                  type="number"
+                  id="energyLevel"
+                  min="1"
+                  max="10"
+                  value={formData.energyLevel || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, energyLevel: e.target.value ? Number(e.target.value) : null }))}
+                  className={inputClasses}
+                />
+              </div>
+              <div>
+                <label htmlFor="stressLevel" className={labelClasses}>Stress Level (1-10)</label>
+                <input
+                  type="number"
+                  id="stressLevel"
+                  min="1"
+                  max="10"
+                  value={formData.stressLevel || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, stressLevel: e.target.value ? Number(e.target.value) : null }))}
+                  className={inputClasses}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <label htmlFor="soreness" className={labelClasses}>Soreness (1-10)</label>
+                <input
+                  type="number"
+                  id="soreness"
+                  min="1"
+                  max="10"
+                  value={formData.soreness || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, soreness: e.target.value ? Number(e.target.value) : null }))}
+                  className={inputClasses}
+                />
+              </div>
+              <div>
+                <label htmlFor="recovery" className={labelClasses}>Recovery (1-10)</label>
+                <input
+                  type="number"
+                  id="recovery"
+                  min="1"
+                  max="10"
+                  value={formData.recovery || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, recovery: e.target.value ? Number(e.target.value) : null }))}
+                  className={inputClasses}
+                />
+              </div>
+            </div>
+          </div>
+        </CollapsibleSection>
+
+        {/* Photos Section */}
+        <CollapsibleSection title="Progress Photos" icon={Camera} defaultOpen={false}>
+          {/* Photo Instructions */}
+          <div className="mb-6 bg-[#FFE5E5] rounded-xl p-4">
+            <h3 className="text-sm font-medium text-[#0F172A] mb-2">Tips for Great Progress Photos</h3>
+            <ul className="text-sm text-[#475569] space-y-1">
+              <li className="flex items-start gap-2">
+                <span className="text-[#FF6B6B]">•</span>
+                Take photos in consistent lighting and location
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-[#FF6B6B]">•</span>
+                Wear fitted clothing that shows your body shape
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-[#FF6B6B]">•</span>
+                Include front, back, and both side views
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-[#FF6B6B]">•</span>
+                Stand in a neutral pose with arms slightly away
+              </li>
+            </ul>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-8 mt-8">
-            {/* Date Picker Section */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
-              <div className="p-6">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Check-in Date</h2>
-                <div className="max-w-xs">
-                  <input
-                    type="date"
-                    value={checkInDate}
-                    onChange={(e) => setCheckInDate(e.target.value)}
-                    className={inputClasses}
-                  />
+          {/* Photo Upload Area */}
+          <div className="relative">
+            <div
+              className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200
+                ${formData.photos.some(p => p.file)
+                  ? 'border-green-300 bg-green-50'
+                  : 'border-[#F1F5F9] hover:border-[#FF6B6B] hover:bg-[#FFE5E5]/20'}`}
+            >
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={async (e) => {
+                  const files = Array.from(e.target.files || []);
+                  const photoTypes = ['FRONT', 'BACK', 'SIDE_LEFT', 'SIDE_RIGHT'] as const;
+
+                  const newPhotos = await Promise.all(files.map(async (file, index) => {
+                    const base64Data = await new Promise<string>((resolve) => {
+                      const reader = new FileReader();
+                      reader.onload = () => resolve(reader.result as string);
+                      reader.readAsDataURL(file);
+                    });
+
+                    return {
+                      type: photoTypes[index] || 'CUSTOM',
+                      file,
+                      base64Data
+                    };
+                  }));
+
+                  setFormData(prev => ({
+                    ...prev,
+                    photos: [...prev.photos, ...newPhotos].slice(0, 8)
+                  }));
+                }}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              />
+
+              <div className="space-y-3">
+                <div className="w-12 h-12 mx-auto bg-[#F8FAFC] rounded-full flex items-center justify-center">
+                  <Camera className="w-6 h-6 text-[#94A3B8]" />
                 </div>
-              </div>
-            </div>
-
-            {/* Body Stats Section */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
-              <div className="p-6">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Body Stats</h2>
-                <div className="space-y-6">
-                  <div className="grid grid-cols-2 gap-6">
-                    <div>
-                      <label htmlFor="weight" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Weight (lbs)
-                      </label>
-                      <input
-                        type="number"
-                        id="weight"
-                        step="0.1"
-                        value={formData.weight || ''}
-                        onChange={(e) => setFormData(prev => ({ ...prev, weight: e.target.value ? Number(e.target.value) : null }))}
-                        className={inputClasses}
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="bodyFat" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Body Fat %
-                      </label>
-                      <input
-                        type="number"
-                        id="bodyFat"
-                        step="0.1"
-                        value={formData.bodyFat || ''}
-                        onChange={(e) => setFormData(prev => ({ ...prev, bodyFat: e.target.value ? Number(e.target.value) : null }))}
-                        className={inputClasses}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Body Measurements Section */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
-              <div className="p-6">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Body Measurements</h2>
-                <div className="space-y-6">
-                  {/* Core Measurements */}
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">Core</h3>
-                    <div className="grid grid-cols-3 gap-6">
-                      <div>
-                        <label htmlFor="chest" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Chest (in)
-                        </label>
-                        <input
-                          type="number"
-                          id="chest"
-                          step="0.25"
-                          value={formData.chest || ''}
-                          onChange={(e) => setFormData(prev => ({ ...prev, chest: e.target.value ? Number(e.target.value) : null }))}
-                          className={inputClasses}
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="waist" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Waist (in)
-                        </label>
-                        <input
-                          type="number"
-                          id="waist"
-                          step="0.25"
-                          value={formData.waist || ''}
-                          onChange={(e) => setFormData(prev => ({ ...prev, waist: e.target.value ? Number(e.target.value) : null }))}
-                          className={inputClasses}
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="hips" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Hips (in)
-                        </label>
-                        <input
-                          type="number"
-                          id="hips"
-                          step="0.25"
-                          value={formData.hips || ''}
-                          onChange={(e) => setFormData(prev => ({ ...prev, hips: e.target.value ? Number(e.target.value) : null }))}
-                          className={inputClasses}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Arms */}
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">Arms</h3>
-                    <div className="grid grid-cols-2 gap-6">
-                      <div className="space-y-4">
-                        <div>
-                          <label htmlFor="bicepLeft" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Left Bicep (in)
-                          </label>
-                          <input
-                            type="number"
-                            id="bicepLeft"
-                            step="0.25"
-                            value={formData.bicepLeft || ''}
-                            onChange={(e) => setFormData(prev => ({ ...prev, bicepLeft: e.target.value ? Number(e.target.value) : null }))}
-                            className={inputClasses}
-                          />
-                        </div>
-                        <div>
-                          <label htmlFor="bicepLeftFlex" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Left Bicep Flexed (in)
-                          </label>
-                          <input
-                            type="number"
-                            id="bicepLeftFlex"
-                            step="0.25"
-                            value={formData.bicepLeftFlex || ''}
-                            onChange={(e) => setFormData(prev => ({ ...prev, bicepLeftFlex: e.target.value ? Number(e.target.value) : null }))}
-                            className={inputClasses}
-                          />
-                        </div>
-                      </div>
-                      <div className="space-y-4">
-                        <div>
-                          <label htmlFor="bicepRight" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Right Bicep (in)
-                          </label>
-                          <input
-                            type="number"
-                            id="bicepRight"
-                            step="0.25"
-                            value={formData.bicepRight || ''}
-                            onChange={(e) => setFormData(prev => ({ ...prev, bicepRight: e.target.value ? Number(e.target.value) : null }))}
-                            className={inputClasses}
-                          />
-                        </div>
-                        <div>
-                          <label htmlFor="bicepRightFlex" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Right Bicep Flexed (in)
-                          </label>
-                          <input
-                            type="number"
-                            id="bicepRightFlex"
-                            step="0.25"
-                            value={formData.bicepRightFlex || ''}
-                            onChange={(e) => setFormData(prev => ({ ...prev, bicepRightFlex: e.target.value ? Number(e.target.value) : null }))}
-                            className={inputClasses}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Legs */}
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">Legs</h3>
-                    <div className="grid grid-cols-2 gap-6">
-                      <div className="space-y-4">
-                        <div>
-                          <label htmlFor="thighLeft" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Left Thigh (in)
-                          </label>
-                          <input
-                            type="number"
-                            id="thighLeft"
-                            step="0.25"
-                            value={formData.thighLeft || ''}
-                            onChange={(e) => setFormData(prev => ({ ...prev, thighLeft: e.target.value ? Number(e.target.value) : null }))}
-                            className={inputClasses}
-                          />
-                        </div>
-                        <div>
-                          <label htmlFor="calfLeft" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Left Calf (in)
-                          </label>
-                          <input
-                            type="number"
-                            id="calfLeft"
-                            step="0.25"
-                            value={formData.calfLeft || ''}
-                            onChange={(e) => setFormData(prev => ({ ...prev, calfLeft: e.target.value ? Number(e.target.value) : null }))}
-                            className={inputClasses}
-                          />
-                        </div>
-                      </div>
-                      <div className="space-y-4">
-                        <div>
-                          <label htmlFor="thighRight" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Right Thigh (in)
-                          </label>
-                          <input
-                            type="number"
-                            id="thighRight"
-                            step="0.25"
-                            value={formData.thighRight || ''}
-                            onChange={(e) => setFormData(prev => ({ ...prev, thighRight: e.target.value ? Number(e.target.value) : null }))}
-                            className={inputClasses}
-                          />
-                        </div>
-                        <div>
-                          <label htmlFor="calfRight" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Right Calf (in)
-                          </label>
-                          <input
-                            type="number"
-                            id="calfRight"
-                            step="0.25"
-                            value={formData.calfRight || ''}
-                            onChange={(e) => setFormData(prev => ({ ...prev, calfRight: e.target.value ? Number(e.target.value) : null }))}
-                            className={inputClasses}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Wellness Section */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
-              <div className="p-6">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Wellness</h2>
-                <div className="space-y-6">
-                  <div className="grid grid-cols-2 gap-6">
-                    <div>
-                      <label htmlFor="sleepHours" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Sleep (hours)
-                      </label>
-                      <input
-                        type="number"
-                        id="sleepHours"
-                        step="0.5"
-                        value={formData.sleepHours || ''}
-                        onChange={(e) => setFormData(prev => ({ ...prev, sleepHours: e.target.value ? Number(e.target.value) : null }))}
-                        className={inputClasses}
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="sleepQuality" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Sleep Quality (1-10)
-                      </label>
-                      <input
-                        type="number"
-                        id="sleepQuality"
-                        min="1"
-                        max="10"
-                        value={formData.sleepQuality || ''}
-                        onChange={(e) => setFormData(prev => ({ ...prev, sleepQuality: e.target.value ? Number(e.target.value) : null }))}
-                        className={inputClasses}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-6">
-                    <div>
-                      <label htmlFor="energyLevel" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Energy Level (1-10)
-                      </label>
-                      <input
-                        type="number"
-                        id="energyLevel"
-                        min="1"
-                        max="10"
-                        value={formData.energyLevel || ''}
-                        onChange={(e) => setFormData(prev => ({ ...prev, energyLevel: e.target.value ? Number(e.target.value) : null }))}
-                        className={inputClasses}
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="stressLevel" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Stress Level (1-10)
-                      </label>
-                      <input
-                        type="number"
-                        id="stressLevel"
-                        min="1"
-                        max="10"
-                        value={formData.stressLevel || ''}
-                        onChange={(e) => setFormData(prev => ({ ...prev, stressLevel: e.target.value ? Number(e.target.value) : null }))}
-                        className={inputClasses}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-6">
-                    <div>
-                      <label htmlFor="soreness" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Soreness (1-10)
-                      </label>
-                      <input
-                        type="number"
-                        id="soreness"
-                        min="1"
-                        max="10"
-                        value={formData.soreness || ''}
-                        onChange={(e) => setFormData(prev => ({ ...prev, soreness: e.target.value ? Number(e.target.value) : null }))}
-                        className={inputClasses}
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="recovery" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Recovery (1-10)
-                      </label>
-                      <input
-                        type="number"
-                        id="recovery"
-                        min="1"
-                        max="10"
-                        value={formData.recovery || ''}
-                        onChange={(e) => setFormData(prev => ({ ...prev, recovery: e.target.value ? Number(e.target.value) : null }))}
-                        className={inputClasses}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Photos Section */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
-              <div className="p-6">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Progress Photos</h2>
-                
-                {/* Photo Instructions */}
-                <div className="mb-6 bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-                  <h3 className="text-sm font-medium text-blue-800 dark:text-blue-300 mb-2">Tips for Great Progress Photos</h3>
-                  <ul className="text-sm text-blue-700 dark:text-blue-400 space-y-2">
-                    <li className="flex items-start">
-                      <span className="mr-2">•</span>
-                      <span>Take photos in consistent lighting and location</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="mr-2">•</span>
-                      <span>Wear fitted clothing that shows your body shape</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="mr-2">•</span>
-                      <span>Include front, back, and both side views for complete progress tracking</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="mr-2">•</span>
-                      <span>Stand in a neutral pose with arms slightly away from body</span>
-                    </li>
-                  </ul>
-                </div>
-
-                {/* Photo Upload Area */}
-                <div className="relative">
-                  <div
-                    className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all duration-200
-                      ${formData.photos.some(p => p.file) 
-                        ? 'border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-900/20' 
-                        : 'border-gray-300 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-indigo-50 dark:hover:bg-indigo-900/20'}`}
-                  >
-                    <input
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      onChange={async (e) => {
-                        const files = Array.from(e.target.files || []);
-                        const photoTypes = ['FRONT', 'BACK', 'SIDE_LEFT', 'SIDE_RIGHT'] as const;
-                        
-                        const newPhotos = await Promise.all(files.map(async (file, index) => {
-                          const base64Data = await new Promise<string>((resolve) => {
-                            const reader = new FileReader();
-                            reader.onload = () => resolve(reader.result as string);
-                            reader.readAsDataURL(file);
-                          });
-                          
-                          return {
-                            type: photoTypes[index] || 'CUSTOM',
-                            file,
-                            base64Data
-                          };
-                        }));
-                        
-                        setFormData(prev => ({
-                          ...prev,
-                          photos: [...prev.photos, ...newPhotos].slice(0, 8) // Limit to 8 photos
-                        }));
-                      }}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    />
-                    
-                    <div className="space-y-4">
-                      <div className="flex justify-center">
-                        <svg className="w-12 h-12 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="text-lg font-medium text-gray-900 dark:text-white">
-                          Drop your progress photos here
-                        </p>
-                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                          or click to select files
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Photo Preview Grid */}
-                  {formData.photos.some(p => p.file) && (
-                    <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                      {formData.photos.filter(p => p.file).map((photo, index) => (
-                        <div key={index} className="relative group aspect-square">
-                          <img
-                            src={URL.createObjectURL(photo.file!)}
-                            alt={`Progress photo ${index + 1}`}
-                            className="w-full h-full object-cover rounded-lg"
-                          />
-                          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200 rounded-lg">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const newPhotos = [...formData.photos];
-                                newPhotos[index] = { ...photo, file: null };
-                                setFormData(prev => ({ ...prev, photos: newPhotos.filter(p => p.file) }));
-                              }}
-                              className="absolute top-2 right-2 p-1 bg-white rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-gray-100"
-                            >
-                              <svg className="w-4 h-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                              </svg>
-                            </button>
-                          </div>
-                          <div className="absolute bottom-2 left-2 px-2 py-1 bg-black bg-opacity-50 rounded text-white text-xs">
-                            {photo.type.replace('_', ' ').toLowerCase()}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Notes Section */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
-              <div className="p-6">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Additional Notes</h2>
                 <div>
-                  <label htmlFor="notes" className="sr-only">
-                    Notes
-                  </label>
-                  <textarea
-                    id="notes"
-                    rows={4}
-                    value={formData.notes}
-                    onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
-                    placeholder="Any additional notes about your progress this week..."
-                    className={inputClasses}
-                  />
+                  <p className="text-base font-medium text-[#0F172A]">
+                    Drop your progress photos here
+                  </p>
+                  <p className="mt-1 text-sm text-[#94A3B8]">
+                    or click to select files
+                  </p>
                 </div>
               </div>
             </div>
 
-            {/* Submit Button */}
-            <div className="flex justify-end">
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="px-6 py-3 rounded-lg bg-indigo-600 dark:bg-indigo-500 text-white font-medium hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200 hover:scale-[1.02] hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:translate-y-0"
-              >
-                {isSubmitting ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-5 h-5 border-t-2 border-b-2 border-white rounded-full animate-spin" />
-                    <span>Saving...</span>
+            {/* Photo Preview Grid */}
+            {formData.photos.some(p => p.file) && (
+              <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                {formData.photos.filter(p => p.file).map((photo, index) => (
+                  <div key={index} className="relative group aspect-square">
+                    <img
+                      src={URL.createObjectURL(photo.file!)}
+                      alt={`Progress photo ${index + 1}`}
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200 rounded-lg">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newPhotos = [...formData.photos];
+                          newPhotos[index] = { ...photo, file: null };
+                          setFormData(prev => ({ ...prev, photos: newPhotos.filter(p => p.file) }));
+                        }}
+                        className="absolute top-2 right-2 p-1 bg-white rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-gray-100"
+                      >
+                        <svg className="w-4 h-4 text-[#475569]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                    <div className="absolute bottom-2 left-2 px-2 py-1 bg-[#0F172A]/70 rounded text-white text-xs">
+                      {photo.type.replace('_', ' ').toLowerCase()}
+                    </div>
                   </div>
-                ) : (
-                  'Save Check-in'
-                )}
-              </button>
-            </div>
-          </form>
+                ))}
+              </div>
+            )}
+          </div>
+        </CollapsibleSection>
+
+        {/* Notes Section */}
+        <CollapsibleSection title="Additional Notes" icon={FileText} defaultOpen={false}>
+          <textarea
+            id="notes"
+            rows={4}
+            value={formData.notes}
+            onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+            placeholder="Any additional notes about your progress this week..."
+            className={inputClasses}
+          />
+        </CollapsibleSection>
+
+        {/* Submit Button */}
+        <div className="flex justify-end pt-4">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="px-8 py-3 rounded-xl bg-[#FF6B6B] text-white font-semibold hover:bg-[#EF5350] transition-all duration-200 shadow-lg shadow-[#FF6B6B]/25 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isSubmitting ? (
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span>Saving...</span>
+              </div>
+            ) : (
+              'Save Check-in'
+            )}
+          </button>
         </div>
-      </main>
+      </form>
     </div>
   );
-} 
+}
 
 export default function CheckInPage() {
   return (
-    <MainLayout>
-      <Suspense fallback={
-        <>
-          <Header />
-          <div className="flex items-center justify-center min-h-screen bg-white dark:bg-gray-900">
-            <div className="w-6 h-6 border-t-2 border-blue-500 border-solid rounded-full animate-spin"></div>
-          </div>
-          <Footer />
-        </>
-      }>
-        <CheckInPageContent />
-      </Suspense>
-    </MainLayout>
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="w-8 h-8 border-2 border-[#F1F5F9] border-t-[#FF6B6B] rounded-full animate-spin" />
+      </div>
+    }>
+      <CheckInPageContent />
+    </Suspense>
   );
 }

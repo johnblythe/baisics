@@ -1,22 +1,8 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
-// import GoogleAnalytics from "@/components/GoogleAnalytics";
 import { GoogleAnalytics } from '@next/third-parties/google'
 import Providers from "@/components/Providers";
 import { GoogleTagManager } from '@next/third-parties/google'
-// import JsonLd from "@/components/JsonLd";
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://www.baisics.app'),
@@ -95,7 +81,7 @@ export default async function RootLayout({
       <head>
         {/* <JsonLd /> */}
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className="antialiased">
         {gtmId && <GoogleTagManager gtmId={gtmId} />}
         <Providers>
           {children}
