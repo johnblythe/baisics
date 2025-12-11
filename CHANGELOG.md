@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Redesigned Program Review page with v2a design system (#102)
+  - Sticky phase navigation tabs with progress indicator
+  - Collapsible workout day cards matching StreamingPhasePreview style
+  - Exercise category badges (PRI, SEC, ISO, CAR, FLX)
+  - Quick jump links for programs with 4+ workouts
+  - Phase cards with key focus areas, nutrition summary, macro pills
+- Redesigned DisclaimerBanner to be collapsible and less intrusive
+  - Collapsed by default with "Health notice" summary
+  - Expandable bullet points instead of wall of text
+  - Warm amber color scheme instead of jarring blue
+
 ### Added
 - StreamingPhasePreview component shows phases as they generate with expandable workouts
 - Design preview page (`/hi/design-preview`) for testing UI states without real generation
