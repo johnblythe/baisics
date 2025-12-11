@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- MacroDisplay component with visual donut chart for nutrition data (#104)
+  - SVG donut shows caloric percentage breakdown (P×4, C×4, F×9)
+  - Color-coded legend with gram values
+  - Compact variant for dashboard, full variant for program review
+
 ### Changed
 - Redesigned Program Review page with v2a design system (#102)
   - Sticky phase navigation tabs with progress indicator

@@ -11,6 +11,7 @@ import { generateWorkoutPDF } from '@/utils/pdf';
 import { formatExerciseMeasure, formatRestPeriod } from '@/utils/formatters';
 import { getMacros } from '@/utils/formatting';
 import { WorkoutPlan } from '@/types/program';
+import { MacroDisplay } from '@/components/MacroDisplay';
 
 interface ProgramDisplayProps {
   program: Program;
@@ -442,39 +443,13 @@ function PhaseCard({
                   </div>
                 </div>
 
-                {/* Nutrition summary */}
-                <div className="p-4 rounded-xl bg-[#F8FAFC] border border-[#F1F5F9]">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div>
-                      <h4 className="text-xs text-[#94A3B8] uppercase tracking-wider font-semibold mb-1" style={{ fontFamily: "'Space Mono', monospace" }}>
-                        Daily Nutrition
-                      </h4>
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-2xl font-extrabold text-[#0F172A]">{nutrition?.calories || 0}</span>
-                        <span className="text-sm text-[#94A3B8]">kcal</span>
-                      </div>
-                    </div>
-
-                    {/* Macro pills */}
-                    <div className="flex items-center gap-2">
-                      <div className="px-3 py-1.5 rounded-lg bg-[#FFE5E5]">
-                        <span className="text-xs font-bold text-[#EF5350]" style={{ fontFamily: "'Space Mono', monospace" }}>
-                          {nutrition?.protein || 0}g P
-                        </span>
-                      </div>
-                      <div className="px-3 py-1.5 rounded-lg bg-[#FEF3C7]">
-                        <span className="text-xs font-bold text-[#D97706]" style={{ fontFamily: "'Space Mono', monospace" }}>
-                          {nutrition?.carbs || 0}g C
-                        </span>
-                      </div>
-                      <div className="px-3 py-1.5 rounded-lg bg-[#D1FAE5]">
-                        <span className="text-xs font-bold text-[#059669]" style={{ fontFamily: "'Space Mono', monospace" }}>
-                          {nutrition?.fats || 0}g F
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                {/* Nutrition summary - visual donut */}
+                <MacroDisplay
+                  protein={nutrition?.protein || 0}
+                  carbs={nutrition?.carbs || 0}
+                  fats={nutrition?.fats || 0}
+                  calories={nutrition?.calories || 0}
+                />
               </div>
             </motion.div>
           )}

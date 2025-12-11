@@ -16,6 +16,7 @@ import { WorkoutUploadModal } from '@/components/WorkoutUploadModal';
 import { ProgramSelector } from '@/components/ProgramSelector';
 import { PhotoComparison } from '@/components/PhotoComparison';
 import { ProgramCard } from '@/components/share/ProgramCard';
+import { MacroDisplay } from '@/components/MacroDisplay';
 
 // Types for our API responses
 interface ProgramOverview {
@@ -972,46 +973,15 @@ function DashboardContent() {
                       </div>
                     )}
 
-                    {/* Daily Macros - v2a styling */}
+                    {/* Daily Macros - visual donut + bars */}
                     {program?.workoutPlans?.[0] && (
-                      <div className="space-y-4">
-                        <h2 className="text-sm font-medium text-[#94A3B8] uppercase tracking-wider" style={{ fontFamily: "'Space Mono', monospace" }}>Daily Macros</h2>
-                        <div className="space-y-3">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 rounded-full bg-[#FF6B6B]"></div>
-                              <span className="text-[#475569]">Protein</span>
-                            </div>
-                            <span className="font-medium text-[#0F172A]">
-                              {getMacros(program.workoutPlans[0]).protein}g
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 rounded-full bg-[#0F172A]"></div>
-                              <span className="text-[#475569]">Carbs</span>
-                            </div>
-                            <span className="font-medium text-[#0F172A]">
-                              {getMacros(program.workoutPlans[0]).carbs}g
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 rounded-full bg-[#94A3B8]"></div>
-                              <span className="text-[#475569]">Fat</span>
-                            </div>
-                            <span className="font-medium text-[#0F172A]">
-                              {getMacros(program.workoutPlans[0]).fats}g
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between pt-2 border-t border-[#F1F5F9]">
-                            <span className="text-[#475569]">Daily Calories</span>
-                            <span className="font-medium text-[#0F172A]">
-                              {getMacros(program.workoutPlans[0]).calories}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
+                      <MacroDisplay
+                        protein={getMacros(program.workoutPlans[0]).protein}
+                        carbs={getMacros(program.workoutPlans[0]).carbs}
+                        fats={getMacros(program.workoutPlans[0]).fats}
+                        calories={getMacros(program.workoutPlans[0]).calories}
+                        compact
+                      />
                     )}
                   </div>
                 </div>
