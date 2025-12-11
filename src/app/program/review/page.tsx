@@ -68,7 +68,7 @@ function ProgramReviewContent() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-indigo-500"></div>
+        <div className="w-6 h-6 border-2 border-[#F1F5F9] border-t-[#FF6B6B] rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -76,9 +76,9 @@ function ProgramReviewContent() {
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-xl shadow-xl">
-          <h1 className="text-2xl font-bold text-red-500 mb-4">Error</h1>
-          <p className="text-gray-600 dark:text-gray-300">{error}</p>
+        <div className="text-center p-8 bg-white rounded-2xl border-l-4 border-l-[#EF5350] border border-[#E2E8F0] shadow-md">
+          <h1 className="text-2xl font-bold text-[#EF5350] mb-4">Error</h1>
+          <p className="text-[#475569]">{error}</p>
         </div>
       </div>
     );
@@ -87,17 +87,17 @@ function ProgramReviewContent() {
   if (!program || !user) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-xl shadow-xl">
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Program Not Found</h1>
-          <p className="text-gray-600 dark:text-gray-300">The requested program could not be found.</p>
+        <div className="text-center p-8 bg-white rounded-2xl border border-[#E2E8F0] shadow-md">
+          <h1 className="text-2xl font-bold text-[#0F172A] mb-4">Program Not Found</h1>
+          <p className="text-[#475569]">The requested program could not be found.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <ProgramDisplay 
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+      <ProgramDisplay
         //@ts-ignore
         program={program}
         userEmail={user?.email}
@@ -106,22 +106,21 @@ function ProgramReviewContent() {
         onCloseUpsell={() => setIsUpsellOpen(false)}
       />
     </div>
-    
   );
 }
 
 export default function ProgramReviewPage() {
   return (
     <MainLayout>
-      <Suspense fallback={
-        <>
-          <div className="flex items-center justify-center min-h-screen bg-white dark:bg-gray-900">
-            <div className="w-6 h-6 border-t-2 border-blue-500 border-solid rounded-full animate-spin"></div>
+      <div className="bg-[#F8FAFC] min-h-screen">
+        <Suspense fallback={
+          <div className="flex items-center justify-center min-h-screen">
+            <div className="w-6 h-6 border-2 border-[#F1F5F9] border-t-[#FF6B6B] rounded-full animate-spin"></div>
           </div>
-        </>
-      }>
-        <ProgramReviewContent />
-      </Suspense>
+        }>
+          <ProgramReviewContent />
+        </Suspense>
+      </div>
     </MainLayout>
   );
 } 

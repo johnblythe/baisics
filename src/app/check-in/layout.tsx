@@ -1,6 +1,5 @@
 import { SessionProvider } from 'next-auth/react';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import MainLayout from '@/app/components/layouts/MainLayout';
 
 export default function CheckInLayout({
   children,
@@ -9,11 +8,9 @@ export default function CheckInLayout({
 }) {
   return (
     <SessionProvider>
-      <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
-        <Header />
+      <MainLayout>
         {children}
-        <Footer />
-      </div>
+      </MainLayout>
     </SessionProvider>
   );
-} 
+}

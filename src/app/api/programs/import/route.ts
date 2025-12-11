@@ -5,6 +5,7 @@ import { sendMessage } from '@/utils/chat';
 import { prisma } from '@/lib/prisma';
 import fs from 'fs/promises';
 import path from 'path';
+import { auth } from '@/auth';
 
 const ALLOWED_FILE_TYPES = [
   'application/pdf',
@@ -72,7 +73,17 @@ function validateFileType(base64String: string): { valid: boolean; mimeType: str
 
 export async function POST(request: Request) {
   try {
-    const { file, fileName } = await request.json();
+    const { file, fileName, autoSave = false } = await request.json();
+
+    // Get authenticated user
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({
+        error: true,
+        reason: 'Unauthorized',
+        details: ['User must be authenticated to upload programs']
+      }, { status: 401 });
+    }
 
     // Validate file type and size
     const validation = validateFileType(file);
@@ -139,26 +150,18 @@ export async function POST(request: Request) {
     try {
       const parsed = JSON.parse(content);
       
-      // Get or create test user
-      let testUser = await prisma.user.findFirst({
-        where: { email: 'test@example.com' }
-      });
-
-      if (!testUser) {
-        testUser = await prisma.user.create({
-          data: {
-            email: 'test@example.com',
-            name: 'Test User'
-          }
-        });
+      // If autoSave is false, just return the parsed data
+      if (!autoSave) {
+        return NextResponse.json({ parsed });
       }
 
-      // Save to database
+      // Save to database only if autoSave is true
       const savedProgram = await prisma.program.create({
         data: {
           name: parsed.program?.name || 'Imported Workout Program',
           description: parsed.program?.description || '',
-          createdBy: testUser.id, // Use the actual user ID
+          createdBy: session.user.id,
+          source: 'uploaded',
           workoutPlans: {
             create: {
               phase: parsed.workoutPlan?.phase || 1,
@@ -168,14 +171,13 @@ export async function POST(request: Request) {
               progressionProtocol: parsed.workoutPlan?.progressionProtocol || [],
               daysPerWeek: parsed.workoutPlan?.daysPerWeek || 1,
               splitType: parsed.workoutPlan?.splitType || 'Full Body',
-              // Default nutrition values until we implement proper nutrition parsing
               dailyCalories: 2000,
               proteinGrams: 150,
               carbGrams: 200,
               fatGrams: 70,
               user: {
                 connect: {
-                  id: testUser.id // Use the same user ID
+                  id: session.user.id
                 }
               },
               workouts: {
@@ -186,7 +188,7 @@ export async function POST(request: Request) {
                   warmup: workout.warmup || '',
                   cooldown: workout.cooldown || '',
                   exercises: {
-                    create: (workout.exercises || []).map((exercise: any) => ({
+                    create: (workout.exercises || []).map((exercise: any, exerciseIndex: number) => ({
                       name: exercise.name || 'Exercise',
                       sets: exercise.sets || 1,
                       reps: exercise.measure?.type === 'REPS' ? exercise.measure.value : null,
@@ -195,6 +197,7 @@ export async function POST(request: Request) {
                       measureType: exercise.measure?.type || 'REPS',
                       measureValue: exercise.measure?.value || 0,
                       measureUnit: exercise.measure?.unit,
+                      sortOrder: exerciseIndex,
                       notes: exercise.notes || '',
                       exerciseLibrary: {
                         connectOrCreate: {
@@ -222,7 +225,7 @@ export async function POST(request: Request) {
             include: {
               workouts: {
                 include: {
-                  exercises: true
+                  exercises: { orderBy: { sortOrder: 'asc' } }
                 }
               }
             }

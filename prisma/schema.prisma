@@ -94,6 +94,12 @@ model User {
   session      Session[]
   purchaseSessions PurchaseSession[]
   subscription   Subscription?
+
+  // Coach Mode relations
+  isCoach      Boolean   @default(false) @map("is_coach")
+  coachClients CoachClient[] @relation("CoachRelation")  // Users this coach manages
+  coachOf      CoachClient[] @relation("ClientRelation") // Coaches managing this user
+
   @@index([email])
   @@map("users")
 }
@@ -205,7 +211,7 @@ model Exercise {
   measureValue      Float?            @map("measure_value")
   measureUnit       ExerciseMeasureUnit?         @map("measure_unit") @default(LB)
   notes             String?         @map("notes") @db.Text
-  // need to add a field for ordering
+  sortOrder         Int             @map("sort_order") @default(0)
 
   workout           Workout         @relation(fields: [workoutId], references: [id], onDelete: Cascade)
   exerciseLibrary   ExerciseLibrary @relation(fields: [exerciseLibraryId], references: [id])
@@ -225,6 +231,7 @@ model Program {
   createdBy    String         @map("created_by") @db.Uuid
   createdAt    DateTime       @default(now()) @map("created_at")
   updatedAt    DateTime       @updatedAt @map("updated_at")
+  source       String?        @map("source") /// such as 'uploaded', 'ai', etc.
   user         User           @relation(fields: [createdBy], references: [id])
   workoutPlans WorkoutPlan[]
   userImages   UserImages[]
@@ -574,4 +581,48 @@ enum SubscriptionStatus {
   CANCELED
   UNPAID
   TRIAL
+}
+
+// Coach Mode - allows trainers to manage clients
+model CoachClient {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  coachId   String   @map("coach_id") @db.Uuid
+  clientId  String?  @map("client_id") @db.Uuid
+
+  // Invite system for clients who don't have accounts yet
+  inviteEmail   String?  @map("invite_email")
+  inviteToken   String?  @unique @map("invite_token")
+  inviteStatus  InviteStatus @default(PENDING) @map("invite_status")
+  inviteSentAt  DateTime? @map("invite_sent_at")
+
+  // Relationship metadata
+  nickname      String?  // Coach's nickname for client
+  notes         String?  @db.Text
+  status        ClientStatus @default(ACTIVE)
+
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  coach         User     @relation("CoachRelation", fields: [coachId], references: [id])
+  client        User?    @relation("ClientRelation", fields: [clientId], references: [id])
+
+  @@unique([coachId, clientId])
+  @@unique([coachId, inviteEmail])
+  @@index([coachId])
+  @@index([clientId])
+  @@index([inviteToken])
+  @@map("coach_clients")
+}
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  CANCELLED
+}
+
+enum ClientStatus {
+  ACTIVE
+  PAUSED
+  ARCHIVED
 }

@@ -7,33 +7,28 @@ import { motion, AnimatePresence } from "framer-motion";
 const ADDITIONAL_TOPICS = [
   {
     id: 'injuries',
-    label: 'Previous Injuries & Medical History',
-    description: 'Tell us about any injuries or conditions that might affect your training'
+    label: 'Injuries & Limitations',
+    description: 'Past injuries or physical limitations'
   },
   {
     id: 'fitness',
-    label: 'Detailed Fitness History',
-    description: 'Share more about your past workout experience and achievements'
+    label: 'Fitness Background',
+    description: 'Your workout history and experience'
   },
   {
     id: 'preferences',
     label: 'Exercise Preferences',
-    description: 'Specific movements you enjoy or want to avoid'
+    description: 'Movements you enjoy or want to avoid'
   },
   {
     id: 'nutrition',
-    label: 'Nutrition Details',
-    description: 'Dietary restrictions, preferences, or specific goals'
-  },
-  {
-    id: 'recovery',
-    label: 'Recovery & Lifestyle',
-    description: 'Sleep patterns, stress levels, and recovery habits'
+    label: 'Nutrition',
+    description: 'Dietary needs or restrictions'
   },
   {
     id: 'other',
-    label: 'Other',
-    description: 'Anything else that needs correction or clarification'
+    label: 'Something Else',
+    description: 'Corrections or clarifications'
   }
 ];
 
@@ -43,27 +38,43 @@ interface DataReviewProps {
   onRequestMore: (topics: string[]) => void;
 }
 
-function SummaryCard({ title, items }: { title: string; items: string[] }) {
+// Compact data row component
+function DataRow({ label, value }: { label: string; value: string }) {
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
+    <div className="flex items-center justify-between py-2 border-b border-[#F1F5F9] last:border-0">
+      <span className="text-sm text-[#64748B]">{label}</span>
+      <span className="text-sm font-medium text-[#0F172A]">{value}</span>
+    </div>
+  );
+}
+
+// Section component with icon
+function DataSection({
+  icon,
+  title,
+  children,
+  delay = 0
+}: {
+  icon: React.ReactNode;
+  title: string;
+  children: React.ReactNode;
+  delay?: number;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="group relative"
+      transition={{ delay, duration: 0.3 }}
+      className="bg-white rounded-xl border border-[#E2E8F0] p-4"
     >
-      <div className="absolute -inset-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 rounded-lg opacity-0 blur-xl transition duration-500 group-hover:opacity-30 dark:group-hover:opacity-20"></div>
-      <div className="relative bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-200">
-        <h3 className="font-semibold text-gray-900 dark:text-white mb-4">{title}</h3>
-        <ul className="space-y-3">
-          {items.map((item, idx) => (
-            <li 
-              key={idx} 
-              className="flex items-center gap-2 text-gray-600 dark:text-gray-300"
-            >
-              <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 dark:bg-indigo-400 flex-shrink-0"></div>
-              <span>{item}</span>
-            </li>
-          ))}
-        </ul>
+      <div className="flex items-center gap-2 mb-3">
+        <div className="w-8 h-8 rounded-lg bg-[#F8FAFC] flex items-center justify-center text-[#64748B]">
+          {icon}
+        </div>
+        <h3 className="font-semibold text-[#0F172A]">{title}</h3>
+      </div>
+      <div className="space-y-0">
+        {children}
       </div>
     </motion.div>
   );
@@ -74,201 +85,221 @@ export function DataReviewTransition({ intakeData, onConfirm, onRequestMore }: D
   const [showTopics, setShowTopics] = useState(false);
   const formattedIntakeData = convertToIntakeFormat(intakeData);
 
-  // Format the intake data for display
-  const summaryCards = [
-    {
-      title: "Personal Info",
-      items: [
-        `Height: ${convertHeightToFeetAndInches(formattedIntakeData.height) || 'Not specified'}`,
-        `Weight: ${formattedIntakeData.weight || 'Not specified'}`,
-        `Age: ${formattedIntakeData.age || 'Not specified'}`,
-      ]
-    },
-    {
-      title: "Training Goals",
-      items: [
-        `Primary: ${formattedIntakeData.trainingGoal || 'Not specified'}`,
-        ...(formattedIntakeData.trainingPreferences && formattedIntakeData.trainingPreferences.length > 0 
-          ? [`Preferences: ${formattedIntakeData.trainingPreferences.join(', ')}`] 
-          : [])
-      ]
-    },
-    {
-      title: "Schedule",
-      items: [
-        `${formattedIntakeData.daysAvailable || 3} days per week`,
-        `${formattedIntakeData.dailyBudget || 60} minutes per session`,
-      ]
-    },
-    {
-      title: "Training Environment",
-      items: [
-        `Location: ${formattedIntakeData.workoutEnvironment?.primary || 'Not specified'}`,
-        `Equipment: ${formattedIntakeData.equipmentAccess?.type || 'Not specified'}`,
-        ...(formattedIntakeData.equipmentAccess?.available && formattedIntakeData.equipmentAccess.available.length > 0
-          ? [`Available: ${formattedIntakeData.equipmentAccess.available.join(', ')}`] 
-          : [])
-      ]
-    },
-    {
-      title: "Style & Experience",
-      items: [
-        `Experience Level: ${formattedIntakeData.experienceLevel || 'Not specified'}`,
-        `Primary Style: ${formattedIntakeData.workoutStyle?.primary || 'Not specified'}`,
-        ...(formattedIntakeData.workoutStyle?.secondary 
-          ? [`Secondary Style: ${formattedIntakeData.workoutStyle.secondary}`] 
-          : [])
-      ]
-    }
-  ];
+  const toggleTopic = (id: string) => {
+    setSelectedTopics(prev =>
+      prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]
+    );
+  };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="max-w-4xl mx-auto p-6 space-y-8"
-    >
-      <div className="relative space-y-2">
-        <div className="h-0.5 w-12 bg-indigo-600/30 dark:bg-indigo-400/30 mb-4"></div>
-        <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 uppercase">Review & Confirm</p>
-        <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Review Your Information</h2>
-        <p className="text-lg text-gray-600 dark:text-gray-400">
-          Let&apos;s make sure we have everything right before creating your program.
-        </p>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {summaryCards.slice(0, 4).map((card, idx) => (
-          <SummaryCard key={idx} title={card.title} items={card.items} />
-        ))}
-        
-        {/* Style & Experience and Don't Sweat It in the same row */}
-        <SummaryCard title={summaryCards[4].title} items={summaryCards[4].items} />
-        <motion.div 
-          className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-gray-800 dark:to-gray-700 rounded-xl p-6 shadow-lg border border-indigo-100 dark:border-gray-600"
-          whileHover={{ scale: 1.01 }}
+    <>
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
+      `}</style>
+
+      <div
+        className="min-h-[70vh] flex flex-col items-center justify-center p-6 bg-gradient-to-b from-[#F8FAFC] to-white"
+        style={{ fontFamily: "'Outfit', sans-serif" }}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-2xl"
         >
-          <div className="flex items-start space-x-4">
-            <div className="flex-shrink-0">
-              <span className="text-2xl">💪</span>
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold text-indigo-900 dark:text-indigo-100 mb-2">Don&apos;t sweat it!</h3>
-              <p className="text-indigo-800/80 dark:text-gray-300 leading-relaxed">
-                We can make changes to your program if needed. You can also upgrade and make as many programs as you&apos;d like.
-              </p>
-            </div>
+          {/* Header */}
+          <div className="text-center mb-8">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.1 }}
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#F0FDF4] border border-[#BBF7D0] mb-4"
+            >
+              <svg className="w-4 h-4 text-[#22C55E]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              <span className="text-sm font-medium text-[#16A34A]">Ready to build your program</span>
+            </motion.div>
+
+            <h1 className="text-2xl md:text-3xl font-bold text-[#0F172A] mb-2">
+              Quick Review
+            </h1>
+            <p className="text-[#64748B]">
+              Make sure everything looks right
+            </p>
           </div>
+
+          <AnimatePresence mode="wait">
+            {!showTopics ? (
+              <motion.div
+                key="review"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="space-y-6"
+              >
+                {/* Data Grid - 2 columns on desktop */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Profile */}
+                  <DataSection
+                    delay={0.15}
+                    icon={
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    }
+                    title="Profile"
+                  >
+                    <DataRow label="Height" value={convertHeightToFeetAndInches(formattedIntakeData.height) || '—'} />
+                    <DataRow label="Weight" value={formattedIntakeData.weight ? `${formattedIntakeData.weight} lbs` : '—'} />
+                    <DataRow label="Age" value={formattedIntakeData.age ? `${formattedIntakeData.age} years` : '—'} />
+                  </DataSection>
+
+                  {/* Schedule */}
+                  <DataSection
+                    delay={0.2}
+                    icon={
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    }
+                    title="Schedule"
+                  >
+                    <DataRow label="Days per week" value={`${formattedIntakeData.daysAvailable || 3} days`} />
+                    <DataRow label="Session length" value={`${formattedIntakeData.dailyBudget || 60} min`} />
+                  </DataSection>
+
+                  {/* Goal */}
+                  <DataSection
+                    delay={0.25}
+                    icon={
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                    }
+                    title="Goal"
+                  >
+                    <div className="py-2">
+                      <p className="text-sm text-[#0F172A] leading-relaxed">
+                        {formattedIntakeData.trainingGoal || 'General fitness'}
+                      </p>
+                    </div>
+                  </DataSection>
+
+                  {/* Setup */}
+                  <DataSection
+                    delay={0.3}
+                    icon={
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                      </svg>
+                    }
+                    title="Setup"
+                  >
+                    <DataRow label="Location" value={formattedIntakeData.workoutEnvironment?.primary || 'Gym'} />
+                    <DataRow label="Equipment" value={formattedIntakeData.equipmentAccess?.type || 'Full gym'} />
+                    <DataRow label="Experience" value={formattedIntakeData.experienceLevel || 'Intermediate'} />
+                  </DataSection>
+                </div>
+
+                {/* Actions */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="pt-4 space-y-3"
+                >
+                  <button
+                    onClick={onConfirm}
+                    className="w-full py-4 bg-[#FF6B6B] hover:bg-[#EF5350] text-white text-lg font-semibold rounded-xl shadow-lg shadow-[#FF6B6B]/25 hover:shadow-xl hover:shadow-[#FF6B6B]/30 transition-all duration-200"
+                  >
+                    Create My Program
+                  </button>
+
+                  <button
+                    onClick={() => setShowTopics(true)}
+                    className="w-full py-3 text-[#64748B] hover:text-[#0F172A] text-sm font-medium transition-colors"
+                  >
+                    Wait, I want to add more details
+                  </button>
+                </motion.div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="topics"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0 }}
+                className="space-y-6"
+              >
+                {/* Topics selection */}
+                <div className="bg-white rounded-xl border border-[#E2E8F0] p-5">
+                  <h3 className="font-semibold text-[#0F172A] mb-1">What would you like to add?</h3>
+                  <p className="text-sm text-[#64748B] mb-4">Select any topics you'd like to discuss</p>
+
+                  <div className="space-y-2">
+                    {ADDITIONAL_TOPICS.map((topic) => {
+                      const isSelected = selectedTopics.includes(topic.id);
+                      return (
+                        <button
+                          key={topic.id}
+                          onClick={() => toggleTopic(topic.id)}
+                          className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 transition-all duration-150 text-left ${
+                            isSelected
+                              ? 'border-[#FF6B6B] bg-[#FFF5F5]'
+                              : 'border-[#F1F5F9] hover:border-[#E2E8F0] bg-[#F8FAFC]'
+                          }`}
+                        >
+                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
+                            isSelected
+                              ? 'border-[#FF6B6B] bg-[#FF6B6B]'
+                              : 'border-[#CBD5E1]'
+                          }`}>
+                            {isSelected && (
+                              <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}
+                          </div>
+                          <div>
+                            <p className={`font-medium ${isSelected ? 'text-[#0F172A]' : 'text-[#475569]'}`}>
+                              {topic.label}
+                            </p>
+                            <p className="text-xs text-[#94A3B8]">{topic.description}</p>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => {
+                      setShowTopics(false);
+                      setSelectedTopics([]);
+                    }}
+                    className="flex-1 py-3 text-[#64748B] hover:text-[#0F172A] font-medium rounded-xl border border-[#E2E8F0] hover:border-[#CBD5E1] transition-all"
+                  >
+                    Back
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (selectedTopics.length > 0) {
+                        onRequestMore(selectedTopics);
+                      }
+                    }}
+                    disabled={selectedTopics.length === 0}
+                    className="flex-1 py-3 bg-[#0F172A] hover:bg-[#1E293B] text-white font-medium rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                  >
+                    Continue
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
       </div>
-
-      <div className="flex flex-col w-full gap-4 mt-8">
-        <AnimatePresence mode="wait">
-          {!showTopics ? (
-            <div className="flex flex-col sm:flex-row justify-center items-center gap-4 w-full">
-              <motion.button
-                key="confirm-button"
-                initial={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={onConfirm}
-                className="w-full sm:w-auto px-8 py-4 bg-indigo-600 dark:bg-indigo-500 text-white rounded-xl hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all duration-200 text-lg font-medium shadow-sm hover:shadow-md hover:-translate-y-0.5 transform"
-              >
-                🚀 Looks good, let&apos;s go!
-              </motion.button>
-              
-              <motion.button
-                key="show-topics-button"
-                initial={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setShowTopics(true)}
-                className="w-full sm:w-auto px-8 py-4 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors font-medium text-sm"
-              >
-                📝 I&apos;d like to add or change some details
-              </motion.button>
-            </div>
-          ) : (
-            <motion.div 
-              key="topics-container"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 space-y-6 border border-gray-200 dark:border-gray-700"
-            >
-              <div className="space-y-4">
-                <h3 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-                  What else would you like to tell us about?
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Select any additional information you&apos;d like to share to help us create your perfect program.
-                </p>
-              </div>
-
-              <div className="space-y-4">
-                {ADDITIONAL_TOPICS.map((topic) => (
-                  <motion.label 
-                    key={topic.id} 
-                    className="flex items-start space-x-4 p-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer border border-transparent hover:border-gray-200 dark:hover:border-gray-600 transition-all duration-150"
-                    whileHover={{ scale: 1.01, x: 4 }}
-                    transition={{ duration: 0.15 }}
-                    whileTap={{ scale: 0.99 }}
-                  >
-                    <div className="relative flex items-center h-6">
-                      <input
-                        type="checkbox"
-                        checked={selectedTopics.includes(topic.id)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setSelectedTopics([...selectedTopics, topic.id]);
-                          } else {
-                            setSelectedTopics(selectedTopics.filter(id => id !== topic.id));
-                          }
-                        }}
-                        className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 transition-all"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900 dark:text-gray-100 text-lg">
-                        {topic.label}
-                      </p>
-                      <p className="text-gray-500 dark:text-gray-400 mt-1">
-                        {topic.description}
-                      </p>
-                    </div>
-                  </motion.label>
-                ))}
-              </div>
-
-              <div className="flex justify-end gap-4 mt-8 pt-4 border-t border-gray-200 dark:border-gray-700">
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setShowTopics(false)}
-                  className="px-6 py-3 text-gray-600 hover:text-gray-800 font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-                >
-                  Cancel
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => {
-                    if (selectedTopics.length > 0) {
-                      onRequestMore(selectedTopics);
-                    }
-                  }}
-                  disabled={selectedTopics.length === 0}
-                  className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-sm hover:shadow-md"
-                >
-                  Continue
-                </motion.button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </motion.div>
+    </>
   );
-} 
+}

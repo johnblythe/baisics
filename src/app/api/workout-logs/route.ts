@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     const workout = await prisma.workout.findUnique({
       where: { id: workoutId },
       include: {
-        exercises: true,
+        exercises: { orderBy: { sortOrder: 'asc' } },
         workoutPlan: {
           include: {
             program: true
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
       include: {
         workout: {
           include: {
-            exercises: true
+            exercises: { orderBy: { sortOrder: 'asc' } }
           }
         }
       }

@@ -2,13 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { CheckCircle, Pencil, Circle, PlayCircle } from 'lucide-react';
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import TawkChat from "@/components/TawkChat";
+import { CheckCircle, Pencil, Circle, PlayCircle, ChevronLeft, ChevronRight, Dumbbell } from 'lucide-react';
+import MainLayout from '@/app/components/layouts/MainLayout';
 import { formatExerciseMeasure, formatExerciseUnit } from '@/utils/formatters';
-// import { ExerciseMeasureType } from '@prisma/client';
 import RestPeriodIndicator from '@/app/components/RestPeriodIndicator';
+import ExerciseSwapModal from '@/components/ExerciseSwapModal';
 
 interface Exercise {
   id: string;
@@ -21,7 +19,7 @@ interface Exercise {
     unit: string;
     type: string;
   };
-    videoUrl?: string;
+  videoUrl?: string;
 }
 
 interface SetLog {
@@ -38,15 +36,15 @@ interface ExerciseWithLogs extends Exercise {
   exerciseLogId?: string;
 }
 
-const SetInput = ({ 
-  log, 
+const SetInput = ({
+  log,
   exercise,
-  onComplete, 
+  onComplete,
   onUpdate,
   isActive,
   previousSetWeight,
   isLastSetOfWorkout
-}: { 
+}: {
   log: SetLog;
   exercise: Exercise;
   onComplete: (data: Partial<SetLog>) => void;
@@ -60,53 +58,43 @@ const SetInput = ({
   );
   const [localReps, setLocalReps] = useState(log.reps?.toString() || '');
   const [localNotes, setLocalNotes] = useState(log.notes || '');
-  
-  // Update local state when log prop changes
+
   useEffect(() => {
     setLocalWeight(log.weight?.toString() || previousSetWeight?.toString() || '');
     setLocalReps(log.reps?.toString() || '');
     setLocalNotes(log.notes || '');
   }, [log, previousSetWeight]);
-  
+
   const canComplete = localWeight && localReps;
 
   return (
     <div className="space-y-2">
-      <div 
-        className={`relative p-4 rounded-2xl transition-all duration-300 group
-          ${log.isCompleted 
-            ? 'bg-green-50/50 dark:bg-green-900/20 border-2 border-green-200/50 dark:border-green-800/50' 
+      <div
+        className={`relative p-4 rounded-xl transition-all duration-300 group
+          ${log.isCompleted
+            ? 'bg-green-50 border-2 border-green-200'
             : isActive
-              ? 'bg-white dark:bg-gray-800 border-2 border-indigo-200/50 dark:border-indigo-800/50 shadow-lg shadow-indigo-500/10'
-              : 'bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700'
+              ? 'bg-white border-2 border-[#FF6B6B]/30 shadow-lg shadow-[#FF6B6B]/10'
+              : 'bg-white border border-[#F1F5F9]'
           }
         `}
       >
-        <div className={`absolute -inset-px rounded-2xl transition-opacity duration-500 bg-gradient-to-r
-          ${log.isCompleted
-            ? 'from-green-100/10 via-green-50/5 to-green-100/10 dark:from-green-900/10 dark:via-green-800/5 dark:to-green-900/10'
-            : isActive
-              ? 'from-indigo-100/20 via-violet-50/10 to-indigo-100/20 dark:from-indigo-900/20 dark:via-violet-800/10 dark:to-indigo-900/20 opacity-100'
-              : 'from-gray-50/10 to-gray-100/10 dark:from-gray-800/10 dark:to-gray-700/10 opacity-0 group-hover:opacity-100'
-          }`} 
-        />
-        
-        <div className="relative flex items-center gap-6">
+        <div className="relative flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
           <div className="flex items-center gap-4">
             <div className="w-6">
               {log.isCompleted ? (
-                <CheckCircle className="w-5 h-5 text-green-500 dark:text-green-400" />
+                <CheckCircle className="w-5 h-5 text-green-500" />
               ) : (
-                <Circle className={`w-3 h-3 ${isActive ? 'text-indigo-400 dark:text-indigo-300 fill-indigo-400/20 dark:fill-indigo-300/20' : 'text-gray-300 dark:text-gray-600 fill-gray-300/20 dark:fill-gray-600/20'}`} />
+                <Circle className={`w-3 h-3 ${isActive ? 'text-[#FF6B6B] fill-[#FF6B6B]/20' : 'text-[#94A3B8] fill-[#94A3B8]/20'}`} />
               )}
             </div>
-            
-            <span className={`font-medium ${isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-400'}`}>
+
+            <span className={`font-medium ${isActive ? 'text-[#FF6B6B]' : 'text-[#475569]'}`}>
               Set {log.setNumber}
             </span>
           </div>
-          
-          <div className="flex-1 flex items-center gap-4">
+
+          <div className="flex-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pl-10 sm:pl-0">
             <div className="relative group/input">
               <input
                 type="number"
@@ -114,17 +102,17 @@ const SetInput = ({
                 value={localWeight}
                 onChange={(e) => setLocalWeight(e.target.value)}
                 disabled={log.isCompleted || !isActive}
-                className={`w-24 px-3 py-2 rounded-xl text-sm transition-all duration-200
+                className={`w-full sm:w-24 px-3 py-2 rounded-lg text-sm transition-all duration-200
                   ${log.isCompleted
-                    ? 'bg-green-50/50 dark:bg-green-900/20 border border-green-200/50 dark:border-green-800/50 text-green-700 dark:text-green-300'
+                    ? 'bg-green-50 border border-green-200 text-green-700'
                     : isActive
-                      ? 'bg-white dark:bg-gray-800 border border-indigo-200 dark:border-indigo-700 focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 dark:focus:ring-indigo-400/20'
-                      : 'bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700'
+                      ? 'bg-white border border-[#F1F5F9] focus:border-[#FF6B6B] focus:ring-2 focus:ring-[#FF6B6B]/20'
+                      : 'bg-[#F8FAFC] border border-[#F1F5F9]'
                   }
-                  disabled:opacity-60 disabled:cursor-not-allowed
+                  disabled:opacity-60 disabled:cursor-not-allowed text-[#0F172A]
                 `}
               />
-              <div className="absolute -top-2 left-2 px-1 text-xs font-medium text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-800">
+              <div className="absolute -top-2 left-2 px-1 text-xs font-medium text-[#94A3B8] bg-white">
                 Weight
               </div>
             </div>
@@ -136,17 +124,17 @@ const SetInput = ({
                 value={Number(localReps) > 0 ? localReps : ''}
                 onChange={(e) => setLocalReps(e.target.value)}
                 disabled={log.isCompleted || !isActive}
-                className={`w-24 px-3 py-2 rounded-xl text-sm transition-all duration-200
+                className={`w-full sm:w-24 px-3 py-2 rounded-lg text-sm transition-all duration-200
                   ${log.isCompleted
-                    ? 'bg-green-50/50 dark:bg-green-900/20 border border-green-200/50 dark:border-green-800/50 text-green-700 dark:text-green-300'
+                    ? 'bg-green-50 border border-green-200 text-green-700'
                     : isActive
-                      ? 'bg-white dark:bg-gray-800 border border-indigo-200 dark:border-indigo-700 focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 dark:focus:ring-indigo-400/20'
-                      : 'bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700'
+                      ? 'bg-white border border-[#F1F5F9] focus:border-[#FF6B6B] focus:ring-2 focus:ring-[#FF6B6B]/20'
+                      : 'bg-[#F8FAFC] border border-[#F1F5F9]'
                   }
-                  disabled:opacity-60 disabled:cursor-not-allowed
+                  disabled:opacity-60 disabled:cursor-not-allowed text-[#0F172A]
                 `}
               />
-              <div className="absolute -top-2 left-2 px-1 text-xs font-medium text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-800">
+              <div className="absolute -top-2 left-2 px-1 text-xs font-medium text-[#94A3B8] bg-white">
                 {formatExerciseUnit(exercise, 'long', 'mixed')}
               </div>
             </div>
@@ -158,22 +146,22 @@ const SetInput = ({
                 value={localNotes}
                 onChange={(e) => setLocalNotes(e.target.value)}
                 disabled={log.isCompleted || !isActive}
-                className={`w-full px-3 py-2 rounded-xl text-sm transition-all duration-200
+                className={`w-full px-3 py-2 rounded-lg text-sm transition-all duration-200
                   ${log.isCompleted
-                    ? 'bg-green-50/50 dark:bg-green-900/20 border border-green-200/50 dark:border-green-800/50 text-green-700 dark:text-green-300'
+                    ? 'bg-green-50 border border-green-200 text-green-700'
                     : isActive
-                      ? 'bg-white dark:bg-gray-800 border border-indigo-200 dark:border-indigo-700 focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 dark:focus:ring-indigo-400/20'
-                      : 'bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700'
+                      ? 'bg-white border border-[#F1F5F9] focus:border-[#FF6B6B] focus:ring-2 focus:ring-[#FF6B6B]/20'
+                      : 'bg-[#F8FAFC] border border-[#F1F5F9]'
                   }
-                  disabled:opacity-60 disabled:cursor-not-allowed
+                  disabled:opacity-60 disabled:cursor-not-allowed text-[#0F172A] placeholder-[#94A3B8]
                 `}
               />
-              <div className="absolute -top-2 left-2 px-1 text-xs font-medium text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-800">
+              <div className="absolute -top-2 left-2 px-1 text-xs font-medium text-[#94A3B8] bg-white">
                 Notes
               </div>
             </div>
           </div>
-          
+
           {log.isCompleted ? (
             <button
               onClick={() => onUpdate({
@@ -182,7 +170,7 @@ const SetInput = ({
                 notes: localNotes,
                 isCompleted: false
               })}
-              className="opacity-0 group-hover:opacity-100 text-indigo-500 dark:text-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300 transition-all duration-200"
+              className="opacity-0 group-hover:opacity-100 text-[#FF6B6B] hover:text-[#EF5350] transition-all duration-200"
             >
               <Pencil className="w-5 h-5" />
             </button>
@@ -195,7 +183,7 @@ const SetInput = ({
                   notes: localNotes,
                   isCompleted: true
                 })}
-                className="px-4 py-2 rounded-xl bg-indigo-600 dark:bg-indigo-500 text-white text-sm font-medium hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors shadow-lg shadow-indigo-500/20"
+                className="px-4 py-2 rounded-lg bg-[#FF6B6B] text-white text-sm font-medium hover:bg-[#EF5350] transition-colors shadow-lg shadow-[#FF6B6B]/25"
               >
                 Complete Set
               </button>
@@ -203,39 +191,6 @@ const SetInput = ({
           )}
         </div>
       </div>
-    </div>
-  );
-};
-
-const FloatingEmojis = () => {
-  const emojis = ['😅', '💦', '🥵', '💪', '🔥', '😮‍💨', '🫡', '🏋️‍♂️', '🦾', '🧘‍♂️', '🏃‍♂️', '⚡️'];
-  // Only show 3-4 emojis at a time
-  const activeEmojis = 4;
-  
-  return (
-    <div className="absolute inset-0 w-full h-full">
-      {Array.from({ length: activeEmojis }).map((_, i) => {
-        const emoji = emojis[Math.floor(Math.random() * emojis.length)];
-        const duration = 10 + Math.random() * 4; // 10-14 seconds
-        const delay = i * 3 + Math.random() * 2; // 3-5 second stagger between each emoji
-        
-        return (
-          <div
-            key={i}
-            className="absolute animate-float-continuous opacity-0"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${delay}s`,
-              animationDuration: `${duration}s`,
-              fontSize: `${3 + Math.random() * 3}rem`,
-              transform: `rotate(${Math.random() * 360}deg)`,
-            }}
-          >
-            {emoji}
-          </div>
-        );
-      })}
     </div>
   );
 };
@@ -249,8 +204,8 @@ export default function WorkoutPage() {
   const [workoutStarted, setWorkoutStarted] = useState(false);
   const [workoutLog, setWorkoutLog] = useState<any>(null);
   const [showCompletion, setShowCompletion] = useState(false);
+  const [swapModalOpen, setSwapModalOpen] = useState(false);
 
-  // Function to find first incomplete exercise/set
   const findFirstIncompletePosition = (exercises: ExerciseWithLogs[]) => {
     for (let i = 0; i < exercises.length; i++) {
       const exercise = exercises[i];
@@ -259,7 +214,7 @@ export default function WorkoutPage() {
         return i;
       }
     }
-    return exercises.length - 1; // Default to last exercise if all complete
+    return exercises.length - 1;
   };
 
   useEffect(() => {
@@ -270,8 +225,7 @@ export default function WorkoutPage() {
           throw new Error('Failed to fetch workout');
         }
         const data = await response.json();
-        
-        // If workout isn't started, start it automatically first
+
         if (!data.workoutLogs?.[0]) {
           const startWorkoutResponse = await fetch('/api/workout-logs', {
             method: 'POST',
@@ -290,8 +244,7 @@ export default function WorkoutPage() {
           const startWorkoutData = await startWorkoutResponse.json();
           setWorkoutLog(startWorkoutData);
           setWorkoutStarted(true);
-          
-          // Transform exercises with the new workout log data
+
           const exercisesWithLogs = data.exercises.map((exercise: Exercise) => {
             const exerciseLog = startWorkoutData.exerciseLogs.find(
               (log: any) => log.exerciseId === exercise.id
@@ -307,14 +260,12 @@ export default function WorkoutPage() {
               })),
             };
           });
-          
+
           setExercises(exercisesWithLogs);
         } else {
-          // Use existing workout log data
           setWorkoutStarted(true);
           setWorkoutLog(data.workoutLogs[0]);
-          
-          // Transform exercises to include logs array
+
           const exercisesWithLogs = data.exercises.map((exercise: Exercise) => {
             const existingLogs = data.workoutLogs[0].exerciseLogs.find(
               (log: any) => log.exerciseId === exercise.id
@@ -347,7 +298,7 @@ export default function WorkoutPage() {
           setExercises(exercisesWithLogs);
           setCurrentExerciseIndex(findFirstIncompletePosition(exercisesWithLogs));
         }
-        
+
         setIsLoading(false);
       } catch (error) {
         console.error('Failed to fetch workout:', error);
@@ -359,20 +310,12 @@ export default function WorkoutPage() {
 
   const updateSet = async (exerciseIndex: number, setIndex: number, logData: Partial<SetLog>) => {
     const exercise = exercises[exerciseIndex];
-    console.log('Updating set for exercise:', {
-      exerciseIndex,
-      setIndex,
-      exerciseId: exercise.id,
-      exerciseLogId: exercise.exerciseLogId,
-      logData
-    });
 
     if (!exercise.exerciseLogId) {
       console.error('No exercise log ID found for exercise:', exercise);
       return;
     }
 
-    // Optimistically update the UI
     setExercises(prev => {
       const newExercises = [...prev];
       const exercise = newExercises[exerciseIndex];
@@ -384,7 +327,6 @@ export default function WorkoutPage() {
     });
 
     try {
-      console.log('Making API call to:', `/api/exercise-logs/${exercise.exerciseLogId}/sets/${setIndex + 1}`);
       const response = await fetch(`/api/exercise-logs/${exercise.exerciseLogId}/sets/${setIndex + 1}`, {
         method: 'PUT',
         headers: {
@@ -394,34 +336,27 @@ export default function WorkoutPage() {
       });
 
       const responseText = await response.text();
-      console.log('Server response:', responseText);
 
       if (!response.ok) {
         throw new Error(responseText || 'Failed to update set');
       }
 
-      // Check if all sets are completed after this update
-      const allSetsCompleted = exercises[exerciseIndex].logs.every((log, i) => 
+      const allSetsCompleted = exercises[exerciseIndex].logs.every((log, i) =>
         i === setIndex ? logData.isCompleted : log.isCompleted
       );
 
       if (allSetsCompleted && currentExerciseIndex < exercises.length - 1) {
-        // setCurrentExerciseIndex(prev => prev + 1);
-        console.log('All sets completed, moving to next exercise -- ', currentExerciseIndex + 1);
+        console.log('All sets completed, moving to next exercise');
       }
 
-      // Only parse JSON if we have content
-      const data = responseText ? JSON.parse(responseText) : null;
-      console.log('Successfully updated set:', data);
     } catch (error) {
       console.error('Failed to update set:', error);
-      // Revert the optimistic update on error
       setExercises(prev => {
         const newExercises = [...prev];
         const exercise = newExercises[exerciseIndex];
         exercise.logs[setIndex] = {
           ...exercise.logs[setIndex],
-          ...logData, // Keep the old data
+          ...logData,
         };
         return newExercises;
       });
@@ -444,169 +379,218 @@ export default function WorkoutPage() {
       }, 2500);
     } catch (error) {
       console.error('Failed to complete workout:', error);
-      // Optionally handle error UI feedback
     }
   };
 
+  // Calculate progress
+  const totalSets = exercises.reduce((acc, ex) => acc + ex.logs.length, 0);
+  const completedSets = exercises.reduce((acc, ex) => acc + ex.logs.filter(l => l.isCompleted).length, 0);
+  const progressPercent = totalSets > 0 ? (completedSets / totalSets) * 100 : 0;
+
   if (isLoading) {
     return (
-      <>
-        <Header />
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="w-6 h-6 border-t-2 border-blue-500 border-solid rounded-full animate-spin"></div>
+      <MainLayout>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="w-8 h-8 border-2 border-[#F1F5F9] border-t-[#FF6B6B] rounded-full animate-spin" />
         </div>
-        <Footer />
-      </>
+      </MainLayout>
     );
   }
 
   if (showCompletion) {
     return (
-      <>
-        <Header />
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center space-y-4 p-8 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg max-w-md mx-auto">
-            <div className="flex justify-center">
-              <CheckCircle className="w-16 h-16 text-green-500 dark:text-green-400" />
+      <MainLayout>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center space-y-6 p-8 bg-white rounded-2xl border border-[#F1F5F9] shadow-lg max-w-md mx-auto">
+            <div className="w-20 h-20 mx-auto bg-green-100 rounded-full flex items-center justify-center">
+              <CheckCircle className="w-10 h-10 text-green-500" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Workout Complete! 🎉</h2>
-            <p className="text-gray-600 dark:text-gray-400">Great job! You&apos;ve completed your workout. Redirecting to dashboard...</p>
+            <div>
+              <h2 className="text-2xl font-bold text-[#0F172A] mb-2">Workout Complete!</h2>
+              <p className="text-[#475569]">Great job! Redirecting to dashboard...</p>
+            </div>
           </div>
         </div>
-        <Footer />
-      </>
+      </MainLayout>
     );
   }
 
   const currentExercise = exercises[currentExerciseIndex];
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      <main className="flex-grow bg-white dark:bg-gray-900 pt-16">
-        <div className="max-w-4xl mx-auto px-4 py-8">
-          <div className="space-y-8">
-            <div className="relative overflow-hidden bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
-              {/* Exercise Header Section */}
-              <div className="relative">
-                {/* Background gradient */}
-                <div className="absolute inset-0 bg-gradient-to-r from-indigo-50/80 via-white to-indigo-50/80 dark:from-indigo-950/50 dark:via-gray-800 dark:to-indigo-950/50" />
-                
-                <div className="relative px-6 py-6 border-b border-gray-200 dark:border-gray-700/80">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                      Exercise {currentExerciseIndex + 1} of {exercises.length}
-                    </span>
-                    {currentExercise && (
-                      <a
-                        href={`https://www.youtube.com/results?search_query=${currentExercise.name} how to`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors"
-                      >
-                        <PlayCircle className="w-4 h-4" />
-                        <span className="text-sm font-medium">Form Videos</span>
-                      </a>
-                    )}
-                  </div>
-
-                  {currentExercise ? (
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-3">
-                        <h3 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-indigo-500 to-indigo-600 dark:from-indigo-400 dark:via-indigo-300 dark:to-indigo-400">
-                          {currentExercise.name}
-                        </h3>
-                        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/50 border border-indigo-100 dark:border-indigo-800">
-                          <span className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">
-                            {currentExercise.sets} sets of {formatExerciseMeasure(currentExercise)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      <h3 className="text-3xl font-bold text-gray-900 dark:text-white">
-                        Select an exercise
-                      </h3>
-                      <p className="text-gray-600 dark:text-gray-400">
-                        Choose an exercise from the list to begin
-                      </p>
-                    </div>
-                  )}
-                </div>
+    <MainLayout>
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        {/* Progress Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-[#FF6B6B]/10 rounded-xl flex items-center justify-center">
+                <Dumbbell className="w-5 h-5 text-[#FF6B6B]" />
               </div>
-
-              <div className="relative p-6 space-y-6">
-                {/* Sets */}
-                <div className="space-y-1">
-                  {currentExercise?.logs.map((log, setIndex) => {
-                    const previousSet = setIndex > 0 ? currentExercise.logs[setIndex - 1] : null;
-                    const isLastSetOfWorkout = currentExerciseIndex === exercises.length - 1 && 
-                      setIndex === currentExercise.logs.length - 1;
-                    
-                    return (
-                      <React.Fragment key={setIndex}>
-                        <SetInput
-                          log={log}
-                          exercise={currentExercise}
-                          previousSetWeight={previousSet?.weight}
-                          isLastSetOfWorkout={isLastSetOfWorkout}
-                          isActive={!log.isCompleted && setIndex === currentExercise.logs.findIndex(l => !l.isCompleted)}
-                          onComplete={(data) => updateSet(currentExerciseIndex, setIndex, data)}
-                          onUpdate={(data) => updateSet(currentExerciseIndex, setIndex, data)}
-                        />
-                        {/* Show rest period indicator after each set except the last one */}
-                        {setIndex < currentExercise.logs.length - 1 && (
-                          <RestPeriodIndicator
-                            restPeriod={currentExercise.restPeriod}
-                            isCompleted={log.isCompleted}
-                            isActive={log.isCompleted && !currentExercise.logs[setIndex + 1].isCompleted}
-                          />
-                        )}
-                      </React.Fragment>
-                    );
-                  })}
-                </div>
-
-                {/* Navigation */}
-                <div className="flex justify-between pt-6">
-                  <button
-                    onClick={() => setCurrentExerciseIndex(prev => prev - 1)}
-                    disabled={currentExerciseIndex === 0}
-                    className={`px-6 py-3 rounded-xl font-medium transition-all duration-200 ${
-                      currentExerciseIndex === 0
-                        ? 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'
-                        : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                    }`}
-                  >
-                    Previous Exercise
-                  </button>
-                  
-                  {currentExerciseIndex < exercises.length - 1 ? (
-                    <button
-                      onClick={() => {
-                        setCurrentExerciseIndex(prev => prev + 1);
-                      }}
-                      className="px-6 py-3 rounded-xl bg-indigo-600 dark:bg-indigo-500 text-white font-medium hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors shadow-lg shadow-indigo-500/20"
-                    >
-                      Next Exercise
-                    </button>
-                  ) : (
-                    <button
-                      onClick={completeWorkout}
-                      className="px-6 py-3 rounded-xl bg-green-600 dark:bg-green-500 text-white font-medium hover:bg-green-700 dark:hover:bg-green-600 transition-colors shadow-lg shadow-green-500/20"
-                    >
-                      Complete Workout
-                    </button>
-                  )}
-                </div>
+              <div>
+                <p className="text-sm text-[#94A3B8] font-medium">Workout in Progress</p>
+                <p className="text-lg font-semibold text-[#0F172A]">{completedSets} of {totalSets} sets complete</p>
               </div>
             </div>
+            <span className="text-2xl font-bold text-[#FF6B6B]">{Math.round(progressPercent)}%</span>
+          </div>
+          <div className="h-2 bg-[#F1F5F9] rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-[#FF6B6B] to-[#EF5350] rounded-full transition-all duration-500"
+              style={{ width: `${progressPercent}%` }}
+            />
           </div>
         </div>
-      </main>
-      <TawkChat />
-      <Footer />
-    </div>
+
+        {/* Exercise Card */}
+        <div className="bg-white rounded-2xl border-l-4 border-l-[#FF6B6B] border border-[#E2E8F0] shadow-md overflow-hidden">
+          {/* Exercise Header */}
+          <div className="bg-[#F8FAFC] px-6 py-5 border-b border-[#E2E8F0]">
+            <div className="flex items-center justify-between mb-3">
+              <span className="font-['Space_Mono'] text-xs uppercase tracking-wider text-[#64748B]">
+                Exercise {currentExerciseIndex + 1} of {exercises.length}
+              </span>
+              {currentExercise && (
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setSwapModalOpen(true)}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white text-[#475569] border border-[#E2E8F0] hover:border-[#FF6B6B]/50 hover:text-[#FF6B6B] transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    </svg>
+                    <span className="text-sm font-medium">Swap</span>
+                  </button>
+                  <a
+                    href={`https://www.youtube.com/results?search_query=${currentExercise.name} how to`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#FF6B6B] text-white hover:bg-[#EF5350] transition-colors"
+                  >
+                    <PlayCircle className="w-4 h-4" />
+                    <span className="text-sm font-medium">Form</span>
+                  </a>
+                </div>
+              )}
+            </div>
+
+            {currentExercise && (
+              <div className="space-y-2">
+                <h3 className="text-2xl font-bold text-[#0F172A]">
+                  {currentExercise.name}
+                </h3>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0F172A] border border-[#0F172A]">
+                  <span className="text-sm font-medium text-white">
+                    {currentExercise.sets} sets × {formatExerciseMeasure(currentExercise)}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Sets Section */}
+          <div className="p-6 space-y-4">
+            {currentExercise?.logs.map((log, setIndex) => {
+              const previousSet = setIndex > 0 ? currentExercise.logs[setIndex - 1] : null;
+              const isLastSetOfWorkout = currentExerciseIndex === exercises.length - 1 &&
+                setIndex === currentExercise.logs.length - 1;
+
+              return (
+                <React.Fragment key={setIndex}>
+                  <SetInput
+                    log={log}
+                    exercise={currentExercise}
+                    previousSetWeight={previousSet?.weight}
+                    isLastSetOfWorkout={isLastSetOfWorkout}
+                    isActive={!log.isCompleted && setIndex === currentExercise.logs.findIndex(l => !l.isCompleted)}
+                    onComplete={(data) => updateSet(currentExerciseIndex, setIndex, data)}
+                    onUpdate={(data) => updateSet(currentExerciseIndex, setIndex, data)}
+                  />
+                  {setIndex < currentExercise.logs.length - 1 && (
+                    <RestPeriodIndicator
+                      restPeriod={currentExercise.restPeriod}
+                      isCompleted={log.isCompleted}
+                      isActive={log.isCompleted && !currentExercise.logs[setIndex + 1].isCompleted}
+                    />
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </div>
+
+          {/* Navigation */}
+          <div className="flex justify-between items-center px-6 py-4 border-t border-[#F1F5F9] bg-[#F8FAFC]">
+            <button
+              onClick={() => setCurrentExerciseIndex(prev => prev - 1)}
+              disabled={currentExerciseIndex === 0}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium transition-all duration-200 ${
+                currentExerciseIndex === 0
+                  ? 'bg-[#F1F5F9] text-[#94A3B8] cursor-not-allowed'
+                  : 'bg-white border border-[#F1F5F9] text-[#475569] hover:border-[#0F172A] hover:text-[#0F172A]'
+              }`}
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Previous
+            </button>
+
+            {currentExerciseIndex < exercises.length - 1 ? (
+              <button
+                onClick={() => setCurrentExerciseIndex(prev => prev + 1)}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#FF6B6B] text-white font-medium hover:bg-[#EF5350] transition-colors shadow-lg shadow-[#FF6B6B]/25"
+              >
+                Next
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            ) : (
+              <button
+                onClick={completeWorkout}
+                className="px-6 py-2.5 rounded-xl bg-[#FF6B6B] text-white font-medium hover:bg-[#EF5350] transition-colors shadow-lg shadow-[#FF6B6B]/25"
+              >
+                Complete Workout
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Exercise Quick Nav */}
+        <div className="mt-6 flex flex-wrap gap-2 justify-center">
+          {exercises.map((ex, idx) => {
+            const isComplete = ex.logs.every(l => l.isCompleted);
+            const isCurrent = idx === currentExerciseIndex;
+            return (
+              <button
+                key={ex.id}
+                onClick={() => setCurrentExerciseIndex(idx)}
+                className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-medium transition-all ${
+                  isComplete
+                    ? 'bg-emerald-100 text-emerald-600 border border-emerald-200'
+                    : isCurrent
+                      ? 'bg-[#FF6B6B] text-white shadow-md shadow-[#FF6B6B]/25'
+                      : 'bg-white border border-[#E2E8F0] text-[#475569] hover:border-[#FF6B6B]/50'
+                }`}
+              >
+                {isComplete ? <CheckCircle className="w-4 h-4" /> : idx + 1}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {currentExercise && (
+        <ExerciseSwapModal
+          isOpen={swapModalOpen}
+          onClose={() => setSwapModalOpen(false)}
+          exerciseId={currentExercise.id}
+          exerciseName={currentExercise.name}
+          onSwap={(newExercise) => {
+            setExercises(prev => prev.map((ex, idx) =>
+              idx === currentExerciseIndex
+                ? { ...ex, name: newExercise.name }
+                : ex
+            ));
+          }}
+        />
+      )}
+    </MainLayout>
   );
-} 
+}

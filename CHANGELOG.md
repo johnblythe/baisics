@@ -5,6 +5,128 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+- Redesigned Program Review page with v2a design system (#102)
+  - Sticky phase navigation tabs with progress indicator
+  - Collapsible workout day cards matching StreamingPhasePreview style
+  - Exercise category badges (PRI, SEC, ISO, CAR, FLX)
+  - Quick jump links for programs with 4+ workouts
+  - Phase cards with key focus areas, nutrition summary, macro pills
+- Redesigned DisclaimerBanner to be collapsible and less intrusive
+  - Collapsed by default with "Health notice" summary
+  - Expandable bullet points instead of wall of text
+  - Warm amber color scheme instead of jarring blue
+
+### Added
+- StreamingPhasePreview component shows phases as they generate with expandable workouts
+- Design preview page (`/hi/design-preview`) for testing UI states without real generation
+- Streaming parser utility for incremental JSON parsing
+
+### Changed
+- Redesigned `/hi` flow to match v2a design system (Outfit font, white bg, navy/coral palette)
+  - Updated Header, Footer, MainLayout with consistent styling
+  - Simplified DataReviewTransition to 4 condensed cards with better CTA hierarchy
+  - GeneratingProgramTransition shows real-time phase previews during generation
+  - ConversationalInterface uses white card styling with coral accents
+
+### Fixed
+- Streaming SSE "Controller already closed" error - added guard flag
+- React closure bug in useStreamingGeneration - use refs to avoid stale options
+- Dark background void between content and footer in MainLayout
+
+### Security
+- Add prompt injection protection for user-provided inputs (#115)
+  - Sanitization utility filters known injection patterns (instruction override, role hijacking, prompt extraction)
+  - System prompt guardrails tell model to treat user data as DATA not instructions
+  - Logging for suspicious input monitoring
+  - 19 unit tests for sanitization logic
+  - Fixed false positives: "Respond with" alone no longer triggers (must have suspicious suffix)
+
+### Added
+- Exercise `sortOrder` field to guarantee display order in database queries
+- Streaming program generation with real-time progress UI
+  - `useStreamingGeneration` hook for consuming SSE stream
+  - Progress bar and stage-by-stage completion in GeneratingProgramTransition
+  - `/api/programs/generate/stream` endpoint now used by `/hi` flow
+- Post-processing sort for exercise ordering - guarantees primary → secondary → isolation (#108)
+- Vitest testing framework with integration tests for exercise ordering (#108)
+- `npm run test:integration` script for running API integration tests
+- JSON repair function for handling truncated AI responses
+- Landing page variants (v2, v2a, v2b, v2d) with distinct color palettes for A/B testing (#101)
+- Coach mode database migration
+- Test plan document for QA workflow
+
+### Fixed
+- Exercise ordering now persists correctly - added `sortOrder` DB field and `orderBy` to all queries (#108)
+- Normalize invalid AI measure types (circuit, rounds) to valid values before validation
+- TawkChat only loads in production (no more chat widget in dev)
+- Exercise ordering in generated programs - added emphatic prompt rules with examples (#108)
+- Returning user flow not recognizing existing data - now passes existing intake to extraction prompt (#107)
+- Session loading race condition in ConversationalIntakeContainer
+- JSON truncation for multi-phase programs - increased max_tokens and added repair logic
+- Wired up unified program generation service to ConversationalInterface - was calling old 6-7 endpoint flow
+- Fixed stale userId bug in handleDataReviewConfirm - React state async issue causing empty userId in redirects
+- Fixed JSON parsing for Claude Sonnet 4 responses - strips markdown code blocks before parsing
+- Removed redundant intake save - unified service already handles it
+- Updated Supabase ports to 5433X range to avoid conflicts with other local projects
+
+### Changed
+- Updated Claude model names from `-latest` aliases to specific versions (claude-sonnet-4-20250514)
+
+### Previously Added
+- Unified program generation service (`src/services/programGeneration/`) that consolidates all program creation into 1-2 AI calls instead of 6-10 sequential calls
+- New `/api/programs/generate` endpoint for all program generation flows
+- Streaming generation endpoint (`/api/programs/generate/stream`) with Server-Sent Events for real-time progress updates
+- `ProgramGenerationProgress` component showing visual progress through generation stages
+- `useProgramGeneration` React hook for consuming streaming generation
+- `/dashboard/new-program` page with program type selection (similar, new focus, fresh start)
+- Zod validation schemas for generated programs
+- Implementation plan document for v2 roadmap
+- Quick Workout Start card at top of dashboard with prominent "Start Workout" button
+- Smart Program Continuation UI when program is complete (similar, new focus, fresh start options)
+- Check-in feedback service (`src/services/checkInFeedback/`) for informing program generation with user history
+- Working rest timer in `RestPeriodIndicator` with countdown, play/pause, and reset controls
+- Progress photos comparison feature with side-by-side and slider overlay views
+- Weekly summary emails with workout stats, weight progress, and streak tracking
+- Exercise swap feature to substitute exercises mid-workout with similar alternatives
+- Social sharing: shareable program cards, OG image generation, achievement sharing
+- Coach Mode: trainer dashboard, client management, invite system (`/coach/dashboard`)
+- Program template library with 7 popular templates (Starting Strength, PPL, 5/3/1, PHUL, etc.)
+- Public share page for programs (`/share/[programId]`) with social meta tags
+
+### Changed
+- `/hi` conversational flow now uses unified generation service (faster generation)
+- Simplified extraction prompt: removed confidence scores, now just tracks required vs optional fields
+- `/dashboard/new-program` now shows real-time progress during generation
+- `convertToIntakeFormat` updated to handle both legacy (confidence scores) and new (direct values) formats
+- Updated Stripe API version to 2025-02-24.acacia
+- Dashboard responsive layout improvements (stacking on mobile, responsive widths)
+- Activity legend in dashboard wraps properly on mobile
+- Program generation now uses weight trends, wellness metrics, and body measurements from check-ins
+- MainLayout uses proper flex structure with sticky footer behavior
+- Workout page set inputs stack vertically on mobile
+- Database schema: added `CoachClient` model and `isCoach` field on User for coach mode
+
+### Fixed
+- Removed outdated TODO comments in WorkoutPlanDisplay
+
+## SLATED
+
+- Add nutrition parsing from uploaded file
+- Add nutrition tracking
+- Program library
+- Program search
+- Edit workouts
+
+## [0.1.4] - 2025-02-06
+
+### Added
+- Upload workouts from file
+- Create new program
+- Choose program
+
 ## [0.1.3] - 2025-02-04
 
 ### Added

@@ -1,0 +1,1090 @@
+'use client';
+
+import React, { useEffect, useState, useCallback, Suspense } from 'react';
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import ReactConfetti from "react-confetti";
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, TooltipProps } from 'recharts';
+import { DisclaimerBanner } from '@/components/DisclaimerBanner';
+import MainLayout from '@/app/components/layouts/MainLayout';
+import { generateWorkoutPDF } from '@/utils/pdf';
+import { getSession } from 'next-auth/react';
+import { WorkoutPlan as WorkoutPlanHiType } from '@/types/program';
+import { ProgramWithRelations, TransformedProgram } from '../../api/programs/current/route';
+import Image from 'next/image';
+import { WorkoutUploadModal } from '@/components/WorkoutUploadModal';
+import { ProgramSelector } from '@/components/ProgramSelector';
+import { PhotoComparison } from '@/components/PhotoComparison';
+import { ProgramCard } from '@/components/share/ProgramCard';
+
+// Types for our API responses
+interface ProgramOverview {
+  id: string;
+  name: string;
+  description: string | null;
+  startDate: Date;
+  workoutPlans: {
+    id: string;
+    proteinGrams: number;
+    carbGrams: number;
+    fatGrams: number;
+    dailyCalories: number;
+    workouts: {
+      id: string;
+      name: string;
+      dayNumber: number;
+      focus: string;
+      exercises: {
+        id: string;
+        name: string;
+        sets: number;
+        reps: number | null;
+        notes: string | null;
+        measureType: string | null;
+        measureUnit: string | null;
+        measureValue: number | null;
+      }[];
+    }[];
+  }[];
+  createdAt?: Date;
+}
+
+interface ProgramStats {
+  completedWorkouts: number;
+  checkIn: {
+    nextDate: string;
+    isCheckInDay: boolean;
+    isOverdue: boolean;
+    daysUntilNext: number;
+  };
+}
+
+interface WeightData {
+  currentWeight: number;
+  startWeight: number;
+  weightHistory: {
+    date: string;
+    displayDate: string;
+    weight: number;
+  }[];
+}
+
+interface ProgressPhoto {
+  id: string;
+  base64Data: string;
+  type: 'FRONT' | 'BACK' | 'SIDE_LEFT' | 'SIDE_RIGHT' | 'CUSTOM' | null;
+  userStats: {
+    bodyFatLow: number | null;
+    bodyFatHigh: number | null;
+    muscleMassDistribution: string | null;
+  } | null;
+  createdAt: string;
+}
+
+interface RecentActivity {
+  id: string;
+  workoutId: string;
+  workoutName: string;
+  dayNumber: number;
+  focus: string;
+  completedAt: string;
+}
+
+interface CurrentWorkout {
+  nextWorkout: {
+    id: string;
+    name: string;
+    dayNumber: number;
+    focus: string;
+    exerciseCount: number;
+  };
+  totalWorkouts: number;
+  lastCompletedAt: string | null;
+}
+
+// Component state types
+interface TooltipContent {
+  x: number;
+  y: number;
+  content: React.ReactNode;
+}
+
+type CheckInWithPhotos = ProgramWithRelations['checkIns']
+
+// Mock data for empty state visualization
+const mockEmptyStateData: WeightData['weightHistory'] = [
+  { date: '2024-01-01', displayDate: 'Jan 1', weight: 165 },
+  { date: '2024-01-08', displayDate: 'Jan 8', weight: 164.2 },
+  { date: '2024-01-15', displayDate: 'Jan 15', weight: 163.5 },
+  { date: '2024-01-22', displayDate: 'Jan 22', weight: 163.8 },
+  { date: '2024-01-29', displayDate: 'Jan 29', weight: 162.9 },
+  { date: '2024-02-05', displayDate: 'Feb 5', weight: 162.3 },
+];
+
+interface Program {
+  id: string;
+  name: string;
+  description?: string;
+  workoutPlans: WorkoutPlan[];
+  workoutLogs: WorkoutLog[];
+  currentWeight?: number;
+  startWeight?: number;
+  progressPhotos: {
+    id: string;
+    url: string;
+    type: 'FRONT' | 'BACK' | 'SIDE_LEFT' | 'SIDE_RIGHT' | 'CUSTOM' | null;
+  }[];
+  checkIns?: {
+    id: string;
+    date: string;
+    type: 'initial' | 'progress' | 'end';
+  }[];
+  activities?: {
+    id: string;
+    timestamp: string;
+    type: string;
+    metadata?: {
+      path?: string;
+      userAgent?: string;
+    };
+  }[];
+  createdAt?: Date;
+}
+
+interface WorkoutPlan {
+  workouts: Workout[];
+  proteinGrams: number;
+  carbGrams: number;
+  fatGrams: number;
+  dailyCalories: number;
+}
+
+interface Workout {
+  id: string;
+  name: string;
+  dayNumber: number;
+  focus: string;
+  exercises: any[];
+}
+
+interface WorkoutLog {
+  id: string;
+  workoutId: string;
+  completedAt: string;
+}
+
+interface TooltipItem {
+  type: 'check-in' | 'workout' | 'visit';
+  text: string;
+}
+
+interface TransformedProgressPhoto {
+  id: string;
+  base64Data: string;
+  type: 'FRONT' | 'BACK' | 'SIDE_LEFT' | 'SIDE_RIGHT' | 'CUSTOM' | null;
+  userStats: {
+    bodyFatLow: number | null;
+    bodyFatHigh: number | null;
+    muscleMassDistribution: string | null;
+  } | null;
+  createdAt: string;
+}
+
+type Activity = {
+  date: string;
+  type: 'workout' | 'check-in' | 'visit';
+};
+
+function DashboardContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [program, setProgram] = useState<ProgramOverview | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [analyzingPhotoId, setAnalyzingPhotoId] = useState<string | null>(null);
+  const [tooltipContent, setTooltipContent] = useState<TooltipContent | null>(null);
+  const [progressPhotos, setProgressPhotos] = useState<TransformedProgressPhoto[]>([]);
+  const [weightData, setWeightData] = useState<WeightData>({ currentWeight: 0, startWeight: 0, weightHistory: [] });
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [showDisclaimer, setShowDisclaimer] = useState(true);
+  const [programStats, setProgramStats] = useState<ProgramStats | null>(null);
+  const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
+  const [currentWorkout, setCurrentWorkout] = useState<CurrentWorkout | null>(null);
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [session, setSession] = useState<any | null>(null);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [shareData, setShareData] = useState<any>(null);
+  const [allPrograms, setAllPrograms] = useState<Program[]>([]);
+
+  useEffect(() => {
+    const disclaimerAcknowledged = localStorage.getItem('disclaimer-acknowledged');
+    setShowDisclaimer(!disclaimerAcknowledged);
+  }, []);
+
+  useEffect(() => {
+    // Show confetti if new_user=true in search params
+    if (searchParams.get('new_user') === 'true') {
+      setShowConfetti(true);
+      const timer = setTimeout(() => setShowConfetti(false), 5000); // Hide after 5 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const programId = window.location.pathname.split('/').pop();
+        const programAccess = await fetch(`/api/programs/${programId}`);
+        if (!programId) return;
+
+        const [overview, stats, weightDataResponse, progressPhotos, activity, currentWorkout, activities] = await Promise.all([
+          fetch(`/api/programs/${programId}/overview`).then(r => r.json()) as Promise<ProgramOverview>,
+          fetch(`/api/programs/${programId}/stats`).then(r => r.json()) as Promise<ProgramStats>,
+          fetch(`/api/programs/${programId}/weight-tracking`).then(r => r.json()) as Promise<WeightData>,
+          fetch(`/api/programs/${programId}/progress-photos`).then(r => r.json()) as Promise<ProgressPhoto[]>,
+          fetch(`/api/programs/${programId}/recent-activity`).then(r => r.json()) as Promise<RecentActivity[]>,
+          fetch(`/api/programs/${programId}/current-workout`).then(r => r.json()) as Promise<CurrentWorkout>,
+          fetch(`/api/programs/${programId}/activity`).then(r => r.json()) as Promise<Activity[]>
+        ]);
+
+        setProgram(overview);
+        setProgramStats(stats);
+        setWeightData(weightDataResponse);
+        setProgressPhotos(progressPhotos || []);
+        setRecentActivity(activity);
+        setCurrentWorkout(currentWorkout);
+        setActivities(activities);
+
+      } catch (error) {
+        console.error('Failed to fetch program:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchData();
+  }, [router]);
+
+  useEffect(() => {
+    async function fetchSession() {
+      const session = await getSession();
+      setSession(session);
+    }
+    fetchSession();
+  }, []);
+
+  useEffect(() => {
+    async function fetchAllPrograms() {
+      try {
+        const response = await fetch('/api/programs');
+        const programs = await response.json();
+        setAllPrograms(programs);
+      } catch (error) {
+        console.error('Failed to fetch all programs:', error);
+      }
+    }
+
+    fetchAllPrograms();
+  }, []);
+
+  const handleAskForHelp = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    // @ts-expect-error Tawk_API is not defined
+    void Tawk_API.toggle();
+  };
+
+  const handleDownloadPDF = async () => {
+    if (!program?.id || !session?.user?.id) return;
+    try {
+      await generateWorkoutPDF(program.id);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="w-6 h-6 border-2 border-[#F1F5F9] border-t-[#FF6B6B] rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  if (!program) {
+    return null;
+  }
+
+  // Find the next workout to do (basic logic - can be enhanced)
+  const completedWorkoutIds = new Set(
+    program?.workoutPlans?.[0]?.workouts?.map(w => w.id) || []
+  );
+  const nextWorkout = program?.workoutPlans?.[0]?.workouts?.find(workout =>
+    !completedWorkoutIds.has(workout.id)
+  );
+
+  // Add transformation helper
+  const transformToHiType = (plan: WorkoutPlan): WorkoutPlanHiType => ({
+    id: '', // Generated or passed separately
+    workouts: plan.workouts.map(w => ({
+      ...w,
+    })),
+    nutrition: {
+      dailyCalories: plan.dailyCalories,
+      macros: {
+        protein: plan.proteinGrams,
+        carbs: plan.carbGrams,
+        fats: plan.fatGrams
+      }
+    },
+    phase: 0,
+    phaseExplanation: '',
+    phaseExpectations: '',
+    phaseKeyPoints: []
+  });
+
+  // Update PDF generation section
+  const workoutPlan = transformToHiType(program.workoutPlans[0]);
+
+  // Update macros display section to handle both structures
+  const getMacros = (plan: WorkoutPlan | WorkoutPlanHiType) => {
+    if ('proteinGrams' in plan) {
+      return {
+        protein: plan.proteinGrams,
+        carbs: plan.carbGrams,
+        fats: plan.fatGrams,
+        calories: plan.dailyCalories
+      };
+    }
+    return {
+      protein: plan.nutrition.macros.protein,
+      carbs: plan.nutrition.macros.carbs,
+      fats: plan.nutrition.macros.fats,
+      calories: plan.nutrition.dailyCalories
+    };
+  };
+
+  return (
+    <div className="bg-[#F8FAFC] min-h-screen">
+      {showConfetti && <ReactConfetti recycle={false} />}
+      {showDisclaimer && (
+        <DisclaimerBanner
+          variant="banner"
+          showAcknowledgeButton={true}
+          persistKey="disclaimer-acknowledged"
+          onAcknowledge={() => setShowDisclaimer(false)}
+        />
+      )}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+          <div className="space-y-8">
+            {/* Quick Workout Start Card - v2a coral accent theme */}
+            {currentWorkout?.nextWorkout && (
+              <div className="relative overflow-hidden bg-white rounded-2xl border-l-4 border-l-[#FF6B6B] border border-[#E2E8F0] shadow-md p-6 lg:p-8">
+                {/* Decorative coral accent */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-[#FF6B6B]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+
+                <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div className="space-y-2">
+                    <p className="text-[#64748B] text-sm font-medium uppercase tracking-wider" style={{ fontFamily: "'Space Mono', monospace" }}>Ready to train?</p>
+                    <h2 className="text-2xl font-bold text-[#0F172A]">
+                      Day {currentWorkout.nextWorkout.dayNumber}: {currentWorkout.nextWorkout.name}
+                    </h2>
+                    <p className="text-[#64748B]">
+                      {currentWorkout.nextWorkout.focus} • {currentWorkout.nextWorkout.exerciseCount} exercises
+                    </p>
+                  </div>
+                  <Link
+                    href={`/workout/${currentWorkout.nextWorkout.id}`}
+                    className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-[#FF6B6B] text-white font-semibold rounded-xl hover:bg-[#EF5350] transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-[#FF6B6B]/25"
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Start Workout
+                  </Link>
+                </div>
+              </div>
+            )}
+
+            {/* Welcome & Program Info Card - v2a styling */}
+            <div className="relative overflow-hidden bg-white rounded-2xl border-l-4 border-l-[#FF6B6B] border border-[#E2E8F0] shadow-md">
+              <div className="relative p-6 lg:p-8">
+                {/* Welcome Text */}
+                <p className="text-sm font-medium text-[#94A3B8] uppercase tracking-wider mb-4" style={{ fontFamily: "'Space Mono', monospace" }}>Welcome to your dashboard</p>
+
+                <div className="flex flex-col lg:flex-row items-start justify-between gap-6 lg:gap-8">
+                  {/* Program Info */}
+                  <div className="flex-1 space-y-4 w-full lg:w-auto">
+                    <div className="space-y-2">
+                      {program && allPrograms.length > 0 ? (
+                        <ProgramSelector
+                          currentProgram={{
+                            id: program.id,
+                            name: program.name,
+                            createdAt: program.startDate
+                          }}
+                          programs={allPrograms.map(p => ({
+                            id: p.id,
+                            name: p.name,
+                            createdAt: p.createdAt!
+                          }))}
+                        />
+                      ) : (
+                        <h1 className="text-3xl font-bold text-[#0F172A]">{program.name}</h1>
+                      )}
+                      {program.description && (
+                        <p className="text-lg text-[#475569] max-w-2xl">{program.description}</p>
+                      )}
+
+                      {/* Helper Links */}
+                      <div className="flex flex-wrap items-center gap-4 sm:gap-6 pt-6 lg:pt-12">
+                        <button
+                          onClick={handleDownloadPDF}
+                          className="inline-flex items-center gap-1.5 text-sm text-[#475569] hover:text-[#FF6B6B] transition-colors"
+                        >
+                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M7 18H17V16H7V18Z" fill="currentColor"/>
+                            <path d="M17 14H7V12H17V14Z" fill="currentColor"/>
+                            <path d="M7 10H11V8H7V10Z" fill="currentColor"/>
+                            <path fillRule="evenodd" clipRule="evenodd" d="M6 2C4.34315 2 3 3.34315 3 5V19C3 20.6569 4.34315 22 6 22H18C19.6569 22 21 20.6569 21 19V9C21 5.13401 17.866 2 14 2H6ZM6 4H13V9H19V19C19 19.5523 18.5523 20 18 20H6C5.44772 20 5 19.5523 5 19V5C5 4.44772 5.44772 4 6 4ZM15 4.10002C16.6113 4.4271 17.9413 5.52906 18.584 7H15V4.10002Z" fill="currentColor"/>
+                          </svg>
+                          Download PDF
+                        </button>
+                        <button
+                          onClick={async () => {
+                            try {
+                              const res = await fetch(`/api/share/program?programId=${program.id}`);
+                              const data = await res.json();
+                              setShareData(data);
+                              setIsShareModalOpen(true);
+                            } catch (err) {
+                              console.error('Failed to load share data:', err);
+                            }
+                          }}
+                          className="inline-flex items-center gap-1.5 text-sm text-[#475569] hover:text-[#FF6B6B] transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                          </svg>
+                          Share Program
+                        </button>
+                        <Link
+                          href="/hi"
+                          className="inline-flex items-center gap-1.5 text-sm text-[#475569] hover:text-[#FF6B6B] transition-colors"
+                        >
+                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 6V18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                            <path d="M6 12H18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          </svg>
+                          Create a new program
+                        </Link>
+                        <Link
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setIsUploadModalOpen(true);
+                          }}
+                          className="inline-flex items-center gap-1.5 text-sm text-[#475569] hover:text-[#FF6B6B] transition-colors"
+                        >
+                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 16V4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                            <path d="M7 9L12 4L17 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M20 16V18C20 19.1046 19.1046 20 18 20H6C4.89543 20 4 19.1046 4 18V16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          </svg>
+                          Upload a program
+                        </Link>
+                        <button
+                          onClick={handleAskForHelp}
+                          className="inline-flex items-center gap-1.5 text-sm text-[#475569] hover:text-[#FF6B6B] transition-colors"
+                        >
+                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" strokeWidth="2"/>
+                            <path d="M9 9C9 7.34315 10.3431 6 12 6C13.6569 6 15 7.34315 15 9C15 10.6569 13.6569 12 12 12V14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                            <circle cx="12" cy="17" r="1" fill="currentColor"/>
+                          </svg>
+                          Need help?
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Stats - v2a styling */}
+                  <div className="flex-shrink-0 w-full sm:w-72 bg-white rounded-xl p-4 space-y-4 border-2 border-[#E2E8F0] shadow-sm">
+                    <div className="space-y-3">
+                      {/* Week Number */}
+                      <div className="flex items-center justify-between">
+                        <span className="text-[#64748B]">Week</span>
+                        <span className="font-semibold text-[#0F172A]">Week {programStats?.completedWorkouts || 0}</span>
+                      </div>
+
+                      {/* Completed Workouts */}
+                      <div className="flex items-center justify-between">
+                        <span className="text-[#64748B]">Workouts Completed</span>
+                        <span className="font-semibold text-[#0F172A]">{programStats?.completedWorkouts || 0}</span>
+                      </div>
+
+                      {/* Next Check-in */}
+                      <div className="pt-2 border-t border-[#E2E8F0]">
+                        {programStats?.checkIn ? (
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <span className="text-[#64748B]">Weekly Check-in</span>
+                              <span className={`text-sm font-medium ${programStats.checkIn.isOverdue ? 'text-[#EF5350]' : 'text-[#FF6B6B]'}`}>
+                                {programStats.checkIn.isOverdue ? 'Overdue' : 'Due Today'}
+                              </span>
+                            </div>
+                            <Link
+                              href="/check-in"
+                              className={`w-full px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+                                programStats.checkIn.isOverdue
+                                  ? 'bg-[#FFE5E5] text-[#EF5350] hover:bg-[#FFD5D5] border border-[#FF6B6B]/30'
+                                  : 'bg-[#FFE5E5] text-[#FF6B6B] hover:bg-[#FFD5D5] border border-[#FF6B6B]/30'
+                              }`}
+                            >
+                              Start Weekly Check-in
+                              <span className="text-xl">→</span>
+                            </Link>
+                            {programStats.checkIn.isOverdue && (
+                              <p className="text-sm text-[#EF5350]">
+                                Your check-in was due on Monday
+                              </p>
+                            )}
+                          </div>
+                        ) : (
+                          <>
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-[#64748B]">Next Check-in</span>
+                              <span className="text-sm text-[#FF6B6B] font-medium">{programStats?.checkIn ? (
+                                <>
+                                  {new Date(programStats.checkIn.nextDate).toLocaleDateString('en-US', {
+                                    weekday: 'long',
+                                    month: 'short',
+                                    day: 'numeric'
+                                  })}
+                                  {programStats.checkIn.isCheckInDay && (
+                                    <span className="ml-2 text-sm text-green-600">(Today!)</span>
+                                  )}
+                                  {programStats.checkIn.isOverdue && (
+                                    <span className="ml-2 text-sm text-[#EF5350]">(Overdue)</span>
+                                  )}
+                                </>
+                              ) : 'Not scheduled'}</span>
+                            </div>
+                            <p className="text-sm text-[#94A3B8]">
+                              {programStats?.checkIn?.daysUntilNext === 0
+                                ? "Today"
+                                : programStats?.checkIn?.daysUntilNext === 1
+                                  ? "Tomorrow"
+                                  : `in ${programStats?.checkIn?.daysUntilNext} days`}
+                            </p>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Progress and Next Workout Card - v2a styling */}
+            <div className="relative overflow-hidden bg-white rounded-2xl border-l-4 border-l-[#0F172A] border border-[#E2E8F0] shadow-md">
+              <div className="p-6 lg:p-8">
+                <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+                  {/* Progress Section - 3/4 width on desktop */}
+                  <div className="w-full lg:w-3/4">
+                    <h2 className="text-sm font-medium text-[#94A3B8] uppercase tracking-wider" style={{ fontFamily: "'Space Mono', monospace" }}>Progress</h2>
+                    <div className="mt-4 space-y-6">
+                      {/* Weight and Activity Grid Row */}
+                      <div className="flex flex-col md:flex-row gap-6">
+
+                        {/* Weight Section */}
+                        <div className="w-full md:w-1/2 space-y-4">
+                          <div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-[#475569]">Current Weight</span>
+                              <span className="text-2xl font-semibold text-[#0F172A]">
+                                {weightData.currentWeight ? `${weightData.currentWeight} lbs` : '–'}
+                              </span>
+                            </div>
+                            {weightData.startWeight > 0 && (
+                              <div className="flex items-center justify-between mt-1">
+                                <span className="text-sm text-[#94A3B8]">Starting Weight</span>
+                                <span className="text-sm text-[#94A3B8]">
+                                  {weightData.startWeight} lbs
+                                </span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Weight Chart - coral line */}
+                          <div className="h-48 relative">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <LineChart
+                                data={weightData.weightHistory.length > 0 ? weightData.weightHistory : mockEmptyStateData}
+                                margin={{ top: 5, right: 5, bottom: 5, left: 35 }}
+                              >
+                                <XAxis
+                                  dataKey="displayDate"
+                                  tick={{ fontSize: 12, fill: '#94A3B8' }}
+                                  tickLine={false}
+                                  axisLine={false}
+                                />
+                                <YAxis
+                                  domain={['dataMin - 1', 'dataMax + 1']}
+                                  tick={{ fontSize: 12, fill: '#94A3B8' }}
+                                  tickLine={false}
+                                  axisLine={false}
+                                  width={30}
+                                  tickFormatter={(value: number) => Math.round(value).toString()}
+                                />
+                                <Tooltip
+                                  wrapperStyle={{ outline: 'none' }}
+                                  contentStyle={{
+                                    backgroundColor: '#FFFFFF',
+                                    border: '1px solid #F1F5F9',
+                                    borderRadius: '0.5rem',
+                                    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                                    padding: '0.5rem',
+                                    color: '#0F172A'
+                                  }}
+                                  formatter={(value: number) => [`${Math.round(value)} lbs`, 'Weight']}
+                                  labelFormatter={(label) => label}
+                                />
+                                <Line
+                                  type="monotone"
+                                  dataKey="weight"
+                                  stroke="#FF6B6B"
+                                  strokeWidth={2}
+                                  dot={{ fill: '#FF6B6B', strokeWidth: 2 }}
+                                  activeDot={{ r: 6, fill: '#FF6B6B' }}
+                                />
+                              </LineChart>
+                            </ResponsiveContainer>
+
+                            {weightData.weightHistory.length === 0 && (
+                              <div className="absolute inset-0 backdrop-blur-[2px] bg-white/50 flex items-center justify-center">
+                                <div className="bg-white/95 px-4 py-2 rounded-lg shadow-sm border border-[#F1F5F9]">
+                                  <p className="text-md font-semibold text-[#475569] text-center">
+                                    No weight data available yet.<br />
+                                    Complete your first check-in to start.
+                                  </p>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
+                          {weightData.weightHistory.length <= 3 && weightData.weightHistory.length > 0 && (
+                            <p className="text-sm text-[#94A3B8]">
+                              Weight tracking becomes more meaningful after a few check-ins
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Activity Grid - v2a colors */}
+                        <div className="w-full md:w-1/2 space-y-4">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[#475569]">Activity</span>
+                            <span className="text-sm text-[#94A3B8]">Last 12 weeks</span>
+                          </div>
+                          <div className="bg-white rounded-lg p-4 border border-[#E2E8F0]">
+                            <div className="grid grid-cols-12 gap-2">
+                              {tooltipContent && (
+                                <div
+                                  className="fixed px-2 py-1 bg-[#475569] text-white text-xs rounded whitespace-pre pointer-events-none min-w-[150px] z-[60]"
+                                  style={{
+                                    left: tooltipContent.x,
+                                    top: tooltipContent.y - 10,
+                                    transform: 'translateX(-50%)'
+                                  }}
+                                >
+                                  {tooltipContent.content}
+                                </div>
+                              )}
+                              {Array.from({ length: 96 }).map((_, i) => {
+                                const date = new Date();
+                                date.setDate(date.getDate() - (95 - i));
+                                const dateStr = date.toISOString().split('T')[0];
+
+                                const dayActivities = activities?.filter(a =>
+                                  a.date.startsWith(dateStr)
+                                ) || [];
+
+                                const classes = dayActivities.length > 0
+                                  ? dayActivities.some(a => a.type === 'check-in')
+                                    ? 'bg-emerald-400'
+                                    : dayActivities.some(a => a.type === 'workout')
+                                      ? 'bg-[#FF6B6B]'
+                                      : 'bg-[#CBD5E1]'
+                                  : 'bg-[#F1F5F9]';
+
+                                return (
+                                  <div
+                                    key={i}
+                                    className={`aspect-square rounded-sm ${classes} transition-all duration-200 hover:scale-110 cursor-help`}
+                                    onMouseEnter={(e) => {
+                                      const rect = e.currentTarget.getBoundingClientRect();
+                                      setTooltipContent({
+                                        x: rect.left + rect.width / 2,
+                                        y: rect.top,
+                                        content: (
+                                          <>
+                                            {date.toLocaleDateString('en-US', {
+                                              weekday: 'short',
+                                              month: 'short',
+                                              day: 'numeric',
+                                              year: 'numeric'
+                                            })}
+                                            {dayActivities.length > 0 ? (
+                                              dayActivities.map((activity, idx) => (
+                                                <div key={idx} className="mt-1 text-gray-200">
+                                                  {activity.type === 'check-in' && 'Check-in completed'}
+                                                  {activity.type === 'workout' && 'Workout completed'}
+                                                  {activity.type === 'visit' && 'Site visit'}
+                                                </div>
+                                              ))
+                                            ) : (
+                                              <div className="mt-1 text-gray-400">No activity</div>
+                                            )}
+                                          </>
+                                        )
+                                      });
+                                    }}
+                                    onMouseLeave={() => setTooltipContent(null)}
+                                  />
+                                );
+                              })}
+                            </div>
+                            <div className="mt-2 flex flex-wrap items-center justify-end gap-x-2 gap-y-1 text-xs sm:text-sm">
+                              <div className="flex items-center gap-1">
+                                <div className="w-3 h-3 rounded-sm bg-[#F1F5F9]" />
+                                <span className="text-[#64748B]">None</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <div className="w-3 h-3 rounded-sm bg-[#CBD5E1]" />
+                                <span className="text-[#64748B]">Visit</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <div className="w-3 h-3 rounded-sm bg-[#FF6B6B]" />
+                                <span className="text-[#64748B]">Workout</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <div className="w-3 h-3 rounded-sm bg-emerald-400" />
+                                <span className="text-[#64748B]">Check-in</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Photos Section - v2a styling */}
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <h2 className="text-sm font-medium text-[#94A3B8] uppercase tracking-wider" style={{ fontFamily: "'Space Mono', monospace" }}>Photos</h2>
+                          <div className="flex items-center gap-4">
+                            {progressPhotos.length >= 2 && (
+                              <button
+                                onClick={() => setIsCompareModalOpen(true)}
+                                className="text-sm text-[#FF6B6B] hover:text-[#EF5350] inline-flex items-center gap-1"
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                </svg>
+                                Compare Progress
+                              </button>
+                            )}
+                            <Link
+                              href="/check-in"
+                              className="text-sm text-[#FF6B6B] hover:text-[#EF5350]"
+                            >
+                              Add New Photos →
+                            </Link>
+                          </div>
+                        </div>
+
+                        {progressPhotos.length > 0 ? (
+                          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                            {progressPhotos.map((photo) => (
+                              <div
+                                key={photo.id}
+                                className="relative aspect-square rounded-xl overflow-hidden border border-[#F1F5F9] hover:border-[#FF6B6B] transition-colors"
+                              >
+                                <Image
+                                  src={photo.base64Data}
+                                  alt="Progress photo"
+                                  width={300}
+                                  height={300}
+                                  className="object-cover"
+                                />
+                                {(photo.userStats?.bodyFatHigh || photo.userStats?.bodyFatLow) && (
+                                  <div className="absolute inset-0 bg-[#0F172A]/80 opacity-0 hover:opacity-100 transition-opacity p-4">
+                                    <div className="text-white space-y-2">
+                                      <p className="font-medium">
+                                        Body Fat: {photo.userStats.bodyFatLow}-{photo.userStats.bodyFatHigh}%
+                                      </p>
+                                      {photo.userStats.muscleMassDistribution && (
+                                        <p className="text-sm text-[#94A3B8]">
+                                          {photo.userStats.muscleMassDistribution}
+                                        </p>
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div
+                            className="border-2 border-dashed border-[#F1F5F9] rounded-lg p-6 text-center transition-colors duration-200 hover:border-[#FF6B6B]/50 hover:bg-[#FFE5E5]/30 cursor-pointer"
+                            onClick={() => router.push('/check-in')}
+                          >
+                            <div className="space-y-3">
+                              <div className="flex justify-center">
+                                <svg className="w-12 h-12 text-[#94A3B8]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16Z" fill="currentColor"/>
+                                  <path d="M9 2L7.17 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4H16.83L15 2H9ZM12 17C9.24 17 7 14.76 7 12C7 9.24 9.24 7 12 7C14.76 7 17 9.24 17 12C17 14.76 14.76 17 12 17Z" fill="currentColor"/>
+                                </svg>
+                              </div>
+                              <Link
+                                href="/check-in"
+                                className="text-lg text-[#FF6B6B] hover:text-[#EF5350] font-medium inline-flex items-center gap-1"
+                              >
+                                Add Your First Photo →
+                              </Link>
+                              <p className="text-[#475569]">
+                                Drop photos here or click to start a check-in
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Next Workout and Macros - 1/4 width on desktop - v2a styling */}
+                  <div className="w-full lg:w-1/4 space-y-6 lg:space-y-8">
+                    {currentWorkout?.nextWorkout ? (
+                      <div className="space-y-4">
+                        <h2 className="text-sm font-medium text-[#94A3B8] uppercase tracking-wider" style={{ fontFamily: "'Space Mono', monospace" }}>Next Workout</h2>
+                        <div className="space-y-2">
+                          <p className="text-lg font-semibold text-[#0F172A]">
+                            Day {currentWorkout.nextWorkout.dayNumber} - {currentWorkout.nextWorkout.name}
+                          </p>
+                          <p className="text-[#475569]">
+                            Focus: {currentWorkout.nextWorkout.focus}
+                          </p>
+                          <p className="text-[#475569]">
+                            {currentWorkout.nextWorkout.exerciseCount} exercises
+                          </p>
+                        </div>
+
+                        <Link
+                          href={`/workout/${currentWorkout.nextWorkout.id}`}
+                          className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[#FF6B6B] text-white font-medium hover:bg-[#EF5350] transition-all duration-200 hover:scale-[1.02] hover:-translate-y-0.5 shadow-lg shadow-[#FF6B6B]/25"
+                        >
+                          Begin Workout
+                          <span className="text-white/70">→</span>
+                        </Link>
+                      </div>
+                    ) : (
+                      <div className="space-y-6">
+                        <div>
+                          <h2 className="text-2xl font-bold text-[#0F172A] flex items-center gap-2">
+                            Program Complete!
+                            <span className="text-3xl">🎉</span>
+                          </h2>
+                          <p className="text-[#475569] mt-2">
+                            Great work finishing <span className="font-medium">{program.name}</span>! Choose your next step:
+                          </p>
+                        </div>
+
+                        {/* Smart Continuation Options - v2a styling */}
+                        <div className="grid gap-3">
+                          {/* Similar Program */}
+                          <Link
+                            href="/dashboard/new-program?type=similar"
+                            className="group flex items-center gap-4 p-4 rounded-xl border border-[#F1F5F9] hover:border-[#FF6B6B]/50 hover:bg-[#FFE5E5]/30 transition-all"
+                          >
+                            <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[#FFE5E5] flex items-center justify-center">
+                              <svg className="w-5 h-5 text-[#FF6B6B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                              </svg>
+                            </div>
+                            <div className="flex-1">
+                              <h3 className="font-semibold text-[#0F172A] group-hover:text-[#FF6B6B]">
+                                Continue with Similar Program
+                              </h3>
+                              <p className="text-sm text-[#94A3B8]">
+                                Keep the momentum - same style, increased intensity
+                              </p>
+                            </div>
+                            <svg className="w-5 h-5 text-[#94A3B8] group-hover:text-[#FF6B6B] transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </Link>
+
+                          {/* New Focus */}
+                          <Link
+                            href="/dashboard/new-program?type=new_focus"
+                            className="group flex items-center gap-4 p-4 rounded-xl border border-[#F1F5F9] hover:border-[#0F172A]/30 hover:bg-[#F8FAFC] transition-all"
+                          >
+                            <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[#F8FAFC] border border-[#F1F5F9] flex items-center justify-center">
+                              <svg className="w-5 h-5 text-[#0F172A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                              </svg>
+                            </div>
+                            <div className="flex-1">
+                              <h3 className="font-semibold text-[#0F172A]">
+                                Try a New Focus
+                              </h3>
+                              <p className="text-sm text-[#94A3B8]">
+                                Shift goals - strength, cardio, mobility, or hypertrophy
+                              </p>
+                            </div>
+                            <svg className="w-5 h-5 text-[#94A3B8] group-hover:text-[#0F172A] transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </Link>
+
+                          {/* Fresh Start */}
+                          <Link
+                            href="/hi"
+                            className="group flex items-center gap-4 p-4 rounded-xl border border-[#F1F5F9] hover:border-green-300 hover:bg-green-50/50 transition-all"
+                          >
+                            <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
+                              <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                              </svg>
+                            </div>
+                            <div className="flex-1">
+                              <h3 className="font-semibold text-[#0F172A] group-hover:text-green-600">
+                                Fresh Start with Full Intake
+                              </h3>
+                              <p className="text-sm text-[#94A3B8]">
+                                Update your profile and get a completely new program
+                              </p>
+                            </div>
+                            <svg className="w-5 h-5 text-[#94A3B8] group-hover:text-green-600 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </Link>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Daily Macros - v2a styling */}
+                    {program?.workoutPlans?.[0] && (
+                      <div className="space-y-4">
+                        <h2 className="text-sm font-medium text-[#94A3B8] uppercase tracking-wider" style={{ fontFamily: "'Space Mono', monospace" }}>Daily Macros</h2>
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 rounded-full bg-[#FF6B6B]"></div>
+                              <span className="text-[#475569]">Protein</span>
+                            </div>
+                            <span className="font-medium text-[#0F172A]">
+                              {getMacros(program.workoutPlans[0]).protein}g
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 rounded-full bg-[#0F172A]"></div>
+                              <span className="text-[#475569]">Carbs</span>
+                            </div>
+                            <span className="font-medium text-[#0F172A]">
+                              {getMacros(program.workoutPlans[0]).carbs}g
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 rounded-full bg-[#94A3B8]"></div>
+                              <span className="text-[#475569]">Fat</span>
+                            </div>
+                            <span className="font-medium text-[#0F172A]">
+                              {getMacros(program.workoutPlans[0]).fats}g
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between pt-2 border-t border-[#F1F5F9]">
+                            <span className="text-[#475569]">Daily Calories</span>
+                            <span className="font-medium text-[#0F172A]">
+                              {getMacros(program.workoutPlans[0]).calories}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Recent Activity Card - v2a styling */}
+            <div className="relative overflow-hidden bg-white rounded-2xl border-l-4 border-l-[#94A3B8] border border-[#E2E8F0] shadow-md">
+              <div className="p-6 lg:p-8 space-y-6">
+                <h2 className="text-sm font-medium text-[#94A3B8] uppercase tracking-wider" style={{ fontFamily: "'Space Mono', monospace" }}>Recent Activity</h2>
+                {recentActivity.length > 0 ? (
+                  <div className="space-y-4">
+                    {recentActivity.map((activity) => (
+                      <div
+                        key={activity.id}
+                        className="group/item flex items-center justify-between p-4 rounded-xl border border-[#F1F5F9] hover:border-[#FF6B6B]/50 hover:shadow-lg transition-all duration-200"
+                      >
+                        <div className="space-y-1">
+                          <p className="font-medium text-[#0F172A]">
+                            Day {activity.dayNumber} - {activity.workoutName}
+                          </p>
+                          <p className="text-sm text-[#94A3B8]">
+                            Completed {new Date(activity.completedAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-12 text-center space-y-4">
+                    <p className="text-[#475569]">No workouts completed yet.</p>
+                    <p className="text-[#94A3B8]">Start your first workout above to begin tracking your progress!</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <WorkoutUploadModal
+              isOpen={isUploadModalOpen}
+              onClose={() => setIsUploadModalOpen(false)}
+            />
+
+            <PhotoComparison
+              programId={program.id}
+              isOpen={isCompareModalOpen}
+              onClose={() => setIsCompareModalOpen(false)}
+            />
+
+            {isShareModalOpen && shareData && (
+              <ProgramCard
+                data={shareData}
+                onClose={() => {
+                  setIsShareModalOpen(false);
+                  setShareData(null);
+                }}
+              />
+            )}
+          </div>
+        </div>
+    </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <MainLayout>
+      <Suspense fallback={
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="w-6 h-6 border-2 border-[#F1F5F9] border-t-[#FF6B6B] rounded-full animate-spin"></div>
+        </div>
+      }>
+        <DashboardContent />
+      </Suspense>
+    </MainLayout>
+  );
+}

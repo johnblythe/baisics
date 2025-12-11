@@ -94,18 +94,6 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
     );
   };
 
-  // @TODO come back and fix types
-  // const nutrition = {
-  //   // @ts-ignore
-  //   dailyCalories: plan.dailyCalories,
-  //   // @ts-ignore
-  //   proteinGrams: plan.proteinGrams,
-  //   // @ts-ignore
-  //   carbGrams: plan.carbGrams,
-  //   // @ts-ignore
-  //   fatGrams: plan.fatGrams
-  // }
-
   const nutrition = getMacros(plan as WorkoutPlan);  
 
   useImperativeHandle(ref, () => ({

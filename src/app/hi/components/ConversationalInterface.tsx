@@ -17,6 +17,8 @@ import { v4 as uuidv4 } from "uuid";
 import exampleProgram from '../utils/example.json';
 import { ConversationalIntakeRef } from './ConversationalIntakeContainer';
 import { sendGTMEvent } from "@next/third-parties/google";
+import { useStreamingGeneration, GenerationProgress } from "@/hooks/useStreamingGeneration";
+import { convertToIntakeFormat } from "@/utils/formatters";
 
 // Add type for example program phase
 interface ExamplePhase {
@@ -54,15 +56,16 @@ interface ConversationalInterfaceProps {
   userId: string;
   user: User | null;
   initialProgram?: Program | null;
+  initialExtractedData?: IntakeFormData | null;
   onProgramChange?: (program: Program | null) => void;
   preventNavigation?: boolean;
 }
 
-export const ConversationalInterface = forwardRef<ConversationalIntakeRef, ConversationalInterfaceProps>(({ userId, user, initialProgram, onProgramChange, preventNavigation }, ref) => {
+export const ConversationalInterface = forwardRef<ConversationalIntakeRef, ConversationalInterfaceProps>(({ userId, user, initialProgram, initialExtractedData, onProgramChange, preventNavigation }, ref) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [extractedData, setExtractedData] = useState<IntakeFormData | null>(null);
+  const [extractedData, setExtractedData] = useState<IntakeFormData | null>(initialExtractedData || null);
   const [program, setProgram] = useState<Program | null>(null);
   const [isGeneratingProgram, setIsGeneratingProgram] = useState(false);
   const [isUpsellOpen, setIsUpsellOpen] = useState(false);
@@ -72,14 +75,68 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
   const [showDataReview, setShowDataReview] = useState(false);
   const [localUserId, setLocalUserId] = useState(userId);
   const [localUser, setLocalUser] = useState(user);
+  const isReturningUser = !!initialExtractedData;
+  const [generationProgress, setGenerationProgress] = useState<GenerationProgress | undefined>(undefined);
 
   const router = useRouter();
-  
+
+  // Streaming generation hook with phase tracking
+  const {
+    generate: generateStreaming,
+    isGenerating: isStreamGenerating,
+    phases: streamedPhases,
+    programMeta: streamedProgramMeta,
+  } = useStreamingGeneration({
+    onProgress: (progress) => {
+      setGenerationProgress(progress);
+    },
+    onPhase: (phase, phaseNumber, totalPhases) => {
+      console.log(`[UI] Phase ${phaseNumber} received, total: ${totalPhases}`);
+    },
+    onProgramMeta: (meta) => {
+      console.log(`[UI] Program meta received: ${meta.name}`);
+    },
+    onComplete: (result) => {
+      if (result.success && result.savedProgram) {
+        setProgram(result.program);
+        setIsGeneratingProgram(false);
+        sendGTMEvent({ event: 'program created successfully', value: result.savedProgram });
+
+        // Navigate to appropriate page
+        const isAuthenticated = localUser?.email;
+        if (isAuthenticated) {
+          router.replace(`/dashboard/${result.savedProgram.id}`);
+        } else {
+          router.replace(`/program/review?userId=${localUserId}&programId=${result.savedProgram.id}`);
+        }
+      }
+    },
+    onError: (error) => {
+      console.error('Generation error:', error);
+      setIsGeneratingProgram(false);
+      setGenerationProgress(undefined);
+      setMessages(prev => [...prev, {
+        role: "assistant",
+        content: "I encountered an error while creating your program. Please try again."
+      }]);
+    },
+  });
+
   useEffect(() => {
     if (initialProgram) {
       setProgram(initialProgram);
     }
   }, [initialProgram]);
+
+  // Set custom welcome message for returning users (#107)
+  useEffect(() => {
+    if (isReturningUser && messages.length === 0) {
+      setMessages([{
+        role: 'assistant',
+        content: `Good to see you again! Last time we set you up with ${initialExtractedData?.daysPerWeek} days a week focused on ${initialExtractedData?.goals}. Ready for something new, or want to keep building on that?`
+      }]);
+    }
+  }, [isReturningUser, initialExtractedData, messages.length]);
 
   // Add escape key handler
   useEffect(() => {
@@ -103,7 +160,9 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
   };
 
   useEffect(() => {
-    // Initial welcome message with typing effect
+    // Initial welcome message with typing effect (skip for returning users - they get custom message)
+    if (isReturningUser) return;
+
     setIsTyping(true);
     setTimeout(() => {
       setMessages([
@@ -114,7 +173,7 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
       ]);
       setIsTyping(false);
     }, 1000);
-  }, []);
+  }, [isReturningUser]);
   
   useEffect(() => {
     if (isGeneratingProgram) {
@@ -175,7 +234,8 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
 
   // Work on getting the right data from the user to generate a program
   const handleInitialIntake = async (userMessage: Message, _: string) => {
-    const result = await processUserMessage([...messages, userMessage], localUserId);
+    // Pass existing extractedData so returning users don't get asked redundant questions (#107)
+    const result = await processUserMessage([...messages, userMessage], localUserId, extractedData);
         
     if (result.success) {
       if (result.extractedData) {
@@ -207,21 +267,27 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
 
     setShowDataReview(false);
     setIsGeneratingProgram(true);
-    setMessages(prev => [...prev, { 
-      role: "assistant", 
-      content: "Great! I'll create your personalized program now. Let me put that together for you..." 
+    setGenerationProgress({ stage: 'idle', message: 'Starting...', progress: 0 });
+    setMessages(prev => [...prev, {
+      role: "assistant",
+      content: "Great! I'll create your personalized program now. Let me put that together for you..."
     }]);
 
+    // Track the actual userId to use (React state updates are async)
+    let activeUserId = localUserId;
+
     // Create user if we don't have one
-    if (!localUserId) {
+    if (!activeUserId) {
       const newUserId = uuidv4();
       const result = await createAnonUser(newUserId);
       if (result.success && result.user) {
+        activeUserId = result.user.id;
         setLocalUserId(result.user.id);
         setLocalUser(result.user);
       } else {
         console.error('Failed to create anonymous user');
         setIsGeneratingProgram(false);
+        setGenerationProgress(undefined);
         setMessages(prev => [...prev, {
           role: "assistant",
           content: "I encountered an error while creating your program. Please try again."
@@ -230,172 +296,13 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
       }
     }
 
-    // save the user's intake data
-    try {
-      const intakeResponse = await fetch(`/api/user/${localUserId}/intake`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(extractedData)
-      });
-
-      if (!intakeResponse.ok) {
-        throw new Error('Failed to save intake data');
-      }
-
-      await intakeResponse.json();
-    } catch (error) {
-      console.error('Error saving intake data:', error);
-      // Continue with program creation even if intake save fails
-    }
-
-    try {
-      // Step 1: Get program structure
-      const structureResponse = await fetch('/api/program-creation/structure', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ intakeData: extractedData, userId: localUserId })
-      });
-      const { programStructure } = await structureResponse.json();
-
-      setMessages(prev => [...prev, {
-        role: "assistant",
-        content: "I've designed the overall program structure. Now creating your workout plan..."
-      }]);
-
-      // Step 2: Get workout structure
-      const workoutResponse = await fetch('/api/program-creation/workout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          intakeData: extractedData,
-          programStructure,
-          userId: localUserId
-        })
-      });
-      const { workoutStructure } = await workoutResponse.json();
-
-      setMessages(prev => [...prev, {
-        role: "assistant",
-        content: "Workout structure is ready. Now creating your detailed program..."
-      }]);
-
-      // Step 3: Get workout details in parallel
-      const phase = 0;
-      const daysPerWeek = workoutStructure.daysPerWeek;
-
-      // Get phase details
-      const phaseResponse = await fetch('/api/program-creation/details/phase', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          intakeData: extractedData,
-          programStructure,
-          workoutStructure,
-          phase,
-          userId: localUserId
-        })
-      });
-      const { phaseDetails } = await phaseResponse.json();
-
-      // Get nutrition details
-      const nutritionResponse = await fetch('/api/program-creation/details/nutrition', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          intakeData: extractedData,
-          programStructure,
-          phase,
-          userId: localUserId
-        })
-      });
-      const { nutrition } = await nutritionResponse.json();
-
-      // Get exercises for each day in parallel
-      const exercisePromises = Array.from({ length: daysPerWeek }, async (_, i) => {
-        // First get the workout focus
-        const focusResponse = await fetch('/api/program-creation/details/exercises/focus', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            intakeData: extractedData,
-            programStructure,
-            workoutStructure,
-            dayNumber: i + 1,
-            userId: localUserId
-          })
-        });
-        const { workoutFocus } = await focusResponse.json();
-
-        // Then get the exercises for that focus
-        const exercisesResponse = await fetch('/api/program-creation/details/exercises/list', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            intakeData: extractedData,
-            programStructure,
-            workoutStructure,
-            workoutFocus,
-            userId: localUserId
-          })
-        });
-        const { exercises } = await exercisesResponse.json();
-
-        return {
-          ...workoutFocus,
-          exercises: exercises.exercises
-        };
-      });
-
-      const workouts = await Promise.all(exercisePromises);
-
-      // Combine all the pieces
-      const workoutDetails = {
-        workouts,
-        ...phaseDetails,
-        nutrition
-      };
-
-      // Final step: Construct and save program
-      const program = {
-        // id: programStructure.id, // TODO: does this actually get done?
-        name: programStructure.name,
-        description: programStructure.description,
-        workoutPlans: [workoutDetails],
-        user: {
-          id: localUserId,
-          email: localUser?.email || null,
-          password: null,
-          isPremium: false,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        }
-      };
-
-      // Save program to database
-      const saveResponse = await fetch('/api/program-creation/save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(program)
-      });
-
-      if (!saveResponse.ok) {
-        throw new Error('Failed to save program');
-      }
-
-      const { program: savedProgram, programId } = await saveResponse.json();
-      setProgram(savedProgram);
-      setIsGeneratingProgram(false);
-      sendGTMEvent({ event: 'program created successfully', value: savedProgram })
-      router.replace(`/program/review?userId=${localUserId}&programId=${programId}`);
-
-    } catch (error) {
-      console.error('Error generating program:', error);
-      setIsGeneratingProgram(false);
-      setMessages(prev => [...prev, {
-        role: "assistant",
-        content: "I encountered an error while creating your program. Please try again."
-      }]);
-    }
+    // Convert extractedData to intake format and use streaming generation
+    const intakeData = convertToIntakeFormat(extractedData);
+    generateStreaming({
+      userId: activeUserId,
+      intakeData,
+      context: { generationType: 'new' as const },
+    });
   };
 
   const handleRequestMoreDetails = (topics: string[]) => {
@@ -646,27 +553,28 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
   const renderFormSection = () => {
     if (program) {
       return (
-        <form onSubmit={handleSubmit} className="hidden p-8 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-b-xl">
-          <div className="flex flex-col space-y-6">
+        <form onSubmit={handleSubmit} className="hidden p-6 border-t border-[#F1F5F9] bg-white rounded-b-xl">
+          <div className="flex flex-col space-y-4">
             <textarea
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Have any feedback about your program? Let me know if you'd like any adjustments..."
               rows={3}
-              className="w-full p-4 border rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none transition-all duration-300"
+              className="w-full p-4 border-2 border-[#F1F5F9] rounded-xl bg-[#F8FAFC] text-[#0F172A] placeholder-[#94A3B8] focus:ring-2 focus:ring-[#FF6B6B]/20 focus:border-[#FF6B6B] resize-none transition-all duration-300"
+              style={{ fontFamily: "'Outfit', sans-serif" }}
             />
-            <div className="flex space-x-4">
+            <div className="flex space-x-3">
               <button
                 type="button"
                 onClick={handleSaveProgram}
-                className="flex-1 px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-lg rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:-translate-y-0.5"
+                className="flex-1 px-6 py-3 bg-[#0F172A] text-white text-base font-semibold rounded-xl hover:bg-[#1E293B] transition-all duration-300"
               >
-                {isSaving ? "Saving..." : "Save My Custom Program"}
+                {isSaving ? "Saving..." : "Save Program"}
               </button>
               <button
                 type="submit"
-                className="flex-1 px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-lg rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:-translate-y-0.5"
+                className="flex-1 px-6 py-3 bg-[#FF6B6B] hover:bg-[#EF5350] text-white text-base font-semibold rounded-xl shadow-lg shadow-[#FF6B6B]/25 transition-all duration-300"
               >
                 Request Changes
               </button>
@@ -678,31 +586,30 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
 
     // Original form for initial conversation
     return (
-      <form 
+      <form
         onSubmit={handleSubmit}
-        className={`p-8 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-b-xl ${showDataReview || isGeneratingProgram ? 'hidden' : ''}`}
+        className={`mt-4 ${showDataReview || isGeneratingProgram ? 'hidden' : ''}`}
       >
-        <div className="flex flex-col space-y-6">
+        <div className="flex flex-col space-y-4">
           <div className="relative">
             <textarea
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder={!extractedData && !messages ? "Share your fitness journey and goals..." : "Keep the info coming!"}
-              rows={4}
+              rows={3}
               autoFocus={true}
-              className="w-full p-4 border rounded-xl dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none transition-all duration-300"
+              className="w-full p-4 border-2 border-[#F1F5F9] rounded-xl bg-[#F8FAFC] text-[#0F172A] placeholder-[#94A3B8] focus:ring-2 focus:ring-[#FF6B6B]/20 focus:border-[#FF6B6B] resize-none transition-all duration-300"
+              style={{ fontFamily: "'Outfit', sans-serif" }}
             />
-            <div className="hidden lg:block absolute bottom-2 right-2 text-xs text-gray-400 space-x-4">
-              <span>⌘ + Return to send</span>
-              <span className="hidden opacity-50">⌥P for sample</span>
-              {!program && <span className="hidden opacity-50">⇧D for demo program</span>}
+            <div className="hidden lg:block absolute bottom-3 right-3 text-xs text-[#94A3B8]" style={{ fontFamily: "'Space Mono', monospace" }}>
+              ⌘ + Return to send
             </div>
           </div>
           <button
             type="submit"
             disabled={!inputValue.trim() || isTyping}
-            className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-lg rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:-translate-y-0.5"
+            className="px-8 py-4 bg-[#FF6B6B] hover:bg-[#EF5350] text-white text-base font-semibold rounded-xl shadow-lg shadow-[#FF6B6B]/25 hover:shadow-xl hover:shadow-[#FF6B6B]/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
           >
             {!extractedData || !messages ? "Share Your Story" : "Tell me more"}
           </button>
@@ -723,11 +630,18 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
   }));
 
   return (
-      <div className={`flex flex-col h-full bg-gradient-to-b from-white via-indigo-50/30 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-xl shadow-xl ${program ? 'max-w-full' : 'max-w-3xl mx-auto'}`}>
-     
+    <>
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
+      `}</style>
+
+      <div
+        className={`flex flex-col min-h-[calc(100vh-10rem)] ${program ? 'max-w-full' : 'max-w-3xl mx-auto px-4 py-8'}`}
+        style={{ fontFamily: "'Outfit', sans-serif" }}
+      >
         {program ? (
-          <ProgramDisplay 
-            program={program} 
+          <ProgramDisplay
+            program={program}
             userEmail={localUser?.email}
             onRequestUpsell={() => setIsUpsellOpen(!isUpsellOpen)}
             isUpsellOpen={isUpsellOpen}
@@ -740,9 +654,13 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
             onRequestMore={handleRequestMoreDetails}
           />
         ) : isGeneratingProgram ? (
-          <GeneratingProgramTransition />
+          <GeneratingProgramTransition
+            progress={generationProgress}
+            phases={streamedPhases}
+            programMeta={streamedProgramMeta}
+          />
         ) : (
-          <div className="flex-1 overflow-y-auto p-8 space-y-8 messages-container relative">
+          <div className="flex-1 overflow-y-auto p-6 space-y-6 messages-container relative bg-white rounded-2xl border border-[#F1F5F9] shadow-sm">
             <AnimatePresence>
               {messages.map((message, index) => (
                 <motion.div
@@ -753,27 +671,29 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
                   className={`flex ${message.role === "assistant" ? "justify-start" : "justify-end"}`}
                 >
                   <div
-                    className={`max-w-[85%] p-6 rounded-2xl shadow-lg transition-all duration-300 hover:-translate-y-0.5 ${
+                    className={`max-w-[85%] p-5 rounded-2xl transition-all duration-300 ${
                       message.role === "assistant"
-                        ? "bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-750 shadow-lg border-2 border-gray-200 dark:border-gray-700"
-                        : "bg-gradient-to-br from-indigo-600 to-purple-700 text-white shadow-xl shadow-indigo-500/25"
+                        ? "bg-white border-2 border-[#F1F5F9] shadow-sm"
+                        : "bg-[#0F172A] text-white shadow-lg shadow-[#0F172A]/10"
                     }`}
                   >
-                    <p className={`whitespace-pre-wrap text-lg leading-relaxed ${message.role === "assistant" ? "text-gray-800 dark:text-gray-100" : "text-white"}`}>{message.content}</p>
+                    <p className={`whitespace-pre-wrap text-base leading-relaxed ${message.role === "assistant" ? "text-[#0F172A]" : "text-white"}`}>
+                      {message.content}
+                    </p>
                   </div>
                 </motion.div>
               ))}
             </AnimatePresence>
-            
+
             {isTyping && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="flex items-center space-x-2 text-indigo-600 dark:text-indigo-400"
+                className="flex items-center space-x-2"
               >
-                <div className="w-2.5 h-2.5 bg-current rounded-full animate-bounce" />
-                <div className="w-2.5 h-2.5 bg-current rounded-full animate-bounce" style={{ animationDelay: "0.2s" }} />
-                <div className="w-2.5 h-2.5 bg-current rounded-full animate-bounce" style={{ animationDelay: "0.4s" }} />
+                <div className="w-2 h-2 bg-[#FF6B6B] rounded-full animate-bounce" />
+                <div className="w-2 h-2 bg-[#FF6B6B] rounded-full animate-bounce" style={{ animationDelay: "0.15s" }} />
+                <div className="w-2 h-2 bg-[#FF6B6B] rounded-full animate-bounce" style={{ animationDelay: "0.3s" }} />
               </motion.div>
             )}
             <div ref={messagesEndRef} />
@@ -782,6 +702,7 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
 
         {renderFormSection()}
       </div>
+    </>
   );
 });
 

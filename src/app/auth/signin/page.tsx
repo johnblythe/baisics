@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { signInAction } from "../actions";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import MainLayout from "@/app/components/layouts/MainLayout";
+import { Mail, ArrowRight } from "lucide-react";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
@@ -22,12 +22,10 @@ export default function SignIn() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted with email:", email);
     setIsLoading(true);
     setError("");
 
     try {
-      console.log("Attempting to sign in...");
       await signInAction(email);
       window.location.href = "/auth/verify-request";
     } catch (err) {
@@ -39,22 +37,30 @@ export default function SignIn() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      <main className="flex-grow flex items-center justify-center bg-gradient-to-b from-white via-indigo-50/30 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 pt-16">
-        <div className="max-w-md w-full space-y-8 p-8 bg-white dark:bg-gray-800 rounded-xl shadow-xl m-4">
-          <div className="text-center">
-            <h2 className="mt-6 text-3xl font-bold text-gray-900 dark:text-white">
-              Sign in to your account
-            </h2>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-              Enter your email to receive a magic link
-            </p>
-          </div>
-          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-            <div className="rounded-md shadow-sm -space-y-px">
+    <MainLayout>
+      <div className="flex items-center justify-center min-h-[60vh] px-4">
+        <div className="max-w-md w-full">
+          {/* Card */}
+          <div className="bg-white rounded-2xl border border-[#F1F5F9] shadow-lg p-8">
+            {/* Icon */}
+            <div className="w-16 h-16 mx-auto bg-[#0F172A] rounded-2xl flex items-center justify-center mb-6">
+              <Mail className="w-8 h-8 text-white" />
+            </div>
+
+            {/* Header */}
+            <div className="text-center mb-8">
+              <h1 className="text-2xl font-bold text-[#0F172A] mb-2">
+                Sign in to baisics
+              </h1>
+              <p className="text-[#475569]">
+                Enter your email to receive a magic link
+              </p>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label htmlFor="email-address" className="sr-only">
+                <label htmlFor="email-address" className="block text-sm font-medium text-[#475569] mb-2">
                   Email address
                 </label>
                 <input
@@ -65,29 +71,43 @@ export default function SignIn() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                  placeholder="Email address"
+                  className="w-full px-4 py-3 rounded-xl border border-[#F1F5F9] bg-white text-[#0F172A] placeholder-[#94A3B8] focus:ring-2 focus:ring-[#FF6B6B]/20 focus:border-[#FF6B6B] transition-colors"
+                  placeholder="you@example.com"
                 />
               </div>
-            </div>
 
-            {error && (
-              <div className="text-red-500 text-sm text-center">{error}</div>
-            )}
+              {error && (
+                <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm text-center">
+                  {error}
+                </div>
+              )}
 
-            <div>
               <button
                 type="submit"
                 disabled={isLoading}
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#FF6B6B] text-white font-semibold hover:bg-[#EF5350] transition-colors shadow-lg shadow-[#FF6B6B]/25 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isLoading ? "Sending link..." : "Send magic link"}
+                {isLoading ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span>Sending link...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Send magic link</span>
+                    <ArrowRight className="w-5 h-5" />
+                  </>
+                )}
               </button>
-            </div>
-          </form>
+            </form>
+
+            {/* Footer note */}
+            <p className="mt-6 text-center text-sm text-[#94A3B8]">
+              No password needed. We&apos;ll send you a secure link.
+            </p>
+          </div>
         </div>
-      </main>
-      <Footer />
-    </div>
+      </div>
+    </MainLayout>
   );
-} 
+}
