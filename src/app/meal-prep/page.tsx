@@ -206,92 +206,70 @@ export default function MealPrepPage() {
 
   return (
     <MainLayout>
-      <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
-        {/* Header */}
-        <div>
-          <h1 className="text-2xl font-bold text-[#0F172A]">Meal Prep Helper</h1>
-          <p className="text-[#64748B]">Generate meal plans that hit your macro targets</p>
-        </div>
-
-        {/* Macro Targets Display */}
-        {macros && (
-          <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm p-6">
-            <h2 className="text-sm font-medium text-[#94A3B8] uppercase tracking-wider mb-4" style={{ fontFamily: "'Space Mono', monospace" }}>
-              Your Daily Targets
-            </h2>
-            <div className="grid grid-cols-4 gap-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-[#0F172A]">{macros.calories}</div>
-                <div className="text-xs text-[#94A3B8]">Calories</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-[#0F172A]">{macros.protein}g</div>
-                <div className="text-xs text-[#94A3B8]">Protein</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-[#0F172A]">{macros.carbs}g</div>
-                <div className="text-xs text-[#94A3B8]">Carbs</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-[#0F172A]">{macros.fat}g</div>
-                <div className="text-xs text-[#94A3B8]">Fat</div>
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        {/* Compact Header with Inline Targets */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-[#0F172A]">Meal Prep Helper</h1>
+            <p className="text-sm text-[#64748B]">Generate meal plans that hit your macro targets</p>
+          </div>
+          {macros && (
+            <div className="flex items-center gap-3 flex-wrap">
+              <span className="text-xs text-[#94A3B8] uppercase tracking-wider" style={{ fontFamily: "'Space Mono', monospace" }}>
+                Targets:
+              </span>
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-1 bg-[#FEF2F2] text-[#DC2626] text-sm font-medium rounded-full">
+                  {macros.calories} cal
+                </span>
+                <span className="px-2.5 py-1 bg-[#F0FDF4] text-[#16A34A] text-sm font-medium rounded-full">
+                  {macros.protein}g P
+                </span>
+                <span className="px-2.5 py-1 bg-[#FEF9C3] text-[#CA8A04] text-sm font-medium rounded-full">
+                  {macros.carbs}g C
+                </span>
+                <span className="px-2.5 py-1 bg-[#F0F9FF] text-[#0284C7] text-sm font-medium rounded-full">
+                  {macros.fat}g F
+                </span>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
-        {/* Configuration Form */}
-        <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm p-6 space-y-6">
-          <h2 className="text-sm font-medium text-[#94A3B8] uppercase tracking-wider" style={{ fontFamily: "'Space Mono', monospace" }}>
-            Configure Your Plan
-          </h2>
+        {/* Horizontal Config Row */}
+        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-4 mb-6">
+          <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+            {/* Dropdowns */}
+            <div className="flex items-center gap-3 flex-wrap">
+              <select
+                value={mealsPerDay}
+                onChange={(e) => setMealsPerDay(Number(e.target.value))}
+                className="px-3 py-2 border border-[#E2E8F0] rounded-lg text-sm text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]/20 focus:border-[#FF6B6B] bg-white"
+              >
+                {[2, 3, 4, 5, 6].map(n => (
+                  <option key={n} value={n}>{n} meals/day</option>
+                ))}
+              </select>
 
-          {/* Meals per day */}
-          <div>
-            <label className="block text-sm font-medium text-[#475569] mb-2">
-              Meals per day
-            </label>
-            <select
-              value={mealsPerDay}
-              onChange={(e) => setMealsPerDay(Number(e.target.value))}
-              className="w-full px-4 py-2 border border-[#E2E8F0] rounded-lg text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]/20 focus:border-[#FF6B6B]"
-            >
-              {[2, 3, 4, 5, 6].map(n => (
-                <option key={n} value={n}>{n} meals</option>
-              ))}
-            </select>
-          </div>
+              <select
+                value={days}
+                onChange={(e) => setDays(Number(e.target.value))}
+                className="px-3 py-2 border border-[#E2E8F0] rounded-lg text-sm text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]/20 focus:border-[#FF6B6B] bg-white"
+              >
+                <option value={1}>1 day</option>
+                {[2, 3, 4, 5, 6, 7].map(n => (
+                  <option key={n} value={n} disabled={!isPro}>
+                    {n} days {!isPro && '(Pro)'}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          {/* Days to plan */}
-          <div>
-            <label className="block text-sm font-medium text-[#475569] mb-2">
-              Days to plan
-            </label>
-            <select
-              value={days}
-              onChange={(e) => setDays(Number(e.target.value))}
-              className="w-full px-4 py-2 border border-[#E2E8F0] rounded-lg text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]/20 focus:border-[#FF6B6B]"
-            >
-              <option value={1}>1 day</option>
-              {[2, 3, 4, 5, 6, 7].map(n => (
-                <option key={n} value={n} disabled={!isPro}>
-                  {n} days {!isPro && '(Pro)'}
-                </option>
-              ))}
-            </select>
-            {!isPro && days > 1 && (
-              <p className="text-xs text-[#94A3B8] mt-1">
-                Multi-day planning available with Pro
-              </p>
-            )}
-          </div>
+            {/* Divider - hidden on mobile */}
+            <div className="hidden lg:block w-px h-8 bg-[#E2E8F0]" />
 
-          {/* Preferences */}
-          <div>
-            <label className="block text-sm font-medium text-[#475569] mb-2">
-              Dietary preferences
-            </label>
-            <div className="flex flex-wrap gap-2">
+            {/* Preferences - inline on desktop */}
+            <div className="flex items-center gap-2 flex-wrap flex-1">
               {ALL_PREFERENCES.map(pref => {
                 const isPaidPref = PAID_PREFERENCES.includes(pref);
                 const isLocked = isPaidPref && !isPro;
@@ -302,7 +280,7 @@ export default function MealPrepPage() {
                     key={pref}
                     onClick={() => togglePreference(pref)}
                     disabled={isLocked}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                    className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
                       isSelected
                         ? 'bg-[#0F172A] text-white'
                         : isLocked
@@ -310,115 +288,146 @@ export default function MealPrepPage() {
                         : 'bg-[#F8FAFC] text-[#64748B] hover:bg-[#E2E8F0]'
                     }`}
                   >
-                    {isLocked && <span className="mr-1">🔒</span>}
+                    {isLocked && <span className="mr-0.5">🔒</span>}
                     {pref.replace('-', ' ')}
                   </button>
                 );
               })}
             </div>
+
+            {/* Generate Button */}
+            <button
+              onClick={generateMealPlan}
+              disabled={generating || !macros}
+              className="px-6 py-2 bg-[#FF6B6B] text-white text-sm font-medium rounded-lg hover:bg-[#EF5350] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 whitespace-nowrap"
+            >
+              {generating ? (
+                <>
+                  <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                'Generate Plan'
+              )}
+            </button>
           </div>
 
-          {/* Generate Button */}
-          <button
-            onClick={generateMealPlan}
-            disabled={generating || !macros}
-            className="w-full py-3 bg-[#FF6B6B] text-white font-medium rounded-lg hover:bg-[#EF5350] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-          >
-            {generating ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Generating...
-              </>
-            ) : (
-              'Generate Meal Plan'
-            )}
-          </button>
-
           {error && (
-            <p className="text-sm text-red-500 text-center">{error}</p>
+            <p className="text-sm text-red-500 mt-3">{error}</p>
           )}
         </div>
 
-        {/* Generated Meal Plan */}
+        {/* Split View: Meal Plan + Grocery List */}
         {mealPlan && (
-          <>
-            <MealPlanDisplay
-              plan={mealPlan}
-              isPro={isPro}
-              onSave={savePlan}
-              targetMacros={macros!}
-            />
+          <div className="flex flex-col lg:flex-row gap-6">
+            {/* Meal Plan - takes more space */}
+            <div className="flex-1 lg:max-w-[60%]">
+              <MealPlanDisplay
+                plan={mealPlan}
+                isPro={isPro}
+                onSave={savePlan}
+                targetMacros={macros!}
+              />
+            </div>
 
-            <GroceryList
-              items={mealPlan.groceryList}
-              isPro={isPro}
-              onCopy={copyGroceryList}
-            />
-          </>
-        )}
+            {/* Right sidebar - sticky on desktop */}
+            <div className="lg:w-[40%]">
+              <div className="lg:sticky lg:top-6 space-y-4">
+                {/* Upgrade CTA - FIRST for free users */}
+                {!isPro && (
+                  <div className="bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0F172A] rounded-xl p-4 text-white relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-[#FF6B6B]/10 rounded-full blur-2xl" />
+                    <div className="relative">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="px-2 py-0.5 bg-[#FF6B6B] text-white text-[10px] font-bold uppercase rounded">Pro</span>
+                        <h3 className="font-semibold text-sm">Unlock Full Meal Planning</h3>
+                      </div>
+                      <ul className="space-y-1.5 mb-3">
+                        <li className="flex items-center gap-2 text-xs text-[#94A3B8]">
+                          <svg className="w-3.5 h-3.5 text-[#FF6B6B]" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                          Plan up to 7 days at once
+                        </li>
+                        <li className="flex items-center gap-2 text-xs text-[#94A3B8]">
+                          <svg className="w-3.5 h-3.5 text-[#FF6B6B]" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                          Save & reuse your favorite plans
+                        </li>
+                        <li className="flex items-center gap-2 text-xs text-[#94A3B8]">
+                          <svg className="w-3.5 h-3.5 text-[#FF6B6B]" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                          Export grocery lists
+                        </li>
+                        <li className="flex items-center gap-2 text-xs text-[#94A3B8]">
+                          <svg className="w-3.5 h-3.5 text-[#FF6B6B]" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                          All dietary preferences
+                        </li>
+                      </ul>
+                      <a
+                        href="/purchase"
+                        className="block w-full py-2 bg-[#FF6B6B] text-white text-sm font-medium rounded-lg hover:bg-[#EF5350] transition-colors text-center"
+                      >
+                        Upgrade to Pro
+                      </a>
+                    </div>
+                  </div>
+                )}
 
-        {/* Saved Plans (Pro only) */}
-        {isPro && savedPlans.length > 0 && (
-          <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm p-6">
-            <h2 className="text-sm font-medium text-[#94A3B8] uppercase tracking-wider mb-4" style={{ fontFamily: "'Space Mono', monospace" }}>
-              Saved Plans
-            </h2>
-            <div className="space-y-2">
-              {savedPlans.map((plan, idx) => (
-                <button
-                  key={plan.id}
-                  onClick={() => loadPlan(plan)}
-                  className="w-full p-3 text-left rounded-lg border border-[#E2E8F0] hover:border-[#94A3B8] transition-colors"
-                >
-                  <div className="font-medium text-[#0F172A]">
-                    {plan.days.length}-day plan • {plan.config.mealsPerDay} meals/day
+                {/* Grocery List */}
+                <GroceryList
+                  items={mealPlan.groceryList}
+                  isPro={isPro}
+                  onCopy={copyGroceryList}
+                />
+
+                {/* Saved Plans (Pro only) - compact */}
+                {isPro && savedPlans.length > 0 && (
+                  <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-4">
+                    <h3 className="text-xs font-medium text-[#94A3B8] uppercase tracking-wider mb-3" style={{ fontFamily: "'Space Mono', monospace" }}>
+                      Saved Plans
+                    </h3>
+                    <div className="space-y-2 max-h-40 overflow-y-auto">
+                      {savedPlans.map((plan) => (
+                        <button
+                          key={plan.id}
+                          onClick={() => loadPlan(plan)}
+                          className="w-full p-2 text-left rounded-lg border border-[#E2E8F0] hover:border-[#94A3B8] transition-colors text-xs"
+                        >
+                          <span className="font-medium text-[#0F172A]">
+                            {plan.days.length}d • {plan.config.mealsPerDay} meals
+                          </span>
+                          <span className="text-[#94A3B8] ml-2">
+                            {new Date(plan.createdAt).toLocaleDateString()}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                  <div className="text-sm text-[#64748B]">
-                    Saved {new Date(plan.createdAt).toLocaleDateString()}
-                  </div>
-                </button>
-              ))}
+                )}
+              </div>
             </div>
           </div>
         )}
 
-        {/* Upgrade CTA (Free users only) */}
-        {!isPro && mealPlan && (
-          <div className="bg-gradient-to-r from-[#0F172A] to-[#1E293B] rounded-2xl p-6 text-white">
-            <h3 className="text-lg font-semibold mb-2">Want to plan your whole week?</h3>
-            <p className="text-[#94A3B8] mb-4">Pro members can:</p>
-            <ul className="space-y-2 mb-4 text-sm">
-              <li className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-[#FF6B6B]" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+        {/* Empty state - before generation */}
+        {!mealPlan && !generating && (
+          <div className="flex items-center justify-center py-16">
+            <div className="text-center max-w-md">
+              <div className="w-16 h-16 mx-auto mb-4 bg-[#F8FAFC] rounded-2xl flex items-center justify-center">
+                <svg className="w-8 h-8 text-[#94A3B8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                 </svg>
-                Generate 7-day meal plans
-              </li>
-              <li className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-[#FF6B6B]" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-                Save unlimited plans
-              </li>
-              <li className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-[#FF6B6B]" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-                Export grocery lists
-              </li>
-              <li className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-[#FF6B6B]" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-                All dietary preferences
-              </li>
-            </ul>
-            <a
-              href="/purchase"
-              className="inline-block px-6 py-2 bg-[#FF6B6B] text-white font-medium rounded-lg hover:bg-[#EF5350] transition-colors"
-            >
-              Upgrade to Pro
-            </a>
+              </div>
+              <h3 className="text-lg font-medium text-[#0F172A] mb-2">Ready to plan your meals</h3>
+              <p className="text-sm text-[#64748B]">
+                Configure your preferences above and click Generate to create a meal plan that hits your daily macro targets.
+              </p>
+            </div>
           </div>
         )}
       </div>
