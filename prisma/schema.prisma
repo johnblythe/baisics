@@ -91,6 +91,7 @@ model User {
   stats        UserStats[]
   checkIns     CheckIn[]
   activities   UserActivity[]
+  nutritionLogs NutritionLog[]
   session      Session[]
   purchaseSessions PurchaseSession[]
   subscription   Subscription?
@@ -500,6 +501,32 @@ model UserActivity {
   @@index([programId])
   @@index([type])
   @@map("user_activities")
+}
+
+model NutritionLog {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  date      DateTime @db.Date
+  protein   Int      // grams
+  carbs     Int      // grams
+  fats      Int      // grams
+  calories  Int
+  source    NutritionSource @default(MANUAL)
+  notes     String?  @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, date])
+  @@index([userId])
+  @@index([date])
+  @@map("nutrition_logs")
+}
+
+enum NutritionSource {
+  MANUAL
+  SCREENSHOT
 }
 
 model Account {
