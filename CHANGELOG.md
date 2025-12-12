@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Meal Prep Helper feature at `/meal-prep` (#124)
+  - AI-generated meal plans targeting user's daily macros from their program
+  - Configurable meals per day (2-6) and planning duration (1-7 days)
+  - Dietary preferences: high-protein, quick meals (free), vegetarian, dairy-free, gluten-free, budget-friendly, low-carb (Pro)
+  - Expandable meal cards showing ingredients, macros per meal, prep time, instructions
+  - Auto-generated grocery list grouped by category with checkboxes
+  - Copy grocery list to clipboard, export for Pro users
+  - Save/load meal plans via localStorage (Pro only)
+  - Free tier: 1-day plans, basic preferences; Pro tier: multi-day, all preferences, save plans
+  - CTA banner on `/nutrition` page linking to meal prep
 - Nutrition tracking feature with daily macro logging (#98)
   - NutritionLog model with unique constraint per user/date (LRU upsert)
   - API routes: log (upsert), history (with summary stats), parse (Claude Vision for MFP screenshots)

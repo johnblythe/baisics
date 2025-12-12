@@ -177,6 +177,29 @@ export default function NutritionHistoryPage() {
           </button>
         </div>
 
+        {/* Meal Prep CTA */}
+        <a
+          href="/meal-prep"
+          className="block bg-gradient-to-r from-[#0F172A] to-[#1E293B] rounded-2xl p-4 text-white hover:opacity-95 transition-opacity"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                </svg>
+              </div>
+              <div>
+                <div className="font-medium">Need meal ideas?</div>
+                <div className="text-sm text-[#94A3B8]">Generate a meal plan that hits your macros</div>
+              </div>
+            </div>
+            <svg className="w-5 h-5 text-[#94A3B8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
+        </a>
+
         {/* Trends Chart */}
         <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm p-6">
           <h2 className="text-sm font-medium text-[#94A3B8] uppercase tracking-wider mb-4" style={{ fontFamily: "'Space Mono', monospace" }}>
