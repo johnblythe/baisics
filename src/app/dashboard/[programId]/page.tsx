@@ -17,6 +17,8 @@ import { ProgramSelector } from '@/components/ProgramSelector';
 import { PhotoComparison } from '@/components/PhotoComparison';
 import { ProgramCard } from '@/components/share/ProgramCard';
 import { MacroDisplay } from '@/components/MacroDisplay';
+import { NutritionLogModal } from '@/components/NutritionLogModal';
+import { NutritionWidget } from '@/components/NutritionWidget';
 
 // Types for our API responses
 interface ProgramOverview {
@@ -215,6 +217,7 @@ function DashboardContent() {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isNutritionModalOpen, setIsNutritionModalOpen] = useState(false);
   const [shareData, setShareData] = useState<any>(null);
   const [allPrograms, setAllPrograms] = useState<Program[]>([]);
 
@@ -394,16 +397,27 @@ function DashboardContent() {
                       {currentWorkout.nextWorkout.focus} • {currentWorkout.nextWorkout.exerciseCount} exercises
                     </p>
                   </div>
-                  <Link
-                    href={`/workout/${currentWorkout.nextWorkout.id}`}
-                    className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-[#FF6B6B] text-white font-semibold rounded-xl hover:bg-[#EF5350] transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-[#FF6B6B]/25"
-                  >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Start Workout
-                  </Link>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <Link
+                      href={`/workout/${currentWorkout.nextWorkout.id}`}
+                      className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-[#FF6B6B] text-white font-semibold rounded-xl hover:bg-[#EF5350] transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-[#FF6B6B]/25"
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Start Workout
+                    </Link>
+                    <button
+                      onClick={() => setIsNutritionModalOpen(true)}
+                      className="inline-flex items-center justify-center gap-3 px-6 py-4 bg-white text-[#0F172A] font-semibold rounded-xl border-2 border-[#E2E8F0] hover:border-[#FF6B6B] hover:text-[#FF6B6B] transition-all duration-200"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                      </svg>
+                      Log Nutrition
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
@@ -1019,6 +1033,9 @@ function DashboardContent() {
               </div>
             </div>
 
+            {/* Nutrition Tracking Widget */}
+            <NutritionWidget onLogClick={() => setIsNutritionModalOpen(true)} />
+
             <WorkoutUploadModal
               isOpen={isUploadModalOpen}
               onClose={() => setIsUploadModalOpen(false)}
@@ -1028,6 +1045,11 @@ function DashboardContent() {
               programId={program.id}
               isOpen={isCompareModalOpen}
               onClose={() => setIsCompareModalOpen(false)}
+            />
+
+            <NutritionLogModal
+              isOpen={isNutritionModalOpen}
+              onClose={() => setIsNutritionModalOpen(false)}
             />
 
             {isShareModalOpen && shareData && (
