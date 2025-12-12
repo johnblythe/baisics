@@ -16,6 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Pre-fills form when editing existing entry, shows info banner for updates
   - NutritionWidget dashboard card showing 7-day adherence and averages
   - "Log Nutrition" button next to "Start Workout" on dashboard
+- Nutrition history page at `/nutrition` (#98)
+  - Calendar view with logged days highlighted, click to log/edit
+  - 14-day trends chart with dual Y-axis (calories + protein)
+  - List view showing all logs with macros and calories
+  - Links from dashboard widget header
 - MacroDisplay component with visual donut chart for nutrition data (#104)
   - SVG donut shows caloric percentage breakdown (P×4, C×4, F×9)
   - Color-coded legend with gram values

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { MacroDisplay } from './MacroDisplay';
 
 interface NutritionLog {
@@ -88,14 +89,26 @@ export function NutritionWidget({ onLogClick }: NutritionWidgetProps) {
       {/* Header */}
       <div className="px-6 py-4 border-b border-[#E2E8F0]">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-medium text-[#94A3B8] uppercase tracking-wider" style={{ fontFamily: "'Space Mono', monospace" }}>
+          <Link
+            href="/nutrition"
+            className="text-sm font-medium text-[#94A3B8] uppercase tracking-wider hover:text-[#FF6B6B] transition-colors"
+            style={{ fontFamily: "'Space Mono', monospace" }}
+          >
             Nutrition This Week
-          </h3>
-          {!todayLogged && (
-            <span className="text-xs px-2 py-1 bg-amber-50 text-amber-600 rounded-full">
-              Not logged today
-            </span>
-          )}
+          </Link>
+          <div className="flex items-center gap-2">
+            {!todayLogged && (
+              <span className="text-xs px-2 py-1 bg-amber-50 text-amber-600 rounded-full">
+                Not logged today
+              </span>
+            )}
+            <Link
+              href="/nutrition"
+              className="text-xs text-[#94A3B8] hover:text-[#FF6B6B] transition-colors"
+            >
+              View all →
+            </Link>
+          </div>
         </div>
       </div>
 
