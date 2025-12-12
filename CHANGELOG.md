@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Meal Prep Helper feature at `/meal-prep` (#124)
+  - AI-generated meal plans targeting user's daily macros from their program
+  - Configurable meals per day (2-6) and planning duration (1-7 days)
+  - Dietary preferences: high-protein, quick meals (free), vegetarian, dairy-free, gluten-free, budget-friendly, low-carb (Pro)
+  - Expandable meal cards showing ingredients, macros per meal, prep time, instructions
+  - Auto-generated grocery list grouped by category with checkboxes
+  - Copy grocery list to clipboard, export for Pro users
+  - Save/load meal plans via localStorage (Pro only)
+  - Free tier: 1-day plans, basic preferences; Pro tier: multi-day, all preferences, save plans
+  - CTA banner on `/nutrition` page linking to meal prep
+- Nutrition tracking feature with daily macro logging (#98)
+  - NutritionLog model with unique constraint per user/date (LRU upsert)
+  - API routes: log (upsert), history (with summary stats), parse (Claude Vision for MFP screenshots)
+  - NutritionLogModal with quick entry and screenshot import tabs
+  - Auto-computes calories from macros (P×4, C×4, F×9), or accepts calories-only
+  - Pre-fills form when editing existing entry, shows info banner for updates
+  - NutritionWidget dashboard card showing 7-day adherence and averages
+  - "Log Nutrition" button next to "Start Workout" on dashboard
+- Nutrition history page at `/nutrition` (#98)
+  - Calendar view with logged days highlighted, click to log/edit
+  - 14-day trends chart with dual Y-axis (calories + protein)
+  - List view showing all logs with macros and calories
+  - Links from dashboard widget header
+- MacroDisplay component with visual donut chart for nutrition data (#104)
+  - SVG donut shows caloric percentage breakdown (P×4, C×4, F×9)
+  - Color-coded legend with gram values
+  - Compact variant for dashboard, full variant for program review
+
 ### Changed
 - Redesigned Program Review page with v2a design system (#102)
   - Sticky phase navigation tabs with progress indicator
