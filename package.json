@@ -12,7 +12,8 @@
     "test:integration": "vitest run tests/integration",
     "vercel-build": "prisma generate && prisma migrate deploy && next build && npm run sitemap",
     "sitemap": "ts-node src/scripts/generate-sitemap.ts",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "import:exercises": "npx tsx src/scripts/import-exercises.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.1",

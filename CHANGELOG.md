@@ -8,6 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Exercise library with 873 exercises imported from free-exercise-db (public domain)
+  - Images, instructions, target/secondary muscles, difficulty, equipment data
+  - New `images` field on ExerciseLibrary model
+  - `NECK` added to MuscleGroup enum
+  - Import script: `npm run import:exercises`
+- Exercise matcher utility for linking AI-generated exercises to library entries
+  - Exact match with normalization (DB→Dumbbell, BB→Barbell)
+  - Pre-resolves exercises before program save for better data linking
+  - See #128 for future AI-assisted fuzzy matching enhancement
+
+### Changed
+- Upgraded AI models for better quality and speed
+  - Opus 4.5 for high-value tasks: program generation, body composition analysis
+  - Sonnet 4.5 for high-volume tasks: meal prep, nutrition parsing, chat
+  - Configurable via `OPUS_MODEL` and `SONNET_MODEL` env vars
+
 - Meal Prep Helper feature at `/meal-prep` (#124)
   - AI-generated meal plans targeting user's daily macros from their program
   - Configurable meals per day (2-6) and planning duration (1-7 days)

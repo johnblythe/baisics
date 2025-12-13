@@ -15,7 +15,9 @@
       "Bash(gh pr view:*)",
       "Bash(git commit:*)",
       "Skill(frontend-design)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(gh issue close:*)",
+      "Bash(gh issue view:*)"
     ],
     "deny": [],
     "ask": []
