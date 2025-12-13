@@ -23,6 +23,7 @@ interface ProgramOverview {
         name: string;
         sets: number;
         reps: number | null;
+        restPeriod: number;
         notes: string | null;
         measureType: string | null;
         measureUnit: string | null;
@@ -73,6 +74,7 @@ export async function GET(
                     name: true,
                     sets: true,
                     reps: true,
+                    restPeriod: true,
                     notes: true,
                     measureType: true,
                     measureUnit: true,
