@@ -44,20 +44,23 @@ export default function Header() {
                       Dashboard
                     </Link>
                     <Link
+                      href="/program"
+                      className="text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors"
+                    >
+                      My Program
+                    </Link>
+                    <Link
+                      href="/nutrition"
+                      className="text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors"
+                    >
+                      Nutrition
+                    </Link>
+                    <Link
                       href="/blog"
                       className="text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors"
                     >
                       Blog
                     </Link>
-                    <div
-                      className="text-sm font-medium text-[#94A3B8] cursor-default relative group"
-                      aria-label="Program Library - Coming Soon"
-                    >
-                      <span>Program Library</span>
-                      <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 px-2 py-1 bg-[#0F172A] text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                        Coming soon!
-                      </div>
-                    </div>
                   </nav>
 
                   {/* User Menu - Authenticated */}
@@ -144,15 +147,26 @@ export default function Header() {
                           Dashboard
                         </Link>
                         <Link
+                          href="/program"
+                          className="block px-4 py-2.5 text-sm font-medium text-[#475569] hover:bg-[#F8FAFC]"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          My Program
+                        </Link>
+                        <Link
+                          href="/nutrition"
+                          className="block px-4 py-2.5 text-sm font-medium text-[#475569] hover:bg-[#F8FAFC]"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          Nutrition
+                        </Link>
+                        <Link
                           href="/blog"
                           className="block px-4 py-2.5 text-sm font-medium text-[#475569] hover:bg-[#F8FAFC]"
                           onClick={() => setIsMenuOpen(false)}
                         >
                           Blog
                         </Link>
-                        <div className="block px-4 py-2.5 text-sm font-medium text-[#94A3B8]">
-                          Program Library (Soon!)
-                        </div>
                       </div>
                     )}
                   </div>
