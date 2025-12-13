@@ -165,6 +165,7 @@ model ExerciseLibrary {
   targetMuscles    MuscleGroup[]     @default([])
   secondaryMuscles MuscleGroup[]     @default([])
   videoUrl         String?           @map("video_url")
+  images           String[]          @default([])
   variations       ExerciseLibrary[] @relation("ExerciseVariations")
   parentExercise   ExerciseLibrary?  @relation("ExerciseVariations", fields: [parentId], references: [id])
   parentId         String?           @db.Uuid
@@ -305,6 +306,8 @@ enum MuscleGroup {
   HIP_ABDUCTORS
   HIP_ADDUCTORS
 
+  // Other
+  NECK
   OTHER
 }
 

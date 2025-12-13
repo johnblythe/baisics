@@ -115,7 +115,7 @@ async function example() {
 
 const sendToClaude = async (prompt: string) => {
   const response = await anthropic.messages.create({
-    model: 'claude-3-sonnet-20240229',
+    model: process.env.SONNET_MODEL || 'claude-sonnet-4-5-20241022',
     max_tokens: 4096,
     messages: [{ role: 'user', content: prompt }],
   });

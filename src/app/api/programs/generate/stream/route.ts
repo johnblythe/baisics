@@ -17,7 +17,8 @@ import { STREAMING_SYSTEM_PROMPT, buildStreamingGenerationPrompt } from '@/servi
 import { StreamingPhaseParser, ProgramMeta } from '@/services/programGeneration/streamingParser';
 import { sanitizeUserProfile, logSuspiciousInput } from '@/utils/security/promptSanitizer';
 
-const MODEL = process.env.SONNET_MODEL || 'claude-sonnet-4-20250514';
+// Use Opus for program generation - core product, quality matters most
+const MODEL = process.env.OPUS_MODEL || 'claude-opus-4-5-20250514';
 const MAX_TOKENS = 16384;
 const ESTIMATED_GENERATION_TIME_MS = 60000; // 60 seconds estimated
 

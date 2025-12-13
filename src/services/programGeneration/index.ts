@@ -15,6 +15,7 @@ import type {
 import { validateProgram, generatedProgramSchema } from './schema';
 import { SYSTEM_PROMPT, buildGenerationPrompt, buildContinuationPrompt } from './prompts';
 import { sanitizeUserProfile, sanitizeInput, logSuspiciousInput } from '@/utils/security/promptSanitizer';
+import { getOrCreateExercise } from '@/utils/exerciseMatcher';
 
 /**
  * Unified Program Generation Service
@@ -25,7 +26,8 @@ import { sanitizeUserProfile, sanitizeInput, logSuspiciousInput } from '@/utils/
  * - Program modifications
  */
 
-const MODEL = process.env.SONNET_MODEL || 'claude-sonnet-4-20250514';
+// Use Opus for program generation - core product, quality matters most
+const MODEL = process.env.OPUS_MODEL || 'claude-opus-4-5-20250514';
 const MAX_TOKENS = 16384; // Higher limit for multi-phase programs
 
 export interface GenerateProgramOptions {
@@ -344,12 +346,45 @@ function sortExercisesByCategory(program: GeneratedProgram): void {
 }
 
 /**
+ * Pre-resolve all exercises in a program to library entries using fuzzy matching
+ */
+async function resolveExerciseLibraryIds(
+  program: GeneratedProgram
+): Promise<Map<string, string>> {
+  const exerciseMap = new Map<string, string>();
+
+  // Collect unique exercise names
+  const uniqueNames = new Set<string>();
+  for (const phase of program.phases) {
+    for (const workout of phase.workouts) {
+      for (const exercise of workout.exercises) {
+        uniqueNames.add(exercise.name);
+      }
+    }
+  }
+
+  // Resolve each to library entry (with fuzzy matching)
+  for (const name of uniqueNames) {
+    const result = await getOrCreateExercise(name, 'default');
+    exerciseMap.set(name, result.id);
+    if (result.wasMatched && result.name !== name) {
+      console.log(`Fuzzy matched "${name}" → "${result.name}"`);
+    }
+  }
+
+  return exerciseMap;
+}
+
+/**
  * Save generated program to database
  */
 export async function saveProgramToDatabase(
   program: GeneratedProgram,
   userId: string
 ): Promise<{ id: string; name: string }> {
+  // Pre-resolve all exercises to library entries
+  const exerciseLibraryMap = await resolveExerciseLibraryIds(program);
+
   const savedProgram = await prisma.program.create({
     data: {
       name: program.name,
@@ -418,13 +453,7 @@ export async function saveProgramToDatabase(
                     sortOrder: exerciseIndex,
                     notes: `${exercise.intensity || ''} ${exercise.notes || ''}`.trim() || null,
                     exerciseLibrary: {
-                      connectOrCreate: {
-                        where: { name: exercise.name },
-                        create: {
-                          name: exercise.name,
-                          category: exercise.category || 'default',
-                        },
-                      },
+                      connect: { id: exerciseLibraryMap.get(exercise.name)! },
                     },
                   };
                 }),
