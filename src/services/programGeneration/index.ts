@@ -352,6 +352,7 @@ async function resolveExerciseLibraryIds(
   program: GeneratedProgram
 ): Promise<Map<string, string>> {
   const exerciseMap = new Map<string, string>();
+  const errors: string[] = [];
 
   // Collect unique exercise names
   const uniqueNames = new Set<string>();
@@ -365,11 +366,20 @@ async function resolveExerciseLibraryIds(
 
   // Resolve each to library entry (with fuzzy matching)
   for (const name of uniqueNames) {
-    const result = await getOrCreateExercise(name, 'default');
-    exerciseMap.set(name, result.id);
-    if (result.wasMatched && result.name !== name) {
-      console.log(`Fuzzy matched "${name}" → "${result.name}"`);
+    try {
+      const result = await getOrCreateExercise(name, 'default');
+      exerciseMap.set(name, result.id);
+      if (result.wasMatched && result.name !== name) {
+        console.log(`Matched "${name}" → "${result.name}"`);
+      }
+    } catch (error) {
+      console.error(`Failed to resolve exercise "${name}":`, error);
+      errors.push(name);
     }
+  }
+
+  if (errors.length > 0) {
+    throw new Error(`Failed to resolve ${errors.length} exercises: ${errors.join(', ')}`);
   }
 
   return exerciseMap;
@@ -441,6 +451,11 @@ export async function saveProgramToDatabase(
                     }
                   }
 
+                  const libraryId = exerciseLibraryMap.get(exercise.name);
+                  if (!libraryId) {
+                    throw new Error(`Exercise "${exercise.name}" was not resolved to library entry`);
+                  }
+
                   return {
                     name: exercise.name,
                     sets: exercise.sets,
@@ -453,7 +468,7 @@ export async function saveProgramToDatabase(
                     sortOrder: exerciseIndex,
                     notes: `${exercise.intensity || ''} ${exercise.notes || ''}`.trim() || null,
                     exerciseLibrary: {
-                      connect: { id: exerciseLibraryMap.get(exercise.name)! },
+                      connect: { id: libraryId },
                     },
                   };
                 }),

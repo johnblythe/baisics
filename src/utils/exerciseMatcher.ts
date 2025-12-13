@@ -27,9 +27,9 @@ function similarity(a: string, b: string): number {
 function normalize(name: string): string {
   return name
     .toLowerCase()
-    .replace(/dumbbell|db/gi, 'dumbbell')
-    .replace(/barbell|bb/gi, 'barbell')
-    .replace(/ez[- ]?bar/gi, 'ez bar')
+    .replace(/\bdumbbell\b|\bdb\b/gi, 'dumbbell')
+    .replace(/\bbarbell\b|\bbb\b/gi, 'barbell')
+    .replace(/\bez[- ]?bar\b/gi, 'ez bar')
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -46,14 +46,19 @@ let exerciseCache: { id: string; name: string; normalizedName: string }[] | null
 
 async function getExerciseCache() {
   if (!exerciseCache) {
-    const exercises = await prisma.exerciseLibrary.findMany({
-      select: { id: true, name: true },
-    });
-    exerciseCache = exercises.map(e => ({
-      id: e.id,
-      name: e.name,
-      normalizedName: normalize(e.name),
-    }));
+    try {
+      const exercises = await prisma.exerciseLibrary.findMany({
+        select: { id: true, name: true },
+      });
+      exerciseCache = exercises.map(e => ({
+        id: e.id,
+        name: e.name,
+        normalizedName: normalize(e.name),
+      }));
+    } catch (error) {
+      console.error('Failed to load exercise library cache:', error);
+      throw new Error(`Exercise library unavailable: ${error instanceof Error ? error.message : 'Database error'}`);
+    }
   }
   return exerciseCache;
 }
@@ -114,14 +119,19 @@ export async function getOrCreateExercise(
   }
 
   // No exact match - create new sparse entry
-  const created = await prisma.exerciseLibrary.upsert({
-    where: { name },
-    update: {},
-    create: { name, category },
-  });
+  try {
+    const created = await prisma.exerciseLibrary.upsert({
+      where: { name },
+      update: {},
+      create: { name, category },
+    });
 
-  // Clear cache since we added a new entry
-  clearExerciseCache();
+    // Clear cache since we added a new entry
+    clearExerciseCache();
 
-  return { id: created.id, name: created.name, wasMatched: false };
+    return { id: created.id, name: created.name, wasMatched: false };
+  } catch (error) {
+    console.error(`Failed to create exercise "${name}":`, error);
+    throw new Error(`Could not save exercise "${name}": ${error instanceof Error ? error.message : 'Database error'}`);
+  }
 }

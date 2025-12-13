@@ -48,7 +48,7 @@ Rules:
 - Do not include any text outside the JSON object`;
 
     const message = await anthropic.messages.create({
-      model: process.env.SONNET_MODEL || 'claude-sonnet-4-5-20241022',
+      model: process.env.SONNET_MODEL || 'claude-sonnet-4-5-20250929',
       max_tokens: 256,
       messages: [{
         role: 'user',

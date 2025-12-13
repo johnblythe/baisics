@@ -74,9 +74,13 @@ async function fetchExercises(): Promise<ExternalExercise[]> {
   console.log('Fetching exercises from free-exercise-db...');
   const response = await fetch(EXERCISE_DB_URL);
   if (!response.ok) {
-    throw new Error(`Failed to fetch: ${response.statusText}`);
+    throw new Error(`Failed to fetch exercises from ${EXERCISE_DB_URL}: HTTP ${response.status} ${response.statusText}`);
   }
-  return response.json();
+  try {
+    return await response.json();
+  } catch (parseError) {
+    throw new Error(`Exercise database returned invalid JSON: ${parseError instanceof Error ? parseError.message : 'Parse error'}`);
+  }
 }
 
 function mapMuscles(muscles: string[]): MuscleGroup[] {
@@ -171,6 +175,18 @@ async function importExercises(dryRun = false) {
     console.log(`  Imported: ${imported}`);
     console.log(`  Skipped (duplicates): ${skipped}`);
     console.log(`  Errors: ${errors}`);
+
+    // Fail if all imports failed
+    if (imported === 0 && errors > 0) {
+      console.error(`\nFATAL: All imports failed with ${errors} errors. Check database connection.`);
+      process.exit(1);
+    }
+
+    // Warn if error rate is high
+    const errorRate = errors / exercises.length;
+    if (errorRate > 0.1) {
+      console.warn(`\nWARNING: High error rate (${(errorRate * 100).toFixed(1)}%) - investigate database issues`);
+    }
 
   } catch (err) {
     console.error('Import failed:', err);
