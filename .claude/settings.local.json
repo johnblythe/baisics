@@ -19,7 +19,9 @@
       "Bash(gh issue close:*)",
       "Bash(gh issue view:*)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "WebFetch(domain:api.github.com)"
+      "WebFetch(domain:api.github.com)",
+      "Bash(git diff:*)",
+      "Bash(gh pr list:*)"
     ],
     "deny": [],
     "ask": []
