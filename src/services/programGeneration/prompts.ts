@@ -154,6 +154,10 @@ PROGRAM REQUIREMENTS:
 4. Exercises must use only the available equipment
 5. Progress difficulty appropriately across phases
 6. Include nutrition recommendations for each phase
+7. Include 2-3 form instructions per exercise, tailored to ${experienceLevel} level
+   - Beginners: basic setup and safety cues
+   - Intermediate: technique refinements and common mistakes
+   - Advanced: performance optimization and advanced cues
 
 EXERCISE ORDERING RULES (CRITICAL - MUST FOLLOW):
 This is the most important rule. Exercises MUST be ordered by category:
@@ -211,7 +215,8 @@ Return a JSON object with this exact structure:
               "alternatives": ["Goblet Squat", "Leg Press"],
               "category": "primary",
               "intensity": "RPE 8",
-              "notes": "Main compound lift - do this FIRST"
+              "notes": "Main compound lift - do this FIRST",
+              "instructions": ["Feet shoulder-width apart, toes slightly out", "Break at hips and knees together, chest up", "Drive through heels, squeeze glutes at top"]
             },
             {
               "name": "Romanian Deadlift",
@@ -222,7 +227,8 @@ Return a JSON object with this exact structure:
               "alternatives": ["Dumbbell RDL"],
               "category": "secondary",
               "intensity": "RPE 7",
-              "notes": "Secondary compound - after primary lifts"
+              "notes": "Secondary compound - after primary lifts",
+              "instructions": ["Soft knee bend, hinge at hips", "Bar stays close to legs, feel hamstring stretch", "Squeeze glutes to return to standing"]
             },
             {
               "name": "Leg Curl",
@@ -233,7 +239,8 @@ Return a JSON object with this exact structure:
               "alternatives": ["Nordic Curl"],
               "category": "isolation",
               "intensity": "RPE 7",
-              "notes": "Isolation work - do LAST"
+              "notes": "Isolation work - do LAST",
+              "instructions": ["Control the weight, no swinging", "Full range of motion, squeeze at top", "Slow eccentric (lowering) phase"]
             }
           ]
         }
@@ -338,6 +345,10 @@ PROGRAM REQUIREMENTS:
 4. Exercises must use only the available equipment
 5. Progress difficulty appropriately across phases
 6. Include nutrition recommendations for each phase
+7. Include 2-3 form instructions per exercise, tailored to ${experienceLevel} level
+   - Beginners: basic setup and safety cues
+   - Intermediate: technique refinements and common mistakes
+   - Advanced: performance optimization and advanced cues
 
 EXERCISE ORDERING RULES (CRITICAL - MUST FOLLOW):
 Exercises MUST be ordered by category:
@@ -378,7 +389,8 @@ Each phase JSON must have this structure:
           "alternatives": ["Alt 1", "Alt 2"],
           "category": "primary",
           "intensity": "RPE 8",
-          "notes": "Form cues"
+          "notes": "Form cues",
+          "instructions": ["Setup cue 1", "Execution cue 2", "Safety/performance cue 3"]
         }
       ]
     }
