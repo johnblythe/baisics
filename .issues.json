@@ -1,9 +1,9 @@
 {
   "issues": [
     {
-      "id": "132",
-      "number": 132,
-      "title": "AI-generated exercise instructions during program generation",
+      "id": "133",
+      "number": 133,
+      "title": "Mid-workout AI trainer chat",
       "labels": ["enhancement"],
       "status": "open",
       "priority": "high",
@@ -13,9 +13,9 @@
       "updatedAt": "2025-12-15T12:30:00Z"
     },
     {
-      "id": "133",
-      "number": 133,
-      "title": "Mid-workout AI trainer chat",
+      "id": "132",
+      "number": 132,
+      "title": "AI-generated exercise instructions during program generation",
       "labels": ["enhancement"],
       "status": "open",
       "priority": "high",
@@ -109,5 +109,5 @@
       "updatedAt": "2025-12-15T12:30:00Z"
     }
   ],
-  "lastSyncedAt": "2025-12-15T12:30:00Z"
+  "lastSyncedAt": "2025-12-15T13:00:00Z"
 }
