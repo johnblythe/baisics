@@ -22,7 +22,7 @@ export default function Footer() {
                   </span>
                 </div>
                 <p className="text-sm text-[#64748B] max-w-sm leading-relaxed">
-                  Making fitness accessible, approachable, and adaptable for everyone.
+                  Making fitness accessible, approachable, and adaptable. For everyone.
                 </p>
               </div>
 

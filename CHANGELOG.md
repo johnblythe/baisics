@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- MealPlanDisplay: coral border now shows on all expanded meals, not just the first (CSS specificity fix)
+- ProgramSelector: fix white text on white background by removing dark mode classes, use consistent project colors
+
 ### Added
 - Exercise library with 873 exercises imported from free-exercise-db (public domain)
   - Images, instructions, target/secondary muscles, difficulty, equipment data
