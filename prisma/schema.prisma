@@ -230,12 +230,36 @@ model Exercise {
 model Program {
   id           String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name         String
+  slug         String?        @unique @map("slug")
   description  String?        @db.Text
   createdBy    String         @map("created_by") @db.Uuid
   createdAt    DateTime       @default(now()) @map("created_at")
   updatedAt    DateTime       @updatedAt @map("updated_at")
-  source       String?        @map("source") /// such as 'uploaded', 'ai', etc.
+  source       String?        @map("source") /// such as 'uploaded', 'ai', 'template', etc.
+
+  // Template & Library fields
+  isTemplate   Boolean        @default(false) @map("is_template")
+  isPublic     Boolean        @default(false) @map("is_public")
+  clonedFromId String?        @map("cloned_from_id") @db.Uuid
+  cloneCount   Int            @default(0) @map("clone_count")
+
+  // Metadata for filtering/display
+  category     String?        @map("category") // strength, hypertrophy, powerlifting, athletic, general
+  difficulty   String?        @map("difficulty") // beginner, intermediate, advanced
+  durationWeeks Int?          @map("duration_weeks")
+  daysPerWeek  Int?           @map("days_per_week")
+  equipment    String[]       @default([]) @map("equipment")
+  goals        String[]       @default([]) @map("goals")
+  tags         String[]       @default([]) @map("tags")
+
+  // SEO & display
+  author       String?        @map("author")
+  imageUrl     String?        @map("image_url")
+  popularityScore Int         @default(0) @map("popularity_score")
+
   user         User           @relation(fields: [createdBy], references: [id])
+  clonedFrom   Program?       @relation("ProgramClones", fields: [clonedFromId], references: [id])
+  clones       Program[]      @relation("ProgramClones")
   workoutPlans WorkoutPlan[]
   userImages   UserImages[]
   workoutLogs  WorkoutLog[]
@@ -244,8 +268,13 @@ model Program {
   activities   UserActivity[]
 
   @@index([name])
+  @@index([slug])
   @@index([createdBy])
   @@index([description])
+  @@index([isTemplate])
+  @@index([isPublic])
+  @@index([category])
+  @@index([difficulty])
   @@map("programs")
 }
 

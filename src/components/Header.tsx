@@ -44,6 +44,12 @@ export default function Header() {
                       Dashboard
                     </Link>
                     <Link
+                      href="/library"
+                      className="text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors"
+                    >
+                      Library
+                    </Link>
+                    <Link
                       href="/program"
                       className="text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors"
                     >
@@ -147,6 +153,13 @@ export default function Header() {
                           Dashboard
                         </Link>
                         <Link
+                          href="/library"
+                          className="block px-4 py-2.5 text-sm font-medium text-[#475569] hover:bg-[#F8FAFC]"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          Library
+                        </Link>
+                        <Link
                           href="/program"
                           className="block px-4 py-2.5 text-sm font-medium text-[#475569] hover:bg-[#F8FAFC]"
                           onClick={() => setIsMenuOpen(false)}
@@ -175,6 +188,9 @@ export default function Header() {
                 <>
                   {/* Desktop Navigation - Public */}
                   <nav className="hidden md:flex items-center gap-6">
+                    <Link href="/library" className="text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors">
+                      Programs
+                    </Link>
                     <Link href="#features" className="text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors">
                       Features
                     </Link>
@@ -207,6 +223,13 @@ export default function Header() {
                     {/* Mobile Menu Dropdown - Public */}
                     {isMenuOpen && (
                       <div className="absolute right-0 mt-2 w-48 py-2 bg-white rounded-xl shadow-lg border border-[#F1F5F9]">
+                        <Link
+                          href="/library"
+                          className="block px-4 py-2.5 text-sm font-medium text-[#475569] hover:bg-[#F8FAFC]"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          Programs
+                        </Link>
                         <Link
                           href="#features"
                           className="block px-4 py-2.5 text-sm font-medium text-[#475569] hover:bg-[#F8FAFC]"
