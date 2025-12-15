@@ -95,6 +95,7 @@ export interface GeneratedExercise {
   category: 'primary' | 'secondary' | 'isolation' | 'cardio' | 'flexibility';
   intensity?: string;
   notes?: string;
+  instructions?: string[]; // 2-3 form cues tailored to user's experience level
 }
 
 export interface GeneratedWorkout {

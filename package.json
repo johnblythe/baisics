@@ -12,11 +12,15 @@
     "test:integration": "vitest run tests/integration",
     "vercel-build": "prisma generate && prisma migrate deploy && next build && npm run sitemap",
     "sitemap": "ts-node src/scripts/generate-sitemap.ts",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "import:exercises": "npx tsx src/scripts/import-exercises.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.1",
     "@auth/prisma-adapter": "^2.7.4",
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "@headlessui/react": "^2.2.0",
     "@next/third-parties": "^15.1.6",
     "@prisma/client": "^5.22.0",

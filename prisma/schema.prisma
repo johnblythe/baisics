@@ -165,6 +165,7 @@ model ExerciseLibrary {
   targetMuscles    MuscleGroup[]     @default([])
   secondaryMuscles MuscleGroup[]     @default([])
   videoUrl         String?           @map("video_url")
+  images           String[]          @default([])
   variations       ExerciseLibrary[] @relation("ExerciseVariations")
   parentExercise   ExerciseLibrary?  @relation("ExerciseVariations", fields: [parentId], references: [id])
   parentId         String?           @db.Uuid
@@ -212,6 +213,7 @@ model Exercise {
   measureValue      Float?            @map("measure_value")
   measureUnit       ExerciseMeasureUnit?         @map("measure_unit") @default(LB)
   notes             String?         @map("notes") @db.Text
+  instructions      String[]        @default([]) @map("instructions")
   sortOrder         Int             @map("sort_order") @default(0)
 
   workout           Workout         @relation(fields: [workoutId], references: [id], onDelete: Cascade)
@@ -305,6 +307,8 @@ enum MuscleGroup {
   HIP_ABDUCTORS
   HIP_ADDUCTORS
 
+  // Other
+  NECK
   OTHER
 }
 

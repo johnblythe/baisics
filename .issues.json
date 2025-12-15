@@ -1,0 +1,113 @@
+{
+  "issues": [
+    {
+      "id": "132",
+      "number": 132,
+      "title": "AI-generated exercise instructions during program generation",
+      "labels": ["enhancement"],
+      "status": "open",
+      "priority": "high",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2025-12-15T12:30:00Z",
+      "updatedAt": "2025-12-15T12:30:00Z"
+    },
+    {
+      "id": "133",
+      "number": 133,
+      "title": "Mid-workout AI trainer chat",
+      "labels": ["enhancement"],
+      "status": "open",
+      "priority": "high",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2025-12-15T12:30:00Z",
+      "updatedAt": "2025-12-15T12:30:00Z"
+    },
+    {
+      "id": "125",
+      "number": 125,
+      "title": "Meal card modification - tap ingredient to swap",
+      "labels": ["enhancement"],
+      "status": "open",
+      "priority": "med",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2025-12-12T14:30:44Z",
+      "updatedAt": "2025-12-12T14:30:44Z"
+    },
+    {
+      "id": "122",
+      "number": 122,
+      "title": "Integrate USDA FoodData Central API for food search",
+      "labels": ["enhancement"],
+      "status": "open",
+      "priority": "med",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2025-12-12T01:40:50Z",
+      "updatedAt": "2025-12-12T01:40:50Z"
+    },
+    {
+      "id": "105",
+      "number": 105,
+      "title": "UI: Program Header & CTA - First Impression Polish",
+      "labels": ["enhancement"],
+      "status": "open",
+      "priority": "med",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2025-12-06T15:49:06Z",
+      "updatedAt": "2025-12-06T15:49:06Z"
+    },
+    {
+      "id": "103",
+      "number": 103,
+      "title": "UI: Exercise Cards - Interactive & Engaging Design",
+      "labels": ["enhancement"],
+      "status": "open",
+      "priority": "med",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2025-12-06T15:48:41Z",
+      "updatedAt": "2025-12-06T15:48:41Z"
+    },
+    {
+      "id": "101",
+      "number": 101,
+      "title": "Landing Page Redesign - Modern & Inviting",
+      "labels": ["enhancement"],
+      "status": "open",
+      "priority": "low",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2025-12-06T14:25:13Z",
+      "updatedAt": "2025-12-06T14:25:13Z"
+    },
+    {
+      "id": "99",
+      "number": 99,
+      "title": "Program Library & Search",
+      "labels": ["enhancement"],
+      "status": "open",
+      "priority": "low",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2025-12-06T14:10:50Z",
+      "updatedAt": "2025-12-06T14:10:50Z"
+    },
+    {
+      "id": "128",
+      "number": 128,
+      "title": "AI-assisted exercise library matching",
+      "labels": ["enhancement"],
+      "status": "closed",
+      "priority": "med",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2025-12-13T15:39:51Z",
+      "updatedAt": "2025-12-15T12:30:00Z"
+    }
+  ],
+  "lastSyncedAt": "2025-12-15T12:30:00Z"
+}

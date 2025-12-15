@@ -20,6 +20,7 @@ interface Exercise {
     type: string;
   };
   videoUrl?: string;
+  instructions?: string[];
 }
 
 interface SetLog {
@@ -475,15 +476,32 @@ export default function WorkoutPage() {
             </div>
 
             {currentExercise && (
-              <div className="space-y-2">
-                <h3 className="text-2xl font-bold text-[#0F172A]">
-                  {currentExercise.name}
-                </h3>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0F172A] border border-[#0F172A]">
-                  <span className="text-sm font-medium text-white">
-                    {currentExercise.sets} sets × {formatExerciseMeasure(currentExercise)}
-                  </span>
+              <div className="space-y-3">
+                <div className="space-y-2">
+                  <h3 className="text-2xl font-bold text-[#0F172A]">
+                    {currentExercise.name}
+                  </h3>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0F172A] border border-[#0F172A]">
+                    <span className="text-sm font-medium text-white">
+                      {currentExercise.sets} sets × {formatExerciseMeasure(currentExercise)}
+                    </span>
+                  </div>
                 </div>
+                {currentExercise.instructions && currentExercise.instructions.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {currentExercise.instructions.map((instruction, idx) => (
+                      <span
+                        key={idx}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-[#E2E8F0] text-xs text-[#475569]"
+                      >
+                        <span className="w-4 h-4 flex items-center justify-center rounded-full bg-[#FF6B6B]/10 text-[#FF6B6B] text-[10px] font-bold">
+                          {idx + 1}
+                        </span>
+                        {instruction}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>

@@ -32,7 +32,10 @@ function MealCard({ meal, isPro, onRegenerate }: MealCardProps) {
   };
 
   return (
-    <div className={`border-l-2 ${expanded ? 'border-[#FF6B6B]' : 'border-transparent hover:border-[#E2E8F0]'} transition-colors`}>
+    <div
+      className="border-l-2 transition-colors"
+      style={{ borderLeftColor: expanded ? '#FF6B6B' : 'transparent' }}
+    >
       <button
         onClick={() => setExpanded(!expanded)}
         className="w-full py-2 px-3 text-left hover:bg-[#F8FAFC] transition-colors flex items-center gap-3"
