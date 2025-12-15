@@ -467,6 +467,7 @@ export async function saveProgramToDatabase(
                     intensity: 0,
                     sortOrder: exerciseIndex,
                     notes: `${exercise.intensity || ''} ${exercise.notes || ''}`.trim() || null,
+                    instructions: exercise.instructions || [],
                     exerciseLibrary: {
                       connect: { id: libraryId },
                     },

@@ -25,6 +25,7 @@ export const exerciseSchema = z.object({
   category: z.enum(['primary', 'secondary', 'isolation', 'cardio', 'flexibility']),
   intensity: z.string().optional(),
   notes: z.string().optional(),
+  instructions: z.array(z.string()).max(5).optional(), // 2-3 form cues
 });
 
 // ============================================
