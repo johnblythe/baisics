@@ -3,23 +3,25 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import {
-  calculateMacros,
+  calculateTDEE,
+  calculateAllFormulas,
   lbsToKg,
   feetInchesToCm,
   ACTIVITY_LABELS,
-  GOAL_LABELS,
+  FORMULA_INFO,
   type Sex,
-  type Goal,
   type ActivityLevel,
-  type MacroResult,
-} from '@/utils/macros';
+  type TDEEFormula,
+  type AllFormulasResult,
+} from '@/utils/tdee';
 import ClaimEmailCapture from '@/app/components/ClaimEmailCapture';
 
 type UnitSystem = 'imperial' | 'metric';
 
-export default function MacroCalculatorPage() {
+export default function TDEECalculatorPage() {
   const [unitSystem, setUnitSystem] = useState<UnitSystem>('imperial');
-  const [results, setResults] = useState<MacroResult | null>(null);
+  const [results, setResults] = useState<AllFormulasResult | null>(null);
+  const [selectedFormula, setSelectedFormula] = useState<TDEEFormula>('mifflin');
 
   // Form state
   const [weightLbs, setWeightLbs] = useState('');
@@ -30,7 +32,7 @@ export default function MacroCalculatorPage() {
   const [age, setAge] = useState('');
   const [sex, setSex] = useState<Sex>('male');
   const [activityLevel, setActivityLevel] = useState<ActivityLevel>('moderate');
-  const [goal, setGoal] = useState<Goal>('maintain');
+  const [bodyFat, setBodyFat] = useState('');
 
   const handleCalculate = (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,23 +45,27 @@ export default function MacroCalculatorPage() {
       ? feetInchesToCm(parseFloat(heightFeet) || 0, parseFloat(heightInches) || 0)
       : parseFloat(heightCm);
 
-    const result = calculateMacros({
+    const result = calculateAllFormulas({
       weightKg: weightInKg,
       heightCm: heightInCm,
       age: parseInt(age),
       sex,
       activityLevel,
-      goal,
+      bodyFatPercent: bodyFat ? parseFloat(bodyFat) : undefined,
     });
 
     setResults(result);
   };
 
+  // Get the currently selected result
+  const currentResult = results ? results[selectedFormula] : null;
+
   // Build toolData for claim
   const getToolData = () => {
-    if (!results) return undefined;
+    if (!currentResult) return undefined;
     return {
-      macros: results,
+      tdee: currentResult,
+      allFormulas: results,
       inputs: {
         sex,
         age: parseInt(age),
@@ -70,7 +76,8 @@ export default function MacroCalculatorPage() {
           : parseFloat(heightCm),
         heightUnit: unitSystem === 'imperial' ? 'ft/in' : 'cm',
         activityLevel,
-        goal,
+        bodyFatPercent: bodyFat ? parseFloat(bodyFat) : undefined,
+        selectedFormula,
       },
     };
   };
@@ -80,7 +87,7 @@ export default function MacroCalculatorPage() {
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
 
-        .macro-calculator {
+        .tdee-calculator {
           --color-white: #FFFFFF;
           --color-gray-50: #F8FAFC;
           --color-gray-100: #F1F5F9;
@@ -102,7 +109,7 @@ export default function MacroCalculatorPage() {
         }
       `}</style>
 
-      <div className="macro-calculator min-h-screen">
+      <div className="tdee-calculator min-h-screen">
         {/* Navigation */}
         <header className="fixed top-0 left-0 right-0 z-50 bg-[var(--color-white)]/95 backdrop-blur-md border-b border-[var(--color-gray-100)]">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
@@ -115,10 +122,18 @@ export default function MacroCalculatorPage() {
               </Link>
 
               <nav className="hidden md:flex items-center gap-8">
-                <Link href="/tools/macros" className="text-sm font-medium text-[var(--color-coral)]">Macro Calculator</Link>
-                <Link href="/tools/tdee" className="text-sm font-medium text-[var(--color-gray-600)] hover:text-[var(--color-navy)] transition-colors">TDEE Calculator</Link>
-                <Link href="/tools/one-rep-max" className="text-sm font-medium text-[var(--color-gray-600)] hover:text-[var(--color-navy)] transition-colors">1RM Calculator</Link>
-                <Link href="/tools/body-fat" className="text-sm font-medium text-[var(--color-gray-600)] hover:text-[var(--color-navy)] transition-colors">Body Fat Estimator</Link>
+                <Link href="/tools/macros" className="text-sm font-medium text-[var(--color-gray-600)] hover:text-[var(--color-navy)] transition-colors">
+                  Macro Calculator
+                </Link>
+                <Link href="/tools/tdee" className="text-sm font-medium text-[var(--color-coral)]">
+                  TDEE Calculator
+                </Link>
+                <Link href="/tools/one-rep-max" className="text-sm font-medium text-[var(--color-gray-600)] hover:text-[var(--color-navy)] transition-colors">
+                  1RM Calculator
+                </Link>
+                <Link href="/tools/body-fat" className="text-sm font-medium text-[var(--color-gray-600)] hover:text-[var(--color-navy)] transition-colors">
+                  Body Fat Estimator
+                </Link>
               </nav>
 
               <Link
@@ -136,10 +151,10 @@ export default function MacroCalculatorPage() {
           <div className="max-w-3xl mx-auto text-center">
             <p className="font-mono text-sm text-[var(--color-coral)] uppercase tracking-wider mb-4">Free Tool</p>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.1] tracking-tight mb-6">
-              Macro Calculator
+              TDEE Calculator
             </h1>
             <p className="text-lg lg:text-xl text-[var(--color-gray-600)] max-w-2xl mx-auto">
-              Calculate your daily macros for weight loss, muscle gain, or maintenance. Based on your body stats and activity level.
+              Calculate your Total Daily Energy Expenditure. Know exactly how many calories you burn, then plan to cut, maintain, or bulk.
             </p>
           </div>
         </section>
@@ -323,27 +338,27 @@ export default function MacroCalculatorPage() {
                     </div>
                   </div>
 
-                  {/* Goal */}
+                  {/* Body Fat (Optional) */}
                   <div>
                     <label className="block text-sm font-semibold text-[var(--color-navy)] mb-2">
-                      Goal
+                      Body Fat % <span className="font-normal text-[var(--color-gray-400)]">(optional)</span>
                     </label>
-                    <div className="grid grid-cols-3 gap-2">
-                      {(Object.keys(GOAL_LABELS) as Goal[]).map((g) => (
-                        <button
-                          key={g}
-                          type="button"
-                          onClick={() => setGoal(g)}
-                          className={`py-3 px-2 rounded-lg text-center transition-all ${
-                            goal === g
-                              ? 'bg-[var(--color-coral)] text-white'
-                              : 'bg-white border border-[var(--color-gray-100)] text-[var(--color-gray-600)] hover:border-[var(--color-coral)]'
-                          }`}
-                        >
-                          <span className="font-medium text-sm">{GOAL_LABELS[g].label}</span>
-                        </button>
-                      ))}
+                    <div className="relative">
+                      <input
+                        type="number"
+                        value={bodyFat}
+                        onChange={(e) => setBodyFat(e.target.value)}
+                        placeholder="15"
+                        min="3"
+                        max="50"
+                        step="0.1"
+                        className="w-full px-4 py-3 pr-10 rounded-lg border border-[var(--color-gray-100)] focus:border-[var(--color-coral)] focus:ring-2 focus:ring-[var(--color-coral)]/20 outline-none transition-all"
+                      />
+                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--color-gray-400)] font-mono text-sm">%</span>
                     </div>
+                    <p className="mt-1 text-xs text-[var(--color-gray-400)]">
+                      If known, enables the Katch-McArdle formula (most accurate)
+                    </p>
                   </div>
 
                   {/* Submit */}
@@ -351,77 +366,114 @@ export default function MacroCalculatorPage() {
                     type="submit"
                     className="w-full py-4 text-lg font-bold text-white bg-[var(--color-coral)] rounded-xl hover:bg-[var(--color-coral-dark)] transition-all shadow-lg shadow-[var(--color-coral)]/25"
                   >
-                    Calculate Macros
+                    Calculate TDEE
                   </button>
                 </form>
               </div>
 
               {/* Results Panel */}
               <div className="lg:sticky lg:top-28 lg:self-start">
-                {results ? (
+                {results && currentResult ? (
                   <div className="space-y-6">
-                    {/* Results Card */}
+                    {/* Main Results Card */}
                     <div className="bg-[var(--color-navy)] rounded-2xl p-6 lg:p-8 text-white">
-                      <h2 className="text-xl font-bold mb-6">Your Daily Macros</h2>
+                      <h2 className="text-xl font-bold mb-6">Your Daily Calories</h2>
 
-                      {/* Calories */}
+                      {/* TDEE */}
                       <div className="text-center mb-8">
                         <p className="font-mono text-6xl font-bold text-[var(--color-coral)]">
-                          {results.targetCalories.toLocaleString()}
+                          {currentResult.tdee.toLocaleString()}
                         </p>
-                        <p className="text-[var(--color-gray-400)] mt-1">calories/day</p>
+                        <p className="text-[var(--color-gray-400)] mt-1">calories/day (maintenance)</p>
                       </div>
 
-                      {/* Macro Breakdown */}
-                      <div className="grid grid-cols-3 gap-4 mb-6">
+                      {/* Cut/Maintain/Bulk */}
+                      <div className="grid grid-cols-3 gap-3 mb-6">
                         <div className="text-center p-4 bg-[var(--color-navy-light)] rounded-xl">
-                          <p className="font-mono text-2xl font-bold">{results.protein}g</p>
-                          <p className="text-sm text-[var(--color-gray-400)]">Protein</p>
+                          <p className="text-xs text-[var(--color-gray-400)] mb-1">Cut</p>
+                          <p className="font-mono text-xl font-bold text-red-400">{currentResult.cutCalories.toLocaleString()}</p>
+                          <p className="text-xs text-[var(--color-gray-400)]">-500 cal</p>
+                        </div>
+                        <div className="text-center p-4 bg-[var(--color-navy-light)] rounded-xl ring-2 ring-[var(--color-coral)]">
+                          <p className="text-xs text-[var(--color-gray-400)] mb-1">Maintain</p>
+                          <p className="font-mono text-xl font-bold">{currentResult.maintainCalories.toLocaleString()}</p>
+                          <p className="text-xs text-[var(--color-gray-400)]">TDEE</p>
                         </div>
                         <div className="text-center p-4 bg-[var(--color-navy-light)] rounded-xl">
-                          <p className="font-mono text-2xl font-bold">{results.carbs}g</p>
-                          <p className="text-sm text-[var(--color-gray-400)]">Carbs</p>
-                        </div>
-                        <div className="text-center p-4 bg-[var(--color-navy-light)] rounded-xl">
-                          <p className="font-mono text-2xl font-bold">{results.fats}g</p>
-                          <p className="text-sm text-[var(--color-gray-400)]">Fats</p>
+                          <p className="text-xs text-[var(--color-gray-400)] mb-1">Bulk</p>
+                          <p className="font-mono text-xl font-bold text-green-400">{currentResult.bulkCalories.toLocaleString()}</p>
+                          <p className="text-xs text-[var(--color-gray-400)]">+300 cal</p>
                         </div>
                       </div>
 
-                      {/* TDEE/BMR Info */}
+                      {/* BMR */}
                       <div className="pt-4 border-t border-[var(--color-navy-light)]">
                         <div className="flex justify-between text-sm">
-                          <span className="text-[var(--color-gray-400)]">BMR (Base Metabolic Rate)</span>
-                          <span className="font-mono">{results.bmr.toLocaleString()} cal</span>
+                          <span className="text-[var(--color-gray-400)]">BMR (Basal Metabolic Rate)</span>
+                          <span className="font-mono">{currentResult.bmr.toLocaleString()} cal</span>
                         </div>
-                        <div className="flex justify-between text-sm mt-2">
-                          <span className="text-[var(--color-gray-400)]">TDEE (Maintenance)</span>
-                          <span className="font-mono">{results.tdee.toLocaleString()} cal</span>
-                        </div>
+                      </div>
+                    </div>
+
+                    {/* Formula Comparison */}
+                    <div className="bg-[var(--color-gray-50)] rounded-2xl p-6">
+                      <h3 className="text-lg font-bold text-[var(--color-navy)] mb-4">
+                        Formula Comparison
+                      </h3>
+
+                      <div className="space-y-2">
+                        {(['mifflin', 'harris', 'katch'] as TDEEFormula[]).map((formula) => {
+                          const result = results[formula];
+                          if (!result) return null;
+
+                          return (
+                            <button
+                              key={formula}
+                              onClick={() => setSelectedFormula(formula)}
+                              className={`w-full p-4 rounded-lg text-left transition-all ${
+                                selectedFormula === formula
+                                  ? 'bg-[var(--color-navy)] text-white'
+                                  : 'bg-white border border-[var(--color-gray-100)] hover:border-[var(--color-navy)]'
+                              }`}
+                            >
+                              <div className="flex justify-between items-center">
+                                <div>
+                                  <p className="font-semibold">{FORMULA_INFO[formula].name}</p>
+                                  <p className={`text-sm ${selectedFormula === formula ? 'text-[var(--color-gray-400)]' : 'text-[var(--color-gray-600)]'}`}>
+                                    {FORMULA_INFO[formula].bestFor}
+                                  </p>
+                                </div>
+                                <p className={`font-mono text-xl font-bold ${selectedFormula === formula ? 'text-[var(--color-coral)]' : 'text-[var(--color-navy)]'}`}>
+                                  {result.tdee.toLocaleString()}
+                                </p>
+                              </div>
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
 
                     {/* CTA Card */}
                     <ClaimEmailCapture
-                      source="macro-calculator"
+                      source="tdee-calculator"
                       toolData={getToolData()}
-                      headline="Get a program designed for these exact macros"
-                      subheadline="Our AI will create a personalized workout plan matched to your nutrition goals."
-                      ctaText="Claim Program"
+                      headline="Match your calories to the right workout plan"
+                      subheadline="Our AI will create a personalized program based on your TDEE and goals."
+                      ctaText="Get My Program"
                     />
                   </div>
                 ) : (
                   <div className="bg-[var(--color-gray-50)] rounded-2xl p-6 lg:p-8 text-center">
                     <div className="w-16 h-16 mx-auto mb-4 bg-[var(--color-coral-light)] rounded-full flex items-center justify-center">
                       <svg className="w-8 h-8 text-[var(--color-coral)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                       </svg>
                     </div>
                     <h3 className="text-xl font-bold text-[var(--color-navy)] mb-2">
                       Your Results
                     </h3>
                     <p className="text-[var(--color-gray-600)]">
-                      Fill out the form to calculate your personalized daily macros.
+                      Fill out the form to calculate your Total Daily Energy Expenditure.
                     </p>
                   </div>
                 )}
@@ -433,28 +485,49 @@ export default function MacroCalculatorPage() {
         {/* Info Section */}
         <section className="py-16 px-6 lg:px-8 bg-[var(--color-gray-50)]">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-2xl font-bold text-[var(--color-navy)] mb-6">How We Calculate Your Macros</h2>
+            <h2 className="text-2xl font-bold text-[var(--color-navy)] mb-6">Understanding Your TDEE</h2>
 
             <div className="prose prose-lg max-w-none text-[var(--color-gray-600)]">
               <p>
-                This calculator uses the <strong>Mifflin-St Jeor equation</strong>, which is considered
-                the most accurate formula for estimating Basal Metabolic Rate (BMR) for most people.
+                <strong>TDEE (Total Daily Energy Expenditure)</strong> is the total number of calories you burn in a day,
+                including your basal metabolism, daily activities, and exercise.
               </p>
 
-              <h3 className="text-lg font-semibold text-[var(--color-navy)] mt-6 mb-3">What&apos;s included:</h3>
+              <h3 className="text-lg font-semibold text-[var(--color-navy)] mt-6 mb-3">How It&apos;s Calculated</h3>
               <ul className="space-y-2">
-                <li><strong>BMR</strong> - The calories your body needs at complete rest</li>
-                <li><strong>TDEE</strong> - Total Daily Energy Expenditure (BMR × activity multiplier)</li>
-                <li><strong>Target Calories</strong> - TDEE adjusted for your goal (deficit, maintenance, or surplus)</li>
-                <li><strong>Protein</strong> - Set at 0.9g per pound of bodyweight for optimal muscle support</li>
-                <li><strong>Fats</strong> - 27% of calories for hormone health</li>
-                <li><strong>Carbs</strong> - The remainder, to fuel your workouts</li>
+                <li><strong>BMR (Basal Metabolic Rate):</strong> Calories your body burns at complete rest just to keep you alive</li>
+                <li><strong>Activity Multiplier:</strong> Factor based on how active you are throughout the day</li>
+                <li><strong>TDEE = BMR × Activity Multiplier</strong></li>
+              </ul>
+
+              <h3 className="text-lg font-semibold text-[var(--color-navy)] mt-6 mb-3">About the Formulas</h3>
+              <ul className="space-y-2">
+                <li><strong>Mifflin-St Jeor:</strong> Most accurate for the general population. Uses weight, height, age, and sex.</li>
+                <li><strong>Harris-Benedict:</strong> Classic formula from 1919 (revised 1984). Good for comparison.</li>
+                <li><strong>Katch-McArdle:</strong> Uses lean body mass. Most accurate if you know your body fat percentage.</li>
+              </ul>
+
+              <h3 className="text-lg font-semibold text-[var(--color-navy)] mt-6 mb-3">Using Your TDEE</h3>
+              <ul className="space-y-2">
+                <li><strong>To lose fat:</strong> Eat 300-500 calories below your TDEE (creates ~1 lb/week deficit)</li>
+                <li><strong>To maintain:</strong> Eat at your TDEE</li>
+                <li><strong>To build muscle:</strong> Eat 200-300 calories above your TDEE (lean bulk)</li>
               </ul>
 
               <p className="mt-6">
-                These are <strong>starting points</strong>. Your actual needs may vary based on genetics,
-                body composition, and how your body responds. Track for 2-3 weeks and adjust based on results.
+                These are <strong>starting points</strong>. Track your weight and progress for 2-3 weeks, then adjust.
+                If you&apos;re not seeing results, your actual TDEE may be slightly different.
               </p>
+
+              <div className="mt-8 p-4 bg-white rounded-xl border border-[var(--color-gray-100)]">
+                <p className="text-sm">
+                  <strong>Want your full macro breakdown?</strong> Use our{' '}
+                  <Link href="/tools/macros" className="text-[var(--color-coral)] hover:underline">
+                    Macro Calculator
+                  </Link>{' '}
+                  to get protein, carbs, and fat targets based on your TDEE.
+                </p>
+              </div>
             </div>
           </div>
         </section>
