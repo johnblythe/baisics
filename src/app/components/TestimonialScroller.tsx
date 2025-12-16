@@ -87,7 +87,7 @@ export default function TestimonialScroller({
             key={index}
             className={`h-1 rounded-full transition-all duration-300 ${
               index === currentIndex 
-                ? 'w-6 bg-indigo-600 dark:bg-indigo-400' 
+                ? 'w-6 bg-[#FF6B6B] dark:bg-[#FF6B6B]' 
                 : 'w-1.5 bg-gray-200 dark:bg-gray-700'
             }`}
           />
@@ -114,7 +114,7 @@ export default function TestimonialScroller({
           </p>
 
           <div className="flex items-center gap-3 pl-4">
-            <div className="h-px flex-1 bg-gradient-to-r from-indigo-100 dark:from-indigo-900/50" />
+            <div className="h-px flex-1 bg-gradient-to-r from-[#FFE5E5] dark:from-[#FF6B6B]/30" />
             <div className="flex items-center gap-2">
               <span className="font-semibold text-gray-900 dark:text-white">
                 {TESTIMONIALS[currentIndex].author}
@@ -129,8 +129,8 @@ export default function TestimonialScroller({
 
           {!compact && TESTIMONIALS[currentIndex].achievement && (
             <div className="pl-4">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
-                <span className="w-1 h-1 rounded-full bg-indigo-600 dark:bg-indigo-400" />
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-[#FFE5E5] dark:bg-[#FF6B6B]/20 text-[#FF6B6B] dark:text-[#FF6B6B]">
+                <span className="w-1 h-1 rounded-full bg-[#FF6B6B] dark:bg-[#FF6B6B]" />
                 {TESTIMONIALS[currentIndex].achievement}
               </span>
             </div>

@@ -110,7 +110,7 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
     <div className="space-y-8">
       {/* Premium Upsell Banner */}
       {userEmail && !user?.isPremium && (
-        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-2xl shadow-sm overflow-hidden">
+        <div className="bg-gradient-to-r from-[#0F172A] to-[#1E293B] text-white rounded-2xl shadow-sm overflow-hidden">
           <div className="md:p-4 p-2 flex flex-col sm:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-3">
               <div className="p-6 bg-white/10 rounded-lg">
@@ -125,7 +125,7 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
             </div>
             <button
               onClick={handleUpsell}
-              className="whitespace-nowrap px-6 py-3 bg-white text-indigo-600 font-medium rounded-lg hover:bg-white/90 transition-colors"
+              className="whitespace-nowrap px-6 py-3 bg-white text-[#FF6B6B] font-medium rounded-lg hover:bg-white/90 transition-colors"
             >
               Upgrade Now
             </button>
@@ -161,7 +161,7 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
               ) : (
                 <button
                   onClick={handleUpsell}
-                  className="px-6 py-2 rounded-lg bg-indigo-600 dark:bg-indigo-500 text-white font-medium hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors flex items-center gap-2 max-w-xs"
+                  className="px-6 py-2 rounded-lg bg-[#FF6B6B] dark:bg-[#FF6B6B] text-white font-medium hover:bg-[#EF5350] dark:hover:bg-[#EF5350] transition-colors flex items-center gap-2 max-w-xs"
                 >
                   ✨ Download PDF, share via email, or upgrade for more value!
                 </button>
@@ -169,7 +169,7 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
               {userEmail && !user?.isPremium && (
                 <button
                   onClick={handleUpsell}
-                  className="px-4 py-2 rounded-lg bg-indigo-600 dark:bg-indigo-500 text-white font-medium hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors"
+                  className="px-4 py-2 rounded-lg bg-[#FF6B6B] dark:bg-[#FF6B6B] text-white font-medium hover:bg-[#EF5350] dark:hover:bg-[#EF5350] transition-colors"
                 >
                   ✨ Upgrade
                 </button>
@@ -192,8 +192,8 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
             <div className="p-2 space-y-2 lg:p-6 lg:space-y-6">
               <div className="flex items-start space-x-3 hidden">
-                <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg">
-                  <Brain className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                <div className="p-2 bg-[#FFE5E5] dark:bg-[#FF6B6B]/20 rounded-lg">
+                  <Brain className="w-4 h-4 text-[#FF6B6B] dark:text-[#FF6B6B]" />
                 </div>
                 <div>
                   <h4 className="text-gray-900 dark:text-white font-semibold mb-2">Why This Phase</h4>
@@ -204,8 +204,8 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
               </div>
 
               <div className="flex items-start space-x-3">
-                <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg">
-                  <Activity className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                <div className="p-2 bg-[#FFE5E5] dark:bg-[#FF6B6B]/20 rounded-lg">
+                  <Activity className="w-4 h-4 text-[#FF6B6B] dark:text-[#FF6B6B]" />
                 </div>
                 <div>
                   <h4 className="text-gray-900 dark:text-white font-semibold mb-2">What to Expect</h4>
@@ -216,8 +216,8 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
               </div>
 
               <div className="flex items-start space-x-3">
-                <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg">
-                  <Key className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                <div className="p-2 bg-[#FFE5E5] dark:bg-[#FF6B6B]/20 rounded-lg">
+                  <Key className="w-4 h-4 text-[#FF6B6B] dark:text-[#FF6B6B]" />
                 </div>
                 <div>
                   <h4 className="text-gray-900 dark:text-white font-semibold mb-2">Keys to Success</h4>
@@ -228,7 +228,7 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
                       "Ensure adequate rest between workouts"
                     ]).map((point, index) => (
                       <li key={`key-point-${index}`} className="flex items-center">
-                        <Dumbbell className="w-4 h-4 mr-2 text-indigo-600 dark:text-indigo-400" />
+                        <Dumbbell className="w-4 h-4 mr-2 text-[#FF6B6B] dark:text-[#FF6B6B]" />
                         {point}
                       </li>
                     ))}
@@ -243,7 +243,7 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
             <div className="p-2 space-y-2 lg:p-6 lg:space-y-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Apple className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                  <Apple className="w-5 h-5 text-[#FF6B6B] dark:text-[#FF6B6B]" />
                   <h3 className="font-semibold text-gray-900 dark:text-white">Nutrition</h3>
                 </div>
                 <button
@@ -274,7 +274,7 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
                   
                 {/* {!userEmail && (
                   <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
-                    ✨ <button onClick={handleUpsell} className="text-indigo-600 dark:text-indigo-400 hover:underline">Upgrade to premium</button> for detailed meal plans
+                    ✨ <button onClick={handleUpsell} className="text-[#FF6B6B] dark:text-[#FF6B6B] hover:underline">Upgrade to premium</button> for detailed meal plans
                   </p>
                 )} */}
               </div>
@@ -285,7 +285,7 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
             <div className="p-4 space-y-4 lg:p-6 lg:space-y-6">
               <div className="flex items-center gap-2">
-                <ChartLine className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                <ChartLine className="w-5 h-5 text-[#FF6B6B] dark:text-[#FF6B6B]" />
                 <h3 className="font-semibold text-gray-900 dark:text-white">Body Composition</h3>
               </div>
               
@@ -310,21 +310,21 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
                     </p>
                     <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-3 mb-6">
                       <li className="flex items-center">
-                        <span className="mr-2 text-indigo-600 dark:text-indigo-400">✓</span> Body fat tracking
+                        <span className="mr-2 text-[#FF6B6B] dark:text-[#FF6B6B]">✓</span> Body fat tracking
                       </li>
                       <li className="flex items-center">
-                        <span className="mr-2 text-indigo-600 dark:text-indigo-400">✓</span> Muscle mass analysis
+                        <span className="mr-2 text-[#FF6B6B] dark:text-[#FF6B6B]">✓</span> Muscle mass analysis
                       </li>
                       <li className="flex items-center">
-                        <span className="mr-2 text-indigo-600 dark:text-indigo-400">✓</span> Progress photos
+                        <span className="mr-2 text-[#FF6B6B] dark:text-[#FF6B6B]">✓</span> Progress photos
                       </li>
                       <li className="flex items-center">
-                        <span className="mr-2 text-indigo-600 dark:text-indigo-400">✓</span> Body measurements
+                        <span className="mr-2 text-[#FF6B6B] dark:text-[#FF6B6B]">✓</span> Body measurements
                       </li>
                     </ul>
                     <button
                       onClick={handleUpsell}
-                      className="w-full px-4 py-2 rounded-lg bg-indigo-600 dark:bg-indigo-500 text-white font-medium hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors"
+                      className="w-full px-4 py-2 rounded-lg bg-[#FF6B6B] dark:bg-[#FF6B6B] text-white font-medium hover:bg-[#EF5350] dark:hover:bg-[#EF5350] transition-colors"
                     >
                       Let&apos;s do it!
                     </button>
@@ -339,7 +339,7 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
             <div className="p-4 space-y-4 lg:p-6 lg:space-y-6">
               <div className="flex items-center gap-2">
-                <Target className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                <Target className="w-5 h-5 text-[#FF6B6B] dark:text-[#FF6B6B]" />
                 <h3 className="font-semibold text-gray-900 dark:text-white">Progress Stats</h3>
               </div>
               
@@ -356,21 +356,21 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
                     </p>
                     <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-3 mb-6">
                       <li className="flex items-center">
-                        <span className="mr-2 text-indigo-600 dark:text-indigo-400">✓</span> Weekly check-ins
+                        <span className="mr-2 text-[#FF6B6B] dark:text-[#FF6B6B]">✓</span> Weekly check-ins
                       </li>
                       <li className="flex items-center">
-                        <span className="mr-2 text-indigo-600 dark:text-indigo-400">✓</span> Consistency tracking
+                        <span className="mr-2 text-[#FF6B6B] dark:text-[#FF6B6B]">✓</span> Consistency tracking
                       </li>
                       <li className="flex items-center">
-                        <span className="mr-2 text-indigo-600 dark:text-indigo-400">✓</span> Volume and intensity
+                        <span className="mr-2 text-[#FF6B6B] dark:text-[#FF6B6B]">✓</span> Volume and intensity
                       </li>
                       <li className="flex items-center">
-                        <span className="mr-2 text-indigo-600 dark:text-indigo-400">✓</span> Macronutrient goals
+                        <span className="mr-2 text-[#FF6B6B] dark:text-[#FF6B6B]">✓</span> Macronutrient goals
                       </li>
                     </ul>
                     <button
                       onClick={handleUpsell}
-                      className="w-full px-4 py-2 rounded-lg bg-indigo-600 dark:bg-indigo-500 text-white font-medium hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors"
+                      className="w-full px-4 py-2 rounded-lg bg-[#FF6B6B] dark:bg-[#FF6B6B] text-white font-medium hover:bg-[#EF5350] dark:hover:bg-[#EF5350] transition-colors"
                     >
                       I&apos;m ready!
                     </button>
@@ -410,7 +410,7 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
                       <h4 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
                         <svg 
                           xmlns="http://www.w3.org/2000/svg" 
-                          className="h-5 w-5 text-indigo-600 dark:text-indigo-400" 
+                          className="h-5 w-5 text-[#FF6B6B] dark:text-[#FF6B6B]" 
                           viewBox="0 0 24 24" 
                           fill="none" 
                           stroke="currentColor" 
@@ -463,7 +463,7 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
                           key={exerciseId}
                           className="group relative overflow-hidden rounded-lg border border-gray-100 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-200"
                         >
-                          <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 via-transparent to-purple-50/50 dark:from-indigo-900/30 dark:via-transparent dark:to-purple-900/30 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                          <div className="absolute inset-0 bg-gradient-to-br from-[#FFE5E5]/50 via-transparent to-[#F8FAFC]/50 dark:from-[#FF6B6B]/20 dark:via-transparent dark:to-[#1E293B]/30 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                           <div className="relative grid grid-cols-12 gap-4 p-4">
                             <div className="col-span-6 font-medium text-gray-900 dark:text-white flex items-center gap-2">
                               {exercise.name}
@@ -499,7 +499,7 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
                               <div className="h-px bg-gray-100 dark:bg-gray-700" />
                               <div className="p-4 text-sm text-gray-600 dark:text-gray-400">
                                 {exercise.notes}<br/>
-                                <a href={`https://www.youtube.com/results?search_query=${exercise.name} how to`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center mt-2 hover:text-indigo-600 dark:text-indigo-400 underline underline-offset-4 gap-1">Need a video? <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg></a>
+                                <a href={`https://www.youtube.com/results?search_query=${exercise.name} how to`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center mt-2 hover:text-[#FF6B6B] dark:text-[#FF6B6B] underline underline-offset-4 gap-1">Need a video? <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg></a>
                               </div>
                             </>
                           )}
@@ -520,7 +520,7 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
                       <h4 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
                         <svg 
                           xmlns="http://www.w3.org/2000/svg" 
-                          className="h-5 w-5 text-indigo-600 dark:text-indigo-400" 
+                          className="h-5 w-5 text-[#FF6B6B] dark:text-[#FF6B6B]" 
                           viewBox="0 0 24 24" 
                           fill="none" 
                           stroke="currentColor" 

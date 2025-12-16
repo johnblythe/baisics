@@ -17,11 +17,11 @@ export function MacrosGuideModal({ isOpen, onClose }: MacrosGuideModalProps) {
         <Dialog.Panel className="relative w-full max-w-4xl rounded-2xl bg-white dark:bg-gray-800 shadow-xl overflow-y-auto max-h-[90vh]">
           {/* Header with gradient */}
           <div className="relative overflow-hidden rounded-t-2xl">
-            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 opacity-10" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#FF6B6B] via-[#0F172A] to-[#FF6B6B] opacity-10" />
             <div className="relative px-8 py-12">
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-3 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl">
-                  <Apple className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+                <div className="p-3 bg-[#FFE5E5] dark:bg-[#FF6B6B]/20 rounded-xl">
+                  <Apple className="w-8 h-8 text-[#FF6B6B] dark:text-[#FF6B6B]" />
                 </div>
                 <Dialog.Title className="text-4xl font-bold text-gray-900 dark:text-white">
                   Quick Guide to (Counting) Macros
@@ -38,8 +38,8 @@ export function MacrosGuideModal({ isOpen, onClose }: MacrosGuideModalProps) {
             {/* What Are Macros */}
             <section className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg">
-                  <Brain className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                <div className="p-2 bg-[#FFE5E5] dark:bg-[#FF6B6B]/20 rounded-lg">
+                  <Brain className="w-5 h-5 text-[#FF6B6B] dark:text-[#FF6B6B]" />
                 </div>
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white">What Are Macros?</h2>
               </div>
@@ -51,8 +51,8 @@ export function MacrosGuideModal({ isOpen, onClose }: MacrosGuideModalProps) {
             {/* Caloric Values */}
             <section className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg">
-                  <Scale className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                <div className="p-2 bg-[#FFE5E5] dark:bg-[#FF6B6B]/20 rounded-lg">
+                  <Scale className="w-5 h-5 text-[#FF6B6B] dark:text-[#FF6B6B]" />
                 </div>
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Caloric Values</h2>
               </div>
@@ -74,8 +74,8 @@ export function MacrosGuideModal({ isOpen, onClose }: MacrosGuideModalProps) {
             {/* Daily Needs */}
             <section className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg">
-                  <Dumbbell className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                <div className="p-2 bg-[#FFE5E5] dark:bg-[#FF6B6B]/20 rounded-lg">
+                  <Dumbbell className="w-5 h-5 text-[#FF6B6B] dark:text-[#FF6B6B]" />
                 </div>
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Daily Needs</h2>
               </div>
@@ -98,26 +98,26 @@ export function MacrosGuideModal({ isOpen, onClose }: MacrosGuideModalProps) {
             {/* Reading Labels */}
             <section className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg">
-                  <Tag className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                <div className="p-2 bg-[#FFE5E5] dark:bg-[#FF6B6B]/20 rounded-lg">
+                  <Tag className="w-5 h-5 text-[#FF6B6B] dark:text-[#FF6B6B]" />
                 </div>
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Reading Labels</h2>
               </div>
               <ul className="space-y-3 text-gray-600 dark:text-gray-300">
                 <li className="flex items-center gap-2">
-                  <span className="text-indigo-600 dark:text-indigo-400">•</span>
+                  <span className="text-[#FF6B6B] dark:text-[#FF6B6B]">•</span>
                   Focus only on total Protein, Fat, and Carbs
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-indigo-600 dark:text-indigo-400">•</span>
+                  <span className="text-[#FF6B6B] dark:text-[#FF6B6B]">•</span>
                   Ignore daily value percentages
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-indigo-600 dark:text-indigo-400">•</span>
+                  <span className="text-[#FF6B6B] dark:text-[#FF6B6B]">•</span>
                   Watch serving sizes - multiply accordingly
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-indigo-600 dark:text-indigo-400">•</span>
+                  <span className="text-[#FF6B6B] dark:text-[#FF6B6B]">•</span>
                   No need to track individual components (like saturated fat or sugar)
                 </li>
               </ul>
@@ -126,26 +126,26 @@ export function MacrosGuideModal({ isOpen, onClose }: MacrosGuideModalProps) {
             {/* Foods Without Labels */}
             <section className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg">
-                  <Database className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                <div className="p-2 bg-[#FFE5E5] dark:bg-[#FF6B6B]/20 rounded-lg">
+                  <Database className="w-5 h-5 text-[#FF6B6B] dark:text-[#FF6B6B]" />
                 </div>
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Foods Without Labels</h2>
               </div>
               <ul className="space-y-3 text-gray-600 dark:text-gray-300">
                 <li className="flex items-center gap-2">
-                  <span className="text-indigo-600 dark:text-indigo-400">•</span>
+                  <span className="text-[#FF6B6B] dark:text-[#FF6B6B]">•</span>
                   Use reliable online databases
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-indigo-600 dark:text-indigo-400">•</span>
+                  <span className="text-[#FF6B6B] dark:text-[#FF6B6B]">•</span>
                   Weigh raw meat (nutrition facts are for raw weight)
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-indigo-600 dark:text-indigo-400">•</span>
+                  <span className="text-[#FF6B6B] dark:text-[#FF6B6B]">•</span>
                   Restaurant nutrition info usually available online
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-indigo-600 dark:text-indigo-400">•</span>
+                  <span className="text-[#FF6B6B] dark:text-[#FF6B6B]">•</span>
                   Use a food scale for accuracy
                 </li>
               </ul>
@@ -154,8 +154,8 @@ export function MacrosGuideModal({ isOpen, onClose }: MacrosGuideModalProps) {
             {/* Why Count Macros */}
             <section className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg">
-                  <Brain className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                <div className="p-2 bg-[#FFE5E5] dark:bg-[#FF6B6B]/20 rounded-lg">
+                  <Brain className="w-5 h-5 text-[#FF6B6B] dark:text-[#FF6B6B]" />
                 </div>
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Why Count Macros vs. Calories?</h2>
               </div>
@@ -179,26 +179,26 @@ export function MacrosGuideModal({ isOpen, onClose }: MacrosGuideModalProps) {
             {/* Pro Tips */}
             <section className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg">
-                  <Scale className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                <div className="p-2 bg-[#FFE5E5] dark:bg-[#FF6B6B]/20 rounded-lg">
+                  <Scale className="w-5 h-5 text-[#FF6B6B] dark:text-[#FF6B6B]" />
                 </div>
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Pro Tips</h2>
               </div>
               <ul className="space-y-3 text-gray-600 dark:text-gray-300">
                 <li className="flex items-center gap-2">
-                  <span className="text-indigo-600 dark:text-indigo-400">•</span>
+                  <span className="text-[#FF6B6B] dark:text-[#FF6B6B]">•</span>
                   Get a food scale for accuracy
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-indigo-600 dark:text-indigo-400">•</span>
+                  <span className="text-[#FF6B6B] dark:text-[#FF6B6B]">•</span>
                   Track raw meat weight
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-indigo-600 dark:text-indigo-400">•</span>
+                  <span className="text-[#FF6B6B] dark:text-[#FF6B6B]">•</span>
                   &ldquo;Free&rdquo; vegetables don&apos;t need counting (high fiber, low-calorie)
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-indigo-600 dark:text-indigo-400">•</span>
+                  <span className="text-[#FF6B6B] dark:text-[#FF6B6B]">•</span>
                   You don&apos;t need to count macros forever - use it as a tool when needed
                 </li>
               </ul>

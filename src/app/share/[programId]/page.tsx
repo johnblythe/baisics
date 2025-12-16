@@ -3,6 +3,18 @@ import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import Link from 'next/link';
 
+// v2a colors
+const COLORS = {
+  coral: '#FF6B6B',
+  coralDark: '#EF5350',
+  navy: '#0F172A',
+  navyLight: '#1E293B',
+  gray50: '#F8FAFC',
+  gray100: '#F1F5F9',
+  gray400: '#94A3B8',
+  gray600: '#475569',
+};
+
 interface PageProps {
   params: Promise<{ programId: string }>;
 }
@@ -91,20 +103,26 @@ export default async function SharePage({ params }: PageProps) {
   ].slice(0, 4);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen" style={{ background: `linear-gradient(to bottom right, ${COLORS.gray50}, ${COLORS.gray100})` }}>
       {/* Header */}
-      <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-700">
+      <header
+        className="backdrop-blur-lg border-b"
+        style={{ backgroundColor: 'rgba(255,255,255,0.8)', borderColor: COLORS.gray100 }}
+      >
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <svg className="w-8 h-8 text-indigo-600" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <circle cx="12" cy="12" r="10" strokeWidth="2" />
-              <path d="M12 6v6l4 2" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-            <span className="text-xl font-bold text-gray-900 dark:text-white">BAISICS</span>
+            <div
+              className="w-8 h-8 rounded-lg flex items-center justify-center"
+              style={{ backgroundColor: COLORS.coral }}
+            >
+              <span className="text-white font-bold text-sm">B</span>
+            </div>
+            <span className="text-xl font-bold" style={{ color: COLORS.navy }}>baisics</span>
           </Link>
           <Link
             href="/hi"
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium"
+            className="px-4 py-2 text-white rounded-lg text-sm font-medium transition-colors"
+            style={{ backgroundColor: COLORS.coral }}
           >
             Get Your Program
           </Link>
@@ -114,9 +132,15 @@ export default async function SharePage({ params }: PageProps) {
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 py-12">
         {/* Program Card */}
-        <div className="bg-gradient-to-br from-indigo-950 via-indigo-900 to-indigo-700 rounded-3xl p-8 md:p-12 text-white shadow-2xl mb-8">
+        <div
+          className="rounded-3xl p-8 md:p-12 text-white shadow-2xl mb-8"
+          style={{ background: `linear-gradient(to bottom right, ${COLORS.navy}, ${COLORS.navyLight})` }}
+        >
           <div className="flex items-center gap-2 mb-6">
-            <span className="text-xs bg-white/10 px-3 py-1 rounded-full">
+            <span
+              className="text-xs px-3 py-1 rounded-full"
+              style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
+            >
               AI-Generated Program
             </span>
           </div>
@@ -141,7 +165,7 @@ export default async function SharePage({ params }: PageProps) {
               <div className="text-sm text-white/60 mt-1">Phases</div>
             </div>
             <div className="bg-white/10 rounded-xl p-6 text-center">
-              <div className="text-4xl font-bold text-pink-400">{totalExercises}</div>
+              <div className="text-4xl font-bold" style={{ color: COLORS.coral }}>{totalExercises}</div>
               <div className="text-sm text-white/60 mt-1">Exercises</div>
             </div>
           </div>
@@ -152,7 +176,8 @@ export default async function SharePage({ params }: PageProps) {
               {focusAreas.map((focus) => (
                 <span
                   key={focus}
-                  className="text-sm bg-white/10 px-4 py-2 rounded-full"
+                  className="text-sm px-4 py-2 rounded-full"
+                  style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
                 >
                   {focus}
                 </span>
@@ -168,16 +193,20 @@ export default async function SharePage({ params }: PageProps) {
         </div>
 
         {/* CTA */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 text-center shadow-lg">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+        <div
+          className="bg-white rounded-2xl p-8 text-center shadow-lg border"
+          style={{ borderColor: COLORS.gray100 }}
+        >
+          <h2 className="text-2xl font-bold mb-3" style={{ color: COLORS.navy }}>
             Want your own personalized program?
           </h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
+          <p className="mb-6" style={{ color: COLORS.gray600 }}>
             BAISICS creates AI-powered fitness programs tailored to your goals, schedule, and equipment.
           </p>
           <Link
             href="/hi"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors font-medium text-lg"
+            className="inline-flex items-center gap-2 px-8 py-4 text-white rounded-xl font-bold text-lg transition-colors"
+            style={{ backgroundColor: COLORS.coral }}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -188,8 +217,8 @@ export default async function SharePage({ params }: PageProps) {
       </main>
 
       {/* Footer */}
-      <footer className="max-w-4xl mx-auto px-4 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
-        <p>&copy; {new Date().getFullYear()} BAISICS. AI-Powered Fitness Programs.</p>
+      <footer className="max-w-4xl mx-auto px-4 py-8 text-center text-sm" style={{ color: COLORS.gray400 }}>
+        <p>&copy; {new Date().getFullYear()} baisics. AI-Powered Fitness Programs.</p>
       </footer>
     </div>
   );

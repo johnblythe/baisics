@@ -96,7 +96,7 @@ async function BlogPageContent() {
                   <li key={category.slug}>
                     <Link 
                       href={`/blog/category/${category.slug}`}
-                      className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 flex justify-between items-center"
+                      className="text-gray-600 dark:text-gray-300 hover:text-[#FF6B6B] dark:hover:text-[#FF6B6B] flex justify-between items-center"
                     >
                       <span>{category.name}</span>
                       <span className="text-gray-400 dark:text-gray-500 text-sm">({category.count})</span>
@@ -113,7 +113,7 @@ async function BlogPageContent() {
                   <Link
                     key={tag.slug}
                     href={`/blog/tag/${tag.slug}`}
-                    className="inline-block bg-gray-100 dark:bg-gray-800 hover:bg-blue-100 dark:hover:bg-blue-900 text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-400 rounded-full px-3 py-1 text-sm"
+                    className="inline-block bg-gray-100 dark:bg-gray-800 hover:bg-[#FFE5E5] dark:hover:bg-[#FF6B6B]/20 text-gray-700 dark:text-gray-300 hover:text-[#FF6B6B] dark:hover:text-[#FF6B6B] rounded-full px-3 py-1 text-sm"
                   >
                     {tag.name}
                   </Link>
@@ -141,7 +141,7 @@ async function BlogPageContent() {
                     >
                       <Link href={`/blog/${post.slug}`}>
                         <div className="p-6">
-                          <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400">
+                          <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100 hover:text-[#FF6B6B] dark:hover:text-[#FF6B6B]">
                             {post.frontmatter.title}
                           </h3>
                           <time className="text-gray-500 dark:text-gray-400 text-sm mb-3 block">
@@ -172,7 +172,7 @@ async function BlogPageContent() {
                     href={`/blog/${post.slug}`}
                     className="group block"
                   >
-                    <h2 className="text-2xl font-semibold mb-2 text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                    <h2 className="text-2xl font-semibold mb-2 text-gray-900 dark:text-gray-100 group-hover:text-[#FF6B6B] dark:group-hover:text-[#FF6B6B]">
                       {post.frontmatter.title}
                     </h2>
                     <time className="text-gray-500 dark:text-gray-400 text-sm mb-3 block">
@@ -189,13 +189,13 @@ async function BlogPageContent() {
                       {post.frontmatter.categories && post.frontmatter.categories.map(category => (
                         <span 
                           key={category}
-                          className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full px-3 py-1 text-sm"
+                          className="bg-[#FFE5E5] dark:bg-[#FF6B6B]/20 text-[#FF6B6B] dark:text-[#FF6B6B] rounded-full px-3 py-1 text-sm"
                         >
                           {category}
                         </span>
                       ))}
                     </div>
-                    <span className="inline-block text-blue-600 dark:text-blue-400 font-medium group-hover:underline">
+                    <span className="inline-block text-[#FF6B6B] dark:text-[#FF6B6B] font-medium group-hover:underline">
                       Read more →
                     </span>
                   </Link>

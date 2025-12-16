@@ -272,7 +272,7 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
                   </p>
                 </div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Need to get back to your baisics dashboard?<br/><a href={`${process.env.NEXT_PUBLIC_APP_URL}/hi?userId=${user.id}`} className="text-indigo-600 dark:text-indigo-400 hover:underline">Log in here</a>
+                  Need to get back to your baisics dashboard?<br/><a href={`${process.env.NEXT_PUBLIC_APP_URL}/hi?userId=${user.id}`} className="text-[#FF6B6B] dark:text-[#FF6B6B] hover:underline">Log in here</a>
                 </p>
               </div>
             ) : (
@@ -379,16 +379,16 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
                 }
               }
             }}>
-              <div className="bg-indigo-100 dark:bg-indigo-900/50 p-4 rounded-lg mb-4">
-                <p className="text-sm text-indigo-800 dark:text-indigo-200">
+              <div className="bg-[#FFE5E5] dark:bg-[#FF6B6B]/20 p-4 rounded-lg mb-4">
+                <p className="text-sm text-[#0F172A] dark:text-white">
                   🚀 <b>Launching soon!</b> Sign up to:
                 </p>
-                <ul className="text-sm text-indigo-700 dark:text-indigo-300 mt-2 space-y-1">
+                <ul className="text-sm text-[#475569] dark:text-gray-300 mt-2 space-y-1">
                   <li>&bull; Be the first in line</li>
                   <li>&bull; Receive exclusive, early-bird pricing</li>
                   <li>&bull; Upgrade your results!</li>
                 </ul>
-                <p className="text-sm text-indigo-700 dark:text-indigo-300 mt-2 underline underline-offset-4">Limited spots in Beta, don&apos;t miss out!</p>
+                <p className="text-sm text-[#475569] dark:text-gray-300 mt-2 underline underline-offset-4">Limited spots in Beta, don&apos;t miss out!</p>
               </div>
               <input
                 type="email"
@@ -414,7 +414,7 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full px-4 py-2 bg-[#FF6B6B] text-white font-medium rounded-lg hover:bg-[#EF5350] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {isLoading ? <LoadingSpinner /> : <strong>Notify me when premium launches! 🚀</strong>}
               </button>

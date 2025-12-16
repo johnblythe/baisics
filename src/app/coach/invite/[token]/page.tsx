@@ -78,7 +78,7 @@ export default function AcceptInvitePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-950 via-indigo-900 to-indigo-700">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0F172A]">
         <div className="w-8 h-8 border-t-2 border-white border-solid rounded-full animate-spin" />
       </div>
     );
@@ -86,7 +86,7 @@ export default function AcceptInvitePage() {
 
   if (error || !invite) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-950 via-indigo-900 to-indigo-700 px-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0F172A] px-4">
         <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 max-w-md w-full text-center">
           <div className="text-6xl mb-4">😕</div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
@@ -97,7 +97,7 @@ export default function AcceptInvitePage() {
           </p>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#FF6B6B] text-white rounded-lg hover:bg-[#EF5350] transition-colors"
           >
             Go to Homepage
           </Link>
@@ -107,7 +107,7 @@ export default function AcceptInvitePage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-950 via-indigo-900 to-indigo-700 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0F172A] px-4">
       <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 max-w-md w-full">
         <div className="text-center mb-8">
           <div className="text-6xl mb-4">🏋️</div>
@@ -152,7 +152,7 @@ export default function AcceptInvitePage() {
           <button
             onClick={handleAccept}
             disabled={accepting}
-            className="w-full px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium disabled:opacity-50"
+            className="w-full px-6 py-3 bg-[#FF6B6B] text-white rounded-lg hover:bg-[#EF5350] transition-colors font-medium disabled:opacity-50"
           >
             {accepting ? 'Accepting...' : 'Accept Invite'}
           </button>
@@ -164,7 +164,7 @@ export default function AcceptInvitePage() {
                   callbackUrl: `/coach/invite/${params.token}`,
                 })
               }
-              className="w-full px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+              className="w-full px-6 py-3 bg-[#FF6B6B] text-white rounded-lg hover:bg-[#EF5350] transition-colors font-medium"
             >
               Sign In to Accept
             </button>
@@ -172,7 +172,7 @@ export default function AcceptInvitePage() {
               Don&apos;t have an account?{' '}
               <Link
                 href={`/hi?invite=${params.token}`}
-                className="text-indigo-600 hover:text-indigo-700"
+                className="text-[#FF6B6B] hover:text-[#EF5350]"
               >
                 Get started free
               </Link>

@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import MainLayout from '@/app/components/layouts/MainLayout';
 import ProgramCard, { ProgramCardProps } from '@/app/components/ProgramCard';
 
 const CATEGORIES = [
@@ -138,15 +137,66 @@ export default function LibraryPage() {
   })();
 
   return (
-    <MainLayout>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          {/* Header */}
+    <>
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
+
+        .library-page {
+          --color-white: #FFFFFF;
+          --color-gray-50: #F8FAFC;
+          --color-gray-100: #F1F5F9;
+          --color-gray-400: #94A3B8;
+          --color-gray-600: #475569;
+          --color-navy: #0F172A;
+          --color-navy-light: #1E293B;
+          --color-coral: #FF6B6B;
+          --color-coral-dark: #EF5350;
+          --color-coral-light: #FFE5E5;
+
+          font-family: 'Outfit', sans-serif;
+        }
+
+        .font-mono {
+          font-family: 'Space Mono', monospace;
+        }
+      `}</style>
+
+      <div className="library-page min-h-screen bg-[var(--color-white)]">
+        {/* Header */}
+        <header className="sticky top-0 z-50 bg-[var(--color-white)]/95 backdrop-blur-md border-b border-[var(--color-gray-100)]">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8">
+            <div className="flex items-center justify-between h-16 lg:h-20">
+              <Link href="/" className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-[var(--color-coral)] rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">B</span>
+                </div>
+                <span className="font-bold text-xl text-[var(--color-navy)]">baisics</span>
+              </Link>
+
+              <nav className="hidden md:flex items-center gap-8">
+                <Link href="/library" className="text-sm font-medium text-[var(--color-coral)]">Library</Link>
+                <Link href="/tools/macros" className="text-sm font-medium text-[var(--color-gray-600)] hover:text-[var(--color-navy)] transition-colors">Macro Calculator</Link>
+                <Link href="/blog" className="text-sm font-medium text-[var(--color-gray-600)] hover:text-[var(--color-navy)] transition-colors">Blog</Link>
+              </nav>
+
+              <Link
+                href="/hi"
+                className="px-5 py-2.5 text-sm font-semibold text-white bg-[var(--color-navy)] rounded-lg hover:bg-[var(--color-navy-light)] transition-all"
+              >
+                Create Program
+              </Link>
+            </div>
+          </div>
+        </header>
+
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8">
+          {/* Page Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            <p className="font-mono text-sm text-[var(--color-coral)] uppercase tracking-wider mb-2">Browse & Claim</p>
+            <h1 className="text-3xl lg:text-4xl font-bold text-[var(--color-navy)] mb-2">
               Program Library
             </h1>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-[var(--color-gray-600)] max-w-2xl">
               Browse proven training programs or start with your own. Claim any template to customize and track.
             </p>
           </div>
@@ -165,8 +215,8 @@ export default function LibraryPage() {
                   onClick={() => setActiveTab(tab.key as typeof activeTab)}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                     activeTab === tab.key
-                      ? 'bg-indigo-600 text-white'
-                      : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      ? 'bg-[var(--color-navy)] text-white'
+                      : 'bg-[var(--color-gray-50)] text-[var(--color-gray-600)] hover:bg-[var(--color-gray-100)]'
                   }`}
                 >
                   {tab.label}
@@ -187,10 +237,10 @@ export default function LibraryPage() {
                   placeholder="Search programs..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full px-4 py-2 pl-10 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full px-4 py-2 pl-10 rounded-lg border border-[var(--color-gray-100)] bg-white text-[var(--color-navy)] focus:ring-2 focus:ring-[var(--color-coral)]/20 focus:border-[var(--color-coral)] outline-none transition-all"
                 />
                 <svg
-                  className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-gray-400)]"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -207,12 +257,12 @@ export default function LibraryPage() {
           </div>
 
           {/* Filters */}
-          <div className="flex flex-wrap gap-3 mb-8 p-4 bg-white dark:bg-gray-800 rounded-xl">
+          <div className="flex flex-wrap gap-3 mb-8 p-4 bg-[var(--color-gray-50)] rounded-xl">
             {/* Category */}
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500"
+              className="px-3 py-2 rounded-lg border border-[var(--color-gray-100)] bg-white text-[var(--color-navy)] text-sm focus:ring-2 focus:ring-[var(--color-coral)]/20 focus:border-[var(--color-coral)] outline-none"
             >
               {CATEGORIES.map((cat) => (
                 <option key={cat.value} value={cat.value}>
@@ -225,7 +275,7 @@ export default function LibraryPage() {
             <select
               value={difficulty}
               onChange={(e) => setDifficulty(e.target.value)}
-              className="px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500"
+              className="px-3 py-2 rounded-lg border border-[var(--color-gray-100)] bg-white text-[var(--color-navy)] text-sm focus:ring-2 focus:ring-[var(--color-coral)]/20 focus:border-[var(--color-coral)] outline-none"
             >
               {DIFFICULTIES.map((diff) => (
                 <option key={diff.value} value={diff.value}>
@@ -238,7 +288,7 @@ export default function LibraryPage() {
             <select
               value={daysPerWeek}
               onChange={(e) => setDaysPerWeek(e.target.value)}
-              className="px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500"
+              className="px-3 py-2 rounded-lg border border-[var(--color-gray-100)] bg-white text-[var(--color-navy)] text-sm focus:ring-2 focus:ring-[var(--color-coral)]/20 focus:border-[var(--color-coral)] outline-none"
             >
               {DAYS_PER_WEEK.map((days) => (
                 <option key={days.value} value={days.value}>
@@ -256,7 +306,7 @@ export default function LibraryPage() {
                   setDaysPerWeek('all');
                   setSearch('');
                 }}
-                className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                className="px-3 py-2 text-sm text-[var(--color-gray-600)] hover:text-[var(--color-navy)]"
               >
                 Clear filters
               </button>
@@ -265,7 +315,7 @@ export default function LibraryPage() {
 
           {/* Error message */}
           {error && (
-            <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400">
+            <div className="mb-6 p-4 bg-[var(--color-coral-light)] border border-[var(--color-coral)]/30 rounded-lg text-[var(--color-coral-dark)]">
               {error}
             </div>
           )}
@@ -276,13 +326,13 @@ export default function LibraryPage() {
               {[...Array(6)].map((_, i) => (
                 <div
                   key={i}
-                  className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden animate-pulse"
+                  className="bg-white rounded-xl overflow-hidden animate-pulse border border-[var(--color-gray-100)]"
                 >
-                  <div className="h-32 bg-gray-200 dark:bg-gray-700" />
+                  <div className="h-32 bg-[var(--color-gray-100)]" />
                   <div className="p-5 space-y-3">
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
-                    <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded" />
+                    <div className="h-4 bg-[var(--color-gray-100)] rounded w-3/4" />
+                    <div className="h-4 bg-[var(--color-gray-100)] rounded w-1/2" />
+                    <div className="h-8 bg-[var(--color-gray-100)] rounded" />
                   </div>
                 </div>
               ))}
@@ -294,7 +344,7 @@ export default function LibraryPage() {
             <>
               {displayedPrograms.length === 0 ? (
                 <div className="text-center py-12">
-                  <div className="text-gray-400 dark:text-gray-500 mb-4">
+                  <div className="text-[var(--color-gray-400)] mb-4">
                     <svg
                       className="w-16 h-16 mx-auto"
                       fill="none"
@@ -309,10 +359,10 @@ export default function LibraryPage() {
                       />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                  <h3 className="text-lg font-medium text-[var(--color-navy)] mb-2">
                     No programs found
                   </h3>
-                  <p className="text-gray-500 dark:text-gray-400 mb-6">
+                  <p className="text-[var(--color-gray-600)] mb-6">
                     {activeTab === 'my-programs'
                       ? "You haven't claimed any programs yet. Browse templates to get started!"
                       : 'Try adjusting your filters or search terms.'}
@@ -320,7 +370,7 @@ export default function LibraryPage() {
                   {activeTab === 'my-programs' && (
                     <button
                       onClick={() => setActiveTab('templates')}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--color-coral)] text-white rounded-lg hover:bg-[var(--color-coral-dark)] transition-colors font-medium"
                     >
                       Browse Templates
                       <svg
@@ -355,15 +405,15 @@ export default function LibraryPage() {
           )}
 
           {/* CTA for custom program */}
-          <div className="mt-12 bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-2xl p-8 text-center text-white">
+          <div className="mt-12 bg-[var(--color-navy)] rounded-2xl p-8 text-center text-white">
             <h2 className="text-2xl font-bold mb-3">Need something custom?</h2>
-            <p className="text-white/80 mb-6 max-w-xl mx-auto">
+            <p className="text-white/70 mb-6 max-w-xl mx-auto">
               Our AI can create a completely personalized program based on your goals, schedule,
               and equipment.
             </p>
             <Link
               href="/hi"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-white text-indigo-600 rounded-lg font-medium hover:bg-gray-100 transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-[var(--color-coral)] text-white rounded-lg font-bold hover:bg-[var(--color-coral-dark)] transition-colors"
             >
               Create Custom Program
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -377,7 +427,18 @@ export default function LibraryPage() {
             </Link>
           </div>
         </div>
+
+        {/* Footer */}
+        <footer className="py-12 px-6 lg:px-8 border-t border-[var(--color-gray-100)]">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 bg-[var(--color-coral)] rounded-md"></div>
+              <span className="font-bold text-[var(--color-navy)]">baisics</span>
+            </div>
+            <p className="text-sm text-[var(--color-gray-400)]">&copy; {new Date().getFullYear()} baisics. Made in Indianapolis.</p>
+          </div>
+        </footer>
       </div>
-    </MainLayout>
+    </>
   );
 }

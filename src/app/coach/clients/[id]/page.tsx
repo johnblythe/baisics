@@ -133,7 +133,7 @@ export default function ClientDetailPage() {
     return (
       <MainLayout>
         <div className="min-h-screen flex items-center justify-center">
-          <div className="w-8 h-8 border-t-2 border-indigo-500 border-solid rounded-full animate-spin" />
+          <div className="w-8 h-8 border-t-2 border-[#FF6B6B] border-solid rounded-full animate-spin" />
         </div>
       </MainLayout>
     );
@@ -147,7 +147,7 @@ export default function ClientDetailPage() {
             <p className="text-red-500 mb-4">{error || 'Client not found'}</p>
             <Link
               href="/coach/dashboard"
-              className="text-indigo-600 hover:text-indigo-700"
+              className="text-[#FF6B6B] hover:text-[#EF5350]"
             >
               Back to Dashboard
             </Link>
@@ -194,7 +194,7 @@ export default function ClientDetailPage() {
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 mb-6">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+                <div className="w-16 h-16 rounded-full bg-[#FFE5E5] dark:bg-[#FF6B6B]/20 flex items-center justify-center text-2xl font-bold text-[#FF6B6B] dark:text-[#FF6B6B]">
                   {(client.nickname || client.client.name || 'U')[0].toUpperCase()}
                 </div>
                 <div>
@@ -204,7 +204,7 @@ export default function ClientDetailPage() {
                       value={nickname}
                       onChange={(e) => setNickname(e.target.value)}
                       placeholder="Nickname"
-                      className="text-2xl font-bold bg-transparent border-b border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:outline-none focus:border-indigo-500"
+                      className="text-2xl font-bold bg-transparent border-b border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:outline-none focus:border-[#FF6B6B]"
                     />
                   ) : (
                     <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -228,7 +228,7 @@ export default function ClientDetailPage() {
                     </button>
                     <button
                       onClick={handleSave}
-                      className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                      className="px-4 py-2 bg-[#FF6B6B] text-white rounded-lg hover:bg-[#EF5350]"
                     >
                       Save
                     </button>
@@ -314,7 +314,7 @@ export default function ClientDetailPage() {
               </div>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-xl p-6">
-              <div className="text-3xl font-bold text-indigo-500">
+              <div className="text-3xl font-bold text-[#FF6B6B]">
                 {currentProgram?.checkIns.length || 0}
               </div>
               <div className="text-sm text-gray-500 dark:text-gray-400">Check-ins</div>

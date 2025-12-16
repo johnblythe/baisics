@@ -49,7 +49,7 @@ export default function ProgramGenerationProgress({
               stroke="currentColor"
               strokeWidth="4"
               strokeLinecap="round"
-              className="text-indigo-600 dark:text-indigo-400 transition-all duration-500"
+              className="text-[#FF6B6B] dark:text-[#FF6B6B] transition-all duration-500"
               style={{
                 strokeDasharray: `${2 * Math.PI * 44}`,
                 strokeDashoffset: `${2 * Math.PI * 44 * (1 - progress.progress / 100)}`,
@@ -63,7 +63,7 @@ export default function ProgramGenerationProgress({
             ) : progress.stage === 'error' ? (
               <AlertCircle className="w-10 h-10 text-red-500" />
             ) : (
-              <Dumbbell className="w-10 h-10 text-indigo-600 dark:text-indigo-400" />
+              <Dumbbell className="w-10 h-10 text-[#FF6B6B] dark:text-[#FF6B6B]" />
             )}
           </div>
         </div>
@@ -86,7 +86,7 @@ export default function ProgramGenerationProgress({
               ? 'bg-red-500'
               : progress.stage === 'complete'
                 ? 'bg-green-500'
-                : 'bg-indigo-600 dark:bg-indigo-400'
+                : 'bg-[#FF6B6B] dark:bg-[#FF6B6B]'
           }`}
           style={{ width: `${progress.progress}%` }}
         />
@@ -104,7 +104,7 @@ export default function ProgramGenerationProgress({
               key={stage.key}
               className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-300 ${
                 isCurrent
-                  ? 'bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700'
+                  ? 'bg-[#FFE5E5] dark:bg-[#FF6B6B]/20 border border-[#FF6B6B]/30 dark:border-[#FF6B6B]/40'
                   : isComplete
                     ? 'bg-green-50 dark:bg-green-900/20'
                     : 'bg-gray-50 dark:bg-gray-800/50'
@@ -115,7 +115,7 @@ export default function ProgramGenerationProgress({
                   isComplete
                     ? 'bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400'
                     : isCurrent
-                      ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400'
+                      ? 'bg-[#FFE5E5] dark:bg-[#FF6B6B]/30 text-[#FF6B6B] dark:text-[#FF6B6B]'
                       : 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500'
                 }`}
               >
@@ -132,7 +132,7 @@ export default function ProgramGenerationProgress({
                   isComplete
                     ? 'text-green-700 dark:text-green-300'
                     : isCurrent
-                      ? 'text-indigo-700 dark:text-indigo-300'
+                      ? 'text-[#0F172A] dark:text-white'
                       : 'text-gray-500 dark:text-gray-400'
                 }`}
               >
