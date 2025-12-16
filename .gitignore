@@ -47,3 +47,9 @@ example\ pics/*
 .cursorrules
 
 uploads/*
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# Local issue cache
+.issues.json
