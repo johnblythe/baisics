@@ -22,18 +22,23 @@ export interface ProgramCardProps {
   isLoading?: boolean;
 }
 
-const DIFFICULTY_COLORS: Record<string, string> = {
-  beginner: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-  intermediate: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-  advanced: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+// v2a color palette
+const COLORS = {
+  coral: '#FF6B6B',
+  coralDark: '#EF5350',
+  coralLight: '#FFE5E5',
+  navy: '#0F172A',
+  navyLight: '#1E293B',
+  gray50: '#F8FAFC',
+  gray100: '#F1F5F9',
+  gray400: '#94A3B8',
+  gray600: '#475569',
 };
 
-const CATEGORY_COLORS: Record<string, string> = {
-  strength: 'from-blue-600 to-blue-800',
-  hypertrophy: 'from-purple-600 to-purple-800',
-  powerlifting: 'from-red-600 to-red-800',
-  athletic: 'from-green-600 to-green-800',
-  general: 'from-indigo-600 to-indigo-800',
+const DIFFICULTY_COLORS: Record<string, string> = {
+  beginner: 'bg-emerald-100 text-emerald-700',
+  intermediate: 'bg-amber-100 text-amber-700',
+  advanced: 'bg-red-100 text-red-700',
 };
 
 export default function ProgramCard({
@@ -49,12 +54,10 @@ export default function ProgramCard({
   goals,
   author,
   cloneCount = 0,
-  popularityScore = 0,
   source,
   onClaim,
   isLoading = false,
 }: ProgramCardProps) {
-  const gradientClass = CATEGORY_COLORS[category || 'general'] || CATEGORY_COLORS.general;
   const difficultyClass = DIFFICULTY_COLORS[difficulty || 'beginner'] || DIFFICULTY_COLORS.beginner;
 
   const handleClaim = (e: React.MouseEvent) => {
@@ -67,8 +70,11 @@ export default function ProgramCard({
 
   const CardContent = () => (
     <>
-      {/* Header */}
-      <div className={`bg-gradient-to-br ${gradientClass} p-5 text-white`}>
+      {/* Header - Navy gradient */}
+      <div
+        className="p-5 text-white"
+        style={{ background: `linear-gradient(to bottom right, ${COLORS.navy}, ${COLORS.navyLight})` }}
+      >
         <div className="flex items-start justify-between mb-3">
           {difficulty && (
             <span className={`text-xs px-2 py-1 rounded-full ${difficultyClass}`}>
@@ -76,7 +82,10 @@ export default function ProgramCard({
             </span>
           )}
           {category && (
-            <span className="text-xs bg-white/20 px-2 py-1 rounded-full capitalize">
+            <span
+              className="text-xs px-2 py-1 rounded-full capitalize"
+              style={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
+            >
               {category}
             </span>
           )}
@@ -92,26 +101,26 @@ export default function ProgramCard({
         <div className="grid grid-cols-3 gap-3 mb-4">
           {daysPerWeek && (
             <div className="text-center">
-              <div className="text-xl font-bold text-gray-900 dark:text-white">
+              <div className="text-xl font-bold" style={{ color: COLORS.navy }}>
                 {daysPerWeek}
               </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">Days/Week</div>
+              <div className="text-xs" style={{ color: COLORS.gray400 }}>Days/Week</div>
             </div>
           )}
           {durationWeeks && (
             <div className="text-center">
-              <div className="text-xl font-bold text-gray-900 dark:text-white">
+              <div className="text-xl font-bold" style={{ color: COLORS.navy }}>
                 {durationWeeks}
               </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">Weeks</div>
+              <div className="text-xs" style={{ color: COLORS.gray400 }}>Weeks</div>
             </div>
           )}
           {cloneCount > 0 && (
             <div className="text-center">
-              <div className="text-xl font-bold text-gray-900 dark:text-white">
+              <div className="text-xl font-bold" style={{ color: COLORS.navy }}>
                 {cloneCount}
               </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">Users</div>
+              <div className="text-xs" style={{ color: COLORS.gray400 }}>Users</div>
             </div>
           )}
         </div>
@@ -122,13 +131,14 @@ export default function ProgramCard({
             {goals.slice(0, 2).map((goal) => (
               <span
                 key={goal}
-                className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-1 rounded"
+                className="text-xs px-2 py-1 rounded"
+                style={{ backgroundColor: COLORS.gray100, color: COLORS.gray600 }}
               >
                 {goal}
               </span>
             ))}
             {goals.length > 2 && (
-              <span className="text-xs text-gray-400 px-1">
+              <span className="text-xs px-1" style={{ color: COLORS.gray400 }}>
                 +{goals.length - 2}
               </span>
             )}
@@ -141,13 +151,18 @@ export default function ProgramCard({
             {equipment.slice(0, 3).map((eq) => (
               <span
                 key={eq}
-                className="text-xs bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-500 px-2 py-0.5 rounded border border-gray-200 dark:border-gray-700"
+                className="text-xs px-2 py-0.5 rounded border"
+                style={{
+                  backgroundColor: COLORS.gray50,
+                  color: COLORS.gray600,
+                  borderColor: COLORS.gray100
+                }}
               >
                 {eq}
               </span>
             ))}
             {equipment.length > 3 && (
-              <span className="text-xs text-gray-400 px-1">
+              <span className="text-xs px-1" style={{ color: COLORS.gray400 }}>
                 +{equipment.length - 3}
               </span>
             )}
@@ -155,21 +170,33 @@ export default function ProgramCard({
         )}
 
         {/* Author & CTA */}
-        <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-700">
+        <div
+          className="flex items-center justify-between pt-3 border-t"
+          style={{ borderColor: COLORS.gray100 }}
+        >
           {author && (
-            <span className="text-xs text-gray-500 dark:text-gray-400">
+            <span className="text-xs" style={{ color: COLORS.gray400 }}>
               by {author}
             </span>
           )}
           {source === 'user' ? (
-            <span className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">
+            <span
+              className="text-xs font-medium"
+              style={{ color: COLORS.coral }}
+            >
               Your Program →
             </span>
           ) : (
             <button
               onClick={handleClaim}
               disabled={isLoading}
-              className="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50"
+              className="text-xs px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50 font-medium"
+              style={{
+                backgroundColor: COLORS.coral,
+                color: 'white',
+              }}
+              onMouseOver={(e) => e.currentTarget.style.backgroundColor = COLORS.coralDark}
+              onMouseOut={(e) => e.currentTarget.style.backgroundColor = COLORS.coral}
             >
               {isLoading ? 'Claiming...' : 'Claim Program'}
             </button>
@@ -183,7 +210,8 @@ export default function ProgramCard({
     return (
       <Link
         href={`/dashboard/${id}`}
-        className="block bg-white dark:bg-gray-800 rounded-xl overflow-hidden hover:shadow-lg transition-all border-2 border-indigo-200 dark:border-indigo-800"
+        className="block bg-white rounded-xl overflow-hidden hover:shadow-lg transition-all border-2"
+        style={{ borderColor: COLORS.coralLight }}
       >
         <CardContent />
       </Link>
@@ -191,9 +219,15 @@ export default function ProgramCard({
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden hover:shadow-lg transition-all">
+    <div
+      className="bg-white rounded-xl overflow-hidden hover:shadow-lg transition-all border"
+      style={{ borderColor: COLORS.gray100 }}
+    >
       <Link href={`/templates/${slug}`}>
-        <div className={`bg-gradient-to-br ${gradientClass} p-5 text-white`}>
+        <div
+          className="p-5 text-white"
+          style={{ background: `linear-gradient(to bottom right, ${COLORS.navy}, ${COLORS.navyLight})` }}
+        >
           <div className="flex items-start justify-between mb-3">
             {difficulty && (
               <span className={`text-xs px-2 py-1 rounded-full ${difficultyClass}`}>
@@ -201,7 +235,10 @@ export default function ProgramCard({
               </span>
             )}
             {category && (
-              <span className="text-xs bg-white/20 px-2 py-1 rounded-full capitalize">
+              <span
+                className="text-xs px-2 py-1 rounded-full capitalize"
+                style={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
+              >
                 {category}
               </span>
             )}
@@ -218,26 +255,26 @@ export default function ProgramCard({
         <div className="grid grid-cols-3 gap-3 mb-4">
           {daysPerWeek && (
             <div className="text-center">
-              <div className="text-xl font-bold text-gray-900 dark:text-white">
+              <div className="text-xl font-bold" style={{ color: COLORS.navy }}>
                 {daysPerWeek}
               </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">Days/Week</div>
+              <div className="text-xs" style={{ color: COLORS.gray400 }}>Days/Week</div>
             </div>
           )}
           {durationWeeks && (
             <div className="text-center">
-              <div className="text-xl font-bold text-gray-900 dark:text-white">
+              <div className="text-xl font-bold" style={{ color: COLORS.navy }}>
                 {durationWeeks}
               </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">Weeks</div>
+              <div className="text-xs" style={{ color: COLORS.gray400 }}>Weeks</div>
             </div>
           )}
           {cloneCount > 0 && (
             <div className="text-center">
-              <div className="text-xl font-bold text-gray-900 dark:text-white">
+              <div className="text-xl font-bold" style={{ color: COLORS.navy }}>
                 {cloneCount}
               </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">Users</div>
+              <div className="text-xs" style={{ color: COLORS.gray400 }}>Users</div>
             </div>
           )}
         </div>
@@ -248,13 +285,14 @@ export default function ProgramCard({
             {goals.slice(0, 2).map((goal) => (
               <span
                 key={goal}
-                className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-1 rounded"
+                className="text-xs px-2 py-1 rounded"
+                style={{ backgroundColor: COLORS.gray100, color: COLORS.gray600 }}
               >
                 {goal}
               </span>
             ))}
             {goals.length > 2 && (
-              <span className="text-xs text-gray-400 px-1">
+              <span className="text-xs px-1" style={{ color: COLORS.gray400 }}>
                 +{goals.length - 2}
               </span>
             )}
@@ -267,13 +305,18 @@ export default function ProgramCard({
             {equipment.slice(0, 3).map((eq) => (
               <span
                 key={eq}
-                className="text-xs bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-500 px-2 py-0.5 rounded border border-gray-200 dark:border-gray-700"
+                className="text-xs px-2 py-0.5 rounded border"
+                style={{
+                  backgroundColor: COLORS.gray50,
+                  color: COLORS.gray600,
+                  borderColor: COLORS.gray100
+                }}
               >
                 {eq}
               </span>
             ))}
             {equipment.length > 3 && (
-              <span className="text-xs text-gray-400 px-1">
+              <span className="text-xs px-1" style={{ color: COLORS.gray400 }}>
                 +{equipment.length - 3}
               </span>
             )}
@@ -281,9 +324,12 @@ export default function ProgramCard({
         )}
 
         {/* Author & CTA */}
-        <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-700">
+        <div
+          className="flex items-center justify-between pt-3 border-t"
+          style={{ borderColor: COLORS.gray100 }}
+        >
           {author ? (
-            <span className="text-xs text-gray-500 dark:text-gray-400">
+            <span className="text-xs" style={{ color: COLORS.gray400 }}>
               by {author}
             </span>
           ) : (
@@ -292,7 +338,13 @@ export default function ProgramCard({
           <button
             onClick={handleClaim}
             disabled={isLoading}
-            className="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50"
+            className="text-xs px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50 font-medium"
+            style={{
+              backgroundColor: COLORS.coral,
+              color: 'white',
+            }}
+            onMouseOver={(e) => e.currentTarget.style.backgroundColor = COLORS.coralDark}
+            onMouseOut={(e) => e.currentTarget.style.backgroundColor = COLORS.coral}
           >
             {isLoading ? 'Claiming...' : 'Claim Program'}
           </button>

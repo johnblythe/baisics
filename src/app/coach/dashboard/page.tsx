@@ -103,7 +103,7 @@ export default function CoachDashboard() {
     return (
       <MainLayout>
         <div className="min-h-screen flex items-center justify-center">
-          <div className="w-8 h-8 border-t-2 border-indigo-500 border-solid rounded-full animate-spin" />
+          <div className="w-8 h-8 border-t-2 border-[#FF6B6B] border-solid rounded-full animate-spin" />
         </div>
       </MainLayout>
     );
@@ -124,7 +124,7 @@ export default function CoachDashboard() {
             </p>
             <Link
               href="/dashboard"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-[#FF6B6B] text-white rounded-lg hover:bg-[#EF5350] transition-colors"
             >
               Back to Dashboard
             </Link>
@@ -150,7 +150,7 @@ export default function CoachDashboard() {
             </div>
             <button
               onClick={() => setShowAddModal(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-[#FF6B6B] text-white rounded-lg hover:bg-[#EF5350] transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -224,7 +224,7 @@ export default function CoachDashboard() {
                           }),
                         });
                       }}
-                      className="text-sm text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
+                      className="text-sm text-[#FF6B6B] hover:text-[#EF5350] dark:text-[#FF6B6B]"
                     >
                       Resend Invite
                     </button>
@@ -251,7 +251,7 @@ export default function CoachDashboard() {
                 </p>
                 <button
                   onClick={() => setShowAddModal(true)}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#FF6B6B] text-white rounded-lg hover:bg-[#EF5350] transition-colors"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -268,7 +268,7 @@ export default function CoachDashboard() {
                     className="bg-white dark:bg-gray-800 rounded-xl p-6 hover:shadow-lg transition-shadow"
                   >
                     <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-xl font-bold text-indigo-600 dark:text-indigo-400">
+                      <div className="w-12 h-12 rounded-full bg-[#FFE5E5] dark:bg-[#FF6B6B]/20 flex items-center justify-center text-xl font-bold text-[#FF6B6B] dark:text-[#FF6B6B]">
                         {(client.nickname || client.client?.name || 'U')[0].toUpperCase()}
                       </div>
                       <div className="flex-1">
@@ -341,7 +341,7 @@ export default function CoachDashboard() {
                       value={addEmail}
                       onChange={(e) => setAddEmail(e.target.value)}
                       required
-                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#FF6B6B] focus:border-transparent"
                       placeholder="client@example.com"
                     />
                   </div>
@@ -354,7 +354,7 @@ export default function CoachDashboard() {
                       type="text"
                       value={addNickname}
                       onChange={(e) => setAddNickname(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#FF6B6B] focus:border-transparent"
                       placeholder="e.g., John - Strength Training"
                     />
                   </div>
@@ -370,7 +370,7 @@ export default function CoachDashboard() {
                     <button
                       type="submit"
                       disabled={adding}
-                      className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50"
+                      className="flex-1 px-4 py-2 bg-[#FF6B6B] text-white rounded-lg hover:bg-[#EF5350] transition-colors disabled:opacity-50"
                     >
                       {adding ? 'Adding...' : 'Add & Send Invite'}
                     </button>

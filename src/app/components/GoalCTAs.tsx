@@ -116,7 +116,7 @@ export default function GoalCTAs({ onGoalSelect }: GoalCTAsProps) {
           className={`
             w-full text-left px-4 py-3 rounded-lg transition-all duration-300
             ${(index === activeIndex || goal.id === selectedGoal) ? 
-              'bg-indigo-600 text-white shadow-lg scale-[1.02] -translate-y-0.5' : 
+              'bg-[#FF6B6B] text-white shadow-lg scale-[1.02] -translate-y-0.5' : 
               'bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
             }
             group relative overflow-hidden
@@ -130,7 +130,7 @@ export default function GoalCTAs({ onGoalSelect }: GoalCTAsProps) {
           {/* Animated gradient background for active item */}
           {(index === activeIndex || goal.id === selectedGoal) && (
             <div 
-              className="absolute inset-0 -z-10 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 opacity-100 dark:opacity-90"
+              className="absolute inset-0 -z-10 bg-gradient-to-r from-[#FF6B6B] via-[#0F172A] to-[#FF6B6B] opacity-100 dark:opacity-90"
               style={{
                 backgroundSize: '200% 100%',
                 animation: 'gradient-x 8s linear infinite'

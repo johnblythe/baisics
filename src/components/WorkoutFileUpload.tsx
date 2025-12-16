@@ -119,7 +119,7 @@ export function WorkoutFileUpload({ onSuccess, className = '' }: WorkoutFileUplo
       {state.status === 'uploading' && (
         <div className="text-center py-4">
           <div className="inline-flex items-center gap-2">
-            <div className="w-4 h-4 border-2 border-indigo-600 dark:border-indigo-400 border-t-transparent rounded-full animate-spin" />
+            <div className="w-4 h-4 border-2 border-[#FF6B6B] dark:border-[#FF6B6B] border-t-transparent rounded-full animate-spin" />
             <p className="text-sm text-gray-600 dark:text-gray-300">Uploading file...</p>
           </div>
         </div>
@@ -128,7 +128,7 @@ export function WorkoutFileUpload({ onSuccess, className = '' }: WorkoutFileUplo
       {state.status === 'processing' && (
         <div className="text-center py-4">
           <div className="inline-flex items-center gap-2">
-            <div className="w-4 h-4 border-2 border-indigo-600 dark:border-indigo-400 border-t-transparent rounded-full animate-spin" />
+            <div className="w-4 h-4 border-2 border-[#FF6B6B] dark:border-[#FF6B6B] border-t-transparent rounded-full animate-spin" />
             <p className="text-sm text-gray-600 dark:text-gray-300">Processing file...</p>
           </div>
         </div>

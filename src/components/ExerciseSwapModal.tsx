@@ -135,7 +135,7 @@ export function ExerciseSwapModal({
           <div className="p-6 overflow-y-auto max-h-[calc(85vh-120px)]">
             {loading ? (
               <div className="flex items-center justify-center py-12">
-                <div className="w-8 h-8 border-t-2 border-indigo-500 border-solid rounded-full animate-spin" />
+                <div className="w-8 h-8 border-t-2 border-[#FF6B6B] border-solid rounded-full animate-spin" />
               </div>
             ) : error ? (
               <div className="text-center py-12">
@@ -164,19 +164,19 @@ export function ExerciseSwapModal({
                 {exercises.map((exercise) => (
                   <div
                     key={exercise.id}
-                    className="group relative p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-600 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 transition-all cursor-pointer"
+                    className="group relative p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-[#FF6B6B]/50 dark:hover:border-[#FF6B6B] hover:bg-[#FFE5E5]/50 dark:hover:bg-[#FF6B6B]/20 transition-all cursor-pointer"
                     onClick={() => handleSwap(exercise)}
                   >
                     {swapping === exercise.id && (
                       <div className="absolute inset-0 bg-white/80 dark:bg-gray-900/80 rounded-xl flex items-center justify-center z-10">
-                        <div className="w-6 h-6 border-t-2 border-indigo-500 border-solid rounded-full animate-spin" />
+                        <div className="w-6 h-6 border-t-2 border-[#FF6B6B] border-solid rounded-full animate-spin" />
                       </div>
                     )}
 
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
+                          <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-[#FF6B6B] dark:group-hover:text-[#FF6B6B]">
                             {exercise.name}
                           </h3>
                           <span className={`text-xs px-2 py-0.5 rounded-full ${DIFFICULTY_COLORS[exercise.difficulty] || DIFFICULTY_COLORS.BEGINNER}`}>
@@ -197,7 +197,7 @@ export function ExerciseSwapModal({
                           {exercise.targetMuscles.slice(0, 3).map((muscle) => (
                             <span
                               key={muscle}
-                              className="px-2 py-1 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 rounded"
+                              className="px-2 py-1 bg-[#FFE5E5] dark:bg-[#FF6B6B]/30 text-[#FF6B6B] dark:text-[#FF6B6B] rounded"
                             >
                               {muscle.replace('_', ' ').toLowerCase()}
                             </span>
@@ -212,7 +212,7 @@ export function ExerciseSwapModal({
 
                       <div className="flex-shrink-0">
                         <svg
-                          className="w-5 h-5 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-transform group-hover:translate-x-1"
+                          className="w-5 h-5 text-gray-400 group-hover:text-[#FF6B6B] dark:group-hover:text-[#FF6B6B] transition-transform group-hover:translate-x-1"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"

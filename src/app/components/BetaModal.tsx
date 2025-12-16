@@ -82,8 +82,8 @@ export default function BetaModal({ isOpen, onClose, user }: BetaModalProps) {
           {user ? (
             // Existing user view
             <div className="text-center py-8">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/50 mb-4">
-                <svg className="h-6 w-6 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#FFE5E5] dark:bg-[#FF6B6B]/20 mb-4">
+                <svg className="h-6 w-6 text-[#FF6B6B] dark:text-[#FF6B6B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
@@ -99,7 +99,7 @@ export default function BetaModal({ isOpen, onClose, user }: BetaModalProps) {
                 <Link 
                   href="#pricing"
                   onClick={onClose}
-                  className="inline-block px-8 py-3 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 transition-colors"
+                  className="inline-block px-8 py-3 rounded-lg bg-[#FF6B6B] text-white font-medium hover:bg-[#EF5350] dark:bg-[#FF6B6B] dark:hover:bg-[#EF5350] transition-colors"
                 >
                   View Premium Plans
                 </Link>
@@ -122,7 +122,7 @@ export default function BetaModal({ isOpen, onClose, user }: BetaModalProps) {
             // New user signup view
             <>
               <div className="mb-8">
-                <div className="bg-indigo-50 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 text-sm font-semibold px-3 py-1 rounded-full inline-block mb-4">
+                <div className="bg-[#FFE5E5] dark:bg-[#FF6B6B]/20 text-[#FF6B6B] dark:text-[#FF6B6B] text-sm font-semibold px-3 py-1 rounded-full inline-block mb-4">
                   Coming Soon
                 </div>
                 <Dialog.Title className="text-2xl font-bold mb-2 text-gray-800 dark:text-white">
@@ -146,7 +146,7 @@ export default function BetaModal({ isOpen, onClose, user }: BetaModalProps) {
                     placeholder="you@example.com"
                     required
                     disabled={isSubmitting}
-                    className="w-full text-gray-800 dark:text-white bg-white dark:bg-gray-700 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full text-gray-800 dark:text-white bg-white dark:bg-gray-700 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#FF6B6B] focus:border-[#FF6B6B] disabled:opacity-50 disabled:cursor-not-allowed"
                   />
                   {error && (
                     <p className="mt-2 text-sm text-red-600 dark:text-red-400">
@@ -159,7 +159,7 @@ export default function BetaModal({ isOpen, onClose, user }: BetaModalProps) {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="flex-1 px-8 py-3 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 px-8 py-3 rounded-lg bg-[#FF6B6B] text-white font-medium hover:bg-[#EF5350] dark:bg-[#FF6B6B] dark:hover:bg-[#EF5350] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isSubmitting ? 'Joining...' : 'Join the waitlist'}
                   </button>
