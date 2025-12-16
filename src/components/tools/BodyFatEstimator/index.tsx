@@ -16,8 +16,8 @@ export interface BodyFatEstimatorProps {
   initialMode?: EstimatorMode;
   /** Called when estimate is generated */
   onEstimate?: (estimate: BodyFatEstimate) => void;
-  /** Called when user submits CTA */
-  onCtaSubmit?: (email: string, estimate: BodyFatEstimate) => void;
+  /** Called when user submits CTA - can be async, should throw on error */
+  onCtaSubmit?: (email: string, estimate: BodyFatEstimate) => void | Promise<void>;
   /** Whether to show the CTA section */
   showCta?: boolean;
   /** Custom CTA content */
@@ -46,6 +46,8 @@ export function BodyFatEstimator({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [ctaSuccess, setCtaSuccess] = useState(false);
+  const [ctaError, setCtaError] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [multipleFilesNotice, setMultipleFilesNotice] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -154,8 +156,12 @@ export function BodyFatEstimator({
     if (!email || !estimate) return;
 
     setIsSubmitting(true);
+    setCtaError(null);
     try {
-      onCtaSubmit?.(email, estimate);
+      await onCtaSubmit?.(email, estimate);
+      setCtaSuccess(true);
+    } catch (err) {
+      setCtaError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -439,30 +445,55 @@ export function BodyFatEstimator({
       {/* CTA */}
       {showCta && estimate && cta && (
         <div className="mt-6 bg-[var(--color-coral-light)] rounded-2xl p-6 border-2 border-[var(--color-coral)]">
-          <h3 className="text-xl font-bold text-[var(--color-navy)] mb-2">
-            {cta.headline}
-          </h3>
-          <p className="text-[var(--color-gray-600)] mb-4">
-            {cta.subtext}
-          </p>
+          {ctaSuccess ? (
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto mb-4 bg-[var(--color-coral)] rounded-full flex items-center justify-center">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-[var(--color-navy)] mb-2">
+                Check your email
+              </h3>
+              <p className="text-[var(--color-gray-600)]">
+                We sent a magic link to <strong>{email}</strong>. Click it to access your dashboard.
+              </p>
+            </div>
+          ) : (
+            <>
+              <h3 className="text-xl font-bold text-[var(--color-navy)] mb-2">
+                {cta.headline}
+              </h3>
+              <p className="text-[var(--color-gray-600)] mb-4">
+                {cta.subtext}
+              </p>
 
-          <form onSubmit={handleCtaSubmit} className="space-y-3">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              required
-              className="w-full px-4 py-3 rounded-lg border border-[var(--color-coral)]/30 focus:border-[var(--color-coral)] focus:ring-2 focus:ring-[var(--color-coral)]/20 outline-none transition-all"
-            />
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full py-4 text-lg font-bold text-white bg-[var(--color-coral)] rounded-xl hover:bg-[var(--color-coral-dark)] transition-all disabled:opacity-50"
-            >
-              {isSubmitting ? 'Loading...' : cta.buttonText}
-            </button>
-          </form>
+              <form onSubmit={handleCtaSubmit} className="space-y-3">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  required
+                  className="w-full px-4 py-3 rounded-lg border border-[var(--color-coral)]/30 focus:border-[var(--color-coral)] focus:ring-2 focus:ring-[var(--color-coral)]/20 outline-none transition-all"
+                />
+                {ctaError && (
+                  <p className="text-red-600 text-sm">{ctaError}</p>
+                )}
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full py-4 text-lg font-bold text-white bg-[var(--color-coral)] rounded-xl hover:bg-[var(--color-coral-dark)] transition-all disabled:opacity-50"
+                >
+                  {isSubmitting ? 'Sending...' : cta.buttonText}
+                </button>
+              </form>
+
+              <p className="mt-4 text-center text-sm text-[var(--color-gray-400)]">
+                No password needed. We&apos;ll send you a secure link.
+              </p>
+            </>
+          )}
         </div>
       )}
     </div>

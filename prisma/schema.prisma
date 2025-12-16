@@ -686,3 +686,19 @@ enum ClientStatus {
   PAUSED
   ARCHIVED
 }
+
+// Claim flow - captures email + tool data before account creation
+model PendingClaim {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email     String   @map("email")
+  source    String   @map("source") // 'macro-calculator', 'body-fat', 'program-page', etc.
+  toolData  Json?    @map("tool_data") // Stores macro results, BF%, etc.
+  token     String   @unique @map("token")
+  used      Boolean  @default(false) @map("used")
+  createdAt DateTime @default(now()) @map("created_at")
+  expiresAt DateTime @map("expires_at")
+
+  @@index([email])
+  @@index([token])
+  @@map("pending_claims")
+}
