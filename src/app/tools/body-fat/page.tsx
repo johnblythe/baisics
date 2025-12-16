@@ -66,11 +66,14 @@ export default function BodyFatEstimatorPage() {
                 <Link href="/tools/macros" className="text-sm font-medium text-[var(--color-gray-600)] hover:text-[var(--color-navy)] transition-colors">
                   Macro Calculator
                 </Link>
+                <Link href="/tools/tdee" className="text-sm font-medium text-[var(--color-gray-600)] hover:text-[var(--color-navy)] transition-colors">
+                  TDEE Calculator
+                </Link>
+                <Link href="/tools/one-rep-max" className="text-sm font-medium text-[var(--color-gray-600)] hover:text-[var(--color-navy)] transition-colors">
+                  1RM Calculator
+                </Link>
                 <Link href="/tools/body-fat" className="text-sm font-medium text-[var(--color-coral)]">
                   Body Fat Estimator
-                </Link>
-                <Link href="/blog" className="text-sm font-medium text-[var(--color-gray-600)] hover:text-[var(--color-navy)] transition-colors">
-                  Blog
                 </Link>
               </nav>
 
