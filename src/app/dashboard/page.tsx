@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { matchTemplateToToolData, ToolSource } from '@/services/templateMatcher';
+import { cloneStaticTemplate } from '@/services/programClone';
 
 interface DashboardPageProps {
   searchParams: Promise<{ claim?: string }>;
@@ -51,15 +53,35 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   });
 
   if (!latestProgram) {
-    // If no program exists, redirect to create one
-    // Pass claim data as query params if present
+    // No existing program - check if we have claim data for auto-assignment
     if (claimData) {
-      const params = new URLSearchParams();
-      params.set('source', claimData.source || 'unknown');
-      if (claimData.toolData) {
-        params.set('prefill', encodeURIComponent(JSON.stringify(claimData.toolData)));
+      // Match tool results to best template
+      const match = matchTemplateToToolData(
+        claimData.source as ToolSource,
+        claimData.toolData
+      );
+
+      if (match) {
+        // Clone the matched template for this user
+        const result = await cloneStaticTemplate(match.template.id, session.user.id);
+
+        if (result.success && result.programId) {
+          // Redirect to new program with welcome state
+          const welcomeParams = new URLSearchParams();
+          welcomeParams.set('welcome', 'claim');
+          welcomeParams.set('reason', encodeURIComponent(match.reason));
+          welcomeParams.set('source', claimData.source || 'tool');
+          redirect(`/dashboard/${result.programId}?${welcomeParams.toString()}`);
+        }
       }
-      redirect(`/hi?${params.toString()}`);
+
+      // Fallback: redirect to /hi with prefill if clone fails
+      const fallbackParams = new URLSearchParams();
+      fallbackParams.set('source', claimData.source || 'unknown');
+      if (claimData.toolData) {
+        fallbackParams.set('prefill', encodeURIComponent(JSON.stringify(claimData.toolData)));
+      }
+      redirect(`/hi?${fallbackParams.toString()}`);
     }
     redirect('/hi');
   }
