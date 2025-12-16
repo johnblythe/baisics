@@ -1,25 +1,26 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { BodyFatEstimator } from '@/components/tools/BodyFatEstimator';
 import { BODY_FAT_RANGES, type BodyFatEstimate } from '@/utils/bodyFat';
 
 export default function BodyFatEstimatorPage() {
-  const router = useRouter();
+  const handleCtaSubmit = async (email: string, estimate: BodyFatEstimate) => {
+    const response = await fetch('/api/claim', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email,
+        source: 'body-fat-estimator',
+        toolData: {
+          estimate,
+        },
+      }),
+    });
 
-  const handleCtaSubmit = (email: string, estimate: BodyFatEstimate) => {
-    // Store lead data
-    const lead = {
-      email,
-      bodyFat: estimate,
-      source: 'body-fat-estimator',
-      timestamp: new Date().toISOString(),
-    };
-    localStorage.setItem('body_fat_lead', JSON.stringify(lead));
-
-    // Redirect to /hi with context
-    router.push(`/hi?source=body-fat&goal=${estimate.recommendation}`);
+    if (!response.ok) {
+      throw new Error('Failed to send magic link');
+    }
   };
 
   return (

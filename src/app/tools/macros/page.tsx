@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import {
   calculateMacros,
   lbsToKg,
@@ -14,15 +13,13 @@ import {
   type ActivityLevel,
   type MacroResult,
 } from '@/utils/macros';
+import ClaimEmailCapture from '@/app/components/ClaimEmailCapture';
 
 type UnitSystem = 'imperial' | 'metric';
 
 export default function MacroCalculatorPage() {
-  const router = useRouter();
   const [unitSystem, setUnitSystem] = useState<UnitSystem>('imperial');
   const [results, setResults] = useState<MacroResult | null>(null);
-  const [email, setEmail] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Form state
   const [weightLbs, setWeightLbs] = useState('');
@@ -58,28 +55,24 @@ export default function MacroCalculatorPage() {
     setResults(result);
   };
 
-  const handleClaimProgram = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !results) return;
-
-    setIsSubmitting(true);
-
-    // Store email for lead capture (could call an API here)
-    try {
-      // Simple localStorage for now - can add API call later
-      const lead = {
-        email,
-        macros: results,
-        source: 'macro-calculator',
-        timestamp: new Date().toISOString(),
-      };
-      localStorage.setItem('macro_lead', JSON.stringify(lead));
-
-      // Redirect to /hi with context
-      router.push(`/hi?source=macros&goal=${goal}`);
-    } catch {
-      setIsSubmitting(false);
-    }
+  // Build toolData for claim
+  const getToolData = () => {
+    if (!results) return undefined;
+    return {
+      macros: results,
+      inputs: {
+        sex,
+        age: parseInt(age),
+        weight: unitSystem === 'imperial' ? parseFloat(weightLbs) : parseFloat(weightKg),
+        weightUnit: unitSystem === 'imperial' ? 'lbs' : 'kg',
+        height: unitSystem === 'imperial'
+          ? { feet: parseFloat(heightFeet), inches: parseFloat(heightInches) }
+          : parseFloat(heightCm),
+        heightUnit: unitSystem === 'imperial' ? 'ft/in' : 'cm',
+        activityLevel,
+        goal,
+      },
+    };
   };
 
   return (
@@ -407,32 +400,13 @@ export default function MacroCalculatorPage() {
                     </div>
 
                     {/* CTA Card */}
-                    <div className="bg-[var(--color-coral-light)] rounded-2xl p-6 lg:p-8 border-2 border-[var(--color-coral)]">
-                      <h3 className="text-xl font-bold text-[var(--color-navy)] mb-2">
-                        Get a program designed for these exact macros
-                      </h3>
-                      <p className="text-[var(--color-gray-600)] mb-6">
-                        Our AI will create a personalized workout plan matched to your nutrition goals.
-                      </p>
-
-                      <form onSubmit={handleClaimProgram} className="space-y-3">
-                        <input
-                          type="email"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          placeholder="Enter your email"
-                          required
-                          className="w-full px-4 py-3 rounded-lg border border-[var(--color-coral)]/30 focus:border-[var(--color-coral)] focus:ring-2 focus:ring-[var(--color-coral)]/20 outline-none transition-all"
-                        />
-                        <button
-                          type="submit"
-                          disabled={isSubmitting}
-                          className="w-full py-4 text-lg font-bold text-white bg-[var(--color-coral)] rounded-xl hover:bg-[var(--color-coral-dark)] transition-all disabled:opacity-50"
-                        >
-                          {isSubmitting ? 'Loading...' : 'Claim Program →'}
-                        </button>
-                      </form>
-                    </div>
+                    <ClaimEmailCapture
+                      source="macro-calculator"
+                      toolData={getToolData()}
+                      headline="Get a program designed for these exact macros"
+                      subheadline="Our AI will create a personalized workout plan matched to your nutrition goals."
+                      ctaText="Claim Program"
+                    />
                   </div>
                 ) : (
                   <div className="bg-[var(--color-gray-50)] rounded-2xl p-6 lg:p-8 text-center">
