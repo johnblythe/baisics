@@ -19,6 +19,7 @@ import { ProgramCard } from '@/components/share/ProgramCard';
 import { MacroDisplay } from '@/components/MacroDisplay';
 import { NutritionLogModal } from '@/components/NutritionLogModal';
 import { NutritionWidget } from '@/components/NutritionWidget';
+import { ClaimWelcomeBanner, storeWelcomeData, getWelcomeData } from '@/components/ClaimWelcomeBanner';
 
 // Types for our API responses
 interface ProgramOverview {
@@ -220,6 +221,11 @@ function DashboardContent() {
   const [isNutritionModalOpen, setIsNutritionModalOpen] = useState(false);
   const [shareData, setShareData] = useState<any>(null);
   const [allPrograms, setAllPrograms] = useState<Program[]>([]);
+  const [welcomeData, setWelcomeData] = useState<{
+    show: boolean;
+    reason: string;
+    source: string;
+  } | null>(null);
 
   useEffect(() => {
     const disclaimerAcknowledged = localStorage.getItem('disclaimer-acknowledged');
@@ -234,6 +240,41 @@ function DashboardContent() {
       return () => clearTimeout(timer);
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    const programId = window.location.pathname.split('/').pop();
+
+    // Check if user came from claim flow (URL params)
+    if (searchParams.get('welcome') === 'claim' && programId) {
+      const reason = searchParams.get('reason');
+      const source = searchParams.get('source');
+      const data = {
+        show: true,
+        reason: reason ? decodeURIComponent(reason) : 'We selected this program based on your results.',
+        source: source || 'tool',
+      };
+      setWelcomeData(data);
+      // Store for persistence
+      storeWelcomeData({
+        reason: data.reason,
+        source: data.source,
+        programId,
+        programName: program?.name,
+      });
+      // Clear the URL params without reload
+      window.history.replaceState({}, '', window.location.pathname);
+    } else if (programId) {
+      // Check localStorage for persisted welcome data
+      const stored = getWelcomeData();
+      if (stored && stored.programId === programId) {
+        setWelcomeData({
+          show: true,
+          reason: stored.reason,
+          source: stored.source,
+        });
+      }
+    }
+  }, [searchParams, program?.name]);
 
   useEffect(() => {
     async function fetchData() {
@@ -380,6 +421,15 @@ function DashboardContent() {
         />
       )}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+        {/* Welcome banner for claim flow users */}
+        {welcomeData?.show && program?.id && (
+          <ClaimWelcomeBanner
+            reason={welcomeData.reason}
+            source={welcomeData.source}
+            programName={program?.name}
+            programId={program.id}
+          />
+        )}
           <div className="space-y-8">
             {/* Quick Workout Start Card - v2a coral accent theme */}
             {currentWorkout?.nextWorkout && (

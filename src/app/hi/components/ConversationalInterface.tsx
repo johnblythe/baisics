@@ -19,6 +19,7 @@ import { ConversationalIntakeRef } from './ConversationalIntakeContainer';
 import { sendGTMEvent } from "@next/third-parties/google";
 import { useStreamingGeneration, GenerationProgress } from "@/hooks/useStreamingGeneration";
 import { convertToIntakeFormat } from "@/utils/formatters";
+import { clearWelcomeData } from "@/components/ClaimWelcomeBanner";
 
 // Add type for example program phase
 interface ExamplePhase {
@@ -101,6 +102,7 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
         setProgram(result.program);
         setIsGeneratingProgram(false);
         sendGTMEvent({ event: 'program created successfully', value: result.savedProgram });
+        clearWelcomeData(); // Clear claim welcome banner when user creates their own program
 
         // Navigate to appropriate page
         const isAuthenticated = localUser?.email;

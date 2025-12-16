@@ -7,6 +7,7 @@ import MainLayout from '@/app/components/layouts/MainLayout';
 import { formatExerciseMeasure, formatExerciseUnit } from '@/utils/formatters';
 import RestPeriodIndicator from '@/app/components/RestPeriodIndicator';
 import ExerciseSwapModal from '@/components/ExerciseSwapModal';
+import { clearWelcomeData } from '@/components/ClaimWelcomeBanner';
 
 interface Exercise {
   id: string;
@@ -245,6 +246,7 @@ export default function WorkoutPage() {
           const startWorkoutData = await startWorkoutResponse.json();
           setWorkoutLog(startWorkoutData);
           setWorkoutStarted(true);
+          clearWelcomeData(); // Clear claim welcome banner on first workout
 
           const exercisesWithLogs = data.exercises.map((exercise: Exercise) => {
             const exerciseLog = startWorkoutData.exerciseLogs.find(
@@ -265,6 +267,7 @@ export default function WorkoutPage() {
           setExercises(exercisesWithLogs);
         } else {
           setWorkoutStarted(true);
+          clearWelcomeData(); // Clear claim welcome banner on workout resume
           setWorkoutLog(data.workoutLogs[0]);
 
           const exercisesWithLogs = data.exercises.map((exercise: Exercise) => {

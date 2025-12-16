@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Auto-assign program from template library when user claims via tool page (#149)
+  - Tool-to-template matching service scores templates by goal, activity level, body fat
+  - Macro calculator results map to appropriate hypertrophy/strength programs
+  - Body fat estimator results map by difficulty and category
+  - Welcome banner persists until first workout or new program creation
+  - "Make Your Own (~1 min)" CTA for custom program generation
+
 ### Fixed
 - MealPlanDisplay: coral border now shows on all expanded meals, not just the first (CSS specificity fix)
 - ProgramSelector: fix white text on white background by removing dark mode classes, use consistent project colors
