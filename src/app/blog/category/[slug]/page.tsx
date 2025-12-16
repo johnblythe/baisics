@@ -116,7 +116,7 @@ async function CategoryPageContent({ params }: Props) {
       <div className="mb-8">
         <Link 
           href="/blog"
-          className="text-blue-600 hover:underline mb-4 inline-block"
+          className="text-[#FF6B6B] hover:underline mb-4 inline-block"
         >
           ← Back to Blog
         </Link>
@@ -130,7 +130,7 @@ async function CategoryPageContent({ params }: Props) {
               href={`/blog/${post.slug}`}
               className="group block"
             >
-              <h2 className="text-2xl font-semibold mb-2 group-hover:text-blue-600">
+              <h2 className="text-2xl font-semibold mb-2 group-hover:text-[#FF6B6B]">
                 {post.frontmatter.title.replace(/^"|"$/g, '')}
               </h2>
               <time className="text-gray-500 text-sm mb-3 block">
@@ -147,13 +147,13 @@ async function CategoryPageContent({ params }: Props) {
                 {post.frontmatter.categories.map(category => (
                   <span 
                     key={category}
-                    className="bg-blue-100 text-blue-700 rounded-full px-3 py-1 text-sm"
+                    className="bg-[#FFE5E5] text-[#FF6B6B] rounded-full px-3 py-1 text-sm"
                   >
                     {category}
                   </span>
                 ))}
               </div>
-              <span className="inline-block text-blue-600 font-medium group-hover:underline">
+              <span className="inline-block text-[#FF6B6B] font-medium group-hover:underline">
                 Read more →
               </span>
             </Link>
