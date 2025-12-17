@@ -27,7 +27,7 @@ import { getOrCreateExercise } from '@/utils/exerciseMatcher';
  */
 
 // Use Opus for program generation - core product, quality matters most
-const MODEL = process.env.OPUS_MODEL || 'claude-opus-4-5-20250514';
+const MODEL = process.env.OPUS_MODEL || 'claude-opus-4-5-20251101';
 const MAX_TOKENS = 16384; // Higher limit for multi-phase programs
 
 export interface GenerateProgramOptions {

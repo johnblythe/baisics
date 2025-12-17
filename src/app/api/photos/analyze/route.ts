@@ -48,7 +48,7 @@ async function analyzeBodyComposition(images: { base64Data: string }[]): Promise
     // Send to AI for analysis
     const message = await anthropic.messages.create({
       // Use Opus for body composition - sensitive analysis, accuracy critical
-      model: process.env.OPUS_MODEL || 'claude-opus-4-5-20250514',
+      model: process.env.OPUS_MODEL || 'claude-opus-4-5-20251101',
       max_tokens: 1024,
       messages: [{
         role: 'user',
