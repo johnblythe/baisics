@@ -15,6 +15,7 @@ import Image from 'next/image';
 import { WorkoutUploadModal } from '@/components/WorkoutUploadModal';
 import { ProgramSelector } from '@/components/ProgramSelector';
 import { PhotoComparison } from '@/components/PhotoComparison';
+import { UpgradeModal } from '@/components/UpgradeModal';
 import { ProgramCard } from '@/components/share/ProgramCard';
 import { MacroDisplay } from '@/components/MacroDisplay';
 import { NutritionLogModal } from '@/components/NutritionLogModal';
@@ -226,6 +227,8 @@ function DashboardContent() {
     reason: string;
     source: string;
   } | null>(null);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [isPremium, setIsPremium] = useState(false);
 
   useEffect(() => {
     const disclaimerAcknowledged = localStorage.getItem('disclaimer-acknowledged');
@@ -318,6 +321,29 @@ function DashboardContent() {
     }
     fetchSession();
   }, []);
+
+  // Fetch user's premium status
+  useEffect(() => {
+    async function fetchUserStatus() {
+      try {
+        const response = await fetch('/api/user');
+        const data = await response.json();
+        setIsPremium(data.user?.isPremium || false);
+      } catch (error) {
+        console.error('Failed to fetch user status:', error);
+      }
+    }
+    fetchUserStatus();
+  }, []);
+
+  // Handle upgrade_prompt from URL (when free user tries to claim 2nd program)
+  useEffect(() => {
+    if (searchParams.get('upgrade_prompt') === 'program_limit') {
+      setShowUpgradeModal(true);
+      // Clear the URL param
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     async function fetchAllPrograms() {
@@ -494,6 +520,7 @@ function DashboardContent() {
                             name: p.name,
                             createdAt: p.createdAt!
                           }))}
+                          isPremium={isPremium}
                         />
                       ) : (
                         <h1 className="text-3xl font-bold text-[#0F172A]">{program.name}</h1>
@@ -1111,6 +1138,14 @@ function DashboardContent() {
                 }}
               />
             )}
+
+            {/* Upgrade Modal for free tier limitations */}
+            <UpgradeModal
+              isOpen={showUpgradeModal}
+              onClose={() => setShowUpgradeModal(false)}
+              context="program_limit"
+              currentProgramName={program?.name}
+            />
           </div>
         </div>
     </div>
