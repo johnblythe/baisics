@@ -52,4 +52,4 @@ uploads/*
 .claude/settings.local.json
 
 # Local issue cache
-.issues.json
+.issues.json.issues.json
