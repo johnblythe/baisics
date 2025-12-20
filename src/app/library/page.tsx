@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import ProgramCard, { ProgramCardProps } from '@/app/components/ProgramCard';
+import { UpgradeModal } from '@/components/UpgradeModal';
 
 const CATEGORIES = [
   { value: 'all', label: 'All Categories' },
@@ -41,6 +42,8 @@ export default function LibraryPage() {
   const [loading, setLoading] = useState(true);
   const [claimingId, setClaimingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [currentProgramName, setCurrentProgramName] = useState<string | undefined>(undefined);
 
   // Filters
   const [search, setSearch] = useState(searchParams.get('search') || '');
@@ -117,6 +120,13 @@ export default function LibraryPage() {
       const data = await res.json();
 
       if (!res.ok) {
+        // Handle upgrade required error
+        if (data.error === 'upgrade_required') {
+          setCurrentProgramName(data.currentProgram?.name);
+          setShowUpgradeModal(true);
+          setClaimingId(null);
+          return;
+        }
         throw new Error(data.error || 'Failed to claim program');
       }
 
@@ -439,6 +449,14 @@ export default function LibraryPage() {
           </div>
         </footer>
       </div>
+
+      {/* Upgrade Modal */}
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        context="program_limit"
+        currentProgramName={currentProgramName}
+      />
     </>
   );
 }

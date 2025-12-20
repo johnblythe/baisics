@@ -8,6 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- A/B testing for UpsellModal with 3 honest variants (#156)
+  - Variant A: Program preview with blurred content teaser
+  - Variant B: Benefits list with icon cards
+  - Variant C: Minimal single-CTA with subtle Pro upsell
+  - `useABTest` hook tracks view/convert/dismiss events to GTM
+  - Variants persist in localStorage for consistent user experience
+- Test page at `/test/upsell-modal` for previewing all variants
+
+### Changed
+- UpsellModal redesigned with v2a styling (navy/coral/white palette)
+  - Removed fake urgency timers and inflated stats
+  - Single focused CTA per variant instead of dual Free/Pro columns
+  - Simplified copy and streamlined forms
+
+### Added
 - Auto-assign program from template library when user claims via tool page (#149)
   - Tool-to-template matching service scores templates by goal, activity level, body fat
   - Macro calculator results map to appropriate hypertrophy/strength programs

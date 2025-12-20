@@ -39,18 +39,30 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     }
   }
 
-  // Get the latest program
-  const latestProgram = await prisma.program.findFirst({
-    where: {
-      createdBy: session.user.id,
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-    select: {
-      id: true,
-    },
-  });
+  // Get the latest program and user info
+  const [latestProgram, user, programCount] = await Promise.all([
+    prisma.program.findFirst({
+      where: {
+        createdBy: session.user.id,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      select: {
+        id: true,
+      },
+    }),
+    prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { isPremium: true },
+    }),
+    prisma.program.count({
+      where: {
+        createdBy: session.user.id,
+        isTemplate: false,
+      },
+    }),
+  ]);
 
   if (!latestProgram) {
     // No existing program - check if we have claim data for auto-assignment
@@ -84,6 +96,12 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       redirect(`/hi?${fallbackParams.toString()}`);
     }
     redirect('/hi');
+  }
+
+  // Free tier: if user already has a program and tries to claim another via token,
+  // redirect to current program with upgrade prompt
+  if (claimData && !user?.isPremium && programCount > 0) {
+    redirect(`/dashboard/${latestProgram.id}?upgrade_prompt=program_limit`);
   }
 
   // Redirect to the latest program

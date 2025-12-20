@@ -18,7 +18,7 @@ import { StreamingPhaseParser, ProgramMeta } from '@/services/programGeneration/
 import { sanitizeUserProfile, logSuspiciousInput } from '@/utils/security/promptSanitizer';
 
 // Use Opus for program generation - core product, quality matters most
-const MODEL = process.env.OPUS_MODEL || 'claude-opus-4-5-20250514';
+const MODEL = process.env.OPUS_MODEL || 'claude-opus-4-5-20251101';
 const MAX_TOKENS = 16384;
 const ESTIMATED_GENERATION_TIME_MS = 60000; // 60 seconds estimated
 
