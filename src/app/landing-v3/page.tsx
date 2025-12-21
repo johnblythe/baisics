@@ -246,11 +246,11 @@ export default function LandingPageV3() {
         <section className="pt-28 pb-16 px-6">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.1] tracking-tight animate-in stagger-1">
-              We make workout programs.
+              We make workout programs that actually work.
             </h1>
             <p className="mt-6 text-xl sm:text-2xl text-[var(--color-gray-500)] leading-relaxed animate-in stagger-2">
-              Tell us what you&apos;ve got—gym, dumbbells, just a floor—and we&apos;ll build something that actually works.
-              <span className="block mt-2 text-[var(--color-gray-400)]">No coaching. No community. No BS. Just a program you&apos;ll do.</span>
+              Tell us what you&apos;ve got&mdash;a gym or just a floor&mdash;and what you want&mdash;weight loss or muscle gain&mdash;and we&apos;ll build something just for you.
+              <span className="block mt-2 text-[var(--color-gray-400)]">No fitspos. No templates. No BS.<br/>Just a program built for you.</span>
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center animate-in stagger-3">
               <button
@@ -263,7 +263,7 @@ export default function LandingPageV3() {
                 href="#examples"
                 className="px-8 py-4 text-lg font-semibold text-[var(--color-navy)] border-2 border-[var(--color-gray-200)] rounded-xl hover:border-[var(--color-navy)] transition-all text-center"
               >
-                See Examples First
+                See Examples
               </Link>
             </div>
           </div>
@@ -408,7 +408,7 @@ export default function LandingPageV3() {
                   <div>
                     <h3 className="font-bold text-[var(--color-navy)]">&ldquo;...hire a coach?&rdquo;</h3>
                     <p className="text-[var(--color-gray-500)] mt-1">
-                      Good ones are hard to find (lots of fitspos pretending). They cost $200-500/month. And many still give you cookie-cutter programs.
+                      Good ones are hard to find (lots of fitspos pretending). They cost $200-500/month <em>minimum</em>. And many still give you cookie-cutter programs.
                     </p>
                   </div>
                 </div>
@@ -420,57 +420,144 @@ export default function LandingPageV3() {
                   <div>
                     <h3 className="font-bold text-[var(--color-navy)]">&ldquo;...find a free program online?&rdquo;</h3>
                     <p className="text-[var(--color-gray-500)] mt-1">
-                      Bodybuilding.com and Men&apos;s Health give you the same generic 12-week plan they give everyone else. It wasn&apos;t built for you.
+                      Men&apos;s Health, Cosmo, and the rest will give you the same generic 12-week plan they give everyone else. It wasn&apos;t built for you.
                     </p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="mt-8 p-6 bg-[var(--color-navy)] rounded-xl text-center">
-              <p className="text-white text-lg font-medium">
-                Baisics gets you back to the <span className="text-[var(--color-coral)]">basics</span>—a real program, built for your situation, so you can stop overthinking and start training.
-              </p>
+          </div>
+        </section>
+
+        {/* Mid-Hero: The Pitch */}
+        <section className="py-20 bg-[var(--color-navy)]">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              {/* Left: Bold Statement */}
+              <div>
+                <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-[1.1]">
+                  Your program.<br />
+                  <span className="text-[var(--color-coral)]">Your rules.</span>
+                </h2>
+                <p className="mt-6 text-xl text-[var(--color-gray-400)]">
+                  Stop overthinking. Start training.
+                </p>
+              </div>
+
+              {/* Right: Proof Points + CTA */}
+              <div className="bg-[var(--color-navy-light)] rounded-2xl p-8 border border-[var(--color-gray-600)]">
+                <ul className="space-y-4">
+                  <li className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-[var(--color-coral)]/20 flex items-center justify-center flex-shrink-0">
+                      <svg className="w-5 h-5 text-[var(--color-coral)]" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <span className="text-lg text-white font-medium">Your schedule, not ours</span>
+                  </li>
+                  <li className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-[var(--color-coral)]/20 flex items-center justify-center flex-shrink-0">
+                      <svg className="w-5 h-5 text-[var(--color-coral)]" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <span className="text-lg text-white font-medium">Your equipment, not ideal</span>
+                  </li>
+                  <li className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-[var(--color-coral)]/20 flex items-center justify-center flex-shrink-0">
+                      <svg className="w-5 h-5 text-[var(--color-coral)]" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <span className="text-lg text-white font-medium">Your goals, not trending</span>
+                  </li>
+                </ul>
+                <button
+                  onClick={() => handleGetStarted()}
+                  className="mt-8 w-full py-4 text-lg font-bold text-white bg-[var(--color-coral)] rounded-xl hover:bg-[var(--color-coral-dark)] transition-all"
+                >
+                  Build Mine →
+                </button>
+              </div>
             </div>
           </div>
         </section>
 
         {/* What You Actually Get */}
         <section className="py-20 px-6">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-5xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-3xl sm:text-4xl font-bold">&ldquo;What do I actually get?&rdquo;</h2>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="p-6 bg-white rounded-2xl border border-[var(--color-gray-200)] shadow-sm">
-                <div className="w-12 h-12 bg-[var(--color-coral-light)] rounded-xl flex items-center justify-center mb-4">
-                  <svg className="w-6 h-6 text-[var(--color-coral)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {/* Free Features */}
+            <div className="grid md:grid-cols-3 gap-6 mb-8">
+              <div className="relative p-8 bg-white rounded-2xl border border-[var(--color-gray-200)] shadow-sm">
+                <span className="absolute top-4 right-4 px-2 py-1 bg-[var(--color-green-light)] text-[var(--color-green)] text-xs font-bold rounded-full uppercase tracking-wide">Free</span>
+                <div className="w-16 h-16 bg-[var(--color-coral-light)] rounded-2xl flex items-center justify-center mb-5">
+                  <svg className="w-8 h-8 text-[var(--color-coral)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-bold text-[var(--color-navy)] mb-2">A Real Program</h3>
-                <p className="text-[var(--color-gray-500)] text-sm">Not a template. Phases, progression, deload weeks—structured for your specific goals and timeline.</p>
+                <h3 className="text-xl font-bold text-[var(--color-navy)] mb-3">A Real Program</h3>
+                <p className="text-[var(--color-gray-500)]">Not a template. Phases, progression, deload weeks—structured for your specific goals and timeline.</p>
               </div>
 
-              <div className="p-6 bg-white rounded-2xl border border-[var(--color-gray-200)] shadow-sm">
-                <div className="w-12 h-12 bg-[var(--color-coral-light)] rounded-xl flex items-center justify-center mb-4">
-                  <svg className="w-6 h-6 text-[var(--color-coral)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="relative p-8 bg-white rounded-2xl border border-[var(--color-gray-200)] shadow-sm">
+                <span className="absolute top-4 right-4 px-2 py-1 bg-[var(--color-green-light)] text-[var(--color-green)] text-xs font-bold rounded-full uppercase tracking-wide">Free</span>
+                <div className="w-16 h-16 bg-[var(--color-coral-light)] rounded-2xl flex items-center justify-center mb-5">
+                  <svg className="w-8 h-8 text-[var(--color-coral)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-bold text-[var(--color-navy)] mb-2">Every Workout</h3>
-                <p className="text-[var(--color-gray-500)] text-sm">Exercises, sets, reps, rest times. No guessing what to do when you walk into the gym.</p>
+                <h3 className="text-xl font-bold text-[var(--color-navy)] mb-3">Every Workout</h3>
+                <p className="text-[var(--color-gray-500)]">Exercises, sets, reps, rest times. No guessing what to do when you walk into the gym.</p>
               </div>
 
-              <div className="p-6 bg-white rounded-2xl border border-[var(--color-gray-200)] shadow-sm">
-                <div className="w-12 h-12 bg-[var(--color-coral-light)] rounded-xl flex items-center justify-center mb-4">
-                  <svg className="w-6 h-6 text-[var(--color-coral)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="relative p-8 bg-white rounded-2xl border border-[var(--color-gray-200)] shadow-sm">
+                <span className="absolute top-4 right-4 px-2 py-1 bg-[var(--color-green-light)] text-[var(--color-green)] text-xs font-bold rounded-full uppercase tracking-wide">Free</span>
+                <div className="w-16 h-16 bg-[var(--color-coral-light)] rounded-2xl flex items-center justify-center mb-5">
+                  <svg className="w-8 h-8 text-[var(--color-coral)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-bold text-[var(--color-navy)] mb-2">Nutrition Targets</h3>
-                <p className="text-[var(--color-gray-500)] text-sm">Calories and macros calculated for your goal. Gain muscle, lose fat, or maintain—we&apos;ll set the numbers.</p>
+                <h3 className="text-xl font-bold text-[var(--color-navy)] mb-3">Nutrition Targets</h3>
+                <p className="text-[var(--color-gray-500)]">Calories and macros calculated for your goal. Gain muscle, lose fat, or maintain—we&apos;ll set the numbers.</p>
+              </div>
+            </div>
+
+            {/* Premium Features */}
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="relative p-8 bg-white rounded-2xl border border-[var(--color-gray-200)] shadow-sm">
+                <div className="w-16 h-16 bg-[var(--color-coral-light)] rounded-2xl flex items-center justify-center mb-5">
+                  <svg className="w-8 h-8 text-[var(--color-coral)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-[var(--color-navy)] mb-3">Progress Tracking</h3>
+                <p className="text-[var(--color-gray-500)]">Log workouts, track weights, see your progress over time with charts and insights.</p>
+              </div>
+
+              <div className="relative p-8 bg-white rounded-2xl border border-[var(--color-gray-200)] shadow-sm">
+                <div className="w-16 h-16 bg-[var(--color-coral-light)] rounded-2xl flex items-center justify-center mb-5">
+                  <svg className="w-8 h-8 text-[var(--color-coral)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-[var(--color-navy)] mb-3">AI Meal Prep</h3>
+                <p className="text-[var(--color-gray-500)]">Weekly meal plans and grocery lists generated to hit your macro targets.</p>
+              </div>
+
+              <div className="relative p-8 bg-white rounded-2xl border border-[var(--color-gray-200)] shadow-sm">
+                <div className="w-16 h-16 bg-[var(--color-coral-light)] rounded-2xl flex items-center justify-center mb-5">
+                  <svg className="w-8 h-8 text-[var(--color-coral)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-[var(--color-navy)] mb-3">Photo Analysis</h3>
+                <p className="text-[var(--color-gray-500)]">Track visual progress with side-by-side comparisons and body composition estimates.</p>
               </div>
             </div>
           </div>
@@ -542,8 +629,7 @@ export default function LandingPageV3() {
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="text-3xl sm:text-4xl font-bold text-[var(--color-navy)]">Still here?</h2>
             <p className="mt-4 text-lg text-[var(--color-gray-500)]">
-              Look, it takes 2 minutes. Answer some questions, get a program.
-              If it sucks, don&apos;t use it. But it probably won&apos;t suck.
+              You could&apos;ve had your program by now!<br/>Just take the 2 minutes and see for yourself.
             </p>
             <button
               onClick={() => handleGetStarted()}
