@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import ProgramCard, { ProgramCardProps } from '@/app/components/ProgramCard';
@@ -32,7 +32,7 @@ const DAYS_PER_WEEK = [
 
 type ProgramType = Omit<ProgramCardProps, 'onClaim' | 'isLoading'>;
 
-export default function LibraryPage() {
+function LibraryPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -458,5 +458,13 @@ export default function LibraryPage() {
         currentProgramName={currentProgramName}
       />
     </>
+  );
+}
+
+export default function LibraryPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <LibraryPageContent />
+    </Suspense>
   );
 }

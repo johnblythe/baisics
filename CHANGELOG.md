@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+- Fix middleware auth bypass that allowed unauthenticated access to protected routes (#159)
+- Add auth checks to 8 previously unprotected API routes (email, generate-token, program-creation/*)
+- Add IP-based rate limiting to AI endpoints and auth routes
+- Secure `/api/email` to prevent open relay abuse (self-only restriction)
+- Secure `/api/auth/generate-token` to prevent token generation for other users
+
+### Added
+- `.env.example` documenting all required environment variables
+- `vercel.json` with function timeouts (60s for AI routes) and security headers
+- `src/utils/security/rateLimit.ts` for basic IP-based rate limiting
+- Suspense boundary for `/library` page to fix static generation
+
+### Fixed
+- Stripe API version mismatch causing type errors
+- ESLint unescaped entity errors in UpsellModal and test files
+- Type errors in ConversationalInterface and progress route
+
+### Changed
+- Remove debug console.log statements from API routes
+- Audit NEXT_PUBLIC_ env vars (all verified safe)
+
 ### Added
 - A/B testing for UpsellModal with 3 honest variants (#156)
   - Variant A: Program preview with blurred content teaser

@@ -235,7 +235,7 @@ export async function GET(req: Request) {
 }
 
 // DELETE /api/progress/photos/:id
-export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(req: Request) {
   try {
     const session = await auth();
     if (!session) {

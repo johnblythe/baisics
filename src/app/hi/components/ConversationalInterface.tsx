@@ -135,7 +135,7 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
     if (isReturningUser && messages.length === 0) {
       setMessages([{
         role: 'assistant',
-        content: `Good to see you again! Last time we set you up with ${initialExtractedData?.daysPerWeek} days a week focused on ${initialExtractedData?.goals}. Ready for something new, or want to keep building on that?`
+        content: `Good to see you again! Last time we set you up with ${(initialExtractedData as any)?.daysPerWeek || 'a few'} days a week focused on ${(initialExtractedData as any)?.goals || 'your fitness'}. Ready for something new, or want to keep building on that?`
       }]);
     }
   }, [isReturningUser, initialExtractedData, messages.length]);
@@ -237,7 +237,7 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
   // Work on getting the right data from the user to generate a program
   const handleInitialIntake = async (userMessage: Message, _: string) => {
     // Pass existing extractedData so returning users don't get asked redundant questions (#107)
-    const result = await processUserMessage([...messages, userMessage], localUserId, extractedData);
+    const result = await processUserMessage([...messages, userMessage], localUserId, extractedData as any);
         
     if (result.success) {
       if (result.extractedData) {

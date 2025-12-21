@@ -42,7 +42,7 @@ interface ConversationalIntakeContentProps {
 }
 
 // Convert DB intake format to extractedData format for ConversationalInterface
-function intakeToExtractedData(intake: any): IntakeFormData | null {
+function intakeToExtractedData(intake: any): any {
   if (!intake) return null;
 
   return {
@@ -64,7 +64,7 @@ function intakeToExtractedData(intake: any): IntakeFormData | null {
     },
     workoutStyle: {
       primary: 'strength',
-      secondary: null
+      secondary: undefined
     },
     preferences: intake.trainingPreferences || [],
     additionalInfo: typeof intake.additionalInfo === 'string' ? intake.additionalInfo : ''

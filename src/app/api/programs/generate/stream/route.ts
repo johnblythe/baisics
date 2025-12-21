@@ -107,10 +107,7 @@ export async function POST(request: Request) {
         let isClosed = false;
 
         const sendEvent = (event: string, data: any) => {
-          if (isClosed) {
-            console.log(`[Stream] Skipping event ${event} - controller closed`);
-            return;
-          }
+          if (isClosed) return;
           try {
             controller.enqueue(encoder.encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`));
           } catch (err) {
@@ -192,8 +189,6 @@ export async function POST(request: Request) {
                     phase: result.phase,
                     totalPhases: completedPhases.length,
                   });
-
-                  console.log(`[Stream] Phase ${result.phase.phaseNumber} complete and saved`);
                 } else if (result.type === 'meta' && result.meta) {
                   programMeta = result.meta;
 
@@ -213,8 +208,6 @@ export async function POST(request: Request) {
                     description: programMeta.description,
                     totalWeeks: programMeta.totalWeeks,
                   });
-
-                  console.log(`[Stream] Program meta received: ${programMeta.name}`);
                 } else if (result.error) {
                   console.error(`[Stream] Parse error: ${result.error}`);
                 }

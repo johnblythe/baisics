@@ -1,5 +1,6 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
+import { checkRateLimit, rateLimitedResponse } from '@/utils/security/rateLimit';
 import { prisma } from '@/lib/prisma';
 import { anthropic } from '@/lib/anthropic';
 import { PhotoType } from '@prisma/client';
@@ -86,8 +87,12 @@ async function analyzeBodyComposition(images: { base64Data: string }[]): Promise
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    // Rate limit: 10 photo analyses per minute
+    const { ok } = checkRateLimit(request, 10, 60_000);
+    if (!ok) return rateLimitedResponse();
+
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { getToken } from 'next-auth/jwt'
-import { auth } from '@/auth'
 import type { NextRequest } from 'next/server'
 
 const PROTECTED_PATHS = [
@@ -17,13 +16,11 @@ export async function middleware(request: NextRequest) {
   if (!requiresAuth) {
     return NextResponse.next()
   }
-  return NextResponse.next()
-  
-  const token = await getToken({ 
+
+  const token = await getToken({
     req: request,
-    secret: process.env.NEXTAUTH_SECRET 
+    secret: process.env.NEXTAUTH_SECRET
   })
-  console.log("🚀 ~ middleware ~ token:", token)
 
   if (!token?.sub) {
     return NextResponse.redirect(new URL('/auth/signin', request.url))

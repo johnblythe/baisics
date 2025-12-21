@@ -1,5 +1,6 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
+import { checkRateLimit, rateLimitedResponse } from '@/utils/security/rateLimit';
 import { anthropic } from '@/lib/anthropic';
 
 type ParsedNutrition = {
@@ -118,8 +119,12 @@ Rules:
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    // Rate limit: 20 parses per minute
+    const { ok } = checkRateLimit(request, 20, 60_000);
+    if (!ok) return rateLimitedResponse();
+
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

@@ -3,10 +3,8 @@ import { prisma } from '@/lib/prisma';
 import { isAfter } from 'date-fns';
 
 export async function POST(request: Request) {
-  console.log("🚀 ~ POST ~ hi");
   try {
     const { sessionId } = await request.json();
-    console.log("🚀 ~ POST ~ sessionId:", sessionId)
 
     if (!sessionId) {
       return NextResponse.json(
@@ -20,7 +18,6 @@ export async function POST(request: Request) {
       where: { id: sessionId },
       include: { user: true },
     });
-    console.log("🚀 ~ POST ~ purchaseSession:", purchaseSession)
 
     if (!purchaseSession) {
       return NextResponse.json(

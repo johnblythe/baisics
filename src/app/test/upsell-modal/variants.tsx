@@ -117,7 +117,7 @@ export function VariantB({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
             </svg>
           </div>
           <h2 className="text-2xl font-bold text-[#0F172A]">Your Program is Ready</h2>
-          <p className="text-[#64748B] mt-1">Here's what you're getting:</p>
+          <p className="text-[#64748B] mt-1">Here&apos;s what you&apos;re getting:</p>
         </div>
 
         {/* Benefits List */}
@@ -267,7 +267,7 @@ export function VariantC({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-[#0F172A] mb-2">You're All Set!</h2>
+            <h2 className="text-2xl font-bold text-[#0F172A] mb-2">You&apos;re All Set!</h2>
             <p className="text-[#64748B] mb-6">Check your inbox for your program.</p>
             <button
               onClick={onClose}

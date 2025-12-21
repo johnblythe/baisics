@@ -1,5 +1,6 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
+import { checkRateLimit, rateLimitedResponse } from '@/utils/security/rateLimit';
 import {
   generateProgram,
   saveProgramToDatabase,
@@ -16,8 +17,12 @@ import {
  * - Full UserProfile object
  * - Legacy IntakeFormData (auto-converted)
  */
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    // Rate limit: 5 program generations per minute
+    const { ok } = checkRateLimit(request, 5, 60_000);
+    if (!ok) return rateLimitedResponse();
+
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
