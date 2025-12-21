@@ -41,6 +41,46 @@ interface ConversationalIntakeContentProps {
   preventNavigation?: boolean;
 }
 
+// Persona pre-fill data (matches landing-v3 personas)
+const PERSONA_DATA: Record<string, any> = {
+  comeback: {
+    gender: 'female',
+    goals: 'Get back in shape, build strength after a long break from training',
+    daysPerWeek: 4,
+    timePerDay: 45,
+    age: 34,
+    experienceLevel: 'beginner',
+    workoutEnvironment: { primary: 'gym', limitations: [] },
+    equipmentAccess: { type: 'full-gym', available: [] },
+    workoutStyle: { primary: 'strength', secondary: undefined },
+    additionalInfo: "Haven't worked out in about 3 years. Have access to a gym at work during lunch breaks. Want to feel strong again, not just lose weight."
+  },
+  intermediate: {
+    gender: 'male',
+    goals: 'Build real strength with proper programming after years of inconsistent training',
+    daysPerWeek: 5,
+    timePerDay: 60,
+    age: 28,
+    experienceLevel: 'intermediate',
+    workoutEnvironment: { primary: 'home', limitations: [] },
+    equipmentAccess: { type: 'home-gym', available: ['barbell', 'dumbbells', 'rack'] },
+    workoutStyle: { primary: 'strength', secondary: undefined },
+    additionalInfo: "Have a garage gym with barbell, rack, and dumbbells. Been lifting for 2 years but feel like I've been spinning my wheels. Ready for a structured program."
+  },
+  parent: {
+    gender: 'female',
+    goals: 'Stay fit and maintain sanity with minimal time commitment',
+    daysPerWeek: 3,
+    timePerDay: 30,
+    age: 42,
+    experienceLevel: 'intermediate',
+    workoutEnvironment: { primary: 'gym', limitations: [] },
+    equipmentAccess: { type: 'full-gym', available: [] },
+    workoutStyle: { primary: 'strength', secondary: undefined },
+    additionalInfo: "Mom of 2, work full time. Have 30 minutes max, 3 days a week. Planet Fitness near work. Just want something efficient that actually works."
+  }
+};
+
 // Convert DB intake format to extractedData format for ConversationalInterface
 function intakeToExtractedData(intake: any): any {
   if (!intake) return null;
@@ -90,6 +130,12 @@ function ConversationalIntakeContent({ chatRef, userId: propUserId, preventNavig
       const urlUserId = searchParams.get("userId");
       let activeUserId = propUserId || urlUserId || session?.user?.id;
 
+      // Check for persona pre-fill from landing page (works for both logged in and anonymous users)
+      const personaId = searchParams.get("persona");
+      if (personaId && PERSONA_DATA[personaId]) {
+        setExistingIntake(PERSONA_DATA[personaId]);
+      }
+
       if (activeUserId) {
         setUserId(activeUserId);
 
@@ -98,11 +144,13 @@ function ConversationalIntakeContent({ chatRef, userId: propUserId, preventNavig
         if (result.success && result.user) {
           setUser(result.user);
 
-          // Fetch existing intake for returning users (#107)
-          const intakeResult = await getSessionIntake(activeUserId);
-          if (intakeResult.success && intakeResult.intake) {
-            const extractedData = intakeToExtractedData(intakeResult.intake);
-            setExistingIntake(extractedData);
+          // Only fetch existing intake if no persona was specified
+          if (!personaId) {
+            const intakeResult = await getSessionIntake(activeUserId);
+            if (intakeResult.success && intakeResult.intake) {
+              const extractedData = intakeToExtractedData(intakeResult.intake);
+              setExistingIntake(extractedData);
+            }
           }
 
           // Check for program in URL

@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- New landing page v3 at `/landing-v3` with anti-marketing honest approach (#101)
+  - 3 persona archetypes (Comeback Kid, Stuck Intermediate, Time-Crunched Parent) with real program previews
+  - "Why not just..." section addressing fitspos, coaches, and generic programs
+  - "I want this" CTA pre-fills `/hi` with persona context via `?persona=` param
+  - 3-tier pricing: Free / $10 Pro / $20 Pro+
+  - Footer with pillar tools (TDEE, 1RM, macros, body fat) and resources
+
+### Changed
+- Dev server now runs on port 3001 by default (documented in CLAUDE.md)
+
 ### Security
 - Fix middleware auth bypass that allowed unauthenticated access to protected routes (#159)
 - Add auth checks to 8 previously unprotected API routes (email, generate-token, program-creation/*)
