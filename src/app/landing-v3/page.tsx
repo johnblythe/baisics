@@ -77,7 +77,7 @@ const PERSONAS = [
 
 const PRICING_TIERS = [
   {
-    name: 'Free',
+    name: 'Starter',
     price: 0,
     period: 'forever',
     description: 'Everything you need to start',
@@ -92,12 +92,12 @@ const PRICING_TIERS = [
     highlighted: false,
   },
   {
-    name: 'Pro',
+    name: 'Fit',
     price: 10,
     period: 'month',
     description: 'For people who want to track progress',
     features: [
-      'Everything in Free',
+      'Everything in Starter',
       'Workout logging',
       'Weekly check-ins',
       'Program auto-adjusts',
@@ -108,12 +108,12 @@ const PRICING_TIERS = [
     highlighted: true,
   },
   {
-    name: 'Pro+',
+    name: 'Jacked',
     price: 20,
     period: 'month',
     description: 'The full experience',
     features: [
-      'Everything in Pro',
+      'Everything in Fit',
       'AI meal prep plans',
       'Progress photo analysis',
       'Exercise swap suggestions',
@@ -243,25 +243,48 @@ export default function LandingPageV3() {
         </header>
 
         {/* Hero - Honest, Direct */}
-        <section className="pt-28 pb-16 px-6">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.1] tracking-tight animate-in stagger-1">
-              We make workout programs that actually work.
-            </h1>
-            <p className="mt-6 text-xl sm:text-2xl text-[var(--color-gray-500)] leading-relaxed animate-in stagger-2">
-              Tell us what you&apos;ve got&mdash;a gym or just a floor&mdash;and what you want&mdash;weight loss or muscle gain&mdash;and we&apos;ll build something just for you.
-              <span className="block mt-2 text-[var(--color-gray-400)]">No fitspos. No templates. No BS.<br/>Just a program built for you.</span>
-            </p>
-            <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center animate-in stagger-3">
+        <section className="pt-32 pb-24 px-6 relative overflow-hidden bg-gradient-to-b from-white via-[var(--color-gray-50)] to-white">
+          {/* Decorative geometric shapes - actually visible */}
+          <div className="absolute top-0 left-0 w-96 h-96 bg-[var(--color-coral)]/25 rounded-full blur-md"></div>
+          <div className="absolute top-10 right-0 w-[32rem] h-[32rem] bg-[var(--color-navy)]/20 rounded-full blur-md"></div>
+          <div className="absolute bottom-0 left-1/4 w-72 h-72 bg-[var(--color-coral)]/20 rounded-full blur-md"></div>
+          
+          <div className="max-w-3xl mx-auto text-center relative z-10">
+            {/* Content container with subtle depth */}
+            <div className="relative">
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-[1.1] tracking-tight text-[var(--color-navy)] animate-in stagger-1 drop-shadow-sm">
+                We make workout programs that{' '}
+                <span className="bg-gradient-to-r from-[var(--color-coral)] to-[var(--color-coral-dark)] bg-clip-text text-transparent drop-shadow-sm">
+                  actually work.
+                </span>
+              </h1>
+              {/* Visual accent line - solid and prominent */}
+              <div className="mt-8 flex items-center justify-center gap-2 animate-in stagger-2">
+                <div className="w-12 h-0.5 bg-[var(--color-gray-300)]"></div>
+                <div className="w-16 h-1 bg-[var(--color-coral)] rounded-full"></div>
+                <div className="w-12 h-0.5 bg-[var(--color-gray-300)]"></div>
+              </div>
+            </div>
+            
+            <div className="mt-10 space-y-4">
+              <p className="text-xl sm:text-2xl text-[var(--color-gray-700)] leading-relaxed font-semibold animate-in stagger-2">
+                Tell us where you&apos;re at. Tell us where you want to go. We&apos;ll build a custom program to get you there.
+              </p>
+              <p className="text-lg sm:text-xl text-[var(--color-gray-600)] leading-relaxed font-medium animate-in stagger-2">
+                No fitspos. No templates. No BS. Just a program built for you.
+              </p>
+            </div>
+            
+            <div className="mt-14 flex flex-col sm:flex-row gap-5 justify-center items-center animate-in stagger-3">
               <button
                 onClick={() => handleGetStarted()}
-                className="px-8 py-4 text-lg font-bold text-white bg-[var(--color-coral)] rounded-xl hover:bg-[var(--color-coral-dark)] transition-all shadow-lg shadow-[var(--color-coral)]/20"
+                className="px-12 py-5 text-lg font-bold text-white bg-[var(--color-coral)] rounded-xl hover:bg-[var(--color-coral-dark)] transition-all shadow-xl shadow-[var(--color-coral)]/40 hover:shadow-2xl hover:shadow-[var(--color-coral)]/50 transform hover:-translate-y-1 hover:scale-105"
               >
                 Build My Program
               </button>
               <Link
                 href="#examples"
-                className="px-8 py-4 text-lg font-semibold text-[var(--color-navy)] border-2 border-[var(--color-gray-200)] rounded-xl hover:border-[var(--color-navy)] transition-all text-center"
+                className="px-12 py-5 text-lg font-semibold text-[var(--color-navy)] bg-white border-2 border-[var(--color-gray-400)] rounded-xl hover:border-[var(--color-navy)] hover:bg-[var(--color-gray-50)] hover:shadow-lg transition-all text-center transform hover:-translate-y-0.5"
               >
                 See Examples
               </Link>
@@ -654,7 +677,7 @@ export default function LandingPageV3() {
                 </div>
                 <p className="text-sm text-[var(--color-gray-500)]">
                   Workout programs that work.<br />
-                  Made in Indianapolis.
+                  Made with <span className="text-[var(--color-coral)]">&hearts;</span> in Indy.
                 </p>
               </div>
 

@@ -11,11 +11,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New landing page v3 at `/landing-v3` with anti-marketing honest approach (#101)
   - 3 persona archetypes (Comeback Kid, Stuck Intermediate, Time-Crunched Parent) with real program previews
   - "Why not just..." section addressing fitspos, coaches, and generic programs
+  - Bold split mid-hero section: "Your program. Your rules."
   - "I want this" CTA pre-fills `/hi` with persona context via `?persona=` param
-  - 3-tier pricing: Free / $10 Pro / $20 Pro+
-  - Footer with pillar tools (TDEE, 1RM, macros, body fat) and resources
+  - 3-tier pricing: Starter / Fit / Jacked ($0 / $10 / $20)
+  - Enlarged feature cards with FREE badges for core features
+  - Premium feature row (Progress Tracking, AI Meal Prep, Photo Analysis)
 
 ### Changed
+- Landing page v3 is now the default homepage (#101)
+- Pricing tier names: Starter / Fit / Jacked (replaces Free / Pro / Pro+)
+- Unified Footer component with 4-column layout (Brand, Free Tools, Resources, Legal)
+  - Tool pages, templates, and library now use shared Footer
+  - "Made with ♥ in Indy" branding
 - Dev server now runs on port 3001 by default (documented in CLAUDE.md)
 
 ### Security

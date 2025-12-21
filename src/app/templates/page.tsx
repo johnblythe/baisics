@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { PROGRAM_TEMPLATES, ProgramTemplate } from '@/data/templates';
+import Footer from '@/components/Footer';
 
 const CATEGORY_LABELS: Record<ProgramTemplate['category'], string> = {
   strength: 'Strength',
@@ -340,15 +341,7 @@ export default function TemplatesPage() {
         </div>
 
         {/* Footer */}
-        <footer className="py-12 px-6 lg:px-8 border-t" style={{ borderColor: COLORS.gray100 }}>
-          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-md" style={{ backgroundColor: COLORS.coral }}></div>
-              <span className="font-bold" style={{ color: COLORS.navy }}>baisics</span>
-            </div>
-            <p className="text-sm" style={{ color: COLORS.gray400 }}>&copy; {new Date().getFullYear()} baisics. Made in Indianapolis.</p>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </>
   );
