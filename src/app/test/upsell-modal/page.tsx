@@ -117,9 +117,9 @@ export default function TestUpsellModalPage() {
                 </tr>
                 <tr className="border-b border-white/10">
                   <td className="py-2 text-white">CTA Text</td>
-                  <td className="py-2">"Send Me My Program"</td>
-                  <td className="py-2">"Get My Free Program"</td>
-                  <td className="py-2">"Send Me My Program"</td>
+                  <td className="py-2">&quot;Send Me My Program&quot;</td>
+                  <td className="py-2">&quot;Get My Free Program&quot;</td>
+                  <td className="py-2">&quot;Send Me My Program&quot;</td>
                 </tr>
                 <tr className="border-b border-white/10">
                   <td className="py-2 text-white">Pro Upsell</td>

@@ -234,7 +234,7 @@ export function DataReviewTransition({ intakeData, onConfirm, onRequestMore }: D
                 {/* Topics selection */}
                 <div className="bg-white rounded-xl border border-[#E2E8F0] p-5">
                   <h3 className="font-semibold text-[#0F172A] mb-1">What would you like to add?</h3>
-                  <p className="text-sm text-[#64748B] mb-4">Select any topics you'd like to discuss</p>
+                  <p className="text-sm text-[#64748B] mb-4">Select any topics you&apos;d like to discuss</p>
 
                   <div className="space-y-2">
                     {ADDITIONAL_TOPICS.map((topic) => {

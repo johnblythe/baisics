@@ -348,8 +348,7 @@ describe('convertIntakeToProfile', () => {
 
   describe('edge cases', () => {
     it('throws on null intake', () => {
-      // @ts-expect-error - testing null handling
-      expect(() => convertIntakeToProfile(null)).toThrow();
+      expect(() => convertIntakeToProfile(null as any)).toThrow();
     });
 
     it('handles undefined values in intake', () => {
