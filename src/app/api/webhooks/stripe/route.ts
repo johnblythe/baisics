@@ -9,20 +9,30 @@ export const config = {
   },
 }
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia',
-})
+// Lazy initialization to avoid build-time errors
+let _stripe: Stripe | null = null
+function getStripe(): Stripe {
+  if (!_stripe) {
+    _stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+      apiVersion: '2024-12-18.acacia',
+    })
+  }
+  return _stripe
+}
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
+function getWebhookSecret(): string {
+  return process.env.STRIPE_WEBHOOK_SECRET!
+}
 
 export async function POST(req: Request) {
   const rawBody = await req.text()
   const sig = req.headers.get('stripe-signature')!
+  const stripe = getStripe()
 
   let event: Stripe.Event
 
   try {
-    event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret)
+    event = stripe.webhooks.constructEvent(rawBody, sig, getWebhookSecret())
   } catch (err: any) {
     console.error(`Webhook Error: ${err.message}`)
     return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 400 })
