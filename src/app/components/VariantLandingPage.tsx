@@ -701,7 +701,7 @@ export default function LandingPage() {
                 <span className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">baisics</span>
               </div>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                 &copy; {new Date().getFullYear()} baisics. All rights reserved. ♥️ from Indianapolis.
+                 &copy; {new Date().getFullYear()} baisics. All rights reserved. ♥️ from Indy.
               </p>
             </div>
           </div>

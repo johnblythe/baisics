@@ -162,7 +162,7 @@ export const createEmailLayout = ({
       <tr>
         <td class="footer">
           <p>&copy; ${new Date().getFullYear()} baisics. All rights reserved.</p>
-          <p>♥️ from Indianapolis</p>
+          <p>♥️ from Indy</p>
         </td>
       </tr>
     </table>

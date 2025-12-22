@@ -376,7 +376,7 @@ export default function LandingPageV2D() {
               </div>
               <span className="font-semibold text-white">baisics</span>
             </div>
-            <p className="text-sm">&copy; {new Date().getFullYear()} baisics. Made with 💛 in Indianapolis.</p>
+            <p className="text-sm">&copy; {new Date().getFullYear()} baisics. Made with <span className="text-[var(--color-gold)]">&hearts;</span> in Indy.</p>
           </div>
         </footer>
       </div>

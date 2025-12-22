@@ -277,7 +277,7 @@ export default function LandingPageV2A() {
               <div className="w-6 h-6 bg-[var(--color-coral)] rounded-md"></div>
               <span className="font-bold text-[var(--color-navy)]">baisics</span>
             </div>
-            <p className="text-sm text-[var(--color-gray-400)]">&copy; {new Date().getFullYear()} baisics. Made in Indianapolis.</p>
+            <p className="text-sm text-[var(--color-gray-400)]">&copy; {new Date().getFullYear()} baisics. Made with <span className="text-[var(--color-coral)]">&hearts;</span> in Indy.</p>
           </div>
         </footer>
       </div>

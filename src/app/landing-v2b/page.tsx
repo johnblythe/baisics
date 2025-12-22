@@ -311,7 +311,7 @@ export default function LandingPageV2B() {
         <footer className="py-12 px-6 lg:px-8 border-t border-[var(--color-gray-100)]">
           <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
             <span className="font-serif text-xl text-[var(--color-gray-900)]">baisics</span>
-            <p className="text-sm text-[var(--color-gray-500)]">&copy; {new Date().getFullYear()} baisics. Made with care in Indianapolis.</p>
+            <p className="text-sm text-[var(--color-gray-500)]">&copy; {new Date().getFullYear()} baisics. Made with <span className="text-[var(--color-sage)]">&hearts;</span> in Indy.</p>
           </div>
         </footer>
       </div>
