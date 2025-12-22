@@ -2,101 +2,72 @@
 
 import Link from 'next/link'
 
+const TOOLS = [
+  { name: 'TDEE Calculator', href: '/tools/tdee' },
+  { name: '1RM Calculator', href: '/tools/one-rep-max' },
+  { name: 'Macro Calculator', href: '/tools/macros' },
+  { name: 'Body Fat Estimator', href: '/tools/body-fat' },
+];
+
 export default function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="border-t border-[#F1F5F9] bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="py-10 md:py-12">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Brand Column */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 bg-[#FF6B6B] rounded-md flex items-center justify-center">
-                    <span className="text-white font-bold text-xs">B</span>
-                  </div>
-                  <span className="font-bold text-[#0F172A]">baisics</span>
-                  <span className="text-sm text-[#94A3B8] border-l border-[#E2E8F0] pl-2 ml-1">
-                    fitness for the rest of us
-                  </span>
-                </div>
-                <p className="text-sm text-[#64748B] max-w-sm leading-relaxed">
-                  Making fitness accessible, approachable, and adaptable. For everyone.
-                </p>
+    <footer className="py-16 px-6 bg-[#F8FAFC] border-t border-[#E2E8F0]">
+      <div className="max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-4 gap-12">
+          {/* Brand */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-8 h-8 bg-[#FF6B6B] rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">B</span>
               </div>
-
-              {/* Quick Links */}
-              <div>
-                <h3 className="font-semibold text-[#0F172A] mb-4">Quick Links</h3>
-                <ul className="space-y-3">
-                  <li>
-                    <Link
-                      href="/dashboard"
-                      className="text-sm text-[#64748B] hover:text-[#FF6B6B] transition-colors"
-                    >
-                      Dashboard
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/hi"
-                      className="text-sm text-[#64748B] hover:text-[#FF6B6B] transition-colors"
-                    >
-                      New Program
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-
-              {/* Contact/Social */}
-              <div>
-                <h3 className="font-semibold text-[#0F172A] mb-4">Connect</h3>
-                <ul className="space-y-3">
-                  <li>
-                    <a
-                      href="https://twitter.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-[#64748B] hover:text-[#FF6B6B] transition-colors"
-                    >
-                      Twitter
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="mailto:john@baisics.app"
-                      className="text-sm text-[#64748B] hover:text-[#FF6B6B] transition-colors"
-                    >
-                      Contact Us
-                    </a>
-                  </li>
-                </ul>
-              </div>
+              <span className="font-bold text-xl text-[#0F172A]">baisics</span>
             </div>
+            <p className="text-sm text-[#64748B]">
+              Workout programs that work.<br />
+              Made with <span className="text-[#FF6B6B]">&hearts;</span> in Indy.
+            </p>
+          </div>
 
-            {/* Bottom Bar */}
-            <div className="border-t border-[#F1F5F9] mt-8 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-              <p className="text-sm text-[#94A3B8]">
-                &copy; {currentYear} baisics. All rights reserved.
-              </p>
-              <div className="flex items-center gap-6">
-                <Link
-                  href="/privacy"
-                  className="text-sm text-[#94A3B8] hover:text-[#FF6B6B] transition-colors"
-                >
-                  Privacy Policy
-                </Link>
-                <Link
-                  href="/terms"
-                  className="text-sm text-[#94A3B8] hover:text-[#FF6B6B] transition-colors"
-                >
-                  Terms of Service
-                </Link>
-              </div>
-            </div>
+          {/* Free Tools */}
+          <div>
+            <h4 className="font-bold text-[#0F172A] mb-4">Free Tools</h4>
+            <ul className="space-y-2">
+              {TOOLS.map((tool) => (
+                <li key={tool.href}>
+                  <Link href={tool.href} className="text-sm text-[#64748B] hover:text-[#0F172A] transition-colors">
+                    {tool.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Resources */}
+          <div>
+            <h4 className="font-bold text-[#0F172A] mb-4">Resources</h4>
+            <ul className="space-y-2">
+              <li><Link href="/blog" className="text-sm text-[#64748B] hover:text-[#0F172A] transition-colors">Blog</Link></li>
+              <li><Link href="/templates" className="text-sm text-[#64748B] hover:text-[#0F172A] transition-colors">Program Templates</Link></li>
+              <li><Link href="/library" className="text-sm text-[#64748B] hover:text-[#0F172A] transition-colors">Exercise Library</Link></li>
+            </ul>
+          </div>
+
+          {/* Legal */}
+          <div>
+            <h4 className="font-bold text-[#0F172A] mb-4">Legal</h4>
+            <ul className="space-y-2">
+              <li><Link href="/privacy" className="text-sm text-[#64748B] hover:text-[#0F172A] transition-colors">Privacy Policy</Link></li>
+              <li><Link href="/terms" className="text-sm text-[#64748B] hover:text-[#0F172A] transition-colors">Terms of Service</Link></li>
+            </ul>
           </div>
         </div>
-      </footer>
+
+        <div className="mt-12 pt-8 border-t border-[#E2E8F0] text-center">
+          <p className="text-sm text-[#94A3B8]">&copy; {currentYear} baisics. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
   )
 }

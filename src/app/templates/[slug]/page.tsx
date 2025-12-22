@@ -401,7 +401,7 @@ export default function TemplateDetailPage() {
               <div className="w-6 h-6 rounded-md" style={{ backgroundColor: COLORS.coral }}></div>
               <span className="font-bold" style={{ color: COLORS.navy }}>baisics</span>
             </div>
-            <p className="text-sm" style={{ color: COLORS.gray400 }}>&copy; {new Date().getFullYear()} baisics. Made in Indianapolis.</p>
+            <p className="text-sm" style={{ color: COLORS.gray400 }}>&copy; {new Date().getFullYear()} baisics. Made with <span className="text-[#FF6B6B]">&hearts;</span> in Indy.</p>
           </div>
         </footer>
       </div>

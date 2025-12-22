@@ -626,7 +626,7 @@ export default function LandingPageV2() {
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <span className="font-display text-2xl text-[var(--color-charcoal)]">baisics</span>
               <p className="text-sm text-[var(--color-charcoal-light)]">
-                &copy; {new Date().getFullYear()} baisics. Made with care in Indianapolis.
+                &copy; {new Date().getFullYear()} baisics. Made with <span className="text-[var(--color-terracotta)]">&hearts;</span> in Indy.
               </p>
             </div>
           </div>

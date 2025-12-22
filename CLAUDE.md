@@ -1,5 +1,9 @@
 # Project Instructions
 
+## Development
+- **Dev server runs on port 3001**: `http://localhost:3001`
+- Run with `npm run dev`
+
 ## Git Workflow
 - **Trunk-based development: all PRs target `main`**
 - Create feature branches from `main`

@@ -14,6 +14,7 @@ import {
   type PercentageChartRow,
 } from '@/utils/oneRepMax';
 import ClaimEmailCapture from '@/app/components/ClaimEmailCapture';
+import Footer from '@/components/Footer';
 
 type UnitSystem = 'imperial' | 'metric';
 
@@ -468,15 +469,7 @@ export default function OneRepMaxPage() {
         </section>
 
         {/* Footer */}
-        <footer className="py-12 px-6 lg:px-8 border-t border-[var(--color-gray-100)]">
-          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 bg-[var(--color-coral)] rounded-md"></div>
-              <span className="font-bold text-[var(--color-navy)]">baisics</span>
-            </div>
-            <p className="text-sm text-[var(--color-gray-400)]">&copy; {new Date().getFullYear()} baisics. Made in Indianapolis.</p>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </>
   );
