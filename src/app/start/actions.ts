@@ -537,7 +537,7 @@ export async function preparePromptForAI(
           response: aiResponse.data?.content[0].text || '',
           inputTokens: aiResponse.data?.usage?.input_tokens,
           outputTokens: aiResponse.data?.usage?.output_tokens,
-          model: process.env.SONNET_MODEL!,
+          model: process.env.SONNET_MODEL || 'claude-sonnet-4-20250514',
         },
       });
       console.timeEnd('save-prompt-log');

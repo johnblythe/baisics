@@ -31,7 +31,7 @@ export async function sendMessage(
     const response = await anthropic.messages.create({
       messages: sanitizedMessages as MessageParam[],
       system: systemPrompt,
-      model: process.env.SONNET_MODEL!,
+      model: process.env.SONNET_MODEL || 'claude-sonnet-4-20250514',
       max_tokens: 4096,
     });
 

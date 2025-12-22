@@ -175,7 +175,7 @@ export async function POST(request: NextRequest) {
     });
 
     const message = await anthropic.messages.create({
-      model: process.env.SONNET_MODEL || 'claude-sonnet-4-5-20250929',
+      model: process.env.SONNET_MODEL || 'claude-sonnet-4-20250514',
       max_tokens: 8000,
       messages: [{
         role: 'user',

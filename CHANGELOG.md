@@ -25,6 +25,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - "Made with ♥ in Indy" branding
 - Dev server now runs on port 3001 by default (documented in CLAUDE.md)
 
+### Fixed
+- Fix invalid Claude model names causing 404 errors
+  - Update SONNET_MODEL default to `claude-sonnet-4-20250514`
+  - Add fallbacks to all AI model references
+  - Revert anthropic client to simple initialization
+
 ### Security
 - Fix middleware auth bypass that allowed unauthenticated access to protected routes (#159)
 - Add auth checks to 8 previously unprotected API routes (email, generate-token, program-creation/*)

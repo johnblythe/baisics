@@ -78,7 +78,7 @@ export async function processUserMessage(
         data: {
           prompt: 'Program generation started',
           response: JSON.stringify({ intakeData: intakeData }),
-          model: process.env.SONNET_MODEL!,
+          model: process.env.SONNET_MODEL || 'claude-sonnet-4-20250514',
           success: true,
           user: {
             connect: { id: userId }
