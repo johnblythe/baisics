@@ -172,6 +172,11 @@ model ExerciseLibrary {
   exercises        Exercise[]
   createdAt        DateTime          @default(now()) @map("created_at")
 
+  // Lean generation fields
+  defaultTier       ExerciseTier      @default(TIER_2) @map("default_tier")
+  contraindications String[]          @default([])     // ["knee", "shoulder", "lower back"]
+  environments      String[]          @default([])     // ["gym", "home", "outdoors", "travel"]
+
   @@index([name])
   @@index([category])
   @@index([equipment])
@@ -180,6 +185,7 @@ model ExerciseLibrary {
   @@index([movementPattern])
   @@index([targetMuscles])
   @@index([secondaryMuscles])
+  @@index([defaultTier])
   @@map("exercise_library")
 }
 
@@ -359,6 +365,12 @@ enum Difficulty {
   ADVANCED
   EXPERT
   OTHER
+}
+
+enum ExerciseTier {
+  TIER_1  // Main lifts - typically programmed first (squat, deadlift, bench)
+  TIER_2  // Supporting movements - typically middle (lunges, RDLs, dips)
+  TIER_3  // Accessories - typically last (curls, raises, abs)
 }
 
 model WorkoutLog {
