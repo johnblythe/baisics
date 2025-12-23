@@ -8,6 +8,10 @@ import {
   type UserProfile,
   type GenerationContext,
 } from '@/services/programGeneration';
+import {
+  generateProgramLean,
+  shouldUseLeanGeneration,
+} from '@/services/programGeneration/leanGeneration';
 
 /**
  * POST /api/programs/generate
@@ -16,6 +20,10 @@ import {
  * Accepts either:
  * - Full UserProfile object
  * - Legacy IntakeFormData (auto-converted)
+ *
+ * Supports lean generation mode (faster, lower token usage):
+ * - Set USE_LEAN_GENERATION=true in env, or
+ * - Pass useLean: true in request body
  */
 export async function POST(request: NextRequest) {
   try {
@@ -29,7 +37,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { profile, intakeData, context, saveToDb = true } = body;
+    const { profile, intakeData, context, saveToDb = true, useLean } = body;
 
     // Convert legacy intake format if needed
     let userProfile: UserProfile;
@@ -52,12 +60,23 @@ export async function POST(request: NextRequest) {
       modifications: context?.modifications,
     };
 
+    // Determine which generation mode to use
+    const useLeanGeneration = useLean === true || shouldUseLeanGeneration();
+
     // Generate the program
-    const result = await generateProgram({
-      userId: session.user.id,
-      profile: userProfile,
-      context: generationContext,
-    });
+    let result;
+    if (useLeanGeneration) {
+      result = await generateProgramLean(userProfile, generationContext, {
+        model: 'auto',
+        saveToDb: false, // We handle save below
+      });
+    } else {
+      result = await generateProgram({
+        userId: session.user.id,
+        profile: userProfile,
+        context: generationContext,
+      });
+    }
 
     if (!result.success || !result.program) {
       return NextResponse.json(
@@ -76,7 +95,10 @@ export async function POST(request: NextRequest) {
       success: true,
       program: result.program,
       savedProgram,
-      metadata: result.metadata,
+      metadata: {
+        ...result.metadata,
+        usedLeanGeneration: useLeanGeneration,
+      },
     });
   } catch (error) {
     console.error('Program generation API error:', error);

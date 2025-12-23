@@ -1,0 +1,212 @@
+/**
+ * Lean Program Generation
+ *
+ * Main entry point for the lean generation flow:
+ * 1. Filter exercises for user's equipment/environment
+ * 2. Build lean prompt with exercise list
+ * 3. Call AI for slim program (500-1500 tokens)
+ * 4. Enrich slim program to full program (DB lookups + templates)
+ *
+ * Target: <30s generation time, fits Vercel 60s limit
+ */
+
+import Anthropic from '@anthropic-ai/sdk';
+import type { UserProfile, GenerationContext, GeneratedProgram } from './types';
+import type { SlimProgram } from './leanTypes';
+import { validateSlimProgram } from './leanTypes';
+import { filterExercisesForUser } from './exerciseFilter';
+import { LEAN_SYSTEM_PROMPT, buildLeanPrompt } from './leanPrompts';
+import { enrichProgram } from './enrichment';
+
+// Lazy-initialized Anthropic client
+let anthropicClient: Anthropic | null = null;
+
+function getAnthropicClient(): Anthropic {
+  if (!anthropicClient) {
+    anthropicClient = new Anthropic({
+      apiKey: process.env.ANTHROPIC_API_KEY,
+    });
+  }
+  return anthropicClient;
+}
+
+// Model selection
+const MODELS = {
+  fast: 'claude-sonnet-4-20250514',      // Sonnet for speed
+  quality: 'claude-opus-4-5-20251101',   // Opus for complex cases
+} as const;
+
+interface LeanGenerationOptions {
+  model?: 'fast' | 'quality' | 'auto';
+  maxTokens?: number;
+  saveToDb?: boolean;
+}
+
+interface LeanGenerationResult {
+  success: boolean;
+  program?: GeneratedProgram;
+  error?: string;
+  metadata: {
+    generationTimeMs: number;
+    aiTimeMs: number;
+    enrichmentTimeMs: number;
+    inputTokens: number;
+    outputTokens: number;
+    model: string;
+    exerciseCount: number;
+  };
+}
+
+/**
+ * Select model based on user profile complexity
+ */
+function selectModel(profile: UserProfile, option: 'fast' | 'quality' | 'auto'): string {
+  if (option === 'fast') return MODELS.fast;
+  if (option === 'quality') return MODELS.quality;
+
+  // Auto-select based on complexity
+  const needsQuality =
+    (profile.injuries && profile.injuries.length > 0) ||
+    profile.experienceLevel === 'advanced' ||
+    profile.additionalInfo?.toLowerCase().includes('competition') ||
+    profile.additionalInfo?.toLowerCase().includes('meet') ||
+    profile.additionalInfo?.toLowerCase().includes('postpartum') ||
+    profile.additionalInfo?.toLowerCase().includes('rehab');
+
+  return needsQuality ? MODELS.quality : MODELS.fast;
+}
+
+/**
+ * Parse AI response to SlimProgram
+ */
+function parseSlimProgram(text: string): SlimProgram {
+  // Clean up the response
+  let cleaned = text.trim();
+
+  // Remove markdown code blocks if present
+  if (cleaned.startsWith('```json')) {
+    cleaned = cleaned.slice(7);
+  } else if (cleaned.startsWith('```')) {
+    cleaned = cleaned.slice(3);
+  }
+  if (cleaned.endsWith('```')) {
+    cleaned = cleaned.slice(0, -3);
+  }
+
+  cleaned = cleaned.trim();
+
+  // Parse JSON
+  const parsed = JSON.parse(cleaned);
+
+  // Validate structure
+  if (!validateSlimProgram(parsed)) {
+    throw new Error('Invalid slim program structure');
+  }
+
+  return parsed;
+}
+
+/**
+ * Main lean generation function
+ */
+export async function generateProgramLean(
+  profile: UserProfile,
+  context?: GenerationContext,
+  options: LeanGenerationOptions = {}
+): Promise<LeanGenerationResult> {
+  const startTime = Date.now();
+  const model = selectModel(profile, options.model || 'auto');
+  const maxTokens = options.maxTokens || 4096;
+
+  try {
+    // Step 1: Filter exercises for this user
+    const exerciseList = await filterExercisesForUser(profile, {
+      maxExercises: 80,
+    });
+
+    if (exerciseList.exercises.length < 10) {
+      return {
+        success: false,
+        error: 'Not enough exercises available for the specified equipment and environment',
+        metadata: {
+          generationTimeMs: Date.now() - startTime,
+          aiTimeMs: 0,
+          enrichmentTimeMs: 0,
+          inputTokens: 0,
+          outputTokens: 0,
+          model,
+          exerciseCount: exerciseList.exercises.length,
+        },
+      };
+    }
+
+    // Step 2: Build lean prompt
+    const prompt = buildLeanPrompt(profile, exerciseList, context);
+
+    // Step 3: Call AI
+    const aiStartTime = Date.now();
+    const client = getAnthropicClient();
+
+    const response = await client.messages.create({
+      model,
+      max_tokens: maxTokens,
+      system: LEAN_SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    const aiTimeMs = Date.now() - aiStartTime;
+
+    // Extract text response
+    const textContent = response.content.find(c => c.type === 'text');
+    if (!textContent || textContent.type !== 'text') {
+      throw new Error('No text response from AI');
+    }
+
+    // Step 4: Parse slim program
+    const slimProgram = parseSlimProgram(textContent.text);
+
+    // Step 5: Enrich to full program
+    const enrichmentStartTime = Date.now();
+    const fullProgram = await enrichProgram(slimProgram, profile);
+    const enrichmentTimeMs = Date.now() - enrichmentStartTime;
+
+    return {
+      success: true,
+      program: fullProgram,
+      metadata: {
+        generationTimeMs: Date.now() - startTime,
+        aiTimeMs,
+        enrichmentTimeMs,
+        inputTokens: response.usage.input_tokens,
+        outputTokens: response.usage.output_tokens,
+        model,
+        exerciseCount: exerciseList.exercises.length,
+      },
+    };
+  } catch (error) {
+    console.error('Lean generation error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      metadata: {
+        generationTimeMs: Date.now() - startTime,
+        aiTimeMs: 0,
+        enrichmentTimeMs: 0,
+        inputTokens: 0,
+        outputTokens: 0,
+        model,
+        exerciseCount: 0,
+      },
+    };
+  }
+}
+
+/**
+ * Check if lean generation should be used
+ * Can be controlled by feature flag
+ */
+export function shouldUseLeanGeneration(): boolean {
+  // Feature flag - can be controlled via env var
+  const flag = process.env.USE_LEAN_GENERATION;
+  return flag === 'true' || flag === '1';
+}
