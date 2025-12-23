@@ -7,6 +7,9 @@
     "src/app/api/programs/generate/stream/route.ts": {
       "maxDuration": 60
     },
+    "src/app/api/programs/generate/phase/route.ts": {
+      "maxDuration": 60
+    },
     "src/app/api/meal-prep/generate/route.ts": {
       "maxDuration": 60
     },

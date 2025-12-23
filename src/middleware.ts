@@ -8,8 +8,20 @@ const PROTECTED_PATHS = [
   '/check-in',
 ]
 
+const PUBLIC_PATHS = [
+  '/program/review',
+]
+
 export async function middleware(request: NextRequest) {
-  const requiresAuth = PROTECTED_PATHS.some(path => 
+  // Allow specific public paths even if parent is protected
+  const isPublicPath = PUBLIC_PATHS.some(path =>
+    request.nextUrl.pathname.startsWith(path)
+  )
+  if (isPublicPath) {
+    return NextResponse.next()
+  }
+
+  const requiresAuth = PROTECTED_PATHS.some(path =>
     request.nextUrl.pathname.startsWith(path)
   )
 

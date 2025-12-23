@@ -7,6 +7,8 @@ export interface GenerationProgress {
   stage: 'idle' | 'analyzing' | 'generating' | 'processing' | 'validating' | 'saving' | 'complete' | 'error';
   message: string;
   progress: number;
+  currentPhase?: number;
+  totalPhases?: number;
 }
 
 export interface ProgramMeta {
@@ -30,6 +32,11 @@ interface UseStreamingGenerationOptions {
   onError?: (error: string) => void;
 }
 
+/**
+ * Hook for sequential phase-based program generation.
+ * Calls /api/programs/generate/phase for each phase sequentially.
+ * Each call is <60s, avoiding Vercel timeout issues.
+ */
 export function useStreamingGeneration(options: UseStreamingGenerationOptions = {}) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState<GenerationProgress>({
@@ -45,145 +52,205 @@ export function useStreamingGeneration(options: UseStreamingGenerationOptions = 
   const optionsRef = useRef(options);
   optionsRef.current = options;
 
+  // Abort controller for cancellation
+  const abortControllerRef = useRef<AbortController | null>(null);
+
   const generate = useCallback(async (params: {
     userId: string;
     intakeData?: any;
     profile?: any;
     context?: any;
   }) => {
+    // Cancel any in-progress generation
+    abortControllerRef.current?.abort();
+    abortControllerRef.current = new AbortController();
+    const signal = abortControllerRef.current.signal;
+
     setIsGenerating(true);
-    setProgress({ stage: 'analyzing', message: 'Starting...', progress: 5 });
+    setProgress({ stage: 'analyzing', message: 'Analyzing your profile...', progress: 5 });
     setResult(null);
     setPhases([]);
     setProgramMeta(null);
 
     try {
-      const response = await fetch('/api/programs/generate/stream', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(params),
-      });
+      // Determine number of phases based on experience level
+      const experienceLevel = params.profile?.experienceLevel ||
+        params.intakeData?.experienceLevel ||
+        'beginner';
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Generation failed');
+      const totalPhases = experienceLevel === 'beginner' ? 1 :
+        experienceLevel === 'intermediate' ? 2 : 3;
+
+      const weeksPerPhase = 4;
+      const totalWeeks = totalPhases * weeksPerPhase;
+
+      console.log(`[Generation] Starting ${totalPhases}-phase program for ${experienceLevel}`);
+
+      const generatedPhases: ValidatedPhase[] = [];
+      let programId: string | null = null;
+
+      // Generate each phase sequentially
+      for (let phaseNum = 1; phaseNum <= totalPhases; phaseNum++) {
+        if (signal.aborted) {
+          throw new Error('Generation cancelled');
+        }
+
+        // Calculate progress (each phase is equal portion of 10-90%)
+        const baseProgress = 10;
+        const progressPerPhase = 80 / totalPhases;
+        const currentProgress = baseProgress + (phaseNum - 1) * progressPerPhase;
+
+        setProgress({
+          stage: 'generating',
+          message: `Generating phase ${phaseNum} of ${totalPhases}...`,
+          progress: Math.round(currentProgress),
+          currentPhase: phaseNum,
+          totalPhases,
+        });
+        optionsRef.current.onProgress?.({
+          stage: 'generating',
+          message: `Generating phase ${phaseNum} of ${totalPhases}...`,
+          progress: Math.round(currentProgress),
+          currentPhase: phaseNum,
+          totalPhases,
+        });
+
+        console.log(`[Generation] Starting phase ${phaseNum}/${totalPhases}`);
+
+        const response: Response = await fetch('/api/programs/generate/phase', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: params.userId,
+            intakeData: params.intakeData,
+            profile: params.profile,
+            context: params.context,
+            phaseNumber: phaseNum,
+            totalPhases,
+            previousPhases: generatedPhases,
+            programId, // Pass existing programId for phases 2+
+            programName: phaseNum === 1 ? 'Custom Fitness Program' : undefined,
+            programDescription: phaseNum === 1 ?
+              `A personalized ${totalWeeks}-week fitness program.` : undefined,
+          }),
+          signal,
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || `Phase ${phaseNum} generation failed`);
+        }
+
+        const data: { success: boolean; phase?: ValidatedPhase; programId?: string; error?: string } = await response.json();
+
+        if (!data.success || !data.phase) {
+          throw new Error(data.error || `Phase ${phaseNum} generation failed`);
+        }
+
+        // Store programId from first phase
+        if (phaseNum === 1 && data.programId) {
+          programId = data.programId;
+        }
+
+        const phase = data.phase;
+        generatedPhases.push(phase);
+
+        // Update state with new phase
+        setPhases(prev => [...prev, phase]);
+
+        // Notify callback
+        optionsRef.current.onPhase?.(phase, phaseNum, totalPhases);
+
+        console.log(`[Generation] Phase ${phaseNum} complete: ${phase.name}`);
+
+        // Update progress after phase completes
+        const completedProgress = baseProgress + phaseNum * progressPerPhase;
+        setProgress({
+          stage: 'generating',
+          message: `Phase ${phaseNum} complete!`,
+          progress: Math.round(completedProgress),
+          currentPhase: phaseNum,
+          totalPhases,
+        });
       }
 
-      const reader = response.body?.getReader();
-      if (!reader) {
-        throw new Error('No response body');
-      }
+      // All phases generated - construct final program
+      const meta: ProgramMeta = {
+        name: 'Custom Fitness Program',
+        description: `A personalized ${totalWeeks}-week fitness program designed for your goals.`,
+        totalWeeks,
+      };
+      setProgramMeta(meta);
+      optionsRef.current.onProgramMeta?.(meta);
 
-      const decoder = new TextDecoder();
-      let buffer = '';
+      // Update program name based on goal if available
+      if (programId) {
+        const goal = params.profile?.trainingGoal || params.intakeData?.trainingGoal || 'fitness';
+        const capitalizedGoal = goal.charAt(0).toUpperCase() + goal.slice(1);
+        meta.name = `${capitalizedGoal} Program`;
+        meta.description = `A personalized ${totalWeeks}-week program focused on ${goal}.`;
 
-      console.log('[SSE] Starting stream reader loop');
-
-      while (true) {
-        const { done, value } = await reader.read();
-        console.log('[SSE] Read chunk, done:', done, 'size:', value?.length || 0);
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-
-        // SSE events are separated by double newlines
-        const events = buffer.split('\n\n');
-        // Keep the last part (might be incomplete)
-        buffer = events.pop() || '';
-
-        console.log('[SSE] Parsed events:', events.length, 'remaining buffer:', buffer.length);
-
-        for (const eventBlock of events) {
-          if (!eventBlock.trim()) continue;
-
-          const lines = eventBlock.split('\n');
-          let eventType = '';
-          let eventData = '';
-
-          for (const line of lines) {
-            if (line.startsWith('event: ')) {
-              eventType = line.slice(7).trim();
-            } else if (line.startsWith('data: ')) {
-              eventData = line.slice(6);
-            }
-          }
-
-          if (!eventType || !eventData) continue;
-
-          try {
-            const data = JSON.parse(eventData);
-            console.log(`[SSE] Event: ${eventType}`, eventType === 'phase' ? `Phase ${data.phaseNumber}` : data);
-
-            if (eventType === 'progress') {
-              const progressUpdate: GenerationProgress = {
-                stage: data.stage,
-                message: data.message,
-                progress: data.progress,
-              };
-              setProgress(progressUpdate);
-              optionsRef.current.onProgress?.(progressUpdate);
-            } else if (eventType === 'phase') {
-              // New phase received
-              const phase = data.phase as ValidatedPhase;
-              const phaseNumber = data.phaseNumber;
-              const totalPhases = data.totalPhases;
-
-              console.log(`[SSE] Setting phase ${phaseNumber}:`, phase.name);
-              setPhases(prev => {
-                // Avoid duplicates
-                if (prev.some(p => p.phaseNumber === phaseNumber)) {
-                  return prev;
-                }
-                const newPhases = [...prev, phase];
-                console.log(`[SSE] Phases now:`, newPhases.length);
-                return newPhases;
-              });
-
-              optionsRef.current.onPhase?.(phase, phaseNumber, totalPhases);
-            } else if (eventType === 'program_meta') {
-              // Program metadata received
-              const meta: ProgramMeta = {
-                name: data.name,
-                description: data.description,
-                totalWeeks: data.totalWeeks,
-              };
-              console.log(`[SSE] Setting program meta:`, meta.name);
-              setProgramMeta(meta);
-              optionsRef.current.onProgramMeta?.(meta);
-            } else if (eventType === 'complete') {
-              const completeResult: StreamingGenerationResult = {
-                success: true,
-                program: data.program,
-                savedProgram: data.savedProgram,
-              };
-              setResult(completeResult);
-              setProgress({ stage: 'complete', message: 'Done!', progress: 100 });
-              optionsRef.current.onComplete?.(completeResult);
-            } else if (eventType === 'error') {
-              const errorResult: StreamingGenerationResult = {
-                success: false,
-                error: data.error,
-              };
-              setResult(errorResult);
-              setProgress({ stage: 'error', message: data.error, progress: 0 });
-              optionsRef.current.onError?.(data.error);
-            }
-          } catch (e) {
-            console.error('Failed to parse SSE data:', e, eventData.slice(0, 100));
-          }
+        // Update program in DB with better name
+        try {
+          await fetch(`/api/programs/${programId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: meta.name,
+              description: meta.description,
+            }),
+          });
+        } catch (e) {
+          // Non-critical, continue
+          console.warn('Failed to update program name:', e);
         }
       }
+
+      // Construct complete program object
+      const program = {
+        name: meta.name,
+        description: meta.description,
+        totalWeeks,
+        phases: generatedPhases,
+      };
+
+      const completeResult: StreamingGenerationResult = {
+        success: true,
+        program,
+        savedProgram: programId ? { id: programId, name: meta.name } : undefined,
+      };
+
+      setResult(completeResult);
+      setProgress({ stage: 'complete', message: 'Your program is ready!', progress: 100 });
+      optionsRef.current.onComplete?.(completeResult);
+
+      console.log(`[Generation] Complete - ${generatedPhases.length} phases, programId: ${programId}`);
+
     } catch (error) {
+      if (signal.aborted) {
+        console.log('[Generation] Cancelled by user');
+        return;
+      }
+
       const errorMessage = error instanceof Error ? error.message : 'Generation failed';
+      console.error('[Generation] Error:', errorMessage);
+
       setProgress({ stage: 'error', message: errorMessage, progress: 0 });
       setResult({ success: false, error: errorMessage });
       optionsRef.current.onError?.(errorMessage);
     } finally {
       setIsGenerating(false);
     }
-  }, []); // No dependencies - use optionsRef for callbacks
+  }, []);
+
+  const cancel = useCallback(() => {
+    abortControllerRef.current?.abort();
+    setIsGenerating(false);
+    setProgress({ stage: 'idle', message: 'Cancelled', progress: 0 });
+  }, []);
 
   const reset = useCallback(() => {
+    abortControllerRef.current?.abort();
     setIsGenerating(false);
     setProgress({ stage: 'idle', message: '', progress: 0 });
     setResult(null);
@@ -193,6 +260,7 @@ export function useStreamingGeneration(options: UseStreamingGenerationOptions = 
 
   return {
     generate,
+    cancel,
     reset,
     isGenerating,
     progress,

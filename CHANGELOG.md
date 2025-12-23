@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Refactor program generation to use sequential per-phase API calls (#164)
+  - New `/api/programs/generate/phase` endpoint generates one phase at a time
+  - Each call ~20s, avoiding Vercel 60s timeout (was timing out with full program generation)
+  - Phases maintain continuity by passing previous phases as context
+  - Works with Opus model for higher quality program generation
+- Allow `/program/review` as public route for anonymous users to view their generated programs
+  - Email capture CTA already exists in ProgramDisplay component
+
+### Added
+- `buildSinglePhasePrompt()` function for phase-by-phase generation with context
+- Cancellation support in program generation hooks via AbortController
+
 ### Added
 - New landing page v3 at `/landing-v3` with anti-marketing honest approach (#101)
   - 3 persona archetypes (Comeback Kid, Stuck Intermediate, Time-Crunched Parent) with real program previews
