@@ -12,6 +12,11 @@ import {
 import { validatePhase, ValidatedPhase } from '@/services/programGeneration/schema';
 import { SYSTEM_PROMPT, buildSinglePhasePrompt } from '@/services/programGeneration/prompts';
 import { sanitizeUserProfile, logSuspiciousInput } from '@/utils/security/promptSanitizer';
+import {
+  generatePhaseLean,
+  shouldUseLeanGeneration,
+} from '@/services/programGeneration/leanGeneration';
+import type { GeneratedPhase } from '@/services/programGeneration/types';
 
 // Use Opus for program generation - core product, quality matters most
 const MODEL = process.env.OPUS_MODEL || 'claude-opus-4-5-20251101';
@@ -34,6 +39,43 @@ function sortExercisesInPhase(phase: ValidatedPhase): void {
       return orderA - orderB;
     });
   }
+}
+
+/**
+ * Convert GeneratedPhase (from lean generation) to ValidatedPhase format
+ */
+function convertGeneratedToValidated(generated: GeneratedPhase, phaseNumber: number): ValidatedPhase {
+  return {
+    phaseNumber,
+    name: generated.name,
+    durationWeeks: generated.durationWeeks,
+    focus: generated.focus,
+    explanation: generated.explanation,
+    expectations: generated.expectations,
+    keyPoints: generated.keyPoints,
+    splitType: generated.splitType,
+    workouts: generated.workouts.map(w => ({
+      dayNumber: w.dayNumber,
+      name: w.name,
+      focus: w.focus,
+      warmup: w.warmup,
+      cooldown: w.cooldown,
+      exercises: w.exercises.map(e => ({
+        name: e.name,
+        sets: e.sets,
+        measure: e.measure,
+        restPeriod: e.restPeriod,
+        equipment: e.equipment,
+        alternatives: e.alternatives,
+        category: e.category,
+        intensity: e.intensity,
+        notes: e.notes,
+        instructions: e.instructions,
+      })),
+    })),
+    nutrition: generated.nutrition,
+    progressionProtocol: generated.progressionProtocol,
+  };
 }
 
 interface PhaseGenerationRequest {
@@ -111,67 +153,96 @@ export async function POST(request: Request) {
       }
     }
 
-    // Build the single-phase prompt
-    const prompt = buildSinglePhasePrompt(
-      sanitizedProfile as UserProfile,
-      phaseNumber,
-      totalPhases,
-      previousPhases,
-      body.context
-    );
+    // Check if we should use lean generation
+    const useLean = shouldUseLeanGeneration();
+    let phase: ValidatedPhase;
+    let tokensUsed: number;
+    let modelUsed: string;
 
-    console.log(`[Phase ${phaseNumber}/${totalPhases}] Starting generation for user ${userId}`);
+    if (useLean) {
+      // LEAN GENERATION PATH
+      console.log(`[Phase ${phaseNumber}/${totalPhases}] Using LEAN generation for user ${userId}`);
 
-    // Call Claude
-    const response = await anthropic.messages.create({
-      model: MODEL,
-      max_tokens: MAX_TOKENS,
-      system: SYSTEM_PROMPT,
-      messages: [{ role: 'user', content: prompt }] as MessageParam[],
-    });
+      // Extract focus from previous phases for context
+      const previousPhasesFocus = previousPhases.map(p => p.focus);
 
-    // Extract text content
-    const textContent = response.content.find((block) => block.type === 'text');
-    if (!textContent || textContent.type !== 'text') {
-      throw new Error('No text content in AI response');
-    }
-
-    let responseText = textContent.text.trim();
-
-    // Clean up response - remove markdown code blocks if present
-    if (responseText.startsWith('```json')) {
-      responseText = responseText.slice(7);
-    }
-    if (responseText.startsWith('```')) {
-      responseText = responseText.slice(3);
-    }
-    if (responseText.endsWith('```')) {
-      responseText = responseText.slice(0, -3);
-    }
-    responseText = responseText.trim();
-
-    // Parse JSON
-    let phaseData: unknown;
-    try {
-      phaseData = JSON.parse(responseText);
-    } catch (parseError) {
-      console.error('Failed to parse AI response as JSON:', responseText.substring(0, 500));
-      throw new Error('Invalid JSON in AI response');
-    }
-
-    // Validate with Zod
-    const validation = validatePhase(phaseData);
-    if (!validation.success) {
-      console.error('Phase validation failed:', validation.errors?.issues);
-      throw new Error(
-        `Phase validation failed: ${validation.errors?.issues.map((i) => i.message).join(', ')}`
+      const leanResult = await generatePhaseLean(
+        sanitizedProfile as UserProfile,
+        phaseNumber,
+        totalPhases,
+        previousPhasesFocus
       );
+
+      if (!leanResult.success || !leanResult.phase) {
+        throw new Error(leanResult.error || 'Lean generation failed');
+      }
+
+      // Convert GeneratedPhase to ValidatedPhase format
+      phase = convertGeneratedToValidated(leanResult.phase, phaseNumber);
+      tokensUsed = leanResult.metadata.inputTokens + leanResult.metadata.outputTokens;
+      modelUsed = leanResult.metadata.model;
+
+      console.log(
+        `[Phase ${phaseNumber}/${totalPhases}] LEAN completed in ${leanResult.metadata.generationTimeMs}ms, tokens: ${tokensUsed}`
+      );
+    } else {
+      // FULL GENERATION PATH (existing code)
+      console.log(`[Phase ${phaseNumber}/${totalPhases}] Using FULL generation for user ${userId}`);
+
+      const prompt = buildSinglePhasePrompt(
+        sanitizedProfile as UserProfile,
+        phaseNumber,
+        totalPhases,
+        previousPhases,
+        body.context
+      );
+
+      const response = await anthropic.messages.create({
+        model: MODEL,
+        max_tokens: MAX_TOKENS,
+        system: SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: prompt }] as MessageParam[],
+      });
+
+      const textContent = response.content.find((block) => block.type === 'text');
+      if (!textContent || textContent.type !== 'text') {
+        throw new Error('No text content in AI response');
+      }
+
+      let responseText = textContent.text.trim();
+
+      if (responseText.startsWith('```json')) {
+        responseText = responseText.slice(7);
+      }
+      if (responseText.startsWith('```')) {
+        responseText = responseText.slice(3);
+      }
+      if (responseText.endsWith('```')) {
+        responseText = responseText.slice(0, -3);
+      }
+      responseText = responseText.trim();
+
+      let phaseData: unknown;
+      try {
+        phaseData = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error('Failed to parse AI response as JSON:', responseText.substring(0, 500));
+        throw new Error('Invalid JSON in AI response');
+      }
+
+      const validation = validatePhase(phaseData);
+      if (!validation.success) {
+        console.error('Phase validation failed:', validation.errors?.issues);
+        throw new Error(
+          `Phase validation failed: ${validation.errors?.issues.map((i) => i.message).join(', ')}`
+        );
+      }
+
+      phase = validation.data!;
+      sortExercisesInPhase(phase);
+      tokensUsed = response.usage.input_tokens + response.usage.output_tokens;
+      modelUsed = MODEL;
     }
-
-    const phase = validation.data!;
-
-    // Sort exercises by category
-    sortExercisesInPhase(phase);
 
     // Ensure phaseNumber matches what we requested
     phase.phaseNumber = phaseNumber;
@@ -199,7 +270,7 @@ export async function POST(request: Request) {
 
     const generationTime = Date.now() - startTime;
     console.log(
-      `[Phase ${phaseNumber}/${totalPhases}] Completed in ${generationTime}ms, tokens: ${response.usage.input_tokens + response.usage.output_tokens}`
+      `[Phase ${phaseNumber}/${totalPhases}] Completed in ${generationTime}ms, tokens: ${tokensUsed}`
     );
 
     return new Response(
@@ -211,8 +282,9 @@ export async function POST(request: Request) {
           phaseNumber,
           totalPhases,
           generationTimeMs: generationTime,
-          tokensUsed: response.usage.input_tokens + response.usage.output_tokens,
-          model: MODEL,
+          tokensUsed,
+          model: modelUsed,
+          usedLeanGeneration: useLean,
         },
       }),
       {

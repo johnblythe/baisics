@@ -1,0 +1,411 @@
+{
+  "name": "Functional Strength & Mobility",
+  "description": "A joint-friendly program designed for older adults focusing on functional movement patterns, balance, and building strength safely while protecting arthritic knees.",
+  "totalWeeks": 4,
+  "phases": [
+    {
+      "phaseNumber": 1,
+      "name": "Foundation & Function",
+      "durationWeeks": 4,
+      "focus": "Building movement confidence with low-impact exercises that strengthen muscles while minimizing knee stress",
+      "explanation": "Phase 1 focuses on building movement confidence with low-impact exercises that strengthen muscles while minimizing knee stress. Full Body split optimizes recovery between sessions.",
+      "expectations": "Focus on learning proper form and building habits. Some muscle soreness is normal.",
+      "keyPoints": [
+        "Consistency is more important than perfection",
+        "Track your weights and reps to ensure progression",
+        "Get 7-9 hours of sleep for optimal recovery"
+      ],
+      "splitType": "Full Body",
+      "workouts": [
+        {
+          "dayNumber": 1,
+          "name": "Day 1 - Upper Push & Core",
+          "focus": "upper",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "Arm circles - 10 each direction",
+              "Band pull-aparts - 15 reps",
+              "Wall slides - 10 reps",
+              "Wall push-ups - 5 reps",
+              "Standing spinal circles - 8 reps"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Chest doorway stretch - 30 seconds each side",
+              "Cross-body shoulder stretch - 30 seconds each side",
+              "Tricep stretch - 30 seconds each side",
+              "Standing spinal circles - 5 reps",
+              "Deep breathing - 5 breaths"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Dumbbell Overhead Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "Dumbbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": []
+            },
+            {
+              "name": "Hammer Grip Incline DB Bench Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "Lie back on an incline bench with a dumbbell on each hand on top of your thighs. The palms of your hand will be facing each other.",
+                "By using your thighs to help you get the dumbbells up, clean the dumbbells one arm at a time so that you can hold them at shoulder width.",
+                "Once at shoulder width, keep the palms of your hands with a neutral grip (palms facing each other). Keep your elbows flared out with the upper arms in line with the shoulders (perpendicular to the torso) and the elbows bent creating a 90-degree angle between the upper arm and the forearm. This will be your starting position."
+              ]
+            },
+            {
+              "name": "Close-Grip Dumbbell Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [],
+              "category": "secondary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "Place a dumbbell standing up on a flat bench.",
+                "Ensuring that the dumbbell stays securely placed at the top of the bench, lie perpendicular to the bench with only your shoulders lying on the surface. Hips should be below the bench and your legs bent with your feet firmly on the floor.",
+                "Grasp the dumbbell with both hands and hold it straight over your chest at arm's length. Both palms should be pressing against the underside of the sides of the dumbbell. This will be your starting position."
+              ]
+            },
+            {
+              "name": "Dead Bug",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [],
+              "alternatives": [],
+              "category": "secondary",
+              "intensity": "RPE 5",
+              "instructions": [
+                "Begin lying on your back with your hands extended above you toward the ceiling.",
+                "Bring your feet, knees, and hips up to 90 degrees.",
+                "Exhale hard to bring your ribcage down and flatten your back onto the floor, rotating your pelvis up and squeezing your glutes. Hold this position throughout the movement. This will be your starting position."
+              ]
+            },
+            {
+              "name": "Balance Board",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 30
+              },
+              "restPeriod": 120,
+              "equipment": [],
+              "alternatives": [],
+              "category": "secondary",
+              "intensity": "RPE 5",
+              "instructions": [
+                "Place a balance board in front of you.",
+                "Stand up on it and try to balance yourself.",
+                "Hold the balance for as long as desired."
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 2,
+          "name": "Day 2 - Hinge & Pull",
+          "focus": "pull",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "Arm circles - 10 each direction",
+              "Band pull-aparts - 15 reps",
+              "Standing spinal circles - 8 reps",
+              "Seated thoracic rotation - 5 each side",
+              "Lat stretch on wall - 20 seconds"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Lat stretch - 30 seconds each side",
+              "Bicep wall stretch - 30 seconds each side",
+              "Standing spinal circles - 5 reps",
+              "Standing forward fold - 30 seconds",
+              "Deep breathing - 5 breaths"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Stiff-Legged Dumbbell Deadlift",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "Grasp a couple of dumbbells holding them by your side at arm's length.",
+                "Stand with your torso straight and your legs spaced using a shoulder width or narrower stance. The knees should be slightly bent. This is your starting position.",
+                "Keeping the knees stationary, lower the dumbbells to over the top of your feet by bending at the waist while keeping your back straight. Keep moving forward as if you were going to pick something from the floor until you feel a stretch on the hamstrings. Exhale as you perform this movement"
+              ]
+            },
+            {
+              "name": "Dumbbell Clean",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "Begin standing with a dumbbell in each hand with your feet shoulder width apart.",
+                "Lower the weights to the floor by flexing at the hips and knees, pushing your hips back until the dumbbells reach the floor. This will be your starting position.",
+                "To initiate the movement, violently jump upward by extending the hips, knees, and ankles to acclerate the weights upward. Maintaining a neutral grip on the dumbbells, keep the arms straight until full extension is reached."
+              ]
+            },
+            {
+              "name": "Bent Over Two-Dumbbell Row",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [],
+              "category": "secondary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "With a dumbbell in each hand (palms facing your torso), bend your knees slightly and bring your torso forward by bending at the waist; as you bend make sure to keep your back straight until it is almost parallel to the floor. Tip: Make sure that you keep the head up. The weights should hang directly in front of you as your arms hang perpendicular to the floor and your torso. This is your starting position.",
+                "While keeping the torso stationary, lift the dumbbells to your side (as you breathe out), keeping the elbows close to the body (do not exert any force with the forearm other than holding the weights). On the top contracted position, squeeze the back muscles and hold for a second.",
+                "Slowly lower the weight again to the starting position as you inhale."
+              ]
+            },
+            {
+              "name": "Band Good Morning",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "bands"
+              ],
+              "alternatives": [],
+              "category": "secondary",
+              "intensity": "RPE 5",
+              "instructions": [
+                "Using a 41 inch band, stand on one end, spreading your feet a small amount. Bend at the hips to loop the end of the band behind your neck. This will be your starting position.",
+                "Keeping your legs straight, extend through the hips to come to a near vertical position.",
+                "Ensure that you do not round your back as you go down back to the starting position."
+              ]
+            },
+            {
+              "name": "Cocoons",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 120,
+              "equipment": [],
+              "alternatives": [],
+              "category": "secondary",
+              "intensity": "RPE 5",
+              "instructions": [
+                "Begin by lying on your back on the ground. Your legs should be straight and your arms extended behind your head. This will be your starting position.",
+                "To perform the movement, tuck the knees toward your chest, rotating your pelvis to lift your glutes from the floor. As you do so, flex the spine, bringing your arms back over your head to perform a simultaneous crunch motion.",
+                "After a brief pause, return to the starting position."
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 3,
+          "name": "Day 3 - Full Body Functional",
+          "focus": "full",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "March in place - 30 seconds",
+              "Arm circles - 10 each direction",
+              "Hip circles - 10 each direction",
+              "Bodyweight squats - 10 reps",
+              "Wall push-ups - 10 reps"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Seated forward fold (on chair) - 30 seconds",
+              "Standing hip flexor stretch - 30 seconds each side",
+              "Chest stretch - 30 seconds",
+              "Standing forward fold - 30 seconds",
+              "Deep breathing - 5 breaths"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Dumbbell Squat To A Bench",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "Stand up straight with a flat bench behind you while holding a dumbbell on each hand (palms facing the side of your legs).",
+                "Position your legs using a shoulder width medium stance with the toes slightly pointed out. Keep your head up at all times as looking down will get you off balance and also maintain a straight back. This will be your starting position. Note: For the purposes of this discussion we will use the medium stance described above which targets overall development; however you can choose any of the three stances discussed in the foot stances section.",
+                "Begin to slowly lower your torso by bending the knees as you maintain a straight posture with the head up. Continue down until you slightly touch the bench behind you. Inhale as you perform this portion of the movement. Tip: If you performed the exercise correctly, the front of the knees should make an imaginary straight line with the toes that is perpendicular to the front. If your knees are past that imaginary line (if they are past your toes) then you are placing undue stress on the knee and the exercise has been performed incorrectly."
+              ]
+            },
+            {
+              "name": "Arnold Dumbbell Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [],
+              "category": "secondary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "Sit on an exercise bench with back support and hold two dumbbells in front of you at about upper chest level with your palms facing your body and your elbows bent. Tip: Your arms should be next to your torso. The starting position should look like the contracted portion of a dumbbell curl.",
+                "Now to perform the movement, raise the dumbbells as you rotate the palms of your hands until they are facing forward.",
+                "Continue lifting the dumbbells until your arms are extended above you in straight arm position. Breathe out as you perform this portion of the movement."
+              ]
+            },
+            {
+              "name": "Bent Over Two-Dumbbell Row With Palms In",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [],
+              "category": "secondary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "With a dumbbell in each hand (palms facing each other), bend your knees slightly and bring your torso forward, by bending at the waist, while keeping the back straight until it is almost parallel to the floor. Tip: Make sure that you keep the head up. The weights should hang directly in front of you as your arms hang perpendicular to the floor and your torso. This is your starting position.",
+                "While keeping the torso stationary, lift the dumbbells to your side as you breathe out, squeezing your shoulder blades together. On the top contracted position, squeeze the back muscles and hold for a second.",
+                "Slowly lower the weight again to the starting position as you inhale."
+              ]
+            },
+            {
+              "name": "Cuban Press",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [],
+              "category": "secondary",
+              "intensity": "RPE 5",
+              "instructions": [
+                "Take a dumbbell in each hand with a pronated grip in a standing position. Raise your upper arms so that they are parallel to the floor, allowing your lower arms to hang in the \"scarecrow\" position. This will be your starting position.",
+                "To initiate the movement, externally rotate the shoulders to move the upper arm 180 degrees. Keep the upper arms in place, rotating the upper arms until the wrists are directly above the elbows, the forearms perpendicular to the floor.",
+                "Now press the dumbbells by extending at the elbows, straightening your arms overhead."
+              ]
+            },
+            {
+              "name": "Dead Bug",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 120,
+              "equipment": [],
+              "alternatives": [],
+              "category": "secondary",
+              "intensity": "RPE 5",
+              "instructions": [
+                "Begin lying on your back with your hands extended above you toward the ceiling.",
+                "Bring your feet, knees, and hips up to 90 degrees.",
+                "Exhale hard to bring your ribcage down and flatten your back onto the floor, rotating your pelvis up and squeezing your glutes. Hold this position throughout the movement. This will be your starting position."
+              ]
+            }
+          ]
+        }
+      ],
+      "nutrition": {
+        "dailyCalories": 1900,
+        "macros": {
+          "protein": 140,
+          "carbs": 190,
+          "fats": 65
+        },
+        "mealTiming": [
+          "Eat protein with each meal (25-40g)",
+          "Pre-workout: Light meal 1-2 hours before",
+          "Post-workout: Protein + carbs within 2 hours"
+        ]
+      },
+      "progressionProtocol": [
+        "Focus on form and movement quality first",
+        "When all sets feel comfortable (RPE 6-7), add 1-2 reps",
+        "Once reaching top of rep range with good form, increase weight by 2.5-5 lbs",
+        "If form breaks down, reduce weight and rebuild"
+      ]
+    }
+  ]
+}
