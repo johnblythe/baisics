@@ -203,10 +203,10 @@ export async function generateProgramLean(
 
 /**
  * Check if lean generation should be used
- * Can be controlled by feature flag
+ * Defaults to TRUE (lean enabled) - set USE_LEAN_GENERATION=false to disable
  */
 export function shouldUseLeanGeneration(): boolean {
-  // Feature flag - can be controlled via env var
-  const flag = process.env.USE_LEAN_GENERATION;
-  return flag === 'true' || flag === '1';
+  const flag = process.env.USE_LEAN_GENERATION?.toLowerCase();
+  // Default to true unless explicitly disabled
+  return flag !== 'false' && flag !== '0';
 }
