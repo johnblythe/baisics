@@ -14,25 +14,29 @@ import type { UserProfile } from './types';
 import type { ExerciseOption, FilteredExerciseList } from './leanTypes';
 
 // Equipment aliases to normalize user input
+// IMPORTANT: Keep aliases strict - don't conflate different equipment types
 const EQUIPMENT_ALIASES: Record<string, string[]> = {
-  'barbell': ['barbell', 'olympic barbell', 'ez bar', 'trap bar'],
-  'dumbbell': ['dumbbell', 'dumbbells', 'db'],
+  'barbell': ['barbell', 'olympic barbell', 'ez bar', 'ez-bar'],
+  'trap bar': ['trap bar', 'hex bar'],  // Separate from barbell - not everyone has one
+  'dumbbell': ['dumbbell', 'dumbbells', 'db', 'adjustable dumbbells'],
   'cable': ['cable', 'cables', 'cable machine'],
   'machine': ['machine', 'machines'],
   'kettlebell': ['kettlebell', 'kettlebells', 'kb'],
   'bands': ['band', 'bands', 'resistance band', 'resistance bands'],
-  'bodyweight': ['body only', 'bodyweight', 'none'],
-  'pull-up bar': ['pull-up bar', 'pullup bar', 'chin-up bar', 'bar'],
+  'bodyweight': ['body only', 'bodyweight', 'none', 'yoga mat', 'mat'],
+  'pull-up bar': ['pull-up bar', 'pullup bar', 'chin-up bar'],
   'bench': ['bench', 'flat bench', 'adjustable bench'],
   'rack': ['rack', 'squat rack', 'power rack', 'cage'],
+  'stability ball': ['stability ball', 'exercise ball', 'swiss ball'],
+  'trx': ['trx', 'suspension trainer', 'suspension'],
 };
 
-// Map user equipment type to likely available equipment
+// Map user equipment type to BASE equipment (conservative - user's available list is authoritative)
 const EQUIPMENT_TYPE_MAP: Record<string, string[]> = {
-  'full-gym': ['barbell', 'dumbbell', 'cable', 'machine', 'kettlebell', 'bands', 'bench', 'rack', 'pull-up bar'],
-  'minimal': ['dumbbell', 'bands', 'kettlebell', 'bodyweight'],
-  'bodyweight': ['bodyweight', 'pull-up bar'],
-  'specific': [], // Use user's specific list
+  'full-gym': ['barbell', 'dumbbell', 'cable', 'machine', 'kettlebell', 'bands', 'bench', 'rack', 'pull-up bar', 'trap bar'],
+  'minimal': ['dumbbell', 'bands', 'bodyweight'],  // Removed kettlebell - not common in minimal setups
+  'bodyweight': ['bodyweight'],  // Removed pull-up bar - not everyone has one
+  'specific': [], // ONLY use user's specific list
 };
 
 /**
@@ -53,18 +57,30 @@ function normalizeEquipment(equipment: string): string {
 
 /**
  * Get equipment list for user's profile
+ *
+ * Priority: User's specific available list > type defaults
+ * For 'specific' or 'minimal' types, user's list is authoritative
  */
 function getUserEquipment(profile: UserProfile): string[] {
-  const baseEquipment = EQUIPMENT_TYPE_MAP[profile.equipment.type] || [];
-  const specificEquipment = profile.equipment.available.map(normalizeEquipment);
+  const specificEquipment = (profile.equipment.available || []).map(normalizeEquipment);
 
-  // Combine and dedupe
-  const allEquipment = new Set([...baseEquipment, ...specificEquipment]);
+  // If user provided specific equipment, that's the source of truth
+  // Only fall back to type defaults if no specific list provided
+  let equipment: Set<string>;
+
+  if (specificEquipment.length > 0) {
+    // User's list is authoritative
+    equipment = new Set(specificEquipment);
+  } else {
+    // No specific list - use type defaults
+    const baseEquipment = EQUIPMENT_TYPE_MAP[profile.equipment.type] || [];
+    equipment = new Set(baseEquipment);
+  }
 
   // Always include bodyweight
-  allEquipment.add('bodyweight');
+  equipment.add('bodyweight');
 
-  return Array.from(allEquipment);
+  return Array.from(equipment);
 }
 
 /**
@@ -113,16 +129,33 @@ export async function filterExercisesForUser(
   const excludedForInjuries: string[] = [];
 
   for (const exercise of exercises) {
-    // Check equipment compatibility
-    const exerciseEquipment = exercise.equipment.map(e => e.toLowerCase());
-    const hasRequiredEquipment =
-      exerciseEquipment.length === 0 || // Bodyweight
-      exerciseEquipment.some(eq =>
-        userEquipment.some(ue => eq.includes(ue) || ue.includes(eq))
-      );
+    // Check equipment compatibility - STRICT matching
+    const exerciseEquipment = exercise.equipment.map(e => e.toLowerCase().trim());
 
-    if (!hasRequiredEquipment) {
-      continue;
+    // Bodyweight exercises always pass
+    if (exerciseEquipment.length === 0 ||
+        exerciseEquipment.every(eq => eq === 'body only' || eq === 'bodyweight')) {
+      // Bodyweight - always allowed
+    } else {
+      // Exercise requires equipment - check if user has ALL required pieces
+      const hasAllRequired = exerciseEquipment.every(eq => {
+        // Normalize the exercise equipment name
+        const normalizedExEq = normalizeEquipment(eq);
+
+        // Check if user has this exact equipment or an alias
+        return userEquipment.some(ue => {
+          // Exact match
+          if (ue === normalizedExEq) return true;
+
+          // Check if both normalize to the same canonical equipment
+          const normalizedUserEq = normalizeEquipment(ue);
+          return normalizedUserEq === normalizedExEq;
+        });
+      });
+
+      if (!hasAllRequired) {
+        continue;
+      }
     }
 
     // Check environment compatibility (if environments are set)

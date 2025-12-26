@@ -30,6 +30,8 @@ import {
   getWarmupTemplate,
   getCooldownTemplate,
   getProgressionTemplate,
+  extractConstraints,
+  type UserConstraints,
 } from '@/lib/templates/workoutTemplates';
 
 // ============================================
@@ -201,11 +203,12 @@ async function enrichExercise(
  */
 async function enrichWorkout(
   slim: SlimWorkout,
-  dayNumber: number
+  dayNumber: number,
+  constraints?: UserConstraints
 ): Promise<GeneratedWorkout> {
-  // Get templates based on focus area
-  const warmup = getWarmupTemplate(slim.focusArea);
-  const cooldown = getCooldownTemplate(slim.focusArea);
+  // Get templates based on focus area, applying user constraints
+  const warmup = getWarmupTemplate(slim.focusArea, constraints);
+  const cooldown = getCooldownTemplate(slim.focusArea, constraints);
 
   // Enrich exercises
   const exercises: GeneratedExercise[] = [];
@@ -265,12 +268,13 @@ function enrichNutrition(slim: { calories: number; protein: number; carbs: numbe
 async function enrichPhase(
   slim: SlimPhase,
   phaseNumber: number,
-  experienceLevel: string
+  experienceLevel: string,
+  constraints?: UserConstraints
 ): Promise<GeneratedPhase> {
   // Enrich workouts
   const workouts: GeneratedWorkout[] = [];
   for (let i = 0; i < slim.workouts.length; i++) {
-    const enriched = await enrichWorkout(slim.workouts[i], i + 1);
+    const enriched = await enrichWorkout(slim.workouts[i], i + 1, constraints);
     workouts.push(enriched);
   }
 
@@ -313,13 +317,17 @@ export async function enrichProgram(
   profile: UserProfile
 ): Promise<GeneratedProgram> {
   try {
+    // Extract user constraints for warmup/cooldown template selection
+    const constraints = extractConstraints(profile);
+
     // Enrich all phases
     const phases: GeneratedPhase[] = [];
     for (let i = 0; i < slim.phases.length; i++) {
       const enriched = await enrichPhase(
         slim.phases[i],
         i + 1,
-        profile.experienceLevel || 'beginner'
+        profile.experienceLevel || 'beginner',
+        constraints
       );
       phases.push(enriched);
     }
@@ -348,7 +356,8 @@ export async function enrichSinglePhase(
   profile: UserProfile
 ): Promise<GeneratedPhase> {
   try {
-    return await enrichPhase(slim, phaseNumber, profile.experienceLevel || 'beginner');
+    const constraints = extractConstraints(profile);
+    return await enrichPhase(slim, phaseNumber, profile.experienceLevel || 'beginner', constraints);
   } finally {
     clearExerciseCache();
   }

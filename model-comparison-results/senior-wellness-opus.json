@@ -1,0 +1,852 @@
+{
+  "name": "Active Grandma Strength & Balance Program",
+  "description": "A safe, progressive strength training program designed for maintaining bone density, improving balance, and supporting independence. This program uses machine-based and supported exercises appropriate for someone with knee arthritis and a hip replacement history, while building functional strength for daily activities with grandchildren.",
+  "totalWeeks": 4,
+  "phases": [
+    {
+      "phaseNumber": 1,
+      "name": "Foundation & Functional Strength",
+      "durationWeeks": 4,
+      "focus": "Building baseline strength, improving balance confidence, and establishing safe movement patterns",
+      "explanation": "This foundational phase focuses on machine-based exercises that provide stability and support while building strength in key areas for bone health and daily function. All exercises are performed standing or seated on equipment - no floor work required. The emphasis is on controlled movements, proper breathing, and gradual progression to build confidence and physical capacity safely.",
+      "expectations": "Expect mild muscle soreness in the first 1-2 weeks as your body adapts. You should feel more stable and confident in your movements by week 2. Energy levels may improve, and you'll likely notice everyday tasks becoming easier. The weight-bearing exercises will help stimulate bone density maintenance. Listen to your body - some joint stiffness is normal, but sharp pain is not.",
+      "keyPoints": [
+        "All exercises are standing or seated - no floor work required",
+        "Machine-based movements provide stability and support for arthritic knees",
+        "Focus on controlled tempo to protect joints and maximize bone-building benefit",
+        "Swimming can be added on rest days for additional cardio and joint relief"
+      ],
+      "splitType": "Full Body",
+      "workouts": [
+        {
+          "dayNumber": 1,
+          "name": "Full Body Strength A",
+          "focus": "Lower body emphasis with upper body support work",
+          "warmup": {
+            "duration": 8,
+            "activities": [
+              "5 minutes recumbent bike at easy pace to warm joints",
+              "Seated leg swings holding chair arms - 10 each leg",
+              "Standing hip circles holding stable surface - 5 each direction",
+              "Arm circles progressing small to large - 10 each direction",
+              "Gentle torso rotations with hands on hips - 10 total"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Seated hamstring stretch using towel - 30 seconds each leg",
+              "Standing quad stretch holding wall - 30 seconds each leg",
+              "Seated spinal twist - 30 seconds each side",
+              "Deep breathing: 5 breaths with arms raising overhead"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Leg Press Machine",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "machines"
+              ],
+              "alternatives": [
+                "Wall sit holds",
+                "TRX assisted squat"
+              ],
+              "category": "primary",
+              "intensity": "RPE 5-6",
+              "notes": "Start light - focus on full range of motion without knee discomfort",
+              "instructions": [
+                "Position feet hip-width apart on platform, toes slightly turned out",
+                "Press through whole foot, not just toes - imagine pushing the floor away",
+                "Control the return slowly - take 3 seconds to lower the weight",
+                "Stop before knees lock out at the top"
+              ]
+            },
+            {
+              "name": "Chest Press Machine",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "machines"
+              ],
+              "alternatives": [
+                "Resistance band chest press seated",
+                "Wall push-ups"
+              ],
+              "category": "primary",
+              "intensity": "RPE 5-6",
+              "notes": "Excellent for upper body bone density - adjust seat height so handles align with mid-chest",
+              "instructions": [
+                "Sit with back flat against pad, feet firmly on floor",
+                "Grip handles with wrists straight, not bent back",
+                "Press forward while exhaling, keep shoulders down away from ears",
+                "Return slowly with control - don't let the weight stack crash"
+              ]
+            },
+            {
+              "name": "Seated Cable Row",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "machines"
+              ],
+              "alternatives": [
+                "Resistance band seated row",
+                "TRX row standing"
+              ],
+              "category": "primary",
+              "intensity": "RPE 5-6",
+              "notes": "Important for posture and back strength - sit tall throughout",
+              "instructions": [
+                "Sit with slight knee bend, chest lifted and proud",
+                "Pull handles toward lower ribs, squeezing shoulder blades together",
+                "Keep elbows close to body - imagine putting them in your back pockets",
+                "Return with control, feeling a stretch in upper back"
+              ]
+            },
+            {
+              "name": "Leg Curl Machine",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "machines"
+              ],
+              "alternatives": [
+                "Stability ball hamstring curl seated",
+                "Resistance band hamstring curl standing"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 5-6",
+              "notes": "Strengthens hamstrings which support knee stability",
+              "instructions": [
+                "Adjust pad to sit just above heel on lower calf",
+                "Curl heels toward buttocks in smooth controlled motion",
+                "Squeeze at the top for one second",
+                "Lower slowly - control is more important than weight"
+              ]
+            },
+            {
+              "name": "Leg Extension Machine",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "machines"
+              ],
+              "alternatives": [
+                "Seated straight leg raise",
+                "Resistance band knee extension"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 5",
+              "notes": "Use light weight - this exercise can stress arthritic knees if too heavy",
+              "instructions": [
+                "Sit with back against pad, grip handles for stability",
+                "Extend legs slowly - do not snap or jerk to straight",
+                "Stop just before full lockout to protect knee joint",
+                "Lower even slower than you lifted - 3-4 seconds down"
+              ]
+            },
+            {
+              "name": "Seated Overhead Press Machine",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "machines"
+              ],
+              "alternatives": [
+                "Seated dumbbell press with light weights",
+                "Resistance band overhead press"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 5-6",
+              "notes": "Great for shoulder strength and overhead reaching ability",
+              "instructions": [
+                "Sit with lower back supported, feet flat on floor",
+                "Press handles up and slightly together overhead",
+                "Keep core gently engaged - don't arch lower back excessively",
+                "Lower with control until upper arms are parallel to floor"
+              ]
+            },
+            {
+              "name": "Standing Calf Raise Machine",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "machines"
+              ],
+              "alternatives": [
+                "Standing calf raise holding wall",
+                "Seated calf raise with dumbbell on thigh"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 5",
+              "notes": "Important for ankle stability and walking confidence",
+              "instructions": [
+                "Stand with balls of feet on platform, heels hanging off",
+                "Rise up onto toes as high as comfortable",
+                "Hold at top for one second, feeling calf muscles contract",
+                "Lower heels below platform level for full stretch"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 2,
+          "name": "Balance & Upper Body Focus",
+          "focus": "Upper body strength with dedicated balance training",
+          "warmup": {
+            "duration": 8,
+            "activities": [
+              "5 minutes walking on treadmill at comfortable pace - use handrails as needed",
+              "Shoulder rolls forward and backward - 10 each",
+              "Standing march in place holding stable surface - 20 steps",
+              "Gentle neck tilts side to side - 5 each",
+              "Wrist circles - 10 each direction"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Chest stretch in doorway - 30 seconds",
+              "Upper back stretch hugging yourself - 30 seconds",
+              "Standing side bend stretch - 20 seconds each side",
+              "Seated deep breathing with eyes closed - 1 minute"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Lat Pulldown Machine",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "machines"
+              ],
+              "alternatives": [
+                "Resistance band lat pulldown",
+                "TRX row with lean back"
+              ],
+              "category": "primary",
+              "intensity": "RPE 5-6",
+              "notes": "Builds back strength for posture and pulling movements",
+              "instructions": [
+                "Sit with thighs secured under pads, grip bar slightly wider than shoulders",
+                "Pull bar down toward upper chest, leading with elbows",
+                "Squeeze shoulder blades down and together at bottom",
+                "Return slowly with control - feel the stretch at top"
+              ]
+            },
+            {
+              "name": "Seated Dumbbell Bicep Curl",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "light dumbbells"
+              ],
+              "alternatives": [
+                "Resistance band bicep curl",
+                "Cable bicep curl"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 5-6",
+              "notes": "Functional arm strength for lifting grandchildren and groceries",
+              "instructions": [
+                "Sit tall on bench with back supported, dumbbells at sides",
+                "Curl weights up rotating palms toward shoulders",
+                "Keep upper arms still - only forearms move",
+                "Lower slowly and completely before next rep"
+              ]
+            },
+            {
+              "name": "Tricep Pushdown Cable",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "machines"
+              ],
+              "alternatives": [
+                "Resistance band tricep extension",
+                "Seated dumbbell tricep extension"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 5-6",
+              "notes": "Important for pushing movements and getting up from chairs",
+              "instructions": [
+                "Stand close to cable machine, elbows pinned to sides",
+                "Push handle down until arms are straight",
+                "Squeeze triceps at bottom for one second",
+                "Return with control - don't let weight pull arms up fast"
+              ]
+            },
+            {
+              "name": "TRX Assisted Balance Reach",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "TRX"
+              ],
+              "alternatives": [
+                "Wall-supported single leg balance",
+                "Chair-supported balance reaches"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 4-5",
+              "notes": "Holding TRX provides safety while challenging balance",
+              "instructions": [
+                "Hold TRX handles with light grip for safety backup",
+                "Stand on one leg, other foot slightly off ground",
+                "Reach free leg forward, side, and back while staying balanced",
+                "Use TRX only as needed - goal is independent balance"
+              ]
+            },
+            {
+              "name": "Stability Ball Wall Squat Hold",
+              "sets": 2,
+              "measure": {
+                "type": "time",
+                "value": 20
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "stability ball"
+              ],
+              "alternatives": [
+                "Wall sit without ball",
+                "Chair squat hover"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 5",
+              "notes": "Ball provides back support while building leg endurance",
+              "instructions": [
+                "Place ball between lower back and wall",
+                "Walk feet forward about 12 inches from wall",
+                "Lower into squat position with thighs parallel or above",
+                "Hold position breathing normally - ball rolls with you"
+              ]
+            },
+            {
+              "name": "Seated Resistance Band External Rotation",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "resistance bands"
+              ],
+              "alternatives": [
+                "Cable external rotation",
+                "Light dumbbell side-lying external rotation"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 4-5",
+              "notes": "Protects shoulder health and improves posture",
+              "instructions": [
+                "Sit with elbow bent 90 degrees, pinned to side with towel",
+                "Hold band anchored at belly level",
+                "Rotate forearm outward keeping elbow still",
+                "Return slowly - rotator cuff muscles need time under tension"
+              ]
+            },
+            {
+              "name": "Standing Hip Abduction with Band",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "resistance bands"
+              ],
+              "alternatives": [
+                "Hip abduction machine",
+                "Side-lying hip raise on bench"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 4-5",
+              "notes": "Critical for hip stability and walking confidence - extra attention to left hip",
+              "instructions": [
+                "Stand holding wall or sturdy surface, band around ankles",
+                "Lift right leg out to side keeping hips level and facing forward",
+                "Control the return - don't let band snap leg back",
+                "Keep standing leg slightly soft, not locked"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 3,
+          "name": "Full Body Strength B",
+          "focus": "Posterior chain and core stability emphasis",
+          "warmup": {
+            "duration": 8,
+            "activities": [
+              "5 minutes recumbent bike gradually increasing pace",
+              "Hip hinge practice with hands on thighs - 10 reps",
+              "Standing cat-cow spine movements - 10 cycles",
+              "Arm swings across body - 20 total",
+              "Ankle circles each direction - 10 each foot"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Figure-4 stretch seated on bench - 30 seconds each side",
+              "Standing calf stretch against wall - 30 seconds each",
+              "Chest doorway stretch - 30 seconds",
+              "Seated forward fold reaching toward feet - 30 seconds"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Cable Pull-Through",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "machines"
+              ],
+              "alternatives": [
+                "Resistance band pull-through",
+                "Dumbbell Romanian deadlift light"
+              ],
+              "category": "primary",
+              "intensity": "RPE 5-6",
+              "notes": "Safe way to train hip hinge pattern without loading spine - great for glutes",
+              "instructions": [
+                "Face away from cable, rope attachment between legs",
+                "Hinge at hips pushing buttocks back, slight knee bend",
+                "Drive hips forward to stand tall, squeezing glutes",
+                "Keep arms relaxed - power comes from hips, not arms"
+              ]
+            },
+            {
+              "name": "Seated Chest Supported Row Machine",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "machines"
+              ],
+              "alternatives": [
+                "Chest supported dumbbell row on incline bench",
+                "TRX row"
+              ],
+              "category": "primary",
+              "intensity": "RPE 5-6",
+              "notes": "Chest pad supports spine while building back strength",
+              "instructions": [
+                "Adjust chest pad height so arms can fully extend",
+                "Pull handles toward lower ribs, elbows close to body",
+                "Squeeze shoulder blades together at end of pull",
+                "Return with slow control feeling back muscles stretch"
+              ]
+            },
+            {
+              "name": "Smith Machine Assisted Squat",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "machines"
+              ],
+              "alternatives": [
+                "TRX assisted squat",
+                "Goblet squat with light dumbbell"
+              ],
+              "category": "primary",
+              "intensity": "RPE 5-6",
+              "notes": "Smith machine bar provides stability - feet slightly forward is fine",
+              "instructions": [
+                "Position bar across upper back on muscle, not neck bone",
+                "Feet shoulder width, slightly in front of bar line",
+                "Sit back and down keeping chest up proud",
+                "Depth based on comfort - stop before knee pain"
+              ]
+            },
+            {
+              "name": "Hip Abduction Machine",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "machines"
+              ],
+              "alternatives": [
+                "Standing band abduction",
+                "Side-lying leg raise on bench"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 5-6",
+              "notes": "Strengthens outer hip muscles crucial after hip replacement",
+              "instructions": [
+                "Sit with back against pad, outer thighs against pads",
+                "Press legs outward in controlled motion",
+                "Hold open position for one second squeezing outer hips",
+                "Return slowly - don't let machine slam closed"
+              ]
+            },
+            {
+              "name": "Hip Adduction Machine",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "machines"
+              ],
+              "alternatives": [
+                "Pilates ball squeeze seated",
+                "Band adduction standing"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 5-6",
+              "notes": "Inner thigh strength supports knee stability",
+              "instructions": [
+                "Sit with inner thighs against pads, start in open position",
+                "Squeeze legs together in controlled motion",
+                "Hold squeezed position for one second",
+                "Open slowly with control against the resistance"
+              ]
+            },
+            {
+              "name": "Standing Cable Core Rotation",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "machines"
+              ],
+              "alternatives": [
+                "Resistance band rotation",
+                "Seated medicine ball rotation"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 4-5",
+              "notes": "Trains core rotation important for daily activities - no floor work needed",
+              "instructions": [
+                "Stand sideways to cable, handle at chest height, arms extended",
+                "Rotate torso away from machine keeping arms straight",
+                "Move from core, not arms - imagine belly button leading",
+                "Return with control, don't let cable yank you back"
+              ]
+            },
+            {
+              "name": "Seated Dumbbell Lateral Raise",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "light dumbbells"
+              ],
+              "alternatives": [
+                "Resistance band lateral raise",
+                "Cable lateral raise"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 5",
+              "notes": "Use very light weights - shoulder muscles fatigue quickly",
+              "instructions": [
+                "Sit tall with dumbbells at sides, slight elbow bend",
+                "Raise arms out to sides until parallel with floor",
+                "Lead with elbows, not hands - like pouring water from pitchers",
+                "Lower slowly - control is more important than weight"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 4,
+          "name": "Strength & Mobility Integration",
+          "focus": "Full body strength with extended flexibility work",
+          "warmup": {
+            "duration": 8,
+            "activities": [
+              "5 minutes walking or recumbent bike easy pace",
+              "Standing hip circles holding support - 8 each direction each leg",
+              "Shoulder IYTW movements with no weight - 5 each position",
+              "Gentle torso circles - 5 each direction",
+              "March in place with high knees if comfortable - 20 steps"
+            ]
+          },
+          "cooldown": {
+            "duration": 7,
+            "activities": [
+              "Seated piriformis stretch - 45 seconds each side",
+              "Standing quadricep stretch holding wall - 45 seconds each",
+              "Chest stretch in doorway - 45 seconds",
+              "Upper trap stretch tilting head - 30 seconds each side",
+              "Cat-cow standing with hands on thighs - 10 cycles",
+              "Deep breathing seated with eyes closed - 90 seconds"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Leg Press Machine",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "machines"
+              ],
+              "alternatives": [
+                "TRX assisted squat",
+                "Wall sit with stability ball"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "notes": "Slight increase from Day 1 if feeling strong - listen to knees",
+              "instructions": [
+                "Position feet hip-width on platform, toes slightly out",
+                "Push through entire foot evenly",
+                "Control descent taking 3 full seconds",
+                "Stop before complete knee lockout at top"
+              ]
+            },
+            {
+              "name": "Chest Press Machine",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "machines"
+              ],
+              "alternatives": [
+                "Resistance band chest press",
+                "Push-up against wall"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "notes": "Focus on mind-muscle connection with chest",
+              "instructions": [
+                "Back flat against pad, feet firmly grounded",
+                "Press forward exhaling, imagine hugging a large tree",
+                "Keep shoulders pulled down, not shrugged up",
+                "Slow return letting chest muscles stretch"
+              ]
+            },
+            {
+              "name": "TRX Row",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "TRX"
+              ],
+              "alternatives": [
+                "Seated cable row",
+                "Resistance band row"
+              ],
+              "category": "primary",
+              "intensity": "RPE 5-6",
+              "notes": "Adjust body angle - more upright is easier, more horizontal is harder",
+              "instructions": [
+                "Grip handles, walk feet forward to create angle",
+                "Keep body straight like a plank from head to heels",
+                "Pull chest toward handles, elbows back",
+                "Lower with control maintaining rigid body position"
+              ]
+            },
+            {
+              "name": "Seated Leg Curl Machine",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "machines"
+              ],
+              "alternatives": [
+                "Stability ball hamstring curl",
+                "Resistance band leg curl"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 5-6",
+              "notes": "Hamstring strength protects knees during walking",
+              "instructions": [
+                "Adjust machine so pad sits above heel on calf",
+                "Curl heels under seat smoothly",
+                "Squeeze hamstrings at bottom position",
+                "Straighten legs slowly with full control"
+              ]
+            },
+            {
+              "name": "Resistance Band Face Pull",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "resistance bands"
+              ],
+              "alternatives": [
+                "Cable face pull",
+                "Reverse fly machine"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 4-5",
+              "notes": "Excellent for posture - pulls shoulders back and down",
+              "instructions": [
+                "Anchor band at face height, grip with both hands",
+                "Pull toward face separating hands, elbows high and wide",
+                "Squeeze shoulder blades together at end position",
+                "Return slowly keeping tension in band throughout"
+              ]
+            },
+            {
+              "name": "Stability Ball Seated Marching",
+              "sets": 2,
+              "measure": {
+                "type": "time",
+                "value": 30
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "stability ball"
+              ],
+              "alternatives": [
+                "Bench seated marching",
+                "Standing marching holding support"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 4",
+              "notes": "Challenges core stability and balance in safe seated position",
+              "instructions": [
+                "Sit tall on stability ball near wall for safety",
+                "Feet flat on floor, hands on hips or holding wall lightly",
+                "Alternate lifting feet 2-3 inches off floor slowly",
+                "Keep hips level - ball should not rock side to side"
+              ]
+            },
+            {
+              "name": "Standing Dumbbell Curl to Press",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "light dumbbells"
+              ],
+              "alternatives": [
+                "Resistance band curl to press",
+                "Separate curl and press exercises"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 5",
+              "notes": "Functional combination movement - like lifting grandchild to shoulder",
+              "instructions": [
+                "Stand holding light dumbbells at sides near wall for balance",
+                "Curl weights to shoulders",
+                "Rotate palms forward and press overhead",
+                "Reverse the entire sequence with control"
+              ]
+            }
+          ]
+        }
+      ],
+      "nutrition": {
+        "dailyCalories": 1650,
+        "macros": {
+          "protein": 100,
+          "carbs": 180,
+          "fats": 60
+        },
+        "mealTiming": [
+          "Breakfast within 1-2 hours of waking to support energy",
+          "Small snack with protein 1-2 hours before workout",
+          "Post-workout snack within 45 minutes including protein",
+          "Largest meal at lunch when digestion is strongest",
+          "Light dinner 3+ hours before bed for better sleep"
+        ],
+        "notes": "Protein is critical for maintaining muscle mass and supporting bone health at 67. Aim for 25-30g protein at each meal from sources like eggs, fish, chicken, Greek yogurt, cottage cheese, and legumes. Calcium and Vitamin D are essential - consider fortified foods or supplements if not getting enough from diet. Stay well hydrated - aim for 6-8 glasses of water daily, more on workout days. Collagen supplements may support joint health but discuss with your doctor. Limit processed foods and added sugars which can increase inflammation and worsen arthritis symptoms."
+      },
+      "progressionProtocol": [
+        "Week 1: Learn all movements with conservative weight - RPE 4-5. Focus entirely on proper form and breathing. Rest longer between sets if needed.",
+        "Week 2: Maintain same weights while improving movement quality. Begin to feel more confident with exercises. Add 1-2 reps if feeling strong.",
+        "Week 3: Small weight increases (2.5-5 lbs on machines) where form remains excellent. Should feel challenged but controlled at RPE 5-6.",
+        "Week 4: Consolidate gains - aim to complete all prescribed reps with good form. Note which exercises feel strongest for future progression."
+      ]
+    }
+  ]
+}

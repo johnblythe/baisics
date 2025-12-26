@@ -1,0 +1,1220 @@
+{
+  "name": "Mt. Rainier Preparation Program",
+  "description": "8-week endurance-focused strength program designed for intermediate hikers preparing for high-altitude climbing with emphasis on functional movement patterns.",
+  "totalWeeks": 8,
+  "phases": [
+    {
+      "phaseNumber": 1,
+      "name": "Foundation Phase",
+      "durationWeeks": 4,
+      "focus": "Build base strength and movement quality while developing aerobic capacity.",
+      "explanation": "Phase 1 focuses on build base strength and movement quality while developing aerobic capacity.. Full Body split optimizes recovery between sessions.",
+      "expectations": "Focus on learning proper form and building habits. Some muscle soreness is normal.",
+      "keyPoints": [
+        "Consistency is more important than perfection",
+        "Track your weights and reps to ensure progression",
+        "Get 7-9 hours of sleep for optimal recovery"
+      ],
+      "splitType": "Full Body",
+      "workouts": [
+        {
+          "dayNumber": 1,
+          "name": "Day 1 - Foundation",
+          "focus": "full",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "Jumping jacks - 30 seconds",
+              "Arm circles - 10 each direction",
+              "Hip circles - 10 each direction",
+              "Bodyweight squats - 10 reps",
+              "Push-ups - 5 reps"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Forward fold - 30 seconds",
+              "Pigeon pose - 30 seconds each side",
+              "Chest stretch - 30 seconds",
+              "Child's pose - 30 seconds",
+              "Deep breathing - 5 breaths"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Barbell Deadlift",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "Stand in front of a loaded barbell.",
+                "While keeping the back as straight as possible, bend your knees, bend forward and grasp the bar using a medium (shoulder width) overhand grip. This will be the starting position of the exercise. Tip: If it is difficult to hold on to the bar with this grip, alternate your grip or use wrist straps.",
+                "While holding the bar, start the lift by pushing with your legs while simultaneously getting your torso to the upright position as you breathe out. In the upright position, stick your chest out and contract the back by bringing the shoulder blades back. Think of how the soldiers in the military look when they are in standing in attention."
+              ]
+            },
+            {
+              "name": "Front Barbell Squat",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "This exercise is best performed inside a squat rack for safety purposes. To begin, first set the bar on a rack that best matches your height. Once the correct height is chosen and the bar is loaded, bring your arms up under the bar while keeping the elbows high and the upper arm slightly above parallel to the floor. Rest the bar on top of the deltoids and cross your arms while grasping the bar for total control.",
+                "Lift the bar off the rack by first pushing with your legs and at the same time straightening your torso.",
+                "Step away from the rack and position your legs using a shoulder width medium stance with the toes slightly pointed out. Keep your head up at all times as looking down will get you off balance and also maintain a straight back. This will be your starting position. (Note: For the purposes of this discussion we will use the medium stance described above which targets overall development; however you can choose any of the three stances described in the foot positioning section)."
+              ]
+            },
+            {
+              "name": "Bent Over Barbell Row",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "Holding a barbell with a pronated grip (palms facing down), bend your knees slightly and bring your torso forward, by bending at the waist, while keeping the back straight until it is almost parallel to the floor. Tip: Make sure that you keep the head up. The barbell should hang directly in front of you as your arms hang perpendicular to the floor and your torso. This is your starting position.",
+                "Now, while keeping the torso stationary, breathe out and lift the barbell to you. Keep the elbows close to the body and only use the forearms to hold the weight. At the top contracted position, squeeze the back muscles and hold for a brief pause.",
+                "Then inhale and slowly lower the barbell back to the starting position."
+              ]
+            },
+            {
+              "name": "Barbell Shoulder Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "Sit on a bench with back support in a squat rack. Position a barbell at a height that is just above your head. Grab the barbell with a pronated grip (palms facing forward).",
+                "Once you pick up the barbell with the correct grip width, lift the bar up over your head by locking your arms. Hold at about shoulder level and slightly in front of your head. This is your starting position.",
+                "Lower the bar down to the shoulders slowly as you inhale."
+              ]
+            },
+            {
+              "name": "Kettlebell Deadlift",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 60,
+              "equipment": [],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": []
+            },
+            {
+              "name": "Bodyweight Squat",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 20
+              },
+              "restPeriod": 120,
+              "equipment": [],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 5",
+              "instructions": [
+                "Stand with your feet shoulder width apart. You can place your hands behind your head. This will be your starting position.",
+                "Begin the movement by flexing your knees and hips, sitting back with your hips.",
+                "Continue down to full depth if you are able,and quickly reverse the motion until you return to the starting position. As you squat, keep your head and chest up and push your knees out."
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 2,
+          "name": "Day 2 - Power Development",
+          "focus": "full",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "Jumping jacks - 30 seconds",
+              "Arm circles - 10 each direction",
+              "Hip circles - 10 each direction",
+              "Bodyweight squats - 10 reps",
+              "Push-ups - 5 reps"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Forward fold - 30 seconds",
+              "Pigeon pose - 30 seconds each side",
+              "Chest stretch - 30 seconds",
+              "Child's pose - 30 seconds",
+              "Deep breathing - 5 breaths"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Hang Clean",
+              "sets": 5,
+              "measure": {
+                "type": "reps",
+                "value": 5
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "Begin with a shoulder width, double overhand or hook grip, with the bar hanging at the mid thigh position. Your back should be straight and inclined slightly forward.",
+                "Begin by aggressively extending through the hips, knees and ankles, driving the weight upward. As you do so, shrug your shoulders towards your ears.",
+                "Immediately recover by driving through the heels, keeping the torso upright and elbows up. Continue until you have risen to a standing position."
+              ]
+            },
+            {
+              "name": "Front Squat (Clean Grip)",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "To begin, first set the bar in a rack slightly below shoulder level. Rest the bar on top of the deltoids, pushing into the clavicles, and lightly touching the throat. Your hands should be in a clean grip, touching the bar only with your fingers to help keep it in position.",
+                "Lift the bar off the rack by first pushing with your legs and at the same time straightening your torso. Step away from the rack and position your legs using a shoulder width medium stance with the toes slightly pointed out. Keep your head and elbows up at all times. This will be your starting position.",
+                "Bend at the knees, sitting down between your legs. Continue down until your hamstrings are on your calves. Keep your knees aligned with your feet by consciously using your abductors to push your knees out as you squat."
+              ]
+            },
+            {
+              "name": "Clean Pull",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "With a barbell on the floor close to the shins, take an overhand or hook grip just outside the legs. Lower your hips with the weight focused on the heels, back straight, head facing forward, chest up, with your shoulders just in front of the bar. This will be your starting position.",
+                "Begin the first pull by driving through the heels, extending your knees. Your back angle should stay the same, and your arms should remain straight and elbows out. Move the weight with control as you continue to above the knees.",
+                "Next comes the second pull, the main source of acceleration for the clean. As the bar approaches the mid-thigh position, begin extending through the hips. In a jumping motion, accelerate by extending the hips, knees, and ankles, using speed to move the bar upward. There should be no need to actively pull through the arms to accelerate the weight; at the end of the second pull, the body should be fully extended, leaning slightly back, with the arms still extended. Full extension should be violent and abrupt, and ensure that you do not prolong the extension for longer than necessary."
+              ]
+            },
+            {
+              "name": "Dumbbell Overhead Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 60,
+              "equipment": [],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": []
+            },
+            {
+              "name": "Kettlebell Hang Clean",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "kettlebells"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "Place kettlebell between your feet. To get in the starting position, push your butt back and look straight ahead.",
+                "Clean kettlebell to your shoulder. Clean the kettlebell to your shoulders by extending through the legs and hips as you raise the kettlebell towards your shoulder. The wrist should rotate as you do so.",
+                "Lower kettlebell to a hanging position between your legs while keeping the hamstrings loaded. Keep your head up at all times."
+              ]
+            },
+            {
+              "name": "Freehand Jump Squat",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "Cross your arms over your chest.",
+                "With your head up and your back straight, position your feet at shoulder width.",
+                "Keeping your back straight and chest up, squat down as you inhale until your upper thighs are parallel, or lower, to the floor."
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 3,
+          "name": "Day 3 - Endurance Focus",
+          "focus": "full",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "Jumping jacks - 30 seconds",
+              "Arm circles - 10 each direction",
+              "Hip circles - 10 each direction",
+              "Bodyweight squats - 10 reps",
+              "Push-ups - 5 reps"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Forward fold - 30 seconds",
+              "Pigeon pose - 30 seconds each side",
+              "Chest stretch - 30 seconds",
+              "Child's pose - 30 seconds",
+              "Deep breathing - 5 breaths"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Barbell Squat",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "This exercise is best performed inside a squat rack for safety purposes. To begin, first set the bar on a rack to just below shoulder level. Once the correct height is chosen and the bar is loaded, step under the bar and place the back of your shoulders (slightly below the neck) across it.",
+                "Hold on to the bar using both arms at each side and lift it off the rack by first pushing with your legs and at the same time straightening your torso.",
+                "Step away from the rack and position your legs using a shoulder width medium stance with the toes slightly pointed out. Keep your head up at all times and also maintain a straight back. This will be your starting position. (Note: For the purposes of this discussion we will use the medium stance described above which targets overall development; however you can choose any of the three stances discussed in the foot stances section)."
+              ]
+            },
+            {
+              "name": "Cable Deadlifts",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "cable"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "Move the cables to the bottom of the towers and select an appropriate weight. Stand directly in between the uprights.",
+                "To begin, squat down be flexing your hips and knees until you can reach the handles.",
+                "After grasping them, begin your ascent. Driving through your heels extend your hips and knees keeping your hands hanging at your side. Keep your head and chest up throughout the movement."
+              ]
+            },
+            {
+              "name": "Barbell Row",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 60,
+              "equipment": [],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": []
+            },
+            {
+              "name": "Dumbbell Squat",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 20
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 5",
+              "instructions": [
+                "Stand up straight while holding a dumbbell on each hand (palms facing the side of your legs).",
+                "Position your legs using a shoulder width medium stance with the toes slightly pointed out. Keep your head up at all times as looking down will get you off balance and also maintain a straight back. This will be your starting position. Note: For the purposes of this discussion we will use the medium stance described above which targets overall development; however you can choose any of the three stances discussed in the foot stances section.",
+                "Begin to slowly lower your torso by bending the knees as you maintain a straight posture with the head up. Continue down until your thighs are parallel to the floor. Tip: If you performed the exercise correctly, the front of the knees should make an imaginary straight line with the toes that is perpendicular to the front. If your knees are past that imaginary line (if they are past your toes) then you are placing undue stress on the knee and the exercise has been performed incorrectly."
+              ]
+            },
+            {
+              "name": "Kettlebell One-Legged Deadlift",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "kettlebells"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "Hold a kettlebell by the handle in one hand. Stand on one leg, on the same side that you hold the kettlebell.",
+                "Keeping that knee slightly bent, perform a stiff legged deadlift by bending at the hip, extending your free leg behind you for balance.",
+                "Continue lowering the kettlebell until you are parallel to the ground, and then return to the upright position."
+              ]
+            },
+            {
+              "name": "Kettlebell Turkish Get-Up (Squat style)",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 5
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "kettlebells"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "Lie on your back on the floor and press a kettlebell to the top position by extending the elbow. Bend the knee on the same side as the kettlebell.",
+                "Keeping the kettlebell locked out at all times, pivot to the opposite side and use your non- working arm to assist you in driving forward to the lunge position.",
+                "Using your free hand, push yourself to a seated position, then progressing to your feet. While looking up at the kettlebell, slowly stand up. Reverse the motion back to the starting position and repeat."
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 4,
+          "name": "Day 4 - Functional Strength",
+          "focus": "full",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "Jumping jacks - 30 seconds",
+              "Arm circles - 10 each direction",
+              "Hip circles - 10 each direction",
+              "Bodyweight squats - 10 reps",
+              "Push-ups - 5 reps"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Forward fold - 30 seconds",
+              "Pigeon pose - 30 seconds each side",
+              "Chest stretch - 30 seconds",
+              "Child's pose - 30 seconds",
+              "Deep breathing - 5 breaths"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Deficit Deadlift",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 8",
+              "instructions": [
+                "Begin by having a platform or weight plates that you can stand on, usually 1-3 inches in height. Approach the bar so that it is centered over your feet. You feet should be about hip width apart. Bend at the hip to grip the bar at shoulder width, allowing your shoulder blades to protract. Typically, you would use an overhand grip or an over/under grip on heavier sets.",
+                "With your feet, and your grip set, take a big breath and then lower your hips and bend the knees until your shins contact the bar. Look forward with your head, keep your chest up and your back arched, and begin driving through the heels to move the weight upward. After the bar passes the knees, aggressively pull the bar back, pulling your shoulder blades together as you drive your hips forward into the bar.",
+                "Lower the bar by bending at the hips and guiding it to the floor."
+              ]
+            },
+            {
+              "name": "One Leg Barbell Squat",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "Start by standing about 2 to 3 feet in front of a flat bench with your back facing the bench. Have a barbell in front of you on the floor. Tip: Your feet should be shoulder width apart from each other.",
+                "Bend the knees and use a pronated grip with your hands being wider than shoulder width apart from each other to lift the barbell up until you can rest it on your chest.",
+                "Then lift the barbell over your head and rest it on the base of your neck. Move one foot back so that your toe is resting on the flat bench. Your other foot should be stationary in front of you. Keep your head up at all times as looking down will get you off balance and also maintain a straight back. Tip: Make sure your back is straight and chest is out while performing this exercise."
+              ]
+            },
+            {
+              "name": "Clean and Press",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 5
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "Assume a shoulder-width stance, with knees inside the arms. Now while keeping the back flat, bend at the knees and hips so that you can grab the bar with the arms fully extended and a pronated grip that is slightly wider than shoulder width. Point the elbows out to sides. The bar should be close to the shins. Position the shoulders over or slightly ahead of the bar. Establish a flat back posture. This will be your starting position.",
+                "Begin to pull the bar by extending the knees. Move your hips forward and raise the shoulders at the same rate while keeping the angle of the back constant; continue to lift the bar straight up while keeping it close to your body.",
+                "As the bar passes the knee, extend at the ankles, knees, and hips forcefully, similar to a jumping motion. As you do so, continue to guide the bar with your hands, shrugging your shoulders and using the momentum from your movement to pull the bar as high as possible. The bar should travel close to your body, and you should keep your elbows out."
+              ]
+            },
+            {
+              "name": "Front Squats With Two Kettlebells",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "kettlebells"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "Clean two kettlebells to your shoulders. Clean the kettlebells to your shoulders by extending through the legs and hips as you pull the kettlebells towards your shoulders. Rotate your wrists as you do so.",
+                "Looking straight ahead at all times, squat as low as you can and pause at the bottom. As you squat down, push your knees out. You should squat between your legs, keeping an upright torso, with your head and chest up.",
+                "Rise back up by driving through your heels and repeat."
+              ]
+            },
+            {
+              "name": "Kettlebell Pistol Squat",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "kettlebells"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "Pick up a kettlebell with two hands and hold it by the horns. Hold one leg off of the floor and squat down on the other.",
+                "Squat down by flexing the knee and sitting back with the hips, holding the kettlebell up in front of you.",
+                "Hold the bottom position for a second and then reverse the motion, driving through the heel and keeping your head and chest up."
+              ]
+            },
+            {
+              "name": "Alternating Hang Clean",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "kettlebells"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "Place two kettlebells between your feet. To get in the starting position, push your butt back and look straight ahead.",
+                "Clean one kettlebell to your shoulder and hold on to the other kettlebell in a hanging position. Clean the kettlebell to your shoulder by extending through the legs and hips as you pull the kettlebell towards your shoulders. Rotate your wrist as you do so.",
+                "Lower the cleaned kettlebell to a hanging position and clean the alternate kettlebell. Repeat."
+              ]
+            }
+          ]
+        }
+      ],
+      "nutrition": {
+        "dailyCalories": 2200,
+        "macros": {
+          "protein": 140,
+          "carbs": 250,
+          "fats": 80
+        },
+        "mealTiming": [
+          "Eat protein with each meal (25-40g)",
+          "Pre-workout: Light meal 1-2 hours before",
+          "Post-workout: Protein + carbs within 2 hours"
+        ]
+      },
+      "progressionProtocol": [
+        "Week 1-2: Establish working weights at RPE 7",
+        "Week 3-4: Push to RPE 8, add weight when completing all reps",
+        "Add 5-10 lbs to lower body, 2.5-5 lbs to upper body when ready",
+        "Deload every 4-6 weeks: reduce volume by 40-50%"
+      ]
+    },
+    {
+      "phaseNumber": 2,
+      "name": "Peak Endurance Phase",
+      "durationWeeks": 4,
+      "focus": "Maximize hiking-specific endurance and strength endurance for high-altitude performance.",
+      "explanation": "Phase 2 focuses on maximize hiking-specific endurance and strength endurance for high-altitude performance.. Full Body split optimizes recovery between sessions.",
+      "expectations": "You should feel stronger and more confident. Progressive overload becomes the focus.",
+      "keyPoints": [
+        "Consistency is more important than perfection",
+        "Track your weights and reps to ensure progression",
+        "Get 7-9 hours of sleep for optimal recovery"
+      ],
+      "splitType": "Full Body",
+      "workouts": [
+        {
+          "dayNumber": 1,
+          "name": "Day 1 - Strength Endurance",
+          "focus": "full",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "Jumping jacks - 30 seconds",
+              "Arm circles - 10 each direction",
+              "Hip circles - 10 each direction",
+              "Bodyweight squats - 10 reps",
+              "Push-ups - 5 reps"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Forward fold - 30 seconds",
+              "Pigeon pose - 30 seconds each side",
+              "Chest stretch - 30 seconds",
+              "Child's pose - 30 seconds",
+              "Deep breathing - 5 breaths"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Barbell Deadlift",
+              "sets": 5,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "Stand in front of a loaded barbell.",
+                "While keeping the back as straight as possible, bend your knees, bend forward and grasp the bar using a medium (shoulder width) overhand grip. This will be the starting position of the exercise. Tip: If it is difficult to hold on to the bar with this grip, alternate your grip or use wrist straps.",
+                "While holding the bar, start the lift by pushing with your legs while simultaneously getting your torso to the upright position as you breathe out. In the upright position, stick your chest out and contract the back by bringing the shoulder blades back. Think of how the soldiers in the military look when they are in standing in attention."
+              ]
+            },
+            {
+              "name": "Front Barbell Squat",
+              "sets": 5,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "This exercise is best performed inside a squat rack for safety purposes. To begin, first set the bar on a rack that best matches your height. Once the correct height is chosen and the bar is loaded, bring your arms up under the bar while keeping the elbows high and the upper arm slightly above parallel to the floor. Rest the bar on top of the deltoids and cross your arms while grasping the bar for total control.",
+                "Lift the bar off the rack by first pushing with your legs and at the same time straightening your torso.",
+                "Step away from the rack and position your legs using a shoulder width medium stance with the toes slightly pointed out. Keep your head up at all times as looking down will get you off balance and also maintain a straight back. This will be your starting position. (Note: For the purposes of this discussion we will use the medium stance described above which targets overall development; however you can choose any of the three stances described in the foot positioning section)."
+              ]
+            },
+            {
+              "name": "Bent Over Barbell Row",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "Holding a barbell with a pronated grip (palms facing down), bend your knees slightly and bring your torso forward, by bending at the waist, while keeping the back straight until it is almost parallel to the floor. Tip: Make sure that you keep the head up. The barbell should hang directly in front of you as your arms hang perpendicular to the floor and your torso. This is your starting position.",
+                "Now, while keeping the torso stationary, breathe out and lift the barbell to you. Keep the elbows close to the body and only use the forearms to hold the weight. At the top contracted position, squeeze the back muscles and hold for a brief pause.",
+                "Then inhale and slowly lower the barbell back to the starting position."
+              ]
+            },
+            {
+              "name": "Double Kettlebell Push Press",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "kettlebells"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "Clean two kettlebells to your shoulders.",
+                "Squat down a few inches and reverse the motion rapidly. Use the momentum from the legs to drive the kettlebells overhead.",
+                "Once the kettlebells are locked out, lower the kettlebells to your shoulders and repeat."
+              ]
+            },
+            {
+              "name": "Bodyweight Squat",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 25
+              },
+              "restPeriod": 120,
+              "equipment": [],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "Stand with your feet shoulder width apart. You can place your hands behind your head. This will be your starting position.",
+                "Begin the movement by flexing your knees and hips, sitting back with your hips.",
+                "Continue down to full depth if you are able,and quickly reverse the motion until you return to the starting position. As you squat, keep your head and chest up and push your knees out."
+              ]
+            },
+            {
+              "name": "Kettlebell Dead Clean",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "kettlebells"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "Place kettlebell between your feet. To get in the starting position, push your butt back and look straight ahead.",
+                "Clean the kettlebell to your shoulder. Clean the kettlebell to your shoulders by extending through the legs and hips as you raise the kettlebell towards your shoulder. The wrist should rotate as you do so.",
+                "Lower the kettlebell, keeping the hamstrings loaded by keeping your back straight and your butt out."
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 2,
+          "name": "Day 2 - Power Endurance",
+          "focus": "full",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "Jumping jacks - 30 seconds",
+              "Arm circles - 10 each direction",
+              "Hip circles - 10 each direction",
+              "Bodyweight squats - 10 reps",
+              "Push-ups - 5 reps"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Forward fold - 30 seconds",
+              "Pigeon pose - 30 seconds each side",
+              "Chest stretch - 30 seconds",
+              "Child's pose - 30 seconds",
+              "Deep breathing - 5 breaths"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Hang Clean",
+              "sets": 6,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "Begin with a shoulder width, double overhand or hook grip, with the bar hanging at the mid thigh position. Your back should be straight and inclined slightly forward.",
+                "Begin by aggressively extending through the hips, knees and ankles, driving the weight upward. As you do so, shrug your shoulders towards your ears.",
+                "Immediately recover by driving through the heels, keeping the torso upright and elbows up. Continue until you have risen to a standing position."
+              ]
+            },
+            {
+              "name": "Kneeling Jump Squat",
+              "sets": 5,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "Begin kneeling on the floor with a barbell racked across the back of your shoulders, or you can use your body weight for this exercise. This can be done inside of a power rack to make unracking easier.",
+                "Sit back with your hips until your glutes touch your feet, keeping your head and chest up.",
+                "Explode up with your hips, generating enough power to land with your feet flat on the floor."
+              ]
+            },
+            {
+              "name": "Clean and Jerk",
+              "sets": 5,
+              "measure": {
+                "type": "reps",
+                "value": 5
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "With a barbell on the floor close to the shins, take an overhand or hook grip just outside the legs. Lower your hips with the weight focused on the heels, back straight, head facing forward, chest up, with your shoulders just in front of the bar. This will be your starting position.",
+                "Begin the first pull by driving through the heels, extending your knees. Your back angle should stay the same, and your arms should remain straight. Move the weight with control as you continue to above the knees.",
+                "Next comes the second pull, the main source of acceleration for the clean. As the bar approaches the mid-thigh position, begin extending through the hips. In a jumping motion, accelerate by extending the hips, knees, and ankles, using speed to move the bar upward. There should be no need to actively pull through the arms to accelerate the weight; at the end of the second pull, the body should be fully extended, leaning slightly back, with the arms still extended."
+              ]
+            },
+            {
+              "name": "Double Kettlebell Snatch",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "kettlebells"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "Place two kettlebells behind your feet. Bend your knees and sit back to pick up the kettlebells.",
+                "Swing the kettlebells between your legs forcefully and reverse the direction.",
+                "Drive through with your hips and lock the ketttlebells overhead in one uninterrupted motion."
+              ]
+            },
+            {
+              "name": "Freehand Jump Squat",
+              "sets": 5,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 120,
+              "equipment": [],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "Cross your arms over your chest.",
+                "With your head up and your back straight, position your feet at shoulder width.",
+                "Keeping your back straight and chest up, squat down as you inhale until your upper thighs are parallel, or lower, to the floor."
+              ]
+            },
+            {
+              "name": "Bottoms-Up Clean From The Hang Position",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "kettlebells"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "Initiate the exercise by standing upright with a kettlebell in one hand.",
+                "Swing the kettlebell back forcefully and then reverse the motion forcefully. Crush the kettlebell handle as hard as possible and raise the kettlebell to your shoulder."
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 3,
+          "name": "Day 3 - High Volume Endurance",
+          "focus": "full",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "Jumping jacks - 30 seconds",
+              "Arm circles - 10 each direction",
+              "Hip circles - 10 each direction",
+              "Bodyweight squats - 10 reps",
+              "Push-ups - 5 reps"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Forward fold - 30 seconds",
+              "Pigeon pose - 30 seconds each side",
+              "Chest stretch - 30 seconds",
+              "Child's pose - 30 seconds",
+              "Deep breathing - 5 breaths"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Barbell Squat",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 20
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "This exercise is best performed inside a squat rack for safety purposes. To begin, first set the bar on a rack to just below shoulder level. Once the correct height is chosen and the bar is loaded, step under the bar and place the back of your shoulders (slightly below the neck) across it.",
+                "Hold on to the bar using both arms at each side and lift it off the rack by first pushing with your legs and at the same time straightening your torso.",
+                "Step away from the rack and position your legs using a shoulder width medium stance with the toes slightly pointed out. Keep your head up at all times and also maintain a straight back. This will be your starting position. (Note: For the purposes of this discussion we will use the medium stance described above which targets overall development; however you can choose any of the three stances discussed in the foot stances section)."
+              ]
+            },
+            {
+              "name": "Cable Deadlifts",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 20
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "cable"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "Move the cables to the bottom of the towers and select an appropriate weight. Stand directly in between the uprights.",
+                "To begin, squat down be flexing your hips and knees until you can reach the handles.",
+                "After grasping them, begin your ascent. Driving through your heels extend your hips and knees keeping your hands hanging at your side. Keep your head and chest up throughout the movement."
+              ]
+            },
+            {
+              "name": "Barbell Rows",
+              "sets": 5,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 60,
+              "equipment": [],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": []
+            },
+            {
+              "name": "Dumbbell Squat",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 25
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 5",
+              "instructions": [
+                "Stand up straight while holding a dumbbell on each hand (palms facing the side of your legs).",
+                "Position your legs using a shoulder width medium stance with the toes slightly pointed out. Keep your head up at all times as looking down will get you off balance and also maintain a straight back. This will be your starting position. Note: For the purposes of this discussion we will use the medium stance described above which targets overall development; however you can choose any of the three stances discussed in the foot stances section.",
+                "Begin to slowly lower your torso by bending the knees as you maintain a straight posture with the head up. Continue down until your thighs are parallel to the floor. Tip: If you performed the exercise correctly, the front of the knees should make an imaginary straight line with the toes that is perpendicular to the front. If your knees are past that imaginary line (if they are past your toes) then you are placing undue stress on the knee and the exercise has been performed incorrectly."
+              ]
+            },
+            {
+              "name": "Kettlebell One-Legged Deadlift",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "kettlebells"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "Hold a kettlebell by the handle in one hand. Stand on one leg, on the same side that you hold the kettlebell.",
+                "Keeping that knee slightly bent, perform a stiff legged deadlift by bending at the hip, extending your free leg behind you for balance.",
+                "Continue lowering the kettlebell until you are parallel to the ground, and then return to the upright position."
+              ]
+            },
+            {
+              "name": "Kettlebell Turkish Get-Up (Squat style)",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "kettlebells"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "Lie on your back on the floor and press a kettlebell to the top position by extending the elbow. Bend the knee on the same side as the kettlebell.",
+                "Keeping the kettlebell locked out at all times, pivot to the opposite side and use your non- working arm to assist you in driving forward to the lunge position.",
+                "Using your free hand, push yourself to a seated position, then progressing to your feet. While looking up at the kettlebell, slowly stand up. Reverse the motion back to the starting position and repeat."
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 4,
+          "name": "Day 4 - Alpine Simulation",
+          "focus": "full",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "Jumping jacks - 30 seconds",
+              "Arm circles - 10 each direction",
+              "Hip circles - 10 each direction",
+              "Bodyweight squats - 10 reps",
+              "Push-ups - 5 reps"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Forward fold - 30 seconds",
+              "Pigeon pose - 30 seconds each side",
+              "Chest stretch - 30 seconds",
+              "Child's pose - 30 seconds",
+              "Deep breathing - 5 breaths"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Deficit Deadlift",
+              "sets": 5,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 8",
+              "instructions": [
+                "Begin by having a platform or weight plates that you can stand on, usually 1-3 inches in height. Approach the bar so that it is centered over your feet. You feet should be about hip width apart. Bend at the hip to grip the bar at shoulder width, allowing your shoulder blades to protract. Typically, you would use an overhand grip or an over/under grip on heavier sets.",
+                "With your feet, and your grip set, take a big breath and then lower your hips and bend the knees until your shins contact the bar. Look forward with your head, keep your chest up and your back arched, and begin driving through the heels to move the weight upward. After the bar passes the knees, aggressively pull the bar back, pulling your shoulder blades together as you drive your hips forward into the bar.",
+                "Lower the bar by bending at the hips and guiding it to the floor."
+              ]
+            },
+            {
+              "name": "One Leg Barbell Squat",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "Start by standing about 2 to 3 feet in front of a flat bench with your back facing the bench. Have a barbell in front of you on the floor. Tip: Your feet should be shoulder width apart from each other.",
+                "Bend the knees and use a pronated grip with your hands being wider than shoulder width apart from each other to lift the barbell up until you can rest it on your chest.",
+                "Then lift the barbell over your head and rest it on the base of your neck. Move one foot back so that your toe is resting on the flat bench. Your other foot should be stationary in front of you. Keep your head up at all times as looking down will get you off balance and also maintain a straight back. Tip: Make sure your back is straight and chest is out while performing this exercise."
+              ]
+            },
+            {
+              "name": "Clean and Press",
+              "sets": 5,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "Assume a shoulder-width stance, with knees inside the arms. Now while keeping the back flat, bend at the knees and hips so that you can grab the bar with the arms fully extended and a pronated grip that is slightly wider than shoulder width. Point the elbows out to sides. The bar should be close to the shins. Position the shoulders over or slightly ahead of the bar. Establish a flat back posture. This will be your starting position.",
+                "Begin to pull the bar by extending the knees. Move your hips forward and raise the shoulders at the same rate while keeping the angle of the back constant; continue to lift the bar straight up while keeping it close to your body.",
+                "As the bar passes the knee, extend at the ankles, knees, and hips forcefully, similar to a jumping motion. As you do so, continue to guide the bar with your hands, shrugging your shoulders and using the momentum from your movement to pull the bar as high as possible. The bar should travel close to your body, and you should keep your elbows out."
+              ]
+            },
+            {
+              "name": "Front Squats With Two Kettlebells",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "kettlebells"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "Clean two kettlebells to your shoulders. Clean the kettlebells to your shoulders by extending through the legs and hips as you pull the kettlebells towards your shoulders. Rotate your wrists as you do so.",
+                "Looking straight ahead at all times, squat as low as you can and pause at the bottom. As you squat down, push your knees out. You should squat between your legs, keeping an upright torso, with your head and chest up.",
+                "Rise back up by driving through your heels and repeat."
+              ]
+            },
+            {
+              "name": "Kettlebell Pistol Squat",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "kettlebells"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "Pick up a kettlebell with two hands and hold it by the horns. Hold one leg off of the floor and squat down on the other.",
+                "Squat down by flexing the knee and sitting back with the hips, holding the kettlebell up in front of you.",
+                "Hold the bottom position for a second and then reverse the motion, driving through the heel and keeping your head and chest up."
+              ]
+            },
+            {
+              "name": "Double Kettlebell Alternating Hang Clean",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 16
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "kettlebells"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "Place two kettlebells between your feet. To get in the starting position, push your butt back and look straight ahead.",
+                "Clean one kettlebell to your shoulder and hold on to the other kettlebell.",
+                "With a fluid motion, lower the top kettlebell while driving the bottom kettlebell up."
+              ]
+            }
+          ]
+        }
+      ],
+      "nutrition": {
+        "dailyCalories": 2400,
+        "macros": {
+          "protein": 150,
+          "carbs": 280,
+          "fats": 85
+        },
+        "mealTiming": [
+          "Eat protein with each meal (25-40g)",
+          "Pre-workout: Light meal 1-2 hours before",
+          "Post-workout: Protein + carbs within 2 hours"
+        ]
+      },
+      "progressionProtocol": [
+        "Week 1-2: Establish working weights at RPE 7",
+        "Week 3-4: Push to RPE 8, add weight when completing all reps",
+        "Add 5-10 lbs to lower body, 2.5-5 lbs to upper body when ready",
+        "Deload every 4-6 weeks: reduce volume by 40-50%"
+      ]
+    }
+  ]
+}

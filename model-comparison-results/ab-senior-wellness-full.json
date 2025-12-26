@@ -1,0 +1,618 @@
+{
+  "name": "Active Aging Foundation Program",
+  "description": "A comprehensive 4-week beginner program designed for mature women focusing on bone density maintenance, balance improvement, and functional independence through safe, progressive strength training and stability work.",
+  "totalWeeks": 4,
+  "phases": [
+    {
+      "phaseNumber": 1,
+      "name": "Foundation Building Phase",
+      "durationWeeks": 4,
+      "focus": "Movement quality, balance, and safe strength progression",
+      "explanation": "This phase establishes proper movement patterns while building foundational strength to support bone density and improve balance for daily activities with grandchildren.",
+      "expectations": "Improved confidence with movement, better balance, reduced joint stiffness, and increased energy for daily activities.",
+      "keyPoints": [
+        "Focus on form and control over speed or heavy weight",
+        "Listen to your body - mild muscle fatigue is normal, joint pain is not",
+        "Consistency is more important than intensity",
+        "Build confidence with supported movements before progressing"
+      ],
+      "splitType": "Full Body",
+      "workouts": [
+        {
+          "dayNumber": 1,
+          "name": "Foundation Strength A",
+          "focus": "Lower body strength and stability",
+          "warmup": {
+            "duration": 8,
+            "activities": [
+              "5 minutes walking on treadmill (comfortable pace)",
+              "Gentle hip circles and knee lifts",
+              "Arm circles and shoulder rolls"
+            ]
+          },
+          "cooldown": {
+            "duration": 7,
+            "activities": [
+              "5 minutes gentle walking",
+              "Hip flexor stretches",
+              "Seated spinal twist"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Leg Press Machine",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "leg press machine"
+              ],
+              "alternatives": [
+                "Chair squats with support"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "notes": "Start with light weight focusing on controlled movement. Avoid full knee extension.",
+              "instructions": [
+                "Sit with back firmly against pad",
+                "Place feet hip-width apart on platform",
+                "Lower slowly until knees reach 90 degrees",
+                "Press through heels to return to start"
+              ]
+            },
+            {
+              "name": "Chest Press Machine",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 75,
+              "equipment": [
+                "chest press machine"
+              ],
+              "alternatives": [
+                "Wall push-ups"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "notes": "Excellent for bone density in spine and arms. Keep shoulder blades back.",
+              "instructions": [
+                "Adjust seat so handles align with mid-chest",
+                "Grip handles with firm but comfortable grip",
+                "Press forward with controlled motion",
+                "Return slowly to starting position"
+              ]
+            },
+            {
+              "name": "Seated Cable Row",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 75,
+              "equipment": [
+                "cable machine"
+              ],
+              "alternatives": [
+                "Resistance band rows"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "notes": "Helps counteract forward posture and strengthens back for better balance.",
+              "instructions": [
+                "Sit tall with slight bend in knees",
+                "Grip handle with both hands",
+                "Pull handle to lower chest, squeezing shoulder blades",
+                "Return with control"
+              ]
+            },
+            {
+              "name": "Single-Leg Balance Hold",
+              "sets": 3,
+              "measure": {
+                "type": "time",
+                "value": "15-30 seconds"
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "none"
+              ],
+              "alternatives": [
+                "Balance with hand support"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 5",
+              "notes": "Progress by closing eyes or removing hand support as able.",
+              "instructions": [
+                "Stand near wall or chair for support",
+                "Lift one foot slightly off ground",
+                "Hold position while maintaining good posture",
+                "Switch legs and repeat"
+              ]
+            },
+            {
+              "name": "Glute Bridge",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "none"
+              ],
+              "alternatives": [
+                "Bridge with stability ball"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 5",
+              "notes": "Great for hip stability and protecting previous hip replacement.",
+              "instructions": [
+                "Lie on back with knees bent, feet flat",
+                "Squeeze glutes and lift hips",
+                "Hold for 2 seconds at top",
+                "Lower slowly to starting position"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 2,
+          "name": "Foundation Strength B",
+          "focus": "Upper body and core stability",
+          "warmup": {
+            "duration": 8,
+            "activities": [
+              "5 minutes recumbent bike (easy pace)",
+              "Arm swings and shoulder shrugs",
+              "Gentle torso rotations"
+            ]
+          },
+          "cooldown": {
+            "duration": 7,
+            "activities": [
+              "5 minutes easy walking",
+              "Chest and shoulder stretches",
+              "Deep breathing exercises"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Lat Pulldown Machine",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "lat pulldown machine"
+              ],
+              "alternatives": [
+                "TRX assisted pull-ups"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "notes": "Strengthens back and improves posture. Keep chest up throughout movement.",
+              "instructions": [
+                "Sit with thighs secured under pad",
+                "Grip bar slightly wider than shoulders",
+                "Pull bar to upper chest",
+                "Squeeze shoulder blades together at bottom"
+              ]
+            },
+            {
+              "name": "Leg Curl Machine",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 75,
+              "equipment": [
+                "leg curl machine"
+              ],
+              "alternatives": [
+                "Standing hamstring curls with resistance band"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "notes": "Important for knee stability and balance. Use controlled motion.",
+              "instructions": [
+                "Lie face down with pad behind ankles",
+                "Keep hips pressed to bench",
+                "Curl heels toward glutes",
+                "Lower slowly with control"
+              ]
+            },
+            {
+              "name": "Dumbbell Shoulder Press (Seated)",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 75,
+              "equipment": [
+                "dumbbells",
+                "bench"
+              ],
+              "alternatives": [
+                "Resistance band shoulder press"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6",
+              "notes": "Start with very light weights (2-5 lbs). Excellent for bone density.",
+              "instructions": [
+                "Sit with back support, feet flat on floor",
+                "Hold dumbbells at shoulder level",
+                "Press straight up without arching back",
+                "Lower with control to starting position"
+              ]
+            },
+            {
+              "name": "Modified Plank on Knees",
+              "sets": 3,
+              "measure": {
+                "type": "time",
+                "value": "15-30 seconds"
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "mat"
+              ],
+              "alternatives": [
+                "Wall plank"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 5",
+              "notes": "Build core strength gradually. Focus on maintaining straight line from head to knees.",
+              "instructions": [
+                "Start on hands and knees",
+                "Walk hands forward slightly",
+                "Keep straight line from head to knees",
+                "Breathe normally while holding position"
+              ]
+            },
+            {
+              "name": "Calf Raises",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "none"
+              ],
+              "alternatives": [
+                "Seated calf raises"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 5",
+              "notes": "Hold wall or rail for balance if needed. Important for ankle stability.",
+              "instructions": [
+                "Stand with feet hip-width apart",
+                "Rise up onto toes",
+                "Hold briefly at top",
+                "Lower slowly with control"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 3,
+          "name": "Balance & Mobility",
+          "focus": "Balance, coordination, and joint mobility",
+          "warmup": {
+            "duration": 8,
+            "activities": [
+              "5 minutes gentle walking",
+              "Joint mobility movements",
+              "Light stretching"
+            ]
+          },
+          "cooldown": {
+            "duration": 10,
+            "activities": [
+              "Full body stretching routine",
+              "Relaxation breathing",
+              "Gentle spinal movements"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "TRX Assisted Squat",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "TRX"
+              ],
+              "alternatives": [
+                "Chair-assisted squats"
+              ],
+              "category": "primary",
+              "intensity": "RPE 5",
+              "notes": "TRX provides support while building leg strength and balance.",
+              "instructions": [
+                "Hold TRX handles with arms extended",
+                "Feet hip-width apart",
+                "Lower into squat using TRX for support",
+                "Return to standing using legs and TRX assistance"
+              ]
+            },
+            {
+              "name": "Stability Ball Wall Squats",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 75,
+              "equipment": [
+                "stability ball"
+              ],
+              "alternatives": [
+                "Wall sits"
+              ],
+              "category": "primary",
+              "intensity": "RPE 5",
+              "notes": "Ball provides back support while challenging stability.",
+              "instructions": [
+                "Place ball between lower back and wall",
+                "Walk feet forward slightly",
+                "Lower into squat, rolling ball up back",
+                "Return to standing"
+              ]
+            },
+            {
+              "name": "Heel-to-Toe Walking",
+              "sets": 3,
+              "measure": {
+                "type": "steps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "none"
+              ],
+              "alternatives": [
+                "Walking on line with support"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 4",
+              "notes": "Walk near wall for support. Excellent for balance and fall prevention.",
+              "instructions": [
+                "Place heel of front foot directly in front of toes of back foot",
+                "Keep arms out for balance",
+                "Look ahead, not down",
+                "Take slow, controlled steps"
+              ]
+            },
+            {
+              "name": "Side-Stepping",
+              "sets": 2,
+              "measure": {
+                "type": "steps",
+                "value": "10 each direction"
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "none"
+              ],
+              "alternatives": [
+                "Side-stepping with resistance band"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 4",
+              "notes": "Improves lateral stability and hip strength.",
+              "instructions": [
+                "Stand with feet hip-width apart",
+                "Step sideways with one foot",
+                "Bring other foot to meet it",
+                "Continue stepping in same direction, then reverse"
+              ]
+            },
+            {
+              "name": "Seated Spinal Rotation",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": "8 each side"
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "chair"
+              ],
+              "alternatives": [
+                "Standing spinal rotation"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 3",
+              "notes": "Gentle movement to maintain spinal mobility.",
+              "instructions": [
+                "Sit tall in chair",
+                "Cross arms over chest",
+                "Rotate torso slowly to one side",
+                "Return to center and repeat other direction"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 4,
+          "name": "Functional Strength",
+          "focus": "Real-world movement patterns",
+          "warmup": {
+            "duration": 8,
+            "activities": [
+              "5 minutes walking with direction changes",
+              "Dynamic movements (arm swings, leg swings)",
+              "Joint mobility"
+            ]
+          },
+          "cooldown": {
+            "duration": 7,
+            "activities": [
+              "5 minutes gentle walking",
+              "Hip and shoulder stretches",
+              "Relaxation breathing"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Sit-to-Stand",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 75,
+              "equipment": [
+                "chair"
+              ],
+              "alternatives": [
+                "Assisted sit-to-stand"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "notes": "Essential functional movement. Use arms for assistance if needed initially.",
+              "instructions": [
+                "Sit in chair with feet flat on floor",
+                "Lean slightly forward",
+                "Stand up without using hands if possible",
+                "Sit down slowly with control"
+              ]
+            },
+            {
+              "name": "Step-Ups (Low Step)",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": "8 each leg"
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "step platform"
+              ],
+              "alternatives": [
+                "Stair step-ups with rail support"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "notes": "Start with 4-6 inch step. Hold rail for balance if needed.",
+              "instructions": [
+                "Place entire foot on step",
+                "Step up by pushing through heel",
+                "Bring other foot to meet it",
+                "Step down with control"
+              ]
+            },
+            {
+              "name": "Resistance Band Chest Press",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "resistance band"
+              ],
+              "alternatives": [
+                "Wall push-ups"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 5",
+              "notes": "Mimics pushing movements needed for daily activities.",
+              "instructions": [
+                "Anchor band behind you at chest height",
+                "Hold handles with arms bent",
+                "Press forward extending arms",
+                "Return slowly to starting position"
+              ]
+            },
+            {
+              "name": "Standing Marching",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": "20 total"
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "none"
+              ],
+              "alternatives": [
+                "Seated marching"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 4",
+              "notes": "Great for hip flexor strength and balance. Hold support if needed.",
+              "instructions": [
+                "Stand tall with good posture",
+                "Lift one knee toward chest",
+                "Lower foot with control",
+                "Alternate legs in marching motion"
+              ]
+            },
+            {
+              "name": "Ankle Circles",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": "10 each direction, each foot"
+              },
+              "restPeriod": 30,
+              "equipment": [
+                "chair"
+              ],
+              "alternatives": [
+                "Alphabet ankle exercises"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 2",
+              "notes": "Maintains ankle mobility important for balance and walking.",
+              "instructions": [
+                "Sit in chair with one foot off ground",
+                "Slowly circle ankle clockwise",
+                "Reverse direction",
+                "Repeat with other foot"
+              ]
+            }
+          ]
+        }
+      ],
+      "nutrition": {
+        "dailyCalories": 1800,
+        "macros": {
+          "protein": 110,
+          "carbs": 180,
+          "fats": 70
+        },
+        "mealTiming": [
+          "Eat protein at every meal to support muscle maintenance",
+          "Include calcium-rich foods for bone health",
+          "Stay hydrated throughout the day"
+        ],
+        "notes": "Focus on nutrient-dense foods including lean proteins, colorful vegetables, whole grains, and calcium-rich dairy or alternatives. Consider vitamin D supplementation as discussed with your doctor."
+      },
+      "progressionProtocol": [
+        "Week 1-2: Focus on learning proper form and movement patterns",
+        "Week 3: Increase repetitions by 2-3 if form remains good",
+        "Week 4: Add light resistance or increase time for balance exercises",
+        "Listen to your body - some muscle fatigue is normal, joint pain is not",
+        "Progress balance exercises by reducing support as confidence improves"
+      ]
+    }
+  ]
+}

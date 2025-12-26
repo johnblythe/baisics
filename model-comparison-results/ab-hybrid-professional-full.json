@@ -1,0 +1,1408 @@
+{
+  "name": "Mt. Rainier Mountaineering Preparation Program",
+  "description": "8-week specialized training program designed for Mt. Rainier climb preparation, focusing on building hiking endurance, functional strength, and altitude adaptation while accommodating frequent travel with hotel gym alternatives",
+  "totalWeeks": 8,
+  "phases": [
+    {
+      "phaseNumber": 1,
+      "name": "Base Building Phase",
+      "durationWeeks": 4,
+      "focus": "Establish aerobic base, build functional strength foundation, and develop movement patterns essential for mountaineering",
+      "explanation": "This phase develops the cardiovascular and muscular endurance foundation necessary for long alpine ascents while strengthening key muscle groups used in mountaineering activities",
+      "expectations": "Improved general endurance, better movement quality, increased strength in hiking-specific patterns, and adaptation to training volume",
+      "keyPoints": [
+        "Focus on time under tension and muscular endurance",
+        "Build aerobic capacity with moderate intensity cardio",
+        "Master fundamental movement patterns",
+        "Establish consistent training rhythm despite travel"
+      ],
+      "splitType": "Full Body",
+      "workouts": [
+        {
+          "dayNumber": 1,
+          "name": "Endurance Foundation",
+          "focus": "Cardiovascular base building with lower body strength emphasis",
+          "warmup": {
+            "duration": 10,
+            "activities": [
+              "5 min treadmill walk",
+              "Dynamic stretching",
+              "Bodyweight squats",
+              "Leg swings"
+            ]
+          },
+          "cooldown": {
+            "duration": 10,
+            "activities": [
+              "5 min easy walk",
+              "Hip flexor stretch",
+              "Calf stretch",
+              "Hamstring stretch"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Stair Climber",
+              "sets": 1,
+              "measure": {
+                "type": "time",
+                "value": 25
+              },
+              "restPeriod": 0,
+              "equipment": [
+                "stair climber"
+              ],
+              "alternatives": [
+                "Treadmill incline walking at 8-12% grade",
+                "Stadium stairs",
+                "Step-ups on bench"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6-7",
+              "notes": "Maintain steady pace, simulate hiking rhythm",
+              "instructions": [
+                "Set moderate pace (60-80 steps/min)",
+                "Focus on full foot placement",
+                "Maintain upright posture",
+                "Breathe rhythmically"
+              ]
+            },
+            {
+              "name": "Goblet Squat",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [
+                "Bodyweight squat",
+                "Kettlebell squat",
+                "Dumbbell front squat"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "notes": "Focus on depth and control",
+              "instructions": [
+                "Hold dumbbell at chest level",
+                "Squat to hip crease below knee",
+                "Drive through heels",
+                "Keep chest up throughout movement"
+              ]
+            },
+            {
+              "name": "Walking Lunges",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "bodyweight"
+              ],
+              "alternatives": [
+                "Stationary lunges",
+                "Dumbbell lunges",
+                "Reverse lunges"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "notes": "Focus on stability and control",
+              "instructions": [
+                "Step forward into deep lunge",
+                "Both knees at 90 degrees",
+                "Push off front foot to next step",
+                "Maintain upright torso"
+              ]
+            },
+            {
+              "name": "Single-leg Romanian Deadlift",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [
+                "Bodyweight single-leg RDL",
+                "Kettlebell RDL",
+                "Two-leg RDL"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6",
+              "notes": "Improves balance and posterior chain strength",
+              "instructions": [
+                "Hold dumbbell in opposite hand",
+                "Hinge at hip while lifting leg back",
+                "Maintain straight line from head to heel",
+                "Return with control"
+              ]
+            },
+            {
+              "name": "Step-ups",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "bench"
+              ],
+              "alternatives": [
+                "Box step-ups",
+                "Stair step-ups",
+                "Dumbbell step-ups"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6",
+              "notes": "Knee height or slightly below",
+              "instructions": [
+                "Step up with full foot contact",
+                "Drive through heel",
+                "Control the descent",
+                "Alternate legs each rep"
+              ]
+            },
+            {
+              "name": "Calf Raises",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 20
+              },
+              "restPeriod": 30,
+              "equipment": [
+                "bodyweight"
+              ],
+              "alternatives": [
+                "Dumbbell calf raises",
+                "Single-leg calf raises",
+                "Seated calf raises"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "Essential for hiking endurance",
+              "instructions": [
+                "Rise onto toes",
+                "Pause at top",
+                "Lower with control",
+                "Full range of motion"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 2,
+          "name": "Functional Strength",
+          "focus": "Upper body and core strength with mountaineering movement patterns",
+          "warmup": {
+            "duration": 10,
+            "activities": [
+              "5 min rowing machine easy pace",
+              "Arm circles",
+              "Band pull-aparts",
+              "Cat-cow stretches"
+            ]
+          },
+          "cooldown": {
+            "duration": 10,
+            "activities": [
+              "5 min easy walk",
+              "Chest stretch",
+              "Lat stretch",
+              "Spinal twist"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Rowing Machine",
+              "sets": 1,
+              "measure": {
+                "type": "time",
+                "value": 20
+              },
+              "restPeriod": 0,
+              "equipment": [
+                "rowing machine"
+              ],
+              "alternatives": [
+                "Lat pulldowns",
+                "Resistance band rows",
+                "Inverted rows"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6-7",
+              "notes": "Focus on form and rhythm",
+              "instructions": [
+                "Drive with legs first",
+                "Pull handle to lower ribs",
+                "Control the return",
+                "Maintain steady stroke rate"
+              ]
+            },
+            {
+              "name": "Dumbbell Chest Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 75,
+              "equipment": [
+                "dumbbell",
+                "bench"
+              ],
+              "alternatives": [
+                "Push-ups",
+                "Chest press machine",
+                "Resistance band chest press"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6-7",
+              "notes": "Build pushing strength for mountaineering",
+              "instructions": [
+                "Press dumbbells from chest level",
+                "Full range of motion",
+                "Control both up and down",
+                "Keep core engaged"
+              ]
+            },
+            {
+              "name": "Lat Pulldown",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 75,
+              "equipment": [
+                "cable machine"
+              ],
+              "alternatives": [
+                "Assisted pull-ups",
+                "Resistance band pulldowns",
+                "Dumbbell rows"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6-7",
+              "notes": "Essential for rope work and scrambling",
+              "instructions": [
+                "Pull bar to upper chest",
+                "Squeeze shoulder blades",
+                "Control the return",
+                "Lean slightly back"
+              ]
+            },
+            {
+              "name": "Overhead Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 75,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [
+                "Seated shoulder press",
+                "Resistance band press",
+                "Pike push-ups"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6-7",
+              "notes": "Important for pack lifting and overhead reach",
+              "instructions": [
+                "Press dumbbells overhead",
+                "Keep core tight",
+                "Full lockout at top",
+                "Lower with control"
+              ]
+            },
+            {
+              "name": "Plank",
+              "sets": 3,
+              "measure": {
+                "type": "time",
+                "value": 45
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "bodyweight"
+              ],
+              "alternatives": [
+                "Modified plank on knees",
+                "Wall plank",
+                "Incline plank"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6-7",
+              "notes": "Core stability for heavy pack carrying",
+              "instructions": [
+                "Straight line from head to heels",
+                "Engage core muscles",
+                "Breathe normally",
+                "Maintain neutral spine"
+              ]
+            },
+            {
+              "name": "Dead Bug",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "bodyweight"
+              ],
+              "alternatives": [
+                "Modified dead bug",
+                "Bird dog",
+                "Bicycle crunches"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 5-6",
+              "notes": "Core stability and coordination",
+              "instructions": [
+                "Lie on back, arms and legs at 90°",
+                "Lower opposite arm and leg",
+                "Return to start position",
+                "Maintain lower back contact with floor"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 3,
+          "name": "Endurance Plus",
+          "focus": "Extended cardiovascular training with weighted vest introduction",
+          "warmup": {
+            "duration": 10,
+            "activities": [
+              "5 min easy treadmill walk",
+              "Dynamic leg swings",
+              "Ankle rolls",
+              "Hip circles"
+            ]
+          },
+          "cooldown": {
+            "duration": 10,
+            "activities": [
+              "10 min easy walk",
+              "IT band stretch",
+              "Pigeon pose",
+              "Quad stretch"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Treadmill Hiking Simulation",
+              "sets": 1,
+              "measure": {
+                "type": "time",
+                "value": 30
+              },
+              "restPeriod": 0,
+              "equipment": [
+                "treadmill",
+                "weighted vest"
+              ],
+              "alternatives": [
+                "Outdoor hiking",
+                "Stair climbing",
+                "Incline walking without vest"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6-7",
+              "notes": "Start with 10-15 lbs in vest, progress weekly",
+              "instructions": [
+                "Set incline to 8-12%",
+                "Maintain hiking pace (3-4 mph)",
+                "Use trekking pole motion with arms",
+                "Focus on steady breathing"
+              ]
+            },
+            {
+              "name": "Bulgarian Split Squat",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "bench"
+              ],
+              "alternatives": [
+                "Rear foot elevated split squat",
+                "Stationary lunges",
+                "Single-leg squats"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6-7",
+              "notes": "Unilateral leg strength crucial for uneven terrain",
+              "instructions": [
+                "Rear foot elevated on bench",
+                "Lower into deep lunge position",
+                "Drive through front heel",
+                "Complete all reps before switching"
+              ]
+            },
+            {
+              "name": "Farmer's Walk",
+              "sets": 3,
+              "measure": {
+                "type": "time",
+                "value": 45
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [
+                "Suitcase carry",
+                "Kettlebell carry",
+                "Weight plate carry"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6-7",
+              "notes": "Simulates heavy pack carrying",
+              "instructions": [
+                "Hold heavy dumbbells at sides",
+                "Walk with normal gait",
+                "Keep shoulders back",
+                "Maintain good posture throughout"
+              ]
+            },
+            {
+              "name": "Mountain Climbers",
+              "sets": 3,
+              "measure": {
+                "type": "time",
+                "value": 30
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "bodyweight"
+              ],
+              "alternatives": [
+                "Modified mountain climbers",
+                "High knees",
+                "Burpees"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7-8",
+              "notes": "Cardiovascular conditioning and core strength",
+              "instructions": [
+                "Start in plank position",
+                "Alternate bringing knees to chest",
+                "Maintain plank throughout",
+                "Keep hips level"
+              ]
+            },
+            {
+              "name": "Wall Sit",
+              "sets": 3,
+              "measure": {
+                "type": "time",
+                "value": 60
+              },
+              "restPeriod": 75,
+              "equipment": [
+                "bodyweight"
+              ],
+              "alternatives": [
+                "Chair squat holds",
+                "Squat pulses",
+                "Goblet squat hold"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6-7",
+              "notes": "Isometric leg strength for long descents",
+              "instructions": [
+                "Back against wall",
+                "Slide down to 90° knee angle",
+                "Hold position",
+                "Keep weight in heels"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 4,
+          "name": "Recovery & Mobility",
+          "focus": "Active recovery with mobility work and light strength maintenance",
+          "warmup": {
+            "duration": 10,
+            "activities": [
+              "5 min easy bike or walk",
+              "Gentle arm swings",
+              "Neck rolls",
+              "Deep breathing"
+            ]
+          },
+          "cooldown": {
+            "duration": 15,
+            "activities": [
+              "Full body stretching routine",
+              "Foam rolling",
+              "Meditation or relaxation",
+              "Hydration focus"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Light Cardio Choice",
+              "sets": 1,
+              "measure": {
+                "type": "time",
+                "value": 20
+              },
+              "restPeriod": 0,
+              "equipment": [
+                "cardio machine"
+              ],
+              "alternatives": [
+                "Easy walk",
+                "Gentle bike ride",
+                "Swimming",
+                "Yoga flow"
+              ],
+              "category": "primary",
+              "intensity": "RPE 4-5",
+              "notes": "Focus on movement quality, not intensity",
+              "instructions": [
+                "Choose preferred low-impact activity",
+                "Maintain conversational pace",
+                "Focus on breathing",
+                "Enjoy the movement"
+              ]
+            },
+            {
+              "name": "Bodyweight Squats",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "bodyweight"
+              ],
+              "alternatives": [
+                "Chair-assisted squats",
+                "Partial squats",
+                "Squat pulses"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 4-5",
+              "notes": "Movement maintenance",
+              "instructions": [
+                "Slow and controlled movement",
+                "Focus on full range of motion",
+                "Quality over quantity",
+                "No added weight"
+              ]
+            },
+            {
+              "name": "Band Pull-Aparts",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 30,
+              "equipment": [
+                "resistance band"
+              ],
+              "alternatives": [
+                "Arm circles",
+                "Door frame stretches",
+                "Light dumbbell reverse flies"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 4",
+              "notes": "Maintain shoulder health",
+              "instructions": [
+                "Hold band at shoulder height",
+                "Pull apart with straight arms",
+                "Squeeze shoulder blades",
+                "Control the return"
+              ]
+            },
+            {
+              "name": "Hip Flexor Stretch",
+              "sets": 2,
+              "measure": {
+                "type": "time",
+                "value": 60
+              },
+              "restPeriod": 30,
+              "equipment": [
+                "bodyweight"
+              ],
+              "alternatives": [
+                "Seated hip flexor stretch",
+                "Standing hip flexor stretch",
+                "Lunge stretch"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 3-4",
+              "notes": "Essential for hip mobility",
+              "instructions": [
+                "Kneel in lunge position",
+                "Lean forward gently",
+                "Feel stretch in front of hip",
+                "Hold and breathe deeply"
+              ]
+            },
+            {
+              "name": "Cat-Cow Stretch",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 30,
+              "equipment": [
+                "bodyweight"
+              ],
+              "alternatives": [
+                "Seated spinal waves",
+                "Standing back extension",
+                "Child's pose to upward dog"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 2-3",
+              "notes": "Spinal mobility for pack carrying",
+              "instructions": [
+                "Start on hands and knees",
+                "Alternate between arched and rounded back",
+                "Move slowly and controlled",
+                "Breathe with movement"
+              ]
+            }
+          ]
+        }
+      ],
+      "nutrition": {
+        "dailyCalories": 2200,
+        "macros": {
+          "protein": 140,
+          "carbs": 275,
+          "fats": 75
+        },
+        "mealTiming": [
+          "Pre-workout: Light carb snack 30-60 min before",
+          "Post-workout: Protein + carb within 30 min",
+          "Spread protein evenly throughout day"
+        ],
+        "notes": "Focus on whole foods, adequate hydration (half body weight in oz), and foods you'll eat on the mountain. Practice fueling strategies during longer sessions."
+      },
+      "progressionProtocol": [
+        "Week 1-2: Focus on form and establishing routine",
+        "Week 3: Increase cardio duration by 5 minutes",
+        "Week 4: Add 5-10 lbs to weighted vest, increase strength exercise reps by 2-3"
+      ]
+    },
+    {
+      "phaseNumber": 2,
+      "name": "Mountaineering Specific Phase",
+      "durationWeeks": 4,
+      "focus": "Advanced endurance building, altitude simulation, technical strength, and mountain-specific movement patterns",
+      "explanation": "This phase intensifies training to simulate actual mountain conditions, builds advanced cardiovascular capacity, and develops the specific strength and endurance patterns required for Mt. Rainier",
+      "expectations": "Significant improvement in hiking endurance, ability to handle sustained elevation gain, increased strength under fatigue, and confidence in mountain-specific movements",
+      "keyPoints": [
+        "Longer duration endurance sessions with weight",
+        "Higher intensity interval training for altitude adaptation",
+        "Advanced unilateral and functional strength patterns",
+        "Mental preparation for sustained effort"
+      ],
+      "splitType": "Full Body",
+      "workouts": [
+        {
+          "dayNumber": 1,
+          "name": "Alpine Endurance",
+          "focus": "Extended duration training with weighted vest progression",
+          "warmup": {
+            "duration": 15,
+            "activities": [
+              "10 min gradual treadmill incline buildup",
+              "Dynamic stretching",
+              "Activation exercises",
+              "Mental preparation"
+            ]
+          },
+          "cooldown": {
+            "duration": 15,
+            "activities": [
+              "10 min easy walk",
+              "Comprehensive stretching",
+              "Foam rolling",
+              "Recovery nutrition"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Weighted Vest Hiking Simulation",
+              "sets": 1,
+              "measure": {
+                "type": "time",
+                "value": 45
+              },
+              "restPeriod": 0,
+              "equipment": [
+                "treadmill",
+                "weighted vest"
+              ],
+              "alternatives": [
+                "Outdoor hiking with pack",
+                "Stair climbing with weight",
+                "Long incline walk"
+              ],
+              "category": "primary",
+              "intensity": "RPE 7-8",
+              "notes": "Progress to 20-30 lbs. Include 2-3 brief rest stops",
+              "instructions": [
+                "Maintain 10-15% incline",
+                "Hiking pace with trekking poles",
+                "Practice breathing techniques",
+                "Include 2-minute rest stops every 15 minutes"
+              ]
+            },
+            {
+              "name": "Step-ups with Knee Drive",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 75,
+              "equipment": [
+                "bench",
+                "weighted vest"
+              ],
+              "alternatives": [
+                "High box step-ups",
+                "Stair climbing",
+                "Weighted step-ups"
+              ],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "notes": "Focus on explosive drive and balance",
+              "instructions": [
+                "Step up with power",
+                "Drive opposite knee up high",
+                "Control the descent",
+                "Maintain balance throughout"
+              ]
+            },
+            {
+              "name": "Lateral Lunges",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [
+                "Bodyweight lateral lunges",
+                "Cossack squats",
+                "Side step-ups"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6-7",
+              "notes": "Essential for traversing and unstable terrain",
+              "instructions": [
+                "Step wide to side",
+                "Sit back into hip",
+                "Keep opposite leg straight",
+                "Push back to center"
+              ]
+            },
+            {
+              "name": "Single-leg Glute Bridge",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "bodyweight"
+              ],
+              "alternatives": [
+                "Double-leg glute bridge",
+                "Hip thrusts",
+                "Clamshells"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6",
+              "notes": "Critical for posterior chain strength",
+              "instructions": [
+                "Lie on back, one foot planted",
+                "Lift hips up using planted leg",
+                "Squeeze glutes at top",
+                "Lower with control"
+              ]
+            },
+            {
+              "name": "Calf Raise to Toe Walk",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "bodyweight"
+              ],
+              "alternatives": [
+                "Weighted calf raises",
+                "Single-leg calf raises",
+                "Toe walks only"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6-7",
+              "notes": "Ankle strength and stability for rocky terrain",
+              "instructions": [
+                "Perform calf raise",
+                "Stay on toes and walk 10 steps",
+                "Lower heels",
+                "Repeat sequence"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 2,
+          "name": "Power & Technical Strength",
+          "focus": "Explosive power development and technical climbing strength",
+          "warmup": {
+            "duration": 15,
+            "activities": [
+              "10 min rowing machine progressive intensity",
+              "Shoulder mobility",
+              "Core activation",
+              "Light resistance band work"
+            ]
+          },
+          "cooldown": {
+            "duration": 15,
+            "activities": [
+              "10 min easy cardio",
+              "Upper body stretching",
+              "Shoulder blade mobility",
+              "Deep breathing"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Rowing Intervals",
+              "sets": 6,
+              "measure": {
+                "type": "time",
+                "value": 2
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "rowing machine"
+              ],
+              "alternatives": [
+                "Assault bike intervals",
+                "High-intensity elliptical",
+                "Burpee intervals"
+              ],
+              "category": "primary",
+              "intensity": "RPE 8-9",
+              "notes": "Altitude adaptation and power endurance",
+              "instructions": [
+                "2 minutes hard effort",
+                "90 seconds easy recovery",
+                "Maintain good form under fatigue",
+                "Focus on power output"
+              ]
+            },
+            {
+              "name": "Dumbbell Thrusters",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [
+                "Barbell thrusters",
+                "Kettlebell thrusters",
+                "Squat to press"
+              ],
+              "category": "primary",
+              "intensity": "RPE 7-8",
+              "notes": "Full-body power and coordination",
+              "instructions": [
+                "Squat with dumbbells at shoulders",
+                "Drive up explosively",
+                "Press overhead at top",
+                "Lower with control"
+              ]
+            },
+            {
+              "name": "Pull-ups or Assisted Pull-ups",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "pull-up bar"
+              ],
+              "alternatives": [
+                "Lat pulldown",
+                "Inverted rows",
+                "Resistance band pull-ups"
+              ],
+              "category": "primary",
+              "intensity": "RPE 7-8",
+              "notes": "Essential for technical rock sections",
+              "instructions": [
+                "Full hang to start",
+                "Pull chest to bar",
+                "Control the descent",
+                "Full range of motion"
+              ]
+            },
+            {
+              "name": "Single-arm Dumbbell Row",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "dumbbell",
+                "bench"
+              ],
+              "alternatives": [
+                "Cable rows",
+                "Resistance band rows",
+                "Bent-over dumbbell rows"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6-7",
+              "notes": "Unilateral pulling strength",
+              "instructions": [
+                "Support with opposite hand",
+                "Row dumbbell to hip",
+                "Squeeze shoulder blade",
+                "Control both directions"
+              ]
+            },
+            {
+              "name": "Russian Twists",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 20
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [
+                "Medicine ball twists",
+                "Bodyweight twists",
+                "Bicycle crunches"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6",
+              "notes": "Rotational core strength for pack stability",
+              "instructions": [
+                "Sit with knees bent",
+                "Hold dumbbell with both hands",
+                "Rotate side to side",
+                "Keep chest up"
+              ]
+            },
+            {
+              "name": "Farmer's Walk with Direction Changes",
+              "sets": 3,
+              "measure": {
+                "type": "time",
+                "value": 60
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [
+                "Suitcase carries",
+                "Uneven carries",
+                "Weight plate carries"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 7",
+              "notes": "Functional carrying with agility",
+              "instructions": [
+                "Carry heavy weights",
+                "Include turns and direction changes",
+                "Maintain good posture",
+                "Simulate terrain navigation"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 3,
+          "name": "Endurance Challenge",
+          "focus": "Extended endurance with mountain simulation and mental preparation",
+          "warmup": {
+            "duration": 15,
+            "activities": [
+              "10 min progressive incline walking",
+              "Full body dynamic warm-up",
+              "Mental preparation",
+              "Equipment check simulation"
+            ]
+          },
+          "cooldown": {
+            "duration": 20,
+            "activities": [
+              "15 min easy walking",
+              "Complete stretching routine",
+              "Recovery techniques",
+              "Session reflection"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Long Weighted Hike Simulation",
+              "sets": 1,
+              "measure": {
+                "type": "time",
+                "value": 60
+              },
+              "restPeriod": 0,
+              "equipment": [
+                "treadmill",
+                "weighted vest"
+              ],
+              "alternatives": [
+                "Outdoor hike",
+                "Stair climbing extended",
+                "Trail hiking"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6-7",
+              "notes": "Build to pack weight. Include nutrition practice",
+              "instructions": [
+                "Vary incline every 10-15 minutes",
+                "Practice fueling every 20 minutes",
+                "Use trekking pole rhythm",
+                "Mental focus techniques"
+              ]
+            },
+            {
+              "name": "Squat to Calf Raise",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "bodyweight"
+              ],
+              "alternatives": [
+                "Weighted version",
+                "Jump squats to calf raise",
+                "Split squat variation"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6",
+              "notes": "Compound movement for efficiency",
+              "instructions": [
+                "Perform full squat",
+                "Rise to standing",
+                "Immediately perform calf raise",
+                "Lower heels and repeat"
+              ]
+            },
+            {
+              "name": "Lateral Step-downs",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "bench"
+              ],
+              "alternatives": [
+                "Forward step-downs",
+                "Single-leg squats",
+                "Pistol squat progression"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6-7",
+              "notes": "Eccentric control for descents",
+              "instructions": [
+                "Stand sideways on bench",
+                "Lower outside foot slowly",
+                "Tap ground lightly",
+                "Control back to start"
+              ]
+            },
+            {
+              "name": "Bear Crawl",
+              "sets": 3,
+              "measure": {
+                "type": "time",
+                "value": 30
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "bodyweight"
+              ],
+              "alternatives": [
+                "Modified bear crawl",
+                "Army crawl",
+                "Crab walk"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Full-body coordination and strength",
+              "instructions": [
+                "Hands and feet only",
+                "Keep hips low",
+                "Small deliberate steps",
+                "Maintain core tension"
+              ]
+            },
+            {
+              "name": "Ankle Circles and Flexion",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 30,
+              "equipment": [
+                "bodyweight"
+              ],
+              "alternatives": [
+                "Resistance band ankle work",
+                "Calf stretches",
+                "Toe pointing"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 3",
+              "notes": "Ankle mobility for uneven terrain",
+              "instructions": [
+                "Seated or standing",
+                "Circle ankles both directions",
+                "Point and flex toes",
+                "Focus on full range"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 4,
+          "name": "Technical Skills & Recovery",
+          "focus": "Movement skills, balance, and active recovery with mobility emphasis",
+          "warmup": {
+            "duration": 10,
+            "activities": [
+              "5 min gentle movement",
+              "Joint mobility sequence",
+              "Balance challenges",
+              "Breathing exercises"
+            ]
+          },
+          "cooldown": {
+            "duration": 20,
+            "activities": [
+              "Extended stretching",
+              "Foam rolling",
+              "Meditation",
+              "Equipment review"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Balance and Agility Circuit",
+              "sets": 3,
+              "measure": {
+                "type": "time",
+                "value": 45
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "bodyweight"
+              ],
+              "alternatives": [
+                "Single-leg stands",
+                "Heel-to-toe walking",
+                "Yoga balance poses"
+              ],
+              "category": "primary",
+              "intensity": "RPE 5-6",
+              "notes": "Combine single-leg stands, heel-to-toe walking, direction changes",
+              "instructions": [
+                "15 seconds single-leg stand each leg",
+                "15 seconds heel-to-toe walk",
+                "15 seconds lateral shuffles",
+                "Focus on control"
+              ]
+            },
+            {
+              "name": "Bodyweight Squats with Pause",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "bodyweight"
+              ],
+              "alternatives": [
+                "Chair squats",
+                "Wall squats",
+                "Partial squats"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 5",
+              "notes": "Movement quality focus",
+              "instructions": [
+                "Squat down slowly",
+                "Pause 2 seconds at bottom",
+                "Rise with control",
+                "Perfect form priority"
+              ]
+            },
+            {
+              "name": "Band-assisted Stretching Circuit",
+              "sets": 1,
+              "measure": {
+                "type": "time",
+                "value": 20
+              },
+              "restPeriod": 0,
+              "equipment": [
+                "resistance band"
+              ],
+              "alternatives": [
+                "Static stretching",
+                "PNF stretching",
+                "Yoga sequence"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 3-4",
+              "notes": "Focus on hiking muscle groups",
+              "instructions": [
+                "Hip flexors 2 minutes",
+                "Calves 2 minutes",
+                "IT bands 2 minutes",
+                "Hamstrings 2 minutes",
+                "Hold and breathe deeply"
+              ]
+            },
+            {
+              "name": "Breathing Exercises",
+              "sets": 3,
+              "measure": {
+                "type": "time",
+                "value": 90
+              },
+              "restPeriod": 30,
+              "equipment": [
+                "bodyweight"
+              ],
+              "alternatives": [
+                "Box breathing",
+                "Diaphragmatic breathing",
+                "Meditation"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 2",
+              "notes": "Altitude preparation and stress management",
+              "instructions": [
+                "4-7-8 breathing pattern",
+                "Inhale for 4 counts",
+                "Hold for 7 counts",
+                "Exhale for 8 counts"
+              ]
+            },
+            {
+              "name": "Foam Rolling Session",
+              "sets": 1,
+              "measure": {
+                "type": "time",
+                "value": 15
+              },
+              "restPeriod": 0,
+              "equipment": [
+                "foam roller"
+              ],
+              "alternatives": [
+                "Self-massage",
+                "Tennis ball massage",
+                "Stretching"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 4-5",
+              "notes": "Focus on legs and back",
+              "instructions": [
+                "IT bands 3 minutes",
+                "Calves 3 minutes",
+                "Quads 3 minutes",
+                "Upper back 3 minutes",
+                "Slow and controlled pressure"
+              ]
+            }
+          ]
+        }
+      ],
+      "nutrition": {
+        "dailyCalories": 2400,
+        "macros": {
+          "protein": 150,
+          "carbs": 300,
+          "fats": 80
+        },
+        "mealTiming": [
+          "Pre-workout: Complex carbs 60-90 min before longer sessions",
+          "During workout: Sports drink or energy gels for sessions over 45 min",
+          "Post-workout: 3:1 carb to protein ratio within 30 min",
+          "Practice mountain nutrition during weekend sessions"
+        ],
+        "notes": "Increase total calories to support higher training volume. Practice eating foods you'll use on the mountain. Focus on easy-to-digest options during training. Hydration becomes critical - aim for pale yellow urine."
+      },
+      "progressionProtocol": [
+        "Week 5: Increase weighted vest to 20-25 lbs for applicable exercises",
+        "Week 6: Extend main cardio sessions by 10 minutes, add 5 lbs to strength exercises",
+        "Week 7: Peak intensity - longest durations and heaviest loads",
+        "Week 8: Begin taper - maintain intensity but reduce volume by 20%"
+      ]
+    }
+  ]
+}

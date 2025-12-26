@@ -1,0 +1,404 @@
+{
+  "name": "Home Strength Foundation: 4-Week Beginner Program",
+  "description": "A comprehensive beginner-friendly strength training program designed for weight loss and foundational strength building using minimal equipment. Perfect for apartment living with no-jump modifications and lower back considerations.",
+  "totalWeeks": 4,
+  "phases": [
+    {
+      "phaseNumber": 1,
+      "name": "Foundation Building Phase",
+      "durationWeeks": 4,
+      "focus": "Movement mastery, habit formation, and gradual strength building",
+      "explanation": "This phase establishes proper movement patterns, builds exercise consistency, and creates a sustainable routine while addressing your lower back tightness through careful exercise selection and progression.",
+      "expectations": "You'll learn fundamental movement patterns, experience initial strength gains, and develop the habit of consistent morning workouts. Expect some initial muscle soreness that will decrease as your body adapts.",
+      "keyPoints": [
+        "Focus on perfect form over heavy weight",
+        "Build the habit of consistent 3x/week training",
+        "Address lower back tightness through mobility and strengthening"
+      ],
+      "splitType": "Full Body",
+      "workouts": [
+        {
+          "dayNumber": 1,
+          "name": "Workout A - Lower Body Focus",
+          "focus": "Lower body strength and core stability",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "Cat-cow stretches",
+              "Hip circles",
+              "Bodyweight squats",
+              "Glute bridges"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Child's pose",
+              "Figure-4 hip stretch",
+              "Knee-to-chest stretches"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Goblet Squat",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [
+                "Bodyweight squat",
+                "Box squat with yoga block"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6-7",
+              "notes": "Primary lower body movement",
+              "instructions": [
+                "Hold dumbbell at chest level",
+                "Keep chest up and core engaged",
+                "Lower until thighs parallel to floor"
+              ]
+            },
+            {
+              "name": "Romanian Deadlift",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "dumbbells"
+              ],
+              "alternatives": [
+                "Single dumbbell RDL",
+                "Resistance band RDL"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6-7",
+              "notes": "Hip hinge pattern for posterior chain",
+              "instructions": [
+                "Keep dumbbells close to legs",
+                "Hinge at hips, slight knee bend",
+                "Feel stretch in hamstrings"
+              ]
+            },
+            {
+              "name": "Glute Bridge",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "yoga mat"
+              ],
+              "alternatives": [
+                "Single-leg glute bridge",
+                "Dumbbell glute bridge"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "Glute activation and lower back friendly",
+              "instructions": [
+                "Squeeze glutes at top",
+                "Keep core engaged",
+                "Pause 1 second at top"
+              ]
+            },
+            {
+              "name": "Modified Plank",
+              "sets": 3,
+              "measure": {
+                "type": "time",
+                "value": 20
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "yoga mat"
+              ],
+              "alternatives": [
+                "Wall plank",
+                "Incline plank"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "Core strengthening",
+              "instructions": [
+                "Start on knees if needed",
+                "Keep straight line from head to knees/feet",
+                "Breathe normally throughout"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 2,
+          "name": "Workout B - Upper Body Focus",
+          "focus": "Upper body strength and postural muscles",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "Arm circles",
+              "Shoulder rolls",
+              "Band pull-aparts",
+              "Wall slides"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Doorway chest stretch",
+              "Cross-body shoulder stretch",
+              "Upper trap stretch"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Dumbbell Chest Press (Floor)",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "dumbbells",
+                "yoga mat"
+              ],
+              "alternatives": [
+                "Push-ups from knees",
+                "Resistance band chest press"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6-7",
+              "notes": "Primary pushing movement",
+              "instructions": [
+                "Lie on floor, press dumbbells up",
+                "Keep core engaged",
+                "Lower until elbows touch floor"
+              ]
+            },
+            {
+              "name": "Bent-Over Row",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "dumbbells"
+              ],
+              "alternatives": [
+                "Single-arm row",
+                "Resistance band rows"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6-7",
+              "notes": "Primary pulling movement",
+              "instructions": [
+                "Hinge at hips, slight knee bend",
+                "Pull dumbbells to lower ribs",
+                "Squeeze shoulder blades together"
+              ]
+            },
+            {
+              "name": "Overhead Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "dumbbells"
+              ],
+              "alternatives": [
+                "Seated overhead press",
+                "Resistance band overhead press"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6-7",
+              "notes": "Vertical pushing movement",
+              "instructions": [
+                "Press dumbbells straight up",
+                "Keep core tight",
+                "Don't arch back excessively"
+              ]
+            },
+            {
+              "name": "Resistance Band Face Pull",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "resistance bands"
+              ],
+              "alternatives": [
+                "Reverse fly with dumbbells",
+                "Wall angels"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "Rear delt and postural muscles",
+              "instructions": [
+                "Pull band to face level",
+                "Lead with elbows",
+                "Squeeze shoulder blades"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 3,
+          "name": "Workout C - Full Body Integration",
+          "focus": "Movement integration and metabolic conditioning",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "Dynamic arm swings",
+              "Leg swings",
+              "Torso twists",
+              "Step-ups on sturdy surface"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Full body stretch sequence",
+              "Deep breathing",
+              "Gentle spinal twists"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Dumbbell Thruster",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "dumbbells"
+              ],
+              "alternatives": [
+                "Squat to press",
+                "Bodyweight squat + overhead reach"
+              ],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "notes": "Full body compound movement",
+              "instructions": [
+                "Squat down, press dumbbells up as you stand",
+                "Keep core engaged throughout",
+                "Use legs to help drive press"
+              ]
+            },
+            {
+              "name": "Reverse Lunge",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 16
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "dumbbells"
+              ],
+              "alternatives": [
+                "Bodyweight reverse lunge",
+                "Stationary lunge"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6-7",
+              "notes": "Unilateral leg strength",
+              "instructions": [
+                "Step back into lunge",
+                "Keep front knee over ankle",
+                "8 reps each leg"
+              ]
+            },
+            {
+              "name": "Dead Bug",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "yoga mat"
+              ],
+              "alternatives": [
+                "Modified dead bug",
+                "Marching in place"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "Core stability and coordination",
+              "instructions": [
+                "Lie on back, knees bent 90 degrees",
+                "Extend opposite arm and leg slowly",
+                "6 reps each side"
+              ]
+            },
+            {
+              "name": "Band Pull-Apart",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "resistance bands"
+              ],
+              "alternatives": [
+                "Arm circles",
+                "Wall slides"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 5-6",
+              "notes": "Postural strengthening",
+              "instructions": [
+                "Hold band at shoulder height",
+                "Pull apart by squeezing shoulder blades",
+                "Control the return"
+              ]
+            }
+          ]
+        }
+      ],
+      "nutrition": {
+        "dailyCalories": 1650,
+        "macros": {
+          "protein": 130,
+          "carbs": 140,
+          "fats": 65
+        },
+        "mealTiming": [
+          "Pre-workout: Light protein snack 30-60 min before",
+          "Post-workout: Protein within 2 hours",
+          "Eat every 3-4 hours to maintain energy"
+        ],
+        "notes": "Focus on whole foods, adequate protein for muscle building, and a moderate caloric deficit for fat loss. Stay hydrated with 8-10 glasses of water daily."
+      },
+      "progressionProtocol": [
+        "Week 1: Focus on learning movements, use lighter weights",
+        "Week 2: Increase weight by 2.5-5 lbs for upper body, 5-10 lbs for lower body",
+        "Week 3: Add 1-2 reps to each exercise",
+        "Week 4: Increase weight again and prepare for more advanced movements"
+      ]
+    }
+  ]
+}

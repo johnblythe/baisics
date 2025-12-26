@@ -1,0 +1,2120 @@
+{
+  "name": "Upper Body Mass & Strength Breakthrough Program",
+  "description": "An 8-week intermediate program designed to break through plateaus and build significant upper body mass while maintaining lower body strength. Combines strength training with hypertrophy work using efficient supersets.",
+  "totalWeeks": 8,
+  "phases": [
+    {
+      "phaseNumber": 1,
+      "name": "Foundation & Volume Phase",
+      "durationWeeks": 4,
+      "focus": "Building training capacity and muscle endurance while establishing strength base",
+      "explanation": "This phase establishes a solid foundation with higher volume training to increase work capacity and create the muscle damage necessary for hypertrophy. We'll use moderate weights with higher rep ranges to build muscle endurance and prepare for the intensive phase.",
+      "expectations": "Expect muscle soreness initially as volume increases. Energy levels may dip in week 2-3 before adaptation occurs. You should notice improved muscle pumps and endurance by week 4.",
+      "keyPoints": [
+        "Focus on perfect form with controlled tempo",
+        "Prioritize upper body volume while maintaining lower body",
+        "Use supersets to maximize time efficiency"
+      ],
+      "splitType": "Upper/Lower/Push/Pull/Legs",
+      "workouts": [
+        {
+          "dayNumber": 1,
+          "name": "Upper Power",
+          "focus": "Heavy compound movements for strength foundation",
+          "warmup": {
+            "duration": 10,
+            "activities": [
+              "5 min light rowing",
+              "Arm circles and band pull-aparts",
+              "Empty barbell bench press x10"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Upper body static stretching",
+              "Deep breathing exercises"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Bench Press",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "barbell",
+                "bench"
+              ],
+              "alternatives": [
+                "Dumbbell Bench Press",
+                "Incline Barbell Press"
+              ],
+              "category": "primary",
+              "intensity": "RPE 8",
+              "notes": "Main chest builder - focus on breaking plateau",
+              "instructions": [
+                "Retract shoulder blades and maintain arch",
+                "Lower bar to chest with control",
+                "Drive through heels while pressing"
+              ]
+            },
+            {
+              "name": "Barbell Rows",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [
+                "T-Bar Row",
+                "Chest Supported Row"
+              ],
+              "category": "primary",
+              "intensity": "RPE 7-8",
+              "notes": "Counterbalance bench press volume",
+              "instructions": [
+                "Hinge at hips, maintain neutral spine",
+                "Pull bar to lower chest/upper abdomen",
+                "Squeeze shoulder blades at top"
+              ]
+            },
+            {
+              "name": "Overhead Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 150,
+              "equipment": [
+                "barbell",
+                "rack"
+              ],
+              "alternatives": [
+                "Dumbbell Shoulder Press",
+                "Seated Press"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Avoid behind-neck position due to shoulder impingement",
+              "instructions": [
+                "Start with bar at shoulder height",
+                "Press straight up, not forward",
+                "Keep core tight throughout movement"
+              ]
+            },
+            {
+              "name": "Weighted Pull-ups",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 150,
+              "equipment": [
+                "pull-up bar",
+                "weight belt"
+              ],
+              "alternatives": [
+                "Lat Pulldowns",
+                "Assisted Pull-ups"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Superset with overhead press",
+              "instructions": [
+                "Full dead hang start position",
+                "Pull chest to bar, not just chin over",
+                "Control the descent"
+              ]
+            },
+            {
+              "name": "Incline Dumbbell Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "dumbbells",
+                "adjustable bench"
+              ],
+              "alternatives": [
+                "Incline Barbell Press",
+                "Hammer Strength Incline"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Target upper chest development",
+              "instructions": [
+                "Set bench to 30-45 degree angle",
+                "Lower dumbbells to chest level",
+                "Press up and slightly together"
+              ]
+            },
+            {
+              "name": "Cable Rows",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "cable machine",
+                "row handle"
+              ],
+              "alternatives": [
+                "Machine Row",
+                "Resistance Band Rows"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6-7",
+              "notes": "Superset with incline press",
+              "instructions": [
+                "Keep chest up and shoulders back",
+                "Pull handle to lower chest",
+                "Squeeze shoulder blades together"
+              ]
+            },
+            {
+              "name": "Barbell Curls",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [
+                "Dumbbell Curls",
+                "Cable Curls"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 7",
+              "notes": "Bicep isolation work",
+              "instructions": [
+                "Keep elbows at sides",
+                "Control the negative portion",
+                "Avoid swinging or momentum"
+              ]
+            },
+            {
+              "name": "Close Grip Bench Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "barbell",
+                "bench"
+              ],
+              "alternatives": [
+                "Dips",
+                "Tricep Pushdowns"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 7",
+              "notes": "Superset with barbell curls",
+              "instructions": [
+                "Hands about shoulder-width apart",
+                "Keep elbows tucked to sides",
+                "Focus on tricep contraction"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 2,
+          "name": "Lower Body Power",
+          "focus": "Lower body strength and power development",
+          "warmup": {
+            "duration": 10,
+            "activities": [
+              "5 min bike or walking",
+              "Leg swings and hip circles",
+              "Bodyweight squats x15"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Lower body static stretching",
+              "Foam rolling if available"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Back Squats",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "barbell",
+                "squat rack"
+              ],
+              "alternatives": [
+                "Front Squats",
+                "Goblet Squats"
+              ],
+              "category": "primary",
+              "intensity": "RPE 8",
+              "notes": "Primary lower body strength movement",
+              "instructions": [
+                "Bar on upper traps, feet shoulder-width",
+                "Sit back and down, knees track over toes",
+                "Drive through heels to stand"
+              ]
+            },
+            {
+              "name": "Romanian Deadlifts",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 150,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [
+                "Dumbbell RDLs",
+                "Stiff Leg Deadlifts"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Posterior chain development",
+              "instructions": [
+                "Start with bar at hip level",
+                "Push hips back, slight knee bend",
+                "Lower bar to mid-shin, feel hamstring stretch"
+              ]
+            },
+            {
+              "name": "Bulgarian Split Squats",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "dumbbells",
+                "bench"
+              ],
+              "alternatives": [
+                "Walking Lunges",
+                "Goblet Split Squats"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Unilateral leg strength",
+              "instructions": [
+                "Rear foot elevated on bench",
+                "Lower into lunge, front knee tracks over toe",
+                "Drive through front heel to return"
+              ]
+            },
+            {
+              "name": "Leg Curls",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "leg curl machine"
+              ],
+              "alternatives": [
+                "Nordic Curls",
+                "Glute Ham Raises"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 7",
+              "notes": "Superset with split squats",
+              "instructions": [
+                "Adjust pad to back of ankles",
+                "Curl heels to glutes smoothly",
+                "Control the return to start"
+              ]
+            },
+            {
+              "name": "Walking Lunges",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 20
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "dumbbells"
+              ],
+              "alternatives": [
+                "Stationary Lunges",
+                "Reverse Lunges"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6-7",
+              "notes": "10 reps per leg",
+              "instructions": [
+                "Step forward into deep lunge",
+                "Keep torso upright, front knee over ankle",
+                "Push off front foot to next step"
+              ]
+            },
+            {
+              "name": "Calf Raises",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "dumbbells"
+              ],
+              "alternatives": [
+                "Machine Calf Raises",
+                "Bodyweight Calf Raises"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 7",
+              "notes": "Calf development",
+              "instructions": [
+                "Rise up on balls of feet",
+                "Hold peak contraction briefly",
+                "Lower slowly to stretch calves"
+              ]
+            },
+            {
+              "name": "Plank",
+              "sets": 3,
+              "measure": {
+                "type": "duration",
+                "value": 45
+              },
+              "restPeriod": 60,
+              "equipment": [],
+              "alternatives": [
+                "Dead Bug",
+                "Pallof Press"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "Core stability",
+              "instructions": [
+                "Maintain straight line from head to heels",
+                "Keep hips level, don't sag",
+                "Breathe normally throughout hold"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 3,
+          "name": "Push Focus",
+          "focus": "Chest, shoulders, and triceps hypertrophy",
+          "warmup": {
+            "duration": 8,
+            "activities": [
+              "Arm circles and shoulder dislocations",
+              "Push-up variations x10",
+              "Light cable flyes"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Chest and shoulder stretches",
+              "Tricep stretches"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Incline Barbell Press",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 150,
+              "equipment": [
+                "barbell",
+                "incline bench"
+              ],
+              "alternatives": [
+                "Incline Dumbbell Press",
+                "Hammer Strength Incline"
+              ],
+              "category": "primary",
+              "intensity": "RPE 7-8",
+              "notes": "Upper chest focus",
+              "instructions": [
+                "Set bench to 30 degrees",
+                "Lower bar to upper chest",
+                "Press straight up, not backward"
+              ]
+            },
+            {
+              "name": "Dumbbell Shoulder Press",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "dumbbells",
+                "bench"
+              ],
+              "alternatives": [
+                "Machine Press",
+                "Arnold Press"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Shoulder-friendly pressing",
+              "instructions": [
+                "Start with dumbbells at shoulder level",
+                "Press up and slightly together",
+                "Control the descent"
+              ]
+            },
+            {
+              "name": "Dips",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "dip bars"
+              ],
+              "alternatives": [
+                "Assisted Dips",
+                "Tricep Pushdowns"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Compound tricep movement",
+              "instructions": [
+                "Lean slightly forward for chest",
+                "Lower until shoulders below elbows",
+                "Push up to full extension"
+              ]
+            },
+            {
+              "name": "Cable Lateral Raises",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 75,
+              "equipment": [
+                "cable machine"
+              ],
+              "alternatives": [
+                "Dumbbell Lateral Raises",
+                "Machine Lateral Raises"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6-7",
+              "notes": "Superset with dips",
+              "instructions": [
+                "Keep slight bend in elbow",
+                "Raise arm to shoulder height",
+                "Control the descent"
+              ]
+            },
+            {
+              "name": "Chest Flyes",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "dumbbells",
+                "bench"
+              ],
+              "alternatives": [
+                "Cable Flyes",
+                "Pec Deck"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6-7",
+              "notes": "Chest isolation",
+              "instructions": [
+                "Lower dumbbells with wide arc",
+                "Feel stretch in chest at bottom",
+                "Bring dumbbells together over chest"
+              ]
+            },
+            {
+              "name": "Overhead Tricep Extension",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 75,
+              "equipment": [
+                "dumbbells"
+              ],
+              "alternatives": [
+                "Cable Overhead Extension",
+                "Skull Crushers"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6-7",
+              "notes": "Superset with chest flyes",
+              "instructions": [
+                "Keep elbows pointing forward",
+                "Lower weight behind head",
+                "Extend only at elbows"
+              ]
+            },
+            {
+              "name": "Front Raises",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "dumbbells"
+              ],
+              "alternatives": [
+                "Cable Front Raises",
+                "Barbell Front Raises"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "Anterior deltoid focus",
+              "instructions": [
+                "Keep arms straight with slight bend",
+                "Raise to shoulder height",
+                "Control the lowering phase"
+              ]
+            },
+            {
+              "name": "Diamond Push-ups",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 60,
+              "equipment": [],
+              "alternatives": [
+                "Close Grip Push-ups",
+                "Tricep Pushdowns"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "Bodyweight tricep finisher",
+              "instructions": [
+                "Make diamond shape with hands",
+                "Keep body in straight line",
+                "Focus on tricep contraction"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 4,
+          "name": "Pull Focus",
+          "focus": "Back, rear delts, and biceps hypertrophy",
+          "warmup": {
+            "duration": 8,
+            "activities": [
+              "Band pull-aparts",
+              "Scapular wall slides",
+              "Light lat pulldowns"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Lat and rhomboid stretches",
+              "Bicep stretches"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Deadlifts",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [
+                "Trap Bar Deadlifts",
+                "Sumo Deadlifts"
+              ],
+              "category": "primary",
+              "intensity": "RPE 8",
+              "notes": "Primary posterior chain movement",
+              "instructions": [
+                "Bar over mid-foot, shins vertical",
+                "Drive through heels, chest up",
+                "Hips and knees extend together"
+              ]
+            },
+            {
+              "name": "Pull-ups",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 150,
+              "equipment": [
+                "pull-up bar"
+              ],
+              "alternatives": [
+                "Lat Pulldowns",
+                "Assisted Pull-ups"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7-8",
+              "notes": "Vertical pulling strength",
+              "instructions": [
+                "Dead hang start, full range of motion",
+                "Pull chest to bar",
+                "Control the descent"
+              ]
+            },
+            {
+              "name": "T-Bar Rows",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "t-bar row machine"
+              ],
+              "alternatives": [
+                "Chest Supported Row",
+                "Barbell Rows"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Mid-back thickness",
+              "instructions": [
+                "Chest on pad, slight knee bend",
+                "Pull handles to lower chest",
+                "Squeeze shoulder blades together"
+              ]
+            },
+            {
+              "name": "Face Pulls",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 75,
+              "equipment": [
+                "cable machine",
+                "rope"
+              ],
+              "alternatives": [
+                "Rear Delt Flyes",
+                "Band Pull-aparts"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6-7",
+              "notes": "Superset with T-bar rows",
+              "instructions": [
+                "Pull rope to face level",
+                "Externally rotate at shoulders",
+                "Squeeze rear delts"
+              ]
+            },
+            {
+              "name": "Lat Pulldowns",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "lat pulldown machine"
+              ],
+              "alternatives": [
+                "Wide Grip Pull-ups",
+                "Cable Pullovers"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Lat width development",
+              "instructions": [
+                "Lean back slightly, chest up",
+                "Pull bar to upper chest",
+                "Focus on lat contraction"
+              ]
+            },
+            {
+              "name": "Hammer Curls",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 75,
+              "equipment": [
+                "dumbbells"
+              ],
+              "alternatives": [
+                "Cable Hammer Curls",
+                "Rope Curls"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 7",
+              "notes": "Superset with lat pulldowns",
+              "instructions": [
+                "Keep palms facing each other",
+                "Curl without rotating wrists",
+                "Control the negative"
+              ]
+            },
+            {
+              "name": "Cable Curls",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 75,
+              "equipment": [
+                "cable machine"
+              ],
+              "alternatives": [
+                "Barbell Curls",
+                "Preacher Curls"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6-7",
+              "notes": "Bicep isolation",
+              "instructions": [
+                "Keep elbows stable at sides",
+                "Curl with supinated grip",
+                "Squeeze bicep at top"
+              ]
+            },
+            {
+              "name": "Shrugs",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "dumbbells"
+              ],
+              "alternatives": [
+                "Barbell Shrugs",
+                "Cable Shrugs"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "Trap development",
+              "instructions": [
+                "Lift shoulders straight up",
+                "Hold peak contraction",
+                "Lower slowly"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 5,
+          "name": "Legs & Core",
+          "focus": "Lower body hypertrophy and core strength",
+          "warmup": {
+            "duration": 10,
+            "activities": [
+              "Dynamic leg swings",
+              "Bodyweight squats",
+              "Hip circles"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Hip flexor stretches",
+              "Hamstring stretches"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Front Squats",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 150,
+              "equipment": [
+                "barbell",
+                "squat rack"
+              ],
+              "alternatives": [
+                "Goblet Squats",
+                "Hack Squats"
+              ],
+              "category": "primary",
+              "intensity": "RPE 7-8",
+              "notes": "Quad-dominant squatting",
+              "instructions": [
+                "Bar rests on front delts",
+                "Keep torso upright",
+                "Sit straight down"
+              ]
+            },
+            {
+              "name": "Stiff Leg Deadlifts",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "dumbbells"
+              ],
+              "alternatives": [
+                "Romanian Deadlifts",
+                "Good Mornings"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Hamstring focus",
+              "instructions": [
+                "Keep legs relatively straight",
+                "Push hips back",
+                "Feel stretch in hamstrings"
+              ]
+            },
+            {
+              "name": "Leg Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "leg press machine"
+              ],
+              "alternatives": [
+                "Goblet Squats",
+                "Hack Squats"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "High rep leg volume",
+              "instructions": [
+                "Feet shoulder-width apart",
+                "Lower to 90 degrees",
+                "Press through heels"
+              ]
+            },
+            {
+              "name": "Walking Lunges",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 20
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "dumbbells"
+              ],
+              "alternatives": [
+                "Stationary Lunges",
+                "Step-ups"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6-7",
+              "notes": "10 per leg, superset with leg press",
+              "instructions": [
+                "Step into deep lunge",
+                "Keep front knee over ankle",
+                "Alternate legs walking forward"
+              ]
+            },
+            {
+              "name": "Leg Curls",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 75,
+              "equipment": [
+                "leg curl machine"
+              ],
+              "alternatives": [
+                "Nordic Curls",
+                "Romanian Deadlifts"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 7",
+              "notes": "Hamstring isolation",
+              "instructions": [
+                "Curl heels to glutes",
+                "Squeeze at top",
+                "Control the return"
+              ]
+            },
+            {
+              "name": "Leg Extensions",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 75,
+              "equipment": [
+                "leg extension machine"
+              ],
+              "alternatives": [
+                "Single Leg Extensions",
+                "Sissy Squats"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6-7",
+              "notes": "Superset with leg curls",
+              "instructions": [
+                "Extend legs fully",
+                "Hold peak contraction",
+                "Lower with control"
+              ]
+            },
+            {
+              "name": "Standing Calf Raises",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 20
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "calf raise machine"
+              ],
+              "alternatives": [
+                "Dumbbell Calf Raises",
+                "Bodyweight Calf Raises"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 7",
+              "notes": "Calf development",
+              "instructions": [
+                "Full range of motion",
+                "Pause at top",
+                "Stretch calves at bottom"
+              ]
+            },
+            {
+              "name": "Russian Twists",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 30
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "medicine ball"
+              ],
+              "alternatives": [
+                "Bicycle Crunches",
+                "Wood Chops"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "Core rotational strength",
+              "instructions": [
+                "Lean back 45 degrees",
+                "Rotate side to side",
+                "Keep feet off ground"
+              ]
+            }
+          ]
+        }
+      ],
+      "nutrition": {
+        "dailyCalories": 2600,
+        "macros": {
+          "protein": 185,
+          "carbs": 260,
+          "fats": 85
+        },
+        "mealTiming": [
+          "Pre-workout: 1-2 hours before training",
+          "Post-workout: Within 30 minutes",
+          "Spread protein across 4-5 meals"
+        ],
+        "notes": "Moderate calorie surplus to support muscle growth. Focus on whole foods and adequate protein timing around workouts."
+      },
+      "progressionProtocol": [
+        "Week 1: Learn movement patterns, establish baselines",
+        "Week 2: Add weight when hitting top rep range",
+        "Week 3-4: Focus on progressive overload, increase weight 2.5-5lbs when possible"
+      ]
+    },
+    {
+      "phaseNumber": 2,
+      "name": "Intensity & Strength Phase",
+      "durationWeeks": 4,
+      "focus": "Heavy strength work with strategic volume to break through plateaus",
+      "explanation": "This phase shifts focus to heavier loads and lower rep ranges to build maximum strength while maintaining muscle mass. We'll target your bench press plateau specifically while continuing to build overall upper body mass through strategic volume work.",
+      "expectations": "Expect to handle heavier weights and see strength gains. Recovery may take longer due to intensity. You should break through your bench press plateau and see significant strength increases across all lifts.",
+      "keyPoints": [
+        "Focus on breaking through bench press plateau",
+        "Use heavier loads with longer rest periods",
+        "Maintain muscle mass with strategic accessory work"
+      ],
+      "splitType": "Upper/Lower/Push/Pull/Legs",
+      "workouts": [
+        {
+          "dayNumber": 1,
+          "name": "Upper Strength",
+          "focus": "Maximum strength development for upper body",
+          "warmup": {
+            "duration": 12,
+            "activities": [
+              "8 min general warmup",
+              "Specific bench press warmup sets",
+              "Mobility work for shoulders"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Upper body stretching",
+              "Shoulder decompression"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Bench Press",
+              "sets": 5,
+              "measure": {
+                "type": "reps",
+                "value": 3
+              },
+              "restPeriod": 240,
+              "equipment": [
+                "barbell",
+                "bench"
+              ],
+              "alternatives": [
+                "Dumbbell Bench Press",
+                "Incline Barbell Press"
+              ],
+              "category": "primary",
+              "intensity": "RPE 9",
+              "notes": "Plateau-breaking protocol - focus on form and power",
+              "instructions": [
+                "Use competition grip width",
+                "Pause briefly on chest",
+                "Drive explosively off chest"
+              ]
+            },
+            {
+              "name": "Weighted Pull-ups",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 5
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "pull-up bar",
+                "weight belt"
+              ],
+              "alternatives": [
+                "Lat Pulldowns",
+                "Assisted Pull-ups"
+              ],
+              "category": "primary",
+              "intensity": "RPE 8",
+              "notes": "Heavy vertical pull to balance bench",
+              "instructions": [
+                "Full dead hang",
+                "Pull chest to bar",
+                "Control descent"
+              ]
+            },
+            {
+              "name": "Barbell Rows",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 150,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [
+                "T-Bar Row",
+                "Chest Supported Row"
+              ],
+              "category": "primary",
+              "intensity": "RPE 8",
+              "notes": "Heavy horizontal pull",
+              "instructions": [
+                "Maintain torso angle",
+                "Pull to lower chest",
+                "Squeeze at top"
+              ]
+            },
+            {
+              "name": "Close Grip Bench Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell",
+                "bench"
+              ],
+              "alternatives": [
+                "Dips",
+                "Board Press"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7-8",
+              "notes": "Bench press accessory for lockout strength",
+              "instructions": [
+                "Hands just inside shoulder width",
+                "Elbows close to body",
+                "Focus on tricep drive"
+              ]
+            },
+            {
+              "name": "Dumbbell Rows",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "dumbbells",
+                "bench"
+              ],
+              "alternatives": [
+                "Cable Rows",
+                "Machine Rows"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Superset with close grip bench",
+              "instructions": [
+                "Support with one hand and knee",
+                "Row to hip level",
+                "Squeeze lat and rhomboid"
+              ]
+            },
+            {
+              "name": "Barbell Curls",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 75,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [
+                "Dumbbell Curls",
+                "Cable Curls"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 7",
+              "notes": "Heavy bicep work",
+              "instructions": [
+                "Strict form, no swinging",
+                "Full range of motion",
+                "Control the negative"
+              ]
+            },
+            {
+              "name": "Skull Crushers",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 75,
+              "equipment": [
+                "barbell",
+                "bench"
+              ],
+              "alternatives": [
+                "Overhead Extension",
+                "Dips"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 7",
+              "notes": "Superset with barbell curls",
+              "instructions": [
+                "Lower to forehead level",
+                "Keep elbows stationary",
+                "Extend only at elbows"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 2,
+          "name": "Lower Body Strength",
+          "focus": "Maximum lower body strength and power",
+          "warmup": {
+            "duration": 12,
+            "activities": [
+              "Dynamic warmup",
+              "Squat-specific warmup sets",
+              "Hip mobility work"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Hip flexor stretches",
+              "Quad and hamstring stretches"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Back Squats",
+              "sets": 5,
+              "measure": {
+                "type": "reps",
+                "value": 3
+              },
+              "restPeriod": 240,
+              "equipment": [
+                "barbell",
+                "squat rack"
+              ],
+              "alternatives": [
+                "Front Squats",
+                "Box Squats"
+              ],
+              "category": "primary",
+              "intensity": "RPE 9",
+              "notes": "Maximum squat strength",
+              "instructions": [
+                "Brace core before descent",
+                "Hit proper depth",
+                "Drive through heels explosively"
+              ]
+            },
+            {
+              "name": "Romanian Deadlifts",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [
+                "Stiff Leg Deadlifts",
+                "Dumbbell RDLs"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 8",
+              "notes": "Posterior chain strength",
+              "instructions": [
+                "Start from hip level",
+                "Push hips back",
+                "Feel hamstring stretch"
+              ]
+            },
+            {
+              "name": "Bulgarian Split Squats",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "dumbbells",
+                "bench"
+              ],
+              "alternatives": [
+                "Lunges",
+                "Step-ups"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7-8",
+              "notes": "Unilateral strength work",
+              "instructions": [
+                "Focus on front leg",
+                "Deep range of motion",
+                "Control the descent"
+              ]
+            },
+            {
+              "name": "Leg Curls",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "leg curl machine"
+              ],
+              "alternatives": [
+                "Nordic Curls",
+                "Glute Ham Raises"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 7",
+              "notes": "Superset with split squats",
+              "instructions": [
+                "Full range of motion",
+                "Pause at top",
+                "Control negative"
+              ]
+            },
+            {
+              "name": "Leg Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "leg press machine"
+              ],
+              "alternatives": [
+                "Hack Squats",
+                "Goblet Squats"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Additional quad volume",
+              "instructions": [
+                "Feet high on platform",
+                "Lower to 90 degrees",
+                "Press through heels"
+              ]
+            },
+            {
+              "name": "Standing Calf Raises",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "calf raise machine"
+              ],
+              "alternatives": [
+                "Dumbbell Calf Raises",
+                "Seated Calf Raises"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 7-8",
+              "notes": "Heavy calf work",
+              "instructions": [
+                "Full stretch at bottom",
+                "Hold peak contraction",
+                "Control the descent"
+              ]
+            },
+            {
+              "name": "Hanging Leg Raises",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "pull-up bar"
+              ],
+              "alternatives": [
+                "Knee Raises",
+                "V-ups"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 7",
+              "notes": "Core strength",
+              "instructions": [
+                "Keep legs straight",
+                "Raise to 90 degrees",
+                "Control the lowering"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 3,
+          "name": "Push Strength",
+          "focus": "Pressing strength and upper body power",
+          "warmup": {
+            "duration": 10,
+            "activities": [
+              "Shoulder mobility",
+              "Light pressing movements",
+              "Band work"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Chest stretches",
+              "Shoulder decompression"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Incline Barbell Press",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 5
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "barbell",
+                "incline bench"
+              ],
+              "alternatives": [
+                "Incline Dumbbell Press",
+                "Hammer Strength Incline"
+              ],
+              "category": "primary",
+              "intensity": "RPE 8",
+              "notes": "Heavy upper chest work",
+              "instructions": [
+                "30-degree incline",
+                "Lower to upper chest",
+                "Drive up explosively"
+              ]
+            },
+            {
+              "name": "Overhead Press",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 150,
+              "equipment": [
+                "barbell",
+                "rack"
+              ],
+              "alternatives": [
+                "Dumbbell Press",
+                "Push Press"
+              ],
+              "category": "primary",
+              "intensity": "RPE 8",
+              "notes": "Vertical pressing strength",
+              "instructions": [
+                "Start from shoulders",
+                "Press straight up",
+                "Lock out overhead"
+              ]
+            },
+            {
+              "name": "Weighted Dips",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "dip bars",
+                "weight belt"
+              ],
+              "alternatives": [
+                "Assisted Dips",
+                "Tricep Pushdowns"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7-8",
+              "notes": "Heavy tricep and chest work",
+              "instructions": [
+                "Lean forward slightly",
+                "Full range of motion",
+                "Control the descent"
+              ]
+            },
+            {
+              "name": "Cable Lateral Raises",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 75,
+              "equipment": [
+                "cable machine"
+              ],
+              "alternatives": [
+                "Dumbbell Lateral Raises",
+                "Machine Laterals"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 7",
+              "notes": "Superset with dips",
+              "instructions": [
+                "Constant tension",
+                "Raise to shoulder height",
+                "Control the negative"
+              ]
+            },
+            {
+              "name": "Decline Bench Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell",
+                "decline bench"
+              ],
+              "alternatives": [
+                "Dips",
+                "Decline Dumbbell Press"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Lower chest emphasis",
+              "instructions": [
+                "Feet secured in decline",
+                "Lower to lower chest",
+                "Press up and back slightly"
+              ]
+            },
+            {
+              "name": "Overhead Tricep Extension",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 75,
+              "equipment": [
+                "cable machine"
+              ],
+              "alternatives": [
+                "Dumbbell Extension",
+                "Skull Crushers"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 7",
+              "notes": "Superset with decline press",
+              "instructions": [
+                "Keep elbows stable",
+                "Full stretch at bottom",
+                "Squeeze triceps at top"
+              ]
+            },
+            {
+              "name": "Cable Front Raises",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "cable machine"
+              ],
+              "alternatives": [
+                "Dumbbell Front Raises",
+                "Plate Raises"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "Front delt isolation",
+              "instructions": [
+                "Keep arms straight",
+                "Raise to eye level",
+                "Squeeze front delts"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 4,
+          "name": "Pull Strength",
+          "focus": "Pulling strength and back thickness",
+          "warmup": {
+            "duration": 10,
+            "activities": [
+              "Lat and rhomboid activation",
+              "Light rowing",
+              "Scapular mobility"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Lat stretches",
+              "Rear delt stretches"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Deadlifts",
+              "sets": 5,
+              "measure": {
+                "type": "reps",
+                "value": 3
+              },
+              "restPeriod": 240,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [
+                "Trap Bar Deadlifts",
+                "Rack Pulls"
+              ],
+              "category": "primary",
+              "intensity": "RPE 9",
+              "notes": "Maximum pulling strength",
+              "instructions": [
+                "Perfect setup every rep",
+                "Drive through heels",
+                "Lock out hips and shoulders together"
+              ]
+            },
+            {
+              "name": "Chest Supported Rows",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 150,
+              "equipment": [
+                "chest supported row machine"
+              ],
+              "alternatives": [
+                "T-Bar Rows",
+                "Incline Dumbbell Rows"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 8",
+              "notes": "Heavy rowing without lower back fatigue",
+              "instructions": [
+                "Chest firmly against pad",
+                "Pull to lower chest",
+                "Squeeze shoulder blades"
+              ]
+            },
+            {
+              "name": "Pull-ups",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "pull-up bar"
+              ],
+              "alternatives": [
+                "Lat Pulldowns",
+                "Assisted Pull-ups"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 8",
+              "notes": "Vertical pull strength",
+              "instructions": [
+                "Dead hang start",
+                "Pull chest to bar",
+                "Control descent"
+              ]
+            },
+            {
+              "name": "Face Pulls",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 75,
+              "equipment": [
+                "cable machine",
+                "rope"
+              ],
+              "alternatives": [
+                "Rear Delt Flyes",
+                "Band Pull-aparts"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 7",
+              "notes": "Superset with pull-ups",
+              "instructions": [
+                "Pull to face level",
+                "External rotation",
+                "Squeeze rear delts"
+              ]
+            },
+            {
+              "name": "Barbell Rows",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [
+                "Dumbbell Rows",
+                "Cable Rows"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7-8",
+              "notes": "Additional horizontal pulling",
+              "instructions": [
+                "Maintain hip hinge",
+                "Row to sternum",
+                "Control the negative"
+              ]
+            },
+            {
+              "name": "Preacher Curls",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 75,
+              "equipment": [
+                "preacher bench",
+                "barbell"
+              ],
+              "alternatives": [
+                "Hammer Curls",
+                "Cable Curls"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 7-8",
+              "notes": "Heavy bicep isolation",
+              "instructions": [
+                "Arms flat on pad",
+                "Full range of motion",
+                "Control the eccentric"
+              ]
+            },
+            {
+              "name": "Cable Hammer Curls",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 75,
+              "equipment": [
+                "cable machine",
+                "rope"
+              ],
+              "alternatives": [
+                "Dumbbell Hammer Curls",
+                "Cross Body Curls"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6-7",
+              "notes": "Superset with preacher curls",
+              "instructions": [
+                "Keep rope neutral",
+                "Curl to shoulders",
+                "Squeeze biceps and forearms"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 5,
+          "name": "Legs & Power",
+          "focus": "Lower body power and muscle building",
+          "warmup": {
+            "duration": 10,
+            "activities": [
+              "Dynamic leg movements",
+              "Jump preparation",
+              "Activation exercises"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Static stretching",
+              "Hip mobility"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Box Squats",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 5
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "barbell",
+                "squat rack",
+                "box"
+              ],
+              "alternatives": [
+                "Pause Squats",
+                "Front Squats"
+              ],
+              "category": "primary",
+              "intensity": "RPE 8",
+              "notes": "Explosive power development",
+              "instructions": [
+                "Sit back to box",
+                "Pause briefly",
+                "Explode up from box"
+              ]
+            },
+            {
+              "name": "Sumo Deadlifts",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 150,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [
+                "Conventional Deadlifts",
+                "Trap Bar Deadlifts"
+              ],
+              "category": "primary",
+              "intensity": "RPE 8",
+              "notes": "Different deadlift variation for variety",
+              "instructions": [
+                "Wide stance, toes out",
+                "Grip inside legs",
+                "Drive knees out"
+              ]
+            },
+            {
+              "name": "Jump Squats",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 5
+              },
+              "restPeriod": 120,
+              "equipment": [],
+              "alternatives": [
+                "Box Jumps",
+                "Weighted Jump Squats"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Explosive power training",
+              "instructions": [
+                "Descend quickly",
+                "Jump as high as possible",
+                "Land softly"
+              ]
+            },
+            {
+              "name": "Single Leg RDLs",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "dumbbells"
+              ],
+              "alternatives": [
+                "Regular RDLs",
+                "Good Mornings"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Superset with jump squats",
+              "instructions": [
+                "Balance on one leg",
+                "Hinge at hip",
+                "Feel hamstring stretch"
+              ]
+            },
+            {
+              "name": "Leg Extensions",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 75,
+              "equipment": [
+                "leg extension machine"
+              ],
+              "alternatives": [
+                "Sissy Squats",
+                "Bulgarian Split Squats"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 7",
+              "notes": "Quad isolation",
+              "instructions": [
+                "Full extension",
+                "Pause at top",
+                "Control the negative"
+              ]
+            },
+            {
+              "name": "Nordic Curls",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 5
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "partner or anchor"
+              ],
+              "alternatives": [
+                "Leg Curls",
+                "Glute Ham Raises"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 8",
+              "notes": "Superset with leg extensions",
+              "instructions": [
+                "Lower slowly",
+                "Use hamstrings to control",
+                "Assist return if needed"
+              ]
+            },
+            {
+              "name": "Seated Calf Raises",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "seated calf machine"
+              ],
+              "alternatives": [
+                "Dumbbell Seated Calf Raises",
+                "Standing Calf Raises"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 7",
+              "notes": "Soleus focus",
+              "instructions": [
+                "Knees at 90 degrees",
+                "Full range of motion",
+                "Pause at top"
+              ]
+            },
+            {
+              "name": "Weighted Planks",
+              "sets": 3,
+              "measure": {
+                "type": "duration",
+                "value": 30
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "weight plate"
+              ],
+              "alternatives": [
+                "Regular Planks",
+                "Side Planks"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 7",
+              "notes": "Progressive core loading",
+              "instructions": [
+                "Plate on back",
+                "Maintain straight line",
+                "Breathe normally"
+              ]
+            }
+          ]
+        }
+      ],
+      "nutrition": {
+        "dailyCalories": 2700,
+        "macros": {
+          "protein": 190,
+          "carbs": 270,
+          "fats": 85
+        },
+        "mealTiming": [
+          "Pre-workout: 2 hours before with carbs",
+          "Post-workout: Immediately with protein and carbs",
+          "Before bed: Casein protein or cottage cheese"
+        ],
+        "notes": "Increased calories to support heavy training. Focus on nutrient timing around intense sessions. Consider creatine supplementation for strength gains."
+      },
+      "progressionProtocol": [
+        "Week 1-2: Establish new 3-5 rep maxes",
+        "Week 3: Peak intensity - attempt PR loads",
+        "Week 4: Deload with 80% volume, maintain intensity"
+      ]
+    }
+  ]
+}
