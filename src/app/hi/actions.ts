@@ -1,16 +1,10 @@
 'use server';
 
-import { Message, ExtractedData, IntakeFormData, WorkoutPlan, Program } from "@/types";
+import { Message, ExtractedData, Program } from "@/types";
 import { sendMessage } from "@/utils/chat";
 import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/email";
 import { buildExtractionPrompt } from "@/utils/prompts/";
-import { convertToIntakeFormat } from "@/utils/formatters";
-import {
-  generateProgram,
-  saveProgramToDatabase,
-  convertIntakeToProfile,
-} from "@/services/programGeneration";
 
 // New server action for sending emails
 export async function sendEmailAction(options: {
@@ -34,96 +28,11 @@ export async function sendEmailAction(options: {
 // @TODO: i'm not sure this is properly keeping a continuation of the conversation since it chops out
 // a pretty, human-readable message instead of the entirety of what the AI has figured out
 export async function processUserMessage(
-  messages: Message[], 
-  userId: string, 
-  extractedData: ExtractedData | null = null,
-  generateProgramDirectly: boolean = false
+  messages: Message[],
+  userId: string,
+  extractedData: ExtractedData | null = null
 ) {
   try {
-    if (generateProgramDirectly) {
-      const intakeData = convertToIntakeFormat(extractedData);
-
-      // Save intake data using existing UserIntake model
-      await prisma.userIntake.upsert({
-        where: { userId },
-        create: {
-          userId,
-          sex: intakeData.sex || 'other',
-          trainingGoal: intakeData.trainingGoal,
-          daysAvailable: intakeData.daysAvailable,
-          dailyBudget: intakeData.dailyBudget,
-          experienceLevel: intakeData.experienceLevel,
-          age: intakeData.age,
-          weight: intakeData.weight,
-          height: intakeData.height,
-          trainingPreferences: intakeData.trainingPreferences || [],
-          additionalInfo: intakeData.additionalInfo
-        },
-        update: {
-          sex: intakeData.sex || 'other',
-          trainingGoal: intakeData.trainingGoal,
-          daysAvailable: intakeData.daysAvailable,
-          dailyBudget: intakeData.dailyBudget,
-          experienceLevel: intakeData.experienceLevel,
-          age: intakeData.age,
-          weight: intakeData.weight,
-          height: intakeData.height,
-          trainingPreferences: intakeData.trainingPreferences || [],
-          additionalInfo: intakeData.additionalInfo
-        }
-      });
-
-      // Log intake for debugging (no longer tracking confidence scores)
-      await prisma.promptLog.create({
-        data: {
-          prompt: 'Program generation started',
-          response: JSON.stringify({ intakeData: intakeData }),
-          model: process.env.SONNET_MODEL || 'claude-sonnet-4-20250514',
-          success: true,
-          user: {
-            connect: { id: userId }
-          }
-        }
-      });
-
-      // Generate program using unified service (1-2 AI calls instead of 6-10)
-      const profile = convertIntakeToProfile(intakeData);
-      const result = await generateProgram({
-        userId,
-        profile,
-        context: { generationType: 'new' },
-      });
-
-      if (!result.success || !result.program) {
-        throw new Error(result.error || 'Failed to generate program');
-      }
-
-      // Save to database
-      const savedProgram = await saveProgramToDatabase(result.program, userId);
-
-      // Fetch the full program for return
-      const program = await prisma.program.findUnique({
-        where: { id: savedProgram.id },
-        include: {
-          workoutPlans: {
-            include: {
-              workouts: {
-                include: {
-                  exercises: { orderBy: { sortOrder: 'asc' } }
-                }
-              }
-            }
-          },
-          user: true
-        }
-      });
-
-      return {
-        success: true,
-        program
-      };
-    }
-
     const messageHistory = messages.map(m => ({
       role: m.role === 'assistant' ? 'assistant' : 'user',
       content: m.content
