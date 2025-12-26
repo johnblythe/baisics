@@ -15,6 +15,54 @@ import type { UserProfile, GenerationContext } from './types';
 import type { FilteredExerciseList } from './leanTypes';
 import { formatExerciseListForPrompt } from './exerciseFilter';
 
+/**
+ * Build injury/limitation context for prompts
+ * Emphasizes safety considerations to guide exercise selection
+ */
+function buildInjuryContext(profile: UserProfile): string {
+  const lines: string[] = [];
+
+  if (profile.injuries?.length) {
+    lines.push(`- INJURIES/LIMITATIONS: ${profile.injuries.join(', ')}`);
+  }
+
+  // Check for implicit limitations from additionalInfo or environment
+  const additionalInfo = profile.additionalInfo?.toLowerCase() || '';
+  const envLimitations = profile.environment?.limitations || [];
+
+  const implicitLimitations: string[] = [];
+
+  // Common injury keywords that need special handling
+  if (additionalInfo.includes('back') || additionalInfo.includes('spine')) {
+    implicitLimitations.push('lower back sensitivity');
+  }
+  if (additionalInfo.includes('knee')) {
+    implicitLimitations.push('knee concerns');
+  }
+  if (additionalInfo.includes('shoulder')) {
+    implicitLimitations.push('shoulder issues');
+  }
+  if (additionalInfo.includes('pregnant') || additionalInfo.includes('pregnancy')) {
+    implicitLimitations.push('pregnancy modifications needed');
+  }
+  if (additionalInfo.includes('postpartum')) {
+    implicitLimitations.push('postpartum recovery (avoid high-impact, core pressure)');
+  }
+
+  // Environment limitations
+  for (const lim of envLimitations) {
+    if (lim.toLowerCase().includes('no jump') || lim.toLowerCase().includes('quiet')) {
+      implicitLimitations.push('no jumping/high-impact');
+    }
+  }
+
+  if (implicitLimitations.length > 0 && !profile.injuries?.length) {
+    lines.push(`- CONSIDERATIONS: ${implicitLimitations.join(', ')}`);
+  }
+
+  return lines.join('\n');
+}
+
 export const LEAN_SYSTEM_PROMPT = `You are a world-class fitness coach creating personalized training programs.
 
 Your task: Select exercises and set parameters for a client. You will be given a list of available exercises - use ONLY exercises from this list.
@@ -54,6 +102,9 @@ export function buildLeanPrompt(
   // Determine exercises per workout based on session duration
   const exercisesPerWorkout = sessionDuration <= 30 ? 4 : sessionDuration <= 45 ? 5 : sessionDuration <= 60 ? 6 : 8;
 
+  // Build injury/limitation context
+  const injuryContext = buildInjuryContext(profile);
+
   return `Create a ${totalWeeks}-week program for:
 
 CLIENT:
@@ -61,8 +112,8 @@ CLIENT:
 - Goal: ${profile.trainingGoal}
 - Level: ${experienceLevel}
 - ${daysPerWeek} days/week, ${sessionDuration} min/session
-${profile.injuries?.length ? `- Injuries: ${profile.injuries.join(', ')}` : ''}
 ${profile.preferences?.length ? `- Preferences: ${profile.preferences.join(', ')}` : ''}
+${injuryContext}
 
 ${exerciseListText}
 
@@ -72,6 +123,7 @@ REQUIREMENTS:
 - ${exercisesPerWorkout} exercises per workout (fits ${sessionDuration} min)
 - Use ONLY slugs from the list above
 - Order: TIER 1 → TIER 2 → TIER 3
+${profile.injuries?.length ? `- IMPORTANT: Avoid exercises that stress or aggravate: ${profile.injuries.join(', ')}` : ''}
 
 Return JSON:
 {
@@ -126,6 +178,9 @@ export function buildLeanPhasePrompt(
     else phaseFocus = 'Peak performance & intensity';
   }
 
+  // Build injury/limitation context
+  const injuryContext = buildInjuryContext(profile);
+
   return `Create phase ${phaseNumber} of ${totalPhases} for:
 
 CLIENT:
@@ -133,12 +188,14 @@ CLIENT:
 - Goal: ${profile.trainingGoal}
 - Level: ${profile.experienceLevel || 'beginner'}
 - ${daysPerWeek} days/week, ${sessionDuration} min/session
+${injuryContext}
 
 PHASE CONTEXT:
 - Phase ${phaseNumber}/${totalPhases}
 - Duration: ${weeksPerPhase} weeks
 - Focus: ${phaseFocus}
 ${previousPhasesFocus?.length ? `- Previous phases focused on: ${previousPhasesFocus.join(', ')}` : ''}
+${profile.injuries?.length ? `- IMPORTANT: Avoid exercises that stress: ${profile.injuries.join(', ')}` : ''}
 
 ${exerciseListText}
 

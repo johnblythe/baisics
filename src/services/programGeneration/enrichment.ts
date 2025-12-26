@@ -50,6 +50,26 @@ interface ExerciseDetails {
 // Cache for exercise lookups within a single enrichment
 let exerciseCache: Map<string, ExerciseDetails> | null = null;
 
+// Track lookup issues for admin review
+interface LookupIssue {
+  slug: string;
+  issue: 'not_found' | 'low_confidence' | 'empty_instructions';
+  matchedTo?: string;
+  confidence?: number;
+  timestamp: Date;
+}
+
+const lookupIssues: LookupIssue[] = [];
+
+/**
+ * Get and clear accumulated lookup issues (for logging after generation)
+ */
+export function getAndClearLookupIssues(): LookupIssue[] {
+  const issues = [...lookupIssues];
+  lookupIssues.length = 0;
+  return issues;
+}
+
 async function loadExerciseCache(): Promise<Map<string, ExerciseDetails>> {
   if (exerciseCache) return exerciseCache;
 
@@ -81,27 +101,124 @@ function clearExerciseCache(): void {
   exerciseCache = null;
 }
 
+/**
+ * Calculate word overlap score between two strings
+ * Returns 0-1 where 1 is perfect match
+ */
+function calculateMatchScore(search: string, candidate: string): number {
+  const searchWords = search.toLowerCase().replace(/-/g, ' ').split(/\s+/).filter(Boolean);
+  const candidateWords = candidate.toLowerCase().replace(/-/g, ' ').split(/\s+/).filter(Boolean);
+
+  if (searchWords.length === 0 || candidateWords.length === 0) return 0;
+
+  // Count matching words
+  let matches = 0;
+  for (const sw of searchWords) {
+    for (const cw of candidateWords) {
+      // Exact word match or one contains the other (for variations like "squat" vs "squats")
+      if (sw === cw || (sw.length >= 4 && (cw.startsWith(sw) || sw.startsWith(cw)))) {
+        matches++;
+        break;
+      }
+    }
+  }
+
+  // Score based on: matches / max(search words, candidate words)
+  // This penalizes both missing words and extra words
+  const maxWords = Math.max(searchWords.length, candidateWords.length);
+  return matches / maxWords;
+}
+
+// Minimum confidence for fuzzy match (0.5 = at least half the words must match)
+const MIN_FUZZY_CONFIDENCE = 0.5;
+
 async function lookupExercise(slug: string): Promise<ExerciseDetails | null> {
   const cache = await loadExerciseCache();
 
   // Try exact match first
   const normalized = slug.toLowerCase().replace(/\s+/g, '-');
   if (cache.has(normalized)) {
-    return cache.get(normalized)!;
+    const result = cache.get(normalized)!;
+    // Log if empty instructions
+    if (result.instructions.length === 0) {
+      lookupIssues.push({
+        slug,
+        issue: 'empty_instructions',
+        matchedTo: result.name,
+        timestamp: new Date(),
+      });
+    }
+    return result;
   }
 
   // Try without hyphens
   const withSpaces = slug.toLowerCase().replace(/-/g, ' ');
   if (cache.has(withSpaces)) {
-    return cache.get(withSpaces)!;
+    const result = cache.get(withSpaces)!;
+    if (result.instructions.length === 0) {
+      lookupIssues.push({
+        slug,
+        issue: 'empty_instructions',
+        matchedTo: result.name,
+        timestamp: new Date(),
+      });
+    }
+    return result;
   }
 
-  // Fuzzy match - find closest
+  // Fuzzy match with scoring - find best match above threshold
+  let bestMatch: ExerciseDetails | null = null;
+  let bestScore = 0;
+  let bestKey = '';
+
+  // Only check unique exercises (avoid duplicate from slug + name indexing)
+  const seen = new Set<string>();
+
   for (const [key, exercise] of cache.entries()) {
-    if (key.includes(normalized) || normalized.includes(key)) {
-      return exercise;
+    if (seen.has(exercise.id)) continue;
+    seen.add(exercise.id);
+
+    const score = calculateMatchScore(normalized, key);
+    if (score > bestScore) {
+      bestScore = score;
+      bestMatch = exercise;
+      bestKey = key;
     }
   }
+
+  // Only return if above confidence threshold
+  if (bestMatch && bestScore >= MIN_FUZZY_CONFIDENCE) {
+    // Log low-confidence matches for review
+    if (bestScore < 0.8) {
+      lookupIssues.push({
+        slug,
+        issue: 'low_confidence',
+        matchedTo: bestMatch.name,
+        confidence: bestScore,
+        timestamp: new Date(),
+      });
+      console.warn(`[Enrichment] Low confidence match: "${slug}" → "${bestMatch.name}" (${(bestScore * 100).toFixed(0)}%)`);
+    }
+
+    if (bestMatch.instructions.length === 0) {
+      lookupIssues.push({
+        slug,
+        issue: 'empty_instructions',
+        matchedTo: bestMatch.name,
+        timestamp: new Date(),
+      });
+    }
+
+    return bestMatch;
+  }
+
+  // No match found
+  lookupIssues.push({
+    slug,
+    issue: 'not_found',
+    timestamp: new Date(),
+  });
+  console.warn(`[Enrichment] Exercise not found: "${slug}"`);
 
   return null;
 }
@@ -335,6 +452,13 @@ export async function enrichProgram(
     // Calculate total weeks
     const totalWeeks = phases.reduce((sum, p) => sum + p.durationWeeks, 0);
 
+    // Log any lookup issues for admin review
+    const issues = getAndClearLookupIssues();
+    if (issues.length > 0) {
+      console.log('[Enrichment] Lookup issues:', JSON.stringify(issues, null, 2));
+      // TODO: In production, send to monitoring/logging service
+    }
+
     return {
       name: slim.name,
       description: slim.description,
@@ -357,7 +481,15 @@ export async function enrichSinglePhase(
 ): Promise<GeneratedPhase> {
   try {
     const constraints = extractConstraints(profile);
-    return await enrichPhase(slim, phaseNumber, profile.experienceLevel || 'beginner', constraints);
+    const result = await enrichPhase(slim, phaseNumber, profile.experienceLevel || 'beginner', constraints);
+
+    // Log any lookup issues for admin review
+    const issues = getAndClearLookupIssues();
+    if (issues.length > 0) {
+      console.log(`[Enrichment] Phase ${phaseNumber} lookup issues:`, JSON.stringify(issues, null, 2));
+    }
+
+    return result;
   } finally {
     clearExerciseCache();
   }
