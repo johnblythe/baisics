@@ -262,6 +262,12 @@ export async function generatePhaseLean(
       maxExercises: 80,
     });
 
+    // Debug: Log filtered exercises
+    console.log(`[Lean Phase ${phaseNumber}] Equipment type: ${profile.equipment.type}`);
+    console.log(`[Lean Phase ${phaseNumber}] Available equipment: ${JSON.stringify(profile.equipment.available)}`);
+    console.log(`[Lean Phase ${phaseNumber}] Filtered ${exerciseList.exercises.length} exercises`);
+    console.log(`[Lean Phase ${phaseNumber}] Sample exercises: ${exerciseList.exercises.slice(0, 5).map(e => e.slug).join(', ')}`);
+
     if (exerciseList.exercises.length < 10) {
       return {
         success: false,
@@ -302,6 +308,10 @@ export async function generatePhaseLean(
 
     // Step 4: Parse slim phase
     const slimPhase = parseSlimPhase(textContent.text);
+
+    // Debug: Log AI's exercise choices
+    const aiSlugs = slimPhase.workouts.flatMap(w => w.exercises.map(e => e.slug));
+    console.log(`[Lean Phase ${phaseNumber}] AI returned ${aiSlugs.length} exercises: ${aiSlugs.slice(0, 10).join(', ')}`);
 
     // Step 5: Enrich to full phase
     const enrichmentStartTime = Date.now();

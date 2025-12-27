@@ -148,7 +148,7 @@ export function validateSlimProgram(program: unknown): program is SlimProgram {
   return true;
 }
 
-function validateSlimPhase(phase: unknown): phase is SlimPhase {
+export function validateSlimPhase(phase: unknown): phase is SlimPhase {
   if (!phase || typeof phase !== 'object') return false;
 
   const p = phase as Record<string, unknown>;

@@ -65,11 +65,11 @@ function buildInjuryContext(profile: UserProfile): string {
 
 export const LEAN_SYSTEM_PROMPT = `You are a world-class fitness coach creating personalized training programs.
 
-Your task: Select exercises and set parameters for a client. You will be given a list of available exercises - use ONLY exercises from this list.
+CRITICAL RULE: You will be given a list of AVAILABLE EXERCISES. You MUST ONLY use exercise slugs from this list. Do NOT invent exercises or use exercises not in the list. If an exercise isn't in the list, the client doesn't have the equipment for it.
 
 Output rules:
 - Return valid JSON only, no markdown or extra text
-- Use exact exercise slugs from the provided list
+- Use EXACT exercise slugs from the provided list (copy-paste them)
 - Order exercises by tier: TIER 1 first, then TIER 2, then TIER 3
 - Keep it concise - no explanations needed
 
@@ -198,6 +198,8 @@ ${previousPhasesFocus?.length ? `- Previous phases focused on: ${previousPhasesF
 ${profile.injuries?.length ? `- IMPORTANT: Avoid exercises that stress: ${profile.injuries.join(', ')}` : ''}
 
 ${exerciseListText}
+
+IMPORTANT: Only use slugs from the list above. Do not invent exercises.
 
 Return JSON for this phase only:
 {

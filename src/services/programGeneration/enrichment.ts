@@ -254,6 +254,93 @@ function tierToCategory(tier: ExerciseTier | 1 | 2 | 3): 'primary' | 'secondary'
   return 'isolation';
 }
 
+/**
+ * Generate fallback instructions based on exercise name patterns
+ * Used when DB has no instructions (stopgap until data quality fixed)
+ */
+function getFallbackInstructions(name: string): string[] {
+  const lower = name.toLowerCase();
+
+  // Squat patterns
+  if (lower.includes('squat')) {
+    return [
+      'Stand with feet shoulder-width apart',
+      'Lower by pushing hips back and bending knees',
+      'Keep chest up and knees tracking over toes',
+    ];
+  }
+
+  // Deadlift patterns
+  if (lower.includes('deadlift') || lower.includes('rdl')) {
+    return [
+      'Hinge at hips while maintaining neutral spine',
+      'Keep weight close to body throughout movement',
+      'Drive through heels to return to standing',
+    ];
+  }
+
+  // Press patterns
+  if (lower.includes('press') || lower.includes('push')) {
+    return [
+      'Maintain controlled movement throughout',
+      'Keep core engaged and stable',
+      'Full range of motion, controlled tempo',
+    ];
+  }
+
+  // Row patterns
+  if (lower.includes('row')) {
+    return [
+      'Pull with elbows, squeeze shoulder blades together',
+      'Keep core tight and back neutral',
+      'Control the weight on the return',
+    ];
+  }
+
+  // Pull-up/chin-up patterns
+  if (lower.includes('pull-up') || lower.includes('pullup') || lower.includes('chin')) {
+    return [
+      'Start from full hang with arms extended',
+      'Pull until chin clears the bar',
+      'Lower with control to full extension',
+    ];
+  }
+
+  // Curl patterns
+  if (lower.includes('curl')) {
+    return [
+      'Keep elbows stationary at your sides',
+      'Control the weight through full range',
+      'Squeeze at the top of the movement',
+    ];
+  }
+
+  // Lunge patterns
+  if (lower.includes('lunge')) {
+    return [
+      'Step forward/back with control',
+      'Lower until back knee nearly touches ground',
+      'Keep front knee tracking over ankle',
+    ];
+  }
+
+  // Plank patterns
+  if (lower.includes('plank')) {
+    return [
+      'Maintain straight line from head to heels',
+      'Engage core and glutes throughout',
+      'Breathe steadily, don\'t hold breath',
+    ];
+  }
+
+  // Default generic instructions
+  return [
+    'Maintain proper form throughout',
+    'Use controlled tempo, no momentum',
+    'Full range of motion each rep',
+  ];
+}
+
 // ============================================
 // ENRICHMENT FUNCTIONS
 // ============================================
@@ -268,10 +355,11 @@ async function enrichExercise(
   const details = await lookupExercise(slim.slug);
 
   if (!details) {
-    // Exercise not found - create minimal entry
+    // Exercise not found - create entry with fallback instructions
+    const displayName = slim.slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
     console.warn(`Exercise not found: ${slim.slug}`);
     return {
-      name: slim.slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+      name: displayName,
       sets: slim.sets,
       measure: slim.reps
         ? { type: 'reps', value: slim.reps }
@@ -282,7 +370,7 @@ async function enrichExercise(
       category: slim.tierOverride ? tierToCategory(slim.tierOverride) : fallbackCategory,
       intensity: slim.rpe ? `RPE ${slim.rpe}` : undefined,
       notes: slim.notes,
-      instructions: [],
+      instructions: getFallbackInstructions(displayName),
     };
   }
 
@@ -311,7 +399,9 @@ async function enrichExercise(
       : tierToCategory(details.defaultTier),
     intensity: slim.rpe ? `RPE ${slim.rpe}` : undefined,
     notes: slim.notes,
-    instructions: details.instructions.slice(0, 3), // Max 3 instructions
+    instructions: details.instructions.length > 0
+      ? details.instructions.slice(0, 3)
+      : getFallbackInstructions(details.name),
   };
 }
 

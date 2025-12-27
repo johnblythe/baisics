@@ -132,9 +132,13 @@ export async function filterExercisesForUser(
     // Check equipment compatibility - STRICT matching
     const exerciseEquipment = exercise.equipment.map(e => e.toLowerCase().trim());
 
-    // Bodyweight exercises always pass
-    if (exerciseEquipment.length === 0 ||
-        exerciseEquipment.every(eq => eq === 'body only' || eq === 'bodyweight')) {
+    // SKIP exercises with empty equipment (data quality issue - unknown requirements)
+    if (exerciseEquipment.length === 0) {
+      continue;
+    }
+
+    // Bodyweight exercises (explicitly tagged) always pass
+    if (exerciseEquipment.every(eq => eq === 'body only' || eq === 'bodyweight')) {
       // Bodyweight - always allowed
     } else {
       // Exercise requires equipment - check if user has ALL required pieces
