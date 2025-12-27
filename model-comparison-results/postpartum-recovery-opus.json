@@ -1,0 +1,1098 @@
+{
+  "name": "Postpartum Core Rebuild & Strength Foundation",
+  "description": "An 8-week progressive strength program designed specifically for postpartum recovery with diastasis recti considerations. This program rebuilds core stability from the inside out while safely restoring full-body strength using home equipment with quiet, baby-nap-friendly exercises.",
+  "totalWeeks": 8,
+  "phases": [
+    {
+      "phaseNumber": 1,
+      "name": "Foundation & Core Reconnection",
+      "durationWeeks": 4,
+      "focus": "Rebuild deep core stability, restore mind-muscle connection, and establish safe movement patterns",
+      "explanation": "This phase prioritizes healing your diastasis recti while rebuilding foundational strength. We focus on deep core activation (transverse abdominis), diaphragmatic breathing patterns, and controlled movements that create intra-abdominal pressure safely. All exercises are selected to avoid excessive forward abdominal pressure that could worsen separation.",
+      "expectations": "You may feel like the exercises are 'too easy' at first - this is intentional. Expect to feel deep core muscles activating that you may have lost connection with. Some muscle soreness is normal, but stop if you notice coning/doming of your abdomen during any exercise. Energy levels may fluctuate with postpartum demands.",
+      "keyPoints": [
+        "Focus on exhaling during exertion to engage deep core",
+        "Stop any exercise if you see abdominal coning or doming",
+        "Quality over quantity - slower reps with full control",
+        "Listen to your body and rest when needed"
+      ],
+      "splitType": "Full Body",
+      "workouts": [
+        {
+          "dayNumber": 1,
+          "name": "Full Body A - Lower Focus",
+          "focus": "Lower body strength with core integration",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "Diaphragmatic breathing lying down - 10 deep breaths",
+              "Cat-cow stretches - 8 slow reps",
+              "Glute bridges with breath focus - 8 reps",
+              "Standing hip circles - 8 each direction"
+            ]
+          },
+          "cooldown": {
+            "duration": 3,
+            "activities": [
+              "Child's pose - 30 seconds",
+              "Supine spinal twist - 20 seconds each side",
+              "Deep breathing - 5 breaths"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Goblet Squat",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [
+                "Bodyweight squat",
+                "Squat to box/chair"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "notes": "Focus on exhaling as you stand, keeping core gently engaged",
+              "instructions": [
+                "Hold dumbbell at chest height with elbows tucked down",
+                "Push knees out over toes as you lower with control",
+                "Exhale forcefully through pursed lips as you drive up through heels"
+              ]
+            },
+            {
+              "name": "Romanian Deadlift",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "dumbbells"
+              ],
+              "alternatives": [
+                "Single leg RDL with support",
+                "Good mornings with band"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "notes": "Light weight to start - focus on hip hinge pattern",
+              "instructions": [
+                "Hold dumbbells in front of thighs, soft knee bend maintained throughout",
+                "Hinge at hips pushing glutes back, keeping back flat and core braced",
+                "Exhale as you squeeze glutes to return to standing"
+              ]
+            },
+            {
+              "name": "Split Squat",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "dumbbells"
+              ],
+              "alternatives": [
+                "Bodyweight split squat",
+                "Reverse lunge"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6",
+              "notes": "Hold wall for balance if needed, stay quiet on landing",
+              "instructions": [
+                "Stagger feet front to back, most weight in front heel",
+                "Lower straight down until back knee nearly touches floor",
+                "Keep torso upright and exhale as you press through front foot to rise"
+              ]
+            },
+            {
+              "name": "Glute Bridge with March",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "yoga mat"
+              ],
+              "alternatives": [
+                "Standard glute bridge hold",
+                "Banded glute bridge"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 5",
+              "notes": "Core stability exercise - keep hips level throughout",
+              "instructions": [
+                "Bridge up squeezing glutes, creating straight line from knees to shoulders",
+                "Slowly lift one foot 2 inches off ground, maintaining level hips",
+                "Lower foot with control, alternate sides - each lift is one rep"
+              ]
+            },
+            {
+              "name": "Dead Bug",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "yoga mat"
+              ],
+              "alternatives": [
+                "Heel slides",
+                "Toe taps"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 5",
+              "notes": "Essential DR-safe core exercise - stop if any coning occurs",
+              "instructions": [
+                "Lie on back with knees at 90 degrees, arms reaching to ceiling",
+                "Press lower back gently into floor and exhale as you extend opposite arm and leg",
+                "Move slowly with control, inhale to return to start position"
+              ]
+            },
+            {
+              "name": "Pallof Press with Band",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "resistance band"
+              ],
+              "alternatives": [
+                "Pallof hold",
+                "Standing band rotation resist"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 5",
+              "notes": "Anti-rotation core work - safe for DR when done correctly",
+              "instructions": [
+                "Anchor band at chest height, hold with both hands at sternum",
+                "Exhale and press band straight out, resisting rotation",
+                "Hold for 2 seconds at full extension, return with control"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 2,
+          "name": "Full Body B - Upper Focus",
+          "focus": "Upper body strength with postural restoration",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "Arm circles - 10 each direction",
+              "Band pull-aparts - 10 reps",
+              "Wall angels - 8 reps",
+              "Thread the needle stretch - 5 each side"
+            ]
+          },
+          "cooldown": {
+            "duration": 3,
+            "activities": [
+              "Doorway chest stretch - 20 seconds each side",
+              "Child's pose with reach - 30 seconds",
+              "Neck rolls - 5 each direction"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Bent Over Row",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "dumbbells"
+              ],
+              "alternatives": [
+                "Single arm row on bench",
+                "Band rows"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "notes": "Excellent for postpartum posture - counteracts nursing hunch",
+              "instructions": [
+                "Hinge forward 45 degrees with flat back, core braced, dumbbells hanging",
+                "Pull elbows back squeezing shoulder blades together at top",
+                "Lower with 3-second control, exhale on the pull"
+              ]
+            },
+            {
+              "name": "Push-Up on Incline",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "stable surface"
+              ],
+              "alternatives": [
+                "Wall push-up",
+                "Kneeling push-up"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "notes": "Use stairs, couch, or counter - higher surface is easier",
+              "instructions": [
+                "Hands shoulder width on elevated surface, body in straight plank line",
+                "Lower chest toward surface with elbows at 45 degrees",
+                "Exhale and press up, keeping core tight and hips level with shoulders"
+              ]
+            },
+            {
+              "name": "Single Arm Overhead Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [
+                "Seated press",
+                "Arnold press"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6",
+              "notes": "Single arm requires more core stability - great functional strength",
+              "instructions": [
+                "Stand with feet hip width, dumbbell at shoulder, opposite hand on hip",
+                "Brace core and exhale as you press straight overhead",
+                "Control the descent for 3 seconds, keep ribs from flaring"
+              ]
+            },
+            {
+              "name": "Band Face Pull",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "resistance band"
+              ],
+              "alternatives": [
+                "Prone Y-T-W raises",
+                "Band pull-aparts"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 5",
+              "notes": "Critical for shoulder health and posture",
+              "instructions": [
+                "Anchor band at face height, grip with palms down",
+                "Pull toward face while rotating hands to palms-forward position",
+                "Squeeze shoulder blades and hold for 2 seconds at peak contraction"
+              ]
+            },
+            {
+              "name": "Bird Dog",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "yoga mat"
+              ],
+              "alternatives": [
+                "Bird dog with knee tap",
+                "Quadruped arm or leg only"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 5",
+              "notes": "Core stability essential - keep hips and shoulders level",
+              "instructions": [
+                "Start on hands and knees, wrists under shoulders, knees under hips",
+                "Exhale and extend opposite arm and leg while keeping back flat",
+                "Move slowly, hold for 2 seconds, return with control"
+              ]
+            },
+            {
+              "name": "Side-Lying Hip Abduction",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 30,
+              "equipment": [
+                "yoga mat",
+                "resistance band"
+              ],
+              "alternatives": [
+                "Standing hip abduction",
+                "Clamshells"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 5",
+              "notes": "Important for pelvic stability, can add band for progression",
+              "instructions": [
+                "Lie on side with hips stacked, bottom knee bent for stability",
+                "Keep top leg straight and lift toward ceiling leading with heel",
+                "Lower with control, keep hips from rolling backward"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 3,
+          "name": "Full Body C - Metabolic Circuit",
+          "focus": "Full body conditioning with core integration",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "March in place - 30 seconds",
+              "Bodyweight squats - 8 reps",
+              "Arm swings - 10 each direction",
+              "Lateral leg swings - 8 each side"
+            ]
+          },
+          "cooldown": {
+            "duration": 3,
+            "activities": [
+              "Figure four stretch - 30 seconds each side",
+              "Kneeling hip flexor stretch - 20 seconds each side",
+              "Deep breathing - 5 breaths"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Sumo Squat",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [
+                "Bodyweight sumo squat",
+                "Plie squat"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "notes": "Wide stance targets inner thighs and glutes",
+              "instructions": [
+                "Stand with feet wider than shoulders, toes turned out 45 degrees",
+                "Hold single dumbbell at chest or between legs",
+                "Sit back and down keeping knees tracking over toes, exhale to stand"
+              ]
+            },
+            {
+              "name": "Floor Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "dumbbells",
+                "yoga mat"
+              ],
+              "alternatives": [
+                "Push-up variation",
+                "Band chest press"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "notes": "Floor limits range of motion - shoulder friendly pressing",
+              "instructions": [
+                "Lie on back with knees bent, dumbbells pressed above chest",
+                "Lower until upper arms touch floor, elbows at 45 degrees",
+                "Pause briefly on floor, exhale and press up with control"
+              ]
+            },
+            {
+              "name": "Reverse Lunge",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "dumbbells"
+              ],
+              "alternatives": [
+                "Bodyweight reverse lunge",
+                "Step back to tap"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6",
+              "notes": "Step back quietly for sleeping baby - control the movement",
+              "instructions": [
+                "Step back with one leg, lowering until both knees at 90 degrees",
+                "Keep front knee stacked over ankle, torso upright",
+                "Push through front heel to return, exhale on the effort"
+              ]
+            },
+            {
+              "name": "Renegade Row - Modified",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "dumbbells"
+              ],
+              "alternatives": [
+                "Plank with alternating arm lift",
+                "Bird dog"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6",
+              "notes": "From knees if needed - focus on zero hip rotation",
+              "instructions": [
+                "Start in push-up position on dumbbells, feet wide for stability",
+                "Row one dumbbell to hip while pressing other into floor",
+                "Keep hips completely still and square to ground throughout"
+              ]
+            },
+            {
+              "name": "Banded Good Morning",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "resistance band"
+              ],
+              "alternatives": [
+                "Bodyweight good morning",
+                "Band pull-through"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 5",
+              "notes": "Posterior chain activation - great for lower back health",
+              "instructions": [
+                "Stand on band with feet hip width, loop over back of neck",
+                "Hinge at hips pushing glutes back, slight knee bend",
+                "Squeeze glutes and exhale to return to standing"
+              ]
+            },
+            {
+              "name": "Diaphragmatic Breathing with Core Engagement",
+              "sets": 3,
+              "measure": {
+                "type": "time",
+                "value": 60
+              },
+              "restPeriod": 30,
+              "equipment": [
+                "yoga mat"
+              ],
+              "alternatives": [
+                "Connection breath only",
+                "Breath with pelvic floor focus"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 3",
+              "notes": "Foundational DR rehab exercise - practice daily",
+              "instructions": [
+                "Lie on back with knees bent, hands on lower belly",
+                "Inhale deeply letting belly rise, then exhale slowly",
+                "On exhale, gently draw belly button toward spine without holding breath"
+              ]
+            }
+          ]
+        }
+      ],
+      "nutrition": {
+        "dailyCalories": 2200,
+        "macros": {
+          "protein": 140,
+          "carbs": 220,
+          "fats": 75
+        },
+        "mealTiming": [
+          "Eat a small snack 30-60 minutes before workout if possible",
+          "Prioritize protein within 2 hours post-workout",
+          "Stay hydrated - aim for 100+ oz water daily, especially if breastfeeding"
+        ],
+        "notes": "If breastfeeding, add 300-500 calories to support milk production. Focus on nutrient-dense whole foods. Protein is critical for muscle recovery and tissue healing - aim for 25-35g per meal. Don't restrict calories too aggressively as this can impact energy, recovery, and milk supply."
+      },
+      "progressionProtocol": [
+        "Week 1-2: Learn movements, focus on breathing patterns, use lighter weights",
+        "Week 3-4: Add 1-2 reps per set or increase weight by 2-5 lbs on primary movements",
+        "Check diastasis weekly - gap should be stable or improving",
+        "If you see coning during any exercise, regress to easier variation"
+      ]
+    },
+    {
+      "phaseNumber": 2,
+      "name": "Strength Building & Core Integration",
+      "durationWeeks": 4,
+      "focus": "Progressive strength increases with advanced core work and compound movement mastery",
+      "explanation": "Building on your foundation, this phase increases training intensity and introduces more challenging variations. Core exercises progress to dynamic movements as your deep core stability improves. We add complexity to compound lifts and begin integrating core function into strength movements rather than isolating it.",
+      "expectations": "You should feel noticeably stronger and more confident in movements. The weights will feel more challenging as we push toward true strength building intensities. Your core should feel more 'connected' during daily activities. Some exercises may feel hard - that's the point now that your foundation is solid.",
+      "keyPoints": [
+        "Push closer to true effort levels (RPE 7-8)",
+        "Core should automatically engage during compound lifts",
+        "Progress to harder variations when current ones feel easy",
+        "Recovery is still important - don't skip rest days"
+      ],
+      "splitType": "Full Body",
+      "workouts": [
+        {
+          "dayNumber": 1,
+          "name": "Strength Day A - Lower Emphasis",
+          "focus": "Lower body strength with increased loading",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "Hip circles - 10 each direction",
+              "Bodyweight squats - 10 reps",
+              "Glute bridge hold - 20 seconds",
+              "Leg swings front and side - 8 each"
+            ]
+          },
+          "cooldown": {
+            "duration": 3,
+            "activities": [
+              "Pigeon pose - 30 seconds each side",
+              "Lying hamstring stretch - 20 seconds each side",
+              "Deep breathing - 5 breaths"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Goblet Squat with Pause",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 75,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [
+                "Heel elevated goblet squat",
+                "Double dumbbell front squat"
+              ],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "notes": "2-second pause at bottom increases difficulty significantly",
+              "instructions": [
+                "Hold heavier dumbbell at chest, elbows tucked",
+                "Lower to full depth and pause for 2 full seconds at bottom",
+                "Exhale forcefully and drive up through heels without momentum"
+              ]
+            },
+            {
+              "name": "Single Leg Romanian Deadlift",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [
+                "Kickstand RDL",
+                "B-stance RDL"
+              ],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "notes": "Hold wall lightly for balance if needed, prioritize hip hinge",
+              "instructions": [
+                "Hold dumbbell in opposite hand of standing leg",
+                "Hinge forward while floating back leg behind as counterbalance",
+                "Keep hips square to ground, exhale to squeeze glute and return"
+              ]
+            },
+            {
+              "name": "Bulgarian Split Squat",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "dumbbells",
+                "couch or chair"
+              ],
+              "alternatives": [
+                "Elevated split squat",
+                "Rear foot elevated lunge"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Rear foot on couch - stay quiet, control the movement",
+              "instructions": [
+                "Rear foot elevated on couch behind you, front foot stepped out",
+                "Lower straight down until front thigh parallel to ground",
+                "Keep torso upright, exhale and press through front heel to rise"
+              ]
+            },
+            {
+              "name": "Hip Thrust",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "dumbbell",
+                "couch"
+              ],
+              "alternatives": [
+                "Glute bridge",
+                "Single leg hip thrust bodyweight"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Upper back on couch, dumbbell on hip crease",
+              "instructions": [
+                "Position upper back on couch edge, feet flat, dumbbell on hips",
+                "Drive through heels squeezing glutes at top, creating straight line from knees to shoulders",
+                "Lower with control for 3 seconds, avoid arching lower back at top"
+              ]
+            },
+            {
+              "name": "Dead Bug with Band Resistance",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "resistance band",
+                "yoga mat"
+              ],
+              "alternatives": [
+                "Weighted dead bug",
+                "Dead bug with slower tempo"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "Loop band around hands and feet for added resistance",
+              "instructions": [
+                "Press band outward with hands and feet to create tension",
+                "Maintain tension while extending opposite arm and leg",
+                "Exhale fully during extension, keep lower back pressed to floor"
+              ]
+            },
+            {
+              "name": "Side Plank - Modified",
+              "sets": 3,
+              "measure": {
+                "type": "time",
+                "value": 20
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "yoga mat"
+              ],
+              "alternatives": [
+                "Side plank pulses",
+                "Side lying leg lifts"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "From knees is fine - watch for coning, stop if it occurs",
+              "instructions": [
+                "Stack knees and prop on forearm, lift hips creating straight line",
+                "Keep top hip stacked directly over bottom hip, no rotation",
+                "Breathe normally and keep core engaged without bearing down"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 2,
+          "name": "Strength Day B - Upper Emphasis",
+          "focus": "Upper body strength with progressive overload",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "Band pull-aparts - 15 reps",
+              "Scapular push-ups - 8 reps",
+              "Arm circles increasing size - 10 each",
+              "Thread the needle - 5 each side"
+            ]
+          },
+          "cooldown": {
+            "duration": 3,
+            "activities": [
+              "Chest stretch in doorway - 30 seconds",
+              "Upper trap stretch - 20 seconds each side",
+              "Cat-cow - 5 slow reps"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Bent Over Row - Heavier",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 75,
+              "equipment": [
+                "dumbbells"
+              ],
+              "alternatives": [
+                "Chest supported row on incline",
+                "Single arm row"
+              ],
+              "category": "primary",
+              "intensity": "RPE 7-8",
+              "notes": "Increase weight from Phase 1 - challenge yourself",
+              "instructions": [
+                "Hinge to 45 degrees maintaining flat back and braced core",
+                "Pull with elbows driving back, squeeze shoulder blades for 1 second at top",
+                "Lower with 3 second control, maintain body position throughout"
+              ]
+            },
+            {
+              "name": "Push-Up - Standard or Deficit",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 75,
+              "equipment": [
+                "yoga mat",
+                "books or blocks"
+              ],
+              "alternatives": [
+                "Incline push-up - lower angle",
+                "Negative push-ups"
+              ],
+              "category": "primary",
+              "intensity": "RPE 7-8",
+              "notes": "Progress to floor push-ups or hands on books for deficit",
+              "instructions": [
+                "Full plank position with hands just outside shoulders",
+                "Lower chest to floor or past hands if using deficit",
+                "Keep body in straight line throughout, exhale on the press"
+              ]
+            },
+            {
+              "name": "Arnold Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "dumbbells"
+              ],
+              "alternatives": [
+                "Standard shoulder press",
+                "Z-press seated on floor"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Seated on floor or standing - both work well",
+              "instructions": [
+                "Start with dumbbells at shoulders, palms facing you",
+                "Press up while rotating palms to face forward at the top",
+                "Reverse the rotation as you lower with control"
+              ]
+            },
+            {
+              "name": "Chin-Up Negative or Band Assisted",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 5
+              },
+              "restPeriod": 75,
+              "equipment": [
+                "pull-up bar",
+                "resistance band"
+              ],
+              "alternatives": [
+                "Inverted row under table",
+                "Lat pulldown with band"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Jump to top, lower for 5-second negative, or use band assistance",
+              "instructions": [
+                "Grip bar with palms facing you, shoulder width apart",
+                "Jump or step to top position with chin over bar",
+                "Lower yourself as slowly as possible for 5+ seconds"
+              ]
+            },
+            {
+              "name": "Tricep Overhead Extension",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [
+                "Band tricep pushdown",
+                "Diamond push-ups on knees"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "Single dumbbell held with both hands overhead",
+              "instructions": [
+                "Hold one dumbbell overhead with both hands, elbows close to head",
+                "Lower dumbbell behind head by bending elbows only",
+                "Extend arms fully, squeezing triceps at top"
+              ]
+            },
+            {
+              "name": "Bicep Curl to Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "dumbbells"
+              ],
+              "alternatives": [
+                "Standard bicep curls",
+                "Hammer curls"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "Combination movement for efficiency",
+              "instructions": [
+                "Curl dumbbells to shoulders with palms up",
+                "At top of curl, rotate palms forward and press overhead",
+                "Reverse the motion with control back to start"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 3,
+          "name": "Strength Day C - Total Body Power",
+          "focus": "Full body compound movements with metabolic component",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "Jumping jacks - quiet version, 20 reps",
+              "Inchworms - 5 reps",
+              "World's greatest stretch - 3 each side",
+              "Glute bridges - 10 reps"
+            ]
+          },
+          "cooldown": {
+            "duration": 3,
+            "activities": [
+              "Child's pose - 30 seconds",
+              "Seated forward fold - 30 seconds",
+              "Deep breathing with core connection - 5 breaths"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Dumbbell Deadlift",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 75,
+              "equipment": [
+                "dumbbells"
+              ],
+              "alternatives": [
+                "Sumo deadlift",
+                "Trap bar position with dumbbells"
+              ],
+              "category": "primary",
+              "intensity": "RPE 7-8",
+              "notes": "Conventional stance, dumbbells at sides - use your heaviest weights",
+              "instructions": [
+                "Stand with feet hip width, dumbbells outside thighs",
+                "Hinge at hips and lower dumbbells along legs keeping back flat",
+                "Drive through heels, squeeze glutes at top, exhale on the lift"
+              ]
+            },
+            {
+              "name": "Single Arm Floor Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "dumbbell",
+                "yoga mat"
+              ],
+              "alternatives": [
+                "Double dumbbell floor press",
+                "Band chest press"
+              ],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "notes": "Single arm adds core anti-rotation challenge",
+              "instructions": [
+                "Lie on back with knees bent, single dumbbell pressed above shoulder",
+                "Lower until upper arm touches floor, opposite hand on ground for stability",
+                "Press up while resisting rotation, keep hips grounded"
+              ]
+            },
+            {
+              "name": "Step Up",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "dumbbells",
+                "stairs or sturdy box"
+              ],
+              "alternatives": [
+                "Elevated split squat",
+                "Lateral step up"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Use stairs - step quietly, control the movement",
+              "instructions": [
+                "Place entire foot on step, drive through heel to stand up",
+                "Bring trailing leg up without pushing off ground",
+                "Lower with control, same leg leads for all reps then switch"
+              ]
+            },
+            {
+              "name": "Renegade Row - Full",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "dumbbells"
+              ],
+              "alternatives": [
+                "Renegade row from knees",
+                "Plank to single arm row"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Full plank position now - wide feet for stability",
+              "instructions": [
+                "High plank on dumbbells, feet wider than hip width",
+                "Row one dumbbell while pressing other firmly into ground",
+                "Keep hips absolutely still, alternate sides with control"
+              ]
+            },
+            {
+              "name": "Pallof Press with Step",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "resistance band"
+              ],
+              "alternatives": [
+                "Standard Pallof press",
+                "Pallof press with overhead reach"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "Add lateral step while pressing for increased difficulty",
+              "instructions": [
+                "Set up for standard Pallof press with band at chest height",
+                "As you press band out, take a lateral step away from anchor",
+                "Step back in as you return hands to chest, maintain tension throughout"
+              ]
+            },
+            {
+              "name": "Plank with Shoulder Tap",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "yoga mat"
+              ],
+              "alternatives": [
+                "Standard plank hold",
+                "Plank with alternating arm lift"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "Anti-rotation core challenge - keep hips completely still",
+              "instructions": [
+                "Full plank position with feet wide for stability",
+                "Tap opposite shoulder while pressing firmly through grounded hand",
+                "Move slowly, minimize any hip shift or rotation"
+              ]
+            }
+          ]
+        }
+      ],
+      "nutrition": {
+        "dailyCalories": 2300,
+        "macros": {
+          "protein": 150,
+          "carbs": 230,
+          "fats": 80
+        },
+        "mealTiming": [
+          "Pre-workout: Complex carbs + protein 1-2 hours before",
+          "Post-workout: Protein + carbs within 1-2 hours after",
+          "Spread protein intake across 4-5 eating occasions"
+        ],
+        "notes": "Slight calorie increase to support increased training intensity. Protein bumped to 150g to support muscle building. If energy is low during workouts, add a small carb-focused snack 30 minutes before. Continue prioritizing hydration - performance drops significantly when dehydrated."
+      },
+      "progressionProtocol": [
+        "Week 5-6: Establish new working weights, aim for RPE 7 on compound lifts",
+        "Week 7-8: Push to RPE 8 on primary lifts, add weight when all reps completed with good form",
+        "Add 2.5-5 lbs to lower body lifts, 2.5 lbs to upper body when ready",
+        "Core exercises: progress to harder variations or add time/reps"
+      ]
+    }
+  ]
+}

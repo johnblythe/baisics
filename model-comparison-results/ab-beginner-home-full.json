@@ -1,0 +1,512 @@
+{
+  "name": "Beginner Body Transformation",
+  "description": "A gentle 4-week introduction to strength training designed for weight loss and building foundational strength, with special attention to lower back health",
+  "totalWeeks": 4,
+  "phases": [
+    {
+      "phaseNumber": 1,
+      "name": "Foundation Building",
+      "durationWeeks": 4,
+      "focus": "Movement mastery, habit formation, and progressive strength building",
+      "explanation": "This phase establishes proper movement patterns while creating a sustainable routine. Light weights and bodyweight exercises build strength gradually while supporting your weight loss goals.",
+      "expectations": "Expect to feel more energetic, notice improved posture, and see initial strength gains. Weight loss of 1-2 lbs per week is realistic and healthy.",
+      "keyPoints": [
+        "Focus on perfect form over heavy weight",
+        "Build consistency with manageable workouts",
+        "Strengthen core and glutes to support lower back",
+        "Create sustainable habits that fit your lifestyle"
+      ],
+      "splitType": "Full Body",
+      "workouts": [
+        {
+          "dayNumber": 1,
+          "name": "Workout A - Foundation",
+          "focus": "Lower body emphasis with core stability",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "Cat-cow stretches x10",
+              "Hip circles x10 each direction",
+              "Arm circles x10 forward/backward",
+              "Bodyweight squats x10"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Child's pose hold 30 seconds",
+              "Knee-to-chest stretches 30 seconds each leg",
+              "Seated spinal twist 30 seconds each side",
+              "Deep breathing x5"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Goblet Squat",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [
+                "Bodyweight squat",
+                "Chair-assisted squat"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "notes": "Hold dumbbell at chest level. Keep chest up and knees tracking over toes.",
+              "instructions": [
+                "Hold one dumbbell vertically at chest level",
+                "Stand with feet shoulder-width apart",
+                "Sit back and down, keeping chest up",
+                "Lower until thighs are parallel to floor",
+                "Drive through heels to return to standing"
+              ]
+            },
+            {
+              "name": "Modified Push-up",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "yoga mat"
+              ],
+              "alternatives": [
+                "Wall push-up",
+                "Incline push-up on chair"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "notes": "Perform on knees to reduce load. Focus on straight line from knees to head.",
+              "instructions": [
+                "Start in plank position on knees",
+                "Hands slightly wider than shoulders",
+                "Lower chest toward floor with control",
+                "Keep core engaged throughout",
+                "Push back up to starting position"
+              ]
+            },
+            {
+              "name": "Single-Arm Dumbbell Row",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "dumbbell",
+                "chair"
+              ],
+              "alternatives": [
+                "Resistance band row",
+                "Bent-over two-arm row"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "notes": "Support opposite hand on chair. Keep back neutral and core engaged.",
+              "instructions": [
+                "Place one knee and hand on chair for support",
+                "Hold dumbbell in opposite hand",
+                "Keep back straight and core tight",
+                "Pull elbow up and back, squeezing shoulder blade",
+                "Lower with control and repeat"
+              ]
+            },
+            {
+              "name": "Glute Bridge",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "yoga mat"
+              ],
+              "alternatives": [
+                "Single-leg glute bridge",
+                "Wall sit"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 5",
+              "notes": "Squeeze glutes at top. This exercise helps strengthen lower back support muscles.",
+              "instructions": [
+                "Lie on back with knees bent, feet flat",
+                "Arms at sides for stability",
+                "Squeeze glutes and lift hips up",
+                "Create straight line from knees to shoulders",
+                "Hold 2 seconds at top, lower slowly"
+              ]
+            },
+            {
+              "name": "Dead Bug",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "yoga mat"
+              ],
+              "alternatives": [
+                "Modified plank hold",
+                "Bird dog"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 4",
+              "notes": "Excellent for core stability and lower back health. Keep lower back pressed to floor.",
+              "instructions": [
+                "Lie on back, arms extended toward ceiling",
+                "Knees bent at 90 degrees, shins parallel to floor",
+                "Slowly lower opposite arm and leg toward floor",
+                "Keep lower back pressed against mat",
+                "Return to start and repeat other side"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 2,
+          "name": "Workout B - Balance",
+          "focus": "Upper body and core with stability work",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "Shoulder rolls x10 each direction",
+              "Arm swings x10 across body",
+              "Torso twists x10 each side",
+              "Marching in place x20"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Chest doorway stretch 30 seconds",
+              "Overhead shoulder stretch 30 seconds each arm",
+              "Cat-cow stretches x5",
+              "Deep breathing x5"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Dumbbell Chest Press (Floor)",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "dumbbell",
+                "yoga mat"
+              ],
+              "alternatives": [
+                "Push-up variations",
+                "Resistance band chest press"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "notes": "Lying on floor limits range of motion safely. Keep core engaged throughout.",
+              "instructions": [
+                "Lie on back holding dumbbells above chest",
+                "Elbows at 45-degree angle to body",
+                "Lower until elbows touch floor",
+                "Press weights up, squeezing chest",
+                "Control the movement throughout"
+              ]
+            },
+            {
+              "name": "Romanian Deadlift",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [
+                "Resistance band deadlift",
+                "Bodyweight good morning"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "notes": "Focus on hip hinge movement. Strengthens posterior chain safely.",
+              "instructions": [
+                "Hold dumbbells in front of thighs",
+                "Stand with feet hip-width apart",
+                "Hinge at hips, pushing them back",
+                "Lower weights along legs, slight knee bend",
+                "Feel stretch in hamstrings, return to standing"
+              ]
+            },
+            {
+              "name": "Overhead Press (Seated)",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "dumbbell",
+                "chair"
+              ],
+              "alternatives": [
+                "Standing overhead press",
+                "Resistance band press"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6",
+              "notes": "Seated position provides back support. Keep core engaged to protect lower back.",
+              "instructions": [
+                "Sit with back supported, dumbbells at shoulder level",
+                "Palms facing forward",
+                "Press weights straight up overhead",
+                "Don't lock elbows completely",
+                "Lower with control to starting position"
+              ]
+            },
+            {
+              "name": "Resistance Band Pull-Apart",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "resistance bands"
+              ],
+              "alternatives": [
+                "Reverse fly with dumbbells",
+                "Wall slides"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 5",
+              "notes": "Great for posture improvement and desk job compensation.",
+              "instructions": [
+                "Hold resistance band at chest level, arms extended",
+                "Pull band apart by squeezing shoulder blades",
+                "Keep arms straight throughout movement",
+                "Feel squeeze between shoulder blades",
+                "Return to start with control"
+              ]
+            },
+            {
+              "name": "Plank Hold",
+              "sets": 3,
+              "measure": {
+                "type": "time",
+                "value": 20
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "yoga mat"
+              ],
+              "alternatives": [
+                "Modified plank on knees",
+                "Wall plank"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 5",
+              "notes": "Build core strength for lower back support. Quality over duration.",
+              "instructions": [
+                "Start in push-up position",
+                "Keep body in straight line",
+                "Engage core, don't let hips sag",
+                "Breathe normally throughout hold",
+                "Stop if form breaks down"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 3,
+          "name": "Workout C - Power",
+          "focus": "Full body integration with light cardio elements",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "Light jogging in place x30 seconds",
+              "Jumping jacks x20",
+              "Leg swings x10 each leg",
+              "Dynamic squats x10"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Standing forward fold 30 seconds",
+              "Hip flexor stretch 30 seconds each leg",
+              "Spinal twist 30 seconds each side",
+              "Deep breathing x5"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Step-Up",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "chair"
+              ],
+              "alternatives": [
+                "Box step-up",
+                "High knee marches"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "notes": "Use sturdy chair or step. Builds functional leg strength.",
+              "instructions": [
+                "Stand in front of sturdy chair",
+                "Step up with right foot completely on chair",
+                "Drive through heel to stand on chair",
+                "Step down with control",
+                "Complete all reps on one leg, then switch"
+              ]
+            },
+            {
+              "name": "Push-Up to T",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "yoga mat"
+              ],
+              "alternatives": [
+                "Modified push-up with reach",
+                "Wall push-up with rotation"
+              ],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "notes": "Combines pushing movement with core rotation. Can modify on knees.",
+              "instructions": [
+                "Perform standard push-up",
+                "At top, rotate and reach one arm to ceiling",
+                "Create T-shape with arms",
+                "Return arm to floor",
+                "Perform another push-up, rotate other direction"
+              ]
+            },
+            {
+              "name": "Reverse Lunge",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "yoga mat"
+              ],
+              "alternatives": [
+                "Stationary lunge",
+                "Lunge with dumbbells"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "notes": "Easier on knees than forward lunges. Focus on control.",
+              "instructions": [
+                "Stand tall with hands on hips",
+                "Step one foot back into lunge position",
+                "Lower until both knees at 90 degrees",
+                "Front knee stays over ankle",
+                "Push off back foot to return to standing"
+              ]
+            },
+            {
+              "name": "Dumbbell Swing (Modified)",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [
+                "Squat to calf raise",
+                "Resistance band swing"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6",
+              "notes": "Light weight, focus on hip drive. Great for conditioning.",
+              "instructions": [
+                "Hold one dumbbell with both hands",
+                "Start in partial squat position",
+                "Drive hips forward to swing weight to chest level",
+                "Let weight swing back down between legs",
+                "Control the movement with your hips"
+              ]
+            },
+            {
+              "name": "Bear Crawl",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "yoga mat"
+              ],
+              "alternatives": [
+                "Modified bear crawl in place",
+                "Cat-cow dynamic"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6",
+              "notes": "Full-body integration exercise. Great for coordination and strength.",
+              "instructions": [
+                "Start on hands and knees",
+                "Lift knees 2 inches off floor",
+                "Crawl forward by moving opposite hand and foot",
+                "Keep hips level and core tight",
+                "Count each hand movement as one rep"
+              ]
+            }
+          ]
+        }
+      ],
+      "nutrition": {
+        "dailyCalories": 1400,
+        "macros": {
+          "protein": 120,
+          "carbs": 140,
+          "fats": 55
+        },
+        "mealTiming": [
+          "Eat protein with each meal to support muscle building",
+          "Have carbs around your workouts for energy",
+          "Stay hydrated with 8-10 glasses of water daily"
+        ],
+        "notes": "Moderate calorie deficit for 1-2 lbs/week weight loss. Focus on whole foods, lean proteins, vegetables, and complex carbohydrates. Listen to your hunger cues and adjust portions as needed."
+      },
+      "progressionProtocol": [
+        "Week 1-2: Focus on perfect form with lighter weights (5-10 lbs)",
+        "Week 3: Increase weight by 2.5-5 lbs when you can complete all reps easily",
+        "Week 4: Add 1-2 reps to each exercise or increase weight slightly",
+        "Track workouts and celebrate small improvements in strength and endurance"
+      ]
+    }
+  ]
+}

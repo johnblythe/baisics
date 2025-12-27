@@ -1,6 +1,66 @@
 {
   "issues": [
     {
+      "id": "166",
+      "number": 166,
+      "title": "Make the /hi experience more engaging",
+      "labels": ["enhancement"],
+      "status": "open",
+      "priority": "med",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2025-12-23T00:16:00Z",
+      "updatedAt": "2025-12-23T00:16:00Z"
+    },
+    {
+      "id": "159",
+      "number": 159,
+      "title": "Production Readiness: Launch Checklist",
+      "labels": ["enhancement"],
+      "status": "open",
+      "priority": "high",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2025-12-22T00:00:00Z",
+      "updatedAt": "2025-12-22T00:00:00Z"
+    },
+    {
+      "id": "158",
+      "number": 158,
+      "title": "Coach Tier: B2B2C Model for Fitness Coaches",
+      "labels": ["enhancement"],
+      "status": "open",
+      "priority": "med",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2025-12-20T00:00:00Z",
+      "updatedAt": "2025-12-20T00:00:00Z"
+    },
+    {
+      "id": "157",
+      "number": 157,
+      "title": "Redesign program creation email",
+      "labels": ["enhancement", "design"],
+      "status": "open",
+      "priority": "med",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2025-12-20T00:00:00Z",
+      "updatedAt": "2025-12-20T00:00:00Z"
+    },
+    {
+      "id": "154",
+      "number": 154,
+      "title": "Keep user state in URI path for back/forward functionality and share ability",
+      "labels": ["enhancement"],
+      "status": "open",
+      "priority": "med",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2025-12-20T00:00:00Z",
+      "updatedAt": "2025-12-20T00:00:00Z"
+    },
+    {
       "id": "133",
       "number": 133,
       "title": "Mid-workout AI trainer chat",
@@ -71,43 +131,7 @@
       "localOnly": false,
       "createdAt": "2025-12-06T15:48:41Z",
       "updatedAt": "2025-12-06T15:48:41Z"
-    },
-    {
-      "id": "101",
-      "number": 101,
-      "title": "Landing Page Redesign - Modern & Inviting",
-      "labels": ["enhancement"],
-      "status": "open",
-      "priority": "low",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2025-12-06T14:25:13Z",
-      "updatedAt": "2025-12-06T14:25:13Z"
-    },
-    {
-      "id": "99",
-      "number": 99,
-      "title": "Program Library & Search",
-      "labels": ["enhancement"],
-      "status": "open",
-      "priority": "low",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2025-12-06T14:10:50Z",
-      "updatedAt": "2025-12-06T14:10:50Z"
-    },
-    {
-      "id": "128",
-      "number": 128,
-      "title": "AI-assisted exercise library matching",
-      "labels": ["enhancement"],
-      "status": "closed",
-      "priority": "med",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2025-12-13T15:39:51Z",
-      "updatedAt": "2025-12-15T12:30:00Z"
     }
   ],
-  "lastSyncedAt": "2025-12-15T13:00:00Z"
+  "lastSyncedAt": "2025-12-23T00:16:00Z"
 }

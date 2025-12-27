@@ -1,0 +1,548 @@
+{
+  "name": "Foundation Strength & Fat Loss Program",
+  "description": "A beginner-friendly 4-week program designed to build foundational strength, establish consistent exercise habits, and support healthy fat loss. This program uses minimal equipment and low-impact exercises perfect for apartment living, with a focus on proper form and sustainable progression.",
+  "totalWeeks": 4,
+  "phases": [
+    {
+      "phaseNumber": 1,
+      "name": "Foundation Building",
+      "durationWeeks": 4,
+      "focus": "Establishing movement patterns, building muscular endurance, and creating sustainable exercise habits",
+      "explanation": "This phase introduces you to fundamental strength training movements using bodyweight and light resistance. The focus is on learning proper form, building work capacity, and creating a consistent routine you can maintain. By starting with manageable intensity, you'll reduce injury risk while building the foundation for future progress.",
+      "expectations": "Expect mild muscle soreness in the first 1-2 weeks as your body adapts. You should feel more energized and confident in your movements by week 2. Energy levels may fluctuate initially but will stabilize as your body adjusts to morning training. Focus on quality over quantity - it's okay if exercises feel challenging.",
+      "keyPoints": [
+        "Master proper form before adding resistance",
+        "Build the habit of consistent 3x/week training",
+        "Listen to your body and respect your lower back",
+        "Progress gradually - small improvements compound over time"
+      ],
+      "splitType": "Full Body",
+      "workouts": [
+        {
+          "dayNumber": 1,
+          "name": "Full Body Strength A",
+          "focus": "Lower body emphasis with foundational movement patterns",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "March in place for 60 seconds",
+              "Arm circles - 10 forward, 10 backward",
+              "Hip circles - 10 each direction",
+              "Cat-cow stretches - 10 reps",
+              "Bodyweight glute bridges - 10 reps"
+            ]
+          },
+          "cooldown": {
+            "duration": 3,
+            "activities": [
+              "Standing quad stretch - 30 seconds each leg",
+              "Seated forward fold - 45 seconds",
+              "Supine spinal twist - 30 seconds each side"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Goblet Squat",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "adjustable dumbbells"
+              ],
+              "alternatives": [
+                "Bodyweight Squat",
+                "Resistance Band Squat"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6-7",
+              "notes": "Start with 10-15 lb dumbbell. Focus on depth and control.",
+              "instructions": [
+                "Hold dumbbell vertically at chest height, elbows pointing down",
+                "Push hips back and down, keeping chest tall and core braced",
+                "Lower until thighs are parallel or slightly below, knees tracking over toes",
+                "Drive through full foot to stand, squeezing glutes at top"
+              ]
+            },
+            {
+              "name": "Dumbbell Romanian Deadlift",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "adjustable dumbbells"
+              ],
+              "alternatives": [
+                "Resistance Band Good Morning",
+                "Bodyweight Single-Leg Deadlift"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6-7",
+              "notes": "Use light weight (5-10 lbs each hand). Excellent for lower back and hamstrings when done correctly.",
+              "instructions": [
+                "Stand with feet hip-width apart, slight bend in knees, dumbbells in front of thighs",
+                "Hinge at hips by pushing them backward, keeping back flat and core engaged",
+                "Lower dumbbells along legs until you feel a stretch in hamstrings (mid-shin level)",
+                "Squeeze glutes and drive hips forward to return to standing"
+              ]
+            },
+            {
+              "name": "Reverse Lunge",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "adjustable dumbbells",
+                "yoga mat"
+              ],
+              "alternatives": [
+                "Bodyweight Reverse Lunge",
+                "Static Split Squat"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6-7",
+              "notes": "Alternate legs each rep. Use 5-10 lb dumbbells or bodyweight only.",
+              "instructions": [
+                "Stand tall holding dumbbells at sides, feet hip-width apart",
+                "Step one foot back and lower until both knees form 90-degree angles",
+                "Keep front knee over ankle, torso upright, core tight",
+                "Push through front heel to return to standing, then alternate legs"
+              ]
+            },
+            {
+              "name": "Resistance Band Pull-Apart",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "resistance bands"
+              ],
+              "alternatives": [
+                "Prone Y-T-W Raises",
+                "Dumbbell Reverse Fly"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "Great for posture and counteracting desk work. Use light resistance.",
+              "instructions": [
+                "Hold band at shoulder height with arms extended, palms down",
+                "Pull band apart by squeezing shoulder blades together",
+                "Keep arms straight and shoulders down away from ears",
+                "Control the return to starting position, maintaining tension"
+              ]
+            },
+            {
+              "name": "Dead Bug",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "yoga mat"
+              ],
+              "alternatives": [
+                "Bird Dog",
+                "Heel Taps"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "Excellent core exercise that's gentle on the lower back. Move slowly and controlled.",
+              "instructions": [
+                "Lie on back with arms extended toward ceiling, knees bent at 90 degrees",
+                "Press lower back firmly into mat and engage core",
+                "Slowly extend opposite arm and leg toward floor without arching back",
+                "Return to start and alternate sides, maintaining back contact with mat"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 2,
+          "name": "Full Body Strength B",
+          "focus": "Upper body emphasis with pushing and pulling movements",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "March in place for 60 seconds",
+              "Shoulder rolls - 10 forward, 10 backward",
+              "Wall push-ups - 8 reps",
+              "Thread the needle stretch - 5 each side",
+              "Glute bridges - 10 reps"
+            ]
+          },
+          "cooldown": {
+            "duration": 3,
+            "activities": [
+              "Doorway chest stretch - 30 seconds each side",
+              "Cross-body shoulder stretch - 30 seconds each arm",
+              "Child's pose - 45 seconds"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Incline Push-Up",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "yoga mat"
+              ],
+              "alternatives": [
+                "Wall Push-Up",
+                "Knee Push-Up"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6-7",
+              "notes": "Use a sturdy chair, couch, or counter. Lower the surface as you get stronger.",
+              "instructions": [
+                "Place hands on elevated surface slightly wider than shoulder-width",
+                "Body forms straight line from head to heels, core engaged",
+                "Lower chest toward surface by bending elbows at 45-degree angle",
+                "Push back up to full arm extension, squeezing chest at top"
+              ]
+            },
+            {
+              "name": "Single-Arm Dumbbell Row",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "adjustable dumbbells"
+              ],
+              "alternatives": [
+                "Resistance Band Row",
+                "Bent-Over Two-Arm Row"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6-7",
+              "notes": "Use 10-15 lb dumbbell. Support yourself on a sturdy surface. Great for back strength.",
+              "instructions": [
+                "Hinge forward at hips, one hand on sturdy surface for support",
+                "Let dumbbell hang directly below shoulder, arm extended",
+                "Pull dumbbell toward hip by driving elbow back, squeezing shoulder blade",
+                "Lower with control, keeping core braced and back flat throughout"
+              ]
+            },
+            {
+              "name": "Resistance Band Overhead Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "resistance bands"
+              ],
+              "alternatives": [
+                "Dumbbell Overhead Press",
+                "Pike Push-Up"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6-7",
+              "notes": "Stand on band with feet hip-width apart. Control the movement in both directions.",
+              "instructions": [
+                "Stand on band, hold handles at shoulder height with palms forward",
+                "Brace core and avoid arching lower back",
+                "Press hands overhead until arms are fully extended",
+                "Lower with control back to shoulder height, maintaining tension"
+              ]
+            },
+            {
+              "name": "Dumbbell Curl",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "adjustable dumbbells"
+              ],
+              "alternatives": [
+                "Resistance Band Curl",
+                "Hammer Curl"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "Use 5-10 lb dumbbells. Keep elbows pinned to sides throughout.",
+              "instructions": [
+                "Stand tall with dumbbells at sides, palms facing forward",
+                "Curl weights toward shoulders by bending elbows only",
+                "Squeeze biceps at top, keeping upper arms stationary",
+                "Lower with control, fully extending arms at bottom"
+              ]
+            },
+            {
+              "name": "Tricep Dip on Chair",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "yoga mat"
+              ],
+              "alternatives": [
+                "Resistance Band Tricep Pressdown",
+                "Close-Grip Push-Up"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "Use a sturdy chair. Keep hips close to chair and go only as deep as comfortable.",
+              "instructions": [
+                "Sit on edge of sturdy chair, hands gripping edge beside hips",
+                "Slide hips off chair, supporting weight with arms, legs extended or bent",
+                "Lower body by bending elbows to 90 degrees, keeping elbows close to body",
+                "Press through palms to straighten arms and return to start"
+              ]
+            },
+            {
+              "name": "Forearm Plank",
+              "sets": 3,
+              "measure": {
+                "type": "time",
+                "value": 20
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "yoga mat"
+              ],
+              "alternatives": [
+                "High Plank",
+                "Plank with Knee Touches"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6-7",
+              "notes": "Quality over time. Increase by 5 seconds each week as able.",
+              "instructions": [
+                "Rest on forearms and toes, elbows directly under shoulders",
+                "Create straight line from head to heels, engage core fully",
+                "Squeeze glutes, keep hips level - don't let them sag or pike up",
+                "Breathe steadily throughout, maintaining tension"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 3,
+          "name": "Full Body Strength C",
+          "focus": "Balanced full body with core stability emphasis",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "March in place with arm swings - 60 seconds",
+              "Hip circles - 10 each direction each leg",
+              "Cat-cow stretches - 10 reps",
+              "Bodyweight squats - 8 reps",
+              "Arm circles - 10 each direction"
+            ]
+          },
+          "cooldown": {
+            "duration": 3,
+            "activities": [
+              "Figure-four stretch - 30 seconds each side",
+              "Kneeling hip flexor stretch - 30 seconds each side",
+              "Supine spinal twist - 30 seconds each side"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Sumo Squat",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "adjustable dumbbells"
+              ],
+              "alternatives": [
+                "Bodyweight Sumo Squat",
+                "Resistance Band Sumo Squat"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6-7",
+              "notes": "Wide stance targets inner thighs and glutes. Use 10-20 lb dumbbell.",
+              "instructions": [
+                "Stand with feet wider than shoulder-width, toes pointed out 45 degrees",
+                "Hold one dumbbell vertically with both hands in front of body",
+                "Lower by pushing hips back and bending knees, keeping chest tall",
+                "Drive through heels to stand, squeezing glutes and inner thighs at top"
+              ]
+            },
+            {
+              "name": "Step-Up",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "adjustable dumbbells"
+              ],
+              "alternatives": [
+                "Bodyweight Step-Up",
+                "Elevated Split Squat"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6-7",
+              "notes": "Use a sturdy step or bottom stair. Hold light dumbbells for added challenge.",
+              "instructions": [
+                "Stand facing step, one foot planted fully on step surface",
+                "Drive through top foot to step up, bringing other foot to meet it",
+                "Step back down with control, leading with the same leg",
+                "Complete all reps on one side, then switch legs"
+              ]
+            },
+            {
+              "name": "Glute Bridge",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "yoga mat",
+                "adjustable dumbbells"
+              ],
+              "alternatives": [
+                "Single-Leg Glute Bridge",
+                "Resistance Band Glute Bridge"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6-7",
+              "notes": "Add a dumbbell on hips for resistance. Excellent for glutes and lower back health.",
+              "instructions": [
+                "Lie on back, knees bent, feet flat and hip-width apart, dumbbell on hips",
+                "Press lower back into mat, then drive through heels to lift hips",
+                "Squeeze glutes hard at top, creating straight line from shoulders to knees",
+                "Lower with control, briefly touching floor before next rep"
+              ]
+            },
+            {
+              "name": "Floor Chest Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "adjustable dumbbells",
+                "yoga mat"
+              ],
+              "alternatives": [
+                "Push-Up",
+                "Resistance Band Chest Press"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6-7",
+              "notes": "Use 10-15 lb dumbbells. Floor limits range of motion which is easier on shoulders.",
+              "instructions": [
+                "Lie on back with knees bent, feet flat, dumbbells pressed above chest",
+                "Lower weights with control until upper arms touch floor",
+                "Press dumbbells back up, squeezing chest at top",
+                "Keep wrists stacked over elbows throughout movement"
+              ]
+            },
+            {
+              "name": "Resistance Band Face Pull",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "resistance bands"
+              ],
+              "alternatives": [
+                "Prone Y-Raise",
+                "Band Pull-Apart"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "Anchor band at face height on door. Excellent for shoulder health and posture.",
+              "instructions": [
+                "Secure band at face height, grip ends with palms facing down",
+                "Step back to create tension, arms extended in front",
+                "Pull band toward face, separating hands and squeezing shoulder blades",
+                "Rotate hands so thumbs point back at end position, control the return"
+              ]
+            },
+            {
+              "name": "Bird Dog",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "yoga mat"
+              ],
+              "alternatives": [
+                "Dead Bug",
+                "Quadruped Hip Extension"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "Move slowly and controlled. Excellent for core stability and lower back.",
+              "instructions": [
+                "Start on hands and knees, wrists under shoulders, knees under hips",
+                "Brace core and extend opposite arm and leg until parallel with floor",
+                "Keep hips and shoulders level, avoid rotation or arching",
+                "Return to start with control, then switch to opposite arm and leg"
+              ]
+            }
+          ]
+        }
+      ],
+      "nutrition": {
+        "dailyCalories": 1650,
+        "macros": {
+          "protein": 130,
+          "carbs": 150,
+          "fats": 55
+        },
+        "mealTiming": [
+          "Light snack 30-45 minutes before morning workout (banana, small toast with nut butter)",
+          "Balanced breakfast within 1 hour after workout with protein and carbs",
+          "Eat protein with every meal to support muscle building and satiety",
+          "Stay hydrated - aim for 8-10 glasses of water daily"
+        ],
+        "notes": "This moderate calorie deficit supports 0.5-1 lb fat loss per week while fueling your workouts. Prioritize protein (aim for 0.8-1g per pound of bodyweight) to preserve muscle during weight loss. Focus on whole foods: lean proteins, vegetables, fruits, whole grains, and healthy fats. Don't skip meals - consistent eating supports energy for morning workouts and prevents overeating later."
+      },
+      "progressionProtocol": [
+        "Week 1: Focus on learning proper form. Use lighter weights or bodyweight only. It's okay to rest longer if needed.",
+        "Week 2: Aim to complete all prescribed reps with good form. Begin finding your appropriate weight for each exercise.",
+        "Week 3: Increase dumbbell weights by 2.5-5 lbs on exercises that feel comfortable, or add 1-2 reps per set.",
+        "Week 4: Push intensity slightly (RPE 7-8). Add 5 seconds to planks. Complete workout with minimal rest adjustments."
+      ]
+    }
+  ]
+}

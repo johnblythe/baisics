@@ -1,0 +1,914 @@
+{
+  "name": "Mt. Rainier Summit Training Program",
+  "description": "An 8-week hybrid training program designed to build the endurance, strength, and resilience needed for high-altitude mountaineering. Combines progressive strength training with cardio conditioning while accommodating frequent travel.",
+  "totalWeeks": 8,
+  "phases": [
+    {
+      "phaseNumber": 1,
+      "name": "Base Building Phase",
+      "durationWeeks": 4,
+      "focus": "Establish aerobic base and movement foundation",
+      "explanation": "This phase builds your cardiovascular base while establishing proper movement patterns for strength exercises. Focus is on building work capacity and preparing your body for more intense training.",
+      "expectations": "You'll feel more energized during daily activities and notice improved recovery between workouts. Initial muscle soreness is normal as your body adapts.",
+      "keyPoints": [
+        "Build aerobic efficiency",
+        "Master movement patterns",
+        "Develop training consistency"
+      ],
+      "splitType": "Upper/Lower with Cardio Focus",
+      "workouts": [
+        {
+          "dayNumber": 1,
+          "name": "Lower Body Strength",
+          "focus": "Leg strength and stability for steep terrain",
+          "warmup": {
+            "duration": 8,
+            "activities": [
+              "Dynamic leg swings",
+              "Bodyweight squats",
+              "Walking lunges"
+            ]
+          },
+          "cooldown": {
+            "duration": 7,
+            "activities": [
+              "Hip flexor stretches",
+              "Calf stretches",
+              "Foam rolling"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Barbell Back Squat",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell",
+                "squat rack"
+              ],
+              "alternatives": [
+                "Goblet squats",
+                "Dumbbell squats"
+              ],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "notes": "Foundation exercise for leg strength",
+              "instructions": [
+                "Keep chest up and core braced",
+                "Descend to parallel or below",
+                "Drive through heels to stand"
+              ]
+            },
+            {
+              "name": "Romanian Deadlift",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [
+                "Dumbbell RDL",
+                "Single-leg RDL"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6",
+              "notes": "Targets posterior chain",
+              "instructions": [
+                "Hinge at hips, not knees",
+                "Keep bar close to legs",
+                "Feel stretch in hamstrings"
+              ]
+            },
+            {
+              "name": "Walking Lunges with Dumbbells",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "dumbbells"
+              ],
+              "alternatives": [
+                "Bodyweight lunges",
+                "Reverse lunges"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6",
+              "notes": "Unilateral leg strength",
+              "instructions": [
+                "Step forward with control",
+                "Lower back knee toward ground",
+                "Push off front leg to next step"
+              ]
+            },
+            {
+              "name": "Calf Raises",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "dumbbells"
+              ],
+              "alternatives": [
+                "Bodyweight calf raises",
+                "Single-leg calf raises"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "Essential for uphill hiking",
+              "instructions": [
+                "Rise up on toes slowly",
+                "Pause at top",
+                "Control the descent"
+              ]
+            },
+            {
+              "name": "Plank Hold",
+              "sets": 3,
+              "measure": {
+                "type": "time",
+                "value": 45
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "bodyweight"
+              ],
+              "alternatives": [
+                "Modified plank on knees",
+                "Side planks"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "Core stability for pack carrying",
+              "instructions": [
+                "Maintain straight line from head to heels",
+                "Engage core and glutes",
+                "Breathe normally throughout"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 2,
+          "name": "Cardio Endurance",
+          "focus": "Aerobic base building and hiking simulation",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "Easy walking",
+              "Dynamic stretching"
+            ]
+          },
+          "cooldown": {
+            "duration": 10,
+            "activities": [
+              "Walking cool-down",
+              "Full body stretching"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Stair Climber",
+              "sets": 1,
+              "measure": {
+                "type": "time",
+                "value": 30
+              },
+              "restPeriod": 0,
+              "equipment": [
+                "stair climber"
+              ],
+              "alternatives": [
+                "Treadmill incline walking",
+                "Step-ups"
+              ],
+              "category": "cardio",
+              "intensity": "Zone 2 (conversational pace)",
+              "notes": "Simulates uphill hiking",
+              "instructions": [
+                "Maintain steady rhythm",
+                "Use handrails minimally",
+                "Focus on breathing pattern"
+              ]
+            },
+            {
+              "name": "Rowing Machine",
+              "sets": 3,
+              "measure": {
+                "type": "time",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "rowing machine"
+              ],
+              "alternatives": [
+                "Elliptical",
+                "Stationary bike"
+              ],
+              "category": "cardio",
+              "intensity": "Moderate (RPE 6-7)",
+              "notes": "Full body cardio",
+              "instructions": [
+                "Drive with legs first",
+                "Pull handle to ribs",
+                "Control the return phase"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 3,
+          "name": "Upper Body Strength",
+          "focus": "Back and shoulder strength for pack carrying",
+          "warmup": {
+            "duration": 8,
+            "activities": [
+              "Arm circles",
+              "Band pull-aparts",
+              "Scapular wall slides"
+            ]
+          },
+          "cooldown": {
+            "duration": 7,
+            "activities": [
+              "Chest stretches",
+              "Shoulder stretches",
+              "Upper back mobility"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Bent-Over Barbell Row",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [
+                "Dumbbell rows",
+                "Seated cable rows"
+              ],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "notes": "Primary back strengthener",
+              "instructions": [
+                "Hinge at hips with straight back",
+                "Pull bar to lower ribs",
+                "Squeeze shoulder blades together"
+              ]
+            },
+            {
+              "name": "Overhead Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [
+                "Dumbbell press",
+                "Seated press"
+              ],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "notes": "Overhead strength for climbing",
+              "instructions": [
+                "Press straight up",
+                "Keep core tight",
+                "Full lockout at top"
+              ]
+            },
+            {
+              "name": "Pull-ups or Assisted Pull-ups",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "pull-up bar"
+              ],
+              "alternatives": [
+                "Lat pulldowns",
+                "Band-assisted pull-ups"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Functional pulling strength",
+              "instructions": [
+                "Full hang at bottom",
+                "Pull chest to bar",
+                "Control the descent"
+              ]
+            },
+            {
+              "name": "Dumbbell Shoulder Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "dumbbells"
+              ],
+              "alternatives": [
+                "Machine press",
+                "Resistance band press"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6",
+              "notes": "Unilateral shoulder strength",
+              "instructions": [
+                "Start at shoulder height",
+                "Press up and slightly forward",
+                "Control the weight down"
+              ]
+            },
+            {
+              "name": "Face Pulls",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "cable machine"
+              ],
+              "alternatives": [
+                "Resistance band face pulls",
+                "Reverse flyes"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 5",
+              "notes": "Posterior deltoid and rhomboids",
+              "instructions": [
+                "Pull rope to face level",
+                "Separate handles at face",
+                "Squeeze shoulder blades"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 4,
+          "name": "Outdoor Adventure",
+          "focus": "Real-world hiking practice and enjoyment",
+          "warmup": {
+            "duration": 10,
+            "activities": [
+              "Easy walking",
+              "Dynamic movement prep"
+            ]
+          },
+          "cooldown": {
+            "duration": 10,
+            "activities": [
+              "Walking cool-down",
+              "Nature meditation",
+              "Stretching"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Trail Hiking",
+              "sets": 1,
+              "measure": {
+                "type": "time",
+                "value": 45
+              },
+              "restPeriod": 0,
+              "equipment": [
+                "hiking shoes",
+                "water"
+              ],
+              "alternatives": [
+                "Treadmill incline walking",
+                "Stair climbing"
+              ],
+              "category": "cardio",
+              "intensity": "Moderate pace with hills",
+              "notes": "Practice for mountain conditions",
+              "instructions": [
+                "Maintain steady breathing",
+                "Practice efficient movement",
+                "Focus on foot placement"
+              ]
+            }
+          ]
+        }
+      ],
+      "nutrition": {
+        "dailyCalories": 2400,
+        "macros": {
+          "protein": 165,
+          "carbs": 270,
+          "fats": 85
+        },
+        "mealTiming": [
+          "Pre-workout: Light snack 1-2 hours before",
+          "Post-workout: Protein within 30 minutes",
+          "Hydration: 2-3 liters daily"
+        ],
+        "notes": "Focus on building sustainable eating habits while supporting training adaptations. Emphasize whole foods and adequate hydration."
+      },
+      "progressionProtocol": [
+        "Week 1-2: Learn exercises, establish base fitness",
+        "Week 3-4: Increase weights by 5-10% and extend cardio duration"
+      ]
+    },
+    {
+      "phaseNumber": 2,
+      "name": "Peak Conditioning Phase",
+      "durationWeeks": 4,
+      "focus": "Mountaineering-specific strength and endurance",
+      "explanation": "This phase intensifies training with weighted exercises and longer cardio sessions to simulate the demands of climbing Mt. Rainier with a heavy pack at altitude.",
+      "expectations": "You'll build significant strength endurance and mental toughness. Training becomes more challenging but directly applicable to your climbing goals.",
+      "keyPoints": [
+        "Simulate mountain conditions",
+        "Build strength endurance",
+        "Develop mental resilience"
+      ],
+      "splitType": "Functional Training with Weighted Conditioning",
+      "workouts": [
+        {
+          "dayNumber": 1,
+          "name": "Loaded Strength Training",
+          "focus": "Heavy pack simulation and power development",
+          "warmup": {
+            "duration": 10,
+            "activities": [
+              "Dynamic warm-up with weighted vest",
+              "Movement prep",
+              "Activation exercises"
+            ]
+          },
+          "cooldown": {
+            "duration": 8,
+            "activities": [
+              "Weighted vest removal",
+              "Thorough stretching",
+              "Recovery breathing"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Weighted Vest Squats",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "weighted vest"
+              ],
+              "alternatives": [
+                "Goblet squats with heavy weight",
+                "Front squats"
+              ],
+              "category": "primary",
+              "intensity": "RPE 8",
+              "notes": "Simulates climbing with pack",
+              "instructions": [
+                "Vest should be 15-20% body weight",
+                "Maintain proper squat form",
+                "Focus on explosive upward movement"
+              ]
+            },
+            {
+              "name": "Barbell Deadlift",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 150,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [
+                "Trap bar deadlift",
+                "Sumo deadlift"
+              ],
+              "category": "primary",
+              "intensity": "RPE 8",
+              "notes": "Total body strength",
+              "instructions": [
+                "Set up with bar over mid-foot",
+                "Drive through heels",
+                "Keep bar close to body"
+              ]
+            },
+            {
+              "name": "Weighted Step-ups",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "dumbbells",
+                "bench"
+              ],
+              "alternatives": [
+                "Weighted vest step-ups",
+                "Box jumps"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Climbing movement pattern",
+              "instructions": [
+                "Use 18-20 inch platform",
+                "Drive through heel of lead leg",
+                "Control the descent"
+              ]
+            },
+            {
+              "name": "Farmer's Walks",
+              "sets": 3,
+              "measure": {
+                "type": "distance",
+                "value": 50
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "dumbbells"
+              ],
+              "alternatives": [
+                "Suitcase carry",
+                "Kettlebell carry"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Grip and core endurance",
+              "instructions": [
+                "Keep shoulders back",
+                "Maintain tight core",
+                "Walk with purpose"
+              ]
+            },
+            {
+              "name": "Russian Twists with Weight",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 20
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "medicine ball"
+              ],
+              "alternatives": [
+                "Weighted sit-ups",
+                "Pallof press"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "Rotational core strength",
+              "instructions": [
+                "Lean back slightly",
+                "Rotate from core, not arms",
+                "Touch weight to each side"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 2,
+          "name": "Endurance Challenge",
+          "focus": "Extended cardio with pack weight simulation",
+          "warmup": {
+            "duration": 8,
+            "activities": [
+              "Progressive walking",
+              "Joint mobility"
+            ]
+          },
+          "cooldown": {
+            "duration": 12,
+            "activities": [
+              "Extended cool-down walk",
+              "Deep stretching",
+              "Hydration focus"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Weighted Vest Stair Climbing",
+              "sets": 1,
+              "measure": {
+                "type": "time",
+                "value": 25
+              },
+              "restPeriod": 300,
+              "equipment": [
+                "stair climber",
+                "weighted vest"
+              ],
+              "alternatives": [
+                "Treadmill incline with weight",
+                "Stadium stairs"
+              ],
+              "category": "cardio",
+              "intensity": "RPE 7-8",
+              "notes": "Direct mountain simulation",
+              "instructions": [
+                "Start with 10-15% body weight",
+                "Maintain steady rhythm",
+                "Practice mountain breathing"
+              ]
+            },
+            {
+              "name": "Rowing Intervals",
+              "sets": 6,
+              "measure": {
+                "type": "time",
+                "value": 3
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "rowing machine"
+              ],
+              "alternatives": [
+                "Bike intervals",
+                "Elliptical intervals"
+              ],
+              "category": "cardio",
+              "intensity": "RPE 8",
+              "notes": "High intensity conditioning",
+              "instructions": [
+                "Pull hard for 3 minutes",
+                "Recovery pace between sets",
+                "Focus on powerful strokes"
+              ]
+            },
+            {
+              "name": "Weighted Vest Walking",
+              "sets": 1,
+              "measure": {
+                "type": "time",
+                "value": 15
+              },
+              "restPeriod": 0,
+              "equipment": [
+                "weighted vest",
+                "treadmill"
+              ],
+              "alternatives": [
+                "Outdoor hiking with pack",
+                "Stairwell climbing"
+              ],
+              "category": "cardio",
+              "intensity": "Recovery pace",
+              "notes": "Active recovery with load",
+              "instructions": [
+                "Easy conversational pace",
+                "Focus on posture",
+                "Practice efficient movement"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 3,
+          "name": "Power and Stability",
+          "focus": "Explosive movements and balance for technical terrain",
+          "warmup": {
+            "duration": 10,
+            "activities": [
+              "Dynamic movement patterns",
+              "Plyometric prep",
+              "Balance challenges"
+            ]
+          },
+          "cooldown": {
+            "duration": 8,
+            "activities": [
+              "Static stretching",
+              "Balance work",
+              "Breathing exercises"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Barbell Thrusters",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [
+                "Dumbbell thrusters",
+                "Kettlebell thrusters"
+              ],
+              "category": "primary",
+              "intensity": "RPE 8",
+              "notes": "Full body power exercise",
+              "instructions": [
+                "Squat then press overhead in one motion",
+                "Keep core engaged throughout",
+                "Full hip extension at top"
+              ]
+            },
+            {
+              "name": "Single-Leg Deadlift",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "dumbbells"
+              ],
+              "alternatives": [
+                "Bodyweight single-leg RDL",
+                "Kettlebell single-leg deadlift"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Unilateral strength and balance",
+              "instructions": [
+                "Hinge at hip while lifting leg",
+                "Keep back straight",
+                "Feel stretch in standing leg hamstring"
+              ]
+            },
+            {
+              "name": "Box Step-ups with Knee Drive",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "box",
+                "dumbbells"
+              ],
+              "alternatives": [
+                "Bodyweight version",
+                "Lateral step-ups"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Power and coordination",
+              "instructions": [
+                "Drive knee up explosively",
+                "Full hip extension at top",
+                "Control the descent"
+              ]
+            },
+            {
+              "name": "Weighted Pull-ups or Lat Pulldowns",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "pull-up bar",
+                "weight belt"
+              ],
+              "alternatives": [
+                "Heavy lat pulldowns",
+                "Assisted weighted pull-ups"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 8",
+              "notes": "Climbing-specific strength",
+              "instructions": [
+                "Add weight if doing 8+ bodyweight pull-ups",
+                "Full range of motion",
+                "Control both phases"
+              ]
+            },
+            {
+              "name": "Single-Arm Dumbbell Row",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 45,
+              "equipment": [
+                "dumbbell",
+                "bench"
+              ],
+              "alternatives": [
+                "Cable single-arm row",
+                "Resistance band row"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 7",
+              "notes": "Unilateral back strength",
+              "instructions": [
+                "Support opposite hand on bench",
+                "Pull dumbbell to hip",
+                "Squeeze shoulder blade"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 4,
+          "name": "Mountain Simulation",
+          "focus": "Long duration hiking with elevation and pack weight",
+          "warmup": {
+            "duration": 15,
+            "activities": [
+              "Gradual pace building",
+              "Movement preparation",
+              "Mental preparation"
+            ]
+          },
+          "cooldown": {
+            "duration": 15,
+            "activities": [
+              "Extended cool-down",
+              "Recovery nutrition",
+              "Reflection and planning"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Weighted Pack Hiking",
+              "sets": 1,
+              "measure": {
+                "type": "time",
+                "value": 75
+              },
+              "restPeriod": 0,
+              "equipment": [
+                "backpack",
+                "water",
+                "hiking gear"
+              ],
+              "alternatives": [
+                "Treadmill with incline and weight",
+                "Stair climbing with pack"
+              ],
+              "category": "cardio",
+              "intensity": "Moderate with challenging sections",
+              "notes": "Full mountain simulation",
+              "instructions": [
+                "Pack weight 20-30% of body weight",
+                "Include elevation gain/loss",
+                "Practice nutrition and hydration"
+              ]
+            }
+          ]
+        }
+      ],
+      "nutrition": {
+        "dailyCalories": 2600,
+        "macros": {
+          "protein": 175,
+          "carbs": 300,
+          "fats": 90
+        },
+        "mealTiming": [
+          "Pre-workout: Substantial meal 2-3 hours before long sessions",
+          "During workout: Sports drinks for sessions >60 min",
+          "Post-workout: Recovery meal within 45 minutes",
+          "Hydration: 3+ liters daily"
+        ],
+        "notes": "Increased calories to support intense training. Practice mountain nutrition strategies during long sessions. Focus on foods you'll eat on the mountain."
+      },
+      "progressionProtocol": [
+        "Week 1-2: Increase intensity and weight loads",
+        "Week 3-4: Peak training loads, practice mountain nutrition and gear"
+      ]
+    }
+  ]
+}

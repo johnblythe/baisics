@@ -116,6 +116,24 @@ export function useProgramGeneration(options: UseProgramGenerationOptions = {}) 
 
           console.log(`[Generation] Starting phase ${phaseNum}/${totalPhases}`);
 
+          // Simulate progress during API call (updates every 500ms)
+          const targetProgress = baseProgress + phaseNum * progressPerPhase - 5; // Stop 5% before completion
+          let simulatedProgress = currentProgress;
+          const progressInterval = setInterval(() => {
+            if (simulatedProgress < targetProgress) {
+              simulatedProgress += 3; // Increment by 3% each tick
+              const simUpdate: GenerationProgress = {
+                stage: 'generating',
+                message: `Generating phase ${phaseNum} of ${totalPhases}...`,
+                progress: Math.min(Math.round(simulatedProgress), Math.round(targetProgress)),
+                currentPhase: phaseNum,
+                totalPhases,
+              };
+              setProgress(simUpdate);
+              optionsRef.current.onProgress?.(simUpdate);
+            }
+          }, 500);
+
           const response: Response = await fetch('/api/programs/generate/phase', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -134,6 +152,9 @@ export function useProgramGeneration(options: UseProgramGenerationOptions = {}) 
             }),
             signal,
           });
+
+          // Clear simulated progress
+          clearInterval(progressInterval);
 
           if (!response.ok) {
             const errorData = await response.json();
@@ -168,7 +189,10 @@ export function useProgramGeneration(options: UseProgramGenerationOptions = {}) 
 
         // Construct final program
         const goal = data.profile?.trainingGoal || data.intakeData?.trainingGoal || 'fitness';
-        const capitalizedGoal = goal.charAt(0).toUpperCase() + goal.slice(1);
+        // Title case the goal (capitalize each word)
+        const capitalizedGoal = goal.split(' ').map((word: string) =>
+          word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        ).join(' ');
         const programName = `${capitalizedGoal} Program`;
         const programDescription = `A personalized ${totalWeeks}-week program focused on ${goal}.`;
 
@@ -179,6 +203,7 @@ export function useProgramGeneration(options: UseProgramGenerationOptions = {}) 
               method: 'PATCH',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
+                userId,
                 name: programName,
                 description: programDescription,
               }),

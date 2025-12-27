@@ -1,0 +1,1578 @@
+{
+  "name": "12-Week Powerlifting Competition Peak",
+  "description": "A structured 12-week powerlifting program designed to peak for competition. Progresses through volume accumulation, intensity building, and competition peaking phases.",
+  "totalWeeks": 12,
+  "phases": [
+    {
+      "phaseNumber": 1,
+      "name": "Volume Accumulation",
+      "durationWeeks": 4,
+      "focus": "Build work capacity and technical proficiency in competition lifts",
+      "explanation": "Establishes movement patterns, builds muscle mass, and creates adaptation stimulus through higher volume training",
+      "expectations": "Increased training volume, improved technique, some fatigue accumulation",
+      "keyPoints": [
+        "Focus on competition commands and timing",
+        "Build accessory strength",
+        "Establish consistent training rhythm",
+        "Practice competition gear if used"
+      ],
+      "splitType": "Upper/Lower",
+      "workouts": [
+        {
+          "dayNumber": 1,
+          "name": "Lower Competition Focus",
+          "focus": "Squat and deadlift with competition specificity",
+          "warmup": {
+            "duration": 15,
+            "activities": [
+              "Dynamic stretching",
+              "Band walks",
+              "Bodyweight squats",
+              "Light goblet squats"
+            ]
+          },
+          "cooldown": {
+            "duration": 10,
+            "activities": [
+              "Static stretching",
+              "Foam rolling",
+              "Light walking"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Competition Squat",
+              "sets": 5,
+              "measure": {
+                "type": "reps",
+                "value": 5
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "competition rack",
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "Box squat",
+                "Pin squat"
+              ],
+              "category": "primary",
+              "intensity": "RPE 7-8",
+              "notes": "Focus on competition commands and timing",
+              "instructions": [
+                "Set up exactly as in competition",
+                "Wait for squat command",
+                "Pause briefly at bottom",
+                "Drive through heels",
+                "Wait for rack command"
+              ]
+            },
+            {
+              "name": "Competition Deadlift",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 3
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "deadlift platform",
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "Deficit deadlift",
+                "Block pulls"
+              ],
+              "category": "primary",
+              "intensity": "RPE 7-8",
+              "notes": "Practice competition setup and timing",
+              "instructions": [
+                "Set up with competition stance",
+                "Wait for down command",
+                "Control the descent",
+                "Complete stop at bottom",
+                "Reset between reps"
+              ]
+            },
+            {
+              "name": "Front Squat",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "competition rack",
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "Goblet squat",
+                "Safety bar squat"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Build quad strength and upper back stability",
+              "instructions": [
+                "Clean grip or cross arms",
+                "Keep elbows high",
+                "Maintain upright torso",
+                "Full depth",
+                "Drive up explosively"
+              ]
+            },
+            {
+              "name": "Romanian Deadlift",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "Stiff leg deadlift",
+                "Good mornings"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Posterior chain development",
+              "instructions": [
+                "Start from hip hinge",
+                "Keep bar close to body",
+                "Feel stretch in hamstrings",
+                "Drive hips forward to return",
+                "Maintain neutral spine"
+              ]
+            },
+            {
+              "name": "Walking Lunges",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 20
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "Static lunges",
+                "Bulgarian split squats"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "Unilateral leg strength and stability",
+              "instructions": [
+                "Hold dumbbells at sides",
+                "Step forward into lunge",
+                "Drop back knee toward ground",
+                "Push off front foot",
+                "Alternate legs each step"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 2,
+          "name": "Upper Competition Focus",
+          "focus": "Bench press technique and supporting upper body work",
+          "warmup": {
+            "duration": 15,
+            "activities": [
+              "Arm circles",
+              "Band pull-aparts",
+              "Push-ups",
+              "Light bench warm-up"
+            ]
+          },
+          "cooldown": {
+            "duration": 10,
+            "activities": [
+              "Shoulder stretches",
+              "Chest stretches",
+              "Light rowing"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Competition Bench Press",
+              "sets": 5,
+              "measure": {
+                "type": "reps",
+                "value": 5
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "competition rack",
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "Close grip bench",
+                "Floor press"
+              ],
+              "category": "primary",
+              "intensity": "RPE 7-8",
+              "notes": "Practice competition commands and arch",
+              "instructions": [
+                "Set competition arch",
+                "Wait for start command",
+                "Lower to chest and pause",
+                "Wait for press command",
+                "Lock out fully"
+              ]
+            },
+            {
+              "name": "Overhead Press",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "Push press",
+                "Seated press"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Build pressing power and shoulder stability",
+              "instructions": [
+                "Start from rack position",
+                "Keep core tight",
+                "Press straight up",
+                "Lock out overhead",
+                "Control descent"
+              ]
+            },
+            {
+              "name": "Barbell Rows",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "T-bar rows",
+                "Dumbbell rows"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Build back strength for bench stability",
+              "instructions": [
+                "Hinge at hips",
+                "Pull bar to lower chest",
+                "Squeeze shoulder blades",
+                "Control negative",
+                "Keep core engaged"
+              ]
+            },
+            {
+              "name": "Close Grip Bench Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "competition rack",
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "Dips",
+                "Diamond push-ups"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Tricep strength for lockout power",
+              "instructions": [
+                "Hands shoulder width apart",
+                "Keep elbows tucked",
+                "Full range of motion",
+                "Squeeze triceps at top",
+                "Control tempo"
+              ]
+            },
+            {
+              "name": "Face Pulls",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "bands"
+              ],
+              "alternatives": [
+                "Rear delt flyes",
+                "Reverse flyes"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "Rear delt health and posture",
+              "instructions": [
+                "Pull band to face level",
+                "Separate hands at face",
+                "Squeeze rear delts",
+                "Control return",
+                "Keep shoulders down"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 3,
+          "name": "Lower Accessory Power",
+          "focus": "Explosive movement and weak point training",
+          "warmup": {
+            "duration": 15,
+            "activities": [
+              "Light cardio",
+              "Dynamic stretching",
+              "Activation exercises",
+              "Movement prep"
+            ]
+          },
+          "cooldown": {
+            "duration": 10,
+            "activities": [
+              "Static stretching",
+              "Mobility work",
+              "Recovery breathing"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Box Squats with Bands",
+              "sets": 6,
+              "measure": {
+                "type": "reps",
+                "value": 3
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "competition rack",
+                "bands",
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "Speed squats",
+                "Pin squats"
+              ],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "notes": "Develop explosive power out of the hole",
+              "instructions": [
+                "Set bands for accommodating resistance",
+                "Sit back fully on box",
+                "Pause briefly",
+                "Explode up aggressively",
+                "Focus on speed"
+              ]
+            },
+            {
+              "name": "Sumo Deadlift",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 5
+              },
+              "restPeriod": 150,
+              "equipment": [
+                "deadlift platform",
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "Wide stance deadlift",
+                "Block pulls"
+              ],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "notes": "Alternative pulling pattern for muscle balance",
+              "instructions": [
+                "Wide stance, toes out",
+                "Hands inside legs",
+                "Chest up, hips low",
+                "Drive through heels",
+                "Finish with hip extension"
+              ]
+            },
+            {
+              "name": "Bulgarian Split Squats",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "Step-ups",
+                "Single leg squats"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Unilateral strength and stability",
+              "instructions": [
+                "Rear foot elevated",
+                "Lower into deep lunge",
+                "Drive through front heel",
+                "Keep torso upright",
+                "Control the movement"
+              ]
+            },
+            {
+              "name": "Glute Ham Raises",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "specialty bars"
+              ],
+              "alternatives": [
+                "Nordic curls",
+                "Hamstring curls"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Posterior chain strength and injury prevention",
+              "instructions": [
+                "Secure feet in machine",
+                "Lower body with control",
+                "Use hamstrings to pull back up",
+                "Keep body straight",
+                "Control negative"
+              ]
+            },
+            {
+              "name": "Calf Raises",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "Seated calf raises",
+                "Single leg calf raises"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "Lower leg strength and stability",
+              "instructions": [
+                "Rise up on toes",
+                "Hold peak contraction",
+                "Lower with control",
+                "Full range of motion",
+                "Keep core engaged"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 4,
+          "name": "Upper Accessory Power",
+          "focus": "Explosive upper body work and weak point training",
+          "warmup": {
+            "duration": 15,
+            "activities": [
+              "Band work",
+              "Light pressing",
+              "Shoulder mobility",
+              "Activation exercises"
+            ]
+          },
+          "cooldown": {
+            "duration": 10,
+            "activities": [
+              "Upper body stretching",
+              "Foam rolling",
+              "Recovery protocols"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Speed Bench with Bands",
+              "sets": 8,
+              "measure": {
+                "type": "reps",
+                "value": 3
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "competition rack",
+                "bands",
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "Speed bench",
+                "Floor press"
+              ],
+              "category": "primary",
+              "intensity": "RPE 6-7",
+              "notes": "Develop explosive pressing power",
+              "instructions": [
+                "Set bands for accommodating resistance",
+                "Focus on bar speed",
+                "Pause on chest briefly",
+                "Explode up aggressively",
+                "Reset between reps"
+              ]
+            },
+            {
+              "name": "Incline Dumbbell Press",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "Incline barbell press",
+                "Dumbbell press"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Upper chest development",
+              "instructions": [
+                "45-degree incline",
+                "Lower dumbbells to chest",
+                "Press up and together",
+                "Control negative",
+                "Full range of motion"
+              ]
+            },
+            {
+              "name": "Weighted Pull-ups",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "Lat pulldowns",
+                "Assisted pull-ups"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Lat strength and pulling power",
+              "instructions": [
+                "Add weight as needed",
+                "Pull chest to bar",
+                "Control descent",
+                "Full hang at bottom",
+                "Keep core tight"
+              ]
+            },
+            {
+              "name": "Dumbbell Shoulder Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "Arnold press",
+                "Lateral raises"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Shoulder stability and strength",
+              "instructions": [
+                "Start at shoulder level",
+                "Press straight up",
+                "Don't let dumbbells drift back",
+                "Lower with control",
+                "Keep core engaged"
+              ]
+            },
+            {
+              "name": "Barbell Curls",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "Hammer curls",
+                "Cable curls"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "Bicep development and elbow health",
+              "instructions": [
+                "Keep elbows at sides",
+                "Curl weight up",
+                "Squeeze biceps at top",
+                "Lower with control",
+                "Don't swing body"
+              ]
+            }
+          ]
+        }
+      ],
+      "nutrition": {
+        "dailyCalories": 3200,
+        "macros": {
+          "protein": 200,
+          "carbs": 350,
+          "fats": 110
+        },
+        "mealTiming": [
+          "Pre-workout: 30-50g carbs 1-2 hours before",
+          "Post-workout: 30g protein + 40g carbs within 30 minutes",
+          "Spread protein evenly across 4-5 meals"
+        ],
+        "notes": "Maintain weight around 183-185lbs. Focus on recovery nutrition and adequate carbohydrates for training volume."
+      },
+      "progressionProtocol": [
+        "Week 1-2: Establish baseline loads at prescribed RPE",
+        "Week 3-4: Add 2.5-5lbs to main lifts based on RPE feedback",
+        "Focus on technique refinement over load increases",
+        "Track fatigue levels and adjust intensity if needed"
+      ]
+    },
+    {
+      "phaseNumber": 2,
+      "name": "Strength Integration",
+      "durationWeeks": 4,
+      "focus": "Integrate strength gains while introducing competition-specific training",
+      "explanation": "Builds upon volume phase gains while introducing heavier loads and competition simulation",
+      "expectations": "Increased strength, reduced volume, better lift coordination",
+      "keyPoints": [
+        "Practice competition day routines",
+        "Introduce opener/second attempt work",
+        "Reduce accessory volume",
+        "Focus on competition timing"
+      ],
+      "splitType": "Upper/Lower",
+      "workouts": [
+        {
+          "dayNumber": 1,
+          "name": "Lower Power Integration",
+          "focus": "Heavy squat and deadlift work with competition specificity",
+          "warmup": {
+            "duration": 20,
+            "activities": [
+              "Extended general warm-up",
+              "Movement prep",
+              "Competition warm-up simulation",
+              "Progressive loading"
+            ]
+          },
+          "cooldown": {
+            "duration": 10,
+            "activities": [
+              "Cool-down stretching",
+              "Recovery protocols",
+              "Mobility work"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Competition Squat",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 3
+              },
+              "restPeriod": 240,
+              "equipment": [
+                "competition rack",
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "Box squat",
+                "Pin squat"
+              ],
+              "category": "primary",
+              "intensity": "RPE 8-9",
+              "notes": "Work up to opener and second attempt weights",
+              "instructions": [
+                "Follow competition warm-up protocol",
+                "Practice all competition commands",
+                "Focus on consistent timing",
+                "Build confidence with heavy loads",
+                "Simulate meet conditions"
+              ]
+            },
+            {
+              "name": "Competition Deadlift",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 2
+              },
+              "restPeriod": 240,
+              "equipment": [
+                "deadlift platform",
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "Block pulls",
+                "Deficit deadlift"
+              ],
+              "category": "primary",
+              "intensity": "RPE 8-9",
+              "notes": "Practice competition commands and timing",
+              "instructions": [
+                "Use competition setup routine",
+                "Practice down command timing",
+                "Work opener through second attempt",
+                "Focus on consistent form",
+                "Build confidence"
+              ]
+            },
+            {
+              "name": "Pause Squats",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 5
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "competition rack",
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "Box squats",
+                "Pin squats"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Build bottom position strength and confidence",
+              "instructions": [
+                "3-second pause at bottom",
+                "Maintain tension in hole",
+                "Drive up explosively",
+                "Focus on consistent depth",
+                "Practice patience"
+              ]
+            },
+            {
+              "name": "Good Mornings",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "Romanian deadlifts",
+                "Back extensions"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Posterior chain strength maintenance",
+              "instructions": [
+                "Bar on back like squat",
+                "Hinge at hips",
+                "Keep back neutral",
+                "Feel stretch in hamstrings",
+                "Drive hips forward"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 2,
+          "name": "Upper Power Integration",
+          "focus": "Heavy bench work with competition commands",
+          "warmup": {
+            "duration": 20,
+            "activities": [
+              "Shoulder mobility",
+              "Competition bench warm-up",
+              "Progressive loading",
+              "Command practice"
+            ]
+          },
+          "cooldown": {
+            "duration": 10,
+            "activities": [
+              "Upper body stretching",
+              "Recovery work",
+              "Mobility maintenance"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Competition Bench Press",
+              "sets": 5,
+              "measure": {
+                "type": "reps",
+                "value": 3
+              },
+              "restPeriod": 240,
+              "equipment": [
+                "competition rack",
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "Floor press",
+                "Close grip bench"
+              ],
+              "category": "primary",
+              "intensity": "RPE 8-9",
+              "notes": "Practice competition commands and work up to attempts",
+              "instructions": [
+                "Set competition arch and setup",
+                "Practice start/press/rack commands",
+                "Work opener through second attempt",
+                "Focus on consistent timing",
+                "Build confidence with heavy loads"
+              ]
+            },
+            {
+              "name": "Overhead Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 5
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "Push press",
+                "Seated press"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Maintain pressing strength and shoulder health",
+              "instructions": [
+                "Strict press only",
+                "Keep core tight",
+                "Press straight up",
+                "Control descent",
+                "Build shoulder stability"
+              ]
+            },
+            {
+              "name": "Competition Bench w/ Pause",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 5
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "competition rack",
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "Spoto press",
+                "Floor press"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Extended pause practice for competition",
+              "instructions": [
+                "3-4 second pause on chest",
+                "Wait for imaginary press command",
+                "Stay tight during pause",
+                "Explosive press after pause",
+                "Practice patience"
+              ]
+            },
+            {
+              "name": "Barbell Rows",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "T-bar rows",
+                "Cable rows"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Maintain back strength for bench stability",
+              "instructions": [
+                "Pull to lower chest",
+                "Squeeze shoulder blades",
+                "Control negative",
+                "Keep core engaged",
+                "Focus on pulling power"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 3,
+          "name": "Lower Strength Maintenance",
+          "focus": "Maintain leg strength while reducing fatigue",
+          "warmup": {
+            "duration": 15,
+            "activities": [
+              "General warm-up",
+              "Movement prep",
+              "Light activation",
+              "Progressive loading"
+            ]
+          },
+          "cooldown": {
+            "duration": 10,
+            "activities": [
+              "Stretching",
+              "Mobility work",
+              "Recovery protocols"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Front Squats",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "competition rack",
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "Goblet squats",
+                "Safety bar squats"
+              ],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "notes": "Quad strength without competing with back squat",
+              "instructions": [
+                "Clean grip preferred",
+                "Keep elbows high",
+                "Full depth squat",
+                "Drive up through heels",
+                "Maintain upright torso"
+              ]
+            },
+            {
+              "name": "Romanian Deadlifts",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "Stiff leg deadlifts",
+                "Good mornings"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Posterior chain maintenance",
+              "instructions": [
+                "Start from hip hinge",
+                "Keep bar close",
+                "Feel hamstring stretch",
+                "Drive hips forward",
+                "Control movement"
+              ]
+            },
+            {
+              "name": "Walking Lunges",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 16
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "Static lunges",
+                "Step-ups"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 6",
+              "notes": "Unilateral strength and hip stability",
+              "instructions": [
+                "Controlled stepping",
+                "Deep lunge position",
+                "Drive off front leg",
+                "Alternate legs",
+                "Keep torso upright"
+              ]
+            },
+            {
+              "name": "Planks",
+              "sets": 3,
+              "measure": {
+                "type": "time",
+                "value": 45
+              },
+              "restPeriod": 60,
+              "equipment": [],
+              "alternatives": [
+                "Dead bugs",
+                "Bird dogs"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "Core stability for competition lifts",
+              "instructions": [
+                "Maintain straight line",
+                "Breathe normally",
+                "Keep hips level",
+                "Engage entire core",
+                "Quality over duration"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 4,
+          "name": "Upper Strength Maintenance",
+          "focus": "Maintain upper body strength with reduced volume",
+          "warmup": {
+            "duration": 15,
+            "activities": [
+              "Upper body mobility",
+              "Light pressing",
+              "Shoulder activation",
+              "Progressive warm-up"
+            ]
+          },
+          "cooldown": {
+            "duration": 10,
+            "activities": [
+              "Upper body stretching",
+              "Shoulder mobility",
+              "Recovery work"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Close Grip Bench Press",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 5
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "competition rack",
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "Floor press",
+                "Board press"
+              ],
+              "category": "primary",
+              "intensity": "RPE 7-8",
+              "notes": "Tricep strength for bench lockout",
+              "instructions": [
+                "Hands shoulder width",
+                "Keep elbows tucked",
+                "Full range of motion",
+                "Focus on tricep power",
+                "Control tempo"
+              ]
+            },
+            {
+              "name": "Weighted Pull-ups",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 150,
+              "equipment": [
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "Lat pulldowns",
+                "Assisted pull-ups"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Lat strength for bench stability",
+              "instructions": [
+                "Add weight as needed",
+                "Pull chest to bar",
+                "Control descent",
+                "Full hang",
+                "Keep core tight"
+              ]
+            },
+            {
+              "name": "Dumbbell Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "Incline dumbbell press",
+                "Machine press"
+              ],
+              "category": "secondary",
+              "intensity": "RPE 7",
+              "notes": "Unilateral pressing strength",
+              "instructions": [
+                "Control both dumbbells",
+                "Full range of motion",
+                "Press up and together",
+                "Lower to chest level",
+                "Maintain stability"
+              ]
+            },
+            {
+              "name": "Face Pulls",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "bands"
+              ],
+              "alternatives": [
+                "Rear delt flyes",
+                "Reverse flyes"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 6",
+              "notes": "Rear delt health and shoulder stability",
+              "instructions": [
+                "Pull to face level",
+                "Separate hands",
+                "Squeeze rear delts",
+                "Control return",
+                "Keep shoulders down"
+              ]
+            }
+          ]
+        }
+      ],
+      "nutrition": {
+        "dailyCalories": 3100,
+        "macros": {
+          "protein": 200,
+          "carbs": 320,
+          "fats": 115
+        },
+        "mealTiming": [
+          "Pre-workout: Focus on easily digestible carbs",
+          "Post-workout: Prioritize protein for recovery",
+          "Evening: Include healthy fats for hormone production"
+        ],
+        "notes": "Begin slight caloric reduction to approach competition weight. Maintain 182-183lbs. Focus on nutrient timing around heavy training sessions."
+      },
+      "progressionProtocol": [
+        "Week 1-2: Work up to current opener and second attempt weights",
+        "Week 3-4: Establish competition openers and confirm second attempts",
+        "Reduce volume while maintaining intensity",
+        "Practice competition timing and commands"
+      ]
+    },
+    {
+      "phaseNumber": 3,
+      "name": "Competition Peak",
+      "durationWeeks": 4,
+      "focus": "Peak for competition while maintaining strength and reducing fatigue",
+      "explanation": "Final preparation phase focusing on competition simulation, attempt selection, and peak performance",
+      "expectations": "Reduced training volume, increased intensity, competition readiness",
+      "keyPoints": [
+        "Finalize competition attempts",
+        "Practice complete competition simulation",
+        "Minimize fatigue accumulation",
+        "Perfect competition day routine"
+      ],
+      "splitType": "Upper/Lower",
+      "workouts": [
+        {
+          "dayNumber": 1,
+          "name": "Competition Simulation - Lower",
+          "focus": "Competition day simulation for squat and deadlift",
+          "warmup": {
+            "duration": 25,
+            "activities": [
+              "Full competition warm-up protocol",
+              "Timing practice",
+              "Mental preparation",
+              "Progressive loading"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Light stretching",
+              "Mental review",
+              "Recovery nutrition"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Competition Squat Simulation",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 1
+              },
+              "restPeriod": 300,
+              "equipment": [
+                "competition rack",
+                "calibrated plates"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "Opener, 2nd, 3rd attempts",
+              "notes": "Full competition simulation with timing",
+              "instructions": [
+                "Follow exact competition warm-up",
+                "Practice all commands and timing",
+                "Take opener, second, and third attempts",
+                "Rest exactly as in competition",
+                "Full mental preparation"
+              ]
+            },
+            {
+              "name": "Competition Deadlift Simulation",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 1
+              },
+              "restPeriod": 300,
+              "equipment": [
+                "deadlift platform",
+                "calibrated plates"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "Opener, 2nd, 3rd attempts",
+              "notes": "Full competition simulation",
+              "instructions": [
+                "Follow competition warm-up protocol",
+                "Practice flight timing",
+                "Take all three attempts",
+                "Focus on mental preparation",
+                "Simulate competition environment"
+              ]
+            },
+            {
+              "name": "Light Accessory Work",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "calibrated plates"
+              ],
+              "alternatives": [
+                "Bodyweight exercises",
+                "Light stretching"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 4-5",
+              "notes": "Light movement for blood flow only",
+              "instructions": [
+                "Very light weight",
+                "Focus on movement quality",
+                "Maintain mobility",
+                "Aid recovery",
+                "Prepare for next session"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 2,
+          "name": "Competition Simulation - Upper",
+          "focus": "Competition day simulation for bench press",
+          "warmup": {
+            "duration": 25,
+            "activities": [
+              "Competition bench warm-up",
+              "Command practice",
+              "Mental preparation",
+              "Full protocol"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Light stretching",
+              "Mental review",
+              "Recovery protocols"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Competition Bench Press Simulation",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 1
+              },
+              "restPeriod": 300,
+              "equipment": [
+                "competition rack",
+                "calibrated plates"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "Opener, 2nd, 3rd attempts",
+              "notes": "Complete competition bench simulation",
+              "instructions": [
+                "Full competition setup routine",
+                "Practice all three commands",
+                "Take opener, second, and third attempts",
+                "Focus on consistency and confidence",
+                "Mental preparation emphasis"
+              ]
+            },
+            {
+              "name": "Light Upper Body Work",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [
+                "bands"
+              ],
+              "alternatives": [
+                "Light stretching",
+                "Mobility work"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 4",
+              "notes": "Blood flow and mobility maintenance",
+              "instructions": [
+                "Very light resistance",
+                "Focus on movement",
+                "Maintain range of motion",
+                "Aid in recovery",
+                "Keep shoulders healthy"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 3,
+          "name": "Active Recovery",
+          "focus": "Light movement and competition preparation",
+          "warmup": {
+            "duration": 10,
+            "activities": [
+              "Light general movement",
+              "Joint mobility",
+              "Gentle activation"
+            ]
+          },
+          "cooldown": {
+            "duration": 10,
+            "activities": [
+              "Extended stretching",
+              "Relaxation",
+              "Mental preparation"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Light Movement Complex",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 60,
+              "equipment": [],
+              "alternatives": [
+                "Walking",
+                "Swimming"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 3-4",
+              "notes": "Promote blood flow and recovery",
+              "instructions": [
+                "Very light bodyweight movements",
+                "Focus on mobility",
+                "Gentle activation",
+                "Aid recovery process",
+                "Maintain movement patterns"
+              ]
+            },
+            {
+              "name": "Competition Visualization",
+              "sets": 3,
+              "measure": {
+                "type": "time",
+                "value": 10
+              },
+              "restPeriod": 60,
+              "equipment": [],
+              "alternatives": [
+                "Meditation",
+                "Breathing exercises"
+              ],
+              "category": "isolation",
+              "intensity": "Mental",
+              "notes": "Mental preparation for competition",
+              "instructions": [
+                "Visualize perfect lifts",
+                "Practice competition routine mentally",
+                "Build confidence",
+                "Rehearse success",
+                "Prepare for competition environment"
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 4,
+          "name": "Competition Prep",
+          "focus": "Final preparation and opener practice",
+          "warmup": {
+            "duration": 15,
+            "activities": [
+              "Light general warm-up",
+              "Movement prep",
+              "Mental preparation"
+            ]
+          },
+          "cooldown": {
+            "duration": 10,
+            "activities": [
+              "Recovery protocols",
+              "Mental preparation",
+              "Competition planning"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Opener Practice",
+              "sets": 1,
+              "measure": {
+                "type": "reps",
+                "value": 1
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "competition rack",
+                "calibrated plates",
+                "deadlift platform"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "Competition openers only",
+              "notes": "Practice openers only for confidence",
+              "instructions": [
+                "Take each opener once",
+                "Focus on perfect technique",
+                "Build confidence",
+                "Practice competition commands",
+                "Confirm opener weights"
+              ]
+            },
+            {
+              "name": "Mobility and Activation",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 30,
+              "equipment": [
+                "bands"
+              ],
+              "alternatives": [
+                "Stretching",
+                "Light movement"
+              ],
+              "category": "isolation",
+              "intensity": "RPE 3",
+              "notes": "Maintain mobility and readiness",
+              "instructions": [
+                "Light activation work",
+                "Focus on mobility",
+                "Prepare body for competition",
+                "Practice movement patterns",
+                "Stay loose and ready"
+              ]
+            }
+          ]
+        }
+      ],
+      "nutrition": {
+        "dailyCalories": 2900,
+        "macros": {
+          "protein": 200,
+          "carbs": 280,
+          "fats": 110
+        },
+        "mealTiming": [
+          "Competition day: Light breakfast 3-4 hours before",
+          "Between sessions: Light snacks and hydration",
+          "Post-competition: Full meal for recovery"
+        ],
+        "notes": "Final cut to competition weight (83kg/183lbs). Practice competition day nutrition. Focus on hydration and easily digestible foods on competition day."
+      },
+      "progressionProtocol": [
+        "Week 1-2: Finalize all attempt selection",
+        "Week 3: Complete dress rehearsal",
+        "Week 4: Taper and final preparation",
+        "Competition week: Openers only, rest and prepare"
+      ]
+    }
+  ]
+}

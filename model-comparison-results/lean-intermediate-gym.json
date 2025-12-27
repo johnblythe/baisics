@@ -1,0 +1,1238 @@
+{
+  "name": "Intermediate Mass Builder",
+  "description": "8-week muscle building program focusing on progressive overload with compound movements and targeted hypertrophy work.",
+  "totalWeeks": 8,
+  "phases": [
+    {
+      "phaseNumber": 1,
+      "name": "Foundation Phase",
+      "durationWeeks": 4,
+      "focus": "Build strength base with moderate volume and establish movement patterns.",
+      "explanation": "Phase 1 focuses on build strength base with moderate volume and establish movement patterns.. Upper/Lower split optimizes recovery between sessions.",
+      "expectations": "Focus on learning proper form and building habits. Some muscle soreness is normal.",
+      "keyPoints": [
+        "Consistency is more important than perfection",
+        "Track your weights and reps to ensure progression",
+        "Get 7-9 hours of sleep for optimal recovery"
+      ],
+      "splitType": "Upper/Lower",
+      "workouts": [
+        {
+          "dayNumber": 1,
+          "name": "Lower Body A",
+          "focus": "lower",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "Hip circles - 10 each direction",
+              "Leg swings (front/back) - 10 each leg",
+              "Leg swings (side to side) - 10 each leg",
+              "Bodyweight squats - 10 reps",
+              "Glute bridges - 10 reps"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Pigeon pose - 30 seconds each side",
+              "Lying hamstring stretch - 30 seconds each side",
+              "Quad stretch - 30 seconds each side",
+              "Child's pose - 30 seconds",
+              "Deep breathing - 5 breaths"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Barbell Back Squat",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 90,
+              "equipment": [],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 8",
+              "instructions": []
+            },
+            {
+              "name": "Barbell Deadlift",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 5
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 8",
+              "instructions": [
+                "Stand in front of a loaded barbell.",
+                "While keeping the back as straight as possible, bend your knees, bend forward and grasp the bar using a medium (shoulder width) overhand grip. This will be the starting position of the exercise. Tip: If it is difficult to hold on to the bar with this grip, alternate your grip or use wrist straps.",
+                "While holding the bar, start the lift by pushing with your legs while simultaneously getting your torso to the upright position as you breathe out. In the upright position, stick your chest out and contract the back by bringing the shoulder blades back. Think of how the soldiers in the military look when they are in standing in attention."
+              ]
+            },
+            {
+              "name": "Front Barbell Squat",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "This exercise is best performed inside a squat rack for safety purposes. To begin, first set the bar on a rack that best matches your height. Once the correct height is chosen and the bar is loaded, bring your arms up under the bar while keeping the elbows high and the upper arm slightly above parallel to the floor. Rest the bar on top of the deltoids and cross your arms while grasping the bar for total control.",
+                "Lift the bar off the rack by first pushing with your legs and at the same time straightening your torso.",
+                "Step away from the rack and position your legs using a shoulder width medium stance with the toes slightly pointed out. Keep your head up at all times as looking down will get you off balance and also maintain a straight back. This will be your starting position. (Note: For the purposes of this discussion we will use the medium stance described above which targets overall development; however you can choose any of the three stances described in the foot positioning section)."
+              ]
+            },
+            {
+              "name": "Dumbbell Squat",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "Stand up straight while holding a dumbbell on each hand (palms facing the side of your legs).",
+                "Position your legs using a shoulder width medium stance with the toes slightly pointed out. Keep your head up at all times as looking down will get you off balance and also maintain a straight back. This will be your starting position. Note: For the purposes of this discussion we will use the medium stance described above which targets overall development; however you can choose any of the three stances discussed in the foot stances section.",
+                "Begin to slowly lower your torso by bending the knees as you maintain a straight posture with the head up. Continue down until your thighs are parallel to the floor. Tip: If you performed the exercise correctly, the front of the knees should make an imaginary straight line with the toes that is perpendicular to the front. If your knees are past that imaginary line (if they are past your toes) then you are placing undue stress on the knee and the exercise has been performed incorrectly."
+              ]
+            },
+            {
+              "name": "Barbell Squat To A Bench",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "This exercise is best performed inside a squat rack for safety purposes. To begin, first place a flat bench or a box behind you. The flat bench is used to teach you to set your hips back and to hit depth.",
+                "",
+                "Then, set the bar on a rack that best matches your height. Once the correct height is chosen and the bar is loaded, step under the bar and place the back of your shoulders (slightly below the neck) across it."
+              ]
+            },
+            {
+              "name": "Bodyweight Squat",
+              "sets": 2,
+              "measure": {
+                "type": "reps",
+                "value": 15
+              },
+              "restPeriod": 120,
+              "equipment": [],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "Stand with your feet shoulder width apart. You can place your hands behind your head. This will be your starting position.",
+                "Begin the movement by flexing your knees and hips, sitting back with your hips.",
+                "Continue down to full depth if you are able,and quickly reverse the motion until you return to the starting position. As you squat, keep your head and chest up and push your knees out."
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 2,
+          "name": "Upper Body A",
+          "focus": "upper",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "Arm circles - 10 each direction",
+              "Band pull-aparts - 15 reps",
+              "Wall slides - 10 reps",
+              "Push-up to downward dog - 5 reps",
+              "Cat-cow stretches - 8 reps"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Chest doorway stretch - 30 seconds each side",
+              "Cross-body shoulder stretch - 30 seconds each side",
+              "Tricep stretch - 30 seconds each side",
+              "Cat-cow stretches - 5 reps",
+              "Deep breathing - 5 breaths"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Barbell Bench Press - Medium Grip",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 8",
+              "instructions": [
+                "Lie back on a flat bench. Using a medium width grip (a grip that creates a 90-degree angle in the middle of the movement between the forearms and the upper arms), lift the bar from the rack and hold it straight over you with your arms locked. This will be your starting position.",
+                "From the starting position, breathe in and begin coming down slowly until the bar touches your middle chest.",
+                "After a brief pause, push the bar back to the starting position as you breathe out. Focus on pushing the bar using your chest muscles. Lock your arms and squeeze your chest in the contracted position at the top of the motion, hold for a second and then start coming down slowly again. Tip: Ideally, lowering the weight should take about twice as long as raising it."
+              ]
+            },
+            {
+              "name": "Bent Over Barbell Row",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 8",
+              "instructions": [
+                "Holding a barbell with a pronated grip (palms facing down), bend your knees slightly and bring your torso forward, by bending at the waist, while keeping the back straight until it is almost parallel to the floor. Tip: Make sure that you keep the head up. The barbell should hang directly in front of you as your arms hang perpendicular to the floor and your torso. This is your starting position.",
+                "Now, while keeping the torso stationary, breathe out and lift the barbell to you. Keep the elbows close to the body and only use the forearms to hold the weight. At the top contracted position, squeeze the back muscles and hold for a brief pause.",
+                "Then inhale and slowly lower the barbell back to the starting position."
+              ]
+            },
+            {
+              "name": "Barbell Shoulder Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "Sit on a bench with back support in a squat rack. Position a barbell at a height that is just above your head. Grab the barbell with a pronated grip (palms facing forward).",
+                "Once you pick up the barbell with the correct grip width, lift the bar up over your head by locking your arms. Hold at about shoulder level and slightly in front of your head. This is your starting position.",
+                "Lower the bar down to the shoulders slowly as you inhale."
+              ]
+            },
+            {
+              "name": "Close-Grip Barbell Bench Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "Lie back on a flat bench. Using a close grip (around shoulder width), lift the bar from the rack and hold it straight over you with your arms locked. This will be your starting position.",
+                "As you breathe in, come down slowly until you feel the bar on your middle chest. Tip: Make sure that - as opposed to a regular bench press - you keep the elbows close to the torso at all times in order to maximize triceps involvement.",
+                "After a second pause, bring the bar back to the starting position as you breathe out and push the bar using your triceps muscles. Lock your arms in the contracted position, hold for a second and then start coming down slowly again. Tip: It should take at least twice as long to go down than to come up."
+              ]
+            },
+            {
+              "name": "Lying T-Bar Row",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "machine"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "Load up the T-bar Row Machine with the desired weight and adjust the leg height so that your upper chest is at the top of the pad. Tip: In some machines all you can do is stand on the appropriate step that allows you to be at a height that has the upper chest at the top of the pad.",
+                "Lay face down on the pad and grab the handles. You can either use a palms down, palms up, or palms in position depending on what part of your back you want to emphasize.",
+                "Lift the bar off the rack and extend your arms in front of you. This will be your starting position."
+              ]
+            },
+            {
+              "name": "Machine Bench Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "machine"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "Sit down on the Chest Press Machine and select the weight.",
+                "Step on the lever provided by the machine since it will help you to bring the handles forward so that you can grab the handles and fully extend the arms.",
+                "Grab the handles with a palms-down grip and lift your elbows so that your upper arms are parallel to the floor to the sides of your torso. Tip: Your forearms will be pointing forward since you are grabbing the handles. Once you bring the handles forward and extend the arms you will be at the starting position."
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 3,
+          "name": "Lower Body B",
+          "focus": "lower",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "Hip circles - 10 each direction",
+              "Leg swings (front/back) - 10 each leg",
+              "Leg swings (side to side) - 10 each leg",
+              "Bodyweight squats - 10 reps",
+              "Glute bridges - 10 reps"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Pigeon pose - 30 seconds each side",
+              "Lying hamstring stretch - 30 seconds each side",
+              "Quad stretch - 30 seconds each side",
+              "Child's pose - 30 seconds",
+              "Deep breathing - 5 breaths"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Deficit Deadlift",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 5
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 8",
+              "instructions": [
+                "Begin by having a platform or weight plates that you can stand on, usually 1-3 inches in height. Approach the bar so that it is centered over your feet. You feet should be about hip width apart. Bend at the hip to grip the bar at shoulder width, allowing your shoulder blades to protract. Typically, you would use an overhand grip or an over/under grip on heavier sets.",
+                "With your feet, and your grip set, take a big breath and then lower your hips and bend the knees until your shins contact the bar. Look forward with your head, keep your chest up and your back arched, and begin driving through the heels to move the weight upward. After the bar passes the knees, aggressively pull the bar back, pulling your shoulder blades together as you drive your hips forward into the bar.",
+                "Lower the bar by bending at the hips and guiding it to the floor."
+              ]
+            },
+            {
+              "name": "Front Squat (Clean Grip)",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 8",
+              "instructions": [
+                "To begin, first set the bar in a rack slightly below shoulder level. Rest the bar on top of the deltoids, pushing into the clavicles, and lightly touching the throat. Your hands should be in a clean grip, touching the bar only with your fingers to help keep it in position.",
+                "Lift the bar off the rack by first pushing with your legs and at the same time straightening your torso. Step away from the rack and position your legs using a shoulder width medium stance with the toes slightly pointed out. Keep your head and elbows up at all times. This will be your starting position.",
+                "Bend at the knees, sitting down between your legs. Continue down until your hamstrings are on your calves. Keep your knees aligned with your feet by consciously using your abductors to push your knees out as you squat."
+              ]
+            },
+            {
+              "name": "Power Clean",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 5
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "Stand with your feet slightly wider than shoulder width apart and toes pointing out slightly.",
+                "Squat down and grasp bar with a closed, pronated grip. Your hands should be slightly wider than shoulder width apart outside knees with elbows fully extended.",
+                "Place the bar about 1 inch in front of your shins and over the balls of your feet."
+              ]
+            },
+            {
+              "name": "Plie Dumbbell Squat",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "Hold a dumbbell at the base with both hands and stand straight up. Move your legs so that they are wider than shoulder width apart from each other with your knees slightly bent.",
+                "Your toes should be facing out. Note: Your arms should be stationary while performing the exercise. This is the starting position.",
+                "Slowly bend the knees and lower your legs until your thighs are parallel to the floor. Make sure to inhale as this is the eccentric part of the exercise."
+              ]
+            },
+            {
+              "name": "Jefferson Squats",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "Place a barbell on the floor.",
+                "Stand in the middle of the bar length wise.",
+                "Bend down by bending at the knees and keeping your back straight and grasp the front of the bar with your right hand. Your palm should be in (neutral grip) facing the left side."
+              ]
+            },
+            {
+              "name": "Freehand Jump Squat",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "Cross your arms over your chest.",
+                "With your head up and your back straight, position your feet at shoulder width.",
+                "Keeping your back straight and chest up, squat down as you inhale until your upper thighs are parallel, or lower, to the floor."
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 4,
+          "name": "Upper Body B",
+          "focus": "upper",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "Arm circles - 10 each direction",
+              "Band pull-aparts - 15 reps",
+              "Wall slides - 10 reps",
+              "Push-up to downward dog - 5 reps",
+              "Cat-cow stretches - 8 reps"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Chest doorway stretch - 30 seconds each side",
+              "Cross-body shoulder stretch - 30 seconds each side",
+              "Tricep stretch - 30 seconds each side",
+              "Cat-cow stretches - 5 reps",
+              "Deep breathing - 5 breaths"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Decline Barbell Bench Press",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 8",
+              "instructions": [
+                "Secure your legs at the end of the decline bench and slowly lay down on the bench.",
+                "Using a medium width grip (a grip that creates a 90-degree angle in the middle of the movement between the forearms and the upper arms), lift the bar from the rack and hold it straight over you with your arms locked. The arms should be perpendicular to the floor. This will be your starting position. Tip: In order to protect your rotator cuff, it is best if you have a spotter help you lift the barbell off the rack.",
+                "As you breathe in, come down slowly until you feel the bar on your lower chest."
+              ]
+            },
+            {
+              "name": "Lying Cambered Barbell Row",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 90,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 8",
+              "instructions": [
+                "Place a cambered bar underneath an exercise bench.",
+                "Lie face down on the exercise bench and grab the bar using a palms down (pronated grip) that is wider than shoulder width. This will be your starting position.",
+                "As you exhale row the bar up as you keep the elbows close to your body to either your chest, in order to target the upper mid back, or to your stomach if targeting the lats is your goal."
+              ]
+            },
+            {
+              "name": "Push Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": []
+            },
+            {
+              "name": "Barbell Guillotine Bench Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "Using a medium width grip (a grip that creates a 90-degree angle in the middle of the movement between the forearms and the upper arms), lift the bar from the rack and hold it straight over your neck with your arms locked. This will be your starting position.",
+                "As you breathe in, bring the bar down slowly until it is about 1 inch from your neck.",
+                "After a second pause, bring the bar back to the starting position as you breathe out and push the bar using your chest muscles. Lock your arms and squeeze your chest in the contracted position, hold for a second and then start coming down slowly again. It should take at least twice as long to go down than to come up."
+              ]
+            },
+            {
+              "name": "Clean",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 5
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "With a barbell on the floor close to the shins, take an overhand (or hook) grip just outside the legs. Lower your hips with the weight focused on the heels, back straight, head facing forward, chest up, with your shoulders just in front of the bar. This will be your starting position.",
+                "",
+                "Begin the first pull by driving through the heels, extending your knees. Your back angle should stay the same, and your arms should remain straight. Move the weight with control as you continue to above the knees."
+              ]
+            },
+            {
+              "name": "Hammer Grip Incline DB Bench Press",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 12
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 6",
+              "instructions": [
+                "Lie back on an incline bench with a dumbbell on each hand on top of your thighs. The palms of your hand will be facing each other.",
+                "By using your thighs to help you get the dumbbells up, clean the dumbbells one arm at a time so that you can hold them at shoulder width.",
+                "Once at shoulder width, keep the palms of your hands with a neutral grip (palms facing each other). Keep your elbows flared out with the upper arms in line with the shoulders (perpendicular to the torso) and the elbows bent creating a 90-degree angle between the upper arm and the forearm. This will be your starting position."
+              ]
+            }
+          ]
+        }
+      ],
+      "nutrition": {
+        "dailyCalories": 2800,
+        "macros": {
+          "protein": 185,
+          "carbs": 280,
+          "fats": 93
+        },
+        "mealTiming": [
+          "Eat protein with each meal (25-40g)",
+          "Pre-workout: Light meal 1-2 hours before",
+          "Post-workout: Protein + carbs within 2 hours"
+        ]
+      },
+      "progressionProtocol": [
+        "Week 1-2: Establish working weights at RPE 7",
+        "Week 3-4: Push to RPE 8, add weight when completing all reps",
+        "Add 5-10 lbs to lower body, 2.5-5 lbs to upper body when ready",
+        "Deload every 4-6 weeks: reduce volume by 40-50%"
+      ]
+    },
+    {
+      "phaseNumber": 2,
+      "name": "Intensity Phase",
+      "durationWeeks": 4,
+      "focus": "Increase training intensity with heavier loads and advanced movement patterns for maximum muscle growth.",
+      "explanation": "Phase 2 focuses on increase training intensity with heavier loads and advanced movement patterns for maximum muscle growth.. Upper/Lower split optimizes recovery between sessions.",
+      "expectations": "You should feel stronger and more confident. Progressive overload becomes the focus.",
+      "keyPoints": [
+        "Consistency is more important than perfection",
+        "Track your weights and reps to ensure progression",
+        "Get 7-9 hours of sleep for optimal recovery"
+      ],
+      "splitType": "Upper/Lower",
+      "workouts": [
+        {
+          "dayNumber": 1,
+          "name": "Lower Body A",
+          "focus": "lower",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "Hip circles - 10 each direction",
+              "Leg swings (front/back) - 10 each leg",
+              "Leg swings (side to side) - 10 each leg",
+              "Bodyweight squats - 10 reps",
+              "Glute bridges - 10 reps"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Pigeon pose - 30 seconds each side",
+              "Lying hamstring stretch - 30 seconds each side",
+              "Quad stretch - 30 seconds each side",
+              "Child's pose - 30 seconds",
+              "Deep breathing - 5 breaths"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Barbell Full Squat",
+              "sets": 5,
+              "measure": {
+                "type": "reps",
+                "value": 5
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 9",
+              "instructions": [
+                "This exercise is best performed inside a squat rack for safety purposes. To begin, first set the bar on a rack just above shoulder level. Once the correct height is chosen and the bar is loaded, step under the bar and place the back of your shoulders (slightly below the neck) across it.",
+                "Hold on to the bar using both arms at each side and lift it off the rack by first pushing with your legs and at the same time straightening your torso.",
+                "Step away from the rack and position your legs using a shoulder-width medium stance with the toes slightly pointed out. Keep your head up at all times and maintain a straight back. This will be your starting position."
+              ]
+            },
+            {
+              "name": "Deadlift with Chains",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 3
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 9",
+              "instructions": [
+                "You can attach the chains to the sleeves of the bar, or just drape the middle over the bar so there is a greater weight increase as you lift.",
+                "Approach the bar so that it is centered over your feet. You feet should be about hip width apart. Bend at the hip to grip the bar at shoulder width, allowing your shoulder blades to protract. Typically, you would use an overhand grip or an over/under grip on heavier sets. With your feet, and your grip set, take a big breath and then lower your hips and bend the knees until your shins contact the bar.",
+                "Look forward with your head, keep your chest up and your back arched, and begin driving through the heels to move the weight upward. After the bar passes the knees, aggressively pull the bar back, pulling your shoulder blades together as you drive your hips forward into the bar."
+              ]
+            },
+            {
+              "name": "Overhead Squat",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 8",
+              "instructions": [
+                "Start out by having a barbell in front of you on the floor. Your feet should be wider than shoulder width apart from each other.",
+                "Bend the knees and use a pronated grip (palms facing you) to grab the barbell. Your hands should be at a wider than shoulder width apart from each other before lifting. Once you are positioned, lift the barbell up until you can rest it on your chest.",
+                "Move the barbell over and slightly behind your head and make sure your arms are fully extended. Keep your head up at all times and also maintain a straight back. Retract your shoulder blades. This is your starting position."
+              ]
+            },
+            {
+              "name": "Hang Clean",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 5
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 8",
+              "instructions": [
+                "Begin with a shoulder width, double overhand or hook grip, with the bar hanging at the mid thigh position. Your back should be straight and inclined slightly forward.",
+                "Begin by aggressively extending through the hips, knees and ankles, driving the weight upward. As you do so, shrug your shoulders towards your ears.",
+                "Immediately recover by driving through the heels, keeping the torso upright and elbows up. Continue until you have risen to a standing position."
+              ]
+            },
+            {
+              "name": "One Leg Barbell Squat",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "Start by standing about 2 to 3 feet in front of a flat bench with your back facing the bench. Have a barbell in front of you on the floor. Tip: Your feet should be shoulder width apart from each other.",
+                "Bend the knees and use a pronated grip with your hands being wider than shoulder width apart from each other to lift the barbell up until you can rest it on your chest.",
+                "Then lift the barbell over your head and rest it on the base of your neck. Move one foot back so that your toe is resting on the flat bench. Your other foot should be stationary in front of you. Keep your head up at all times as looking down will get you off balance and also maintain a straight back. Tip: Make sure your back is straight and chest is out while performing this exercise."
+              ]
+            },
+            {
+              "name": "Kneeling Jump Squat",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "Begin kneeling on the floor with a barbell racked across the back of your shoulders, or you can use your body weight for this exercise. This can be done inside of a power rack to make unracking easier.",
+                "Sit back with your hips until your glutes touch your feet, keeping your head and chest up.",
+                "Explode up with your hips, generating enough power to land with your feet flat on the floor."
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 2,
+          "name": "Upper Body A",
+          "focus": "upper",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "Arm circles - 10 each direction",
+              "Band pull-aparts - 15 reps",
+              "Wall slides - 10 reps",
+              "Push-up to downward dog - 5 reps",
+              "Cat-cow stretches - 8 reps"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Chest doorway stretch - 30 seconds each side",
+              "Cross-body shoulder stretch - 30 seconds each side",
+              "Tricep stretch - 30 seconds each side",
+              "Cat-cow stretches - 5 reps",
+              "Deep breathing - 5 breaths"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Bench Press with Chains",
+              "sets": 5,
+              "measure": {
+                "type": "reps",
+                "value": 3
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 9",
+              "instructions": [
+                "Adjust the leader chain, shortening it to the desired length.Place the chains on the sleeves of the bar.",
+                "Lying on the bench, get your head beyond the bar if possible. Tuck your feet underneath you and arch your back. Using the bar to help support your weight, lift your shoulder off the bench and retract them, squeezing the shoulder blades together. Use your feet to drive your traps into the bench. Maintain this tight body position throughout the movement. However wide your grip, it should cover the ring on the bar.",
+                "Pull the bar out of the rack without protracting your shoulders. Focus on squeezing the bar and trying to pull it apart. Lower the bar to your lower chest or upper stomach. The bar, wrist, and elbow should stay in line at all times."
+              ]
+            },
+            {
+              "name": "Clean Pull",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 5
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 9",
+              "instructions": [
+                "With a barbell on the floor close to the shins, take an overhand or hook grip just outside the legs. Lower your hips with the weight focused on the heels, back straight, head facing forward, chest up, with your shoulders just in front of the bar. This will be your starting position.",
+                "Begin the first pull by driving through the heels, extending your knees. Your back angle should stay the same, and your arms should remain straight and elbows out. Move the weight with control as you continue to above the knees.",
+                "Next comes the second pull, the main source of acceleration for the clean. As the bar approaches the mid-thigh position, begin extending through the hips. In a jumping motion, accelerate by extending the hips, knees, and ankles, using speed to move the bar upward. There should be no need to actively pull through the arms to accelerate the weight; at the end of the second pull, the body should be fully extended, leaning slightly back, with the arms still extended. Full extension should be violent and abrupt, and ensure that you do not prolong the extension for longer than necessary."
+              ]
+            },
+            {
+              "name": "Clean and Press",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 5
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 8",
+              "instructions": [
+                "Assume a shoulder-width stance, with knees inside the arms. Now while keeping the back flat, bend at the knees and hips so that you can grab the bar with the arms fully extended and a pronated grip that is slightly wider than shoulder width. Point the elbows out to sides. The bar should be close to the shins. Position the shoulders over or slightly ahead of the bar. Establish a flat back posture. This will be your starting position.",
+                "Begin to pull the bar by extending the knees. Move your hips forward and raise the shoulders at the same rate while keeping the angle of the back constant; continue to lift the bar straight up while keeping it close to your body.",
+                "As the bar passes the knee, extend at the ankles, knees, and hips forcefully, similar to a jumping motion. As you do so, continue to guide the bar with your hands, shrugging your shoulders and using the momentum from your movement to pull the bar as high as possible. The bar should travel close to your body, and you should keep your elbows out."
+              ]
+            },
+            {
+              "name": "Bench Press - Powerlifting",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 8",
+              "instructions": [
+                "Begin by lying on the bench, getting your head beyond the bar if possible. Tuck your feet underneath you and arch your back. Using the bar to help support your weight, lift your shoulder off the bench and retract them, squeezing the shoulder blades together. Use your feet to drive your traps into the bench. Maintain this tight body position throughout the movement.",
+                "However wide your grip, it should cover the ring on the bar. Pull the bar out of the rack without protracting your shoulders. Focus on squeezing the bar and trying to pull it apart.",
+                "Lower the bar to your lower chest or upper stomach. The bar, wrist, and elbow should stay in line at all times."
+              ]
+            },
+            {
+              "name": "Muscle Snatch",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "Begin with a loaded barbell held at the mid thigh position with a wide grip. The feet should be directly below the hips, with the feet turned out as needed. Lower the hips, with the chest up and the head looking forward. The shoulders should be just in front of the bar. This will be the starting position.",
+                "Begin the pull by driving through the front of the heels, raising the bar. Transition into the second pull by extending through the hips knees and ankles, driving the bar up as quickly as possible. The bar should be close to the body.",
+                "Continue raising the bar to the overhead position, without rebending the knees."
+              ]
+            },
+            {
+              "name": "Dumbbell Clean",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "dumbbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "Begin standing with a dumbbell in each hand with your feet shoulder width apart.",
+                "Lower the weights to the floor by flexing at the hips and knees, pushing your hips back until the dumbbells reach the floor. This will be your starting position.",
+                "To initiate the movement, violently jump upward by extending the hips, knees, and ankles to acclerate the weights upward. Maintaining a neutral grip on the dumbbells, keep the arms straight until full extension is reached."
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 3,
+          "name": "Lower Body B",
+          "focus": "lower",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "Hip circles - 10 each direction",
+              "Leg swings (front/back) - 10 each leg",
+              "Leg swings (side to side) - 10 each leg",
+              "Bodyweight squats - 10 reps",
+              "Glute bridges - 10 reps"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Pigeon pose - 30 seconds each side",
+              "Lying hamstring stretch - 30 seconds each side",
+              "Quad stretch - 30 seconds each side",
+              "Child's pose - 30 seconds",
+              "Deep breathing - 5 breaths"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Power Clean from Blocks",
+              "sets": 5,
+              "measure": {
+                "type": "reps",
+                "value": 3
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 9",
+              "instructions": [
+                "With a barbell on boxes of the desired height, take a grip just outside the legs. Lower your hips with the weight focused on the heels, back straight, head facing forward, chest up, with your shoulders just in front of the bar. This will be your starting position.",
+                "Begin the first pull by driving through the heels, extending your knees. Your back angle should stay the same, and your arms should remain straight. As the bar approaches the mid-thigh position, begin extending through the hips.",
+                "In a jumping motion, accelerate by extending the hips, knees, and ankles, using speed to move the bar upward. There should be no need to actively pull through the arms to accelerate the weight. At the end of the second pull, the body should be fully extended, leaning slightly back, with the arms still extended."
+              ]
+            },
+            {
+              "name": "Frankenstein Squat",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 5
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 9",
+              "instructions": [
+                "This drill teaches you the proper positioning of both the bar and your body during the clean and front squat.",
+                "Place the barbell on the front of the shoulders, releasing your grip and extending your arms out in front of you. The shoulders should be pushed forward to create a shelf, and the bar should be in contact with the throat. Ensure that you only move your shoulder blades forward; don't round the thoracic spine.",
+                "Squat by flexing the knees and hips, sitting in between your legs. Keep the torso upright, the arms up, and the shoulders forward, and the bar should stay in place. Go to the bottom of the squat, until your hamstrings contact your calves."
+              ]
+            },
+            {
+              "name": "Hang Snatch",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 3
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 8",
+              "instructions": [
+                "Begin with a wide grip on the bar, with an overhand or hook grip. The feet should be directly below the hips with the feet turned out. Your knees should be slightly bent, and the torso inclined forward. The spine should be fully extended and the head facing forward. The bar should be at the hips. This will be your starting position.",
+                "Aggressively extend through the legs and hips. At peak extension, shrug the shoulders and allow the elbows to flex to the side.",
+                "As you move your feet into the receiving position, forcefully pull yourself below the bar as you elevate the bar overhead. Receive the bar with your body as low as possible and the arms fully extended overhead."
+              ]
+            },
+            {
+              "name": "Clean Deadlift",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 5
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 8",
+              "instructions": [
+                "Begin standing with a barbell close to your shins. Your feet should be directly under your hips with your feet turned out slightly. Grip the bar with a double overhand grip or hook grip, about shoulder width apart. Squat down to the bar. Your spine should be in full extension, with a back angle that places your shoulders in front of the bar and your back as vertical as possible.",
+                "Begin by driving through the floor through the front of your heels. As the bar travels upward, maintain a constant back angle. Flare your knees out to the side to help keep them out of the bar's path.",
+                "After the bar crosses the knees, complete the lift by driving the hips into the bar until your hips and knees are extended."
+              ]
+            },
+            {
+              "name": "Heaving Snatch Balance",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 6
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "This drill helps you learn the snatch. Begin by holding a light weight across the back of the shoulders. Your feet should be slightly wider than hip width apart with the feet turned out, the same position that you would perform a squat with.",
+                "Begin by dipping with the knees slightly, and popping back up to briefly unload the bar. Drive yourself underneath the bar, elevating it overhead as you descend into a full squat.",
+                "Return to a standing position."
+              ]
+            },
+            {
+              "name": "Kneeling Squat",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 10
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "Set the bar to the proper height in a power rack. Kneel behind the bar; it may be beneficial to put a mat down to pad your knees. Slide under the bar, racking it across the back of your shoulders. Your shoulder blades should be retracted and the bar tight across your back. Unrack the weight.",
+                "With your head looking forward, sit back with your butt until you touch your calves.",
+                "Reverse the motion, returning the torso to an upright position."
+              ]
+            }
+          ]
+        },
+        {
+          "dayNumber": 4,
+          "name": "Upper Body B",
+          "focus": "upper",
+          "warmup": {
+            "duration": 5,
+            "activities": [
+              "Arm circles - 10 each direction",
+              "Band pull-aparts - 15 reps",
+              "Wall slides - 10 reps",
+              "Push-up to downward dog - 5 reps",
+              "Cat-cow stretches - 8 reps"
+            ]
+          },
+          "cooldown": {
+            "duration": 5,
+            "activities": [
+              "Chest doorway stretch - 30 seconds each side",
+              "Cross-body shoulder stretch - 30 seconds each side",
+              "Tricep stretch - 30 seconds each side",
+              "Cat-cow stretches - 5 reps",
+              "Deep breathing - 5 breaths"
+            ]
+          },
+          "exercises": [
+            {
+              "name": "Clean and Jerk",
+              "sets": 5,
+              "measure": {
+                "type": "reps",
+                "value": 3
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 9",
+              "instructions": [
+                "With a barbell on the floor close to the shins, take an overhand or hook grip just outside the legs. Lower your hips with the weight focused on the heels, back straight, head facing forward, chest up, with your shoulders just in front of the bar. This will be your starting position.",
+                "Begin the first pull by driving through the heels, extending your knees. Your back angle should stay the same, and your arms should remain straight. Move the weight with control as you continue to above the knees.",
+                "Next comes the second pull, the main source of acceleration for the clean. As the bar approaches the mid-thigh position, begin extending through the hips. In a jumping motion, accelerate by extending the hips, knees, and ankles, using speed to move the bar upward. There should be no need to actively pull through the arms to accelerate the weight; at the end of the second pull, the body should be fully extended, leaning slightly back, with the arms still extended."
+              ]
+            },
+            {
+              "name": "Power Snatch from Blocks",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 3
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 9",
+              "instructions": [
+                "Begin with a loaded barbell on boxes or stands of the desired height. A wide grip should be taken on the bar. The feet should be directly below the hips, with the feet turned out as needed. Lower the hips, with the chest up and the head looking forward. The shoulders should be just in front of the bar, with the elbows pointed out. This will be the starting position.",
+                "Begin the first pull by driving through the front of the heels, raising the bar from the boxes.",
+                "Transition into the second pull by extending through the hips knees and ankles, driving the bar up as quickly as possible. The bar should be close to the body. At peak extension, shrug the shoulders and allow the elbows to flex to the side."
+              ]
+            },
+            {
+              "name": "Clean from Blocks",
+              "sets": 4,
+              "measure": {
+                "type": "reps",
+                "value": 5
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 8",
+              "instructions": [
+                "With a barbell on boxes or stands of the desired height, take an overhand or hook grip just outside the legs. Lower your hips with the weight focused on the heels, back straight, head facing forward, chest up, with your shoulders just in front of the bar. This will be your starting position.",
+                "Begin the first pull by driving through the heels, extending your knees. Your back angle should stay the same, and your arms should remain straight with the elbows pointed out.",
+                "As full extension is achieved, transition into the receiving position by aggressively shrugging and flexing the arms with the elbows up and out. Aggressively pull yourself down, rotating your elbows under the bar as you do so. Receive the bar in a front squat position, the depth of which is dependent upon the height of the bar at the end of the third pull. The bar should be racked onto the protracted shoulders, lightly touching the throat with the hands relaxed. Continue to descend to the bottom squat position, which will help in the recovery."
+              ]
+            },
+            {
+              "name": "Power Snatch",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 5
+              },
+              "restPeriod": 180,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 8",
+              "instructions": [
+                "Begin with a loaded barbell on the floor. The bar should be close to or touching the shins, and a wide grip should be taken on the bar. The feet should be directly below the hips, with the feet turned out as needed. Lower the hips, with the chest up and the head looking forward. The shoulders should be just in front of the bar. This will be the starting position.",
+                "Begin the first pull by driving through the front of the heels, raising the bar from the ground. The back angle should stay the same until the bar passes the knees.",
+                "Transition into the second pull by extending through the hips knees and ankles, driving the bar up as quickly as possible. The bar should be close to the body. At peak extension, shrug the shoulders and allow the elbows to flex to the side."
+              ]
+            },
+            {
+              "name": "Hang Snatch - Below Knees",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 5
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "Begin with a wide grip on the bar, with an overhand or hook grip. The feet should be directly below the hips with the feet turned out. Your knees should be slightly bent, and the torso inclined forward. The spine should be fully extended and the head facing forward. The bar should be just below the knees. This will be your starting position.",
+                "Aggressively extend through the legs and hips. At peak extension, shrug the shoulders and allow the elbows to flex to the side.",
+                "As you move your feet into the receiving position, forcefully pull yourself below the bar as you elevate the bar overhead. Receive the bar with your body as low as possible and the arms fully extended overhead."
+              ]
+            },
+            {
+              "name": "Clean Shrug",
+              "sets": 3,
+              "measure": {
+                "type": "reps",
+                "value": 8
+              },
+              "restPeriod": 120,
+              "equipment": [
+                "barbell"
+              ],
+              "alternatives": [],
+              "category": "primary",
+              "intensity": "RPE 7",
+              "instructions": [
+                "Begin with a shoulder width, double overhand or hook grip, with the bar hanging at the mid thigh position. Your back should be straight and inclined slightly forward.",
+                "Shrug your shoulders towards your ears. While this exercise can usually by loaded with heavier weight than a clean, avoid overloading to the point that the execution slows down."
+              ]
+            }
+          ]
+        }
+      ],
+      "nutrition": {
+        "dailyCalories": 3000,
+        "macros": {
+          "protein": 200,
+          "carbs": 300,
+          "fats": 100
+        },
+        "mealTiming": [
+          "Eat protein with each meal (25-40g)",
+          "Pre-workout: Light meal 1-2 hours before",
+          "Post-workout: Protein + carbs within 2 hours"
+        ]
+      },
+      "progressionProtocol": [
+        "Week 1-2: Establish working weights at RPE 7",
+        "Week 3-4: Push to RPE 8, add weight when completing all reps",
+        "Add 5-10 lbs to lower body, 2.5-5 lbs to upper body when ready",
+        "Deload every 4-6 weeks: reduce volume by 40-50%"
+      ]
+    }
+  ]
+}

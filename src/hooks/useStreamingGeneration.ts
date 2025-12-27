@@ -117,6 +117,24 @@ export function useStreamingGeneration(options: UseStreamingGenerationOptions = 
 
         console.log(`[Generation] Starting phase ${phaseNum}/${totalPhases}`);
 
+        // Simulate progress during API call (updates every 500ms)
+        const targetProgress = baseProgress + phaseNum * progressPerPhase - 5;
+        let simulatedProgress = currentProgress;
+        const progressInterval = setInterval(() => {
+          if (simulatedProgress < targetProgress) {
+            simulatedProgress += 3;
+            const simUpdate = {
+              stage: 'generating' as const,
+              message: `Generating phase ${phaseNum} of ${totalPhases}...`,
+              progress: Math.min(Math.round(simulatedProgress), Math.round(targetProgress)),
+              currentPhase: phaseNum,
+              totalPhases,
+            };
+            setProgress(simUpdate);
+            optionsRef.current.onProgress?.(simUpdate);
+          }
+        }, 500);
+
         const response: Response = await fetch('/api/programs/generate/phase', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -135,6 +153,9 @@ export function useStreamingGeneration(options: UseStreamingGenerationOptions = 
           }),
           signal,
         });
+
+        // Clear simulated progress
+        clearInterval(progressInterval);
 
         if (!response.ok) {
           const error = await response.json();
@@ -186,7 +207,10 @@ export function useStreamingGeneration(options: UseStreamingGenerationOptions = 
       // Update program name based on goal if available
       if (programId) {
         const goal = params.profile?.trainingGoal || params.intakeData?.trainingGoal || 'fitness';
-        const capitalizedGoal = goal.charAt(0).toUpperCase() + goal.slice(1);
+        // Title case the goal (capitalize each word)
+        const capitalizedGoal = goal.split(' ').map((word: string) =>
+          word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        ).join(' ');
         meta.name = `${capitalizedGoal} Program`;
         meta.description = `A personalized ${totalWeeks}-week program focused on ${goal}.`;
 
@@ -196,6 +220,7 @@ export function useStreamingGeneration(options: UseStreamingGenerationOptions = 
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
+              userId: params.userId,
               name: meta.name,
               description: meta.description,
             }),
