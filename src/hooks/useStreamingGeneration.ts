@@ -208,7 +208,7 @@ export function useStreamingGeneration(options: UseStreamingGenerationOptions = 
       if (programId) {
         const goal = params.profile?.trainingGoal || params.intakeData?.trainingGoal || 'fitness';
         // Title case the goal (capitalize each word)
-        const capitalizedGoal = goal.split(' ').map(word =>
+        const capitalizedGoal = goal.split(' ').map((word: string) =>
           word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
         ).join(' ');
         meta.name = `${capitalizedGoal} Program`;

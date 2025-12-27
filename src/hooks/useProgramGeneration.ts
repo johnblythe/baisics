@@ -190,7 +190,7 @@ export function useProgramGeneration(options: UseProgramGenerationOptions = {}) 
         // Construct final program
         const goal = data.profile?.trainingGoal || data.intakeData?.trainingGoal || 'fitness';
         // Title case the goal (capitalize each word)
-        const capitalizedGoal = goal.split(' ').map(word =>
+        const capitalizedGoal = goal.split(' ').map((word: string) =>
           word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
         ).join(' ');
         const programName = `${capitalizedGoal} Program`;

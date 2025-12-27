@@ -8,6 +8,53 @@ interface ComparisonFile {
   type: 'lean' | 'full';
 }
 
+interface Exercise {
+  name?: string;
+  sets?: number;
+  measure?: { type?: string; value?: number };
+  category?: string;
+  equipment?: string[];
+  instructions?: string[];
+  alternatives?: string[];
+  notes?: string;
+}
+
+interface Workout {
+  dayNumber?: number;
+  name?: string;
+  focus?: string;
+  warmup?: {
+    duration?: number;
+    activities?: string[];
+  };
+  cooldown?: {
+    duration?: number;
+    activities?: string[];
+  };
+  exercises?: Exercise[];
+}
+
+interface Phase {
+  phaseNumber?: number;
+  name?: string;
+  focus?: string;
+  splitType?: string;
+  durationWeeks?: number;
+  workouts?: Workout[];
+  nutrition?: {
+    dailyCalories?: number;
+    macros?: { protein?: number; carbs?: number; fats?: number };
+  };
+}
+
+interface Program {
+  name?: string;
+  description?: string;
+  totalWeeks?: number;
+  phases?: Phase[];
+  error?: string;
+}
+
 export default function ComparePage() {
   const [files, setFiles] = useState<ComparisonFile[]>([]);
   const [fileA, setFileA] = useState<string>('');
@@ -130,46 +177,7 @@ function ProgramView({ data, label, filename }: { data: unknown; label: string; 
     );
   }
 
-  const program = data as {
-    name?: string;
-    description?: string;
-    totalWeeks?: number;
-    phases?: Array<{
-      phaseNumber?: number;
-      name?: string;
-      focus?: string;
-      splitType?: string;
-      durationWeeks?: number;
-      workouts?: Array<{
-        dayNumber?: number;
-        name?: string;
-        focus?: string;
-        warmup?: {
-          duration?: number;
-          activities?: string[];
-        };
-        cooldown?: {
-          duration?: number;
-          activities?: string[];
-        };
-        exercises?: Array<{
-          name?: string;
-          sets?: number;
-          measure?: { type?: string; value?: number };
-          category?: string;
-          equipment?: string[];
-          instructions?: string[];
-          alternatives?: string[];
-          notes?: string;
-        }>;
-      }>;
-      nutrition?: {
-        dailyCalories?: number;
-        macros?: { protein?: number; carbs?: number; fats?: number };
-      };
-    }>;
-    error?: string;
-  };
+  const program = data as Program;
 
   if (program.error) {
     return (
@@ -196,7 +204,7 @@ function ProgramView({ data, label, filename }: { data: unknown; label: string; 
   );
 }
 
-function PhaseSection({ phase }: { phase: NonNullable<NonNullable<Parameters<typeof ProgramView>[0]['data']>['phases']>[0] }) {
+function PhaseSection({ phase }: { phase: Phase }) {
   const [expanded, setExpanded] = useState(true);
 
   return (
@@ -238,7 +246,7 @@ function PhaseSection({ phase }: { phase: NonNullable<NonNullable<Parameters<typ
   );
 }
 
-function WorkoutSection({ workout }: { workout: NonNullable<NonNullable<Parameters<typeof PhaseSection>[0]['phase']>['workouts']>[0] }) {
+function WorkoutSection({ workout }: { workout: Workout }) {
   const [expanded, setExpanded] = useState(false);
 
   return (

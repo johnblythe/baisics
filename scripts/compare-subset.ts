@@ -29,13 +29,10 @@ import type { UserProfile } from '../src/services/programGeneration/types';
 // Test personas - subset for quick verification
 const TEST_PERSONAS: Record<string, UserProfile> = {
   'postpartum-mom': {
-    odometer: 'new',
-    odometer_value: 0,
     sex: 'female',
     age: 32,
     weight: 155,
-    heightFeet: 5,
-    heightInches: 5,
+    height: 65, // 5'5" in inches
     trainingGoal: 'Build strength and lose baby weight safely',
     experienceLevel: 'beginner',
     daysAvailable: 3,
@@ -54,13 +51,10 @@ const TEST_PERSONAS: Record<string, UserProfile> = {
   },
 
   'senior-beginner': {
-    odometer: 'new',
-    odometer_value: 0,
     sex: 'male',
     age: 68,
     weight: 185,
-    heightFeet: 5,
-    heightInches: 10,
+    height: 70, // 5'10" in inches
     trainingGoal: 'Maintain mobility and build functional strength',
     experienceLevel: 'beginner',
     daysAvailable: 3,
