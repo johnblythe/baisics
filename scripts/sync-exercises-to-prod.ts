@@ -120,7 +120,7 @@ async function syncExercises(dryRun = true) {
               | "OTHER",
             targetMuscles: data.targetMuscles as any[],
             secondaryMuscles: data.secondaryMuscles as any[],
-            default_tier: data.default_tier as "TIER_1" | "TIER_2" | "TIER_3",
+            defaultTier: data.default_tier as "TIER_1" | "TIER_2" | "TIER_3",
           },
         });
 
@@ -176,7 +176,7 @@ async function syncExercises(dryRun = true) {
                 | "OTHER",
               targetMuscles: data.targetMuscles as any[],
               secondaryMuscles: data.secondaryMuscles as any[],
-              default_tier: data.default_tier as "TIER_1" | "TIER_2" | "TIER_3",
+              defaultTier: data.default_tier as "TIER_1" | "TIER_2" | "TIER_3",
             },
           });
         }
@@ -210,7 +210,7 @@ async function syncExercises(dryRun = true) {
                 | "OTHER",
               targetMuscles: data.targetMuscles as any[],
               secondaryMuscles: data.secondaryMuscles as any[],
-              default_tier: data.default_tier as "TIER_1" | "TIER_2" | "TIER_3",
+              defaultTier: data.default_tier as "TIER_1" | "TIER_2" | "TIER_3",
             },
           });
         }
