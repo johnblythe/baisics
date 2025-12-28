@@ -8,6 +8,11 @@
 - **Trunk-based development: all PRs target `main`**
 - Create feature branches from `main`
 
+## Database & Migrations
+- **Production migrations only via deploy**: Never run migrations directly against prod. Vercel build runs `prisma migrate deploy` automatically.
+- **Workflow**: Create migration locally → commit → push to main → Vercel deploys and applies migration
+- **Local data → prod**: Use sync scripts in `scripts/` folder, not direct DB access
+
 ## Style Guide (v2a - Fresh Athletic)
 All public-facing pages should match the v2a landing page styling:
 - **Colors**: White + deep navy (#0F172A) + warm coral (#FF6B6B)

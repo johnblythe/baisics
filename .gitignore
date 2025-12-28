@@ -53,3 +53,5 @@ uploads/*
 
 # Local issue cache
 .issues.json.issues.json
+scripts/exercise-*-data.json
+.env.production
