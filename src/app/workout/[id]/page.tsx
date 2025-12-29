@@ -2,12 +2,18 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { CheckCircle, Pencil, Circle, PlayCircle, ChevronLeft, ChevronRight, Dumbbell } from 'lucide-react';
+import { CheckCircle, Pencil, Circle, PlayCircle, ChevronLeft, ChevronRight, Dumbbell, MessageCircle } from 'lucide-react';
 import MainLayout from '@/app/components/layouts/MainLayout';
 import { formatExerciseMeasure, formatExerciseUnit } from '@/utils/formatters';
 import RestPeriodIndicator from '@/app/components/RestPeriodIndicator';
 import ExerciseSwapModal from '@/components/ExerciseSwapModal';
+import WorkoutChatPanel from '@/components/WorkoutChatPanel';
 import { clearWelcomeData } from '@/components/ClaimWelcomeBanner';
+
+interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
 
 interface Exercise {
   id: string;
@@ -207,6 +213,9 @@ export default function WorkoutPage() {
   const [workoutLog, setWorkoutLog] = useState<any>(null);
   const [showCompletion, setShowCompletion] = useState(false);
   const [swapModalOpen, setSwapModalOpen] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
+  // Store chat messages per exercise for persistence
+  const [chatMessages, setChatMessages] = useState<Record<string, ChatMessage[]>>({});
 
   const findFirstIncompletePosition = (exercises: ExerciseWithLogs[]) => {
     for (let i = 0; i < exercises.length; i++) {
@@ -421,9 +430,20 @@ export default function WorkoutPage() {
 
   const currentExercise = exercises[currentExerciseIndex];
 
+  // Helper to get/set messages for current exercise
+  const currentMessages = currentExercise ? (chatMessages[currentExercise.id] || []) : [];
+  const setCurrentMessages = (messages: ChatMessage[]) => {
+    if (currentExercise) {
+      setChatMessages(prev => ({ ...prev, [currentExercise.id]: messages }));
+    }
+  };
+
   return (
     <MainLayout>
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="flex gap-6">
+          {/* Main Content */}
+          <div className={`flex-1 ${chatOpen ? 'lg:max-w-3xl' : 'max-w-4xl mx-auto'}`}>
         {/* Progress Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
@@ -464,6 +484,22 @@ export default function WorkoutPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                     </svg>
                     <span className="text-sm font-medium">Swap</span>
+                  </button>
+                  <button
+                    onClick={() => setChatOpen(!chatOpen)}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-colors ${
+                      chatOpen
+                        ? 'bg-[#FF6B6B] text-white border-[#FF6B6B]'
+                        : 'bg-white text-[#475569] border-[#E2E8F0] hover:border-[#FF6B6B]/50 hover:text-[#FF6B6B]'
+                    }`}
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    <span className="text-sm font-medium">Ask</span>
+                    {currentMessages.length > 0 && !chatOpen && (
+                      <span className="w-4 h-4 bg-[#FF6B6B] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                        {currentMessages.length}
+                      </span>
+                    )}
                   </button>
                   <a
                     href={`https://www.youtube.com/results?search_query=${currentExercise.name} how to`}
@@ -594,6 +630,29 @@ export default function WorkoutPage() {
               </button>
             );
           })}
+        </div>
+          </div>
+
+          {/* Chat Panel - Desktop right side */}
+          {currentExercise && (
+            <div className={`hidden lg:block transition-all duration-300 ${chatOpen ? 'w-80' : 'w-0'}`}>
+              {chatOpen && (
+                <div className="sticky top-24 h-[calc(100vh-8rem)]">
+                  <WorkoutChatPanel
+                    exerciseName={currentExercise.name}
+                    currentSet={currentExercise.logs.findIndex(l => !l.isCompleted) + 1 || currentExercise.sets}
+                    totalSets={currentExercise.sets}
+                    userEquipment="standard gym equipment"
+                    experienceLevel="intermediate"
+                    isOpen={chatOpen}
+                    onClose={() => setChatOpen(false)}
+                    messages={currentMessages}
+                    onMessagesChange={setCurrentMessages}
+                  />
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
