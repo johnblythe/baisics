@@ -639,7 +639,6 @@ export default function WorkoutPage() {
               {chatOpen && (
                 <div className="sticky top-24 h-[calc(100vh-8rem)]">
                   <WorkoutChatPanel
-                    exerciseId={currentExercise.id}
                     exerciseName={currentExercise.name}
                     currentSet={currentExercise.logs.findIndex(l => !l.isCompleted) + 1 || currentExercise.sets}
                     totalSets={currentExercise.sets}

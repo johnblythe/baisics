@@ -9,7 +9,6 @@ interface Message {
 }
 
 interface WorkoutChatPanelProps {
-  exerciseId: string;
   exerciseName: string;
   currentSet: number;
   totalSets: number;
@@ -30,7 +29,6 @@ const QUICK_PROMPTS = [
 ];
 
 export function WorkoutChatPanel({
-  exerciseId,
   exerciseName,
   currentSet,
   totalSets,
@@ -95,6 +93,8 @@ export function WorkoutChatPanel({
       const assistantMessage: Message = { role: 'assistant', content: data.response };
       onMessagesChange([...newMessages, assistantMessage]);
     } catch (err) {
+      // Log error for debugging (#180)
+      console.error('Workout chat request failed:', { error: err, exerciseName });
       setError(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
       setLoading(false);

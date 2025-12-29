@@ -31,6 +31,7 @@ export default function SignIn() {
     } catch (err) {
       console.error("Sign in error:", err);
       setError("An unexpected error occurred. Please try again.");
+    } finally {
       setIsLoading(false);
     }
   };
