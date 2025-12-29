@@ -55,3 +55,12 @@ uploads/*
 .issues.json.issues.json
 scripts/exercise-*-data.json
 .env.production
+
+# local issue cache
+.issues.json
+
+# local plans
+plans/
+
+# supabase local config
+supabase/config.toml
