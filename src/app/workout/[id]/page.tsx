@@ -2,11 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { CheckCircle, Pencil, Circle, PlayCircle, ChevronLeft, ChevronRight, Dumbbell } from 'lucide-react';
+import { CheckCircle, Pencil, Circle, PlayCircle, ChevronLeft, ChevronRight, Dumbbell, MessageCircle } from 'lucide-react';
 import MainLayout from '@/app/components/layouts/MainLayout';
 import { formatExerciseMeasure, formatExerciseUnit } from '@/utils/formatters';
 import RestPeriodIndicator from '@/app/components/RestPeriodIndicator';
 import ExerciseSwapModal from '@/components/ExerciseSwapModal';
+import WorkoutChatModal from '@/components/WorkoutChatModal';
 import { clearWelcomeData } from '@/components/ClaimWelcomeBanner';
 
 interface Exercise {
@@ -207,6 +208,7 @@ export default function WorkoutPage() {
   const [workoutLog, setWorkoutLog] = useState<any>(null);
   const [showCompletion, setShowCompletion] = useState(false);
   const [swapModalOpen, setSwapModalOpen] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
 
   const findFirstIncompletePosition = (exercises: ExerciseWithLogs[]) => {
     for (let i = 0; i < exercises.length; i++) {
@@ -465,6 +467,13 @@ export default function WorkoutPage() {
                     </svg>
                     <span className="text-sm font-medium">Swap</span>
                   </button>
+                  <button
+                    onClick={() => setChatOpen(true)}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white text-[#475569] border border-[#E2E8F0] hover:border-[#FF6B6B]/50 hover:text-[#FF6B6B] transition-colors"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    <span className="text-sm font-medium">Ask</span>
+                  </button>
                   <a
                     href={`https://www.youtube.com/results?search_query=${currentExercise.name} how to`}
                     target="_blank"
@@ -598,19 +607,30 @@ export default function WorkoutPage() {
       </div>
 
       {currentExercise && (
-        <ExerciseSwapModal
-          isOpen={swapModalOpen}
-          onClose={() => setSwapModalOpen(false)}
-          exerciseId={currentExercise.id}
-          exerciseName={currentExercise.name}
-          onSwap={(newExercise) => {
-            setExercises(prev => prev.map((ex, idx) =>
-              idx === currentExerciseIndex
-                ? { ...ex, name: newExercise.name }
-                : ex
-            ));
-          }}
-        />
+        <>
+          <ExerciseSwapModal
+            isOpen={swapModalOpen}
+            onClose={() => setSwapModalOpen(false)}
+            exerciseId={currentExercise.id}
+            exerciseName={currentExercise.name}
+            onSwap={(newExercise) => {
+              setExercises(prev => prev.map((ex, idx) =>
+                idx === currentExerciseIndex
+                  ? { ...ex, name: newExercise.name }
+                  : ex
+              ));
+            }}
+          />
+          <WorkoutChatModal
+            isOpen={chatOpen}
+            onClose={() => setChatOpen(false)}
+            exerciseName={currentExercise.name}
+            currentSet={currentExercise.logs.findIndex(l => !l.isCompleted) + 1 || currentExercise.sets}
+            totalSets={currentExercise.sets}
+            userEquipment="standard gym equipment"
+            experienceLevel="intermediate"
+          />
+        </>
       )}
     </MainLayout>
   );

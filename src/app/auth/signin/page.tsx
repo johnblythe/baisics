@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { signInAction } from "../actions";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import MainLayout from "@/app/components/layouts/MainLayout";
 import { Mail, ArrowRight } from "lucide-react";
 
@@ -22,16 +21,16 @@ export default function SignIn() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!email) return;
+
     setIsLoading(true);
     setError("");
 
     try {
-      await signInAction(email);
-      window.location.href = "/auth/verify-request";
+      await signIn("forwardemail", { email, callbackUrl: "/dashboard" });
     } catch (err) {
       console.error("Sign in error:", err);
       setError("An unexpected error occurred. Please try again.");
-    } finally {
       setIsLoading(false);
     }
   };
