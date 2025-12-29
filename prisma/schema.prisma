@@ -95,6 +95,7 @@ model User {
   session      Session[]
   purchaseSessions PurchaseSession[]
   subscription   Subscription?
+  appLogs        AppLog[]
 
   // Coach Mode relations
   isCoach      Boolean   @default(false) @map("is_coach")
@@ -697,6 +698,31 @@ enum ClientStatus {
   ACTIVE
   PAUSED
   ARCHIVED
+}
+
+// Logging
+enum LogLevel {
+  INFO
+  WARN
+  ERROR
+}
+
+model AppLog {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  level     LogLevel @default(INFO)
+  category  String   @db.VarChar(100)
+  type      String   @db.VarChar(100)
+  message   String   @db.Text
+  metadata  Json?    @db.JsonB
+  userId    String?  @map("user_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@index([level, createdAt])
+  @@index([category, type])
+  @@index([createdAt])
+  @@map("app_logs")
 }
 
 // Claim flow - captures email + tool data before account creation

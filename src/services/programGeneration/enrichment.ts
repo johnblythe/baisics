@@ -11,6 +11,7 @@
  */
 
 import { prisma } from "@/lib/prisma";
+import { logger } from "@/lib/logger";
 import type { ExerciseTier } from "@prisma/client";
 import type {
   SlimProgram,
@@ -214,9 +215,12 @@ async function lookupExercise(slug: string): Promise<ExerciseDetails | null> {
         confidence: bestScore,
         timestamp: new Date(),
       });
-      console.warn(
-        `[Enrichment] Low confidence match: "${slug}" → "${bestMatch.name}" (${(bestScore * 100).toFixed(0)}%)`,
-      );
+      logger.warn({
+        category: 'enrichment',
+        type: 'low_confidence',
+        message: `Low confidence match: "${slug}" → "${bestMatch.name}" (${(bestScore * 100).toFixed(0)}%)`,
+        metadata: { slug, matchedTo: bestMatch.name, confidence: bestScore },
+      });
     }
 
     if (bestMatch.instructions.length === 0) {
@@ -237,7 +241,12 @@ async function lookupExercise(slug: string): Promise<ExerciseDetails | null> {
     issue: "not_found",
     timestamp: new Date(),
   });
-  console.warn(`[Enrichment] Exercise not found: "${slug}"`);
+  logger.warn({
+    category: 'enrichment',
+    type: 'not_found',
+    message: `Exercise not found: "${slug}"`,
+    metadata: { slug },
+  });
 
   return null;
 }
@@ -469,9 +478,12 @@ async function enrichExercise(
         exerciseEquipment: details.equipment,
         timestamp: new Date(),
       });
-      console.warn(
-        `[Enrichment] Equipment mismatch: "${details.name}" requires [${details.equipment.join(", ")}] but user only has [${userEquipment.join(", ")}]`,
-      );
+      logger.warn({
+        category: 'enrichment',
+        type: 'equipment_mismatch',
+        message: `Equipment mismatch: "${details.name}" requires [${details.equipment.join(", ")}] but user only has [${userEquipment.join(", ")}]`,
+        metadata: { slug: slim.slug, exerciseName: details.name, userEquipment, exerciseEquipment: details.equipment },
+      });
     }
   }
 
@@ -480,7 +492,6 @@ async function enrichExercise(
     const displayName = slim.slug
       .replace(/-/g, " ")
       .replace(/\b\w/g, (c) => c.toUpperCase());
-    console.warn(`Exercise not found: ${slim.slug}`);
     return {
       name: displayName,
       sets: slim.sets,
@@ -702,11 +713,18 @@ export async function enrichProgram(
     // Log any lookup issues for admin review
     const issues = getAndClearLookupIssues();
     if (issues.length > 0) {
-      console.log(
-        "[Enrichment] Lookup issues:",
-        JSON.stringify(issues, null, 2),
-      );
-      // TODO: In production, send to monitoring/logging service
+      logger.info({
+        category: 'enrichment',
+        type: 'lookup_summary',
+        message: `Enrichment completed with ${issues.length} lookup issue(s)`,
+        metadata: {
+          issueCount: issues.length,
+          issues: issues.map(i => ({
+            ...i,
+            timestamp: i.timestamp.toISOString(),
+          })),
+        },
+      });
     }
 
     return {
@@ -743,10 +761,19 @@ export async function enrichSinglePhase(
     // Log any lookup issues for admin review
     const issues = getAndClearLookupIssues();
     if (issues.length > 0) {
-      console.log(
-        `[Enrichment] Phase ${phaseNumber} lookup issues:`,
-        JSON.stringify(issues, null, 2),
-      );
+      logger.info({
+        category: 'enrichment',
+        type: 'phase_lookup_summary',
+        message: `Phase ${phaseNumber} enrichment completed with ${issues.length} lookup issue(s)`,
+        metadata: {
+          phaseNumber,
+          issueCount: issues.length,
+          issues: issues.map(i => ({
+            ...i,
+            timestamp: i.timestamp.toISOString(),
+          })),
+        },
+      });
     }
 
     return result;
