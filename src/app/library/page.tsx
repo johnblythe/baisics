@@ -37,6 +37,17 @@ function LibraryPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // URL state helper
+  const updateFilter = useCallback((key: string, value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value && value !== 'all' && value !== '') {
+      params.set(key, value);
+    } else {
+      params.delete(key);
+    }
+    router.push(`/library?${params.toString()}`, { scroll: false });
+  }, [router, searchParams]);
+
   // State
   const [templates, setTemplates] = useState<ProgramType[]>([]);
   const [userPrograms, setUserPrograms] = useState<ProgramType[]>([]);
@@ -46,22 +57,34 @@ function LibraryPageContent() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [currentProgramName, setCurrentProgramName] = useState<string | undefined>(undefined);
 
-  // Filters
-  const [search, setSearch] = useState(searchParams.get('search') || '');
-  const [category, setCategory] = useState(searchParams.get('category') || 'all');
-  const [difficulty, setDifficulty] = useState(searchParams.get('difficulty') || 'all');
-  const [daysPerWeek, setDaysPerWeek] = useState(searchParams.get('days') || 'all');
-  const [activeTab, setActiveTab] = useState<'all' | 'templates' | 'my-programs'>('all');
+  // Filters - read from URL
+  const search = searchParams.get('search') || '';
+  const category = searchParams.get('category') || 'all';
+  const difficulty = searchParams.get('difficulty') || 'all';
+  const daysPerWeek = searchParams.get('days') || 'all';
+  const activeTab = (searchParams.get('tab') as 'all' | 'templates' | 'my-programs') || 'all';
 
-  // Debounced search
+  // Local search input (for debouncing)
+  const [searchInput, setSearchInput] = useState(search);
+
+  // Debounced search - sync to URL after delay
   const [debouncedSearch, setDebouncedSearch] = useState(search);
 
+  // Sync searchInput when URL search changes (e.g., browser back/forward)
+  useEffect(() => {
+    setSearchInput(search);
+  }, [search]);
+
+  // Debounce search input and sync to URL
   useEffect(() => {
     const timer = setTimeout(() => {
-      setDebouncedSearch(search);
+      if (searchInput !== search) {
+        updateFilter('search', searchInput);
+      }
+      setDebouncedSearch(searchInput);
     }, 300);
     return () => clearTimeout(timer);
-  }, [search]);
+  }, [searchInput, search, updateFilter]);
 
   // Fetch programs
   const fetchPrograms = useCallback(async () => {
@@ -223,7 +246,7 @@ function LibraryPageContent() {
               ].map((tab) => (
                 <button
                   key={tab.key}
-                  onClick={() => setActiveTab(tab.key as typeof activeTab)}
+                  onClick={() => updateFilter('tab', tab.key)}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                     activeTab === tab.key
                       ? 'bg-[var(--color-navy)] text-white'
@@ -246,8 +269,8 @@ function LibraryPageContent() {
                 <input
                   type="text"
                   placeholder="Search programs..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
                   className="w-full px-4 py-2 pl-10 rounded-lg border border-[var(--color-gray-100)] bg-white text-[var(--color-navy)] focus:ring-2 focus:ring-[var(--color-coral)]/20 focus:border-[var(--color-coral)] outline-none transition-all"
                 />
                 <svg
@@ -272,7 +295,7 @@ function LibraryPageContent() {
             {/* Category */}
             <select
               value={category}
-              onChange={(e) => setCategory(e.target.value)}
+              onChange={(e) => updateFilter('category', e.target.value)}
               className="px-3 py-2 rounded-lg border border-[var(--color-gray-100)] bg-white text-[var(--color-navy)] text-sm focus:ring-2 focus:ring-[var(--color-coral)]/20 focus:border-[var(--color-coral)] outline-none"
             >
               {CATEGORIES.map((cat) => (
@@ -285,7 +308,7 @@ function LibraryPageContent() {
             {/* Difficulty */}
             <select
               value={difficulty}
-              onChange={(e) => setDifficulty(e.target.value)}
+              onChange={(e) => updateFilter('difficulty', e.target.value)}
               className="px-3 py-2 rounded-lg border border-[var(--color-gray-100)] bg-white text-[var(--color-navy)] text-sm focus:ring-2 focus:ring-[var(--color-coral)]/20 focus:border-[var(--color-coral)] outline-none"
             >
               {DIFFICULTIES.map((diff) => (
@@ -298,7 +321,7 @@ function LibraryPageContent() {
             {/* Days per week */}
             <select
               value={daysPerWeek}
-              onChange={(e) => setDaysPerWeek(e.target.value)}
+              onChange={(e) => updateFilter('days', e.target.value)}
               className="px-3 py-2 rounded-lg border border-[var(--color-gray-100)] bg-white text-[var(--color-navy)] text-sm focus:ring-2 focus:ring-[var(--color-coral)]/20 focus:border-[var(--color-coral)] outline-none"
             >
               {DAYS_PER_WEEK.map((days) => (
@@ -312,10 +335,8 @@ function LibraryPageContent() {
             {(category !== 'all' || difficulty !== 'all' || daysPerWeek !== 'all' || search) && (
               <button
                 onClick={() => {
-                  setCategory('all');
-                  setDifficulty('all');
-                  setDaysPerWeek('all');
-                  setSearch('');
+                  setSearchInput('');
+                  router.push('/library', { scroll: false });
                 }}
                 className="px-3 py-2 text-sm text-[var(--color-gray-600)] hover:text-[var(--color-navy)]"
               >
@@ -380,7 +401,7 @@ function LibraryPageContent() {
                   </p>
                   {activeTab === 'my-programs' && (
                     <button
-                      onClick={() => setActiveTab('templates')}
+                      onClick={() => updateFilter('tab', 'templates')}
                       className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--color-coral)] text-white rounded-lg hover:bg-[var(--color-coral-dark)] transition-colors font-medium"
                     >
                       Browse Templates
