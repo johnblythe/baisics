@@ -220,6 +220,45 @@ function DashboardContent() {
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isNutritionModalOpen, setIsNutritionModalOpen] = useState(false);
+
+  // Modal URL state helpers
+  const openModal = useCallback((modalName: 'upload' | 'compare' | 'share' | 'nutrition') => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('modal', modalName);
+    router.replace(`?${params.toString()}`, { scroll: false });
+
+    switch (modalName) {
+      case 'upload': setIsUploadModalOpen(true); break;
+      case 'compare': setIsCompareModalOpen(true); break;
+      case 'share': setIsShareModalOpen(true); break;
+      case 'nutrition': setIsNutritionModalOpen(true); break;
+    }
+  }, [router, searchParams]);
+
+  const closeModal = useCallback(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('modal');
+    const newUrl = params.toString() ? `?${params.toString()}` : window.location.pathname;
+    router.replace(newUrl, { scroll: false });
+
+    setIsUploadModalOpen(false);
+    setIsCompareModalOpen(false);
+    setIsShareModalOpen(false);
+    setIsNutritionModalOpen(false);
+  }, [router, searchParams]);
+
+  // Read modal param on mount and open corresponding modal
+  useEffect(() => {
+    const modalParam = searchParams.get('modal');
+    if (modalParam) {
+      switch (modalParam) {
+        case 'upload': setIsUploadModalOpen(true); break;
+        case 'compare': setIsCompareModalOpen(true); break;
+        case 'share': setIsShareModalOpen(true); break;
+        case 'nutrition': setIsNutritionModalOpen(true); break;
+      }
+    }
+  }, []); // Run once on mount
   const [shareData, setShareData] = useState<any>(null);
   const [allPrograms, setAllPrograms] = useState<Program[]>([]);
   const [welcomeData, setWelcomeData] = useState<{
@@ -485,7 +524,7 @@ function DashboardContent() {
                       Start Workout
                     </Link>
                     <button
-                      onClick={() => setIsNutritionModalOpen(true)}
+                      onClick={() => openModal('nutrition')}
                       className="inline-flex items-center justify-center gap-3 px-6 py-4 bg-white text-[#0F172A] font-semibold rounded-xl border-2 border-[#E2E8F0] hover:border-[#FF6B6B] hover:text-[#FF6B6B] transition-all duration-200"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -549,7 +588,7 @@ function DashboardContent() {
                               const res = await fetch(`/api/share/program?programId=${program.id}`);
                               const data = await res.json();
                               setShareData(data);
-                              setIsShareModalOpen(true);
+                              openModal('share');
                             } catch (err) {
                               console.error('Failed to load share data:', err);
                             }
@@ -575,7 +614,7 @@ function DashboardContent() {
                           href="#"
                           onClick={(e) => {
                             e.preventDefault();
-                            setIsUploadModalOpen(true);
+                            openModal('upload');
                           }}
                           className="inline-flex items-center gap-1.5 text-sm text-[#475569] hover:text-[#FF6B6B] transition-colors"
                         >
@@ -876,7 +915,7 @@ function DashboardContent() {
                           <div className="flex items-center gap-4">
                             {progressPhotos.length >= 2 && (
                               <button
-                                onClick={() => setIsCompareModalOpen(true)}
+                                onClick={() => openModal('compare')}
                                 className="text-sm text-[#FF6B6B] hover:text-[#EF5350] inline-flex items-center gap-1"
                               >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1111,29 +1150,29 @@ function DashboardContent() {
             </div>
 
             {/* Nutrition Tracking Widget */}
-            <NutritionWidget onLogClick={() => setIsNutritionModalOpen(true)} />
+            <NutritionWidget onLogClick={() => openModal('nutrition')} />
 
             <WorkoutUploadModal
               isOpen={isUploadModalOpen}
-              onClose={() => setIsUploadModalOpen(false)}
+              onClose={closeModal}
             />
 
             <PhotoComparison
               programId={program.id}
               isOpen={isCompareModalOpen}
-              onClose={() => setIsCompareModalOpen(false)}
+              onClose={closeModal}
             />
 
             <NutritionLogModal
               isOpen={isNutritionModalOpen}
-              onClose={() => setIsNutritionModalOpen(false)}
+              onClose={closeModal}
             />
 
             {isShareModalOpen && shareData && (
               <ProgramCard
                 data={shareData}
                 onClose={() => {
-                  setIsShareModalOpen(false);
+                  closeModal();
                   setShareData(null);
                 }}
               />

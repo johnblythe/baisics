@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   calculateMacros,
   lbsToKg,
@@ -18,20 +19,93 @@ import Footer from '@/components/Footer';
 
 type UnitSystem = 'imperial' | 'metric';
 
-export default function MacroCalculatorPage() {
-  const [unitSystem, setUnitSystem] = useState<UnitSystem>('imperial');
+const STORAGE_KEY = 'baisics_macro_unit_preference';
+
+function MacroCalculatorContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Get initial unit preference: URL > localStorage > default
+  const getInitialUnitSystem = (): UnitSystem => {
+    const urlUnits = searchParams.get('units');
+    if (urlUnits === 'imperial' || urlUnits === 'metric') return urlUnits;
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored === 'imperial' || stored === 'metric') return stored;
+    }
+    return 'imperial';
+  };
+
+  const [unitSystem, setUnitSystem] = useState<UnitSystem>(getInitialUnitSystem);
   const [results, setResults] = useState<MacroResult | null>(null);
 
-  // Form state
-  const [weightLbs, setWeightLbs] = useState('');
-  const [weightKg, setWeightKg] = useState('');
-  const [heightFeet, setHeightFeet] = useState('');
-  const [heightInches, setHeightInches] = useState('');
-  const [heightCm, setHeightCm] = useState('');
-  const [age, setAge] = useState('');
-  const [sex, setSex] = useState<Sex>('male');
-  const [activityLevel, setActivityLevel] = useState<ActivityLevel>('moderate');
-  const [goal, setGoal] = useState<Goal>('maintain');
+  // Form state - initialize from URL params
+  const [weightLbs, setWeightLbs] = useState(searchParams.get('weight') || '');
+  const [weightKg, setWeightKg] = useState(searchParams.get('weightKg') || '');
+  const [heightFeet, setHeightFeet] = useState(searchParams.get('heightFt') || '');
+  const [heightInches, setHeightInches] = useState(searchParams.get('heightIn') || '');
+  const [heightCm, setHeightCm] = useState(searchParams.get('heightCm') || '');
+  const [age, setAge] = useState(searchParams.get('age') || '');
+  const [sex, setSex] = useState<Sex>((searchParams.get('sex') as Sex) || 'male');
+  const [activityLevel, setActivityLevel] = useState<ActivityLevel>(
+    (searchParams.get('activity') as ActivityLevel) || 'moderate'
+  );
+  const [goal, setGoal] = useState<Goal>((searchParams.get('goal') as Goal) || 'maintain');
+
+  // Save unit preference to localStorage when changed
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, unitSystem);
+  }, [unitSystem]);
+
+  // Sync URL with form state
+  const syncToURL = useCallback((calculatedResult: MacroResult) => {
+    const params = new URLSearchParams();
+    params.set('units', unitSystem);
+    if (unitSystem === 'imperial') {
+      if (weightLbs) params.set('weight', weightLbs);
+      if (heightFeet) params.set('heightFt', heightFeet);
+      if (heightInches) params.set('heightIn', heightInches);
+    } else {
+      if (weightKg) params.set('weightKg', weightKg);
+      if (heightCm) params.set('heightCm', heightCm);
+    }
+    if (age) params.set('age', age);
+    params.set('sex', sex);
+    params.set('activity', activityLevel);
+    params.set('goal', goal);
+    params.set('calc', '1'); // Flag to auto-calculate on load
+
+    router.replace(`/tools/macros?${params.toString()}`, { scroll: false });
+  }, [unitSystem, weightLbs, weightKg, heightFeet, heightInches, heightCm, age, sex, activityLevel, goal, router]);
+
+  // Auto-calculate on load if URL has calc=1 flag
+  useEffect(() => {
+    if (searchParams.get('calc') === '1') {
+      // Defer calculation to ensure state is ready
+      const timer = setTimeout(() => {
+        const weightInKg = unitSystem === 'imperial'
+          ? lbsToKg(parseFloat(weightLbs) || 0)
+          : parseFloat(weightKg) || 0;
+
+        const heightInCm = unitSystem === 'imperial'
+          ? feetInchesToCm(parseFloat(heightFeet) || 0, parseFloat(heightInches) || 0)
+          : parseFloat(heightCm) || 0;
+
+        if (weightInKg > 0 && heightInCm > 0 && age) {
+          const result = calculateMacros({
+            weightKg: weightInKg,
+            heightCm: heightInCm,
+            age: parseInt(age),
+            sex,
+            activityLevel,
+            goal,
+          });
+          setResults(result);
+        }
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+  }, []); // Run only once on mount
 
   const handleCalculate = (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,6 +128,7 @@ export default function MacroCalculatorPage() {
     });
 
     setResults(result);
+    syncToURL(result);
   };
 
   // Build toolData for claim
@@ -464,5 +539,13 @@ export default function MacroCalculatorPage() {
         <Footer />
       </div>
     </>
+  );
+}
+
+export default function MacroCalculatorPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <MacroCalculatorContent />
+    </Suspense>
   );
 }
