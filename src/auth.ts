@@ -139,9 +139,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return baseUrl
     },
     async jwt({ token, user, account }) {
-      if (development) {
-        console.log("🔐 JWT callback:", { hasUser: !!user, sub: token.sub, id: token.id });
-      }
+      console.log("🎫 JWT callback:", { hasUser: !!user, sub: token.sub, id: token.id, accountProvider: account?.provider });
       if (user) {
         token.id = user.id;
         token.sub = user.id; // Ensure sub is set for middleware
