@@ -6,11 +6,22 @@ import { prisma } from "./lib/prisma"
 const baseAdapter = PrismaAdapter(prisma)
 const debugAdapter = {
   ...baseAdapter,
+  getUserByEmail: async (email: string) => {
+    console.log("👤 getUserByEmail:", email);
+    const result = await baseAdapter.getUserByEmail!(email);
+    console.log("👤 getUserByEmail result:", result ? { id: result.id, email: result.email } : null);
+    return result;
+  },
   createVerificationToken: async (data: { identifier: string; token: string; expires: Date }) => {
     console.log("📝 createVerificationToken:", { identifier: data.identifier, tokenLength: data.token?.length, expires: data.expires });
-    const result = await baseAdapter.createVerificationToken!(data);
-    console.log("📝 createVerificationToken result:", result);
-    return result;
+    try {
+      const result = await baseAdapter.createVerificationToken!(data);
+      console.log("📝 createVerificationToken result:", result);
+      return result;
+    } catch (err) {
+      console.error("📝 createVerificationToken ERROR:", err);
+      throw err;
+    }
   },
   useVerificationToken: async (params: { identifier: string; token: string }) => {
     console.log("🔍 useVerificationToken:", { identifier: params.identifier, tokenLength: params.token?.length });
