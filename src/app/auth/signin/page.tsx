@@ -27,7 +27,7 @@ export default function SignIn() {
     setError("");
 
     try {
-      await signIn("forwardemail", { email, callbackUrl: "/dashboard" });
+      await signIn("nodemailer", { email, callbackUrl: "/dashboard" });
     } catch (err) {
       console.error("Sign in error:", err);
       setError("An unexpected error occurred. Please try again.");

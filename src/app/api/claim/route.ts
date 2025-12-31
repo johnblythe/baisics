@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     // The callbackUrl includes the claim token so we can process it on login
     const callbackUrl = `/dashboard?claim=${token}`;
 
-    await signIn("forwardemail", {
+    await signIn("nodemailer", {
       email: email.toLowerCase(),
       redirect: false,
       callbackUrl,
