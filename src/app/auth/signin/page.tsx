@@ -27,7 +27,7 @@ export default function SignIn() {
     setError("");
 
     try {
-      await signIn("email", { email, callbackUrl: "/dashboard" });
+      await signIn("email", { email: email.toLowerCase().trim(), callbackUrl: "/dashboard" });
     } catch (err) {
       console.error("Sign in error:", err);
       setError("An unexpected error occurred. Please try again.");
