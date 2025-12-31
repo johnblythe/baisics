@@ -1,7 +1,7 @@
 import NextAuth from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "./lib/prisma"
-import ForwardEmail from "next-auth/providers/forwardemail"
+import Nodemailer from "next-auth/providers/nodemailer"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { sendEmail, emailConfig } from "./lib/email"
 import { magicLinkTemplate } from "./lib/email/templates/magic-link"
@@ -11,16 +11,17 @@ const development = process.env.NODE_ENV === "development"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
-    ForwardEmail({
+    Nodemailer({
       server: {
         host: emailConfig.host,
         port: emailConfig.port,
+        secure: false,
         auth: {
           user: process.env.EMAIL_SERVER_USER,
           pass: process.env.EMAIL_SERVER_PASSWORD,
         }
       },
-      from: development ? "noreply@localhost" : emailConfig.from,
+      from: emailConfig.from,
       sendVerificationRequest: async ({ identifier: email, url }) => {
         console.log("🔑 Login Link:", url)
 
