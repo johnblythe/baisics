@@ -1,6 +1,24 @@
 import NextAuth from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "./lib/prisma"
+
+// Wrap adapter to debug token operations
+const baseAdapter = PrismaAdapter(prisma)
+const debugAdapter = {
+  ...baseAdapter,
+  createVerificationToken: async (data: { identifier: string; token: string; expires: Date }) => {
+    console.log("📝 createVerificationToken:", { identifier: data.identifier, tokenLength: data.token?.length, expires: data.expires });
+    const result = await baseAdapter.createVerificationToken!(data);
+    console.log("📝 createVerificationToken result:", result);
+    return result;
+  },
+  useVerificationToken: async (params: { identifier: string; token: string }) => {
+    console.log("🔍 useVerificationToken:", { identifier: params.identifier, tokenLength: params.token?.length });
+    const result = await baseAdapter.useVerificationToken!(params);
+    console.log("🔍 useVerificationToken result:", result);
+    return result;
+  },
+}
 import Email from "next-auth/providers/email"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { sendEmail, emailConfig } from "./lib/email"
@@ -85,7 +103,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
-  adapter: PrismaAdapter(prisma),
+  adapter: debugAdapter,
   session: {
     strategy: "jwt",
   },
