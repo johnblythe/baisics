@@ -152,7 +152,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
       return session;
     },
-    authorized: async ({ auth }) => {
+    authorized: async ({ auth, request }) => {
+      // Allow public paths
+      if (request.nextUrl?.pathname.startsWith('/program/review')) {
+        return true;
+      }
+      // Require auth for protected routes
       return !!auth;
     },
   },
