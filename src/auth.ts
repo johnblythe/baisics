@@ -10,6 +10,7 @@ import { cookies } from "next/headers"
 const development = process.env.NODE_ENV === "development"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  debug: true, // Enable debug logging
   providers: [
     Nodemailer({
       server: {
@@ -89,7 +90,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     strategy: "jwt",
   },
   callbacks: {
+    async signIn({ user, account, profile, email, credentials }) {
+      console.log("🔐 signIn callback:", {
+        userId: user?.id,
+        userEmail: user?.email,
+        accountProvider: account?.provider,
+        emailVerificationRequest: email?.verificationRequest
+      });
+      return true; // Allow sign in
+    },
     async redirect({ url, baseUrl }) {
+      console.log("🔄 redirect callback:", { url, baseUrl });
       // After magic link auth, redirect to dashboard (not back to signin)
       if (url.includes('/auth/signin')) {
         return new URL('/dashboard', baseUrl).toString()
