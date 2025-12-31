@@ -3,7 +3,7 @@
 import { signIn } from "@/auth";
 
 export async function signInAction(email: string) {
-  return signIn("nodemailer", {
+  return signIn("email", {
     email,
     redirect: false,
     // callbackUrl: "/auth/verify-request"

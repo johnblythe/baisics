@@ -1,6 +1,54 @@
 {
   "issues": [
     {
+      "id": "184",
+      "number": 184,
+      "title": "feat: Manual program creation (non-AI)",
+      "labels": [],
+      "status": "open",
+      "priority": "med",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2025-12-29T22:20:00Z",
+      "updatedAt": "2025-12-29T22:20:00Z"
+    },
+    {
+      "id": "178",
+      "number": 178,
+      "title": "Enhance workout chat with exercise-specific coaching knowledge",
+      "labels": ["enhancement"],
+      "status": "open",
+      "priority": "med",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2025-12-28T00:00:00Z",
+      "updatedAt": "2025-12-28T00:00:00Z"
+    },
+    {
+      "id": "174",
+      "number": 174,
+      "title": "Rotate exposed credentials from git history",
+      "labels": [],
+      "status": "open",
+      "priority": "high",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2025-12-27T00:00:00Z",
+      "updatedAt": "2025-12-27T00:00:00Z"
+    },
+    {
+      "id": "168",
+      "number": 168,
+      "title": "Clean up legacy verbose generation after lean rollout",
+      "labels": [],
+      "status": "open",
+      "priority": "low",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2025-12-25T00:00:00Z",
+      "updatedAt": "2025-12-25T00:00:00Z"
+    },
+    {
       "id": "166",
       "number": 166,
       "title": "Make the /hi experience more engaging",
@@ -17,12 +65,12 @@
       "number": 159,
       "title": "Production Readiness: Launch Checklist",
       "labels": ["enhancement"],
-      "status": "open",
+      "status": "closed",
       "priority": "high",
       "needsSync": false,
       "localOnly": false,
       "createdAt": "2025-12-22T00:00:00Z",
-      "updatedAt": "2025-12-22T00:00:00Z"
+      "updatedAt": "2025-12-29T22:30:00Z"
     },
     {
       "id": "158",
@@ -53,36 +101,36 @@
       "number": 154,
       "title": "Keep user state in URI path for back/forward functionality and share ability",
       "labels": ["enhancement"],
-      "status": "open",
+      "status": "closed",
       "priority": "med",
       "needsSync": false,
       "localOnly": false,
       "createdAt": "2025-12-20T00:00:00Z",
-      "updatedAt": "2025-12-20T00:00:00Z"
+      "updatedAt": "2025-12-30T19:45:00Z"
     },
     {
       "id": "133",
       "number": 133,
       "title": "Mid-workout AI trainer chat",
       "labels": ["enhancement"],
-      "status": "open",
+      "status": "closed",
       "priority": "high",
       "needsSync": false,
       "localOnly": false,
       "createdAt": "2025-12-15T12:30:00Z",
-      "updatedAt": "2025-12-15T12:30:00Z"
+      "updatedAt": "2025-12-29T22:30:00Z"
     },
     {
       "id": "132",
       "number": 132,
       "title": "AI-generated exercise instructions during program generation",
       "labels": ["enhancement"],
-      "status": "open",
+      "status": "closed",
       "priority": "high",
       "needsSync": false,
       "localOnly": false,
       "createdAt": "2025-12-15T12:30:00Z",
-      "updatedAt": "2025-12-15T12:30:00Z"
+      "updatedAt": "2025-12-29T22:30:00Z"
     },
     {
       "id": "125",
@@ -133,5 +181,5 @@
       "updatedAt": "2025-12-06T15:48:41Z"
     }
   ],
-  "lastSyncedAt": "2025-12-23T00:16:00Z"
+  "lastSyncedAt": "2025-12-30T19:45:00Z"
 }

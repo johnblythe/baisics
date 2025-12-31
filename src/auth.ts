@@ -1,7 +1,7 @@
 import NextAuth from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "./lib/prisma"
-import Nodemailer from "next-auth/providers/nodemailer"
+import Email from "next-auth/providers/email"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { sendEmail, emailConfig } from "./lib/email"
 import { magicLinkTemplate } from "./lib/email/templates/magic-link"
@@ -12,7 +12,7 @@ const development = process.env.NODE_ENV === "development"
 export const { handlers, signIn, signOut, auth } = NextAuth({
   debug: true, // Enable debug logging
   providers: [
-    Nodemailer({
+    Email({
       server: {
         host: emailConfig.host,
         port: emailConfig.port,
