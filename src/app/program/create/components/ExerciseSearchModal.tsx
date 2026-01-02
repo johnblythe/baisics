@@ -21,6 +21,7 @@ export function ExerciseSearchModal({ isOpen, onClose, onSelect }: ExerciseSearc
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Exercise[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<NodeJS.Timeout>();
 
@@ -36,6 +37,7 @@ export function ExerciseSearchModal({ isOpen, onClose, onSelect }: ExerciseSearc
     if (!isOpen) {
       setQuery('');
       setResults([]);
+      setSearchError(null);
     }
   }, [isOpen]);
 
@@ -47,16 +49,21 @@ export function ExerciseSearchModal({ isOpen, onClose, onSelect }: ExerciseSearc
 
     if (query.length < 2) {
       setResults([]);
+      setSearchError(null);
       return;
     }
 
     setIsSearching(true);
+    setSearchError(null);
     debounceRef.current = setTimeout(async () => {
       try {
         const exercises = await searchExercises(query);
         setResults(exercises);
+        setSearchError(null);
       } catch (error) {
         console.error('Search failed:', error);
+        setResults([]);
+        setSearchError('Search temporarily unavailable. Please try again.');
       } finally {
         setIsSearching(false);
       }
@@ -125,7 +132,9 @@ export function ExerciseSearchModal({ isOpen, onClose, onSelect }: ExerciseSearc
 
         {/* Results */}
         <div className="flex-1 overflow-y-auto p-2">
-          {query.length < 2 ? (
+          {searchError ? (
+            <p className="text-center text-red-500 py-8">{searchError}</p>
+          ) : query.length < 2 ? (
             <p className="text-center text-[#94A3B8] py-8">Type to search exercises...</p>
           ) : results.length === 0 && !isSearching ? (
             <p className="text-center text-[#94A3B8] py-8">No exercises found</p>

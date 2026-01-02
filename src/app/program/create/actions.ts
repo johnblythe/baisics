@@ -52,6 +52,8 @@ export async function createManualProgram(data: ProgramFormData) {
 
   const { name, description, goal, daysPerWeek, workouts } = parsed.data;
 
+  let programId: string | null = null;
+
   try {
     // Create program with nested workoutPlan, workouts, and exercises in transaction
     const program = await prisma.$transaction(async (tx) => {
@@ -112,33 +114,52 @@ export async function createManualProgram(data: ProgramFormData) {
       return prog;
     });
 
-    revalidatePath('/dashboard');
-    redirect(`/program/${program.id}`);
+    programId = program.id;
   } catch (error) {
     console.error('Failed to create program:', error);
     return { error: { formErrors: ['Failed to create program. Please try again.'], fieldErrors: {} } };
   }
+
+  // Redirect outside try/catch - redirect() throws NEXT_REDIRECT internally
+  revalidatePath('/dashboard');
+  redirect(`/program/${programId}`);
 }
 
 export async function searchExercises(query: string, limit = 20) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new Error('Authentication required');
+  }
+
   if (!query || query.length < 2) {
     return [];
   }
 
-  const exercises = await prisma.exerciseLibrary.findMany({
-    where: {
-      name: { contains: query, mode: 'insensitive' },
-    },
-    select: {
-      id: true,
-      name: true,
-      category: true,
-      equipment: true,
-      targetMuscles: true,
-    },
-    take: limit,
-    orderBy: { name: 'asc' },
-  });
+  // Sanitize and limit query length
+  const sanitizedQuery = query.trim().slice(0, 100);
 
-  return exercises;
+  try {
+    const exercises = await prisma.exerciseLibrary.findMany({
+      where: {
+        name: { contains: sanitizedQuery, mode: 'insensitive' },
+      },
+      select: {
+        id: true,
+        name: true,
+        category: true,
+        equipment: true,
+        targetMuscles: true,
+      },
+      take: limit,
+      orderBy: { name: 'asc' },
+    });
+
+    return exercises;
+  } catch (error) {
+    console.error('Exercise search failed:', {
+      query: sanitizedQuery,
+      error: error instanceof Error ? error.message : error,
+    });
+    throw new Error('Unable to search exercises. Please try again.');
+  }
 }
