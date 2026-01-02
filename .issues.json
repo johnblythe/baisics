@@ -1,6 +1,30 @@
 {
   "issues": [
     {
+      "id": "189",
+      "number": 189,
+      "title": "Evaluate /hi route - remove or consolidate with main program display",
+      "labels": ["question"],
+      "status": "open",
+      "priority": "med",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2026-01-01T00:00:00Z",
+      "updatedAt": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": "188",
+      "number": 188,
+      "title": "Email templates need design refresh to match v2a style",
+      "labels": ["enhancement"],
+      "status": "open",
+      "priority": "med",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2026-01-01T00:00:00Z",
+      "updatedAt": "2026-01-01T00:00:00Z"
+    },
+    {
       "id": "184",
       "number": 184,
       "title": "feat: Manual program creation (non-AI)",
@@ -181,5 +205,5 @@
       "updatedAt": "2025-12-06T15:48:41Z"
     }
   ],
-  "lastSyncedAt": "2025-12-30T19:45:00Z"
+  "lastSyncedAt": "2026-01-01T00:00:00Z"
 }

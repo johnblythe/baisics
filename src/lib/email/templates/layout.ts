@@ -43,8 +43,8 @@ export const createEmailLayout = ({
       width: 100%;
       max-width: 600px;
       border-spacing: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      color: #1f2937;
+      font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      color: #0F172A;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
       border-radius: 16px;
       overflow: hidden;
@@ -52,7 +52,7 @@ export const createEmailLayout = ({
 
     /* Header styles */
     .header {
-      background: linear-gradient(to right, #4f46e5, #7c3aed);
+      background: linear-gradient(135deg, #0F172A, #1E293B);
       padding: 24px 30px;
       text-align: center;
     }
@@ -79,7 +79,7 @@ export const createEmailLayout = ({
     }
 
     .content h1 {
-      color: #1f2937;
+      color: #0F172A;
       font-size: 24px;
       font-weight: bold;
       margin: 0 0 20px;
@@ -87,7 +87,7 @@ export const createEmailLayout = ({
 
     .content p {
       margin: 0 0 24px;
-      color: #4b5563;
+      color: #475569;
       font-size: 16px;
     }
 
@@ -105,11 +105,11 @@ export const createEmailLayout = ({
     .button {
       display: inline-block;
       padding: 12px 24px;
-      background: linear-gradient(to right, #4f46e5, #7c3aed);
+      background-color: #FF6B6B;
       color: #ffffff !important;
       text-decoration: none;
       border-radius: 8px;
-      font-weight: 500;
+      font-weight: 600;
       margin: 20px 0;
     }
 
@@ -125,18 +125,6 @@ export const createEmailLayout = ({
     @media screen and (max-width: 600px) {
       .wrapper { padding: 20px 10px; }
       .content { padding: 30px 20px; }
-    }
-
-    /* Dark mode support */
-    @media (prefers-color-scheme: dark) {
-      body { background-color: #1e1e1e; }
-      .wrapper { background-color: #1e1e1e; }
-      .main { color: #f3f4f6; }
-      .content { background-color: #1e293b; }
-      .content h1 { color: #f3f4f6; }
-      .content p { color: #e2e8f0; }
-      .content li { color: #e2e8f0; }
-      .footer { background-color: #1e1e1e; color: #94a3b8; }
     }
   </style>
 </head>

@@ -9,7 +9,7 @@ export const welcomeFreeTemplate = ({ upgradeLink, programLink }: WelcomeEmailDa
   const content = `
     <h1>Welcome to Baisics!</h1>
     <p>Thank you for joining us! We're excited to help you start your fitness journey.</p>
-    <p><a style="color: #cdcdcd; text-decoration: underline;" href="${programLink}">Your custom program's first phase</a> is ready for you to begin.</p>
+    <p><a style="color: #FF6B6B; text-decoration: underline;" href="${programLink}">Your custom program's first phase</a> is ready for you to begin.</p>
   `;
 
   return createEmailLayout({
@@ -34,7 +34,7 @@ export const welcomePremiumTemplate = () => {
       <li style="list-style-type: disc; margin-bottom: 4px;">Advanced progress tracking</li>
       <li style="list-style-type: disc; margin-bottom: 4px;">Priority support</li>
     </ul>
-    <p>Let's <a style="color: #cdcdcd; text-decoration: underline;" href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard">get started</a> on your fitness journey!</p>
+    <p>Let's <a style="color: #FF6B6B; text-decoration: underline;" href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard">get started</a> on your fitness journey!</p>
   `;
 
   return createEmailLayout({

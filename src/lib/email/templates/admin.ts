@@ -5,7 +5,7 @@ export const adminSignupNotificationTemplate = (data: {
   programId?: string 
 }) => {
   // const userLink = `${process.env.NEXT_PUBLIC_APP_URL}/admin/users/${data.userId}`;
-  // <p>👤 <a href="${userLink}" style="color: #4f46e5;">View User Profile</a></p>
+  // <p>👤 <a href="${userLink}" style="color: #FF6B6B;">View User Profile</a></p>
 
   const programLink = data.programId ? `${process.env.NEXT_PUBLIC_APP_URL}/program/review?userId=${data.userId}&programId=${data.programId}` : 'No program';
 
@@ -25,7 +25,7 @@ export const adminSignupNotificationTemplate = (data: {
 
       <div style="margin-top: 20px;">
         <p><strong>Quick Links:</strong></p>
-        <p>📊 <a href="${programLink}" style="color: #4f46e5;">View Program</a></p>
+        <p>📊 <a href="${programLink}" style="color: #FF6B6B;">View Program</a></p>
       </div>
 
       <hr style="margin: 30px 0; border: none; border-top: 1px solid #e2e8f0;" />
@@ -120,7 +120,7 @@ export const adminProgramCreationTemplate = (data: {
 
       <div style="margin-top: 20px;">
         <p><strong>Quick Links:</strong></p>
-        <p>📊 <a href="${programLink}" style="color: #4f46e5;">View Program</a></p>
+        <p>📊 <a href="${programLink}" style="color: #FF6B6B;">View Program</a></p>
       </div>
 
       <hr style="margin: 30px 0; border: none; border-top: 1px solid #e2e8f0;" />
