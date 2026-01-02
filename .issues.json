@@ -1,6 +1,30 @@
 {
   "issues": [
     {
+      "id": "192",
+      "number": 192,
+      "title": "Tech Debt: Low Priority Cleanup Items",
+      "labels": [],
+      "status": "open",
+      "priority": "low",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2026-01-02T00:00:00Z",
+      "updatedAt": "2026-01-02T00:00:00Z"
+    },
+    {
+      "id": "190",
+      "number": 190,
+      "title": "feat: Manual program builder v2 enhancements",
+      "labels": ["enhancement"],
+      "status": "open",
+      "priority": "med",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2026-01-01T00:00:00Z",
+      "updatedAt": "2026-01-01T00:00:00Z"
+    },
+    {
       "id": "189",
       "number": 189,
       "title": "Evaluate /hi route - remove or consolidate with main program display",
@@ -17,36 +41,36 @@
       "number": 188,
       "title": "Email templates need design refresh to match v2a style",
       "labels": ["enhancement"],
-      "status": "open",
+      "status": "closed",
       "priority": "med",
       "needsSync": false,
       "localOnly": false,
       "createdAt": "2026-01-01T00:00:00Z",
-      "updatedAt": "2026-01-01T00:00:00Z"
+      "updatedAt": "2026-01-02T00:00:00Z"
     },
     {
       "id": "184",
       "number": 184,
       "title": "feat: Manual program creation (non-AI)",
       "labels": [],
-      "status": "open",
+      "status": "closed",
       "priority": "med",
       "needsSync": false,
       "localOnly": false,
       "createdAt": "2025-12-29T22:20:00Z",
-      "updatedAt": "2025-12-29T22:20:00Z"
+      "updatedAt": "2026-01-02T00:00:00Z"
     },
     {
       "id": "178",
       "number": 178,
       "title": "Enhance workout chat with exercise-specific coaching knowledge",
       "labels": ["enhancement"],
-      "status": "open",
+      "status": "closed",
       "priority": "med",
       "needsSync": false,
       "localOnly": false,
       "createdAt": "2025-12-28T00:00:00Z",
-      "updatedAt": "2025-12-28T00:00:00Z"
+      "updatedAt": "2026-01-02T00:00:00Z"
     },
     {
       "id": "174",
@@ -77,12 +101,12 @@
       "number": 166,
       "title": "Make the /hi experience more engaging",
       "labels": ["enhancement"],
-      "status": "open",
+      "status": "closed",
       "priority": "med",
       "needsSync": false,
       "localOnly": false,
       "createdAt": "2025-12-23T00:16:00Z",
-      "updatedAt": "2025-12-23T00:16:00Z"
+      "updatedAt": "2026-01-02T00:00:00Z"
     },
     {
       "id": "159",
@@ -113,12 +137,12 @@
       "number": 157,
       "title": "Redesign program creation email",
       "labels": ["enhancement", "design"],
-      "status": "open",
+      "status": "closed",
       "priority": "med",
       "needsSync": false,
       "localOnly": false,
       "createdAt": "2025-12-20T00:00:00Z",
-      "updatedAt": "2025-12-20T00:00:00Z"
+      "updatedAt": "2026-01-02T00:00:00Z"
     },
     {
       "id": "154",
@@ -205,5 +229,5 @@
       "updatedAt": "2025-12-06T15:48:41Z"
     }
   ],
-  "lastSyncedAt": "2026-01-01T00:00:00Z"
+  "lastSyncedAt": "2026-01-02T19:30:00Z"
 }
