@@ -178,6 +178,9 @@ model ExerciseLibrary {
   contraindications String[]          @default([])     // ["knee", "shoulder", "lower back"]
   environments      String[]          @default([])     // ["gym", "home", "outdoors", "travel"]
 
+  // Coaching data for mid-workout AI chat
+  coachingNotes     String?           @db.Text @map("coaching_notes") // Form cues, modifications, progressions in one block
+
   @@index([name])
   @@index([category])
   @@index([equipment])
