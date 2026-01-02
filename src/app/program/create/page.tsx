@@ -1,5 +1,6 @@
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
 import { ProgramBuilder } from './components/ProgramBuilder';
 
 export const metadata = {
@@ -19,7 +20,7 @@ export default async function CreateProgramPage() {
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <a
+          <Link
             href="/dashboard"
             className="inline-flex items-center gap-2 text-[#64748B] hover:text-[#0F172A] transition-colors mb-4"
           >
@@ -27,7 +28,7 @@ export default async function CreateProgramPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
             Back to Dashboard
-          </a>
+          </Link>
           <h1 className="text-3xl font-bold text-[#0F172A]">Create Program</h1>
           <p className="text-[#64748B] mt-2">Build your own custom workout program</p>
         </div>

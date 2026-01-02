@@ -12,7 +12,6 @@ const ExerciseSchema = z.object({
   sets: z.number().int().min(1).max(20),
   measureType: z.enum(['REPS', 'TIME', 'DISTANCE']),
   measureValue: z.number().min(1),
-  measureUnit: z.string().optional(),
   restPeriod: z.number().int().min(0).max(600).optional(),
   sortOrder: z.number().int(),
 });
@@ -101,7 +100,6 @@ export async function createManualProgram(data: ProgramFormData) {
               sets: exercise.sets,
               measureType: exercise.measureType,
               measureValue: exercise.measureValue,
-              measureUnit: exercise.measureUnit || null,
               restPeriod: exercise.restPeriod || 60,
               sortOrder: exercise.sortOrder,
               workoutId: createdWorkout.id,
