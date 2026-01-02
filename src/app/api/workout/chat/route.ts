@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { auth } from '@/auth';
 import { anthropic } from '@/lib/anthropic';
+import { prisma } from '@/lib/prisma';
 import { sanitizeChatMessage, logSuspiciousInput } from '@/utils/security/promptSanitizer';
 import { MessageParam } from '@anthropic-ai/sdk/src/resources/messages.js';
 
@@ -51,6 +52,23 @@ export async function POST(req: Request) {
       experienceLevel: sanitizeChatMessage(context.experienceLevel).sanitized,
     };
 
+    // Fetch coaching notes from ExerciseLibrary (#178)
+    let coachingNotes: string | null = null;
+    try {
+      const exercise = await prisma.exerciseLibrary.findFirst({
+        where: { name: { contains: context.exerciseName, mode: 'insensitive' } },
+        select: { coachingNotes: true },
+      });
+      coachingNotes = exercise?.coachingNotes || null;
+    } catch (e) {
+      // Non-blocking - continue without coaching notes
+      console.warn('Failed to fetch coaching notes:', e);
+    }
+
+    const coachingSection = coachingNotes
+      ? `\nEXERCISE-SPECIFIC COACHING:\n${coachingNotes}\n\nUse this knowledge to give more specific, actionable advice.`
+      : '';
+
     const systemPrompt = `You are a helpful, encouraging workout trainer assistant. The user is currently mid-workout and needs quick, actionable advice.
 
 CURRENT WORKOUT CONTEXT:
@@ -58,6 +76,7 @@ CURRENT WORKOUT CONTEXT:
 - Set ${context.currentSet} of ${context.totalSets}
 - User's available equipment: ${sanitizedContext.userEquipment}
 - Experience level: ${sanitizedContext.experienceLevel}
+${coachingSection}
 
 GUIDELINES:
 - Keep responses concise (2-3 sentences max)

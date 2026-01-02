@@ -9,8 +9,38 @@
 - Create feature branches from `main`
 
 ## Database & Migrations
-- **Production migrations only via deploy**: Never run migrations directly against prod. Vercel build runs `prisma migrate deploy` automatically.
-- **Workflow**: Create migration locally → commit → push to main → Vercel deploys and applies migration
+
+### Key Concepts
+- `DATABASE_URL` determines WHERE migrations run (local vs prod), not the command
+- `migrate dev` = interactive, may reset DB, for CREATING new migrations
+- `migrate deploy` = safe, non-interactive, for APPLYING existing migrations
+
+### Workflow
+```bash
+# Apply existing migrations locally (safe, preserves data)
+npx prisma migrate deploy
+
+# Create NEW migration (only when adding schema changes)
+npx prisma migrate dev --name add_some_field
+
+# Production: Vercel build runs `prisma migrate deploy` automatically
+```
+
+### Fixing Failed Migrations
+If `migrate deploy` fails with "failed migrations" error:
+```bash
+# Check if the changes actually applied to the DB
+# If yes, mark as applied:
+npx prisma migrate resolve --applied <migration_name>
+
+# If no, mark as rolled back and retry:
+npx prisma migrate resolve --rolled-back <migration_name>
+```
+
+### Rules
+- **Never run migrations directly against prod** - Vercel handles it
+- **Use `migrate deploy` locally** to apply migrations without data loss
+- **Use `migrate dev` only** when creating new migrations
 - **Local data → prod**: Use sync scripts in `scripts/` folder, not direct DB access
 
 ## Style Guide (v2a - Fresh Athletic)

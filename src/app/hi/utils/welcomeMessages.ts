@@ -1,29 +1,27 @@
 export const WELCOME_MESSAGES = [
-  // Original message
-  `Hey there! 👋 
+  // Bold, confident opener
+  `Hey! Let's build you a program that actually works. 💪
 
-I'm excited to help create a fitness program that's tailored to you. Let's start with what matters most - your story and goals.
+No generic templates. No cookie-cutter routines. Just a workout plan designed around YOUR goals, YOUR schedule, and YOUR equipment.
 
-💭 Tell me about what brings you here today. What are you hoping to achieve? Feel free to share anything you think would help me design the best possible program for you!
+Tell me what you're working toward - building muscle, getting stronger, losing weight, or just feeling better. I'll handle the rest.`,
 
-Don't worry about structure - just share what's on your mind, and we'll chat to figure things out.`,
+  // Direct and energetic
+  `Ready to stop guessing and start training smart? 🎯
 
-  // More casual, direct variation
-  `Hi! Ready to create your perfect workout plan? 🎯
+I'm here to create YOUR perfect program. Not someone else's - yours.
 
-Let's skip boring questionnaires and just have a real conversation. What's motivating you to start this fitness journey?
+What's the goal? Drop some weight? Build some muscle? Get back in shape after a break? Let's hear it.`,
 
-Simply chat - I'm here to listen and create a program that fits YOU! 💪`,
+  // Motivational and warm
+  `This is where it starts. 🔥
 
-  // More structured, professional variation
-  `Welcome to your personalized fitness consultation! 🌟
+Whatever brought you here today - wanting to look better, feel stronger, or just finally commit to something real - you're in the right place.
 
-I'm here to design a program specifically for YOU. To create the most effective plan, I'd love to understand your unique motivations and goals.
-
-Your journey is unique, and your program should reflect that. Let's start with what matters most to you.`
+Tell me about your goals. Be specific, be vague, ramble if you need to. I'll piece it together and build you something great.`
 ];
 
 export const getRandomWelcomeMessage = () => {
   const randomIndex = Math.floor(Math.random() * WELCOME_MESSAGES.length);
   return WELCOME_MESSAGES[randomIndex];
-}; 
+};

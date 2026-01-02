@@ -65,7 +65,7 @@ export const createWeeklySummaryEmail = (data: WeeklySummaryData) => {
   ` : '';
 
   const nextWorkoutSection = data.nextWorkout ? `
-    <div style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); border-radius: 12px; padding: 20px; margin: 20px 0; color: white;">
+    <div style="background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); border-radius: 12px; padding: 20px; margin: 20px 0; color: white;">
       <h3 style="margin: 0 0 8px; font-size: 14px; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px;">Next Up</h3>
       <div style="font-size: 20px; font-weight: bold; margin-bottom: 4px;">
         Day ${data.nextWorkout.dayNumber}: ${data.nextWorkout.name}
@@ -89,9 +89,9 @@ export const createWeeklySummaryEmail = (data: WeeklySummaryData) => {
     <!-- Stats Grid -->
     <table width="100%" style="margin: 24px 0; border-collapse: separate; border-spacing: 12px;">
       <tr>
-        <td style="background-color: #eef2ff; border-radius: 12px; padding: 20px; text-align: center; width: 50%;">
-          <div style="font-size: 36px; font-weight: bold; color: #4f46e5;">${data.workoutsCompleted}/${data.workoutsPlanned}</div>
-          <div style="color: #6366f1; font-size: 14px; margin-top: 4px;">Workouts</div>
+        <td style="background-color: #FFE5E5; border-radius: 12px; padding: 20px; text-align: center; width: 50%;">
+          <div style="font-size: 36px; font-weight: bold; color: #FF6B6B;">${data.workoutsCompleted}/${data.workoutsPlanned}</div>
+          <div style="color: #EF5350; font-size: 14px; margin-top: 4px;">Workouts</div>
         </td>
         <td style="background-color: #f0fdf4; border-radius: 12px; padding: 20px; text-align: center; width: 50%;">
           <div style="font-size: 36px; font-weight: bold; color: #16a34a;">${completionRate}%</div>
@@ -99,9 +99,9 @@ export const createWeeklySummaryEmail = (data: WeeklySummaryData) => {
         </td>
       </tr>
       <tr>
-        <td style="background-color: #fdf4ff; border-radius: 12px; padding: 20px; text-align: center; width: 50%;">
-          <div style="font-size: 36px; font-weight: bold; color: #a855f7;">${data.totalExercises}</div>
-          <div style="color: #a855f7; font-size: 14px; margin-top: 4px;">Exercises Done</div>
+        <td style="background-color: #F1F5F9; border-radius: 12px; padding: 20px; text-align: center; width: 50%;">
+          <div style="font-size: 36px; font-weight: bold; color: #0F172A;">${data.totalExercises}</div>
+          <div style="color: #475569; font-size: 14px; margin-top: 4px;">Exercises Done</div>
         </td>
         <td style="background-color: ${data.checkInCompleted ? '#f0fdf4' : '#fef2f2'}; border-radius: 12px; padding: 20px; text-align: center; width: 50%;">
           <div style="font-size: 36px;">${data.checkInCompleted ? '✓' : '○'}</div>
@@ -116,7 +116,7 @@ export const createWeeklySummaryEmail = (data: WeeklySummaryData) => {
     ${streakSection}
     ${nextWorkoutSection}
 
-    <div style="background-color: #f9fafb; border-left: 4px solid #4f46e5; padding: 16px 20px; margin: 24px 0; border-radius: 0 8px 8px 0;">
+    <div style="background-color: #f9fafb; border-left: 4px solid #FF6B6B; padding: 16px 20px; margin: 24px 0; border-radius: 0 8px 8px 0;">
       <p style="margin: 0; color: #374151; font-style: italic;">"${motivationalMessage}"</p>
     </div>
   `;
