@@ -21,6 +21,14 @@ import { useStreamingGeneration, GenerationProgress } from "@/hooks/useStreaming
 import { convertToIntakeFormat } from "@/utils/formatters";
 import { clearWelcomeData } from "@/components/ClaimWelcomeBanner";
 
+// Quick start prompts for new users
+const QUICK_PROMPTS = [
+  { label: '💪 Build Muscle', message: "I want to build muscle and get stronger. I can train 4-5 days per week." },
+  { label: '🔥 Lose Weight', message: "I want to lose weight and get in better shape. Looking for something I can stick with." },
+  { label: '⚡ Get Stronger', message: "I want to focus on building strength. Interested in compound lifts and progressive overload." },
+  { label: '🎯 General Fitness', message: "I just want to get healthier and more fit overall. Not sure where to start." },
+];
+
 // Add type for example program phase
 interface ExamplePhase {
   phase: number;
@@ -662,43 +670,92 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
             programMeta={streamedProgramMeta}
           />
         ) : (
-          <div className="flex-1 overflow-y-auto p-6 space-y-6 messages-container relative bg-white rounded-2xl border border-[#F1F5F9] shadow-sm">
-            <AnimatePresence>
-              {messages.map((message, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  className={`flex ${message.role === "assistant" ? "justify-start" : "justify-end"}`}
-                >
-                  <div
-                    className={`max-w-[85%] p-5 rounded-2xl transition-all duration-300 ${
-                      message.role === "assistant"
-                        ? "bg-white border-2 border-[#F1F5F9] shadow-sm"
-                        : "bg-[#0F172A] text-white shadow-lg shadow-[#0F172A]/10"
-                    }`}
-                  >
-                    <p className={`whitespace-pre-wrap text-base leading-relaxed ${message.role === "assistant" ? "text-[#0F172A]" : "text-white"}`}>
-                      {message.content}
-                    </p>
-                  </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-
-            {isTyping && (
+          <div className="flex-1 flex flex-col">
+            {/* Hero Section - shows when conversation just started */}
+            {messages.length <= 1 && !isTyping && (
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex items-center space-x-2"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-center mb-6"
               >
-                <div className="w-2 h-2 bg-[#FF6B6B] rounded-full animate-bounce" />
-                <div className="w-2 h-2 bg-[#FF6B6B] rounded-full animate-bounce" style={{ animationDelay: "0.15s" }} />
-                <div className="w-2 h-2 bg-[#FF6B6B] rounded-full animate-bounce" style={{ animationDelay: "0.3s" }} />
+                <h1 className="text-3xl md:text-4xl font-bold text-[#0F172A] mb-2">
+                  Let&apos;s Build Your Program
+                </h1>
+                <p className="text-[#64748B] text-lg">
+                  Tell me about your goals, or pick one below to get started
+                </p>
               </motion.div>
             )}
-            <div ref={messagesEndRef} />
+
+            {/* Chat Messages Container */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-6 messages-container relative bg-white rounded-2xl border border-[#F1F5F9] shadow-sm">
+              <AnimatePresence>
+                {messages.map((message, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    className={`flex ${message.role === "assistant" ? "justify-start" : "justify-end"}`}
+                  >
+                    <div
+                      className={`max-w-[85%] p-5 rounded-2xl transition-all duration-300 ${
+                        message.role === "assistant"
+                          ? "bg-[#0F172A] text-white shadow-lg"
+                          : "bg-white border-l-4 border-[#FF6B6B] text-[#0F172A] shadow-sm"
+                      }`}
+                    >
+                      <p className={`whitespace-pre-wrap text-base leading-relaxed ${message.role === "assistant" ? "text-white" : "text-[#0F172A]"}`}>
+                        {message.content}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+
+              {isTyping && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex items-center space-x-2"
+                >
+                  <div className="w-2 h-2 bg-[#FF6B6B] rounded-full animate-bounce" />
+                  <div className="w-2 h-2 bg-[#FF6B6B] rounded-full animate-bounce" style={{ animationDelay: "0.15s" }} />
+                  <div className="w-2 h-2 bg-[#FF6B6B] rounded-full animate-bounce" style={{ animationDelay: "0.3s" }} />
+                </motion.div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Quick Start Prompts - shows when conversation just started */}
+            {messages.length <= 1 && !isTyping && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="mt-4"
+              >
+                <p className="text-sm text-[#94A3B8] mb-3 text-center">Quick start:</p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  {QUICK_PROMPTS.map((prompt, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        setInputValue(prompt.message);
+                        // Auto-submit after a brief delay so user sees what was filled
+                        setTimeout(() => {
+                          handleSubmit({ preventDefault: () => {} } as React.FormEvent);
+                        }, 100);
+                      }}
+                      className="px-4 py-3 bg-[#F8FAFC] hover:bg-[#FFE5E5] border border-[#E2E8F0] hover:border-[#FF6B6B] rounded-xl text-sm font-medium text-[#0F172A] transition-all duration-200"
+                    >
+                      {prompt.label}
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
           </div>
         )}
 
