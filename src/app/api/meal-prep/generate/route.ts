@@ -3,6 +3,8 @@ import { auth } from '@/auth';
 import { checkRateLimit, rateLimitedResponse } from '@/utils/security/rateLimit';
 import { anthropic } from '@/lib/anthropic';
 import { v4 as uuidv4 } from 'uuid';
+import { sendEmail } from '@/lib/email';
+import { adminToolUsageTemplate } from '@/lib/email/templates';
 
 interface MealPrepRequest {
   targetMacros: {
@@ -230,6 +232,18 @@ export async function POST(request: NextRequest) {
       days: daysWithNames,
       groceryList,
     };
+
+    // Send admin notification (non-blocking)
+    sendEmail({
+      to: process.env.NEXT_PUBLIC_ADMIN_EMAIL!,
+      subject: `Free Tool Used: Meal Prep Generator`,
+      html: adminToolUsageTemplate({
+        toolName: 'Meal Prep Generator',
+        userId: session.user.id,
+        userEmail: session.user.email,
+        details: { days, mealsPerDay, calories: body.targetMacros.calories }
+      })
+    }).catch(err => console.error('Admin notification failed:', err));
 
     return NextResponse.json(mealPlan);
   } catch (error) {

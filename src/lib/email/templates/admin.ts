@@ -37,6 +37,41 @@ export const adminSignupNotificationTemplate = (data: {
   `;
 }; 
 
+export const adminToolUsageTemplate = (data: {
+  toolName: string;
+  userId?: string;
+  userEmail?: string | null;
+  details?: Record<string, unknown>;
+}) => {
+  const detailsHtml = data.details
+    ? Object.entries(data.details)
+        .map(([key, value]) => `<li>${key}: ${JSON.stringify(value)}</li>`)
+        .join('')
+    : '';
+
+  return `
+    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2>🛠️ Free Tool Used: ${data.toolName}</h2>
+
+      <div style="margin: 20px 0; padding: 20px; background-color: #f8fafc; border-radius: 8px;">
+        <p><strong>Usage Details:</strong></p>
+        <ul style="list-style: none; padding: 0;">
+          <li>🛠️ Tool: ${data.toolName}</li>
+          <li>👤 User: ${data.userEmail || data.userId || 'Anonymous'}</li>
+          <li>🕐 Time: ${new Date().toISOString()}</li>
+        </ul>
+        ${detailsHtml ? `<p><strong>Additional Details:</strong></p><ul>${detailsHtml}</ul>` : ''}
+      </div>
+
+      <hr style="margin: 30px 0; border: none; border-top: 1px solid #e2e8f0;" />
+
+      <p style="color: #64748b; font-size: 14px;">
+        This is an automated notification from Baisics.
+      </p>
+    </div>
+  `;
+};
+
 export const adminProgramCreationTemplate = (data: {
   programId: string,
   programName: string,

@@ -4,6 +4,8 @@ import { checkRateLimit, rateLimitedResponse } from '@/utils/security/rateLimit'
 import { prisma } from '@/lib/prisma';
 import { anthropic } from '@/lib/anthropic';
 import { PhotoType } from '@prisma/client';
+import { sendEmail } from '@/lib/email';
+import { adminToolUsageTemplate } from '@/lib/email/templates';
 
 type ImageAnalysis = {
   bodyFatPercentageLow: number;
@@ -189,6 +191,18 @@ export async function POST(request: NextRequest) {
         });
       }
     });
+
+    // Send admin notification (non-blocking)
+    sendEmail({
+      to: process.env.NEXT_PUBLIC_ADMIN_EMAIL!,
+      subject: `Free Tool Used: Photo Body Composition Analyzer`,
+      html: adminToolUsageTemplate({
+        toolName: 'Photo Body Composition Analyzer',
+        userId: session.user.id,
+        userEmail: session.user.email,
+        details: { photoCount: photos.length, bodyFatRange: `${analysis.bodyFatPercentageLow}-${analysis.bodyFatPercentageHigh}%` }
+      })
+    }).catch(err => console.error('Admin notification failed:', err));
 
     return NextResponse.json({ success: true, analysis });
   } catch (error) {

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { checkRateLimit, rateLimitedResponse } from '@/utils/security/rateLimit';
 import { anthropic } from '@/lib/anthropic';
+import { sendEmail } from '@/lib/email';
+import { adminToolUsageTemplate } from '@/lib/email/templates';
 
 type ParsedNutrition = {
   protein: number | null;
@@ -141,6 +143,18 @@ export async function POST(request: NextRequest) {
     }
 
     const result = await parseNutritionScreenshot(image);
+
+    // Send admin notification (non-blocking)
+    sendEmail({
+      to: process.env.NEXT_PUBLIC_ADMIN_EMAIL!,
+      subject: `Free Tool Used: Nutrition Screenshot Parser`,
+      html: adminToolUsageTemplate({
+        toolName: 'Nutrition Screenshot Parser',
+        userId: session.user.id,
+        userEmail: session.user.email,
+        details: result.error ? { error: result.error } : { calories: result.calories, protein: result.protein }
+      })
+    }).catch(err => console.error('Admin notification failed:', err));
 
     return NextResponse.json(result);
   } catch (error) {
