@@ -57,7 +57,7 @@ export default async function SharePage({ params }: PageProps) {
   const program = await prisma.program.findUnique({
     where: { id: programId },
     include: {
-      user: {
+      createdByUser: {
         select: { name: true },
       },
       workoutPlans: {
@@ -187,7 +187,7 @@ export default async function SharePage({ params }: PageProps) {
 
           {/* Footer */}
           <div className="pt-6 border-t border-white/10 flex items-center justify-between text-sm text-white/40">
-            <span>Created by {program.user.name || 'BAISICS User'}</span>
+            <span>Created by {program.createdByUser?.name || 'BAISICS User'}</span>
             <span>{program.workoutPlans[0]?.daysPerWeek || 0} days/week</span>
           </div>
         </div>

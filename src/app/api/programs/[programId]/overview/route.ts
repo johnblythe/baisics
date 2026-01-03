@@ -7,6 +7,8 @@ interface ProgramOverview {
   name: string;
   description: string | null;
   startDate: Date; // For week calculation
+  isTemplate: boolean;
+  createdBy: string;
   workoutPlans: {
     id: string;
     proteinGrams: number;
@@ -46,15 +48,21 @@ export async function GET(
     }
 
     const program = await prisma.program.findFirst({
-      where: { 
+      where: {
         id: programId,
-        createdBy: session.user.id, // Security check
+        // Allow access if user is author OR owner
+        OR: [
+          { createdBy: session.user.id },
+          { userId: session.user.id },
+        ],
       },
       select: {
         id: true,
         name: true,
         description: true,
         createdAt: true,
+        isTemplate: true,
+        createdBy: true,
         workoutPlans: {
           select: {
             id: true,
@@ -96,6 +104,8 @@ export async function GET(
     const overview: ProgramOverview = {
       ...program,
       startDate: program.createdAt,
+      isTemplate: program.isTemplate,
+      createdBy: program.createdBy,
     };
 
     return NextResponse.json(overview);

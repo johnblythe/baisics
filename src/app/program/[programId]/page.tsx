@@ -5,7 +5,8 @@ import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import MainLayout from '@/app/components/layouts/MainLayout';
 import { ExerciseAddModal } from '@/components/ExerciseAddModal';
-import { ChevronDown, ChevronRight, Play, GripVertical, Trash2, Plus, X } from 'lucide-react';
+import { SaveAsTemplateModal } from './components/SaveAsTemplateModal';
+import { ChevronDown, ChevronRight, Play, GripVertical, Trash2, Plus, X, BookmarkPlus } from 'lucide-react';
 import {
   DndContext,
   closestCenter,
@@ -59,6 +60,8 @@ interface Program {
   name: string;
   description: string | null;
   workoutPlans: WorkoutPlan[];
+  isTemplate?: boolean;
+  createdBy?: string;
 }
 
 // Editable state types
@@ -225,6 +228,7 @@ export default function ProgramPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [addExerciseWorkoutId, setAddExerciseWorkoutId] = useState<string | null>(null);
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
 
   // DnD sensors
   const sensors = useSensors(
@@ -569,15 +573,33 @@ export default function ProgramPage() {
                   </button>
                 </>
               ) : (
-                <button
-                  onClick={() => setIsEditMode(true)}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm text-[#64748B] hover:text-[#FF6B6B] transition-colors"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                  </svg>
-                  Edit
-                </button>
+                <>
+                  {!program.isTemplate && (
+                    <button
+                      onClick={() => setShowTemplateModal(true)}
+                      className="inline-flex items-center gap-2 px-4 py-2 text-sm text-[#64748B] hover:text-[#FF6B6B] transition-colors"
+                      title="Save as template"
+                    >
+                      <BookmarkPlus className="w-4 h-4" />
+                      <span className="hidden sm:inline">Template</span>
+                    </button>
+                  )}
+                  {program.isTemplate && (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#FF6B6B] bg-[#FFE5E5] rounded-full">
+                      <BookmarkPlus className="w-3.5 h-3.5" />
+                      Template
+                    </span>
+                  )}
+                  <button
+                    onClick={() => setIsEditMode(true)}
+                    className="inline-flex items-center gap-2 px-4 py-2 text-sm text-[#64748B] hover:text-[#FF6B6B] transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    </svg>
+                    Edit
+                  </button>
+                </>
               )}
             </div>
           </div>
@@ -773,6 +795,20 @@ export default function ProgramPage() {
         onClose={() => setAddExerciseWorkoutId(null)}
         workoutId={addExerciseWorkoutId || ''}
         onAdd={handleAddExercise}
+      />
+
+      <SaveAsTemplateModal
+        isOpen={showTemplateModal}
+        onClose={() => setShowTemplateModal(false)}
+        programId={program.id}
+        programName={program.name}
+        onSuccess={() => {
+          // Refetch program to update isTemplate flag
+          fetch(`/api/programs/${programId}/overview`)
+            .then(res => res.json())
+            .then(data => setProgram(data))
+            .catch(console.error);
+        }}
       />
     </MainLayout>
   );

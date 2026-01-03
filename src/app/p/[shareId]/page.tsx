@@ -16,7 +16,7 @@ export default async function SharedProgramPage({
     program = await prisma.program.findUnique({
       where: { shareId },
       include: {
-        user: { select: { name: true } },
+        createdByUser: { select: { name: true } },
         workoutPlans: {
           take: 1,
           include: {
@@ -84,7 +84,7 @@ export default async function SharedProgramPage({
             <div>
               <h1 className="text-3xl font-bold text-[#0F172A] mb-2">{program.name}</h1>
               <p className="text-gray-500 text-sm mb-4">
-                Shared by {program.user?.name || 'Anonymous'}
+                Shared by {program.createdByUser?.name || 'Anonymous'}
               </p>
               {program.description && (
                 <p className="text-gray-600 mb-4">{program.description}</p>

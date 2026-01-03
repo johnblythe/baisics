@@ -257,15 +257,16 @@ export async function getUsersForWeeklySummary(): Promise<UserWeeklyData[]> {
   const users = await prisma.user.findMany({
     where: {
       email: { not: null },
-      programs: {
-        some: {}, // Has at least one program
+      ownedPrograms: {
+        some: { active: true }, // Has at least one active program
       },
     },
     select: {
       id: true,
       email: true,
       name: true,
-      programs: {
+      ownedPrograms: {
+        where: { active: true },
         orderBy: { createdAt: 'desc' },
         take: 1,
         select: {
@@ -277,13 +278,13 @@ export async function getUsersForWeeklySummary(): Promise<UserWeeklyData[]> {
   });
 
   return users
-    .filter(u => u.email && u.programs.length > 0)
+    .filter(u => u.email && u.ownedPrograms.length > 0)
     .map(u => ({
       userId: u.id,
       email: u.email!,
       name: u.name || 'User',
-      programId: u.programs[0].id,
-      programName: u.programs[0].name,
+      programId: u.ownedPrograms[0].id,
+      programName: u.ownedPrograms[0].name,
     }));
 }
 

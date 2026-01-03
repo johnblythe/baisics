@@ -236,7 +236,7 @@ const parseAIResponse = <T>(response: SendMessageResponse, defaultValue: T): T =
 
 export const saveProgramToDatabase = async (program: Program): Promise<void> => {
   try {
-    if (!program?.name || !program?.user?.id) {
+    if (!program?.name || !program?.createdByUser?.id) {
       throw new Error('Invalid program data');
     }
 
@@ -244,7 +244,7 @@ export const saveProgramToDatabase = async (program: Program): Promise<void> => 
       id: program.id,
       name: program.name,
       description: program.description || '',
-      createdBy: program.user.id,
+      createdBy: program.createdByUser.id,
       workoutPlans: {
         create: program.workoutPlans.map(plan => ({
           phase: 1, // @todo
@@ -258,10 +258,10 @@ export const saveProgramToDatabase = async (program: Program): Promise<void> => 
           carbGrams: plan.nutrition.macros.carbs,
           fatGrams: plan.nutrition.macros.fats,
           daysPerWeek: plan.workouts.length,
-          user: { 
-            connect: { 
-              id: program.user.id
-            } 
+          user: {
+            connect: {
+              id: program.createdByUser.id
+            }
           },
           workouts: {
             create: plan.workouts.map(workout => ({
@@ -449,7 +449,7 @@ export const createProgramSequentially = async (
       name: programStructure.name,
       description: programStructure.description,
       workoutPlans,
-      user: {
+      createdByUser: {
         id: userId,
         email: null,
         password: null,

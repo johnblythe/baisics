@@ -14,7 +14,7 @@ export async function GET(request: Request) {
     const program = await prisma.program.findUnique({
       where: { id: programId },
       include: {
-        user: {
+        createdByUser: {
           select: { name: true },
         },
         workoutPlans: {
@@ -76,7 +76,7 @@ export async function GET(request: Request) {
       id: program.id,
       name: program.name,
       description: program.description,
-      createdBy: program.user.name || 'BAISICS User',
+      createdBy: program.createdByUser?.name || 'BAISICS User',
       createdAt: program.createdAt,
       stats: {
         phases,

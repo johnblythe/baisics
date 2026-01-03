@@ -4,37 +4,37 @@
       "id": "195",
       "number": 195,
       "title": "feat: Progress photos with comparison view",
-      "labels": ["enhancement"],
-      "status": "open",
+      "labels": [],
+      "status": "closed",
       "priority": "med",
       "needsSync": false,
       "localOnly": false,
       "createdAt": "2026-01-02T00:00:00Z",
-      "updatedAt": "2026-01-02T00:00:00Z"
+      "updatedAt": "2026-01-03T00:00:00Z"
     },
     {
       "id": "194",
       "number": 194,
       "title": "feat: Streak tracking with forgiveness mode",
-      "labels": ["enhancement"],
-      "status": "open",
+      "labels": [],
+      "status": "closed",
       "priority": "med",
       "needsSync": false,
       "localOnly": false,
       "createdAt": "2026-01-02T00:00:00Z",
-      "updatedAt": "2026-01-02T00:00:00Z"
+      "updatedAt": "2026-01-03T00:00:00Z"
     },
     {
       "id": "193",
       "number": 193,
       "title": "feat: Email reminders for workouts and check-ins",
-      "labels": ["enhancement"],
-      "status": "open",
+      "labels": [],
+      "status": "closed",
       "priority": "med",
       "needsSync": false,
       "localOnly": false,
       "createdAt": "2026-01-02T00:00:00Z",
-      "updatedAt": "2026-01-02T00:00:00Z"
+      "updatedAt": "2026-01-03T00:00:00Z"
     },
     {
       "id": "192",
@@ -265,5 +265,5 @@
       "updatedAt": "2025-12-06T15:48:41Z"
     }
   ],
-  "lastSyncedAt": "2026-01-03T01:15:00Z"
+  "lastSyncedAt": "2026-01-03T09:50:00Z"
 }
