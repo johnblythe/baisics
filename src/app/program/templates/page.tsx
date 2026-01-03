@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import MainLayout from '@/app/components/layouts/MainLayout';
-import { BookmarkPlus, Copy, Globe, Lock, MoreVertical } from 'lucide-react';
+import { BookmarkPlus, Copy, Globe, Lock } from 'lucide-react';
 
 interface Template {
   id: string;

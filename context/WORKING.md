@@ -1,78 +1,81 @@
-# Session Context - 2026-01-03T17:00:00Z
+# Session Context - 2026-01-03T18:30:00Z
 
 ## Current Session Overview
-- **Main Task/Feature**: Manual Program Builder v2 (#190) + Coach Tier foundation
+- **Main Task/Feature**: Manual Program Builder v2 (#190) - Templates, Assignment API, Multi-phase support
 - **Session Duration**: ~4 hours
-- **Current Status**: ALL PHASES COMPLETE
+- **Current Status**: All 3 phases implemented, PR created, comprehensive review completed with issues identified
 
 ## Recent Activity (Last 30-60 minutes)
-- **What We Just Did**: Phase 3 - Multi-phase program support (phase tabs, templates, validation)
-- **Active Problems**: None - All phases complete
-- **Current Files**: ProgramBuilder.tsx, schema.prisma, migration
-- **Test Status**: TypeScript compiles clean
+- **What We Just Did**: Created branch `feat/190-manual-program-builder-v2`, committed, pushed, ran comprehensive PR review with 3 agents
+- **Active Problems**: 2 critical issues from review (missing auth check in assign API, silent JSON parse failure)
+- **Current Files**: PR review focused on assign/route.ts, promote-template/route.ts, ProgramBuilder.tsx
+- **Test Status**: TypeScript compiles clean, no tests run yet
 
 ## Key Technical Decisions Made
 - **Architecture Choices**:
   - Split `createdBy` (author) from `userId` (owner/tracker) on Program model
-  - `active` boolean for tracking current program per user
-  - Clone-based assignment model for coach tier (coach creates, clones to client, client owns copy)
+  - Clone-based assignment model (coach creates → clones to client → client owns copy)
+  - Enhanced WorkoutPlan with `phaseName`/`phaseDurationWeeks` (vs separate Phase model)
 - **Implementation Approaches**:
-  - dnd-kit for drag-drop (already used in program editor, now in builder)
-  - Filter dropdowns for exercise search instead of text-only
-- **Technology Selections**: @dnd-kit/core, @dnd-kit/sortable already in project
-- **Performance/Security Considerations**: Exercise filter options fetched once per modal open
+  - dnd-kit for drag-drop
+  - Server actions for form submission
+  - Modal pattern for template saving
+- **Technology Selections**: @dnd-kit/core, @dnd-kit/sortable (already in project)
+- **Performance/Security Considerations**: Need coach-client relationship validation before merge
 
 ## Code Context
 - **Modified Files**:
-  - prisma/schema.prisma (userId, active, relation renames)
+  - prisma/schema.prisma (userId, active, phaseName, phaseDurationWeeks)
   - prisma/migrations/20260103100000_add_program_userId_active/
-  - src/app/program/create/components/WorkoutSection.tsx (dnd-kit)
-  - src/app/program/create/components/ExerciseSearchModal.tsx (filters)
-  - src/app/program/create/actions.ts (searchExercises with filters)
-  - ~15 other files with relation updates (createdByUser, ownerUser, ownedPrograms)
-- **New Patterns**:
-  - SortableExercise component pattern for dnd-kit
-  - Filter state management with shouldSearch derived value
-- **Dependencies**: None new (dnd-kit already installed)
+  - prisma/migrations/20260103160000_add_phase_metadata/
+  - src/app/api/programs/[programId]/promote-template/route.ts (NEW)
+  - src/app/api/programs/assign/route.ts (NEW)
+  - src/app/api/programs/templates/route.ts (NEW)
+  - src/app/api/programs/[programId]/overview/route.ts
+  - src/app/program/[programId]/components/SaveAsTemplateModal.tsx (NEW)
+  - src/app/program/[programId]/page.tsx
+  - src/app/program/create/components/ProgramBuilder.tsx
+  - src/app/program/templates/page.tsx (NEW)
+- **New Patterns**: Phase interface, SortableExercise component, filter dropdowns
+- **Dependencies**: None new
 - **Configuration Changes**: None
 
 ## Current Implementation State
 - **Completed**:
-  - Phase 1: Schema migration, dnd-kit drag-drop, exercise filters (bf06b58)
-  - Phase 2: Templates + Assignment API
-    - `POST /api/programs/[programId]/promote-template` - Promote/demote templates
-    - `POST /api/programs/assign` - Clone program to client (coach tier)
-    - `GET /api/programs/templates` - Get user's templates
-    - SaveAsTemplateModal component in program detail page
-    - My Templates page at `/program/templates`
-  - Phase 3: Multi-phase program support
-    - Schema: Added `phaseName`, `phaseDurationWeeks` to WorkoutPlan
-    - UI: Multi-phase toggle, phase tabs, phase templates (Hypertrophy/Strength/Deload)
-    - Per-phase workout management
-- **In Progress**: Nothing actively
+  - Phase 1: Schema (userId/active), dnd-kit drag-drop, exercise filters
+  - Phase 2: Templates API (promote/demote), Assignment API, My Templates page
+  - Phase 3: Multi-phase toggle, phase tabs UI, phase templates
+- **In Progress**: Addressing PR review findings
 - **Blocked**: Nothing
 - **Next Steps**:
-  1. Coach tier dashboard using new schema
-  2. Test multi-phase save (currently only Phase 1 workouts saved - needs action update)
+  1. Fix critical: Add coach-client auth check in assign/route.ts
+  2. Fix critical: Remove silent JSON parse catch in promote-template/route.ts
+  3. Fix important: Add missing phase fields to clone operation
+  4. Fix important: Remove unused code (duplicatePhase, MoreVertical import)
+  5. Consider: Extract helper functions per simplifier recommendations
 
 ## Important Context for Handoff
-- **Environment Setup**: Local Postgres via Supabase, migrations applied
-- **Running/Testing**: `npm test` passes, `npx tsc --noEmit` clean
-- **Known Issues**: None
+- **Environment Setup**: Local Postgres via Supabase
+- **Running/Testing**: `npx tsc --noEmit` clean, `npm test` not run
+- **Known Issues**:
+  - Multi-phase save only persists Phase 1 workouts (needs action update)
+  - No coach-client relationship table yet (assign API needs guard)
 - **External Dependencies**: None new
 
 ## Conversation Thread
-- **Original Goal**: Plan and implement #190 (Manual Program Builder v2) as foundation for coach tier
-- **Evolution**: Started with schema discussion for coach-to-client assignment model, settled on createdBy/userId split
+- **Original Goal**: Implement Manual Program Builder v2 as foundation for Coach Tier
+- **Evolution**: Started with schema discussion → 3-phase implementation → PR review
 - **Lessons Learned**:
-  - Current "active" program was implicit (most recent by date, URL-based) - now explicit
-  - Relation renames required updates across ~20 files
+  - "Active" program was implicit (most recent) - now explicit boolean
+  - Relation renames affected ~20 files
+  - Silent error patterns are pervasive and need systematic addressing
 - **Alternatives Considered**:
-  - Assignment-based (coach owns, client reads) - rejected, too complex
-  - Transfer ownership - rejected, coach loses their work
-  - Chose clone-based with visibility (coach sees via createdBy filter)
+  - Separate Phase model vs enhancing WorkoutPlan (chose WorkoutPlan enhancement)
+  - Assignment-based vs clone-based ownership (chose clone-based)
 
-## Plan Files
-- `/Users/johnblythe/code/jb/baisics/plans/190-manual-program-builder-v2.md` - Implementation plan
-- `/Users/johnblythe/code/jb/baisics/plans/coach-tier-spec.md` - Coach tier product spec
-- `/Users/johnblythe/code/jb/baisics/plans/coach-tier-design-decisions.md` - UX decisions
+## PR Review Summary
+- **Branch**: feat/190-manual-program-builder-v2
+- **Critical Issues (2)**: Missing auth in assign, silent JSON parse
+- **Important Issues (8)**: Missing clone fields, unused code, silent failures
+- **Suggestions (7)**: Extract helpers, use Promise.allSettled, add error states
+- **Plan file**: plans/190-manual-program-builder-v2.md

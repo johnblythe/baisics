@@ -141,19 +141,6 @@ export function ProgramBuilder() {
     ));
   };
 
-  const duplicatePhase = (index: number) => {
-    const source = phases[index];
-    const newPhase: Phase = {
-      name: `${source.name} (Copy)`,
-      durationWeeks: source.durationWeeks,
-      workouts: JSON.parse(JSON.stringify(source.workouts)), // Deep copy
-    };
-    const updated = [...phases];
-    updated.splice(index + 1, 0, newPhase);
-    setPhases(updated);
-    setActivePhaseIndex(index + 1);
-  };
-
   const openExerciseSearch = (workoutIndex: number) => {
     setTargetWorkoutIndex(workoutIndex);
     setSearchModalOpen(true);

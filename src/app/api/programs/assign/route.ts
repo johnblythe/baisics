@@ -60,14 +60,31 @@ export async function POST(request: Request) {
       );
     }
 
-    // Verify client exists
+    // Verify client exists and coach has relationship with them
+    const coachClientRelation = await prisma.coachClient.findFirst({
+      where: {
+        coachId,
+        clientId,
+        inviteStatus: 'ACCEPTED',
+        status: 'ACTIVE',
+      },
+    });
+
+    if (!coachClientRelation) {
+      return NextResponse.json(
+        { error: 'Client not found or not in your client list' },
+        { status: 403 }
+      );
+    }
+
+    // Fetch client details
     const client = await prisma.user.findUnique({
       where: { id: clientId },
       select: { id: true, name: true, email: true },
     });
 
     if (!client) {
-      return NextResponse.json({ error: 'Client not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Client user not found' }, { status: 404 });
     }
 
     // If setAsActive, deactivate client's current programs first
@@ -107,6 +124,8 @@ export async function POST(request: Request) {
         workoutPlans: {
           create: sourceProgram.workoutPlans.map((plan) => ({
             phase: plan.phase,
+            phaseName: plan.phaseName,
+            phaseDurationWeeks: plan.phaseDurationWeeks,
             daysPerWeek: plan.daysPerWeek,
             dailyCalories: plan.dailyCalories,
             proteinGrams: plan.proteinGrams,

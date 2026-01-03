@@ -18,8 +18,17 @@ export async function POST(
     }
 
     const { programId } = await params;
-    const body = await request.json().catch(() => ({}));
-    const { isPublic = false } = body;
+
+    let isPublic = false;
+    const contentType = request.headers.get('content-type');
+    if (contentType?.includes('application/json')) {
+      try {
+        const body = await request.json();
+        isPublic = body.isPublic ?? false;
+      } catch {
+        return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+      }
+    }
 
     // Verify program exists and user owns it
     const program = await prisma.program.findUnique({
