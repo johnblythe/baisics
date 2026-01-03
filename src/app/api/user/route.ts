@@ -16,6 +16,8 @@ export async function GET() {
         id: true,
         email: true,
         isPremium: true,
+        streakCurrent: true,
+        streakLongest: true,
       },
     });
 

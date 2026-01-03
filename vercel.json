@@ -1,5 +1,11 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "crons": [
+    {
+      "path": "/api/cron/daily-reminders",
+      "schedule": "0 14 * * *"
+    }
+  ],
   "functions": {
     "src/app/api/programs/generate/route.ts": {
       "maxDuration": 60

@@ -1,74 +1,70 @@
-# Session Context - 2026-01-01T00:00:00Z
+# Session Context - 2026-01-03T01:45:00Z
 
 ## Current Session Overview
-- **Main Task/Feature**: Q1 2026 Feature Bundle - 4 features (#188, #166, #178, #184)
+- **Main Task/Feature**: Cross-cutting features bundle (#190, #193, #194, #195) - Email reminders, streak tracking, program sharing
 - **Session Duration**: ~2 hours
-- **Current Status**: Complete - PR #191 created and ready for review
+- **Current Status**: Implementation complete, all TypeScript checks pass, ready for commit and PR
 
 ## Recent Activity (Last 30-60 minutes)
-- **What We Just Did**: Created PR #191 for all 4 features
-- **Active Problems**: None - all features implemented
-- **Current Files**: All changes committed and pushed
-- **Test Status**: Needs manual testing per PR test plan
+- **What We Just Did**: Completed Phase B (Program Sharing) - created share API, public share page, CloneButton
+- **Active Problems**: None - all implementation complete
+- **Current Files**: `src/app/p/[shareId]/page.tsx`, `src/app/api/programs/share/route.ts`, dashboard share button update
+- **Test Status**: TypeScript compiles with no errors, migration applied successfully
 
 ## Key Technical Decisions Made
-- **Architecture Choices**:
-  - Single `coachingNotes` text field instead of 4 separate fields (#178)
-  - Server actions for manual program creation instead of API routes (#184)
-  - Single-phase MVP for manual builder, multi-phase deferred to #190
-- **Implementation Approaches**:
-  - Up/down buttons for reordering instead of drag-drop (simpler)
-  - Search-only exercise selection (no filters for MVP)
-- **Technology Selections**: None new - uses existing Prisma, Next.js patterns
-- **Performance/Security Considerations**: Non-blocking DB lookup for coaching notes in chat API
+- **Architecture Choices**: Merged UserSettings/UserStreak into User model (DHH recommendation), single daily cron instead of hourly
+- **Implementation Approaches**: Simple streak (no forgiveness mode for MVP), copy-link sharing (no modal with options)
+- **Technology Selections**: nanoid for share IDs, Vercel Cron for scheduling (not Inngest)
+- **Performance/Security Considerations**: Cron auth via CRON_SECRET header, streak updates in workout completion endpoint
 
 ## Code Context
 - **Modified Files**:
-  - `src/lib/email/templates/*.ts` - v2a colors
-  - `src/app/hi/components/ChatMessage.tsx` - bubble styling
-  - `src/app/hi/utils/welcomeMessages.ts` - new copy
-  - `prisma/schema.prisma` - coachingNotes field
-  - `src/app/api/workout/chat/route.ts` - coaching notes integration
-  - `src/app/program/create/*` - new manual builder
-  - `src/components/ProgramSelector.tsx` - "Create New Program" option
-- **New Patterns**: None
-- **Dependencies**: None new
-- **Configuration Changes**: New Prisma migration for coachingNotes
+  - `prisma/schema.prisma` - Added emailReminders, streakCurrent, streakLongest, streakLastActivityAt to User; shareId to Program
+  - `src/app/api/workout-logs/[id]/complete/route.ts` - Added streak update on workout completion
+  - `src/app/dashboard/[programId]/page.tsx` - Added StreakBadge, updated share button
+  - `src/app/api/user/route.ts` - Added streak fields to response
+  - `vercel.json` - Added cron schedules
+- **New Files**:
+  - `src/lib/streaks.ts` - updateStreak() function
+  - `src/lib/email/templates/workout-reminder.ts` - Email template
+  - `src/app/api/cron/daily-reminders/route.ts` - Cron endpoint
+  - `src/components/StreakBadge.tsx` - UI component
+  - `src/app/api/programs/share/route.ts` - Share link generation
+  - `src/app/p/[shareId]/page.tsx` - Public program view
+  - `src/app/p/[shareId]/CloneButton.tsx` - Clone action
+- **Dependencies**: Added nanoid
+- **Configuration Changes**: vercel.json crons for daily-reminders (2pm UTC) and weekly-summary (1pm UTC Monday)
 
 ## Current Implementation State
 - **Completed**:
-  - #188 Email templates v2a refresh
-  - #166 /hi polish (chat bubbles, welcome copy)
-  - #178 Exercise coaching chat (schema + API + seed script)
-  - #184 Manual program creation MVP
-- **In Progress**: Nothing
-- **Blocked**: Nothing
+  - Schema migration with streak and share fields
+  - Streak logic and UI
+  - Email reminder cron and template
+  - Program sharing (generate link, public page, clone button)
+- **In Progress**: None
+- **Blocked**: None
 - **Next Steps**:
-  1. Merge PR #191
-  2. Run migration: `npx prisma migrate deploy`
-  3. Seed coaching data: `npx tsx scripts/seed-coaching-notes.ts`
-  4. Test all features in staging
+  1. Create git commit
+  2. Push to remote
+  3. Create PR for issues #190, #193, #194, #195
 
 ## Important Context for Handoff
-- **Environment Setup**: Standard Next.js + Prisma setup
-- **Running/Testing**:
-  - Dev: `npm run dev` on port 3001
-  - Test emails: `/admin/email-templates` preview page
-  - Test manual builder: `/program/create`
+- **Environment Setup**: Local Postgres running on port 54332, migration already applied
+- **Running/Testing**: `npm run dev` on port 3001, TypeScript checks pass
 - **Known Issues**: None discovered
-- **External Dependencies**: AWS SES for email, Anthropic for AI chat
+- **External Dependencies**: CRON_SECRET env var needed for cron endpoints in production
 
 ## Conversation Thread
-- **Original Goal**: Implement 4 features from Q1 2026 plan
+- **Original Goal**: Build cross-cutting features (email reminders, streaks, progress photos, program builder v2) for both personal users and coach clients
 - **Evolution**:
-  - Started with planning via /workflows:plan
-  - Got reviews from DHH, Kieran, Simplicity reviewers
-  - Simplified scope based on feedback (cut drag-drop, reduced schema fields, etc.)
-  - Implemented all 4 features sequentially
-- **Lessons Learned**:
-  - DataReviewTransition and GeneratingProgramTransition already had v2a styling
-  - ExerciseLibrary already had commonMistakes field (only needed coachingNotes)
+  1. Started with comprehensive plan
+  2. Ran plan review with 3 agents (DHH, Kieran, Simplicity)
+  3. Cut 50-60% scope based on feedback
+  4. Simplified to 2 phases: Reminders+Streaks and Program Sharing
+  5. Progress photos already complete, skipped
+- **Lessons Learned**: DHH was right - merge related fields into User model, avoid separate tables for 1:1 relationships
 - **Alternatives Considered**:
-  - 4 separate schema fields vs single coachingNotes (chose single)
-  - API routes vs server actions for #184 (chose server actions)
-  - Drag-drop vs up/down buttons (chose buttons for simplicity)
+  - Inngest for cron (rejected: simpler to use Vercel Cron)
+  - Separate UserSettings/UserStreak tables (rejected: added columns to User)
+  - Forgiveness mode for streaks (deferred: YAGNI)
+  - Per-user reminder times (rejected: too complex for MVP)

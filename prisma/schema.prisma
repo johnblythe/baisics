@@ -102,6 +102,14 @@ model User {
   coachClients CoachClient[] @relation("CoachRelation")  // Users this coach manages
   coachOf      CoachClient[] @relation("ClientRelation") // Coaches managing this user
 
+  // Email preferences
+  emailReminders Boolean @default(true) @map("email_reminders")
+
+  // Streak tracking
+  streakCurrent        Int       @default(0) @map("streak_current")
+  streakLongest        Int       @default(0) @map("streak_longest")
+  streakLastActivityAt DateTime? @map("streak_last_activity_at")
+
   @@index([email])
   @@map("users")
 }
@@ -267,6 +275,9 @@ model Program {
   imageUrl     String?        @map("image_url")
   popularityScore Int         @default(0) @map("popularity_score")
 
+  // Sharing
+  shareId      String?        @unique @map("share_id")
+
   user         User           @relation(fields: [createdBy], references: [id])
   clonedFrom   Program?       @relation("ProgramClones", fields: [clonedFromId], references: [id])
   clones       Program[]      @relation("ProgramClones")
@@ -285,6 +296,7 @@ model Program {
   @@index([isPublic])
   @@index([category])
   @@index([difficulty])
+  @@index([shareId])
   @@map("programs")
 }
 
