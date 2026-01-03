@@ -5,7 +5,8 @@ export interface Program {
   name: string;
   description?: string | null;
   workoutPlans: WorkoutPlan[];
-  user: Partial<User>;
+  createdByUser: Partial<User>;
+  ownerUser?: Partial<User>;
   userImages?: UserImages[];
   createdAt?: Date;
   startDate?: Date;

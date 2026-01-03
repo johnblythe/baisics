@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     const program = await request.json() as Program;
 
     // Ensure user can only save programs for themselves
-    if (program.user?.id !== session.user.id) {
+    if (program.createdByUser?.id !== session.user.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

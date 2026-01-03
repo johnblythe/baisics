@@ -489,7 +489,7 @@ export async function saveProgramToDatabase(
           },
         },
       },
-      user: true,
+      createdByUser: true,
     },
   });
 
@@ -509,7 +509,7 @@ async function sendAdminNotification(savedProgram: any): Promise<void> {
         programName: savedProgram.name,
         programDescription: savedProgram.description || '',
         userId: savedProgram.createdBy,
-        userEmail: savedProgram.user?.email,
+        userEmail: savedProgram.createdByUser?.email,
         workoutPlans: savedProgram.workoutPlans.map((plan: any) => ({
           phase: plan.phase,
           daysPerWeek: plan.daysPerWeek,

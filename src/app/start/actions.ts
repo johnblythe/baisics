@@ -300,7 +300,7 @@ export async function getUserProgram(userId: string, programId: string) {
             }
           }
         },
-        user: true,
+        createdByUser: true,
       },
     });
 
@@ -407,7 +407,7 @@ export async function createNewProgram(programData: ProgramData, userId: string)
       data: {
         name: programDetails.programName,
         description: programDetails.programDescription,
-        user: {
+        createdByUser: {
           connect: {
             id: userId,
           },

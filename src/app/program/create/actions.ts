@@ -125,24 +125,49 @@ export async function createManualProgram(data: ProgramFormData) {
   redirect(`/program/${programId}`);
 }
 
-export async function searchExercises(query: string, limit = 20) {
+export interface ExerciseFilters {
+  category?: string;
+  equipment?: string;
+  muscle?: string;
+}
+
+export async function searchExercises(query: string, filters?: ExerciseFilters, limit = 20) {
   const session = await auth();
   if (!session?.user?.id) {
     throw new Error('Authentication required');
   }
 
-  if (!query || query.length < 2) {
+  // Allow empty query if filters are set
+  const hasFilters = filters && (filters.category || filters.equipment || filters.muscle);
+  if ((!query || query.length < 2) && !hasFilters) {
     return [];
   }
 
   // Sanitize and limit query length
-  const sanitizedQuery = query.trim().slice(0, 100);
+  const sanitizedQuery = query?.trim().slice(0, 100) || '';
+
+  // Build where clause
+  const where: Record<string, unknown> = {};
+
+  if (sanitizedQuery) {
+    where.name = { contains: sanitizedQuery, mode: 'insensitive' };
+  }
+
+  if (filters?.category) {
+    where.category = { equals: filters.category, mode: 'insensitive' };
+  }
+
+  if (filters?.equipment) {
+    where.equipment = { has: filters.equipment };
+  }
+
+  if (filters?.muscle) {
+    where.targetMuscles = { has: filters.muscle };
+  }
 
   try {
     const exercises = await prisma.exerciseLibrary.findMany({
-      where: {
-        name: { contains: sanitizedQuery, mode: 'insensitive' },
-      },
+      where,
       select: {
         id: true,
         name: true,
@@ -161,5 +186,43 @@ export async function searchExercises(query: string, limit = 20) {
       error: error instanceof Error ? error.message : error,
     });
     throw new Error('Unable to search exercises. Please try again.');
+  }
+}
+
+export async function getExerciseFilterOptions() {
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new Error('Authentication required');
+  }
+
+  try {
+    // Get distinct categories
+    const categoriesRaw = await prisma.exerciseLibrary.findMany({
+      select: { category: true },
+      distinct: ['category'],
+      orderBy: { category: 'asc' },
+    });
+    const categories = categoriesRaw
+      .map(c => c.category)
+      .filter((c): c is string => c !== null && c !== '');
+
+    // Get all equipment (flatten arrays and dedupe)
+    const equipmentRaw = await prisma.exerciseLibrary.findMany({
+      select: { equipment: true },
+      where: { equipment: { isEmpty: false } },
+    });
+    const equipment = [...new Set(equipmentRaw.flatMap(e => e.equipment))].sort();
+
+    // Get all target muscles (flatten arrays and dedupe)
+    const musclesRaw = await prisma.exerciseLibrary.findMany({
+      select: { targetMuscles: true },
+      where: { targetMuscles: { isEmpty: false } },
+    });
+    const muscles = [...new Set(musclesRaw.flatMap(m => m.targetMuscles))].sort();
+
+    return { categories, equipment, muscles };
+  } catch (error) {
+    console.error('Failed to get filter options:', error);
+    return { categories: [], equipment: [], muscles: [] };
   }
 }

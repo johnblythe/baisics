@@ -80,26 +80,27 @@ model User {
   name          String?
   image         String?
   emailVerified DateTime? @map("email_verified")
-  
-  accounts     Account[]
-  userImages   UserImages[]
-  userIntakes  UserIntake[]
-  promptLogs   PromptLog[]
-  workoutPlans WorkoutPlan[]
-  programs     Program[]
-  workoutLogs  WorkoutLog[]
-  stats        UserStats[]
-  checkIns     CheckIn[]
-  activities   UserActivity[]
-  nutritionLogs NutritionLog[]
-  session      Session[]
+
+  accounts         Account[]
+  userImages       UserImages[]
+  userIntakes      UserIntake[]
+  promptLogs       PromptLog[]
+  workoutPlans     WorkoutPlan[]
+  authoredPrograms Program[]         @relation("ProgramAuthor") // Programs this user created
+  ownedPrograms    Program[]         @relation("ProgramOwner") // Programs this user is tracking
+  workoutLogs      WorkoutLog[]
+  stats            UserStats[]
+  checkIns         CheckIn[]
+  activities       UserActivity[]
+  nutritionLogs    NutritionLog[]
+  session          Session[]
   purchaseSessions PurchaseSession[]
-  subscription   Subscription?
-  appLogs        AppLog[]
+  subscription     Subscription?
+  appLogs          AppLog[]
 
   // Coach Mode relations
-  isCoach      Boolean   @default(false) @map("is_coach")
-  coachClients CoachClient[] @relation("CoachRelation")  // Users this coach manages
+  isCoach      Boolean       @default(false) @map("is_coach")
+  coachClients CoachClient[] @relation("CoachRelation") // Users this coach manages
   coachOf      CoachClient[] @relation("ClientRelation") // Coaches managing this user
 
   // Email preferences
@@ -118,7 +119,7 @@ model WorkoutPlan {
   id                     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId                 String    @map("user_id") @db.Uuid
   programId              String    @map("program_id") @db.Uuid
-  bodyFatPercentage   Float?    @map("body_fat_percentage") /// todo: remove
+  bodyFatPercentage      Float?    @map("body_fat_percentage") /// todo: remove
   muscleMassDistribution String?   @map("muscle_mass_distribution") @db.Text /// todo: remove
   daysPerWeek            Int       @map("days_per_week")
   dailyCalories          Int       @map("daily_calories")
@@ -182,12 +183,12 @@ model ExerciseLibrary {
   createdAt        DateTime          @default(now()) @map("created_at")
 
   // Lean generation fields
-  defaultTier       ExerciseTier      @default(TIER_2) @map("default_tier")
-  contraindications String[]          @default([])     // ["knee", "shoulder", "lower back"]
-  environments      String[]          @default([])     // ["gym", "home", "outdoors", "travel"]
+  defaultTier       ExerciseTier @default(TIER_2) @map("default_tier")
+  contraindications String[]     @default([]) // ["knee", "shoulder", "lower back"]
+  environments      String[]     @default([]) // ["gym", "home", "outdoors", "travel"]
 
   // Coaching data for mid-workout AI chat
-  coachingNotes     String?           @db.Text @map("coaching_notes") // Form cues, modifications, progressions in one block
+  coachingNotes String? @map("coaching_notes") @db.Text // Form cues, modifications, progressions in one block
 
   @@index([name])
   @@index([category])
@@ -219,25 +220,25 @@ enum ExerciseMeasureUnit {
 }
 
 model Exercise {
-  id                String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  workoutId         String          @map("workout_id") @db.Uuid
-  exerciseLibraryId String          @map("exercise_library_id") @db.Uuid
-  name              String          @map("name")
-  sets              Int             @map("sets") @default(1)
-  reps              Int?            @map("reps")
-  restPeriod        Int            @map("rest_period") @default(0)
-  intensity         Int?            @map("intensity") @default(0)
-  measureType       ExerciseMeasureType         @map("measure_type") @default(REPS)
-  measureValue      Float?            @map("measure_value")
-  measureUnit       ExerciseMeasureUnit?         @map("measure_unit") @default(LB)
-  notes             String?         @map("notes") @db.Text
-  instructions      String[]        @default([]) @map("instructions")
-  sortOrder         Int             @map("sort_order") @default(0)
+  id                String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workoutId         String               @map("workout_id") @db.Uuid
+  exerciseLibraryId String               @map("exercise_library_id") @db.Uuid
+  name              String               @map("name")
+  sets              Int                  @default(1) @map("sets")
+  reps              Int?                 @map("reps")
+  restPeriod        Int                  @default(0) @map("rest_period")
+  intensity         Int?                 @default(0) @map("intensity")
+  measureType       ExerciseMeasureType  @default(REPS) @map("measure_type")
+  measureValue      Float?               @map("measure_value")
+  measureUnit       ExerciseMeasureUnit? @default(LB) @map("measure_unit")
+  notes             String?              @map("notes") @db.Text
+  instructions      String[]             @default([]) @map("instructions")
+  sortOrder         Int                  @default(0) @map("sort_order")
 
-  workout           Workout         @relation(fields: [workoutId], references: [id], onDelete: Cascade)
-  exerciseLibrary   ExerciseLibrary @relation(fields: [exerciseLibraryId], references: [id])
-  exerciseLogs      ExerciseLog[]
-  createdAt         DateTime        @default(now()) @map("created_at")
+  workout         Workout         @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  exerciseLibrary ExerciseLibrary @relation(fields: [exerciseLibraryId], references: [id])
+  exerciseLogs    ExerciseLog[]
+  createdAt       DateTime        @default(now()) @map("created_at")
 
   @@index([workoutId])
   @@index([exerciseLibraryId])
@@ -246,51 +247,56 @@ model Exercise {
 }
 
 model Program {
-  id           String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name         String
-  slug         String?        @unique @map("slug")
-  description  String?        @db.Text
-  createdBy    String         @map("created_by") @db.Uuid
-  createdAt    DateTime       @default(now()) @map("created_at")
-  updatedAt    DateTime       @updatedAt @map("updated_at")
-  source       String?        @map("source") /// such as 'uploaded', 'ai', 'template', etc.
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String
+  slug        String?  @unique @map("slug")
+  description String?  @db.Text
+  createdBy   String   @map("created_by") @db.Uuid // Author (coach, user, community)
+  userId      String?  @map("user_id") @db.Uuid // Owner/tracker (who logs workouts)
+  active      Boolean  @default(true) // Is this the user's current program?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  source      String?  @map("source") /// such as 'uploaded', 'ai', 'template', etc.
 
   // Template & Library fields
-  isTemplate   Boolean        @default(false) @map("is_template")
-  isPublic     Boolean        @default(false) @map("is_public")
-  clonedFromId String?        @map("cloned_from_id") @db.Uuid
-  cloneCount   Int            @default(0) @map("clone_count")
+  isTemplate   Boolean @default(false) @map("is_template")
+  isPublic     Boolean @default(false) @map("is_public")
+  clonedFromId String? @map("cloned_from_id") @db.Uuid
+  cloneCount   Int     @default(0) @map("clone_count")
 
   // Metadata for filtering/display
-  category     String?        @map("category") // strength, hypertrophy, powerlifting, athletic, general
-  difficulty   String?        @map("difficulty") // beginner, intermediate, advanced
-  durationWeeks Int?          @map("duration_weeks")
-  daysPerWeek  Int?           @map("days_per_week")
-  equipment    String[]       @default([]) @map("equipment")
-  goals        String[]       @default([]) @map("goals")
-  tags         String[]       @default([]) @map("tags")
+  category      String?  @map("category") // strength, hypertrophy, powerlifting, athletic, general
+  difficulty    String?  @map("difficulty") // beginner, intermediate, advanced
+  durationWeeks Int?     @map("duration_weeks")
+  daysPerWeek   Int?     @map("days_per_week")
+  equipment     String[] @default([]) @map("equipment")
+  goals         String[] @default([]) @map("goals")
+  tags          String[] @default([]) @map("tags")
 
   // SEO & display
-  author       String?        @map("author")
-  imageUrl     String?        @map("image_url")
-  popularityScore Int         @default(0) @map("popularity_score")
+  author          String? @map("author")
+  imageUrl        String? @map("image_url")
+  popularityScore Int     @default(0) @map("popularity_score")
 
   // Sharing
-  shareId      String?        @unique @map("share_id")
+  shareId String? @unique @map("share_id")
 
-  user         User           @relation(fields: [createdBy], references: [id])
-  clonedFrom   Program?       @relation("ProgramClones", fields: [clonedFromId], references: [id])
-  clones       Program[]      @relation("ProgramClones")
-  workoutPlans WorkoutPlan[]
-  userImages   UserImages[]
-  workoutLogs  WorkoutLog[]
-  stats        UserStats[]
-  checkIns     CheckIn[]
-  activities   UserActivity[]
+  createdByUser User           @relation("ProgramAuthor", fields: [createdBy], references: [id])
+  ownerUser     User?          @relation("ProgramOwner", fields: [userId], references: [id])
+  clonedFrom    Program?       @relation("ProgramClones", fields: [clonedFromId], references: [id])
+  clones        Program[]      @relation("ProgramClones")
+  workoutPlans  WorkoutPlan[]
+  userImages    UserImages[]
+  workoutLogs   WorkoutLog[]
+  stats         UserStats[]
+  checkIns      CheckIn[]
+  activities    UserActivity[]
 
   @@index([name])
   @@index([slug])
   @@index([createdBy])
+  @@index([userId])
+  @@index([active])
   @@index([description])
   @@index([isTemplate])
   @@index([isPublic])
@@ -384,9 +390,9 @@ enum Difficulty {
 }
 
 enum ExerciseTier {
-  TIER_1  // Main lifts - typically programmed first (squat, deadlift, bench)
-  TIER_2  // Supporting movements - typically middle (lunges, RDLs, dips)
-  TIER_3  // Accessories - typically last (curls, raises, abs)
+  TIER_1 // Main lifts - typically programmed first (squat, deadlift, bench)
+  TIER_2 // Supporting movements - typically middle (lunges, RDLs, dips)
+  TIER_3 // Accessories - typically last (curls, raises, abs)
 }
 
 model WorkoutLog {
@@ -445,13 +451,13 @@ model UserStats {
   id        String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId    String @map("user_id") @db.Uuid
   programId String @map("program_id") @db.Uuid
-  checkInId String @map("check_in_id") @db.Uuid @unique
+  checkInId String @unique @map("check_in_id") @db.Uuid
 
-  weight  Float?  @map("weight")
-  bodyFatLow Float?  @map("body_fat_low")
-  bodyFatHigh Float?  @map("body_fat_high")
-  muscleMassDistribution String?   @map("muscle_mass_distribution") @db.Text
-  notes   String? @map("notes") @db.Text
+  weight                 Float?  @map("weight")
+  bodyFatLow             Float?  @map("body_fat_low")
+  bodyFatHigh            Float?  @map("body_fat_high")
+  muscleMassDistribution String? @map("muscle_mass_distribution") @db.Text
+  notes                  String? @map("notes") @db.Text
 
   // Wellness Metrics
   sleepHours   Float? @map("sleep_hours")
@@ -526,13 +532,13 @@ model ProgressPhoto {
   checkInId   String    @map("check_in_id") @db.Uuid
   userImageId String    @map("user_image_id") @db.Uuid
   type        PhotoType @map("type")
-  userStatsId String?    @db.Uuid @map("user_stats_id")
+  userStatsId String?   @map("user_stats_id") @db.Uuid
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
 
-  checkIn     CheckIn    @relation(fields: [checkInId], references: [id])
-  userImage   UserImages @relation(fields: [userImageId], references: [id])
-  userStats   UserStats? @relation(fields: [userStatsId], references: [id])
+  checkIn   CheckIn    @relation(fields: [checkInId], references: [id])
+  userImage UserImages @relation(fields: [userImageId], references: [id])
+  userStats UserStats? @relation(fields: [userStatsId], references: [id])
 
   @@index([checkInId])
   @@index([userImageId])
@@ -565,17 +571,17 @@ model UserActivity {
 }
 
 model NutritionLog {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId    String   @map("user_id") @db.Uuid
-  date      DateTime @db.Date
-  protein   Int      // grams
-  carbs     Int      // grams
-  fats      Int      // grams
+  id        String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String          @map("user_id") @db.Uuid
+  date      DateTime        @db.Date
+  protein   Int // grams
+  carbs     Int // grams
+  fats      Int // grams
   calories  Int
   source    NutritionSource @default(MANUAL)
-  notes     String?  @db.Text
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  notes     String?         @db.Text
+  createdAt DateTime        @default(now()) @map("created_at")
+  updatedAt DateTime        @updatedAt @map("updated_at")
 
   user User @relation(fields: [userId], references: [id])
 
@@ -644,21 +650,21 @@ model PurchaseSession {
   @@map("purchase_sessions")
 }
 
-
 model Subscription {
-  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId          String    @unique @db.Uuid @map("user_id")
-  stripeCustomerId String?  @unique @map("stripe_customer_id")
-  stripePriceId   String?  @map("stripe_price_id")
-  stripeSubscriptionId String? @unique @map("stripe_subscription_id")
-  status          SubscriptionStatus @map("status")
-  currentPeriodStart DateTime @map("current_period_start")
-  currentPeriodEnd   DateTime @map("current_period_end")
-  cancelAtPeriodEnd  Boolean @default(false) @map("cancel_at_period_end")
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
+  id                   String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId               String             @unique @map("user_id") @db.Uuid
+  stripeCustomerId     String?            @unique @map("stripe_customer_id")
+  stripePriceId        String?            @map("stripe_price_id")
+  stripeSubscriptionId String?            @unique @map("stripe_subscription_id")
+  status               SubscriptionStatus @map("status")
+  currentPeriodStart   DateTime           @map("current_period_start")
+  currentPeriodEnd     DateTime           @map("current_period_end")
+  cancelAtPeriodEnd    Boolean            @default(false) @map("cancel_at_period_end")
+  createdAt            DateTime           @default(now()) @map("created_at")
+  updatedAt            DateTime           @updatedAt @map("updated_at")
 
-  user            User      @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
   @@index([userId])
   @@map("subscriptions")
 }
@@ -673,26 +679,26 @@ enum SubscriptionStatus {
 
 // Coach Mode - allows trainers to manage clients
 model CoachClient {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  coachId   String   @map("coach_id") @db.Uuid
-  clientId  String?  @map("client_id") @db.Uuid
+  id       String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  coachId  String  @map("coach_id") @db.Uuid
+  clientId String? @map("client_id") @db.Uuid
 
   // Invite system for clients who don't have accounts yet
-  inviteEmail   String?  @map("invite_email")
-  inviteToken   String?  @unique @map("invite_token")
-  inviteStatus  InviteStatus @default(PENDING) @map("invite_status")
-  inviteSentAt  DateTime? @map("invite_sent_at")
+  inviteEmail  String?      @map("invite_email")
+  inviteToken  String?      @unique @map("invite_token")
+  inviteStatus InviteStatus @default(PENDING) @map("invite_status")
+  inviteSentAt DateTime?    @map("invite_sent_at")
 
   // Relationship metadata
-  nickname      String?  // Coach's nickname for client
-  notes         String?  @db.Text
-  status        ClientStatus @default(ACTIVE)
+  nickname String? // Coach's nickname for client
+  notes    String?      @db.Text
+  status   ClientStatus @default(ACTIVE)
 
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  coach         User     @relation("CoachRelation", fields: [coachId], references: [id])
-  client        User?    @relation("ClientRelation", fields: [clientId], references: [id])
+  coach  User  @relation("CoachRelation", fields: [coachId], references: [id])
+  client User? @relation("ClientRelation", fields: [clientId], references: [id])
 
   @@unique([coachId, clientId])
   @@unique([coachId, inviteEmail])

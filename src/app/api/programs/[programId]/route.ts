@@ -85,7 +85,7 @@ export async function GET(
             },
           },
         },
-        user: true,
+        createdByUser: true,
       },
     });
 

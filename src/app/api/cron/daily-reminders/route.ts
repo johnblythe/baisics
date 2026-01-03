@@ -36,8 +36,9 @@ export async function GET(request: Request) {
       where: {
         emailReminders: true,
         email: { not: null },
-        programs: {
+        ownedPrograms: {
           some: {
+            active: true,
             workoutPlans: {
               some: {
                 workouts: {
@@ -55,7 +56,8 @@ export async function GET(request: Request) {
         email: true,
         name: true,
         streakCurrent: true,
-        programs: {
+        ownedPrograms: {
+          where: { active: true },
           take: 1,
           orderBy: { createdAt: 'desc' },
           include: {
@@ -82,13 +84,13 @@ export async function GET(request: Request) {
     // Filter to users who haven't completed today's workout
     const usersNeedingReminder = usersWithWorkouts.filter(u =>
       u.workoutLogs.length === 0 &&
-      u.programs[0]?.workoutPlans[0]?.workouts[0]
+      u.ownedPrograms[0]?.workoutPlans[0]?.workouts[0]
     );
 
     // Send emails with error handling and per-user logging
     const results = await Promise.allSettled(
       usersNeedingReminder.map(async (user) => {
-        const workout = user.programs[0]?.workoutPlans[0]?.workouts[0];
+        const workout = user.ownedPrograms[0]?.workoutPlans[0]?.workouts[0];
         if (!workout || !user.email) {
           console.log('Skipped reminder (no workout/email):', { userId: user.id });
           return { skipped: true, userId: user.id };

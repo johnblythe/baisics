@@ -32,7 +32,8 @@ export async function GET() {
             name: true,
             email: true,
             image: true,
-            programs: {
+            ownedPrograms: {
+              where: { active: true },
               orderBy: { createdAt: 'desc' },
               take: 1,
               include: {
@@ -73,16 +74,16 @@ export async function GET() {
             name: cc.client.name,
             email: cc.client.email,
             image: cc.client.image,
-            currentProgram: cc.client.programs[0]
+            currentProgram: cc.client.ownedPrograms[0]
               ? {
-                  id: cc.client.programs[0].id,
-                  name: cc.client.programs[0].name,
-                  completedWorkouts: cc.client.programs[0].workoutLogs.length,
-                  totalWorkouts: cc.client.programs[0].workoutPlans.reduce(
-                    (acc, plan) => acc + plan.workouts.length,
+                  id: cc.client.ownedPrograms[0].id,
+                  name: cc.client.ownedPrograms[0].name,
+                  completedWorkouts: cc.client.ownedPrograms[0].workoutLogs.length,
+                  totalWorkouts: cc.client.ownedPrograms[0].workoutPlans.reduce(
+                    (acc: number, plan: { workouts: unknown[] }) => acc + plan.workouts.length,
                     0
                   ),
-                  lastWorkout: cc.client.programs[0].workoutLogs[0]?.completedAt || null,
+                  lastWorkout: cc.client.ownedPrograms[0].workoutLogs[0]?.completedAt || null,
                 }
               : null,
             lastCheckIn: cc.client.checkIns[0]?.createdAt || null,

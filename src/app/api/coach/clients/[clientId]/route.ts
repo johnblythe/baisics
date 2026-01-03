@@ -24,7 +24,7 @@ export async function GET(request: Request, { params }: RouteParams) {
       include: {
         client: {
           include: {
-            programs: {
+            ownedPrograms: {
               orderBy: { createdAt: 'desc' },
               include: {
                 workoutPlans: {
