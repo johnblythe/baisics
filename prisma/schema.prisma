@@ -129,6 +129,8 @@ model WorkoutPlan {
   mealTiming             String[]  @default([]) @map("meal_timing")
   progressionProtocol    String[]  @default([]) @map("progression_protocol")
   phase                  Int       @default(1) @map("phase")
+  phaseName              String?   @map("phase_name") @db.VarChar(100)
+  phaseDurationWeeks     Int?      @map("phase_duration_weeks")
   phaseExplanation       String?   @map("phase_explanation") @db.Text
   phaseExpectations      String?   @map("phase_expectations") @db.Text
   phaseKeyPoints         String[]  @default([]) @map("phase_key_points")

@@ -1,70 +1,78 @@
-# Session Context - 2026-01-03T01:45:00Z
+# Session Context - 2026-01-03T17:00:00Z
 
 ## Current Session Overview
-- **Main Task/Feature**: Cross-cutting features bundle (#190, #193, #194, #195) - Email reminders, streak tracking, program sharing
-- **Session Duration**: ~2 hours
-- **Current Status**: Implementation complete, all TypeScript checks pass, ready for commit and PR
+- **Main Task/Feature**: Manual Program Builder v2 (#190) + Coach Tier foundation
+- **Session Duration**: ~4 hours
+- **Current Status**: ALL PHASES COMPLETE
 
 ## Recent Activity (Last 30-60 minutes)
-- **What We Just Did**: Completed Phase B (Program Sharing) - created share API, public share page, CloneButton
-- **Active Problems**: None - all implementation complete
-- **Current Files**: `src/app/p/[shareId]/page.tsx`, `src/app/api/programs/share/route.ts`, dashboard share button update
-- **Test Status**: TypeScript compiles with no errors, migration applied successfully
+- **What We Just Did**: Phase 3 - Multi-phase program support (phase tabs, templates, validation)
+- **Active Problems**: None - All phases complete
+- **Current Files**: ProgramBuilder.tsx, schema.prisma, migration
+- **Test Status**: TypeScript compiles clean
 
 ## Key Technical Decisions Made
-- **Architecture Choices**: Merged UserSettings/UserStreak into User model (DHH recommendation), single daily cron instead of hourly
-- **Implementation Approaches**: Simple streak (no forgiveness mode for MVP), copy-link sharing (no modal with options)
-- **Technology Selections**: nanoid for share IDs, Vercel Cron for scheduling (not Inngest)
-- **Performance/Security Considerations**: Cron auth via CRON_SECRET header, streak updates in workout completion endpoint
+- **Architecture Choices**:
+  - Split `createdBy` (author) from `userId` (owner/tracker) on Program model
+  - `active` boolean for tracking current program per user
+  - Clone-based assignment model for coach tier (coach creates, clones to client, client owns copy)
+- **Implementation Approaches**:
+  - dnd-kit for drag-drop (already used in program editor, now in builder)
+  - Filter dropdowns for exercise search instead of text-only
+- **Technology Selections**: @dnd-kit/core, @dnd-kit/sortable already in project
+- **Performance/Security Considerations**: Exercise filter options fetched once per modal open
 
 ## Code Context
 - **Modified Files**:
-  - `prisma/schema.prisma` - Added emailReminders, streakCurrent, streakLongest, streakLastActivityAt to User; shareId to Program
-  - `src/app/api/workout-logs/[id]/complete/route.ts` - Added streak update on workout completion
-  - `src/app/dashboard/[programId]/page.tsx` - Added StreakBadge, updated share button
-  - `src/app/api/user/route.ts` - Added streak fields to response
-  - `vercel.json` - Added cron schedules
-- **New Files**:
-  - `src/lib/streaks.ts` - updateStreak() function
-  - `src/lib/email/templates/workout-reminder.ts` - Email template
-  - `src/app/api/cron/daily-reminders/route.ts` - Cron endpoint
-  - `src/components/StreakBadge.tsx` - UI component
-  - `src/app/api/programs/share/route.ts` - Share link generation
-  - `src/app/p/[shareId]/page.tsx` - Public program view
-  - `src/app/p/[shareId]/CloneButton.tsx` - Clone action
-- **Dependencies**: Added nanoid
-- **Configuration Changes**: vercel.json crons for daily-reminders (2pm UTC) and weekly-summary (1pm UTC Monday)
+  - prisma/schema.prisma (userId, active, relation renames)
+  - prisma/migrations/20260103100000_add_program_userId_active/
+  - src/app/program/create/components/WorkoutSection.tsx (dnd-kit)
+  - src/app/program/create/components/ExerciseSearchModal.tsx (filters)
+  - src/app/program/create/actions.ts (searchExercises with filters)
+  - ~15 other files with relation updates (createdByUser, ownerUser, ownedPrograms)
+- **New Patterns**:
+  - SortableExercise component pattern for dnd-kit
+  - Filter state management with shouldSearch derived value
+- **Dependencies**: None new (dnd-kit already installed)
+- **Configuration Changes**: None
 
 ## Current Implementation State
 - **Completed**:
-  - Schema migration with streak and share fields
-  - Streak logic and UI
-  - Email reminder cron and template
-  - Program sharing (generate link, public page, clone button)
-- **In Progress**: None
-- **Blocked**: None
+  - Phase 1: Schema migration, dnd-kit drag-drop, exercise filters (bf06b58)
+  - Phase 2: Templates + Assignment API
+    - `POST /api/programs/[programId]/promote-template` - Promote/demote templates
+    - `POST /api/programs/assign` - Clone program to client (coach tier)
+    - `GET /api/programs/templates` - Get user's templates
+    - SaveAsTemplateModal component in program detail page
+    - My Templates page at `/program/templates`
+  - Phase 3: Multi-phase program support
+    - Schema: Added `phaseName`, `phaseDurationWeeks` to WorkoutPlan
+    - UI: Multi-phase toggle, phase tabs, phase templates (Hypertrophy/Strength/Deload)
+    - Per-phase workout management
+- **In Progress**: Nothing actively
+- **Blocked**: Nothing
 - **Next Steps**:
-  1. Create git commit
-  2. Push to remote
-  3. Create PR for issues #190, #193, #194, #195
+  1. Coach tier dashboard using new schema
+  2. Test multi-phase save (currently only Phase 1 workouts saved - needs action update)
 
 ## Important Context for Handoff
-- **Environment Setup**: Local Postgres running on port 54332, migration already applied
-- **Running/Testing**: `npm run dev` on port 3001, TypeScript checks pass
-- **Known Issues**: None discovered
-- **External Dependencies**: CRON_SECRET env var needed for cron endpoints in production
+- **Environment Setup**: Local Postgres via Supabase, migrations applied
+- **Running/Testing**: `npm test` passes, `npx tsc --noEmit` clean
+- **Known Issues**: None
+- **External Dependencies**: None new
 
 ## Conversation Thread
-- **Original Goal**: Build cross-cutting features (email reminders, streaks, progress photos, program builder v2) for both personal users and coach clients
-- **Evolution**:
-  1. Started with comprehensive plan
-  2. Ran plan review with 3 agents (DHH, Kieran, Simplicity)
-  3. Cut 50-60% scope based on feedback
-  4. Simplified to 2 phases: Reminders+Streaks and Program Sharing
-  5. Progress photos already complete, skipped
-- **Lessons Learned**: DHH was right - merge related fields into User model, avoid separate tables for 1:1 relationships
+- **Original Goal**: Plan and implement #190 (Manual Program Builder v2) as foundation for coach tier
+- **Evolution**: Started with schema discussion for coach-to-client assignment model, settled on createdBy/userId split
+- **Lessons Learned**:
+  - Current "active" program was implicit (most recent by date, URL-based) - now explicit
+  - Relation renames required updates across ~20 files
 - **Alternatives Considered**:
-  - Inngest for cron (rejected: simpler to use Vercel Cron)
-  - Separate UserSettings/UserStreak tables (rejected: added columns to User)
-  - Forgiveness mode for streaks (deferred: YAGNI)
-  - Per-user reminder times (rejected: too complex for MVP)
+  - Assignment-based (coach owns, client reads) - rejected, too complex
+  - Transfer ownership - rejected, coach loses their work
+  - Chose clone-based with visibility (coach sees via createdBy filter)
+
+## Plan Files
+- `/Users/johnblythe/code/jb/baisics/plans/190-manual-program-builder-v2.md` - Implementation plan
+- `/Users/johnblythe/code/jb/baisics/plans/coach-tier-spec.md` - Coach tier product spec
+- `/Users/johnblythe/code/jb/baisics/plans/coach-tier-design-decisions.md` - UX decisions

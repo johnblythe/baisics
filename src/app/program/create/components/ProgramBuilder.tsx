@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react';
 import { createManualProgram, type ProgramFormData, type WorkoutFormData } from '../actions';
 import { WorkoutSection } from './WorkoutSection';
 import { ExerciseSearchModal } from './ExerciseSearchModal';
+import { Plus, X, Layers } from 'lucide-react';
 
 const GOALS = [
   { value: 'strength', label: 'Strength' },
@@ -12,6 +13,18 @@ const GOALS = [
   { value: 'weight-loss', label: 'Weight Loss' },
   { value: 'general', label: 'General Fitness' },
 ];
+
+const PHASE_TEMPLATES = [
+  { name: 'Hypertrophy', durationWeeks: 4, description: 'Muscle building focus' },
+  { name: 'Strength', durationWeeks: 4, description: 'Strength development' },
+  { name: 'Deload', durationWeeks: 1, description: 'Recovery week' },
+];
+
+interface Phase {
+  name: string;
+  durationWeeks: number;
+  workouts: WorkoutFormData[];
+}
 
 export function ProgramBuilder() {
   const [isPending, startTransition] = useTransition();
@@ -23,19 +36,38 @@ export function ProgramBuilder() {
   const [goal, setGoal] = useState('strength');
   const [daysPerWeek, setDaysPerWeek] = useState(4);
 
-  // Workouts
-  const [workouts, setWorkouts] = useState<WorkoutFormData[]>([
+  // Multi-phase support
+  const [usePhases, setUsePhases] = useState(false);
+  const [activePhaseIndex, setActivePhaseIndex] = useState(0);
+  const [phases, setPhases] = useState<Phase[]>([
     {
-      name: 'Workout 1',
-      focus: 'Full Body',
-      dayNumber: 1,
-      exercises: [],
+      name: 'Phase 1',
+      durationWeeks: 4,
+      workouts: [
+        {
+          name: 'Workout 1',
+          focus: 'Full Body',
+          dayNumber: 1,
+          exercises: [],
+        },
+      ],
     },
   ]);
+
+  // Get current phase's workouts for display
+  const currentPhase = phases[activePhaseIndex];
+  const workouts = currentPhase?.workouts || [];
 
   // Exercise search modal
   const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [targetWorkoutIndex, setTargetWorkoutIndex] = useState<number>(0);
+
+  // Helper to update workouts in current phase
+  const setWorkouts = (newWorkouts: WorkoutFormData[]) => {
+    setPhases(prev => prev.map((phase, i) =>
+      i === activePhaseIndex ? { ...phase, workouts: newWorkouts } : phase
+    ));
+  };
 
   const addWorkout = () => {
     setWorkouts([
@@ -52,7 +84,6 @@ export function ProgramBuilder() {
   const removeWorkout = (index: number) => {
     if (workouts.length <= 1) return;
     const updated = workouts.filter((_, i) => i !== index);
-    // Update day numbers
     updated.forEach((w, i) => {
       w.dayNumber = i + 1;
     });
@@ -65,7 +96,6 @@ export function ProgramBuilder() {
 
     const updated = [...workouts];
     [updated[index], updated[newIndex]] = [updated[newIndex], updated[index]];
-    // Update day numbers
     updated.forEach((w, i) => {
       w.dayNumber = i + 1;
     });
@@ -76,6 +106,52 @@ export function ProgramBuilder() {
     const updated = [...workouts];
     updated[index] = { ...updated[index], ...data };
     setWorkouts(updated);
+  };
+
+  // Phase management
+  const addPhase = (template?: typeof PHASE_TEMPLATES[0]) => {
+    const newPhase: Phase = {
+      name: template?.name || `Phase ${phases.length + 1}`,
+      durationWeeks: template?.durationWeeks || 4,
+      workouts: [
+        {
+          name: 'Workout 1',
+          focus: 'Full Body',
+          dayNumber: 1,
+          exercises: [],
+        },
+      ],
+    };
+    setPhases([...phases, newPhase]);
+    setActivePhaseIndex(phases.length);
+  };
+
+  const removePhase = (index: number) => {
+    if (phases.length <= 1) return;
+    const updated = phases.filter((_, i) => i !== index);
+    setPhases(updated);
+    if (activePhaseIndex >= updated.length) {
+      setActivePhaseIndex(updated.length - 1);
+    }
+  };
+
+  const updatePhase = (index: number, data: Partial<Phase>) => {
+    setPhases(prev => prev.map((phase, i) =>
+      i === index ? { ...phase, ...data } : phase
+    ));
+  };
+
+  const duplicatePhase = (index: number) => {
+    const source = phases[index];
+    const newPhase: Phase = {
+      name: `${source.name} (Copy)`,
+      durationWeeks: source.durationWeeks,
+      workouts: JSON.parse(JSON.stringify(source.workouts)), // Deep copy
+    };
+    const updated = [...phases];
+    updated.splice(index + 1, 0, newPhase);
+    setPhases(updated);
+    setActivePhaseIndex(index + 1);
   };
 
   const openExerciseSearch = (workoutIndex: number) => {
@@ -116,18 +192,25 @@ export function ProgramBuilder() {
       return;
     }
 
-    const emptyWorkouts = workouts.filter((w) => w.exercises.length === 0);
-    if (emptyWorkouts.length > 0) {
-      setError('Each workout must have at least one exercise');
-      return;
+    // Validate all phases have workouts with exercises
+    for (let i = 0; i < phases.length; i++) {
+      const phase = phases[i];
+      const emptyWorkouts = phase.workouts.filter((w) => w.exercises.length === 0);
+      if (emptyWorkouts.length > 0) {
+        setError(`${phase.name}: Each workout must have at least one exercise`);
+        setActivePhaseIndex(i);
+        return;
+      }
     }
 
+    // For now, use first phase workouts (multi-phase save requires action update)
+    // TODO: Update action to accept phases array
     const data: ProgramFormData = {
       name,
       description,
       goal,
       daysPerWeek,
-      workouts,
+      workouts: phases[0].workouts,
     };
 
     startTransition(async () => {
@@ -217,12 +300,125 @@ export function ProgramBuilder() {
             />
           </div>
         </div>
+
+        {/* Multi-phase toggle */}
+        <label className="flex items-center gap-3 pt-2 cursor-pointer">
+          <div className="relative">
+            <input
+              type="checkbox"
+              checked={usePhases}
+              onChange={(e) => setUsePhases(e.target.checked)}
+              className="sr-only peer"
+            />
+            <div className="w-10 h-6 bg-[#E2E8F0] peer-focus:ring-2 peer-focus:ring-[#FF6B6B] rounded-full peer peer-checked:bg-[#FF6B6B] transition-colors"></div>
+            <div className="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform peer-checked:translate-x-4"></div>
+          </div>
+          <div>
+            <span className="text-sm font-medium text-[#0F172A]">Multi-phase program</span>
+            <p className="text-xs text-[#64748B]">Create periodized training with multiple phases</p>
+          </div>
+        </label>
       </div>
+
+      {/* Phase Tabs (only shown when multi-phase is enabled) */}
+      {usePhases && (
+        <div className="bg-white rounded-xl border border-[#E2E8F0] p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <Layers className="w-4 h-4 text-[#64748B]" />
+            <span className="text-sm font-medium text-[#64748B]">Training Phases</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {phases.map((phase, index) => (
+              <div
+                key={index}
+                className={`relative group flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors cursor-pointer ${
+                  activePhaseIndex === index
+                    ? 'bg-[#FFE5E5] border-[#FF6B6B] text-[#FF6B6B]'
+                    : 'bg-[#F8FAFC] border-[#E2E8F0] text-[#64748B] hover:border-[#FF6B6B]'
+                }`}
+                onClick={() => setActivePhaseIndex(index)}
+              >
+                <span className="font-medium">{phase.name}</span>
+                <span className="text-xs opacity-75">{phase.durationWeeks}w</span>
+                {phases.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removePhase(index);
+                    }}
+                    className="ml-1 p-0.5 text-current opacity-50 hover:opacity-100"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                )}
+              </div>
+            ))}
+            {/* Add Phase dropdown */}
+            <div className="relative group">
+              <button
+                type="button"
+                className="flex items-center gap-1 px-3 py-2 text-sm text-[#FF6B6B] hover:bg-[#FFE5E5] rounded-lg transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                Add Phase
+              </button>
+              <div className="hidden group-hover:block absolute top-full left-0 mt-1 bg-white rounded-lg border border-[#E2E8F0] shadow-lg z-10 min-w-[160px]">
+                <button
+                  type="button"
+                  onClick={() => addPhase()}
+                  className="w-full px-4 py-2 text-left text-sm text-[#0F172A] hover:bg-[#F8FAFC]"
+                >
+                  Blank Phase
+                </button>
+                <div className="border-t border-[#E2E8F0]" />
+                {PHASE_TEMPLATES.map((template) => (
+                  <button
+                    key={template.name}
+                    type="button"
+                    onClick={() => addPhase(template)}
+                    className="w-full px-4 py-2 text-left hover:bg-[#F8FAFC]"
+                  >
+                    <span className="text-sm text-[#0F172A]">{template.name}</span>
+                    <span className="block text-xs text-[#94A3B8]">{template.description}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Phase settings for active phase */}
+          <div className="mt-4 pt-4 border-t border-[#E2E8F0] grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-medium text-[#64748B] mb-1">Phase Name</label>
+              <input
+                type="text"
+                value={currentPhase?.name || ''}
+                onChange={(e) => updatePhase(activePhaseIndex, { name: e.target.value })}
+                className="w-full px-3 py-2 text-sm rounded-lg border border-[#E2E8F0] focus:ring-2 focus:ring-[#FF6B6B] focus:border-transparent text-[#0F172A]"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-[#64748B] mb-1">Duration (weeks)</label>
+              <input
+                type="number"
+                value={currentPhase?.durationWeeks || 4}
+                onChange={(e) => updatePhase(activePhaseIndex, { durationWeeks: parseInt(e.target.value) || 4 })}
+                min={1}
+                max={12}
+                className="w-full px-3 py-2 text-sm rounded-lg border border-[#E2E8F0] focus:ring-2 focus:ring-[#FF6B6B] focus:border-transparent text-[#0F172A]"
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Workouts */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-[#0F172A]">Workouts</h2>
+          <h2 className="text-lg font-semibold text-[#0F172A]">
+            {usePhases ? `${currentPhase?.name || 'Phase'} Workouts` : 'Workouts'}
+          </h2>
           <button
             type="button"
             onClick={addWorkout}
