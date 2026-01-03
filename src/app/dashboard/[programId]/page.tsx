@@ -21,6 +21,7 @@ import { MacroDisplay } from '@/components/MacroDisplay';
 import { NutritionLogModal } from '@/components/NutritionLogModal';
 import { NutritionWidget } from '@/components/NutritionWidget';
 import { ClaimWelcomeBanner, storeWelcomeData, getWelcomeData } from '@/components/ClaimWelcomeBanner';
+import { StreakBadge } from '@/components/StreakBadge';
 
 // Types for our API responses
 interface ProgramOverview {
@@ -268,6 +269,7 @@ function DashboardContent() {
   } | null>(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [isPremium, setIsPremium] = useState(false);
+  const [streak, setStreak] = useState({ current: 0, longest: 0 });
 
   useEffect(() => {
     const disclaimerAcknowledged = localStorage.getItem('disclaimer-acknowledged');
@@ -361,13 +363,17 @@ function DashboardContent() {
     fetchSession();
   }, []);
 
-  // Fetch user's premium status
+  // Fetch user's premium status and streak
   useEffect(() => {
     async function fetchUserStatus() {
       try {
         const response = await fetch('/api/user');
         const data = await response.json();
         setIsPremium(data.user?.isPremium || false);
+        setStreak({
+          current: data.user?.streakCurrent || 0,
+          longest: data.user?.streakLongest || 0
+        });
       } catch (error) {
         console.error('Failed to fetch user status:', error);
       }
@@ -585,12 +591,18 @@ function DashboardContent() {
                         <button
                           onClick={async () => {
                             try {
-                              const res = await fetch(`/api/share/program?programId=${program.id}`);
+                              const res = await fetch('/api/programs/share', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ programId: program.id })
+                              });
                               const data = await res.json();
-                              setShareData(data);
-                              openModal('share');
+                              if (data.shareUrl) {
+                                await navigator.clipboard.writeText(data.shareUrl);
+                                alert('Share link copied to clipboard!');
+                              }
                             } catch (err) {
-                              console.error('Failed to load share data:', err);
+                              console.error('Failed to generate share link:', err);
                             }
                           }}
                           className="inline-flex items-center gap-1.5 text-sm text-[#475569] hover:text-[#FF6B6B] transition-colors"
@@ -598,7 +610,7 @@ function DashboardContent() {
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                           </svg>
-                          Share Program
+                          Copy Share Link
                         </button>
                         <Link
                           href="/hi"
@@ -654,6 +666,19 @@ function DashboardContent() {
                         <span className="text-[#64748B]">Workouts Completed</span>
                         <span className="font-semibold text-[#0F172A]">{programStats?.completedWorkouts || 0}</span>
                       </div>
+
+                      {/* Streak */}
+                      {streak.current > 0 && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-[#64748B]">Streak</span>
+                          <StreakBadge
+                            current={streak.current}
+                            longest={streak.longest}
+                            showLongest
+                            size="sm"
+                          />
+                        </div>
+                      )}
 
                       {/* Next Check-in */}
                       <div className="pt-2 border-t border-[#E2E8F0]">

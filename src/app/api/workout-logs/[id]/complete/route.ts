@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
+import { updateStreak } from '@/lib/streaks';
 
 export async function POST(
   request: Request,
@@ -57,7 +58,17 @@ export async function POST(
       },
     });
 
-    return NextResponse.json(updatedWorkoutLog);
+    // Update workout streak
+    const streak = await updateStreak(userId);
+
+    return NextResponse.json({
+      ...updatedWorkoutLog,
+      streak: {
+        current: streak.current,
+        longest: streak.longest,
+        extended: streak.extended
+      }
+    });
   } catch (error) {
     console.error('Error completing workout:', error);
     return new NextResponse('Internal Server Error', { status: 500 });
