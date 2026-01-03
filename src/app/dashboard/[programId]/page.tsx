@@ -597,12 +597,21 @@ function DashboardContent() {
                                 body: JSON.stringify({ programId: program.id })
                               });
                               const data = await res.json();
+
+                              if (!res.ok) {
+                                alert(data.error || 'Failed to generate share link');
+                                return;
+                              }
+
                               if (data.shareUrl) {
                                 await navigator.clipboard.writeText(data.shareUrl);
                                 alert('Share link copied to clipboard!');
+                              } else {
+                                alert('Could not generate share link. Please try again.');
                               }
                             } catch (err) {
                               console.error('Failed to generate share link:', err);
+                              alert('Network error - please check your connection and try again.');
                             }
                           }}
                           className="inline-flex items-center gap-1.5 text-sm text-[#475569] hover:text-[#FF6B6B] transition-colors"

@@ -11,11 +11,11 @@ export async function POST(
   try {
     const session = await auth();
     if (!session) {
-      return NextResponse.json({ error: 'User not authenticated' });
+      return NextResponse.json({ error: 'User not authenticated' }, { status: 401 });
     }
     const userId = session.user?.id;
     if (!userId) {
-      return NextResponse.json({ error: 'User ID not found' });
+      return NextResponse.json({ error: 'User ID not found' }, { status: 401 });
     }
 
     // Get the workout log to verify ownership
@@ -58,15 +58,24 @@ export async function POST(
       },
     });
 
-    // Update workout streak
-    const streak = await updateStreak(userId);
+    // Update workout streak (non-blocking - don't fail if streak update fails)
+    let streakData = { current: 0, longest: 0, extended: false };
+    try {
+      streakData = await updateStreak(userId);
+    } catch (streakError) {
+      console.error('Failed to update streak (workout still completed):', {
+        userId,
+        workoutLogId: id,
+        error: streakError instanceof Error ? streakError.message : String(streakError)
+      });
+    }
 
     return NextResponse.json({
       ...updatedWorkoutLog,
       streak: {
-        current: streak.current,
-        longest: streak.longest,
-        extended: streak.extended
+        current: streakData.current,
+        longest: streakData.longest,
+        extended: streakData.extended
       }
     });
   } catch (error) {

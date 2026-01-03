@@ -27,15 +27,15 @@ export function CloneButton({ programId, isAuthenticated }: CloneButtonProps) {
       const res = await fetch('/api/programs/clone', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ programId })
+        body: JSON.stringify({ sourceId: programId })
       });
 
       const data = await res.json();
 
       if (!res.ok) {
         // Handle specific error cases
-        if (data.error?.includes('limit') || data.error?.includes('premium')) {
-          setError('Upgrade to premium to clone more programs');
+        if (data.error === 'upgrade_required') {
+          setError(data.message || 'Upgrade to premium to clone more programs');
         } else {
           setError(data.error || 'Failed to clone program');
         }
@@ -43,7 +43,7 @@ export function CloneButton({ programId, isAuthenticated }: CloneButtonProps) {
       }
 
       // Redirect to the cloned program
-      router.push(`/dashboard/${data.id}`);
+      router.push(`/dashboard/${data.programId}`);
     } catch (err) {
       console.error('Clone error:', err);
       setError('Something went wrong. Please try again.');

@@ -11,26 +11,49 @@ export default async function SharedProgramPage({
 }) {
   const { shareId } = await params;
 
-  const program = await prisma.program.findUnique({
-    where: { shareId },
-    include: {
-      user: { select: { name: true } },
-      workoutPlans: {
-        take: 1,
-        include: {
-          workouts: {
-            orderBy: { dayNumber: 'asc' },
-            include: {
-              exercises: {
-                orderBy: { sortOrder: 'asc' },
-                take: 6
+  let program;
+  try {
+    program = await prisma.program.findUnique({
+      where: { shareId },
+      include: {
+        user: { select: { name: true } },
+        workoutPlans: {
+          take: 1,
+          include: {
+            workouts: {
+              orderBy: { dayNumber: 'asc' },
+              include: {
+                exercises: {
+                  orderBy: { sortOrder: 'asc' },
+                  take: 6
+                }
               }
             }
           }
         }
       }
-    }
-  });
+    });
+  } catch (error) {
+    console.error('Failed to load shared program:', { error, shareId });
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="text-center max-w-md">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Unable to load program
+          </h1>
+          <p className="text-gray-600 mb-6">
+            There was a problem loading this shared program. Please try again later.
+          </p>
+          <Link
+            href="/"
+            className="inline-block bg-coral-500 hover:bg-coral-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+          >
+            Go Home
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (!program) notFound();
 

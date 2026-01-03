@@ -14,11 +14,16 @@ import { startOfDay } from 'date-fns';
  * Schedule: Run daily at 2pm UTC (configured in vercel.json)
  */
 export async function GET(request: Request) {
-  // Verify cron secret to prevent unauthorized access
+  // Verify cron secret - fail closed if not configured
   const authHeader = request.headers.get('authorization');
   const cronSecret = process.env.CRON_SECRET;
 
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+  if (!cronSecret) {
+    console.error('CRON_SECRET not configured - rejecting request');
+    return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+  }
+
+  if (authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -80,11 +85,14 @@ export async function GET(request: Request) {
       u.programs[0]?.workoutPlans[0]?.workouts[0]
     );
 
-    // Send emails with error handling
+    // Send emails with error handling and per-user logging
     const results = await Promise.allSettled(
       usersNeedingReminder.map(async (user) => {
         const workout = user.programs[0]?.workoutPlans[0]?.workouts[0];
-        if (!workout || !user.email) return { skipped: true };
+        if (!workout || !user.email) {
+          console.log('Skipped reminder (no workout/email):', { userId: user.id });
+          return { skipped: true, userId: user.id };
+        }
 
         const result = await sendEmail({
           to: user.email,
@@ -96,21 +104,30 @@ export async function GET(request: Request) {
           })
         });
 
-        return result;
+        if (!result.success) {
+          console.error('Email reminder failed:', {
+            userId: user.id,
+            email: user.email,
+            error: result.error
+          });
+        }
+
+        return { ...result, userId: user.id };
       })
     );
 
-    const sent = results.filter(r =>
-      r.status === 'fulfilled' &&
-      r.value &&
-      'success' in r.value &&
-      r.value.success
-    ).length;
-
-    const failed = results.filter(r =>
-      r.status === 'rejected' ||
-      (r.status === 'fulfilled' && r.value && 'success' in r.value && !r.value.success)
-    ).length;
+    // Count results in single pass
+    const { sent, failed } = results.reduce(
+      (acc, r) => {
+        if (r.status === 'rejected') {
+          acc.failed++;
+        } else if (r.value && 'success' in r.value) {
+          r.value.success ? acc.sent++ : acc.failed++;
+        }
+        return acc;
+      },
+      { sent: 0, failed: 0 }
+    );
 
     console.log(`Daily workout reminders: ${sent} sent, ${failed} failed out of ${usersNeedingReminder.length} users`);
 
