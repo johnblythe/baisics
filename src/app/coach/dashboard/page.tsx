@@ -18,6 +18,7 @@ interface Client {
     name: string | null;
     email: string | null;
     image: string | null;
+    createdAt: string;
     currentProgram: {
       id: string;
       name: string;
@@ -27,6 +28,26 @@ interface Client {
     } | null;
     lastCheckIn: string | null;
   } | null;
+}
+
+// Check if client needs attention (inactive 5+ days, not a new client)
+function needsAttention(client: Client): boolean {
+  if (!client.client) return false;
+
+  // Grace period: skip clients < 5 days old
+  const clientCreatedAt = new Date(client.client.createdAt);
+  const daysSinceJoined = Math.floor((Date.now() - clientCreatedAt.getTime()) / (24 * 60 * 60 * 1000));
+  if (daysSinceJoined < 5) return false;
+
+  // Check days since last workout
+  const lastWorkout = client.client.currentProgram?.lastWorkout;
+  if (!lastWorkout) return true; // No workouts ever = needs attention
+
+  const daysSinceWorkout = Math.floor(
+    (Date.now() - new Date(lastWorkout).getTime()) / (24 * 60 * 60 * 1000)
+  );
+
+  return daysSinceWorkout >= 5;
 }
 
 export default function CoachDashboard() {
@@ -160,7 +181,7 @@ export default function CoachDashboard() {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8">
             <div className="bg-white dark:bg-gray-800 rounded-xl p-6">
               <div className="text-3xl font-bold text-gray-900 dark:text-white">
                 {activeClients.length}
@@ -183,6 +204,12 @@ export default function CoachDashboard() {
                 ).length}
               </div>
               <div className="text-sm text-gray-500 dark:text-gray-400">Active This Week</div>
+            </div>
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6">
+              <div className="text-3xl font-bold text-[#FF6B6B]">
+                {activeClients.filter(needsAttention).length}
+              </div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">Need Attention</div>
             </div>
           </div>
 
@@ -265,8 +292,12 @@ export default function CoachDashboard() {
                   <Link
                     key={client.id}
                     href={`/coach/clients/${client.id}`}
-                    className="bg-white dark:bg-gray-800 rounded-xl p-6 hover:shadow-lg transition-shadow"
+                    className="bg-white dark:bg-gray-800 rounded-xl p-6 hover:shadow-lg transition-shadow relative"
                   >
+                    {/* Attention indicator */}
+                    {needsAttention(client) && (
+                      <div className="absolute top-3 right-3 w-3 h-3 bg-[#FF6B6B] rounded-full" title="Needs attention - inactive 5+ days" />
+                    )}
                     <div className="flex items-start gap-4">
                       <div className="w-12 h-12 rounded-full bg-[#FFE5E5] dark:bg-[#FF6B6B]/20 flex items-center justify-center text-xl font-bold text-[#FF6B6B] dark:text-[#FF6B6B]">
                         {(client.nickname || client.client?.name || 'U')[0].toUpperCase()}

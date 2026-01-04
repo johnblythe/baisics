@@ -45,6 +45,13 @@ interface ClientDetails {
         id: string;
         createdAt: string;
         type: string;
+        notes: string | null;
+        stats: Array<{
+          energyLevel: number | null;
+          soreness: number | null;
+          recovery: number | null;
+          weight: number | null;
+        }>;
       }>;
     }>;
     userIntakes: Array<{
@@ -380,6 +387,79 @@ export default function ClientDetailPage() {
               )}
             </div>
           </div>
+
+          {/* Check-in History */}
+          {currentProgram?.checkIns && currentProgram.checkIns.length > 0 && (
+            <div className="mt-6 bg-white dark:bg-gray-800 rounded-xl p-6">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                Recent Check-ins
+              </h2>
+              <div className="space-y-4">
+                {currentProgram.checkIns.map((checkIn) => {
+                  const stats = checkIn.stats?.[0];
+                  const hasLowEnergy = stats?.energyLevel != null && stats.energyLevel <= 2;
+                  const hasHighSoreness = stats?.soreness != null && stats.soreness >= 8;
+                  const needsFlag = hasLowEnergy || hasHighSoreness;
+
+                  return (
+                    <div
+                      key={checkIn.id}
+                      className={`p-4 rounded-lg border ${
+                        needsFlag
+                          ? 'border-[#FF6B6B] bg-[#FFE5E5] dark:bg-[#FF6B6B]/10'
+                          : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium text-gray-900 dark:text-white">
+                            {new Date(checkIn.createdAt).toLocaleDateString()}
+                          </span>
+                          <span className="text-xs px-2 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-gray-600 dark:text-gray-300">
+                            {checkIn.type}
+                          </span>
+                          {needsFlag && (
+                            <span className="text-xs px-2 py-0.5 bg-[#FF6B6B] text-white rounded">
+                              Needs Attention
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {stats && (
+                        <div className="grid grid-cols-3 gap-4 mb-3">
+                          <div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">Energy</div>
+                            <div className={`font-semibold ${hasLowEnergy ? 'text-[#FF6B6B]' : 'text-gray-900 dark:text-white'}`}>
+                              {stats.energyLevel ?? '-'}/10
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">Soreness</div>
+                            <div className={`font-semibold ${hasHighSoreness ? 'text-[#FF6B6B]' : 'text-gray-900 dark:text-white'}`}>
+                              {stats.soreness ?? '-'}/10
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">Recovery</div>
+                            <div className="font-semibold text-gray-900 dark:text-white">
+                              {stats.recovery ?? '-'}/10
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {checkIn.notes && (
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                          {checkIn.notes}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Programs */}
           <div className="mt-6 bg-white dark:bg-gray-800 rounded-xl p-6">
