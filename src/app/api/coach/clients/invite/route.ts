@@ -111,7 +111,7 @@ export async function POST(request: Request) {
   }
 }
 
-// GET - Accept invite (by token)
+// GET - Validate invite (by token)
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -125,7 +125,7 @@ export async function GET(request: Request) {
       where: { inviteToken: token },
       include: {
         coach: {
-          select: { name: true, email: true },
+          select: { id: true, name: true, email: true },
         },
       },
     });
@@ -134,7 +134,10 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Invalid invite' }, { status: 404 });
     }
 
-    if (coachClient.inviteStatus !== 'PENDING') {
+    // Public invites (inviteEmail: null) are always valid
+    // Private invites must be PENDING
+    const isPublicInvite = coachClient.inviteEmail === null;
+    if (!isPublicInvite && coachClient.inviteStatus !== 'PENDING') {
       return NextResponse.json(
         { error: 'Invite already used or expired' },
         { status: 400 }
@@ -143,6 +146,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       valid: true,
+      isPublic: isPublicInvite,
       coach: coachClient.coach,
       inviteEmail: coachClient.inviteEmail,
     });

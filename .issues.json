@@ -53,12 +53,12 @@
       "number": 190,
       "title": "feat: Manual program builder v2 enhancements",
       "labels": ["enhancement"],
-      "status": "open",
+      "status": "closed",
       "priority": "med",
       "needsSync": false,
       "localOnly": false,
       "createdAt": "2026-01-01T00:00:00Z",
-      "updatedAt": "2026-01-01T00:00:00Z"
+      "updatedAt": "2026-01-03T00:00:00Z"
     },
     {
       "id": "189",
@@ -265,5 +265,5 @@
       "updatedAt": "2025-12-06T15:48:41Z"
     }
   ],
-  "lastSyncedAt": "2026-01-03T09:50:00Z"
+  "lastSyncedAt": "2026-01-03T19:00:00Z"
 }
