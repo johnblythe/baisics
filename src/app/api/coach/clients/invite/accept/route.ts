@@ -23,23 +23,53 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid invite' }, { status: 404 });
     }
 
-    if (coachClient.inviteStatus !== 'PENDING') {
+    const isPublicInvite = coachClient.inviteEmail === null;
+
+    // For private invites, check status
+    if (!isPublicInvite && coachClient.inviteStatus !== 'PENDING') {
       return NextResponse.json(
         { error: 'Invite already used or expired' },
         { status: 400 }
       );
     }
 
-    // Update the coach-client relationship
-    await prisma.coachClient.update({
-      where: { id: coachClient.id },
-      data: {
+    // Check if user is already a client of this coach
+    const existingRelation = await prisma.coachClient.findFirst({
+      where: {
+        coachId: coachClient.coachId,
         clientId: session.user.id,
-        inviteStatus: 'ACCEPTED',
-        inviteToken: null, // Clear token after use
-        inviteEmail: null,
       },
     });
+
+    if (existingRelation) {
+      return NextResponse.json(
+        { error: 'You are already a client of this coach' },
+        { status: 400 }
+      );
+    }
+
+    if (isPublicInvite) {
+      // Public invite: create NEW CoachClient, keep the public invite intact
+      await prisma.coachClient.create({
+        data: {
+          coachId: coachClient.coachId,
+          clientId: session.user.id,
+          inviteStatus: 'ACCEPTED',
+          status: 'ACTIVE',
+        },
+      });
+    } else {
+      // Private invite: update the existing record
+      await prisma.coachClient.update({
+        where: { id: coachClient.id },
+        data: {
+          clientId: session.user.id,
+          inviteStatus: 'ACCEPTED',
+          inviteToken: null,
+          inviteEmail: null,
+        },
+      });
+    }
 
     return NextResponse.json({
       success: true,

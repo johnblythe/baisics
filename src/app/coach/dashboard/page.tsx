@@ -37,10 +37,33 @@ export default function CoachDashboard() {
   const [addEmail, setAddEmail] = useState('');
   const [addNickname, setAddNickname] = useState('');
   const [adding, setAdding] = useState(false);
+  const [publicInviteUrl, setPublicInviteUrl] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     fetchClients();
+    fetchPublicInvite();
   }, []);
+
+  async function fetchPublicInvite() {
+    try {
+      const res = await fetch('/api/coach/public-invite');
+      if (res.ok) {
+        const data = await res.json();
+        setPublicInviteUrl(data.url);
+      }
+    } catch {
+      // Silently fail - not critical
+    }
+  }
+
+  function copyInviteLink() {
+    if (publicInviteUrl) {
+      navigator.clipboard.writeText(publicInviteUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  }
 
   async function fetchClients() {
     try {
@@ -158,6 +181,45 @@ export default function CoachDashboard() {
               Add Client
             </button>
           </div>
+
+          {/* Public Invite Link */}
+          {publicInviteUrl && (
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-4 mb-8">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                    Your public invite link
+                  </div>
+                  <div className="text-sm text-gray-900 dark:text-white font-mono truncate">
+                    {publicInviteUrl}
+                  </div>
+                </div>
+                <button
+                  onClick={copyInviteLink}
+                  className="flex-shrink-0 inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                >
+                  {copied ? (
+                    <>
+                      <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      Copied!
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                      Copy Link
+                    </>
+                  )}
+                </button>
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                Share this link with potential clients. They can sign up and automatically join your roster.
+              </p>
+            </div>
+          )}
 
           {/* Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
