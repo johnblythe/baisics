@@ -87,98 +87,103 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Client user not found' }, { status: 404 });
     }
 
-    // If setAsActive, deactivate client's current programs first
-    if (setAsActive) {
-      await prisma.program.updateMany({
-        where: {
-          userId: clientId,
+    // Use transaction to ensure atomic operation
+    const assignedProgram = await prisma.$transaction(async (tx) => {
+      // Deactivate client's current programs first (if setting as active)
+      if (setAsActive) {
+        await tx.program.updateMany({
+          where: {
+            userId: clientId,
+            active: true,
+          },
+          data: { active: false },
+        });
+      }
+
+      // Create the cloned program for the client
+      const slug = `${sourceProgram.slug || sourceProgram.name.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`;
+
+      const newProgram = await tx.program.create({
+        data: {
+          name: sourceProgram.name,
+          slug,
+          description: sourceProgram.description,
+          createdBy: coachId, // Coach remains author
+          userId: clientId, // Client is the owner/tracker
+          active: setAsActive,
+          source: 'assigned',
+          isTemplate: false,
+          isPublic: false,
+          clonedFromId: sourceProgram.id,
+          category: sourceProgram.category,
+          difficulty: sourceProgram.difficulty,
+          durationWeeks: sourceProgram.durationWeeks,
+          daysPerWeek: sourceProgram.daysPerWeek,
+          equipment: sourceProgram.equipment,
+          goals: sourceProgram.goals,
+          author: sourceProgram.author,
+          tags: sourceProgram.tags,
+          workoutPlans: {
+            create: sourceProgram.workoutPlans.map((plan) => ({
+              phase: plan.phase,
+              phaseName: plan.phaseName,
+              phaseDurationWeeks: plan.phaseDurationWeeks,
+              daysPerWeek: plan.daysPerWeek,
+              dailyCalories: plan.dailyCalories,
+              proteinGrams: plan.proteinGrams,
+              carbGrams: plan.carbGrams,
+              fatGrams: plan.fatGrams,
+              splitType: plan.splitType,
+              phaseExplanation: plan.phaseExplanation,
+              phaseExpectations: plan.phaseExpectations,
+              phaseKeyPoints: plan.phaseKeyPoints,
+              mealTiming: plan.mealTiming,
+              progressionProtocol: plan.progressionProtocol,
+              user: { connect: { id: clientId } }, // Client's workout plan
+              workouts: {
+                create: plan.workouts.map((workout) => ({
+                  name: workout.name,
+                  dayNumber: workout.dayNumber,
+                  focus: workout.focus,
+                  warmup: workout.warmup,
+                  cooldown: workout.cooldown,
+                  exercises: {
+                    create: workout.exercises.map((exercise) => ({
+                      name: exercise.name,
+                      sets: exercise.sets,
+                      reps: exercise.reps,
+                      restPeriod: exercise.restPeriod,
+                      intensity: exercise.intensity,
+                      measureType: exercise.measureType,
+                      measureValue: exercise.measureValue,
+                      measureUnit: exercise.measureUnit,
+                      notes: exercise.notes,
+                      instructions: exercise.instructions,
+                      sortOrder: exercise.sortOrder,
+                      exerciseLibrary: {
+                        connect: { id: exercise.exerciseLibraryId },
+                      },
+                    })),
+                  },
+                })),
+              },
+            })),
+          },
+        },
+        select: {
+          id: true,
+          name: true,
           active: true,
         },
-        data: { active: false },
       });
-    }
 
-    // Create the cloned program for the client
-    const slug = `${sourceProgram.slug || sourceProgram.name.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`;
+      // Increment clone count on source
+      await tx.program.update({
+        where: { id: sourceProgram.id },
+        data: { cloneCount: { increment: 1 } },
+      });
 
-    const assignedProgram = await prisma.program.create({
-      data: {
-        name: sourceProgram.name,
-        slug,
-        description: sourceProgram.description,
-        createdBy: coachId, // Coach remains author
-        userId: clientId, // Client is the owner/tracker
-        active: setAsActive,
-        source: 'assigned',
-        isTemplate: false,
-        isPublic: false,
-        clonedFromId: sourceProgram.id,
-        category: sourceProgram.category,
-        difficulty: sourceProgram.difficulty,
-        durationWeeks: sourceProgram.durationWeeks,
-        daysPerWeek: sourceProgram.daysPerWeek,
-        equipment: sourceProgram.equipment,
-        goals: sourceProgram.goals,
-        author: sourceProgram.author,
-        tags: sourceProgram.tags,
-        workoutPlans: {
-          create: sourceProgram.workoutPlans.map((plan) => ({
-            phase: plan.phase,
-            phaseName: plan.phaseName,
-            phaseDurationWeeks: plan.phaseDurationWeeks,
-            daysPerWeek: plan.daysPerWeek,
-            dailyCalories: plan.dailyCalories,
-            proteinGrams: plan.proteinGrams,
-            carbGrams: plan.carbGrams,
-            fatGrams: plan.fatGrams,
-            splitType: plan.splitType,
-            phaseExplanation: plan.phaseExplanation,
-            phaseExpectations: plan.phaseExpectations,
-            phaseKeyPoints: plan.phaseKeyPoints,
-            mealTiming: plan.mealTiming,
-            progressionProtocol: plan.progressionProtocol,
-            user: { connect: { id: clientId } }, // Client's workout plan
-            workouts: {
-              create: plan.workouts.map((workout) => ({
-                name: workout.name,
-                dayNumber: workout.dayNumber,
-                focus: workout.focus,
-                warmup: workout.warmup,
-                cooldown: workout.cooldown,
-                exercises: {
-                  create: workout.exercises.map((exercise) => ({
-                    name: exercise.name,
-                    sets: exercise.sets,
-                    reps: exercise.reps,
-                    restPeriod: exercise.restPeriod,
-                    intensity: exercise.intensity,
-                    measureType: exercise.measureType,
-                    measureValue: exercise.measureValue,
-                    measureUnit: exercise.measureUnit,
-                    notes: exercise.notes,
-                    instructions: exercise.instructions,
-                    sortOrder: exercise.sortOrder,
-                    exerciseLibrary: {
-                      connect: { id: exercise.exerciseLibraryId },
-                    },
-                  })),
-                },
-              })),
-            },
-          })),
-        },
-      },
-      select: {
-        id: true,
-        name: true,
-        active: true,
-      },
-    });
-
-    // Increment clone count on source
-    await prisma.program.update({
-      where: { id: sourceProgram.id },
-      data: { cloneCount: { increment: 1 } },
+      return newProgram;
     });
 
     return NextResponse.json({
