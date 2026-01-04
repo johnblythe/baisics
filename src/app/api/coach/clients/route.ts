@@ -32,6 +32,7 @@ export async function GET() {
             name: true,
             email: true,
             image: true,
+            createdAt: true,
             ownedPrograms: {
               where: { active: true },
               orderBy: { createdAt: 'desc' },
@@ -74,6 +75,7 @@ export async function GET() {
             name: cc.client.name,
             email: cc.client.email,
             image: cc.client.image,
+            createdAt: cc.client.createdAt,
             currentProgram: cc.client.ownedPrograms[0]
               ? {
                   id: cc.client.ownedPrograms[0].id,

@@ -55,6 +55,16 @@ export async function GET(request: Request, { params }: RouteParams) {
                 checkIns: {
                   orderBy: { createdAt: 'desc' },
                   take: 5,
+                  include: {
+                    stats: {
+                      select: {
+                        energyLevel: true,
+                        soreness: true,
+                        recovery: true,
+                        weight: true,
+                      },
+                    },
+                  },
                 },
               },
             },
