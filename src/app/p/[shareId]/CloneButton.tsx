@@ -15,7 +15,6 @@ export function CloneButton({ programId, isAuthenticated }: CloneButtonProps) {
 
   const handleClone = async () => {
     if (!isAuthenticated) {
-      // Redirect to signin with callback to current page
       router.push('/auth/signin?callbackUrl=' + encodeURIComponent(window.location.href));
       return;
     }
@@ -33,7 +32,6 @@ export function CloneButton({ programId, isAuthenticated }: CloneButtonProps) {
       const data = await res.json();
 
       if (!res.ok) {
-        // Handle specific error cases
         if (data.error === 'upgrade_required') {
           setError(data.message || 'Upgrade to premium to clone more programs');
         } else {
@@ -42,7 +40,6 @@ export function CloneButton({ programId, isAuthenticated }: CloneButtonProps) {
         return;
       }
 
-      // Redirect to the cloned program
       router.push(`/dashboard/${data.programId}`);
     } catch (err) {
       console.error('Clone error:', err);
@@ -53,11 +50,11 @@ export function CloneButton({ programId, isAuthenticated }: CloneButtonProps) {
   };
 
   return (
-    <div className="flex flex-col items-center gap-2">
+    <div className="flex flex-col items-center gap-3 w-full">
       <button
         onClick={handleClone}
         disabled={loading}
-        className="bg-coral-500 hover:bg-coral-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+        className="w-full px-8 py-4 text-white font-bold text-lg bg-[#FF6B6B] rounded-xl hover:bg-[#EF5350] transition-all shadow-lg shadow-[#FF6B6B]/25 hover:shadow-xl hover:shadow-[#FF6B6B]/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {loading ? (
           <>
@@ -77,7 +74,7 @@ export function CloneButton({ programId, isAuthenticated }: CloneButtonProps) {
         )}
       </button>
       {error && (
-        <p className="text-sm text-red-500">{error}</p>
+        <p className="text-sm text-[#EF5350] text-center">{error}</p>
       )}
     </div>
   );
