@@ -6,12 +6,14 @@ import { prisma } from '@/lib/prisma';
 import fs from 'fs/promises';
 import path from 'path';
 import { auth } from '@/auth';
+import mammoth from 'mammoth';
 
 const ALLOWED_FILE_TYPES = [
   'application/pdf',
   'image/jpeg',
   'image/jpg',
-  'image/png'
+  'image/png',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
 ];
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -32,20 +34,20 @@ function validateFileType(base64String: string): { valid: boolean; mimeType: str
     const mimeMatch = base64String.match(/^data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+);base64,/);
     
     if (!mimeMatch) {
-      return { 
-        valid: false, 
+      return {
+        valid: false,
         mimeType: null,
-        error: 'Invalid file format. File must be a PDF or image (JPEG, PNG).'
+        error: 'Invalid file format. File must be a PDF, Word document, or image.'
       };
     }
 
     const mimeType = mimeMatch[1].toLowerCase();
 
     if (!ALLOWED_FILE_TYPES.includes(mimeType)) {
-      return { 
-        valid: false, 
+      return {
+        valid: false,
         mimeType,
-        error: `Unsupported file type: ${mimeType}. File must be a PDF or image (JPEG, PNG).`
+        error: `Unsupported file type: ${mimeType}. File must be a PDF, Word document (.docx), or image.`
       };
     }
 
@@ -73,21 +75,23 @@ function validateFileType(base64String: string): { valid: boolean; mimeType: str
 
 export async function POST(request: Request) {
   try {
-    const { file, fileName, autoSave = false } = await request.json();
+    const { file, fileName, autoSave = false, allowGuest = false } = await request.json();
 
     // Get authenticated user
     const session = await auth();
-    if (!session?.user?.id) {
+
+    // Require auth for saving, but allow guest for preview-only
+    if (!session?.user?.id && (autoSave || !allowGuest)) {
       return NextResponse.json({
         error: true,
         reason: 'Unauthorized',
-        details: ['User must be authenticated to upload programs']
+        details: ['User must be authenticated to save programs']
       }, { status: 401 });
     }
 
     // Validate file type and size
     const validation = validateFileType(file);
-    
+
     if (!validation.valid) {
       return NextResponse.json({
         error: true,
@@ -99,30 +103,52 @@ export async function POST(request: Request) {
     // Extract just the base64 data without the data URL prefix
     const base64Data = file.split(',')[1];
 
-    // Save the raw file
-    await ensureUploadsDir();
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const rawFilePath = path.join(UPLOADS_DIR, `${timestamp}_${fileName}`);
-    await fs.writeFile(rawFilePath, base64Data, 'base64');
+    // Save the raw file (only if authenticated)
+    if (session?.user?.id) {
+      await ensureUploadsDir();
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const rawFilePath = path.join(UPLOADS_DIR, `${timestamp}_${fileName}`);
+      await fs.writeFile(rawFilePath, base64Data, 'base64');
+    }
 
-    // Send to Claude with our prompt
-    const messages = [{
-      role: 'user',
-      content: [
-        {
-          type: 'document',
-          source: {
-            type: 'base64',
-            media_type: validation.mimeType || 'application/pdf',
-            data: base64Data,
+    // Handle DOCX files - extract text first with mammoth
+    const isDocx = validation.mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    let messages;
+
+    if (isDocx) {
+      // Convert base64 to buffer and extract text with mammoth
+      const buffer = Buffer.from(base64Data, 'base64');
+      const { value: extractedText } = await mammoth.extractRawText({ buffer });
+
+      messages = [{
+        role: 'user',
+        content: [
+          {
+            type: 'text',
+            text: workoutFilePrompt + `\n\nAnalyze this workout program text extracted from a Word document (${fileName}):\n\n${extractedText}`
           },
-        },
-        {
-          type: 'text',
-          text: workoutFilePrompt + `\n\nAnalyze the workout file above (${fileName}).`
-        },
-      ],
-    }];
+        ],
+      }];
+    } else {
+      // PDF and images - use document/vision
+      messages = [{
+        role: 'user',
+        content: [
+          {
+            type: 'document',
+            source: {
+              type: 'base64',
+              media_type: validation.mimeType || 'application/pdf',
+              data: base64Data,
+            },
+          },
+          {
+            type: 'text',
+            text: workoutFilePrompt + `\n\nAnalyze the workout file above (${fileName}).`
+          },
+        ],
+      }];
+    }
 
     const response = await sendMessage(messages, 'system');
 

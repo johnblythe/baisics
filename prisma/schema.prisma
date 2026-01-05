@@ -106,6 +106,12 @@ model User {
   // Email preferences
   emailReminders Boolean @default(true) @map("email_reminders")
 
+  // Coach branding
+  brandName  String? @map("brand_name")
+  brandColor String? @map("brand_color") // hex color like #FF6B6B
+  brandLogo  String? @map("brand_logo") @db.Text // base64 or URL
+  inviteSlug String? @unique @map("invite_slug") // custom slug for public invite
+
   // Streak tracking
   streakCurrent        Int       @default(0) @map("streak_current")
   streakLongest        Int       @default(0) @map("streak_longest")

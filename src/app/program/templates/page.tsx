@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 import MainLayout from '@/app/components/layouts/MainLayout';
+import { AssignDropdown } from '@/components/AssignDropdown';
 import { BookmarkPlus, Copy, Globe, Lock } from 'lucide-react';
 
 interface Template {
@@ -23,6 +25,7 @@ interface Template {
 }
 
 export default function MyTemplatesPage() {
+  const { data: session } = useSession();
   const [templates, setTemplates] = useState<Template[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -153,6 +156,12 @@ export default function MyTemplatesPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
+                      {session && (
+                        <AssignDropdown
+                          programId={template.id}
+                          programName={template.name}
+                        />
+                      )}
                       <Link
                         href={`/program/${template.id}`}
                         className="px-4 py-2 text-sm font-medium text-[#FF6B6B] hover:bg-[#FFE5E5] rounded-lg transition-colors"

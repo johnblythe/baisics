@@ -270,6 +270,12 @@ function DashboardContent() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [isPremium, setIsPremium] = useState(false);
   const [streak, setStreak] = useState({ current: 0, longest: 0 });
+  const [coach, setCoach] = useState<{
+    id: string;
+    name: string;
+    brandColor: string;
+    brandLogo: string | null;
+  } | null>(null);
 
   useEffect(() => {
     const disclaimerAcknowledged = localStorage.getItem('disclaimer-acknowledged');
@@ -363,17 +369,21 @@ function DashboardContent() {
     fetchSession();
   }, []);
 
-  // Fetch user's premium status and streak
+  // Fetch user's premium status, streak, and coach info
   useEffect(() => {
     async function fetchUserStatus() {
       try {
         const response = await fetch('/api/user');
         const data = await response.json();
-        setIsPremium(data.user?.isPremium || false);
+        setIsPremium(data.isPremium || false);
         setStreak({
-          current: data.user?.streakCurrent || 0,
-          longest: data.user?.streakLongest || 0
+          current: data.streakCurrent || 0,
+          longest: data.streakLongest || 0
         });
+        // Set coach info if user has one
+        if (data.coach) {
+          setCoach(data.coach);
+        }
       } catch (error) {
         console.error('Failed to fetch user status:', error);
       }
@@ -502,6 +512,60 @@ function DashboardContent() {
           />
         )}
           <div className="space-y-8">
+            {/* Coach Branding Card - shows if client is connected to a coach */}
+            {coach && (
+              <div
+                className="relative overflow-hidden rounded-2xl border shadow-md"
+                style={{
+                  borderColor: coach.brandColor,
+                  borderLeftWidth: '4px',
+                  backgroundColor: 'white',
+                }}
+              >
+                <div
+                  className="absolute top-0 right-0 w-48 h-48 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 opacity-10"
+                  style={{ backgroundColor: coach.brandColor }}
+                />
+                <div className="relative p-5 flex items-center gap-4">
+                  {/* Coach Avatar */}
+                  {coach.brandLogo ? (
+                    <img
+                      src={coach.brandLogo}
+                      alt={coach.name}
+                      className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+                    />
+                  ) : (
+                    <div
+                      className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0"
+                      style={{ backgroundColor: coach.brandColor }}
+                    >
+                      {coach.name
+                        .trim()
+                        .split(/\s+/)
+                        .filter((n) => n.length > 0)
+                        .map((n) => n[0])
+                        .slice(0, 2)
+                        .join('')
+                        .toUpperCase()}
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium text-[#94A3B8] uppercase tracking-wider" style={{ fontFamily: "'Space Mono', monospace" }}>
+                      Your Coach
+                    </p>
+                    <h3 className="text-lg font-semibold text-[#0F172A] truncate">
+                      {coach.name}
+                    </h3>
+                  </div>
+                  <div
+                    className="px-3 py-1.5 rounded-full text-sm font-medium"
+                    style={{ backgroundColor: `${coach.brandColor}15`, color: coach.brandColor }}
+                  >
+                    Connected
+                  </div>
+                </div>
+              </div>
+            )}
             {/* Quick Workout Start Card - v2a coral accent theme */}
             {currentWorkout?.nextWorkout && (
               <div className="relative overflow-hidden bg-white rounded-2xl border-l-4 border-l-[#FF6B6B] border border-[#E2E8F0] shadow-md p-6 lg:p-8">

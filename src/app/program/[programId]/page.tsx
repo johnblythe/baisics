@@ -6,7 +6,9 @@ import Link from 'next/link';
 import MainLayout from '@/app/components/layouts/MainLayout';
 import { ExerciseAddModal } from '@/components/ExerciseAddModal';
 import { SaveAsTemplateModal } from './components/SaveAsTemplateModal';
+import { useSession } from 'next-auth/react';
 import { ChevronDown, ChevronRight, Play, GripVertical, Trash2, Plus, X, BookmarkPlus } from 'lucide-react';
+import { AssignDropdown } from '@/components/AssignDropdown';
 import {
   DndContext,
   closestCenter,
@@ -219,6 +221,7 @@ export default function ProgramPage() {
   const router = useRouter();
   const params = useParams();
   const programId = params.programId as string;
+  const { data: session } = useSession();
 
   const [program, setProgram] = useState<Program | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -589,6 +592,12 @@ export default function ProgramPage() {
                       <BookmarkPlus className="w-3.5 h-3.5" />
                       Template
                     </span>
+                  )}
+                  {session && (
+                    <AssignDropdown
+                      programId={program.id}
+                      programName={program.name}
+                    />
                   )}
                   <button
                     onClick={() => setIsEditMode(true)}
