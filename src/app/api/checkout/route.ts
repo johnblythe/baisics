@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const priceId = USER_TIER_CONFIG.PRO.priceId
+    const priceId = USER_TIER_CONFIG.JACKED.priceId
     if (!priceId) {
       return NextResponse.json({ error: 'Price not configured' }, { status: 500 })
     }
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
       cancel_url: `${baseUrl}/dashboard?canceled=true`,
       metadata: {
         userId: user.id,
-        tier: 'PRO',
+        tier: 'JACKED',
       },
     })
 

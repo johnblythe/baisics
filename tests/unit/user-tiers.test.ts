@@ -1,11 +1,11 @@
 import { describe, it, expect, vi } from 'vitest'
 
 // Mock env vars before importing
-vi.stubEnv('STRIPE_PRICE_PRO', 'price_test_consumer_pro')
+vi.stubEnv('STRIPE_PRICE_JACKED', 'price_test_jacked')
 
 const {
   USER_TIER_CONFIG,
-  isConsumerProPrice,
+  isJackedPrice,
   hasFeature,
   getLimit,
   canGenerateProgram
@@ -20,11 +20,11 @@ describe('User Tiers', () => {
       expect(USER_TIER_CONFIG.FREE.limits.mealPlanDays).toBe(1)
     })
 
-    it('should have PRO tier with unlimited access', () => {
-      expect(USER_TIER_CONFIG.PRO.price).toBe(5)
-      expect(USER_TIER_CONFIG.PRO.limits.programGenerations).toBe(Infinity)
-      expect(USER_TIER_CONFIG.PRO.limits.activePrograms).toBe(Infinity)
-      expect(USER_TIER_CONFIG.PRO.limits.mealPlanDays).toBe(7)
+    it('should have JACKED tier with unlimited access', () => {
+      expect(USER_TIER_CONFIG.JACKED.price).toBe(5)
+      expect(USER_TIER_CONFIG.JACKED.limits.programGenerations).toBe(Infinity)
+      expect(USER_TIER_CONFIG.JACKED.limits.activePrograms).toBe(Infinity)
+      expect(USER_TIER_CONFIG.JACKED.limits.mealPlanDays).toBe(7)
     })
 
     it('FREE should have core features enabled', () => {
@@ -47,28 +47,28 @@ describe('User Tiers', () => {
       expect(USER_TIER_CONFIG.FREE.features.programHistory).toBe(false)
     })
 
-    it('PRO should have all features enabled', () => {
-      const features = Object.values(USER_TIER_CONFIG.PRO.features)
+    it('JACKED should have all features enabled', () => {
+      const features = Object.values(USER_TIER_CONFIG.JACKED.features)
       expect(features.every(f => f === true)).toBe(true)
     })
   })
 
-  describe('isConsumerProPrice', () => {
-    it('should return true for PRO price ID', () => {
-      expect(isConsumerProPrice('price_test_consumer_pro')).toBe(true)
+  describe('isJackedPrice', () => {
+    it('should return true for JACKED price ID', () => {
+      expect(isJackedPrice('price_test_jacked')).toBe(true)
     })
 
     it('should return false for null', () => {
-      expect(isConsumerProPrice(null)).toBe(false)
+      expect(isJackedPrice(null)).toBe(false)
     })
 
     it('should return false for unknown price', () => {
-      expect(isConsumerProPrice('price_unknown')).toBe(false)
+      expect(isJackedPrice('price_unknown')).toBe(false)
     })
 
     it('should return false for coach price IDs', () => {
-      expect(isConsumerProPrice('price_coach_pro')).toBe(false)
-      expect(isConsumerProPrice('price_coach_max')).toBe(false)
+      expect(isJackedPrice('price_coach_swole')).toBe(false)
+      expect(isJackedPrice('price_coach_yoked')).toBe(false)
     })
   })
 
@@ -79,7 +79,7 @@ describe('User Tiers', () => {
       expect(hasFeature(false, 'mealPlans')).toBe(true)
     })
 
-    it('should return false for PRO features when not premium', () => {
+    it('should return false for JACKED features when not premium', () => {
       expect(hasFeature(false, 'checkInReminders')).toBe(false)
       expect(hasFeature(false, 'liveWorkoutCoach')).toBe(false)
       expect(hasFeature(false, 'shoppingLists')).toBe(false)
@@ -100,7 +100,7 @@ describe('User Tiers', () => {
       expect(getLimit(false, 'mealPlanDays')).toBe(1)
     })
 
-    it('should return PRO limits when premium', () => {
+    it('should return JACKED limits when premium', () => {
       expect(getLimit(true, 'programGenerations')).toBe(Infinity)
       expect(getLimit(true, 'activePrograms')).toBe(Infinity)
       expect(getLimit(true, 'mealPlanDays')).toBe(7)
@@ -126,7 +126,7 @@ describe('User Tiers', () => {
       })
     })
 
-    describe('PRO tier (unlimited)', () => {
+    describe('JACKED tier (unlimited)', () => {
       it('should always allow generating', () => {
         expect(canGenerateProgram(true, 0)).toBe(true)
         expect(canGenerateProgram(true, 100)).toBe(true)
@@ -137,24 +137,24 @@ describe('User Tiers', () => {
 })
 
 describe('Upgrade value proposition', () => {
-  it('FREE → PRO unlocks reminders', () => {
+  it('FREE → JACKED unlocks reminders', () => {
     expect(hasFeature(false, 'checkInReminders')).toBe(false)
     expect(hasFeature(true, 'checkInReminders')).toBe(true)
   })
 
-  it('FREE → PRO unlocks live workout coach', () => {
+  it('FREE → JACKED unlocks live workout coach', () => {
     expect(hasFeature(false, 'liveWorkoutCoach')).toBe(false)
     expect(hasFeature(true, 'liveWorkoutCoach')).toBe(true)
   })
 
-  it('FREE → PRO removes program generation limit', () => {
+  it('FREE → JACKED removes program generation limit', () => {
     // At limit on FREE
     expect(canGenerateProgram(false, 4)).toBe(false)
-    // Unlimited on PRO
+    // Unlimited on JACKED
     expect(canGenerateProgram(true, 4)).toBe(true)
   })
 
-  it('FREE → PRO removes active program limit', () => {
+  it('FREE → JACKED removes active program limit', () => {
     expect(getLimit(false, 'activePrograms')).toBe(1)
     expect(getLimit(true, 'activePrograms')).toBe(Infinity)
   })

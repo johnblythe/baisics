@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { SubscriptionStatus } from '@prisma/client'
 import { NextResponse } from 'next/server'
 import { getTierFromPriceId, COACH_TIER_CONFIG } from '@/lib/coach-tiers'
-import { isConsumerProPrice } from '@/lib/user-tiers'
+import { isJackedPrice } from '@/lib/user-tiers'
 
 export const config = {
   api: {
@@ -137,8 +137,8 @@ export async function POST(req: Request) {
         })
 
         // Update user based on subscription type
-        const isCoachPrice = priceId === COACH_TIER_CONFIG.PRO.priceId ||
-                            priceId === COACH_TIER_CONFIG.MAX.priceId
+        const isCoachPrice = priceId === COACH_TIER_CONFIG.SWOLE.priceId ||
+                            priceId === COACH_TIER_CONFIG.YOKED.priceId
 
         if (subscription.status === 'active') {
           if (isCoachPrice) {
@@ -151,8 +151,8 @@ export async function POST(req: Request) {
                 coachTier: newTier,
               },
             })
-          } else if (isConsumerProPrice(priceId)) {
-            // Consumer Pro subscription - set isPremium
+          } else if (isJackedPrice(priceId)) {
+            // Jacked subscription - set isPremium
             await prisma.user.update({
               where: { id: user.id },
               data: { isPremium: true },
@@ -178,8 +178,8 @@ export async function POST(req: Request) {
 
         // Reset user status based on subscription type
         if (sub.userId) {
-          const isCoachPrice = priceId === COACH_TIER_CONFIG.PRO.priceId ||
-                              priceId === COACH_TIER_CONFIG.MAX.priceId
+          const isCoachPrice = priceId === COACH_TIER_CONFIG.SWOLE.priceId ||
+                              priceId === COACH_TIER_CONFIG.YOKED.priceId
 
           if (isCoachPrice) {
             // Reset coach tier to FREE (keep isCoach = true)
@@ -187,7 +187,7 @@ export async function POST(req: Request) {
               where: { id: sub.userId },
               data: { coachTier: 'FREE' },
             })
-          } else if (isConsumerProPrice(priceId)) {
+          } else if (isJackedPrice(priceId)) {
             // Reset isPremium
             await prisma.user.update({
               where: { id: sub.userId },
