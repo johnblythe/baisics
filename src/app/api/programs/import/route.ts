@@ -174,7 +174,13 @@ export async function POST(request: Request) {
     }
 
     try {
-      const parsed = JSON.parse(content);
+      // Strip markdown code blocks if present (Claude sometimes wraps in ```json ... ```)
+      let jsonContent = content.trim();
+      if (jsonContent.startsWith('```')) {
+        jsonContent = jsonContent.replace(/^```(?:json)?\s*\n?/, '').replace(/\n?```\s*$/, '');
+      }
+
+      const parsed = JSON.parse(jsonContent);
       
       // If autoSave is false, just return the parsed data
       if (!autoSave) {

@@ -5,6 +5,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "./prisma";
 import { sendEmail, emailConfig } from "./email";
 import { magicLinkTemplate } from "./email/templates/magic-link";
+import { setDevMagicLink } from "./dev-magic-link";
 
 // Helper to get session (v4 pattern that mimics v5's auth())
 export async function auth() {
@@ -26,9 +27,10 @@ export const authOptions: NextAuthOptions = {
       },
       from: emailConfig.from,
       sendVerificationRequest: async ({ identifier, url }) => {
-        // Dev mode: log to console
+        // Dev mode: store for display on verify page
         if (process.env.NODE_ENV !== "production") {
           console.log(`\n🔗 MAGIC LINK for ${identifier}:\n${url}\n`);
+          setDevMagicLink(identifier, url);
           return;
         }
 

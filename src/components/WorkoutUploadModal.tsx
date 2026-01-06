@@ -54,8 +54,8 @@ export function WorkoutUploadModal({ isOpen, onClose }: WorkoutUploadModalProps)
         throw new Error(data.reason || 'Failed to save program');
       }
 
-      router.refresh(); // Refresh the page data
       onClose();
+      window.location.reload(); // Full refresh to update all dashboard components
     } catch (error) {
       console.error('Error saving program:', error);
       setError(error instanceof Error ? error.message : 'Failed to save program');
@@ -158,8 +158,10 @@ export function WorkoutUploadModal({ isOpen, onClose }: WorkoutUploadModalProps)
                                 <div className="text-gray-600 dark:text-gray-300 space-y-1 mt-1">
                                   <p>Sets: {exercise.sets}</p>
                                   <p>
-                                    {exercise.measure.type}: {exercise.measure.value}
-                                    {exercise.measure.unit ? ` ${exercise.measure.unit}` : ''}
+                                    {exercise.measure.type === 'REPS'
+                                      ? `Reps: ${exercise.measure.value}`
+                                      : `${exercise.measure.type}: ${exercise.measure.value}${exercise.measure.unit && exercise.measure.unit !== 'PERCENT' ? ` ${exercise.measure.unit}` : ''}`
+                                    }
                                   </p>
                                   <p>Rest: {exercise.restPeriod}s</p>
                                   {exercise.notes && (

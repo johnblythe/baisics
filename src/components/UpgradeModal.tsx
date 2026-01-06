@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import { validateEmail } from '@/utils/forms/validation';
 
 interface UpgradeModalProps {
@@ -29,10 +30,18 @@ const contextMessages = {
 };
 
 export function UpgradeModal({ isOpen, onClose, context, currentProgramName }: UpgradeModalProps) {
+  const { data: session } = useSession();
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
+
+  // Pre-fill email from session
+  useEffect(() => {
+    if (session?.user?.email && !email) {
+      setEmail(session.user.email);
+    }
+  }, [session, email]);
 
   const messages = contextMessages[context];
 
@@ -142,26 +151,36 @@ export function UpgradeModal({ isOpen, onClose, context, currentProgramName }: U
                 <p className="text-white text-sm mb-3">
                   Pro launching soon! Get early access pricing:
                 </p>
-                <div className="flex gap-2">
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      setError('');
-                    }}
-                    placeholder="your@email.com"
-                    className="flex-1 px-4 py-2 rounded-lg bg-white text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]"
-                    disabled={isSubmitting}
-                  />
+                {session?.user?.email ? (
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="px-4 py-2 bg-[#FF6B6B] text-white font-semibold rounded-lg hover:bg-[#EF5350] transition-colors disabled:opacity-50"
+                    className="w-full px-4 py-2 bg-[#FF6B6B] text-white font-semibold rounded-lg hover:bg-[#EF5350] transition-colors disabled:opacity-50"
                   >
-                    {isSubmitting ? '...' : 'Notify Me'}
+                    {isSubmitting ? 'Adding...' : 'Notify Me at ' + session.user.email}
                   </button>
-                </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        setError('');
+                      }}
+                      placeholder="your@email.com"
+                      className="flex-1 px-4 py-2 rounded-lg bg-white text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]"
+                      disabled={isSubmitting}
+                    />
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="px-4 py-2 bg-[#FF6B6B] text-white font-semibold rounded-lg hover:bg-[#EF5350] transition-colors disabled:opacity-50"
+                    >
+                      {isSubmitting ? '...' : 'Notify Me'}
+                    </button>
+                  </div>
+                )}
                 {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
               </div>
             </form>

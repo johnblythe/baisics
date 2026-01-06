@@ -128,9 +128,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Program not found' }, { status: 404 });
     }
 
-    // Generate share URL
+    // Generate share URL - use /p/ route with shareId
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://baisics.app';
-    const shareUrl = `${baseUrl}/share/${programId}`;
+    // Use existing shareId or the programId as fallback
+    const shareUrl = program.shareId
+      ? `${baseUrl}/p/${program.shareId}`
+      : `${baseUrl}/share/${programId}`; // Fallback for programs without shareId
     const ogImageUrl = `${baseUrl}/api/og?programId=${programId}`;
 
     return NextResponse.json({
