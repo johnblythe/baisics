@@ -2,6 +2,8 @@ import Stripe from 'stripe'
 import { prisma } from '@/lib/prisma'
 import { SubscriptionStatus } from '@prisma/client'
 import { NextResponse } from 'next/server'
+import { getTierFromPriceId, COACH_TIER_CONFIG } from '@/lib/coach-tiers'
+import { isConsumerProPrice } from '@/lib/user-tiers'
 
 export const config = {
   api: {
@@ -109,6 +111,8 @@ export async function POST(req: Request) {
           return NextResponse.json({ error: "User not found" }, { status: 400 })
         }
         
+        const priceId = subscription.items.data[0].price.id
+
         await prisma.subscription.upsert({
           where: {
             stripeSubscriptionId: subscription.id,
@@ -117,26 +121,52 @@ export async function POST(req: Request) {
             stripeSubscriptionId: subscription.id,
             userId: user.id,
             stripeCustomerId: subscription.customer as string,
-            stripePriceId: subscription.items.data[0].price.id,
+            stripePriceId: priceId,
             status: mapStripeStatus(subscription.status),
             currentPeriodStart: new Date(subscription.current_period_start * 1000),
             currentPeriodEnd: new Date(subscription.current_period_end * 1000),
             cancelAtPeriodEnd: subscription.cancel_at_period_end,
           },
           update: {
+            stripePriceId: priceId,
             status: mapStripeStatus(subscription.status),
             currentPeriodStart: new Date(subscription.current_period_start * 1000),
             currentPeriodEnd: new Date(subscription.current_period_end * 1000),
             cancelAtPeriodEnd: subscription.cancel_at_period_end,
           },
         })
+
+        // Update user based on subscription type
+        const isCoachPrice = priceId === COACH_TIER_CONFIG.PRO.priceId ||
+                            priceId === COACH_TIER_CONFIG.MAX.priceId
+
+        if (subscription.status === 'active') {
+          if (isCoachPrice) {
+            // Coach subscription - set isCoach and coachTier
+            const newTier = getTierFromPriceId(priceId)
+            await prisma.user.update({
+              where: { id: user.id },
+              data: {
+                isCoach: true,
+                coachTier: newTier,
+              },
+            })
+          } else if (isConsumerProPrice(priceId)) {
+            // Consumer Pro subscription - set isPremium
+            await prisma.user.update({
+              where: { id: user.id },
+              data: { isPremium: true },
+            })
+          }
+        }
         break
       }
       
       case 'customer.subscription.deleted': {
         const subscription = event.data.object as Stripe.Subscription
-        
-        await prisma.subscription.update({
+        const priceId = subscription.items.data[0]?.price.id
+
+        const sub = await prisma.subscription.update({
           where: {
             stripeSubscriptionId: subscription.id,
           },
@@ -145,6 +175,26 @@ export async function POST(req: Request) {
             cancelAtPeriodEnd: true,
           },
         })
+
+        // Reset user status based on subscription type
+        if (sub.userId) {
+          const isCoachPrice = priceId === COACH_TIER_CONFIG.PRO.priceId ||
+                              priceId === COACH_TIER_CONFIG.MAX.priceId
+
+          if (isCoachPrice) {
+            // Reset coach tier to FREE (keep isCoach = true)
+            await prisma.user.update({
+              where: { id: sub.userId },
+              data: { coachTier: 'FREE' },
+            })
+          } else if (isConsumerProPrice(priceId)) {
+            // Reset isPremium
+            await prisma.user.update({
+              where: { id: sub.userId },
+              data: { isPremium: false },
+            })
+          }
+        }
         break
       }
     }

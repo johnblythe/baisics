@@ -18,6 +18,7 @@ export async function GET() {
         name: true,
         isPremium: true,
         isCoach: true,
+        coachTier: true,
         streakCurrent: true,
         streakLongest: true,
         subscription: {
@@ -65,6 +66,7 @@ export async function GET() {
       name: user?.name,
       isPremium: user?.isPremium,
       isCoach: user?.isCoach,
+      coachTier: user?.coachTier || 'FREE',
       streakCurrent: user?.streakCurrent,
       streakLongest: user?.streakLongest,
       subscriptionStatus: user?.subscription?.status || null,
