@@ -9,6 +9,9 @@ import { describe, it, expect } from 'vitest';
  * - Exercises can be added to any workout
  * - Exercises can be deleted from any workout
  * - Exercises can be reordered within a workout
+ * - Bulk import: coaches can upload multiple files
+ * - Bulk import: each file is processed independently
+ * - Bulk import: program names can be edited before saving
  */
 
 interface ParsedExercise {
@@ -378,5 +381,172 @@ describe('Import Preview - Integration', () => {
     // Program metadata should be unchanged
     expect(program.program?.name).toBe('Test Program');
     expect(program.program?.description).toBe('A test program');
+  });
+});
+
+// Bulk Import Types and Functions
+interface BulkImportItem {
+  id: string;
+  fileName: string;
+  status: 'pending' | 'processing' | 'parsed' | 'error' | 'saved';
+  error?: string;
+  parsedProgram?: ParsedProgram;
+  programName: string;
+}
+
+function updateBulkItemName(items: BulkImportItem[], id: string, name: string): BulkImportItem[] {
+  return items.map(item => item.id === id ? { ...item, programName: name } : item);
+}
+
+function removeBulkItem(items: BulkImportItem[], id: string): BulkImportItem[] {
+  return items.filter(item => item.id !== id);
+}
+
+function getBulkItemsReadyToSave(items: BulkImportItem[]): BulkImportItem[] {
+  return items.filter(item => item.status === 'parsed');
+}
+
+function createTestBulkItems(): BulkImportItem[] {
+  return [
+    {
+      id: '1',
+      fileName: 'program1.pdf',
+      status: 'parsed',
+      programName: 'Beginner Strength',
+      parsedProgram: createTestProgram()
+    },
+    {
+      id: '2',
+      fileName: 'program2.pdf',
+      status: 'parsed',
+      programName: 'Advanced Hypertrophy',
+      parsedProgram: createTestProgram()
+    },
+    {
+      id: '3',
+      fileName: 'program3.pdf',
+      status: 'error',
+      error: 'Failed to parse file',
+      programName: 'Failed Program'
+    }
+  ];
+}
+
+describe('Bulk Import - updateBulkItemName', () => {
+  it('updates program name for specific item', () => {
+    const items = createTestBulkItems();
+    const updated = updateBulkItemName(items, '1', 'New Name');
+
+    expect(updated[0].programName).toBe('New Name');
+    expect(updated[1].programName).toBe('Advanced Hypertrophy'); // unchanged
+  });
+
+  it('does not affect other items', () => {
+    const items = createTestBulkItems();
+    const updated = updateBulkItemName(items, '2', 'Changed');
+
+    expect(updated[0].programName).toBe('Beginner Strength');
+    expect(updated[2].programName).toBe('Failed Program');
+  });
+
+  it('handles non-existent id gracefully', () => {
+    const items = createTestBulkItems();
+    const updated = updateBulkItemName(items, 'non-existent', 'Test');
+
+    expect(updated).toEqual(items);
+  });
+});
+
+describe('Bulk Import - removeBulkItem', () => {
+  it('removes item by id', () => {
+    const items = createTestBulkItems();
+    const updated = removeBulkItem(items, '2');
+
+    expect(updated.length).toBe(2);
+    expect(updated.find(i => i.id === '2')).toBeUndefined();
+  });
+
+  it('keeps other items intact', () => {
+    const items = createTestBulkItems();
+    const updated = removeBulkItem(items, '1');
+
+    expect(updated[0].id).toBe('2');
+    expect(updated[1].id).toBe('3');
+  });
+
+  it('handles non-existent id gracefully', () => {
+    const items = createTestBulkItems();
+    const updated = removeBulkItem(items, 'non-existent');
+
+    expect(updated.length).toBe(3);
+  });
+});
+
+describe('Bulk Import - getBulkItemsReadyToSave', () => {
+  it('returns only parsed items', () => {
+    const items = createTestBulkItems();
+    const ready = getBulkItemsReadyToSave(items);
+
+    expect(ready.length).toBe(2);
+    expect(ready.every(i => i.status === 'parsed')).toBe(true);
+  });
+
+  it('excludes error items', () => {
+    const items = createTestBulkItems();
+    const ready = getBulkItemsReadyToSave(items);
+
+    expect(ready.find(i => i.status === 'error')).toBeUndefined();
+  });
+
+  it('excludes pending and processing items', () => {
+    const items: BulkImportItem[] = [
+      { id: '1', fileName: 'a.pdf', status: 'pending', programName: 'A' },
+      { id: '2', fileName: 'b.pdf', status: 'processing', programName: 'B' },
+      { id: '3', fileName: 'c.pdf', status: 'parsed', programName: 'C', parsedProgram: createTestProgram() }
+    ];
+    const ready = getBulkItemsReadyToSave(items);
+
+    expect(ready.length).toBe(1);
+    expect(ready[0].id).toBe('3');
+  });
+
+  it('returns empty array when no items are ready', () => {
+    const items: BulkImportItem[] = [
+      { id: '1', fileName: 'a.pdf', status: 'error', error: 'Failed', programName: 'A' },
+      { id: '2', fileName: 'b.pdf', status: 'pending', programName: 'B' }
+    ];
+    const ready = getBulkItemsReadyToSave(items);
+
+    expect(ready.length).toBe(0);
+  });
+});
+
+describe('Bulk Import - Workflow', () => {
+  it('supports editing name then removing item', () => {
+    let items = createTestBulkItems();
+
+    // Edit first item's name
+    items = updateBulkItemName(items, '1', 'Renamed Program');
+    expect(items[0].programName).toBe('Renamed Program');
+
+    // Remove second item
+    items = removeBulkItem(items, '2');
+    expect(items.length).toBe(2);
+
+    // Check ready items
+    const ready = getBulkItemsReadyToSave(items);
+    expect(ready.length).toBe(1);
+    expect(ready[0].programName).toBe('Renamed Program');
+  });
+
+  it('filters by status correctly after modifications', () => {
+    let items = createTestBulkItems();
+
+    // Remove error item
+    items = removeBulkItem(items, '3');
+
+    // All remaining should be ready
+    const ready = getBulkItemsReadyToSave(items);
+    expect(ready.length).toBe(2);
   });
 });

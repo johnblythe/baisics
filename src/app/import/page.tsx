@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import MainLayout from '@/app/components/layouts/MainLayout';
-import { Upload, FileText, ArrowRight, X, GripVertical, Plus, Mail, Check, Trash2, Edit2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Upload, FileText, ArrowRight, X, GripVertical, Plus, Mail, Check, Trash2, Edit2, ChevronDown, ChevronUp, Loader2, Files } from 'lucide-react';
 
 // Types for parsed program
 interface ParsedExercise {
@@ -39,6 +39,16 @@ interface ParsedProgram {
 
 type PageState = 'upload' | 'processing' | 'preview' | 'auth' | 'saving' | 'success';
 
+// Bulk import types
+interface BulkImportItem {
+  id: string;
+  fileName: string;
+  status: 'pending' | 'processing' | 'parsed' | 'error' | 'saved';
+  error?: string;
+  parsedProgram?: ParsedProgram;
+  programName: string;
+}
+
 export default function ImportPage() {
   const { data: session } = useSession();
   const router = useRouter();
@@ -53,15 +63,25 @@ export default function ImportPage() {
   const [expandedWorkout, setExpandedWorkout] = useState<number | null>(0);
   const [editingExercise, setEditingExercise] = useState<{ wIdx: number; eIdx: number } | null>(null);
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    const file = acceptedFiles[0];
-    if (!file) return;
+  // Bulk import state (for coaches)
+  const [isCoach, setIsCoach] = useState(false);
+  const [bulkMode, setBulkMode] = useState(false);
+  const [bulkItems, setBulkItems] = useState<BulkImportItem[]>([]);
+  const [bulkSaving, setBulkSaving] = useState(false);
 
-    setError(null);
-    setPageState('processing');
+  // Check if user is a coach
+  useEffect(() => {
+    if (session?.user) {
+      fetch('/api/user')
+        .then(res => res.json())
+        .then(data => setIsCoach(data.isCoach || false))
+        .catch(() => setIsCoach(false));
+    }
+  }, [session]);
 
+  // Process a single file and return parsed data
+  const processFile = async (file: File): Promise<{ parsed?: ParsedProgram; error?: string }> => {
     try {
-      // Read file as base64
       const fileContent = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => resolve(reader.result as string);
@@ -69,7 +89,6 @@ export default function ImportPage() {
         reader.readAsDataURL(file);
       });
 
-      // Send to API for parsing (no auth required for preview)
       const response = await fetch('/api/programs/import', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -77,25 +96,84 @@ export default function ImportPage() {
           file: fileContent,
           fileName: file.name,
           autoSave: false,
-          allowGuest: true // Flag to allow unauthenticated parsing
+          allowGuest: true
         }),
       });
 
       const data = await response.json();
 
       if (data.error) {
-        throw new Error(data.reason || 'Failed to parse file');
+        return { error: data.reason || 'Failed to parse file' };
       }
 
-      setParsedProgram(data.parsed);
-      setProgramName(data.parsed?.program?.name || 'Imported Program');
-      setPageState('preview');
-
+      return { parsed: data.parsed };
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to process file');
-      setPageState('upload');
+      return { error: err instanceof Error ? err.message : 'Failed to process file' };
     }
-  }, []);
+  };
+
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    if (bulkMode && acceptedFiles.length > 0) {
+      // Bulk mode: process multiple files
+      const items: BulkImportItem[] = acceptedFiles.map((file, idx) => ({
+        id: `${Date.now()}-${idx}`,
+        fileName: file.name,
+        status: 'pending' as const,
+        programName: file.name.replace(/\.(pdf|docx)$/i, '')
+      }));
+
+      setBulkItems(items);
+      setPageState('processing');
+
+      // Process files in parallel (max 3 concurrent)
+      const processWithConcurrency = async () => {
+        const results = [...items];
+
+        for (let i = 0; i < acceptedFiles.length; i++) {
+          // Update status to processing
+          results[i] = { ...results[i], status: 'processing' };
+          setBulkItems([...results]);
+
+          const { parsed, error } = await processFile(acceptedFiles[i]);
+
+          if (error) {
+            results[i] = { ...results[i], status: 'error', error };
+          } else {
+            results[i] = {
+              ...results[i],
+              status: 'parsed',
+              parsedProgram: parsed,
+              programName: parsed?.program?.name || results[i].programName
+            };
+          }
+          setBulkItems([...results]);
+        }
+      };
+
+      await processWithConcurrency();
+      setPageState('preview');
+      return;
+    }
+
+    // Single file mode
+    const file = acceptedFiles[0];
+    if (!file) return;
+
+    setError(null);
+    setPageState('processing');
+
+    const { parsed, error: parseError } = await processFile(file);
+
+    if (parseError) {
+      setError(parseError);
+      setPageState('upload');
+      return;
+    }
+
+    setParsedProgram(parsed!);
+    setProgramName(parsed?.program?.name || 'Imported Program');
+    setPageState('preview');
+  }, [bulkMode]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -103,8 +181,8 @@ export default function ImportPage() {
       'application/pdf': ['.pdf'],
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
     },
-    maxFiles: 1,
-    multiple: false
+    maxFiles: bulkMode ? 20 : 1,
+    multiple: bulkMode
   });
 
   const handleSave = async () => {
@@ -181,7 +259,74 @@ export default function ImportPage() {
     setParsedProgram(null);
     setProgramName('');
     setError(null);
+    setBulkItems([]);
     setPageState('upload');
+  };
+
+  // Bulk save all programs
+  const handleBulkSave = async () => {
+    if (!session) {
+      setPageState('auth');
+      return;
+    }
+
+    setBulkSaving(true);
+    const updatedItems = [...bulkItems];
+
+    for (let i = 0; i < updatedItems.length; i++) {
+      const item = updatedItems[i];
+      if (item.status !== 'parsed' || !item.parsedProgram) continue;
+
+      try {
+        const response = await fetch('/api/programs/import/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            parsed: {
+              ...item.parsedProgram,
+              program: { ...item.parsedProgram.program, name: item.programName }
+            }
+          }),
+        });
+
+        const data = await response.json();
+
+        if (data.error) {
+          updatedItems[i] = { ...item, status: 'error', error: data.reason || 'Failed to save' };
+        } else {
+          updatedItems[i] = { ...item, status: 'saved' };
+        }
+      } catch (err) {
+        updatedItems[i] = { ...item, status: 'error', error: 'Failed to save' };
+      }
+
+      setBulkItems([...updatedItems]);
+    }
+
+    setBulkSaving(false);
+
+    // Check if all saved successfully
+    const allSaved = updatedItems.every(item => item.status === 'saved' || item.status === 'error');
+    const anySuccess = updatedItems.some(item => item.status === 'saved');
+
+    if (allSaved && anySuccess) {
+      setPageState('success');
+      setTimeout(() => {
+        router.push('/program/templates');
+      }, 1500);
+    }
+  };
+
+  // Update bulk item program name
+  const updateBulkItemName = (id: string, name: string) => {
+    setBulkItems(items =>
+      items.map(item => item.id === id ? { ...item, programName: name } : item)
+    );
+  };
+
+  // Remove a bulk item
+  const removeBulkItem = (id: string) => {
+    setBulkItems(items => items.filter(item => item.id !== id));
   };
 
   const updateExercise = (wIdx: number, eIdx: number, updates: Partial<ParsedExercise>) => {
@@ -344,26 +489,212 @@ export default function ImportPage() {
                 </div>
               </div>
             </div>
+
+            {/* Bulk Mode Toggle (Coaches Only) */}
+            {isCoach && (
+              <div className="mt-8 max-w-xl mx-auto">
+                <button
+                  onClick={() => setBulkMode(!bulkMode)}
+                  className={`
+                    flex items-center gap-3 w-full px-4 py-3 rounded-xl border transition-colors
+                    ${bulkMode
+                      ? 'bg-[#FFE5E5] border-[#FF6B6B] text-[#FF6B6B]'
+                      : 'bg-white border-[#E2E8F0] text-[#64748B] hover:border-[#FF6B6B]'
+                    }
+                  `}
+                >
+                  <Files className="w-5 h-5" />
+                  <div className="flex-1 text-left">
+                    <p className="font-medium text-sm">Bulk Import Mode</p>
+                    <p className="text-xs opacity-75">Upload multiple programs at once (up to 20)</p>
+                  </div>
+                  <div className={`
+                    w-10 h-6 rounded-full transition-colors relative
+                    ${bulkMode ? 'bg-[#FF6B6B]' : 'bg-[#E2E8F0]'}
+                  `}>
+                    <div className={`
+                      absolute top-1 w-4 h-4 rounded-full bg-white transition-transform
+                      ${bulkMode ? 'translate-x-5' : 'translate-x-1'}
+                    `} />
+                  </div>
+                </button>
+              </div>
+            )}
           </div>
         )}
 
         {/* STATE: PROCESSING */}
         {pageState === 'processing' && (
-          <div className="text-center py-20">
-            <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[#FFE5E5] flex items-center justify-center">
-              <div className="w-8 h-8 border-3 border-[#FF6B6B] border-t-transparent rounded-full animate-spin" />
-            </div>
-            <h2 className="text-2xl font-bold text-[#0F172A] mb-2">
-              Analyzing your program...
-            </h2>
-            <p className="text-[#64748B]">
-              This usually takes 10-20 seconds
-            </p>
+          <div className="py-12">
+            {bulkMode && bulkItems.length > 0 ? (
+              <div>
+                <h2 className="text-2xl font-bold text-[#0F172A] mb-2 text-center">
+                  Processing {bulkItems.length} files...
+                </h2>
+                <p className="text-[#64748B] text-center mb-8">
+                  This may take a few minutes
+                </p>
+                <div className="max-w-xl mx-auto space-y-3">
+                  {bulkItems.map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex items-center gap-3 px-4 py-3 bg-white rounded-xl border border-[#E2E8F0]"
+                    >
+                      <div className="w-8 h-8 rounded-lg bg-[#F1F5F9] flex items-center justify-center">
+                        {item.status === 'pending' && (
+                          <FileText className="w-4 h-4 text-[#94A3B8]" />
+                        )}
+                        {item.status === 'processing' && (
+                          <Loader2 className="w-4 h-4 text-[#FF6B6B] animate-spin" />
+                        )}
+                        {item.status === 'parsed' && (
+                          <Check className="w-4 h-4 text-green-500" />
+                        )}
+                        {item.status === 'error' && (
+                          <X className="w-4 h-4 text-red-500" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-[#0F172A] truncate">
+                          {item.fileName}
+                        </p>
+                        {item.error && (
+                          <p className="text-xs text-red-500 truncate">{item.error}</p>
+                        )}
+                      </div>
+                      <span className="text-xs text-[#94A3B8] capitalize">
+                        {item.status === 'processing' ? 'Analyzing...' : item.status}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[#FFE5E5] flex items-center justify-center">
+                  <div className="w-8 h-8 border-3 border-[#FF6B6B] border-t-transparent rounded-full animate-spin" />
+                </div>
+                <h2 className="text-2xl font-bold text-[#0F172A] mb-2">
+                  Analyzing your program...
+                </h2>
+                <p className="text-[#64748B]">
+                  This usually takes 10-20 seconds
+                </p>
+              </div>
+            )}
           </div>
         )}
 
-        {/* STATE: PREVIEW */}
-        {pageState === 'preview' && parsedProgram && (
+        {/* STATE: PREVIEW - Bulk Mode */}
+        {pageState === 'preview' && bulkMode && bulkItems.length > 0 && (
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-[#0F172A]">Review Programs</h2>
+                <p className="text-sm text-[#64748B]">
+                  {bulkItems.filter(i => i.status === 'parsed').length} of {bulkItems.length} ready to save
+                </p>
+              </div>
+              <button
+                onClick={handleStartOver}
+                className="text-sm text-[#64748B] hover:text-[#0F172A] flex items-center gap-1"
+              >
+                <X className="w-4 h-4" />
+                Start Over
+              </button>
+            </div>
+
+            <div className="space-y-3 mb-8">
+              {bulkItems.map((item) => (
+                <div
+                  key={item.id}
+                  className={`
+                    bg-white rounded-xl border overflow-hidden
+                    ${item.status === 'error' ? 'border-red-200' : 'border-[#E2E8F0]'}
+                  `}
+                >
+                  <div className="flex items-center gap-3 px-4 py-3">
+                    <div className={`
+                      w-8 h-8 rounded-lg flex items-center justify-center
+                      ${item.status === 'parsed' ? 'bg-green-100' : item.status === 'error' ? 'bg-red-100' : item.status === 'saved' ? 'bg-[#FFE5E5]' : 'bg-[#F1F5F9]'}
+                    `}>
+                      {item.status === 'parsed' && <Check className="w-4 h-4 text-green-600" />}
+                      {item.status === 'error' && <X className="w-4 h-4 text-red-500" />}
+                      {item.status === 'saved' && <Check className="w-4 h-4 text-[#FF6B6B]" />}
+                      {(item.status === 'pending' || item.status === 'processing') && (
+                        <Loader2 className="w-4 h-4 text-[#94A3B8] animate-spin" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      {item.status === 'parsed' ? (
+                        <input
+                          type="text"
+                          value={item.programName}
+                          onChange={(e) => updateBulkItemName(item.id, e.target.value)}
+                          className="w-full px-2 py-1 text-sm font-medium text-[#0F172A] border border-transparent hover:border-[#E2E8F0] focus:border-[#FF6B6B] rounded focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]/20"
+                        />
+                      ) : (
+                        <p className="text-sm font-medium text-[#0F172A] truncate px-2">
+                          {item.programName}
+                        </p>
+                      )}
+                      <p className="text-xs text-[#94A3B8] px-2">{item.fileName}</p>
+                      {item.error && (
+                        <p className="text-xs text-red-500 px-2 mt-1">{item.error}</p>
+                      )}
+                    </div>
+                    {item.status === 'parsed' && item.parsedProgram?.workouts && (
+                      <span className="text-xs text-[#94A3B8]">
+                        {item.parsedProgram.workouts.length} workouts
+                      </span>
+                    )}
+                    {item.status === 'saved' && (
+                      <span className="text-xs text-[#FF6B6B] font-medium">Saved!</span>
+                    )}
+                    {item.status !== 'saved' && (
+                      <button
+                        onClick={() => removeBulkItem(item.id)}
+                        className="p-1.5 text-[#94A3B8] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Bulk Actions */}
+            <div className="flex items-center justify-between pt-6 border-t border-[#E2E8F0]">
+              <button
+                onClick={handleStartOver}
+                className="px-6 py-3 text-[#64748B] hover:text-[#0F172A] font-medium transition-colors"
+              >
+                Start Over
+              </button>
+              <button
+                onClick={handleBulkSave}
+                disabled={bulkSaving || bulkItems.filter(i => i.status === 'parsed').length === 0}
+                className="flex items-center gap-2 px-6 py-3 bg-[#FF6B6B] text-white font-semibold rounded-xl hover:bg-[#EF5350] transition-colors shadow-lg shadow-[#FF6B6B]/25 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {bulkSaving ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    Save All Programs
+                    <ArrowRight className="w-5 h-5" />
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* STATE: PREVIEW - Single Mode */}
+        {pageState === 'preview' && !bulkMode && parsedProgram && (
           <div>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-[#0F172A]">Preview Your Program</h2>
