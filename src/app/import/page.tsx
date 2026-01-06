@@ -5,7 +5,8 @@ import { useDropzone } from 'react-dropzone';
 import { useSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Upload, FileText, ArrowRight, X, GripVertical, Plus, Mail, Check } from 'lucide-react';
+import MainLayout from '@/app/components/layouts/MainLayout';
+import { Upload, FileText, ArrowRight, X, GripVertical, Plus, Mail, Check, Trash2, Edit2, ChevronDown, ChevronUp } from 'lucide-react';
 
 // Types for parsed program
 interface ParsedExercise {
@@ -49,6 +50,8 @@ export default function ImportPage() {
   const [email, setEmail] = useState('');
   const [isAuthLoading, setIsAuthLoading] = useState(false);
   const [savedProgramId, setSavedProgramId] = useState<string | null>(null);
+  const [expandedWorkout, setExpandedWorkout] = useState<number | null>(0);
+  const [editingExercise, setEditingExercise] = useState<{ wIdx: number; eIdx: number } | null>(null);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -181,6 +184,60 @@ export default function ImportPage() {
     setPageState('upload');
   };
 
+  const updateExercise = (wIdx: number, eIdx: number, updates: Partial<ParsedExercise>) => {
+    if (!parsedProgram?.workouts) return;
+
+    const newWorkouts = [...parsedProgram.workouts];
+    newWorkouts[wIdx] = {
+      ...newWorkouts[wIdx],
+      exercises: newWorkouts[wIdx].exercises.map((ex, i) =>
+        i === eIdx ? { ...ex, ...updates } : ex
+      )
+    };
+    setParsedProgram({ ...parsedProgram, workouts: newWorkouts });
+  };
+
+  const deleteExercise = (wIdx: number, eIdx: number) => {
+    if (!parsedProgram?.workouts) return;
+
+    const newWorkouts = [...parsedProgram.workouts];
+    newWorkouts[wIdx] = {
+      ...newWorkouts[wIdx],
+      exercises: newWorkouts[wIdx].exercises.filter((_, i) => i !== eIdx)
+    };
+    setParsedProgram({ ...parsedProgram, workouts: newWorkouts });
+    setEditingExercise(null);
+  };
+
+  const addExercise = (wIdx: number) => {
+    if (!parsedProgram?.workouts) return;
+
+    const newWorkouts = [...parsedProgram.workouts];
+    newWorkouts[wIdx] = {
+      ...newWorkouts[wIdx],
+      exercises: [
+        ...newWorkouts[wIdx].exercises,
+        { name: 'New Exercise', sets: 3, reps: 10 }
+      ]
+    };
+    setParsedProgram({ ...parsedProgram, workouts: newWorkouts });
+    setEditingExercise({ wIdx, eIdx: newWorkouts[wIdx].exercises.length - 1 });
+  };
+
+  const moveExercise = (wIdx: number, eIdx: number, direction: 'up' | 'down') => {
+    if (!parsedProgram?.workouts) return;
+
+    const exercises = [...parsedProgram.workouts[wIdx].exercises];
+    const newIdx = direction === 'up' ? eIdx - 1 : eIdx + 1;
+    if (newIdx < 0 || newIdx >= exercises.length) return;
+
+    [exercises[eIdx], exercises[newIdx]] = [exercises[newIdx], exercises[eIdx]];
+
+    const newWorkouts = [...parsedProgram.workouts];
+    newWorkouts[wIdx] = { ...newWorkouts[wIdx], exercises };
+    setParsedProgram({ ...parsedProgram, workouts: newWorkouts });
+  };
+
   // Check for returning from auth
   useState(() => {
     if (typeof window !== 'undefined') {
@@ -205,31 +262,9 @@ export default function ImportPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
-      {/* Header */}
-      <header className="bg-white border-b border-[#F1F5F9]">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-[#FF6B6B] rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">B</span>
-              </div>
-              <span className="font-bold text-xl text-[#0F172A]">baisics</span>
-            </Link>
-            {session ? (
-              <Link href="/dashboard" className="text-sm text-[#475569] hover:text-[#0F172A]">
-                Dashboard
-              </Link>
-            ) : (
-              <Link href="/auth/signin" className="text-sm text-[#475569] hover:text-[#0F172A]">
-                Sign in
-              </Link>
-            )}
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <MainLayout>
+      <div className="bg-[#F8FAFC] min-h-screen">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* STATE: UPLOAD */}
         {pageState === 'upload' && (
           <div className="text-center">
@@ -364,30 +399,151 @@ export default function ImportPage() {
             <div className="space-y-4">
               {parsedProgram.workouts?.map((workout, wIdx) => (
                 <div key={wIdx} className="bg-white rounded-xl border border-[#E2E8F0] overflow-hidden">
-                  <div className="px-6 py-4 bg-[#F8FAFC] border-b border-[#E2E8F0]">
-                    <h3 className="font-semibold text-[#0F172A]">
-                      Day {workout.dayNumber}: {workout.name}
-                    </h3>
-                    {workout.focus && (
-                      <p className="text-sm text-[#64748B]">{workout.focus}</p>
-                    )}
-                  </div>
-                  <div className="divide-y divide-[#F1F5F9]">
-                    {workout.exercises.map((exercise, eIdx) => (
-                      <div key={eIdx} className="px-6 py-4 flex items-center gap-4">
-                        <GripVertical className="w-4 h-4 text-[#94A3B8] flex-shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-[#0F172A] truncate">{exercise.name}</p>
-                        </div>
-                        <div className="flex items-center gap-4 text-sm text-[#64748B]">
-                          <span>{exercise.sets} × {exercise.reps || exercise.measure?.value || '?'}</span>
-                          {exercise.restPeriod && (
-                            <span>{exercise.restPeriod}s rest</span>
-                          )}
-                        </div>
+                  <button
+                    onClick={() => setExpandedWorkout(expandedWorkout === wIdx ? null : wIdx)}
+                    className="w-full px-6 py-4 bg-[#F8FAFC] border-b border-[#E2E8F0] flex items-center justify-between hover:bg-[#F1F5F9] transition-colors"
+                  >
+                    <div className="text-left">
+                      <h3 className="font-semibold text-[#0F172A]">
+                        Day {workout.dayNumber}: {workout.name}
+                      </h3>
+                      {workout.focus && (
+                        <p className="text-sm text-[#64748B]">{workout.focus}</p>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm text-[#94A3B8]">
+                        {workout.exercises.length} exercises
+                      </span>
+                      {expandedWorkout === wIdx ? (
+                        <ChevronUp className="w-5 h-5 text-[#64748B]" />
+                      ) : (
+                        <ChevronDown className="w-5 h-5 text-[#64748B]" />
+                      )}
+                    </div>
+                  </button>
+                  {expandedWorkout === wIdx && (
+                    <>
+                      <div className="divide-y divide-[#F1F5F9]">
+                        {workout.exercises.map((exercise, eIdx) => {
+                          const isEditing = editingExercise?.wIdx === wIdx && editingExercise?.eIdx === eIdx;
+
+                          return (
+                            <div key={eIdx} className="px-6 py-4">
+                              {isEditing ? (
+                                <div className="space-y-3">
+                                  <input
+                                    type="text"
+                                    value={exercise.name}
+                                    onChange={(e) => updateExercise(wIdx, eIdx, { name: e.target.value })}
+                                    className="w-full px-3 py-2 rounded-lg border border-[#E2E8F0] text-[#0F172A] focus:ring-2 focus:ring-[#FF6B6B]/20 focus:border-[#FF6B6B]"
+                                    placeholder="Exercise name"
+                                    autoFocus
+                                  />
+                                  <div className="flex items-center gap-4">
+                                    <div className="flex items-center gap-2">
+                                      <label className="text-sm text-[#64748B]">Sets</label>
+                                      <input
+                                        type="number"
+                                        min={1}
+                                        value={exercise.sets}
+                                        onChange={(e) => updateExercise(wIdx, eIdx, { sets: parseInt(e.target.value) || 1 })}
+                                        className="w-16 px-3 py-2 rounded-lg border border-[#E2E8F0] text-[#0F172A] text-center focus:ring-2 focus:ring-[#FF6B6B]/20 focus:border-[#FF6B6B]"
+                                      />
+                                    </div>
+                                    <span className="text-[#94A3B8]">×</span>
+                                    <div className="flex items-center gap-2">
+                                      <label className="text-sm text-[#64748B]">Reps</label>
+                                      <input
+                                        type="number"
+                                        min={1}
+                                        value={exercise.reps || exercise.measure?.value || ''}
+                                        onChange={(e) => updateExercise(wIdx, eIdx, { reps: parseInt(e.target.value) || undefined })}
+                                        className="w-16 px-3 py-2 rounded-lg border border-[#E2E8F0] text-[#0F172A] text-center focus:ring-2 focus:ring-[#FF6B6B]/20 focus:border-[#FF6B6B]"
+                                        placeholder="10"
+                                      />
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <label className="text-sm text-[#64748B]">Rest (s)</label>
+                                      <input
+                                        type="number"
+                                        min={0}
+                                        value={exercise.restPeriod || ''}
+                                        onChange={(e) => updateExercise(wIdx, eIdx, { restPeriod: parseInt(e.target.value) || undefined })}
+                                        className="w-20 px-3 py-2 rounded-lg border border-[#E2E8F0] text-[#0F172A] text-center focus:ring-2 focus:ring-[#FF6B6B]/20 focus:border-[#FF6B6B]"
+                                        placeholder="60"
+                                      />
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center justify-between pt-2">
+                                    <button
+                                      onClick={() => deleteExercise(wIdx, eIdx)}
+                                      className="text-sm text-red-500 hover:text-red-600 flex items-center gap-1"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                      Delete
+                                    </button>
+                                    <button
+                                      onClick={() => setEditingExercise(null)}
+                                      className="px-4 py-2 text-sm font-medium text-white bg-[#FF6B6B] rounded-lg hover:bg-[#EF5350] transition-colors"
+                                    >
+                                      Done
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="flex items-center gap-4">
+                                  <div className="flex flex-col gap-1">
+                                    <button
+                                      onClick={() => moveExercise(wIdx, eIdx, 'up')}
+                                      disabled={eIdx === 0}
+                                      className="p-1 text-[#94A3B8] hover:text-[#64748B] disabled:opacity-30 disabled:cursor-not-allowed"
+                                    >
+                                      <ChevronUp className="w-4 h-4" />
+                                    </button>
+                                    <button
+                                      onClick={() => moveExercise(wIdx, eIdx, 'down')}
+                                      disabled={eIdx === workout.exercises.length - 1}
+                                      className="p-1 text-[#94A3B8] hover:text-[#64748B] disabled:opacity-30 disabled:cursor-not-allowed"
+                                    >
+                                      <ChevronDown className="w-4 h-4" />
+                                    </button>
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="font-medium text-[#0F172A] truncate">{exercise.name}</p>
+                                    {exercise.notes && (
+                                      <p className="text-xs text-[#94A3B8] truncate mt-0.5">{exercise.notes}</p>
+                                    )}
+                                  </div>
+                                  <div className="flex items-center gap-4 text-sm text-[#64748B]">
+                                    <span>{exercise.sets} × {exercise.reps || exercise.measure?.value || '?'}</span>
+                                    {exercise.restPeriod && (
+                                      <span>{exercise.restPeriod}s rest</span>
+                                    )}
+                                  </div>
+                                  <button
+                                    onClick={() => setEditingExercise({ wIdx, eIdx })}
+                                    className="p-2 text-[#94A3B8] hover:text-[#64748B] hover:bg-[#F1F5F9] rounded-lg transition-colors"
+                                  >
+                                    <Edit2 className="w-4 h-4" />
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
-                    ))}
-                  </div>
+                      <div className="px-6 py-3 bg-[#F8FAFC] border-t border-[#E2E8F0]">
+                        <button
+                          onClick={() => addExercise(wIdx)}
+                          className="flex items-center gap-2 text-sm text-[#64748B] hover:text-[#FF6B6B] transition-colors"
+                        >
+                          <Plus className="w-4 h-4" />
+                          Add exercise
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
               ))}
             </div>
@@ -509,7 +665,8 @@ export default function ImportPage() {
             </p>
           </div>
         )}
-      </main>
-    </div>
+        </div>
+      </div>
+    </MainLayout>
   );
 }

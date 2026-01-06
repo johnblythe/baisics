@@ -1,81 +1,66 @@
-# Session Context - 2026-01-03T18:30:00Z
+# Session Context - 2026-01-05T08:10:00Z
 
 ## Current Session Overview
-- **Main Task/Feature**: Manual Program Builder v2 (#190) - Templates, Assignment API, Multi-phase support
-- **Session Duration**: ~4 hours
-- **Current Status**: All 3 phases implemented, PR created, comprehensive review completed with issues identified
+- **Main Task/Feature**: Phase 2 Coach UX - #209 (Share page) & #210 (Coach dashboard polish)
+- **Session Duration**: ~65 minutes
+- **Current Status**: All 3 subtasks complete for #210
 
 ## Recent Activity (Last 30-60 minutes)
-- **What We Just Did**: Created branch `feat/190-manual-program-builder-v2`, committed, pushed, ran comprehensive PR review with 3 agents
-- **Active Problems**: 2 critical issues from review (missing auth check in assign API, silent JSON parse failure)
-- **Current Files**: PR review focused on assign/route.ts, promote-template/route.ts, ProgramBuilder.tsx
-- **Test Status**: TypeScript compiles clean, no tests run yet
+- **What We Just Did**:
+  - Subtask 3: Client-Facing Coach Branding
+    - Extended `/api/user` to return coach info (name, brandColor, brandLogo)
+    - Added coach branding card to client dashboard
+    - Only shows ACTIVE + ACCEPTED coach relationships
+    - 21 new tests for client branding logic
+  - WIP commit: 031a51a
+  - Updated GitHub issue #210 with progress comment
+- **Active Problems**: None
+- **Current Files**: `src/app/api/user/route.ts`, `src/app/dashboard/[programId]/page.tsx`
+- **Test Status**: 70 tests passing (17 dashboard + 32 settings + 21 client branding)
 
 ## Key Technical Decisions Made
 - **Architecture Choices**:
-  - Split `createdBy` (author) from `userId` (owner/tracker) on Program model
-  - Clone-based assignment model (coach creates → clones to client → client owns copy)
-  - Enhanced WorkoutPlan with `phaseName`/`phaseDurationWeeks` (vs separate Phase model)
+  - Branding fields on User model (brandName, brandColor, brandLogo, inviteSlug)
+  - Custom invite slugs resolve via `/api/coach/lookup-slug` → get invite token
 - **Implementation Approaches**:
-  - dnd-kit for drag-drop
-  - Server actions for form submission
-  - Modal pattern for template saving
-- **Technology Selections**: @dnd-kit/core, @dnd-kit/sortable (already in project)
-- **Performance/Security Considerations**: Need coach-client relationship validation before merge
+  - v2a styling with styled-jsx for fonts
+  - 8 preset colors + custom hex input
+  - Live preview card in settings
+- **Technology Selections**: Outfit font, lucide-react icons
 
 ## Code Context
 - **Modified Files**:
-  - prisma/schema.prisma (userId, active, phaseName, phaseDurationWeeks)
-  - prisma/migrations/20260103100000_add_program_userId_active/
-  - prisma/migrations/20260103160000_add_phase_metadata/
-  - src/app/api/programs/[programId]/promote-template/route.ts (NEW)
-  - src/app/api/programs/assign/route.ts (NEW)
-  - src/app/api/programs/templates/route.ts (NEW)
-  - src/app/api/programs/[programId]/overview/route.ts
-  - src/app/program/[programId]/components/SaveAsTemplateModal.tsx (NEW)
-  - src/app/program/[programId]/page.tsx
-  - src/app/program/create/components/ProgramBuilder.tsx
-  - src/app/program/templates/page.tsx (NEW)
-- **New Patterns**: Phase interface, SortableExercise component, filter dropdowns
-- **Dependencies**: None new
-- **Configuration Changes**: None
+  - `prisma/schema.prisma` - added brandName, brandColor, brandLogo, inviteSlug
+  - `src/app/api/coach/settings/route.ts` - NEW GET/PUT for branding
+  - `src/app/api/coach/lookup-slug/route.ts` - NEW slug → token lookup
+  - `src/app/coach/settings/page.tsx` - full settings UI
+  - `src/app/join/[slug]/page.tsx` - NEW branded invite page
+  - `tests/unit/coach-settings.test.ts` - NEW 32 tests
+- **New Patterns**:
+  - Slug normalization (lowercase, alphanumeric + hyphens)
+  - Live preview with dynamic brandColor
+- **Dependencies**: None added
+- **Configuration Changes**: Migration `20260105000000_add_coach_branding`
 
 ## Current Implementation State
 - **Completed**:
-  - Phase 1: Schema (userId/active), dnd-kit drag-drop, exercise filters
-  - Phase 2: Templates API (promote/demote), Assignment API, My Templates page
-  - Phase 3: Multi-phase toggle, phase tabs UI, phase templates
-- **In Progress**: Addressing PR review findings
+  - #209 Share page v2a redesign
+  - #210 Subtask 1: Dashboard polish
+  - #210 Subtask 2: Coach Settings (branding, colors, custom invite slugs)
+  - #210 Subtask 3: Client-Facing Branding (coach card in client dashboard)
+- **In Progress**:
+  - None (waiting for user)
 - **Blocked**: Nothing
 - **Next Steps**:
-  1. Fix critical: Add coach-client auth check in assign/route.ts
-  2. Fix critical: Remove silent JSON parse catch in promote-template/route.ts
-  3. Fix important: Add missing phase fields to clone operation
-  4. Fix important: Remove unused code (duplicatePhase, MoreVertical import)
-  5. Consider: Extract helper functions per simplifier recommendations
+  1. Squash WIP commits and create final PR for #209 + #210
 
 ## Important Context for Handoff
-- **Environment Setup**: Local Postgres via Supabase
-- **Running/Testing**: `npx tsc --noEmit` clean, `npm test` not run
-- **Known Issues**:
-  - Multi-phase save only persists Phase 1 workouts (needs action update)
-  - No coach-client relationship table yet (assign API needs guard)
-- **External Dependencies**: None new
+- **Environment Setup**: Dev server on port 3001
+- **Running/Testing**: `npm run test -- tests/unit/coach-settings.test.ts tests/unit/coach-dashboard.test.ts`
+- **Known Issues**: None
+- **External Dependencies**: None
 
 ## Conversation Thread
-- **Original Goal**: Implement Manual Program Builder v2 as foundation for Coach Tier
-- **Evolution**: Started with schema discussion → 3-phase implementation → PR review
-- **Lessons Learned**:
-  - "Active" program was implicit (most recent) - now explicit boolean
-  - Relation renames affected ~20 files
-  - Silent error patterns are pervasive and need systematic addressing
-- **Alternatives Considered**:
-  - Separate Phase model vs enhancing WorkoutPlan (chose WorkoutPlan enhancement)
-  - Assignment-based vs clone-based ownership (chose clone-based)
-
-## PR Review Summary
-- **Branch**: feat/190-manual-program-builder-v2
-- **Critical Issues (2)**: Missing auth in assign, silent JSON parse
-- **Important Issues (8)**: Missing clone fields, unused code, silent failures
-- **Suggestions (7)**: Extract helpers, use Promise.allSettled, add error states
-- **Plan file**: plans/190-manual-program-builder-v2.md
+- **Original Goal**: Phase 2 - #209 invite page design + #210 coach UX polish
+- **Evolution**: Completed share page, dashboard polish, now settings with branding
+- **Lessons Learned**: Structured subtask approach with tests + WIP commits works well

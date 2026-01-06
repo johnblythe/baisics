@@ -99,12 +99,12 @@ export default function Header() {
                         <Menu.Item>
                           {({ active }) => (
                             <Link
-                              href="/account"
+                              href="/settings"
                               className={`${
                                 active ? 'bg-[#F8FAFC]' : ''
                               } block px-4 py-2.5 text-sm text-[#475569] font-medium`}
                             >
-                              Account Settings
+                              Settings
                             </Link>
                           )}
                         </Menu.Item>

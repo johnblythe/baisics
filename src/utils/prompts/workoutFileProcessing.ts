@@ -75,7 +75,7 @@ Required Response Format:
           "measure": {
             "type": "REPS" | "TIME" | "DISTANCE" | "WEIGHT" | "BODY_WEIGHT",
             "value": number,
-            "unit": "KG" | "LB" | "PERCENT" | "SECONDS" | "METERS" | "KILOMETERS"
+            "unit"?: "KG" | "LB" | "PERCENT" | "SECONDS" | "METERS" | "KILOMETERS"  // Optional - omit for REPS
           },
           "restPeriod": number,  // in seconds
           "intensity": number,    // 0-100 for percentage
@@ -94,11 +94,12 @@ Critical Requirements:
    - "other": Cardio, mobility work
 
 2. Measurements:
-   - For time: Use SECONDS (convert minutes if needed)
-   - For distance: Use METERS (convert km/miles if needed)
-   - For weight-based: Use either KG or LB
-   - For bodyweight: Use BODY_WEIGHT type
-   - For standard rep schemes: Use REPS type
+   - For time: type=TIME, unit=SECONDS (convert minutes if needed)
+   - For distance: type=DISTANCE, unit=METERS or KILOMETERS
+   - For weight-based: type=WEIGHT, unit=KG or LB
+   - For bodyweight: type=BODY_WEIGHT, no unit needed
+   - For standard rep schemes: type=REPS, NO UNIT (leave unit empty/null)
+   - PERCENT is ONLY for percentage of 1RM (e.g., "80% of max")
 
 3. Environment Grouping:
    - Group exercises by environment (gym, pool, outdoors)

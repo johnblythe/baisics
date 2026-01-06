@@ -22,11 +22,12 @@
 **Done:**
 - Basic import flow exists
 - AI parsing for PDF/docs
+- [x] Polish preview/edit UI (editable exercises, sets, reps, rest)
+- [x] Add/delete/reorder exercises
+- [x] Public landing page (`/tools/import-program` → `/import`)
 
 **TODO:**
-- [ ] Polish preview/edit UI
 - [ ] Bulk import for coaches
-- [ ] Public landing page (`/tools/import-program`)
 
 ## Not Started
 

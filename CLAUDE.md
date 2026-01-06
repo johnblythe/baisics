@@ -10,6 +10,11 @@
 
 ## Database & Migrations
 
+**Database Provider**: Supabase (PostgreSQL)
+- Connection strings in `.env.local` via `POSTGRES_PRISMA_URL` and `POSTGRES_URL_NON_POOLING`
+- Use `psql "$POSTGRES_URL_NON_POOLING"` for direct SQL queries
+- Never use Prisma Studio - use SQL directly
+
 ### Key Concepts
 - `DATABASE_URL` determines WHERE migrations run (local vs prod), not the command
 - `migrate dev` = interactive, may reset DB, for CREATING new migrations
