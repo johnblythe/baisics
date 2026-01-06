@@ -100,6 +100,7 @@ model User {
 
   // Coach Mode relations
   isCoach      Boolean       @default(false) @map("is_coach")
+  coachTier    CoachTier     @default(FREE) @map("coach_tier")
   coachClients CoachClient[] @relation("CoachRelation") // Users this coach manages
   coachOf      CoachClient[] @relation("ClientRelation") // Coaches managing this user
 
@@ -683,6 +684,12 @@ enum SubscriptionStatus {
   CANCELED
   UNPAID
   TRIAL
+}
+
+enum CoachTier {
+  FREE // 2 clients max
+  PRO  // 15 clients max
+  MAX  // unlimited
 }
 
 // Coach Mode - allows trainers to manage clients
