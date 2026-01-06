@@ -8,7 +8,8 @@ const {
   isJackedPrice,
   hasFeature,
   getLimit,
-  canGenerateProgram
+  canGenerateProgram,
+  shouldResetGenerations
 } = await import('@/lib/user-tiers')
 
 describe('User Tiers', () => {
@@ -157,5 +158,38 @@ describe('Upgrade value proposition', () => {
   it('FREE → JACKED removes active program limit', () => {
     expect(getLimit(false, 'activePrograms')).toBe(1)
     expect(getLimit(true, 'activePrograms')).toBe(Infinity)
+  })
+})
+
+describe('shouldResetGenerations', () => {
+  it('should return false when still in same month', () => {
+    const now = new Date()
+    const resetAt = new Date(now.getFullYear(), now.getMonth(), 1) // 1st of current month
+    expect(shouldResetGenerations(resetAt)).toBe(false)
+  })
+
+  it('should return true when in previous month', () => {
+    const now = new Date()
+    const resetAt = new Date(now.getFullYear(), now.getMonth() - 1, 15) // last month
+    expect(shouldResetGenerations(resetAt)).toBe(true)
+  })
+
+  it('should return true when in previous year', () => {
+    const resetAt = new Date(2025, 11, 15) // December 2025
+    expect(shouldResetGenerations(resetAt)).toBe(true)
+  })
+
+  it('should handle year boundary', () => {
+    // If it's January 2026, December 2025 should trigger reset
+    const jan2026 = new Date(2026, 0, 15) // January 15, 2026
+    const dec2025 = new Date(2025, 11, 15) // December 15, 2025
+
+    // Mock current date to January 2026
+    vi.useFakeTimers()
+    vi.setSystemTime(jan2026)
+
+    expect(shouldResetGenerations(dec2025)).toBe(true)
+
+    vi.useRealTimers()
   })
 })
