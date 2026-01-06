@@ -118,6 +118,10 @@ model User {
   streakLongest        Int       @default(0) @map("streak_longest")
   streakLastActivityAt DateTime? @map("streak_last_activity_at")
 
+  // Subscription limits tracking
+  programGenerationsThisMonth Int       @default(0) @map("program_generations_this_month")
+  generationsResetAt          DateTime  @default(now()) @map("generations_reset_at")
+
   @@index([email])
   @@map("users")
 }

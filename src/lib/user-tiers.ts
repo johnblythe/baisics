@@ -81,3 +81,15 @@ export function canGenerateProgram(isPremium: boolean, generationsThisMonth: num
   const limit = getLimit(isPremium, 'programGenerations')
   return generationsThisMonth < limit
 }
+
+/**
+ * Check if we need to reset the monthly generation counter
+ */
+export function shouldResetGenerations(resetAt: Date): boolean {
+  const now = new Date()
+  const resetDate = new Date(resetAt)
+
+  // Reset if we're in a new month
+  return now.getMonth() !== resetDate.getMonth() ||
+         now.getFullYear() !== resetDate.getFullYear()
+}

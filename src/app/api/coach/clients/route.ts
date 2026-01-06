@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
+import { canAddMoreClients, getClientLimit } from '@/lib/coach-tiers';
 
 // GET - List all clients for a coach
 export async function GET() {
@@ -113,11 +114,37 @@ export async function POST(request: Request) {
 
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { isCoach: true },
+      select: {
+        isCoach: true,
+        coachTier: true,
+        _count: {
+          select: {
+            coachClients: {
+              where: {
+                clientId: { not: null }, // Only count actual clients, not placeholder invites
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!user?.isCoach) {
       return NextResponse.json({ error: 'Not a coach account' }, { status: 403 });
+    }
+
+    // Check client limit
+    if (!canAddMoreClients(user.coachTier, user._count.coachClients)) {
+      const limit = getClientLimit(user.coachTier);
+      return NextResponse.json(
+        {
+          error: 'coach_client_limit_reached',
+          message: 'You have reached your client limit. Upgrade to add more clients.',
+          limit,
+          current: user._count.coachClients,
+        },
+        { status: 403 }
+      );
     }
 
     const { email, nickname, notes } = await request.json();

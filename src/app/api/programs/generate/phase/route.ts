@@ -17,6 +17,7 @@ import {
   shouldUseLeanGeneration,
 } from '@/services/programGeneration/leanGeneration';
 import type { GeneratedPhase } from '@/services/programGeneration/types';
+import { canGenerateProgram, shouldResetGenerations } from '@/lib/user-tiers';
 
 // Use Opus for program generation - core product, quality matters most
 const MODEL = process.env.OPUS_MODEL || 'claude-opus-4-5-20251101';
@@ -122,6 +123,46 @@ export async function POST(request: Request) {
   }
 
   const { phaseNumber, totalPhases, previousPhases, programId: existingProgramId } = body;
+
+  // Check generation limits on first phase only (one program = one generation credit)
+  if (phaseNumber === 1) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        isPremium: true,
+        programGenerationsThisMonth: true,
+        generationsResetAt: true,
+      },
+    });
+
+    if (user) {
+      // Reset counter if new month
+      let generationsThisMonth = user.programGenerationsThisMonth;
+      if (shouldResetGenerations(user.generationsResetAt)) {
+        await prisma.user.update({
+          where: { id: userId },
+          data: {
+            programGenerationsThisMonth: 0,
+            generationsResetAt: new Date(),
+          },
+        });
+        generationsThisMonth = 0;
+      }
+
+      // Check if user can generate
+      if (!canGenerateProgram(user.isPremium, generationsThisMonth)) {
+        return new Response(
+          JSON.stringify({
+            error: 'generation_limit_reached',
+            message: 'You have reached your monthly program generation limit',
+            limit: user.isPremium ? Infinity : 4,
+            used: generationsThisMonth,
+          }),
+          { status: 403, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+  }
 
   // Validate phase number
   if (!phaseNumber || phaseNumber < 1 || phaseNumber > totalPhases) {
@@ -267,6 +308,16 @@ export async function POST(request: Request) {
 
     // Save phase to database
     await savePhaseToDatabase(phase, programId, userId);
+
+    // Increment generation counter on first phase (one program = one credit)
+    if (phaseNumber === 1) {
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          programGenerationsThisMonth: { increment: 1 },
+        },
+      });
+    }
 
     const generationTime = Date.now() - startTime;
     console.log(
