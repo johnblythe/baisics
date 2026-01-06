@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import MainLayout from '@/app/components/layouts/MainLayout';
 import { Settings } from 'lucide-react';
+import { ProgramAssignModal } from '@/components/ProgramAssignModal';
 
 interface Client {
   id: string;
@@ -80,6 +81,11 @@ export default function CoachDashboard() {
   const [adding, setAdding] = useState(false);
   const [publicInviteUrl, setPublicInviteUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [assignModalClient, setAssignModalClient] = useState<{
+    id: string;
+    name: string;
+    currentProgram: string | null;
+  } | null>(null);
 
   useEffect(() => {
     fetchClients();
@@ -326,14 +332,16 @@ export default function CoachDashboard() {
               </h2>
               <div className="bg-white rounded-xl border border-[#FFE5E5] overflow-hidden">
                 {clientsNeedingAttention.map((client, index) => (
-                  <Link
+                  <div
                     key={client.id}
-                    href={`/coach/clients/${client.id}`}
                     className={`flex items-center justify-between p-4 hover:bg-[#FFF5F5] transition-colors ${
                       index !== clientsNeedingAttention.length - 1 ? 'border-b border-[#FFE5E5]' : ''
                     }`}
                   >
-                    <div className="flex items-center gap-3">
+                    <Link
+                      href={`/coach/clients/${client.id}`}
+                      className="flex items-center gap-3 flex-1"
+                    >
                       <div className="w-10 h-10 rounded-full bg-[#FFE5E5] flex items-center justify-center text-[#FF6B6B] font-bold">
                         {(client.nickname || client.client?.name || 'U')[0].toUpperCase()}
                       </div>
@@ -345,11 +353,27 @@ export default function CoachDashboard() {
                           {getAttentionReason(client)}
                         </div>
                       </div>
+                    </Link>
+                    <div className="flex items-center gap-2">
+                      {!client.client?.currentProgram && client.client && (
+                        <button
+                          onClick={() => setAssignModalClient({
+                            id: client.client!.id,
+                            name: client.nickname || client.client?.name || 'Client',
+                            currentProgram: null,
+                          })}
+                          className="px-3 py-1.5 text-xs font-medium text-[#FF6B6B] hover:bg-[#FFE5E5] rounded-lg transition-colors"
+                        >
+                          Assign Program
+                        </button>
+                      )}
+                      <Link href={`/coach/clients/${client.id}`}>
+                        <svg className="w-5 h-5 text-[#94A3B8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </Link>
                     </div>
-                    <svg className="w-5 h-5 text-[#94A3B8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </Link>
+                  </div>
                 ))}
               </div>
             </div>
@@ -484,8 +508,22 @@ export default function CoachDashboard() {
                     )}
 
                     {!client.client?.currentProgram && (
-                      <div className="mt-4 p-3 bg-amber-50 rounded-lg text-sm text-amber-700 border border-amber-100">
-                        No active program
+                      <div className="mt-4 p-3 bg-amber-50 rounded-lg border border-amber-100 flex items-center justify-between">
+                        <span className="text-sm text-amber-700">No active program</span>
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setAssignModalClient({
+                              id: client.client!.id,
+                              name: client.nickname || client.client?.name || 'Client',
+                              currentProgram: null,
+                            });
+                          }}
+                          className="text-xs font-medium text-[#FF6B6B] hover:text-[#EF5350]"
+                        >
+                          Assign →
+                        </button>
                       </div>
                     )}
                   </Link>
@@ -556,6 +594,20 @@ export default function CoachDashboard() {
               </div>
             </div>
           </div>
+        )}
+
+        {/* Program Assign Modal */}
+        {assignModalClient && (
+          <ProgramAssignModal
+            clientId={assignModalClient.id}
+            clientName={assignModalClient.name}
+            currentProgramName={assignModalClient.currentProgram}
+            onClose={() => setAssignModalClient(null)}
+            onAssigned={() => {
+              fetchClients();
+              setAssignModalClient(null);
+            }}
+          />
         )}
       </div>
     </MainLayout>
