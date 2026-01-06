@@ -687,9 +687,9 @@ enum SubscriptionStatus {
 }
 
 enum CoachTier {
-  FREE // 2 clients max
-  PRO  // 15 clients max
-  MAX  // unlimited
+  FREE  // 2 clients max
+  SWOLE // 15 clients max ($29/mo)
+  YOKED // unlimited ($59/mo)
 }
 
 // Coach Mode - allows trainers to manage clients

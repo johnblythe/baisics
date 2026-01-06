@@ -8,26 +8,26 @@ export const COACH_TIER_CONFIG = {
     priceId: null,
     price: 0,
   },
-  PRO: {
-    tier: 'PRO' as CoachTier,
-    name: 'Pro',
+  SWOLE: {
+    tier: 'SWOLE' as CoachTier,
+    name: 'Swole',
     clientLimit: 15,
-    priceId: process.env.STRIPE_PRICE_COACH_PRO,
+    priceId: process.env.STRIPE_PRICE_COACH_SWOLE,
     price: 29,
   },
-  MAX: {
-    tier: 'MAX' as CoachTier,
-    name: 'Max',
+  YOKED: {
+    tier: 'YOKED' as CoachTier,
+    name: 'Yoked',
     clientLimit: Infinity,
-    priceId: process.env.STRIPE_PRICE_COACH_MAX,
+    priceId: process.env.STRIPE_PRICE_COACH_YOKED,
     price: 59,
   },
 } as const
 
 export function getTierFromPriceId(priceId: string | null): CoachTier {
   if (!priceId) return 'FREE'
-  if (priceId === COACH_TIER_CONFIG.PRO.priceId) return 'PRO'
-  if (priceId === COACH_TIER_CONFIG.MAX.priceId) return 'MAX'
+  if (priceId === COACH_TIER_CONFIG.SWOLE.priceId) return 'SWOLE'
+  if (priceId === COACH_TIER_CONFIG.YOKED.priceId) return 'YOKED'
   return 'FREE'
 }
 

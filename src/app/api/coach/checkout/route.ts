@@ -17,11 +17,11 @@ export async function POST(req: NextRequest) {
 
     const { tier } = await req.json()
 
-    if (!tier || !['PRO', 'MAX'].includes(tier)) {
+    if (!tier || !['SWOLE', 'YOKED'].includes(tier)) {
       return NextResponse.json({ error: 'Invalid tier' }, { status: 400 })
     }
 
-    const tierConfig = COACH_TIER_CONFIG[tier as 'PRO' | 'MAX']
+    const tierConfig = COACH_TIER_CONFIG[tier as 'SWOLE' | 'YOKED']
     if (!tierConfig.priceId) {
       return NextResponse.json({ error: 'Price not configured' }, { status: 500 })
     }

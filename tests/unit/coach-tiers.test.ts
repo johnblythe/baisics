@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // Mock env vars before importing
-vi.stubEnv('STRIPE_PRICE_COACH_PRO', 'price_test_pro')
-vi.stubEnv('STRIPE_PRICE_COACH_MAX', 'price_test_max')
+vi.stubEnv('STRIPE_PRICE_COACH_SWOLE', 'price_test_swole')
+vi.stubEnv('STRIPE_PRICE_COACH_YOKED', 'price_test_yoked')
 
 // Need to import after stubbing env
 const {
@@ -20,14 +20,14 @@ describe('Coach Tiers', () => {
       expect(COACH_TIER_CONFIG.FREE.priceId).toBeNull()
     })
 
-    it('should have PRO tier with 15 client limit', () => {
-      expect(COACH_TIER_CONFIG.PRO.clientLimit).toBe(15)
-      expect(COACH_TIER_CONFIG.PRO.price).toBe(29)
+    it('should have SWOLE tier with 15 client limit', () => {
+      expect(COACH_TIER_CONFIG.SWOLE.clientLimit).toBe(15)
+      expect(COACH_TIER_CONFIG.SWOLE.price).toBe(29)
     })
 
-    it('should have MAX tier with unlimited clients', () => {
-      expect(COACH_TIER_CONFIG.MAX.clientLimit).toBe(Infinity)
-      expect(COACH_TIER_CONFIG.MAX.price).toBe(59)
+    it('should have YOKED tier with unlimited clients', () => {
+      expect(COACH_TIER_CONFIG.YOKED.clientLimit).toBe(Infinity)
+      expect(COACH_TIER_CONFIG.YOKED.price).toBe(59)
     })
   })
 
@@ -40,12 +40,12 @@ describe('Coach Tiers', () => {
       expect(getTierFromPriceId('price_unknown')).toBe('FREE')
     })
 
-    it('should return PRO for pro price ID', () => {
-      expect(getTierFromPriceId('price_test_pro')).toBe('PRO')
+    it('should return SWOLE for swole price ID', () => {
+      expect(getTierFromPriceId('price_test_swole')).toBe('SWOLE')
     })
 
-    it('should return MAX for max price ID', () => {
-      expect(getTierFromPriceId('price_test_max')).toBe('MAX')
+    it('should return YOKED for yoked price ID', () => {
+      expect(getTierFromPriceId('price_test_yoked')).toBe('YOKED')
     })
   })
 
@@ -54,12 +54,12 @@ describe('Coach Tiers', () => {
       expect(getClientLimit('FREE')).toBe(2)
     })
 
-    it('should return 15 for PRO tier', () => {
-      expect(getClientLimit('PRO')).toBe(15)
+    it('should return 15 for SWOLE tier', () => {
+      expect(getClientLimit('SWOLE')).toBe(15)
     })
 
-    it('should return Infinity for MAX tier', () => {
-      expect(getClientLimit('MAX')).toBe(Infinity)
+    it('should return Infinity for YOKED tier', () => {
+      expect(getClientLimit('YOKED')).toBe(Infinity)
     })
   })
 
@@ -82,50 +82,50 @@ describe('Coach Tiers', () => {
       })
     })
 
-    describe('PRO tier (15 clients)', () => {
+    describe('SWOLE tier (15 clients)', () => {
       it('should allow adding when at 0 clients', () => {
-        expect(canAddMoreClients('PRO', 0)).toBe(true)
+        expect(canAddMoreClients('SWOLE', 0)).toBe(true)
       })
 
       it('should allow adding when at 14 clients', () => {
-        expect(canAddMoreClients('PRO', 14)).toBe(true)
+        expect(canAddMoreClients('SWOLE', 14)).toBe(true)
       })
 
       it('should NOT allow adding when at 15 clients', () => {
-        expect(canAddMoreClients('PRO', 15)).toBe(false)
+        expect(canAddMoreClients('SWOLE', 15)).toBe(false)
       })
     })
 
-    describe('MAX tier (unlimited)', () => {
+    describe('YOKED tier (unlimited)', () => {
       it('should always allow adding clients', () => {
-        expect(canAddMoreClients('MAX', 0)).toBe(true)
-        expect(canAddMoreClients('MAX', 100)).toBe(true)
-        expect(canAddMoreClients('MAX', 1000)).toBe(true)
+        expect(canAddMoreClients('YOKED', 0)).toBe(true)
+        expect(canAddMoreClients('YOKED', 100)).toBe(true)
+        expect(canAddMoreClients('YOKED', 1000)).toBe(true)
       })
     })
   })
 })
 
 describe('Tier upgrade paths', () => {
-  it('FREE → PRO increases limit from 2 to 15', () => {
+  it('FREE → SWOLE increases limit from 2 to 15', () => {
     expect(getClientLimit('FREE')).toBe(2)
-    expect(getClientLimit('PRO')).toBe(15)
+    expect(getClientLimit('SWOLE')).toBe(15)
   })
 
-  it('PRO → MAX removes limit entirely', () => {
-    expect(getClientLimit('PRO')).toBe(15)
-    expect(getClientLimit('MAX')).toBe(Infinity)
+  it('SWOLE → YOKED removes limit entirely', () => {
+    expect(getClientLimit('SWOLE')).toBe(15)
+    expect(getClientLimit('YOKED')).toBe(Infinity)
   })
 
-  it('coach at FREE limit can add after upgrading to PRO', () => {
+  it('coach at FREE limit can add after upgrading to SWOLE', () => {
     const clientCount = 2
     expect(canAddMoreClients('FREE', clientCount)).toBe(false)
-    expect(canAddMoreClients('PRO', clientCount)).toBe(true)
+    expect(canAddMoreClients('SWOLE', clientCount)).toBe(true)
   })
 
-  it('coach at PRO limit can add after upgrading to MAX', () => {
+  it('coach at SWOLE limit can add after upgrading to YOKED', () => {
     const clientCount = 15
-    expect(canAddMoreClients('PRO', clientCount)).toBe(false)
-    expect(canAddMoreClients('MAX', clientCount)).toBe(true)
+    expect(canAddMoreClients('SWOLE', clientCount)).toBe(false)
+    expect(canAddMoreClients('YOKED', clientCount)).toBe(true)
   })
 })

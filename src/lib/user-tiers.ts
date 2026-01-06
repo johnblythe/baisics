@@ -2,7 +2,7 @@
  * Consumer (non-coach) subscription tiers
  *
  * FREE: Limited but fully functional
- * PRO: $5/mo - all features unlocked
+ * JACKED: $5/mo - all features unlocked
  */
 
 export const USER_TIER_CONFIG = {
@@ -18,11 +18,11 @@ export const USER_TIER_CONFIG = {
     features: {
       workoutTracking: true,
       checkIns: true,
-      checkInReminders: false,    // PRO only
+      checkInReminders: false,    // JACKED only
       progressAnalysis: true,
       nutritionLogging: true,
       mealPlans: true,
-      mealPlanFilters: false,     // dietary filters PRO only
+      mealPlanFilters: false,     // dietary filters JACKED only
       shoppingLists: false,
       liveWorkoutCoach: false,
       programLibrary: false,
@@ -32,9 +32,9 @@ export const USER_TIER_CONFIG = {
       exerciseLibrary: true,
     },
   },
-  PRO: {
-    name: 'Pro',
-    priceId: process.env.STRIPE_PRICE_PRO,
+  JACKED: {
+    name: 'Jacked',
+    priceId: process.env.STRIPE_PRICE_JACKED,
     price: 5,
     limits: {
       programGenerations: Infinity,
@@ -63,17 +63,17 @@ export const USER_TIER_CONFIG = {
 export type UserTier = keyof typeof USER_TIER_CONFIG
 export type UserFeature = keyof typeof USER_TIER_CONFIG.FREE.features
 
-export function isConsumerProPrice(priceId: string | null): boolean {
-  return priceId === USER_TIER_CONFIG.PRO.priceId
+export function isJackedPrice(priceId: string | null): boolean {
+  return priceId === USER_TIER_CONFIG.JACKED.priceId
 }
 
 export function hasFeature(isPremium: boolean, feature: UserFeature): boolean {
-  const tier = isPremium ? 'PRO' : 'FREE'
+  const tier = isPremium ? 'JACKED' : 'FREE'
   return USER_TIER_CONFIG[tier].features[feature]
 }
 
 export function getLimit(isPremium: boolean, limit: keyof typeof USER_TIER_CONFIG.FREE.limits): number {
-  const tier = isPremium ? 'PRO' : 'FREE'
+  const tier = isPremium ? 'JACKED' : 'FREE'
   return USER_TIER_CONFIG[tier].limits[limit]
 }
 
