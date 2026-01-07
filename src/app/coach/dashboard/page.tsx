@@ -3,8 +3,9 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import MainLayout from '@/app/components/layouts/MainLayout';
-import { Settings } from 'lucide-react';
+import { Settings, TrendingUp } from 'lucide-react';
 import { ProgramAssignModal } from '@/components/ProgramAssignModal';
+import { CoachOnboardingWizard } from '@/components/CoachOnboardingWizard';
 
 interface Client {
   id: string;
@@ -86,11 +87,30 @@ export default function CoachDashboard() {
     name: string;
     currentProgram: string | null;
   } | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [userName, setUserName] = useState<string | null>(null);
 
   useEffect(() => {
     fetchClients();
     fetchPublicInvite();
+    fetchUserData();
   }, []);
+
+  async function fetchUserData() {
+    try {
+      const res = await fetch('/api/user');
+      if (res.ok) {
+        const data = await res.json();
+        setUserName(data.name);
+        // Show onboarding if coach hasn't completed it
+        if (data.isCoach && !data.coachOnboardedAt) {
+          setShowOnboarding(true);
+        }
+      }
+    } catch {
+      // Non-critical
+    }
+  }
 
   async function fetchPublicInvite() {
     try {
@@ -238,6 +258,13 @@ export default function CoachDashboard() {
               </p>
             </div>
             <div className="flex items-center gap-3">
+              <Link
+                href="/coach/analytics"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-[#E2E8F0] text-[#475569] rounded-lg hover:bg-[#F1F5F9] transition-colors"
+              >
+                <TrendingUp className="w-4 h-4" />
+                Analytics
+              </Link>
               <Link
                 href="/coach/settings"
                 className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-[#E2E8F0] text-[#475569] rounded-lg hover:bg-[#F1F5F9] transition-colors"
@@ -607,6 +634,14 @@ export default function CoachDashboard() {
               fetchClients();
               setAssignModalClient(null);
             }}
+          />
+        )}
+
+        {/* Coach Onboarding Wizard */}
+        {showOnboarding && (
+          <CoachOnboardingWizard
+            coachName={userName}
+            onComplete={() => setShowOnboarding(false)}
           />
         )}
       </div>
