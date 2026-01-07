@@ -1,27 +1,16 @@
 import { auth } from '@/auth';
-import { anthropic } from '@/lib/anthropic';
 import { prisma } from '@/lib/prisma';
 import { ExerciseMeasureUnit, ExerciseMeasureType } from '@prisma/client';
-import type { MessageParam } from '@anthropic-ai/sdk/src/resources/messages.js';
 
 import {
   convertIntakeToProfile,
   type UserProfile,
-  type GenerationContext,
 } from '@/services/programGeneration';
-import { validatePhase, ValidatedPhase } from '@/services/programGeneration/schema';
-import { SYSTEM_PROMPT, buildSinglePhasePrompt } from '@/services/programGeneration/prompts';
+import { ValidatedPhase } from '@/services/programGeneration/schema';
 import { sanitizeUserProfile, logSuspiciousInput } from '@/utils/security/promptSanitizer';
-import {
-  generatePhaseLean,
-  shouldUseLeanGeneration,
-} from '@/services/programGeneration/leanGeneration';
+import { generatePhaseLean } from '@/services/programGeneration/leanGeneration';
 import type { GeneratedPhase } from '@/services/programGeneration/types';
 import { canGenerateProgram, shouldResetGenerations } from '@/lib/user-tiers';
-
-// Use Opus for program generation - core product, quality matters most
-const MODEL = process.env.OPUS_MODEL || 'claude-opus-4-5-20251101';
-const MAX_TOKENS = 8192; // Single phase needs less tokens
 
 // Exercise category ordering
 const CATEGORY_ORDER: Record<string, number> = {
@@ -83,7 +72,6 @@ interface PhaseGenerationRequest {
   userId?: string;
   profile?: UserProfile;
   intakeData?: any;
-  context?: GenerationContext;
   phaseNumber: number;
   totalPhases: number;
   previousPhases: ValidatedPhase[];
@@ -194,96 +182,30 @@ export async function POST(request: Request) {
       }
     }
 
-    // Check if we should use lean generation
-    const useLean = shouldUseLeanGeneration();
-    let phase: ValidatedPhase;
-    let tokensUsed: number;
-    let modelUsed: string;
+    // Generate phase using lean generation
+    console.log(`[Phase ${phaseNumber}/${totalPhases}] Generating for user ${userId}`);
 
-    if (useLean) {
-      // LEAN GENERATION PATH
-      console.log(`[Phase ${phaseNumber}/${totalPhases}] Using LEAN generation for user ${userId}`);
+    const previousPhasesFocus = previousPhases.map(p => p.focus);
 
-      // Extract focus from previous phases for context
-      const previousPhasesFocus = previousPhases.map(p => p.focus);
+    const leanResult = await generatePhaseLean(
+      sanitizedProfile as UserProfile,
+      phaseNumber,
+      totalPhases,
+      previousPhasesFocus
+    );
 
-      const leanResult = await generatePhaseLean(
-        sanitizedProfile as UserProfile,
-        phaseNumber,
-        totalPhases,
-        previousPhasesFocus
-      );
-
-      if (!leanResult.success || !leanResult.phase) {
-        throw new Error(leanResult.error || 'Lean generation failed');
-      }
-
-      // Convert GeneratedPhase to ValidatedPhase format
-      phase = convertGeneratedToValidated(leanResult.phase, phaseNumber);
-      tokensUsed = leanResult.metadata.inputTokens + leanResult.metadata.outputTokens;
-      modelUsed = leanResult.metadata.model;
-
-      console.log(
-        `[Phase ${phaseNumber}/${totalPhases}] LEAN completed in ${leanResult.metadata.generationTimeMs}ms, tokens: ${tokensUsed}`
-      );
-    } else {
-      // FULL GENERATION PATH (existing code)
-      console.log(`[Phase ${phaseNumber}/${totalPhases}] Using FULL generation for user ${userId}`);
-
-      const prompt = buildSinglePhasePrompt(
-        sanitizedProfile as UserProfile,
-        phaseNumber,
-        totalPhases,
-        previousPhases,
-        body.context
-      );
-
-      const response = await anthropic.messages.create({
-        model: MODEL,
-        max_tokens: MAX_TOKENS,
-        system: SYSTEM_PROMPT,
-        messages: [{ role: 'user', content: prompt }] as MessageParam[],
-      });
-
-      const textContent = response.content.find((block) => block.type === 'text');
-      if (!textContent || textContent.type !== 'text') {
-        throw new Error('No text content in AI response');
-      }
-
-      let responseText = textContent.text.trim();
-
-      if (responseText.startsWith('```json')) {
-        responseText = responseText.slice(7);
-      }
-      if (responseText.startsWith('```')) {
-        responseText = responseText.slice(3);
-      }
-      if (responseText.endsWith('```')) {
-        responseText = responseText.slice(0, -3);
-      }
-      responseText = responseText.trim();
-
-      let phaseData: unknown;
-      try {
-        phaseData = JSON.parse(responseText);
-      } catch (parseError) {
-        console.error('Failed to parse AI response as JSON:', responseText.substring(0, 500));
-        throw new Error('Invalid JSON in AI response');
-      }
-
-      const validation = validatePhase(phaseData);
-      if (!validation.success) {
-        console.error('Phase validation failed:', validation.errors?.issues);
-        throw new Error(
-          `Phase validation failed: ${validation.errors?.issues.map((i) => i.message).join(', ')}`
-        );
-      }
-
-      phase = validation.data!;
-      sortExercisesInPhase(phase);
-      tokensUsed = response.usage.input_tokens + response.usage.output_tokens;
-      modelUsed = MODEL;
+    if (!leanResult.success || !leanResult.phase) {
+      throw new Error(leanResult.error || 'Phase generation failed');
     }
+
+    // Convert GeneratedPhase to ValidatedPhase format
+    const phase = convertGeneratedToValidated(leanResult.phase, phaseNumber);
+    const tokensUsed = leanResult.metadata.inputTokens + leanResult.metadata.outputTokens;
+    const modelUsed = leanResult.metadata.model;
+
+    console.log(
+      `[Phase ${phaseNumber}/${totalPhases}] Completed in ${leanResult.metadata.generationTimeMs}ms, tokens: ${tokensUsed}`
+    );
 
     // Ensure phaseNumber matches what we requested
     phase.phaseNumber = phaseNumber;
@@ -335,7 +257,6 @@ export async function POST(request: Request) {
           generationTimeMs: generationTime,
           tokensUsed,
           model: modelUsed,
-          usedLeanGeneration: useLean,
         },
       }),
       {
