@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { X, Loader2, Check, AlertCircle, BookOpen } from 'lucide-react';
 
 interface Program {
@@ -158,12 +159,12 @@ export function ProgramAssignModal({
                 <BookOpen className="w-6 h-6 text-[#64748B]" />
               </div>
               <p className="text-[#64748B] mb-4">No programs available</p>
-              <a
+              <Link
                 href="/program/create"
                 className="text-sm text-[#FF6B6B] hover:text-[#EF5350] font-medium"
               >
                 Create a program →
-              </a>
+              </Link>
             </div>
           )}
 
@@ -220,12 +221,12 @@ export function ProgramAssignModal({
         {/* Footer */}
         <div className="px-6 py-4 border-t border-[#E2E8F0] bg-[#F8FAFC]">
           <div className="flex items-center justify-between">
-            <a
+            <Link
               href="/program/templates"
               className="text-sm text-[#64748B] hover:text-[#0F172A]"
             >
               Manage templates →
-            </a>
+            </Link>
             <button
               onClick={onClose}
               className="px-4 py-2 text-sm font-medium text-[#64748B] hover:text-[#0F172A] transition-colors"
