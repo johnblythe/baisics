@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useState, useEffect, Suspense } from "react";
 import { Program, User } from "@prisma/client";
 import { ProgramDisplay } from "@/app/components/ProgramDisplay";
-import { getUser } from "@/app/start/actions";
+import { getUser } from "@/lib/actions/user";
 import MainLayout from "@/app/components/layouts/MainLayout";
 
 function ProgramReviewContent() {

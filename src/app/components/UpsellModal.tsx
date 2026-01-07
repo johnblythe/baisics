@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { validateEmail } from "@/utils/forms/validation";
 import ReactConfetti from "react-confetti";
-import { updateUser } from '../start/actions';
+import { updateUser } from '@/lib/actions/user';
 import { welcomeFreeTemplate, welcomePremiumTemplate } from '@/lib/email/templates';
 import { adminSignupNotificationTemplate } from '@/lib/email/templates/admin';
 import { sendEmailAction } from "../hi/actions";

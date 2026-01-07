@@ -3,7 +3,7 @@
 import { useState, useEffect, forwardRef, useImperativeHandle, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { getUser, getUserProgram, getSessionIntake } from "../../start/actions";
+import { getUser, getUserProgram, getSessionIntake } from "@/lib/actions/user";
 import { User } from "@prisma/client";
 import { ConversationalInterface } from "./ConversationalInterface";
 import Link from "next/link";

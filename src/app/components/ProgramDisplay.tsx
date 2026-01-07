@@ -4,7 +4,7 @@ import { Program } from '@/types';
 import { UpsellModal } from './UpsellModal';
 import { useEffect, useState, useRef, forwardRef, useImperativeHandle } from 'react';
 import { User } from '@prisma/client';
-import { getUser } from '../start/actions';
+import { getUser } from '@/lib/actions/user';
 import { DisclaimerBanner } from '@/components/DisclaimerBanner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { generateWorkoutPDF } from '@/utils/pdf';

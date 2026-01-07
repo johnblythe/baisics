@@ -12,7 +12,7 @@ import { SAMPLE_PROFILES } from "@/utils/sampleUserPersonas";
 import { User } from "@prisma/client";
 import { getRandomWelcomeMessage } from "../utils/welcomeMessages";
 import { useRouter } from "next/navigation";
-import { createAnonUser, getUser } from "@/app/start/actions";
+import { createAnonUser, getUser } from "@/lib/actions/user";
 import { v4 as uuidv4 } from "uuid";
 import exampleProgram from '../utils/example.json';
 import { ConversationalIntakeRef } from './ConversationalIntakeContainer';

@@ -349,12 +349,3 @@ export async function generatePhaseLean(
   }
 }
 
-/**
- * Check if lean generation should be used
- * Defaults to TRUE (lean enabled) - set USE_LEAN_GENERATION=false to disable
- */
-export function shouldUseLeanGeneration(): boolean {
-  const flag = process.env.USE_LEAN_GENERATION?.toLowerCase();
-  // Default to true unless explicitly disabled
-  return flag !== 'false' && flag !== '0';
-}
