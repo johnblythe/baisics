@@ -3,9 +3,9 @@
 ## Priority Order
 1. ~~#206 - Assignment UI~~ ✅
 2. ~~#207 - Program Import Tool~~ ✅
-3. #204 - Stripe Coach Tier Config ← NEXT
-4. #200 - Subscription + Limits
-5. #201 - Analytics + Onboarding Polish
+3. ~~#204 - Stripe Coach Tier Config~~ ✅
+4. ~~#200 - Subscription + Limits~~ ✅
+5. ~~#201 - Analytics + Onboarding~~ ✅
 
 ## Completed
 - [x] #158 - Coach Tier: B2B2C Model (core infra)
@@ -16,6 +16,9 @@
 - [x] #210 - Coach dashboard polish + settings + branding (PR #211)
 - [x] #206 - Coach Assignment UI (2026-01-05)
 - [x] #207 - Program Import Tool (2026-01-05)
+- [x] #204 - Stripe Coach Tier Config (2026-01-06)
+- [x] #200 - Subscription + Limits (2026-01-06)
+- [x] #201 - Analytics + Onboarding (2026-01-06)
 
 ## Up Next
 

@@ -99,10 +99,11 @@ model User {
   appLogs          AppLog[]
 
   // Coach Mode relations
-  isCoach      Boolean       @default(false) @map("is_coach")
-  coachTier    CoachTier     @default(FREE) @map("coach_tier")
-  coachClients CoachClient[] @relation("CoachRelation") // Users this coach manages
-  coachOf      CoachClient[] @relation("ClientRelation") // Coaches managing this user
+  isCoach          Boolean       @default(false) @map("is_coach")
+  coachTier        CoachTier     @default(FREE) @map("coach_tier")
+  coachOnboardedAt DateTime?     @map("coach_onboarded_at") // null = show onboarding wizard
+  coachClients     CoachClient[] @relation("CoachRelation") // Users this coach manages
+  coachOf          CoachClient[] @relation("ClientRelation") // Coaches managing this user
 
   // Email preferences
   emailReminders Boolean @default(true) @map("email_reminders")

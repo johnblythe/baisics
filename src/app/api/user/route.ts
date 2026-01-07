@@ -19,6 +19,7 @@ export async function GET() {
         isPremium: true,
         isCoach: true,
         coachTier: true,
+        coachOnboardedAt: true,
         streakCurrent: true,
         streakLongest: true,
         subscription: {
@@ -67,6 +68,7 @@ export async function GET() {
       isPremium: user?.isPremium,
       isCoach: user?.isCoach,
       coachTier: user?.coachTier || 'FREE',
+      coachOnboardedAt: user?.coachOnboardedAt || null,
       streakCurrent: user?.streakCurrent,
       streakLongest: user?.streakLongest,
       subscriptionStatus: user?.subscription?.status || null,
