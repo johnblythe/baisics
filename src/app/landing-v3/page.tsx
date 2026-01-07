@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { sendGTMEvent } from '@next/third-parties/google';
 
 // VERSION 3: Anti-Marketing Honest
@@ -134,6 +135,7 @@ const TOOLS = [
 
 export default function LandingPageV3() {
   const router = useRouter();
+  const { data: session } = useSession();
   const [expandedPersona, setExpandedPersona] = useState<string | null>(null);
   const [showFullProgram, setShowFullProgram] = useState<string | null>(null);
 
@@ -228,15 +230,26 @@ export default function LandingPageV3() {
               </nav>
 
               <div className="flex items-center gap-3">
-                <Link href="/auth/signin" className="text-sm font-medium text-[var(--color-gray-500)] hover:text-[var(--color-navy)] transition-colors hidden sm:block">
-                  Sign In
-                </Link>
-                <button
-                  onClick={() => handleGetStarted()}
-                  className="px-5 py-2 text-sm font-semibold text-white bg-[var(--color-navy)] rounded-lg hover:bg-[var(--color-navy-light)] transition-all"
-                >
-                  Get Started
-                </button>
+                {session ? (
+                  <Link
+                    href="/dashboard"
+                    className="px-5 py-2 text-sm font-semibold text-white bg-[var(--color-navy)] rounded-lg hover:bg-[var(--color-navy-light)] transition-all"
+                  >
+                    Dashboard
+                  </Link>
+                ) : (
+                  <>
+                    <Link href="/auth/signin" className="text-sm font-medium text-[var(--color-gray-500)] hover:text-[var(--color-navy)] transition-colors">
+                      Log in
+                    </Link>
+                    <button
+                      onClick={() => handleGetStarted()}
+                      className="px-5 py-2 text-sm font-semibold text-white bg-[var(--color-navy)] rounded-lg hover:bg-[var(--color-navy-light)] transition-all"
+                    >
+                      Get Started
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>
