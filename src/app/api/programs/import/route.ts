@@ -17,7 +17,8 @@ const ALLOWED_FILE_TYPES = [
 ];
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-const UPLOADS_DIR = path.join(process.cwd(), 'uploads', 'programs');
+// Use /tmp on Vercel (serverless has read-only filesystem except /tmp)
+const UPLOADS_DIR = process.env.VERCEL ? '/tmp/uploads/programs' : path.join(process.cwd(), 'uploads', 'programs');
 
 // Ensure uploads directory exists
 async function ensureUploadsDir() {

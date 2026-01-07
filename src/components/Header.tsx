@@ -251,6 +251,16 @@ export default function Header() {
                         >
                           Blog
                         </Link>
+                        <div className="border-t border-[#F1F5F9] my-1" />
+                        <button
+                          onClick={() => {
+                            setIsMenuOpen(false);
+                            signIn();
+                          }}
+                          className="block w-full text-left px-4 py-2.5 text-sm font-medium text-[#FF6B6B] hover:bg-[#F8FAFC]"
+                        >
+                          Log in
+                        </button>
                       </div>
                     )}
                   </div>
