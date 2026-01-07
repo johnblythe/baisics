@@ -269,7 +269,7 @@ export default function Header() {
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => signIn()}
-                      className="hidden sm:block text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors"
+                      className="text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors"
                     >
                       Log in
                     </button>
