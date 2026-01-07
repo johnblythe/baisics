@@ -4,32 +4,10 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import MainLayout from '@/app/components/layouts/MainLayout';
 import { ArrowLeft, TrendingUp, Users, Dumbbell, ClipboardCheck } from 'lucide-react';
-
-interface AnalyticsData {
-  summary: {
-    totalClients: number;
-    activeThisWeek: number;
-    avgWorkoutsPerWeek: number;
-    programCompletionRate: number;
-    totalWorkoutsLogged: number;
-    totalCheckIns: number;
-  };
-  weeklyTrend: {
-    week: string;
-    weekStart: string;
-    workouts: number;
-    activeClients: number;
-  }[];
-  clientEngagement: {
-    clientId: string;
-    workoutsLast4Weeks: number;
-    avgPerWeek: number;
-    active: boolean;
-  }[];
-}
+import type { CoachAnalyticsResponse } from '@/types/coach-analytics';
 
 export default function CoachAnalytics() {
-  const [data, setData] = useState<AnalyticsData | null>(null);
+  const [data, setData] = useState<CoachAnalyticsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

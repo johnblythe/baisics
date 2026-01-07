@@ -73,9 +73,18 @@ export default function ImportPage() {
   useEffect(() => {
     if (session?.user) {
       fetch('/api/user')
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) {
+            console.warn('Failed to fetch user data:', res.status);
+            return { isCoach: false };
+          }
+          return res.json();
+        })
         .then(data => setIsCoach(data.isCoach || false))
-        .catch(() => setIsCoach(false));
+        .catch((error) => {
+          console.warn('Error fetching user data:', error);
+          // Don't set false on error - keep current state to avoid hiding coach features on transient errors
+        });
     }
   }, [session]);
 
@@ -383,11 +392,11 @@ export default function ImportPage() {
     setParsedProgram({ ...parsedProgram, workouts: newWorkouts });
   };
 
-  // Check for returning from auth
-  useState(() => {
-    if (typeof window !== 'undefined') {
+  // Check for returning from auth - using useEffect since session is async
+  useEffect(() => {
+    if (typeof window !== 'undefined' && session) {
       const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get('complete') === 'true' && session) {
+      if (urlParams.get('complete') === 'true') {
         const pending = sessionStorage.getItem('pendingImport');
         if (pending) {
           try {
@@ -398,13 +407,13 @@ export default function ImportPage() {
             // Auto-save after auth
             setPageState('preview');
             setTimeout(() => saveProgram(), 100);
-          } catch {
-            // Ignore parse errors
+          } catch (error) {
+            console.warn('Error restoring pending import:', error);
           }
         }
       }
     }
-  });
+  }, [session]); // Re-run when session becomes available
 
   return (
     <MainLayout>

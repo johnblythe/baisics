@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
+import type { CoachAnalyticsResponse } from '@/types/coach-analytics';
 
 export async function GET() {
   try {
@@ -167,7 +168,7 @@ export async function GET() {
         ? Math.round((totalWorkoutsLast4Weeks / 4 / activeClientCount) * 10) / 10
         : 0;
 
-    return NextResponse.json({
+    const response: CoachAnalyticsResponse = {
       summary: {
         totalClients: clientIds.length,
         activeThisWeek: activeClientIds.size,
@@ -178,7 +179,8 @@ export async function GET() {
       },
       weeklyTrend,
       clientEngagement: clientEngagement.slice(0, 10), // Top 10
-    });
+    };
+    return NextResponse.json(response);
   } catch (error) {
     console.error('Error fetching coach analytics:', error);
     return NextResponse.json(

@@ -59,12 +59,16 @@ export function CoachOnboardingWizard({
   const handleComplete = async () => {
     setIsCompleting(true);
     try {
-      await fetch('/api/coach/onboarding/complete', {
+      const res = await fetch('/api/coach/onboarding/complete', {
         method: 'POST',
       });
+      if (!res.ok) {
+        console.warn('Failed to save onboarding status:', await res.text());
+      }
       onComplete();
-    } catch {
-      // Still close - non-critical
+    } catch (error) {
+      // Log but still close - onboarding status can be retried
+      console.warn('Error saving onboarding status:', error);
       onComplete();
     }
   };
