@@ -60,10 +60,15 @@ export async function POST(req: Request) {
       case 'invoice.payment_succeeded': {
         const invoice = event.data.object as Stripe.Invoice
         const customer = await stripe.customers.retrieve(invoice.customer as string)
+        // Handle deleted customers
+        if ('deleted' in customer && customer.deleted) {
+          console.warn(`Stripe webhook: Customer ${invoice.customer} was deleted`)
+          return NextResponse.json({ received: true, warning: 'Customer deleted' })
+        }
         const customerEmail = (customer as Stripe.Customer).email
         if (!customerEmail) {
-          console.error("Customer email not found")
-          return NextResponse.json({ error: "Customer email not found" }, { status: 400 })
+          console.warn(`Stripe webhook: No email for customer ${invoice.customer}`)
+          return NextResponse.json({ received: true, warning: 'Customer email not found' })
         }
         const user = await prisma.user.findUnique({
           where: {
@@ -71,8 +76,8 @@ export async function POST(req: Request) {
           },
         })
         if (!user) {
-          console.error("User not found")
-          return NextResponse.json({ error: "User not found" }, { status: 400 })
+          console.warn(`Stripe webhook: User not found for email ${customerEmail}`)
+          return NextResponse.json({ received: true, warning: 'User not found' })
         }
         if (invoice.subscription) {
           await prisma.subscription.update({
@@ -91,13 +96,18 @@ export async function POST(req: Request) {
       case 'customer.subscription.created':
       case 'customer.subscription.updated': {
         const subscription = event.data.object as Stripe.Subscription
-        // get teh customer
         const customer = await stripe.customers.retrieve(subscription.customer as string)
+
+        // Handle deleted customers
+        if ('deleted' in customer && customer.deleted) {
+          console.warn(`Stripe webhook: Customer ${subscription.customer} was deleted`)
+          return NextResponse.json({ received: true, warning: 'Customer deleted' })
+        }
         const customerEmail = (customer as Stripe.Customer).email
 
         if (!customerEmail) {
-          console.error("Customer email not found")
-          return NextResponse.json({ error: "Customer email not found" }, { status: 400 })
+          console.warn(`Stripe webhook: No email for customer ${subscription.customer}`)
+          return NextResponse.json({ received: true, warning: 'Customer email not found' })
         }
 
         const user = await prisma.user.findUnique({
@@ -107,11 +117,15 @@ export async function POST(req: Request) {
         })
 
         if (!user) {
-          console.error("User not found")
-          return NextResponse.json({ error: "User not found" }, { status: 400 })
+          console.warn(`Stripe webhook: User not found for email ${customerEmail}`)
+          return NextResponse.json({ received: true, warning: 'User not found' })
         }
         
-        const priceId = subscription.items.data[0].price.id
+        const priceId = subscription.items.data[0]?.price?.id
+        if (!priceId) {
+          console.warn(`Stripe webhook: No price found for subscription ${subscription.id}`)
+          return NextResponse.json({ received: true, warning: 'No price found' })
+        }
 
         await prisma.subscription.upsert({
           where: {
@@ -164,7 +178,7 @@ export async function POST(req: Request) {
       
       case 'customer.subscription.deleted': {
         const subscription = event.data.object as Stripe.Subscription
-        const priceId = subscription.items.data[0]?.price.id
+        const priceId = subscription.items.data[0]?.price?.id
 
         const sub = await prisma.subscription.update({
           where: {
@@ -201,7 +215,13 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ received: true })
   } catch (error) {
-    console.error('Error processing webhook:', error)
+    // Log with event context for debugging
+    console.error('Error processing webhook:', {
+      eventType: event.type,
+      eventId: event.id,
+      error: error instanceof Error ? error.message : error,
+    })
+    // Return 500 only for unexpected errors - Stripe will retry
     return NextResponse.json({ error: 'Webhook handler failed' }, { status: 500 })
   }
 }
@@ -219,7 +239,13 @@ function mapStripeStatus(stripeStatus: string): SubscriptionStatus {
       return 'CANCELED'
     case 'trialing':
       return 'TRIAL'
+    case 'incomplete':
+    case 'incomplete_expired':
+    case 'paused':
+      console.warn(`Stripe status '${stripeStatus}' mapped to UNPAID`)
+      return 'UNPAID'
     default:
+      console.warn(`Unknown Stripe status '${stripeStatus}' mapped to UNPAID`)
       return 'UNPAID'
   }
 }

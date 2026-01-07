@@ -148,22 +148,24 @@ export async function POST(request: Request) {
                   warmup: workout.warmup,
                   cooldown: workout.cooldown,
                   exercises: {
-                    create: workout.exercises.map((exercise) => ({
-                      name: exercise.name,
-                      sets: exercise.sets,
-                      reps: exercise.reps,
-                      restPeriod: exercise.restPeriod,
-                      intensity: exercise.intensity,
-                      measureType: exercise.measureType,
-                      measureValue: exercise.measureValue,
-                      measureUnit: exercise.measureUnit,
-                      notes: exercise.notes,
-                      instructions: exercise.instructions,
-                      sortOrder: exercise.sortOrder,
-                      exerciseLibrary: {
-                        connect: { id: exercise.exerciseLibraryId },
-                      },
-                    })),
+                    create: workout.exercises
+                      .filter((exercise) => exercise.exerciseLibraryId) // Filter out any without library reference
+                      .map((exercise) => ({
+                        name: exercise.name,
+                        sets: exercise.sets,
+                        reps: exercise.reps,
+                        restPeriod: exercise.restPeriod,
+                        intensity: exercise.intensity,
+                        measureType: exercise.measureType,
+                        measureValue: exercise.measureValue,
+                        measureUnit: exercise.measureUnit,
+                        notes: exercise.notes,
+                        instructions: exercise.instructions,
+                        sortOrder: exercise.sortOrder,
+                        exerciseLibrary: {
+                          connect: { id: exercise.exerciseLibraryId },
+                        },
+                      })),
                   },
                 })),
               },

@@ -106,9 +106,11 @@ export default function CoachDashboard() {
         if (data.isCoach && !data.coachOnboardedAt) {
           setShowOnboarding(true);
         }
+      } else {
+        console.warn('Failed to fetch user data:', res.status);
       }
-    } catch {
-      // Non-critical
+    } catch (error) {
+      console.warn('Error fetching user data:', error);
     }
   }
 
@@ -119,8 +121,9 @@ export default function CoachDashboard() {
         const data = await res.json();
         setPublicInviteUrl(data.url);
       }
-    } catch {
-      // Silently fail - not critical
+      // Non-ok response is expected if coach doesn't have public invite set up
+    } catch (error) {
+      console.warn('Error fetching public invite:', error);
     }
   }
 
@@ -168,11 +171,18 @@ export default function CoachDashboard() {
 
       // Send invite if pending
       if (data.inviteToken) {
-        await fetch('/api/coach/clients/invite', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ coachClientId: data.client.id }),
-        });
+        try {
+          const inviteRes = await fetch('/api/coach/clients/invite', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ coachClientId: data.client.id }),
+          });
+          if (!inviteRes.ok) {
+            console.warn('Failed to send invite email:', await inviteRes.text());
+          }
+        } catch (inviteError) {
+          console.warn('Error sending invite email:', inviteError);
+        }
       }
 
       setShowAddModal(false);
@@ -434,17 +444,44 @@ export default function CoachDashboard() {
                       </div>
                     </div>
                     <button
-                      onClick={async () => {
-                        await fetch('/api/coach/clients/invite', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({
-                            coachClientId: client.id,
-                            resend: true,
-                          }),
-                        });
+                      onClick={async (e) => {
+                        const btn = e.currentTarget;
+                        const originalText = btn.textContent;
+                        btn.textContent = 'Sending...';
+                        btn.disabled = true;
+                        try {
+                          const res = await fetch('/api/coach/clients/invite', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                              coachClientId: client.id,
+                              resend: true,
+                            }),
+                          });
+                          if (res.ok) {
+                            btn.textContent = 'Sent!';
+                            setTimeout(() => {
+                              btn.textContent = originalText;
+                              btn.disabled = false;
+                            }, 2000);
+                          } else {
+                            console.warn('Failed to resend invite:', await res.text());
+                            btn.textContent = 'Failed';
+                            setTimeout(() => {
+                              btn.textContent = originalText;
+                              btn.disabled = false;
+                            }, 2000);
+                          }
+                        } catch (error) {
+                          console.warn('Error resending invite:', error);
+                          btn.textContent = 'Failed';
+                          setTimeout(() => {
+                            btn.textContent = originalText;
+                            btn.disabled = false;
+                          }, 2000);
+                        }
                       }}
-                      className="text-sm text-[#FF6B6B] hover:text-[#EF5350] font-medium"
+                      className="text-sm text-[#FF6B6B] hover:text-[#EF5350] font-medium disabled:opacity-50"
                     >
                       Resend Invite
                     </button>

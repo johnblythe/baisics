@@ -9,6 +9,16 @@ export async function POST() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Verify user is a coach before marking onboarding complete
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { isCoach: true },
+    });
+
+    if (!user?.isCoach) {
+      return NextResponse.json({ error: 'Not a coach account' }, { status: 403 });
+    }
+
     await prisma.user.update({
       where: { id: session.user.id },
       data: { coachOnboardedAt: new Date() },
