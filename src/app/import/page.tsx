@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import MainLayout from '@/app/components/layouts/MainLayout';
 import { Upload, FileText, ArrowRight, X, GripVertical, Plus, Mail, Check, Trash2, Edit2, ChevronDown, ChevronUp, Loader2, Files } from 'lucide-react';
+import { toast } from 'sonner';
 
 // Types for parsed program
 interface ParsedExercise {
@@ -253,9 +254,14 @@ export default function ImportPage() {
       setSavedProgramId(data.program.id);
       setPageState('success');
 
-      // Redirect after brief delay
+      // Show success toast and redirect based on user type
+      toast.success('Program imported successfully!', {
+        description: 'Your workout program is ready to track.',
+      });
+
+      // Redirect after brief delay - coaches go to editor, users go to dashboard
       setTimeout(() => {
-        router.push(`/program/${data.program.id}`);
+        router.push(isCoach ? `/program/${data.program.id}` : `/dashboard/${data.program.id}`);
       }, 1500);
 
     } catch (err) {
@@ -319,6 +325,10 @@ export default function ImportPage() {
     const anySuccess = updatedItems.some(item => item.status === 'saved');
 
     if (allSaved && anySuccess) {
+      const savedCount = updatedItems.filter(i => i.status === 'saved').length;
+      toast.success(`${savedCount} program${savedCount > 1 ? 's' : ''} imported!`, {
+        description: 'Your templates are ready to assign.',
+      });
       setPageState('success');
       setTimeout(() => {
         router.push('/program/templates');

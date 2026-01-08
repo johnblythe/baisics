@@ -12,7 +12,6 @@ import { getSession } from 'next-auth/react';
 import { WorkoutPlan as WorkoutPlanHiType } from '@/types/program';
 import { ProgramWithRelations, TransformedProgram } from '../../api/programs/current/route';
 import Image from 'next/image';
-import { WorkoutUploadModal } from '@/components/WorkoutUploadModal';
 import { ProgramSelector } from '@/components/ProgramSelector';
 import { PhotoComparison } from '@/components/PhotoComparison';
 import { UpgradeModal } from '@/components/UpgradeModal';
@@ -217,19 +216,23 @@ function DashboardContent() {
   const [currentWorkout, setCurrentWorkout] = useState<CurrentWorkout | null>(null);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [session, setSession] = useState<any | null>(null);
-  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isNutritionModalOpen, setIsNutritionModalOpen] = useState(false);
 
   // Modal URL state helpers
   const openModal = useCallback((modalName: 'upload' | 'compare' | 'share' | 'nutrition') => {
+    // Upload redirects to dedicated import page
+    if (modalName === 'upload') {
+      router.push('/import');
+      return;
+    }
+
     const params = new URLSearchParams(searchParams.toString());
     params.set('modal', modalName);
     router.replace(`?${params.toString()}`, { scroll: false });
 
     switch (modalName) {
-      case 'upload': setIsUploadModalOpen(true); break;
       case 'compare': setIsCompareModalOpen(true); break;
       case 'share': setIsShareModalOpen(true); break;
       case 'nutrition': setIsNutritionModalOpen(true); break;
@@ -242,7 +245,6 @@ function DashboardContent() {
     const newUrl = params.toString() ? `?${params.toString()}` : window.location.pathname;
     router.replace(newUrl, { scroll: false });
 
-    setIsUploadModalOpen(false);
     setIsCompareModalOpen(false);
     setIsShareModalOpen(false);
     setIsNutritionModalOpen(false);
@@ -253,7 +255,9 @@ function DashboardContent() {
     const modalParam = searchParams.get('modal');
     if (modalParam) {
       switch (modalParam) {
-        case 'upload': setIsUploadModalOpen(true); break;
+        case 'upload':
+          router.push('/import');
+          break;
         case 'compare': setIsCompareModalOpen(true); break;
         case 'share': setIsShareModalOpen(true); break;
         case 'nutrition': setIsNutritionModalOpen(true); break;
@@ -1250,11 +1254,7 @@ function DashboardContent() {
             {/* Nutrition Tracking Widget */}
             <NutritionWidget onLogClick={() => openModal('nutrition')} />
 
-            <WorkoutUploadModal
-              isOpen={isUploadModalOpen}
-              onClose={closeModal}
-            />
-
+            
             <PhotoComparison
               programId={program.id}
               isOpen={isCompareModalOpen}
