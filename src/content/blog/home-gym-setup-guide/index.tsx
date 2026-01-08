@@ -7,7 +7,7 @@ export const frontmatter: BlogPostFrontmatter = {
   date: "2024-03-14",
   excerpt: "Learn how to build the perfect home gym for your space and budget. From essential equipment to optimal layout, discover everything you need for an effective home training setup.",
   metaDescription: "Master home gym setup with our comprehensive guide. Learn how to choose equipment, optimize space, and create the perfect training environment for your goals and budget.",
-  published: false,
+  published: true,
   featured: false,
   categories: [
     "Equipment",

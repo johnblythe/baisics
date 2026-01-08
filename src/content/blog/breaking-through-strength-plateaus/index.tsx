@@ -7,7 +7,7 @@ export const frontmatter: BlogPostFrontmatter = {
   date: "2024-03-14",
   excerpt: "Learn proven strategies to overcome strength plateaus with our comprehensive guide. Discover how to adjust your training, nutrition, and recovery for continued progress.",
   metaDescription: "Master science-based techniques to break through strength plateaus. Learn how to optimize your training, nutrition, and recovery for continued strength gains.",
-  published: false,
+  published: true,
   featured: false,
   categories: [
     "Strength Training",

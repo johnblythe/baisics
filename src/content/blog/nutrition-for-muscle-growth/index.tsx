@@ -7,7 +7,7 @@ export const frontmatter: BlogPostFrontmatter = {
   date: "2024-03-14",
   excerpt: "Master the art of eating for muscle growth with our comprehensive macro-based nutrition guide. Learn how to optimize your protein, carbs, and fats for maximum muscle gains.",
   metaDescription: "Learn how to structure your nutrition for optimal muscle growth using a macro-based approach. Discover the science behind protein timing, carb cycling, and meal planning for maximum gains.",
-  published: false,
+  published: true,
   featured: false,
   categories: [
     "Nutrition",

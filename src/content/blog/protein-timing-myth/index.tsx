@@ -7,7 +7,7 @@ export const frontmatter: BlogPostFrontmatter = {
   date: "2024-03-14",
   excerpt: "The post-workout \"anabolic window\" has been a hot topic in fitness for years. But what does the science actually say about protein timing? Let's separate fact from fiction.",
   metaDescription: "Discover the truth about protein timing and the anabolic window myth. Learn what actually matters for muscle growth and recovery, backed by the latest scientific research.",
-  published: false,
+  published: true,
   featured: false,
   categories: [
     "Nutrition",

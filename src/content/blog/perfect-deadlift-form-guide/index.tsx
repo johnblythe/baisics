@@ -7,7 +7,7 @@ export const frontmatter: BlogPostFrontmatter = {
   date: "2024-03-14",
   excerpt: "Master the king of all exercises with this comprehensive guide to proper deadlift technique. Learn how to avoid common mistakes and optimize your form for maximum strength and safety.",
   metaDescription: "Master proper deadlift form with our comprehensive guide. Learn step-by-step technique, avoid common mistakes, and optimize your deadlift for maximum strength and safety.",
-  published: false,
+  published: true,
   featured: false,
   categories: [
     "Exercise Technique",
