@@ -7,7 +7,7 @@ export const frontmatter: BlogPostFrontmatter = {
   date: "2024-03-14",
   excerpt: "Trying to decide between resistance bands and free weights for your home gym? Learn the pros, cons, and science behind each option to make the best choice for your goals.",
   metaDescription: "Discover which is better for muscle growth: resistance bands or free weights. Learn the pros, cons, and science behind each option to make the best choice for your goals.",
-  published: false,
+  published: true,
   featured: false,
   categories: [
     "Equipment",

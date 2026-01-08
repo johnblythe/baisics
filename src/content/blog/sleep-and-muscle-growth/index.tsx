@@ -7,7 +7,7 @@ export const frontmatter: BlogPostFrontmatter = {
   date: "2024-03-14",
   excerpt: "Discover how sleep affects muscle growth, recovery, and athletic performance. Learn science-backed strategies to optimize your sleep for maximum results.",
   metaDescription: "Learn how sleep affects muscle growth and recovery. Discover science-backed strategies to optimize your sleep for maximum muscle gains and better athletic performance.",
-  published: false,
+  published: true,
   featured: false,
   categories: [
     "Recovery",

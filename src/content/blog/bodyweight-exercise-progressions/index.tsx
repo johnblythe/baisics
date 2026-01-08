@@ -7,7 +7,7 @@ export const frontmatter: BlogPostFrontmatter = {
   date: "2024-03-14",
   excerpt: "Master bodyweight training with our comprehensive progression guide. Learn how to advance from basic movements to impressive calisthenics skills while building real strength and muscle.",
   metaDescription: "Learn how to progress from basic bodyweight exercises to advanced calisthenics movements. Master proper form and build strength with our detailed progression guide.",
-  published: false,
+  published: true,
   featured: false,
   categories: [
     "Exercise Technique",

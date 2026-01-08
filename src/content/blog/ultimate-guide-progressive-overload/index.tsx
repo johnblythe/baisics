@@ -7,7 +7,7 @@ export const frontmatter: BlogPostFrontmatter = {
   date: "2024-03-14",
   excerpt: "Master the fundamental principle behind all muscle growth and strength gains. Learn how to implement progressive overload effectively for continuous progress in your training.",
   metaDescription: "Learn how to implement progressive overload correctly for continuous muscle growth and strength gains. Master this fundamental principle with our comprehensive guide.",
-  published: false,
+  published: true,
   featured: true,
   categories: [
     "Training Principles",

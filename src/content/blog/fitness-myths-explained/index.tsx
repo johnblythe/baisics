@@ -7,7 +7,7 @@ export const frontmatter: BlogPostFrontmatter = {
   date: "2024-03-14",
   excerpt: "Discover surprising truths about fitness and nutrition that seem to defy common sense. Learn why rest builds muscle, eating more can help fat loss, and why walking beats HIIT for sustainable results.",
   metaDescription: "Learn counter-intuitive but scientifically proven fitness facts about muscle growth, fat loss, and exercise. Understand why common fitness beliefs might be holding you back.",
-  published: false,
+  published: true,
   featured: true,
   categories: [
     "Fundamentals",

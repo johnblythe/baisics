@@ -7,7 +7,7 @@ export const frontmatter: BlogPostFrontmatter = {
   date: "2025-02-04",
   excerpt: "Learn how to perform the squat with perfect form. From setup to execution, discover the essential cues and fixes for one of the most important compound exercises.",
   metaDescription: "Master proper squat form with our comprehensive guide. Learn correct technique, avoid common mistakes, and optimize your squat for maximum strength and safety.",
-  published: false,
+  published: true,
   featured: false,
   categories: [
     "Exercise Technique",
