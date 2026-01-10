@@ -151,7 +151,7 @@
         "Verify component renders correctly in browser at /library"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "Reference: /dev/library-cards Option D - coral goals and gradient CTA"
     },
     {
@@ -170,7 +170,7 @@
         "npm run typecheck passes"
       ],
       "priority": 9,
-      "passes": false,
+      "passes": true,
       "notes": "Reference: /dev/exercise-cards Option B - card layout with emoji icons"
     },
     {
@@ -189,7 +189,7 @@
         "npm run typecheck passes"
       ],
       "priority": 10,
-      "passes": false,
+      "passes": true,
       "notes": "Reference: /dev/exercise-cards Option B - the 40x40px action buttons on the right"
     },
     {
@@ -207,7 +207,7 @@
         "npm run typecheck passes"
       ],
       "priority": 11,
-      "passes": false,
+      "passes": true,
       "notes": "Reference: /dev/exercise-cards Option B - the animated expand section"
     },
     {

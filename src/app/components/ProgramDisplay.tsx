@@ -12,6 +12,7 @@ import { formatExerciseMeasure, formatRestPeriod } from '@/utils/formatters';
 import { getMacros } from '@/utils/formatting';
 import { WorkoutPlan } from '@/types/program';
 import { MacroDisplay } from '@/components/MacroDisplay';
+import { ExerciseCard } from '@/components/exercise/ExerciseCard';
 
 interface ProgramDisplayProps {
   program: Program;
@@ -251,19 +252,22 @@ function WorkoutDayCard({ workout, index, defaultOpen = false }: { workout: any;
                 );
               })()}
 
-              {/* Exercise header */}
-              <div className="grid grid-cols-12 gap-3 text-[10px] font-bold text-[#94A3B8] uppercase tracking-wider px-4 py-3 bg-[#FAFAFA] border-b border-[#F1F5F9]" style={{ fontFamily: "'Space Mono', monospace" }}>
-                <div className="col-span-1">Type</div>
-                <div className="col-span-5">Exercise</div>
-                <div className="col-span-3 text-right">Sets × Reps</div>
-                <div className="col-span-2 text-right">Rest</div>
-                <div className="col-span-1"></div>
-              </div>
-
               {/* Exercises */}
-              <div>
+              <div className="p-3 space-y-3">
                 {workout.exercises?.map((exercise: any, i: number) => (
-                  <ExerciseRow key={exercise.id || i} exercise={exercise} index={i} />
+                  <ExerciseCard
+                    key={exercise.id || i}
+                    exercise={{
+                      id: exercise.id,
+                      name: exercise.name,
+                      sets: exercise.sets,
+                      reps: exercise.reps || exercise.measure || '10',
+                      rest: exercise.restPeriod,
+                      category: getCategoryFromExercise(exercise),
+                      notes: exercise.notes,
+                      instructions: exercise.instructions,
+                    }}
+                  />
                 ))}
               </div>
 

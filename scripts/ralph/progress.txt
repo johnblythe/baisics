@@ -116,3 +116,37 @@ Started: Sat Jan 10 13:08:32 EST 2026
   - Use gray600 (#64748B) for stat labels instead of gray400 for better contrast on white cards
   - Border uses COLORS.gray100 (#F1F5F9) for subtle definition
 ---
+
+## 2026-01-10 - US-008: Update ProgramCard goals and CTA styling
+- Modified `src/app/components/ProgramCard.tsx`
+- Goals badges changed from gray to coral: bg-[#FFE5E5] text-[#EF5350] rounded-full font-medium
+- Equipment badges changed from gray50 bg to white bg
+- CTA button now uses gradient: bg-gradient-to-r from-[#FF6B6B] to-[#FF8E8E]
+- CTA button has shadow: shadow-md shadow-[#FF6B6B]/25
+- Removed inline onMouseOver/onMouseOut handlers, replaced with Tailwind hover:opacity-90
+- Updated both card variants (CardContent and template Link variant)
+- **Learnings for future iterations:**
+  - ProgramCard has duplicate code for CardContent and template variant - use replace_all when making same change to both
+  - Reference design is `/dev/library-cards` Option D lines 233-247
+  - For buttons, prefer Tailwind classes over inline styles for hover effects
+  - Use font-semibold (not font-medium) on CTA buttons for better visual weight
+---
+
+## 2026-01-10 - US-009: Create ExerciseCard component with emoji category icons
+- Created `src/components/exercise/ExerciseCard.tsx`
+- Card layout with white bg, rounded-xl, border-[#E2E8F0], hover:shadow-md
+- Category icon: 56x56px (w-14 h-14) rounded-xl with emoji and category label
+- CATEGORY_STYLES exported with icon property for all categories
+- Exercise name with font-semibold, sets/reps/rest shown below
+- Three action buttons (40x40px): Video (PlayCircle), Swap (ArrowLeftRight), Expand (ChevronDown)
+- Video button links to YouTube search for exercise
+- Supports both controlled and uncontrolled expand state
+- AnimatePresence for smooth expand/collapse animation
+- Notes shown in amber-tinted box with lightbulb emoji prefix
+- **Learnings for future iterations:**
+  - Reference design is `/dev/exercise-cards` Option B (OptionBCards function lines 107-202)
+  - Component supports both controlled (isExpanded + onToggleExpand) and uncontrolled mode
+  - Exercise interface is flexible - rest can be string or number, reps can be string or number
+  - Use lucide-react icons (PlayCircle, ArrowLeftRight, ChevronDown) instead of inline SVGs
+  - Group action buttons with stopPropagation to prevent card click triggering expand
+---
