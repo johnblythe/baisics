@@ -408,8 +408,14 @@ function DashboardContent() {
     async function fetchAllPrograms() {
       try {
         const response = await fetch('/api/programs');
+        if (!response.ok) {
+          console.error('Failed to fetch programs:', response.status, response.statusText);
+          return;
+        }
         const programs = await response.json();
-        setAllPrograms(programs);
+        if (Array.isArray(programs)) {
+          setAllPrograms(programs);
+        }
       } catch (error) {
         console.error('Failed to fetch all programs:', error);
       }

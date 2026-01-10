@@ -1,0 +1,54 @@
+{
+  "project": "Baisics",
+  "branchName": "ralph/workout-selector",
+  "description": "Add workout selector dropdown to let users pick which workout to do, plus fix program selector bug",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Fix program selector fetch error handling",
+      "description": "As a user with multiple programs, I need the program selector to show so I can switch between them.",
+      "acceptanceCriteria": [
+        "In src/app/dashboard/[programId]/page.tsx, update fetchAllPrograms to check response.ok before parsing JSON",
+        "Log error to console if response is not ok",
+        "Only call setAllPrograms if response is an array",
+        "npm run typecheck passes"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Bug fix - fetch was failing silently when API returned error, leaving allPrograms empty"
+    },
+    {
+      "id": "US-002",
+      "title": "Add allWorkouts to current-workout API response",
+      "description": "As a developer, I need all workouts with completion dates returned from the API to populate the dropdown.",
+      "acceptanceCriteria": [
+        "Modify src/app/api/programs/[programId]/current-workout/route.ts",
+        "Query all workouts for the program with their most recent WorkoutLog completedAt date",
+        "Add allWorkouts array to response: { id, dayNumber, name, focus, exerciseCount, lastCompletedAt }",
+        "lastCompletedAt is null if workout never completed, otherwise most recent completion date",
+        "Existing nextWorkout, totalWorkouts, lastCompletedAt fields unchanged",
+        "npm run typecheck passes"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "Add workout selector dropdown to Ready to Train card",
+      "description": "As a user, I want to pick a different workout than the suggested 'next' one so I can do workouts out of order.",
+      "acceptanceCriteria": [
+        "Add selectedWorkoutId state to dashboard, defaulting to currentWorkout.nextWorkout.id",
+        "Add dropdown to workout title in Ready to Train card (same pattern as ProgramSelector)",
+        "Dropdown shows all workouts: 'Day N: Name' with last completed date or dash if never done",
+        "Selecting a workout updates selectedWorkoutId and card display (name, focus, exerciseCount)",
+        "Start Workout button links to /workout/{selectedWorkoutId}",
+        "npm run typecheck passes",
+        "Verify dropdown renders and functions correctly in browser at localhost:3001"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Reuse styling from ProgramSelector component for consistency"
+    }
+  ]
+}
