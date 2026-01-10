@@ -1,9 +1,10 @@
 'use client';
 
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createCheckIn } from './actions';
-import { Camera, Scale, Ruler, Heart, FileText, Calendar, ChevronDown, ChevronUp } from 'lucide-react';
+import { Camera, Scale, Ruler, Heart, FileText, Calendar, ChevronDown, ChevronUp, ImageIcon } from 'lucide-react';
+import { PhotoComparison } from '@/components/PhotoComparison';
 
 interface Photo {
   type: 'FRONT' | 'BACK' | 'SIDE_LEFT' | 'SIDE_RIGHT' | 'CUSTOM';
@@ -41,6 +42,12 @@ export interface CheckIn {
 }
 
 export type CheckInFormData = CheckIn;
+
+interface PastCheckIn {
+  id: string;
+  date: string;
+  photoCount: number;
+}
 
 // Collapsible section component
 const CollapsibleSection = ({
@@ -116,6 +123,50 @@ function CheckInPageContent() {
     lastMonday.setDate(lastMonday.getDate() - ((lastMonday.getDay() + 6) % 7));
     return lastMonday.toISOString().split('T')[0];
   });
+
+  // Check-in history state
+  const [pastCheckIns, setPastCheckIns] = useState<PastCheckIn[]>([]);
+  const [programId, setProgramId] = useState<string | null>(null);
+  const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
+  const [loadingHistory, setLoadingHistory] = useState(true);
+
+  // Fetch past check-ins with photos
+  useEffect(() => {
+    async function fetchCheckInHistory() {
+      try {
+        // First get the current program
+        const programRes = await fetch('/api/programs/latest');
+        if (!programRes.ok) {
+          setLoadingHistory(false);
+          return;
+        }
+        const programData = await programRes.json();
+        if (!programData.id) {
+          setLoadingHistory(false);
+          return;
+        }
+        setProgramId(programData.id);
+
+        // Then fetch check-ins with photos
+        const checkInsRes = await fetch(`/api/programs/${programData.id}/progress-photos/compare`);
+        if (checkInsRes.ok) {
+          const data = await checkInsRes.json();
+          const checkIns = (data.checkIns || []).map((checkIn: { id: string; date: string; photos: unknown[] }) => ({
+            id: checkIn.id,
+            date: checkIn.date,
+            photoCount: checkIn.photos?.length || 0,
+          }));
+          setPastCheckIns(checkIns);
+        }
+      } catch (error) {
+        console.error('Error fetching check-in history:', error);
+      } finally {
+        setLoadingHistory(false);
+      }
+    }
+
+    fetchCheckInHistory();
+  }, []);
 
   React.useEffect(() => {
     setFormData(prev => ({ ...prev, date: checkInDate }));
@@ -575,6 +626,92 @@ function CheckInPageContent() {
           </button>
         </div>
       </form>
+
+      {/* Check-in History Section */}
+      <div className="mt-12 pt-8 border-t border-[#F1F5F9]">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-[#0F172A] rounded-xl flex items-center justify-center">
+              <ImageIcon className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-[#0F172A]">Check-in History</h2>
+              <p className="text-sm text-[#94A3B8]">
+                {pastCheckIns.length > 0
+                  ? `${pastCheckIns.length} check-in${pastCheckIns.length === 1 ? '' : 's'} with photos`
+                  : 'No check-ins with photos yet'}
+              </p>
+            </div>
+          </div>
+
+          {pastCheckIns.length >= 2 && programId && (
+            <button
+              type="button"
+              onClick={() => setIsCompareModalOpen(true)}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-white font-medium transition-all duration-200 hover:scale-[1.02] hover:-translate-y-0.5 shadow-lg shadow-[#FF6B6B]/25"
+              style={{
+                background: 'linear-gradient(to right, #FF6B6B, #FF8E8E)',
+              }}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+              Compare Photos
+            </button>
+          )}
+        </div>
+
+        {loadingHistory ? (
+          <div className="flex items-center justify-center py-8">
+            <div className="w-6 h-6 border-2 border-[#F1F5F9] border-t-[#FF6B6B] rounded-full animate-spin" />
+          </div>
+        ) : pastCheckIns.length > 0 ? (
+          <div className="grid gap-3">
+            {pastCheckIns.map((checkIn) => (
+              <div
+                key={checkIn.id}
+                className="flex items-center justify-between p-4 bg-white rounded-xl border border-[#F1F5F9] hover:border-[#FF6B6B]/30 transition-colors"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-[#FFE5E5] rounded-lg flex items-center justify-center">
+                    <Camera className="w-5 h-5 text-[#FF6B6B]" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-[#0F172A]">
+                      {new Date(checkIn.date).toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })}
+                    </p>
+                    <p className="text-sm text-[#94A3B8]">
+                      {checkIn.photoCount} photo{checkIn.photoCount === 1 ? '' : 's'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8 bg-[#F8FAFC] rounded-xl border border-dashed border-[#F1F5F9]">
+            <Camera className="w-10 h-10 mx-auto text-[#94A3B8] mb-3" />
+            <p className="text-[#475569]">No check-ins with photos yet</p>
+            <p className="text-sm text-[#94A3B8] mt-1">
+              Add photos to your check-ins to compare your progress
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Photo Comparison Modal */}
+      {programId && (
+        <PhotoComparison
+          programId={programId}
+          isOpen={isCompareModalOpen}
+          onClose={() => setIsCompareModalOpen(false)}
+        />
+      )}
     </div>
   );
 }

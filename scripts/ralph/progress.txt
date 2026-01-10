@@ -230,3 +230,23 @@ Started: Sat Jan 10 16:52:02 EST 2026
   - Weeks calculated by dividing completed workouts by workouts per week from workout plan
   - ProgressShareCard already includes privacy toggles and share options - no extra wiring needed
 ---
+
+## 2026-01-10 19:XX - US-014: Create progress photo comparison component
+- **What was implemented:**
+  - Created new PhotoComparison component at `src/components/progress/PhotoComparison.tsx`
+  - Uses date pickers (native HTML `<input type="date">`) with Calendar icon
+  - Responsive layout: `grid-cols-1 md:grid-cols-2` (stacked mobile, side-by-side desktop)
+  - Date labels under each photo with "Before"/"After" badges
+  - Photo type tabs (Front, Back, Left Side, Right Side)
+  - Auto-selects first and last check-ins with photos
+  - Fetches photos from `/api/programs/[programId]/progress-photos/compare`
+  - Datalist hints for available dates with check-in photos
+- **Files created/changed:**
+  - Created: `src/components/progress/PhotoComparison.tsx`
+- **Learnings for future iterations:**
+  - Existing `PhotoComparison.tsx` at `src/components/` is used by dashboard modal - more feature-rich (slider view)
+  - New component in `progress/` folder is simpler, focused on date picker UX per story requirements
+  - Memoize array extractions from optional chaining to avoid useMemo dependency warnings
+  - Pattern: `useMemo(() => checkIn?.photos || [], [checkIn])` instead of direct `checkIn?.photos || []`
+  - Native HTML datalist provides date hints but doesn't restrict input
+---

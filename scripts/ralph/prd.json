@@ -218,7 +218,7 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 14,
-      "passes": false,
+      "passes": true,
       "notes": "Issue #221 - Photo comparison component"
     },
     {
