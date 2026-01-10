@@ -145,19 +145,19 @@ export default function TemplateDetailClient({ template }: TemplateDetailClientP
             {/* Quick Stats */}
             <div className="grid grid-cols-4 gap-4">
               <div className="bg-white/10 rounded-xl p-4 text-center">
-                <div className="text-3xl font-bold">{template.daysPerWeek}</div>
+                <div className="text-4xl font-bold" style={{ color: COLORS.coral }}>{template.daysPerWeek}</div>
                 <div className="text-xs text-white/60">Days/Week</div>
               </div>
               <div className="bg-white/10 rounded-xl p-4 text-center">
-                <div className="text-3xl font-bold">{template.durationWeeks}</div>
+                <div className="text-4xl font-bold" style={{ color: COLORS.coral }}>{template.durationWeeks}</div>
                 <div className="text-xs text-white/60">Weeks</div>
               </div>
               <div className="bg-white/10 rounded-xl p-4 text-center">
-                <div className="text-3xl font-bold">{template.structure.phases}</div>
+                <div className="text-4xl font-bold" style={{ color: COLORS.coral }}>{template.structure.phases}</div>
                 <div className="text-xs text-white/60">Phases</div>
               </div>
               <div className="bg-white/10 rounded-xl p-4 text-center">
-                <div className="text-3xl font-bold">{template.popularityScore}%</div>
+                <div className="text-4xl font-bold" style={{ color: COLORS.coral }}>{template.popularityScore}%</div>
                 <div className="text-xs text-white/60">Popular</div>
               </div>
             </div>
@@ -167,9 +167,12 @@ export default function TemplateDetailClient({ template }: TemplateDetailClientP
             <div className="lg:col-span-2 space-y-8">
               {/* Goals */}
               <div className="bg-white rounded-xl p-6 border" style={{ borderColor: COLORS.gray100 }}>
-                <h2 className="text-lg font-semibold mb-4" style={{ color: COLORS.navy }}>
-                  Program Goals
-                </h2>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-1 h-6 rounded-full" style={{ backgroundColor: COLORS.coral }}></div>
+                  <h2 className="text-lg font-semibold" style={{ color: COLORS.navy }}>
+                    Program Goals
+                  </h2>
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {template.goals.map((goal) => (
                     <span
@@ -185,9 +188,12 @@ export default function TemplateDetailClient({ template }: TemplateDetailClientP
 
               {/* Features */}
               <div className="bg-white rounded-xl p-6 border" style={{ borderColor: COLORS.gray100 }}>
-                <h2 className="text-lg font-semibold mb-4" style={{ color: COLORS.navy }}>
-                  Key Features
-                </h2>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-1 h-6 rounded-full" style={{ backgroundColor: COLORS.coral }}></div>
+                  <h2 className="text-lg font-semibold" style={{ color: COLORS.navy }}>
+                    Key Features
+                  </h2>
+                </div>
                 <div className="space-y-3">
                   {template.features.map((feature, i) => (
                     <div key={i} className="flex items-start gap-3" style={{ color: COLORS.gray600 }}>
@@ -213,9 +219,12 @@ export default function TemplateDetailClient({ template }: TemplateDetailClientP
 
               {/* Workout Preview */}
               <div className="bg-white rounded-xl p-6 border" style={{ borderColor: COLORS.gray100 }}>
-                <h2 className="text-lg font-semibold mb-4" style={{ color: COLORS.navy }}>
-                  Workout Preview
-                </h2>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-1 h-6 rounded-full" style={{ backgroundColor: COLORS.coral }}></div>
+                  <h2 className="text-lg font-semibold" style={{ color: COLORS.navy }}>
+                    Workout Preview
+                  </h2>
+                </div>
                 <div className="space-y-4">
                   {template.workoutPreview.map((workout) => (
                     <div
@@ -312,9 +321,12 @@ export default function TemplateDetailClient({ template }: TemplateDetailClientP
 
               {/* Equipment */}
               <div className="bg-white rounded-xl p-6 border" style={{ borderColor: COLORS.gray100 }}>
-                <h3 className="font-semibold mb-4" style={{ color: COLORS.navy }}>
-                  Equipment Needed
-                </h3>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-1 h-5 rounded-full" style={{ backgroundColor: COLORS.coral }}></div>
+                  <h3 className="font-semibold" style={{ color: COLORS.navy }}>
+                    Equipment Needed
+                  </h3>
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {template.equipment.map((eq) => (
                     <span
@@ -330,9 +342,12 @@ export default function TemplateDetailClient({ template }: TemplateDetailClientP
 
               {/* Program Structure */}
               <div className="bg-white rounded-xl p-6 border" style={{ borderColor: COLORS.gray100 }}>
-                <h3 className="font-semibold mb-4" style={{ color: COLORS.navy }}>
-                  Structure
-                </h3>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-1 h-5 rounded-full" style={{ backgroundColor: COLORS.coral }}></div>
+                  <h3 className="font-semibold" style={{ color: COLORS.navy }}>
+                    Structure
+                  </h3>
+                </div>
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
                     <span style={{ color: COLORS.gray600 }}>Split Type</span>

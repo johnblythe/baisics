@@ -30,7 +30,7 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Issue #226 - Structured data for rich snippets"
     },
     {
@@ -46,7 +46,7 @@
         "Verify visually at /hi"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Issue #230 - Quick UI polish"
     },
     {

@@ -27,3 +27,34 @@ Started: Sat Jan 10 16:52:02 EST 2026
   - The `PageProps` interface should be: `{ params: Promise<{ slug: string }> }`
   - Server/client component split is required for `generateMetadata` with client interactivity
 ---
+
+## 2026-01-10 17:XX - US-002: Add JSON-LD structured data to template pages
+- **What was implemented:**
+  - Added `generateJsonLd` function to create ExercisePlan schema.org structured data
+  - JSON-LD includes: name, description, exerciseType, activityDuration (ISO 8601), activityFrequency
+  - Added additional properties for difficulty and splitType
+  - Rendered as script tag with type application/ld+json in page body
+- **Files created/changed:**
+  - Modified: `src/app/templates/[slug]/page.tsx` (added JSON-LD generation and rendering)
+- **Learnings for future iterations:**
+  - JSON-LD for ExercisePlan uses ISO 8601 duration format: `P${weeks}W`
+  - JSON.stringify of trusted server-side template data is safe for inline scripts
+  - Schema.org additionalProperty can extend ExercisePlan with custom fields
+---
+
+## 2026-01-10 17:XX - US-003: Widen program generation page layout
+- **What was implemented:**
+  - Widened layout from max-w-3xl to max-w-5xl for more spacious feel
+  - Updated padding to v2a pattern: px-6 py-10
+  - Enlarged hero section with responsive text sizes (lg:text-5xl)
+  - Added more breathing room to chat container (md:p-8)
+  - Increased form spacing (mt-6, space-y-5)
+  - Enlarged textarea (rows 4, p-5) and button text (text-lg)
+  - Increased quick prompt button padding (px-5 py-4) and grid gaps (gap-3)
+- **Files created/changed:**
+  - Modified: `src/app/hi/components/ConversationalInterface.tsx`
+- **Learnings for future iterations:**
+  - The /hi page layout is in ConversationalInterface.tsx, not page.tsx
+  - v2a design pattern uses max-w-5xl or max-w-6xl with px-6 padding
+  - Responsive padding with md: breakpoints helps mobile experience
+---
