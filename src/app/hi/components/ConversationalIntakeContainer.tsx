@@ -85,29 +85,42 @@ const PERSONA_DATA: Record<string, any> = {
 function intakeToExtractedData(intake: any): any {
   if (!intake) return null;
 
+  // Parse additionalInfo JSON to get workout environment, equipment, style
+  // These were stored as JSON when the intake was originally saved
+  let extraData: any = {};
+  if (intake.additionalInfo) {
+    try {
+      extraData = typeof intake.additionalInfo === 'string'
+        ? JSON.parse(intake.additionalInfo)
+        : intake.additionalInfo;
+    } catch (e) {
+      console.warn('Failed to parse additionalInfo:', e);
+    }
+  }
+
   return {
     gender: intake.sex === 'man' ? 'male' : intake.sex === 'woman' ? 'female' : intake.sex,
     goals: intake.trainingGoal,
     daysPerWeek: intake.daysAvailable,
-    timePerDay: intake.dailyBudget,
+    timePerDay: intake.dailyBudget || extraData.timePerDay || 60,
     age: intake.age,
     weight: intake.weight,
     height: intake.height,
     experienceLevel: intake.experienceLevel || 'beginner',
-    workoutEnvironment: {
+    workoutEnvironment: extraData.workoutEnvironment || {
       primary: 'gym',
       limitations: []
     },
-    equipmentAccess: {
+    equipmentAccess: extraData.equipmentAccess || {
       type: 'full-gym',
       available: intake.trainingPreferences || []
     },
-    workoutStyle: {
+    workoutStyle: extraData.workoutStyle || {
       primary: 'strength',
-      secondary: undefined
+      secondary: null
     },
     preferences: intake.trainingPreferences || [],
-    additionalInfo: typeof intake.additionalInfo === 'string' ? intake.additionalInfo : ''
+    additionalInfo: extraData.originalAdditionalInfo || ''
   };
 }
 

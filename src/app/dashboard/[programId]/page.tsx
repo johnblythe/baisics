@@ -734,7 +734,7 @@ function DashboardContent() {
             )}
 
             {/* Welcome & Program Info Card - v2a styling */}
-            <div className="relative overflow-hidden bg-white rounded-2xl border-l-4 border-l-[#FF6B6B] border border-[#E2E8F0] shadow-md">
+            <div className="relative overflow-visible bg-white rounded-2xl border-l-4 border-l-[#FF6B6B] border border-[#E2E8F0] shadow-md">
               <div className="relative p-6 lg:p-8">
                 {/* Welcome Text */}
                 <p className="text-sm font-medium text-[#94A3B8] uppercase tracking-wider mb-4" style={{ fontFamily: "'Space Mono', monospace" }}>Welcome to your dashboard</p>
