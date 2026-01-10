@@ -56,18 +56,45 @@ export async function GET(
 
     // Get the most recently completed workout
     const lastWorkoutLog = program.workoutLogs[0];
-    
+
     // Find the index of the last completed workout in our sequence
-    const lastWorkoutIndex = lastWorkoutLog 
+    const lastWorkoutIndex = lastWorkoutLog
       ? workoutSequence.findIndex(w => w.id === lastWorkoutLog.workoutId)
       : -1;
 
     // Get the next workout in the sequence (loop back to start if needed)
-    const nextWorkoutIndex = lastWorkoutIndex === -1 
+    const nextWorkoutIndex = lastWorkoutIndex === -1
       ? 0 // Start with first workout if no logs exist
       : (lastWorkoutIndex + 1) % workoutSequence.length; // Loop back to 0 if we hit the end
 
     const nextWorkout = workoutSequence[nextWorkoutIndex];
+
+    // Get most recent completion date for each workout
+    const workoutCompletions = await prisma.workoutLog.groupBy({
+      by: ['workoutId'],
+      where: {
+        programId,
+        status: 'completed',
+      },
+      _max: {
+        completedAt: true,
+      },
+    });
+
+    // Create a map of workoutId -> lastCompletedAt
+    const completionMap = new Map(
+      workoutCompletions.map(wc => [wc.workoutId, wc._max.completedAt])
+    );
+
+    // Build allWorkouts array with completion info
+    const allWorkouts = workoutSequence.map(workout => ({
+      id: workout.id,
+      dayNumber: workout.dayNumber,
+      name: workout.name,
+      focus: workout.focus,
+      exerciseCount: workout.exercises.length,
+      lastCompletedAt: completionMap.get(workout.id) || null,
+    }));
 
     return NextResponse.json({
       nextWorkout: {
@@ -78,7 +105,8 @@ export async function GET(
         exerciseCount: nextWorkout.exercises.length
       },
       totalWorkouts: workoutSequence.length,
-      lastCompletedAt: lastWorkoutLog?.completedAt || null
+      lastCompletedAt: lastWorkoutLog?.completedAt || null,
+      allWorkouts,
     });
   } catch (error) {
     console.error('Error fetching current workout:', error);
