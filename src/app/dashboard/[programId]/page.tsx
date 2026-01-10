@@ -651,7 +651,7 @@ function DashboardContent() {
 
                       {isWorkoutSelectorOpen && currentWorkout.allWorkouts && (
                         <div
-                          className="absolute z-50 w-full min-w-[320px] max-w-[450px] mt-2 bg-white rounded-xl shadow-lg border border-[#E2E8F0] py-1 overflow-hidden"
+                          className="absolute z-[60] w-full min-w-[320px] max-w-[450px] mt-2 bg-white rounded-xl shadow-lg border border-[#E2E8F0] py-1 overflow-hidden"
                           role="listbox"
                           tabIndex={-1}
                         >

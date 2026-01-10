@@ -27,6 +27,11 @@ export function ProgramSelector({ currentProgram, programs, isPremium = false }:
     new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
 
+  // Limit display to 5 most recent, show "View all" if more
+  const MAX_DISPLAY = 5;
+  const displayedPrograms = sortedPrograms.slice(0, MAX_DISPLAY);
+  const hasMorePrograms = sortedPrograms.length > MAX_DISPLAY;
+
   // For free tier, only the most recent program is active
   const activeProgram = sortedPrograms[0];
   const isActiveProgram = (programId: string) => programId === activeProgram?.id;
@@ -118,7 +123,7 @@ export function ProgramSelector({ currentProgram, programs, isPremium = false }:
               </div>
             )}
 
-            {sortedPrograms.map((program, index) => {
+            {displayedPrograms.map((program, index) => {
               const isActive = isActiveProgram(program.id);
               const isLocked = !isPremium && !isActive;
               const isCurrent = program.id === currentProgram.id;
@@ -168,6 +173,27 @@ export function ProgramSelector({ currentProgram, programs, isPremium = false }:
                 </button>
               );
             })}
+
+            {/* View all programs link */}
+            {hasMorePrograms && (
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  router.push('/library?tab=my-programs');
+                }}
+                className="w-full text-left px-4 py-3 text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors flex items-center justify-between gap-2 border-t border-[#E2E8F0]"
+              >
+                <div className="flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
+                  <span className="font-medium">View all programs ({sortedPrograms.length})</span>
+                </div>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            )}
 
             {/* Create New Program */}
             <div className="border-t border-[#E2E8F0]">

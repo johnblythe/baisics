@@ -6,6 +6,7 @@ import Link from 'next/link';
 import ProgramCard, { ProgramCardProps } from '@/app/components/ProgramCard';
 import { UpgradeModal } from '@/components/UpgradeModal';
 import Footer from '@/components/Footer';
+import Header from '@/components/Header';
 
 const CATEGORIES = [
   { value: 'all', label: 'All Categories' },
@@ -196,34 +197,9 @@ function LibraryPageContent() {
       `}</style>
 
       <div className="library-page min-h-screen bg-[var(--color-white)]">
-        {/* Header */}
-        <header className="sticky top-0 z-50 bg-[var(--color-white)]/95 backdrop-blur-md border-b border-[var(--color-gray-100)]">
-          <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16 lg:h-20">
-              <Link href="/" className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-[var(--color-coral)] rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">B</span>
-                </div>
-                <span className="font-bold text-xl text-[var(--color-navy)]">baisics</span>
-              </Link>
+        <Header />
 
-              <nav className="hidden md:flex items-center gap-8">
-                <Link href="/library" className="text-sm font-medium text-[var(--color-coral)]">Library</Link>
-                <Link href="/tools/macros" className="text-sm font-medium text-[var(--color-gray-600)] hover:text-[var(--color-navy)] transition-colors">Macro Calculator</Link>
-                <Link href="/blog" className="text-sm font-medium text-[var(--color-gray-600)] hover:text-[var(--color-navy)] transition-colors">Blog</Link>
-              </nav>
-
-              <Link
-                href="/hi"
-                className="px-5 py-2.5 text-sm font-semibold text-white bg-[var(--color-navy)] rounded-lg hover:bg-[var(--color-navy-light)] transition-all"
-              >
-                Create Program
-              </Link>
-            </div>
-          </div>
-        </header>
-
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-24 lg:pt-28 pb-8">
           {/* Page Header */}
           <div className="mb-8">
             <p className="font-mono text-sm text-[var(--color-coral)] uppercase tracking-wider mb-2">Browse & Claim</p>
