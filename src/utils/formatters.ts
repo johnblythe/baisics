@@ -23,11 +23,25 @@ export const formatExerciseUnit = (
   format: 'short' | 'long' = 'short',
   style: 'lower' | 'upper' | 'mixed' = 'lower'
 ) => {
+  // Check measureType first - if it's REPS, always show "Reps" regardless of measureUnit
+  const measureType = exercise.measureType?.toUpperCase() || exercise.measure?.type?.toUpperCase();
+  if (measureType === 'REPS' || (!measureType && exercise.reps)) {
+    let unit = 'reps';
+    if (style === 'upper') unit = 'REPS';
+    else if (style === 'mixed') unit = 'Reps';
+    return format === 'short' ? unit.slice(0, 1) : unit;
+  }
+
   let unit = '';
   if (exercise.measureUnit) {
     unit = exercise.measureUnit;
   } else if (exercise.measure?.unit) {
     unit = exercise.measure.unit;
+  }
+
+  // Don't show PERCENT/LB/KG as the unit label for input fields - those are weight units
+  if (['PERCENT', 'LB', 'KG'].includes(unit.toUpperCase())) {
+    unit = 'reps'; // Default fallback
   }
 
   if (style === 'lower') {

@@ -16,37 +16,32 @@
 - Never use Prisma Studio - use SQL directly
 
 ### Key Concepts
-- `DATABASE_URL` determines WHERE migrations run (local vs prod), not the command
-- `migrate dev` = interactive, may reset DB, for CREATING new migrations
-- `migrate deploy` = safe, non-interactive, for APPLYING existing migrations
+- `migrate deploy` = **DEFAULT** - safe, non-destructive, applies existing migrations
+- `migrate dev` = ONLY when creating NEW schema changes (can reset DB!)
 
 ### Workflow
 ```bash
-# Apply existing migrations locally (safe, preserves data)
+# DEFAULT: Apply migrations (safe, preserves data)
 npx prisma migrate deploy
 
-# Create NEW migration (only when adding schema changes)
+# ONLY when adding new schema changes:
 npx prisma migrate dev --name add_some_field
-
-# Production: Vercel build runs `prisma migrate deploy` automatically
-```
-
-### Fixing Failed Migrations
-If `migrate deploy` fails with "failed migrations" error:
-```bash
-# Check if the changes actually applied to the DB
-# If yes, mark as applied:
-npx prisma migrate resolve --applied <migration_name>
-
-# If no, mark as rolled back and retry:
-npx prisma migrate resolve --rolled-back <migration_name>
 ```
 
 ### Rules
+- **ALWAYS use `migrate deploy`** - after pulling, switching branches, or "column does not exist" errors
+- **NEVER use `migrate dev`** unless actively creating a new migration
 - **Never run migrations directly against prod** - Vercel handles it
-- **Use `migrate deploy` locally** to apply migrations without data loss
-- **Use `migrate dev` only** when creating new migrations
-- **Local data → prod**: Use sync scripts in `scripts/` folder, not direct DB access
+- **Local data → prod**: Use sync scripts in `scripts/` folder
+
+### Fixing Failed Migrations
+```bash
+# If changes applied but migration marked failed:
+npx prisma migrate resolve --applied <migration_name>
+
+# If changes didn't apply:
+npx prisma migrate resolve --rolled-back <migration_name>
+```
 
 ## Style Guide (v2a - Fresh Athletic)
 All public-facing pages should match the v2a landing page styling:

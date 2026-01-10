@@ -1,0 +1,9 @@
+US-001 is complete. There are still stories with `passes: false` (US-002 and US-003), so another iteration will pick up the next story.
+
+**Summary of US-001 completion:**
+- Fixed `fetchAllPrograms` in `src/app/dashboard/[programId]/page.tsx:407-425`
+- Added `response.ok` check before parsing JSON
+- Added console.error logging on failure
+- Added `Array.isArray` validation before setState
+- Lint and build pass
+- Committed: `feat: US-001 - Fix program selector fetch error handling`
