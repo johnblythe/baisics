@@ -29,10 +29,12 @@ const COLORS = {
   coralLight: '#FFE5E5',
   navy: '#0F172A',
   navyLight: '#1E293B',
+  navyMid: '#334155',
   gray50: '#F8FAFC',
   gray100: '#F1F5F9',
   gray400: '#94A3B8',
   gray600: '#475569',
+  descriptionText: '#CBD5E1',
 };
 
 const DIFFICULTY_COLORS: Record<string, string> = {
@@ -70,10 +72,10 @@ export default function ProgramCard({
 
   const CardContent = () => (
     <>
-      {/* Header - Navy gradient */}
+      {/* Header - Navy gradient with vertical fade */}
       <div
         className="p-5 text-white"
-        style={{ background: `linear-gradient(to bottom right, ${COLORS.navy}, ${COLORS.navyLight})` }}
+        style={{ background: `linear-gradient(180deg, ${COLORS.navy} 0%, ${COLORS.navyLight} 60%, ${COLORS.navyMid} 100%)` }}
       >
         <div className="flex items-start justify-between mb-3">
           {difficulty && (
@@ -83,8 +85,8 @@ export default function ProgramCard({
           )}
           {category && (
             <span
-              className="text-xs px-2 py-1 rounded-full capitalize"
-              style={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
+              className="text-xs px-2 py-1 rounded-full capitalize border"
+              style={{ borderColor: 'rgba(255,255,255,0.3)', color: 'rgba(255,255,255,0.9)' }}
             >
               {category}
             </span>
@@ -92,47 +94,48 @@ export default function ProgramCard({
         </div>
         <h3 className="text-lg font-bold mb-1 line-clamp-1">{name}</h3>
         {description && (
-          <p className="text-sm text-white/70 line-clamp-2">{description}</p>
+          <p className="text-sm line-clamp-2" style={{ color: COLORS.descriptionText }}>{description}</p>
+        )}
+
+        {/* Elevated Stats - overlapping header/content */}
+        {(daysPerWeek || durationWeeks) && (
+          <div className="flex gap-4 mt-4 -mb-8 relative z-10">
+            {daysPerWeek && (
+              <div
+                className="flex-1 text-center py-3 rounded-lg bg-white shadow-lg border"
+                style={{ borderColor: COLORS.gray100 }}
+              >
+                <div className="text-xl font-bold" style={{ color: COLORS.navy }}>
+                  {daysPerWeek}
+                </div>
+                <div className="text-xs" style={{ color: COLORS.gray600 }}>Days/Week</div>
+              </div>
+            )}
+            {durationWeeks && (
+              <div
+                className="flex-1 text-center py-3 rounded-lg bg-white shadow-lg border"
+                style={{ borderColor: COLORS.gray100 }}
+              >
+                <div className="text-xl font-bold" style={{ color: COLORS.navy }}>
+                  {durationWeeks}
+                </div>
+                <div className="text-xs" style={{ color: COLORS.gray600 }}>Weeks</div>
+              </div>
+            )}
+          </div>
         )}
       </div>
 
-      {/* Stats */}
-      <div className="p-5">
-        <div className="grid grid-cols-3 gap-3 mb-4">
-          {daysPerWeek && (
-            <div className="text-center">
-              <div className="text-xl font-bold" style={{ color: COLORS.navy }}>
-                {daysPerWeek}
-              </div>
-              <div className="text-xs" style={{ color: COLORS.gray400 }}>Days/Week</div>
-            </div>
-          )}
-          {durationWeeks && (
-            <div className="text-center">
-              <div className="text-xl font-bold" style={{ color: COLORS.navy }}>
-                {durationWeeks}
-              </div>
-              <div className="text-xs" style={{ color: COLORS.gray400 }}>Weeks</div>
-            </div>
-          )}
-          {cloneCount > 0 && (
-            <div className="text-center">
-              <div className="text-xl font-bold" style={{ color: COLORS.navy }}>
-                {cloneCount}
-              </div>
-              <div className="text-xs" style={{ color: COLORS.gray400 }}>Users</div>
-            </div>
-          )}
-        </div>
-
-        {/* Goals */}
+      {/* Body content with padding for overlapping stats */}
+      <div className="p-5 pt-12" style={{ backgroundColor: '#FAFAFA' }}>
+        {/* Goals - coral highlight badges */}
         {goals.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-4">
             {goals.slice(0, 2).map((goal) => (
               <span
                 key={goal}
-                className="text-xs px-2 py-1 rounded"
-                style={{ backgroundColor: COLORS.gray100, color: COLORS.gray600 }}
+                className="text-xs px-2 py-1 rounded-full font-medium"
+                style={{ backgroundColor: COLORS.coralLight, color: COLORS.coralDark }}
               >
                 {goal}
               </span>
@@ -151,9 +154,8 @@ export default function ProgramCard({
             {equipment.slice(0, 3).map((eq) => (
               <span
                 key={eq}
-                className="text-xs px-2 py-0.5 rounded border"
+                className="text-xs px-2 py-0.5 rounded border bg-white"
                 style={{
-                  backgroundColor: COLORS.gray50,
                   color: COLORS.gray600,
                   borderColor: COLORS.gray100
                 }}
@@ -190,13 +192,7 @@ export default function ProgramCard({
             <button
               onClick={handleClaim}
               disabled={isLoading}
-              className="text-xs px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50 font-medium"
-              style={{
-                backgroundColor: COLORS.coral,
-                color: 'white',
-              }}
-              onMouseOver={(e) => e.currentTarget.style.backgroundColor = COLORS.coralDark}
-              onMouseOut={(e) => e.currentTarget.style.backgroundColor = COLORS.coral}
+              className="text-xs px-4 py-2 rounded-lg transition-opacity disabled:opacity-50 font-semibold text-white hover:opacity-90 bg-gradient-to-r from-[#FF6B6B] to-[#FF8E8E] shadow-md shadow-[#FF6B6B]/25"
             >
               {isLoading ? 'Claiming...' : 'Claim Program'}
             </button>
@@ -226,7 +222,7 @@ export default function ProgramCard({
       <Link href={`/templates/${slug}`}>
         <div
           className="p-5 text-white"
-          style={{ background: `linear-gradient(to bottom right, ${COLORS.navy}, ${COLORS.navyLight})` }}
+          style={{ background: `linear-gradient(180deg, ${COLORS.navy} 0%, ${COLORS.navyLight} 60%, ${COLORS.navyMid} 100%)` }}
         >
           <div className="flex items-start justify-between mb-3">
             {difficulty && (
@@ -236,8 +232,8 @@ export default function ProgramCard({
             )}
             {category && (
               <span
-                className="text-xs px-2 py-1 rounded-full capitalize"
-                style={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
+                className="text-xs px-2 py-1 rounded-full capitalize border"
+                style={{ borderColor: 'rgba(255,255,255,0.3)', color: 'rgba(255,255,255,0.9)' }}
               >
                 {category}
               </span>
@@ -245,48 +241,49 @@ export default function ProgramCard({
           </div>
           <h3 className="text-lg font-bold mb-1 line-clamp-1">{name}</h3>
           {description && (
-            <p className="text-sm text-white/70 line-clamp-2">{description}</p>
+            <p className="text-sm line-clamp-2" style={{ color: COLORS.descriptionText }}>{description}</p>
+          )}
+
+          {/* Elevated Stats - overlapping header/content */}
+          {(daysPerWeek || durationWeeks) && (
+            <div className="flex gap-4 mt-4 -mb-8 relative z-10">
+              {daysPerWeek && (
+                <div
+                  className="flex-1 text-center py-3 rounded-lg bg-white shadow-lg border"
+                  style={{ borderColor: COLORS.gray100 }}
+                >
+                  <div className="text-xl font-bold" style={{ color: COLORS.navy }}>
+                    {daysPerWeek}
+                  </div>
+                  <div className="text-xs" style={{ color: COLORS.gray600 }}>Days/Week</div>
+                </div>
+              )}
+              {durationWeeks && (
+                <div
+                  className="flex-1 text-center py-3 rounded-lg bg-white shadow-lg border"
+                  style={{ borderColor: COLORS.gray100 }}
+                >
+                  <div className="text-xl font-bold" style={{ color: COLORS.navy }}>
+                    {durationWeeks}
+                  </div>
+                  <div className="text-xs" style={{ color: COLORS.gray600 }}>Weeks</div>
+                </div>
+              )}
+            </div>
           )}
         </div>
       </Link>
 
-      {/* Stats */}
-      <div className="p-5">
-        <div className="grid grid-cols-3 gap-3 mb-4">
-          {daysPerWeek && (
-            <div className="text-center">
-              <div className="text-xl font-bold" style={{ color: COLORS.navy }}>
-                {daysPerWeek}
-              </div>
-              <div className="text-xs" style={{ color: COLORS.gray400 }}>Days/Week</div>
-            </div>
-          )}
-          {durationWeeks && (
-            <div className="text-center">
-              <div className="text-xl font-bold" style={{ color: COLORS.navy }}>
-                {durationWeeks}
-              </div>
-              <div className="text-xs" style={{ color: COLORS.gray400 }}>Weeks</div>
-            </div>
-          )}
-          {cloneCount > 0 && (
-            <div className="text-center">
-              <div className="text-xl font-bold" style={{ color: COLORS.navy }}>
-                {cloneCount}
-              </div>
-              <div className="text-xs" style={{ color: COLORS.gray400 }}>Users</div>
-            </div>
-          )}
-        </div>
-
-        {/* Goals */}
+      {/* Body content with padding for overlapping stats */}
+      <div className="p-5 pt-12" style={{ backgroundColor: '#FAFAFA' }}>
+        {/* Goals - coral highlight badges */}
         {goals.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-4">
             {goals.slice(0, 2).map((goal) => (
               <span
                 key={goal}
-                className="text-xs px-2 py-1 rounded"
-                style={{ backgroundColor: COLORS.gray100, color: COLORS.gray600 }}
+                className="text-xs px-2 py-1 rounded-full font-medium"
+                style={{ backgroundColor: COLORS.coralLight, color: COLORS.coralDark }}
               >
                 {goal}
               </span>
@@ -305,9 +302,8 @@ export default function ProgramCard({
             {equipment.slice(0, 3).map((eq) => (
               <span
                 key={eq}
-                className="text-xs px-2 py-0.5 rounded border"
+                className="text-xs px-2 py-0.5 rounded border bg-white"
                 style={{
-                  backgroundColor: COLORS.gray50,
                   color: COLORS.gray600,
                   borderColor: COLORS.gray100
                 }}
@@ -338,13 +334,7 @@ export default function ProgramCard({
           <button
             onClick={handleClaim}
             disabled={isLoading}
-            className="text-xs px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50 font-medium"
-            style={{
-              backgroundColor: COLORS.coral,
-              color: 'white',
-            }}
-            onMouseOver={(e) => e.currentTarget.style.backgroundColor = COLORS.coralDark}
-            onMouseOut={(e) => e.currentTarget.style.backgroundColor = COLORS.coral}
+            className="text-xs px-4 py-2 rounded-lg transition-opacity disabled:opacity-50 font-semibold text-white hover:opacity-90 bg-gradient-to-r from-[#FF6B6B] to-[#FF8E8E] shadow-md shadow-[#FF6B6B]/25"
           >
             {isLoading ? 'Claiming...' : 'Claim Program'}
           </button>

@@ -19,7 +19,7 @@
         "npm run typecheck passes"
       ],
       "priority": 1,
-      "passes": true,
+      "passes": false,
       "notes": "Reference: /dev/workout-tracker Option B - the grid at the top showing Set 1-4 cells"
     },
     {
@@ -39,7 +39,7 @@
         "npm run typecheck passes"
       ],
       "priority": 2,
-      "passes": true,
+      "passes": false,
       "notes": "Reference: /dev/workout-tracker Option B - the big coral gradient card with large inputs"
     },
     {
@@ -57,7 +57,7 @@
         "npm run typecheck passes"
       ],
       "priority": 3,
-      "passes": true,
+      "passes": false,
       "notes": "Reference: /dev/workout-tracker Option B - the rest timer row at bottom"
     },
     {
@@ -75,7 +75,7 @@
         "npm run typecheck passes"
       ],
       "priority": 4,
-      "passes": true,
+      "passes": false,
       "notes": "Reference: /dev/workout-tracker Option B - the progress bar between grid and input card"
     },
     {
@@ -95,7 +95,7 @@
         "Verify UI renders correctly in browser at /workout/[id]"
       ],
       "priority": 5,
-      "passes": true,
+      "passes": false,
       "notes": "This integrates US-001 through US-004 into the production workout page"
     },
     {
@@ -113,7 +113,7 @@
         "Verify component renders correctly in browser at /library"
       ],
       "priority": 6,
-      "passes": true,
+      "passes": false,
       "notes": "Reference: /dev/library-cards Option D header styling"
     },
     {
@@ -132,7 +132,7 @@
         "Verify component renders correctly in browser at /library"
       ],
       "priority": 7,
-      "passes": true,
+      "passes": false,
       "notes": "Reference: /dev/library-cards Option D - elevated stats overlapping header/body"
     },
     {
@@ -151,7 +151,7 @@
         "Verify component renders correctly in browser at /library"
       ],
       "priority": 8,
-      "passes": true,
+      "passes": false,
       "notes": "Reference: /dev/library-cards Option D - coral goals and gradient CTA"
     },
     {
@@ -170,7 +170,7 @@
         "npm run typecheck passes"
       ],
       "priority": 9,
-      "passes": true,
+      "passes": false,
       "notes": "Reference: /dev/exercise-cards Option B - card layout with emoji icons"
     },
     {
@@ -189,7 +189,7 @@
         "npm run typecheck passes"
       ],
       "priority": 10,
-      "passes": true,
+      "passes": false,
       "notes": "Reference: /dev/exercise-cards Option B - the 40x40px action buttons on the right"
     },
     {
@@ -207,7 +207,7 @@
         "npm run typecheck passes"
       ],
       "priority": 11,
-      "passes": true,
+      "passes": false,
       "notes": "Reference: /dev/exercise-cards Option B - the animated expand section"
     },
     {
@@ -226,7 +226,7 @@
         "Verify UI renders correctly in browser at /program/[programId]"
       ],
       "priority": 12,
-      "passes": true,
+      "passes": false,
       "notes": "This integrates US-009 through US-011 into the production program display"
     },
     {
@@ -242,7 +242,7 @@
         "Verify page renders at /dev/library-cards"
       ],
       "priority": 13,
-      "passes": true,
+      "passes": false,
       "notes": "This helps verify the production component matches the approved design"
     },
     {
@@ -259,7 +259,7 @@
         "npm run build succeeds without errors"
       ],
       "priority": 14,
-      "passes": true,
+      "passes": false,
       "notes": "Final integration verification across all three features"
     }
   ]
