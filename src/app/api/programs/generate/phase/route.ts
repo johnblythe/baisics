@@ -160,6 +160,53 @@ export async function POST(request: Request) {
     );
   }
 
+  // Save intake data on phase 1 so returning users have their info (#217)
+  if (phaseNumber === 1 && body.intakeData) {
+    try {
+      const intake = body.intakeData;
+      // Store environment, equipment, style as JSON in additionalInfo
+      const extraData = {
+        workoutEnvironment: intake.workoutEnvironment,
+        equipmentAccess: intake.equipmentAccess,
+        workoutStyle: intake.workoutStyle,
+        originalAdditionalInfo: intake.additionalInfo || '',
+      };
+
+      await prisma.userIntake.upsert({
+        where: { userId },
+        create: {
+          userId,
+          sex: intake.sex || 'other',
+          trainingGoal: intake.trainingGoal || '',
+          daysAvailable: intake.daysAvailable || 3,
+          dailyBudget: intake.dailyBudget || 60,
+          experienceLevel: intake.experienceLevel || 'beginner',
+          age: intake.age ? parseInt(String(intake.age)) : null,
+          weight: intake.weight ? parseInt(String(intake.weight)) : null,
+          height: intake.height ? parseInt(String(intake.height)) : null,
+          trainingPreferences: intake.trainingPreferences || [],
+          additionalInfo: JSON.stringify(extraData),
+        },
+        update: {
+          sex: intake.sex || 'other',
+          trainingGoal: intake.trainingGoal || '',
+          daysAvailable: intake.daysAvailable || 3,
+          dailyBudget: intake.dailyBudget || 60,
+          experienceLevel: intake.experienceLevel || 'beginner',
+          age: intake.age ? parseInt(String(intake.age)) : null,
+          weight: intake.weight ? parseInt(String(intake.weight)) : null,
+          height: intake.height ? parseInt(String(intake.height)) : null,
+          trainingPreferences: intake.trainingPreferences || [],
+          additionalInfo: JSON.stringify(extraData),
+        },
+      });
+      console.log(`[Phase 1] Saved intake for user ${userId}`);
+    } catch (intakeError) {
+      // Non-critical - log but continue with generation
+      console.warn(`[Phase 1] Failed to save intake for user ${userId}:`, intakeError);
+    }
+  }
+
   try {
     // Convert legacy intake format if needed
     let userProfile: UserProfile;

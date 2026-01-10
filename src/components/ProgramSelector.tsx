@@ -74,11 +74,11 @@ export function ProgramSelector({ currentProgram, programs, isPremium = false }:
 
   return (
     <>
-      <div className="relative group" ref={menuRef}>
+      <div className="relative group z-50 text-left" ref={menuRef}>
         <button
           onClick={() => setIsOpen(!isOpen)}
           onKeyDown={handleKeyDown}
-          className="inline-flex items-center gap-2 group text-3xl font-bold text-[#0F172A] hover:text-[#FF6B6B] transition-colors"
+          className="inline-flex items-center gap-2 group text-3xl font-bold text-[#0F172A] hover:text-[#FF6B6B] transition-colors text-left"
           aria-expanded={isOpen}
           aria-haspopup="listbox"
           aria-label="Select program"
@@ -105,7 +105,7 @@ export function ProgramSelector({ currentProgram, programs, isPremium = false }:
 
         {isOpen && (
           <div
-            className="absolute z-50 w-full min-w-[300px] max-w-[400px] mt-2 bg-white rounded-xl shadow-lg border border-[#E2E8F0] py-1 overflow-hidden"
+            className="absolute z-[60] w-full min-w-[300px] max-w-[400px] mt-2 bg-white rounded-xl shadow-lg border border-[#E2E8F0] py-1 overflow-hidden"
             role="listbox"
             tabIndex={-1}
           >
