@@ -1,1 +1,27 @@
+## Codebase Patterns
+- Dashboard page: src/app/dashboard/[programId]/page.tsx
+- API fetch pattern: check response.ok before parsing JSON, validate data type before setState
+- ProgramSelector component available at @/components/ProgramSelector for dropdown styling reference
 
+---
+
+## 2026-01-09 - US-001: Fix program selector fetch error handling
+- Updated fetchAllPrograms in dashboard page to check response.ok before parsing
+- Added console.error logging with status/statusText on failure
+- Added Array.isArray check before calling setAllPrograms
+- **Learnings for future iterations:**
+  - Dashboard has many parallel API calls in fetchData() useEffect - same pattern should apply
+  - The allPrograms state is used by ProgramSelector component
+  - Pre-existing lint warnings exist (react-hooks/exhaustive-deps, img elements) - these are not blockers
+---
+
+## 2026-01-09 - US-002: Add allWorkouts to current-workout API response
+- Added prisma.workoutLog.groupBy query to get most recent completion per workout
+- Created completionMap to efficiently look up lastCompletedAt by workoutId
+- Added allWorkouts array to response with: id, dayNumber, name, focus, exerciseCount, lastCompletedAt
+- Existing response fields unchanged (nextWorkout, totalWorkouts, lastCompletedAt)
+- **Learnings for future iterations:**
+  - Prisma groupBy with _max is efficient way to get aggregate per-group values
+  - workoutSequence already contains exercises, so exerciseCount is available without extra query
+  - The allWorkouts array is ordered by dayNumber (inherits from workoutSequence ordering)
+---

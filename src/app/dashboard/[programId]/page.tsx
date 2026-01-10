@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback, Suspense } from 'react';
+import React, { useEffect, useState, useCallback, Suspense, useRef } from 'react';
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import ReactConfetti from "react-confetti";
@@ -95,6 +95,15 @@ interface RecentActivity {
   completedAt: string;
 }
 
+interface WorkoutOption {
+  id: string;
+  dayNumber: number;
+  name: string;
+  focus: string;
+  exerciseCount: number;
+  lastCompletedAt: string | null;
+}
+
 interface CurrentWorkout {
   nextWorkout: {
     id: string;
@@ -105,6 +114,7 @@ interface CurrentWorkout {
   };
   totalWorkouts: number;
   lastCompletedAt: string | null;
+  allWorkouts: WorkoutOption[];
 }
 
 // Component state types
@@ -280,6 +290,9 @@ function DashboardContent() {
     brandColor: string;
     brandLogo: string | null;
   } | null>(null);
+  const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null);
+  const [isWorkoutSelectorOpen, setIsWorkoutSelectorOpen] = useState(false);
+  const workoutSelectorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const disclaimerAcknowledged = localStorage.getItem('disclaimer-acknowledged');
@@ -423,6 +436,28 @@ function DashboardContent() {
 
     fetchAllPrograms();
   }, []);
+
+  // Initialize selectedWorkoutId when currentWorkout loads
+  useEffect(() => {
+    if (currentWorkout?.nextWorkout?.id && !selectedWorkoutId) {
+      setSelectedWorkoutId(currentWorkout.nextWorkout.id);
+    }
+  }, [currentWorkout, selectedWorkoutId]);
+
+  // Handle click outside for workout selector dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (workoutSelectorRef.current && !workoutSelectorRef.current.contains(event.target as Node)) {
+        setIsWorkoutSelectorOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Derive the selected workout from currentWorkout.allWorkouts
+  const selectedWorkout = currentWorkout?.allWorkouts?.find(w => w.id === selectedWorkoutId) || currentWorkout?.nextWorkout;
 
   const handleAskForHelp = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -577,7 +612,7 @@ function DashboardContent() {
               </div>
             )}
             {/* Quick Workout Start Card - v2a coral accent theme */}
-            {currentWorkout?.nextWorkout && (
+            {currentWorkout?.nextWorkout && selectedWorkout && (
               <div className="relative overflow-hidden bg-white rounded-2xl border-l-4 border-l-[#FF6B6B] border border-[#E2E8F0] shadow-md p-6 lg:p-8">
                 {/* Decorative coral accent */}
                 <div className="absolute top-0 right-0 w-64 h-64 bg-[#FF6B6B]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
@@ -585,16 +620,97 @@ function DashboardContent() {
                 <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="space-y-2">
                     <p className="text-[#64748B] text-sm font-medium uppercase tracking-wider" style={{ fontFamily: "'Space Mono', monospace" }}>Ready to train?</p>
-                    <h2 className="text-2xl font-bold text-[#0F172A]">
-                      Day {currentWorkout.nextWorkout.dayNumber}: {currentWorkout.nextWorkout.name}
-                    </h2>
+
+                    {/* Workout Selector Dropdown */}
+                    <div className="relative" ref={workoutSelectorRef}>
+                      <button
+                        onClick={() => setIsWorkoutSelectorOpen(!isWorkoutSelectorOpen)}
+                        className="inline-flex items-center gap-2 group text-2xl font-bold text-[#0F172A] hover:text-[#FF6B6B] transition-colors"
+                        aria-expanded={isWorkoutSelectorOpen}
+                        aria-haspopup="listbox"
+                        aria-label="Select workout"
+                      >
+                        Day {selectedWorkout.dayNumber}: {selectedWorkout.name}
+                        <svg
+                          className={`w-5 h-5 text-[#94A3B8] group-hover:text-[#FF6B6B] transition-transform duration-200 ${
+                            isWorkoutSelectorOpen ? 'rotate-180' : ''
+                          }`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
+                      </button>
+
+                      {isWorkoutSelectorOpen && currentWorkout.allWorkouts && (
+                        <div
+                          className="absolute z-50 w-full min-w-[320px] max-w-[450px] mt-2 bg-white rounded-xl shadow-lg border border-[#E2E8F0] py-1 overflow-hidden"
+                          role="listbox"
+                          tabIndex={-1}
+                        >
+                          {currentWorkout.allWorkouts.map((workout) => {
+                            const isSelected = workout.id === selectedWorkoutId;
+                            const isNextWorkout = workout.id === currentWorkout.nextWorkout.id;
+
+                            return (
+                              <button
+                                key={workout.id}
+                                onClick={() => {
+                                  setSelectedWorkoutId(workout.id);
+                                  setIsWorkoutSelectorOpen(false);
+                                }}
+                                className={`w-full text-left px-4 py-3 transition-colors flex items-center justify-between gap-2 ${
+                                  isSelected ? 'bg-[#F8FAFC]' : ''
+                                } text-[#0F172A] hover:bg-[#F8FAFC]`}
+                                role="option"
+                                aria-selected={isSelected}
+                              >
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2">
+                                    <span className="block font-medium truncate">
+                                      Day {workout.dayNumber}: {workout.name}
+                                    </span>
+                                    {isNextWorkout && (
+                                      <span className="text-xs bg-[#FFE5E5] text-[#FF6B6B] px-2 py-0.5 rounded-full font-medium">
+                                        Next
+                                      </span>
+                                    )}
+                                  </div>
+                                  <span className="block text-sm text-[#64748B] mt-0.5">
+                                    {workout.focus} • {workout.exerciseCount} exercises
+                                    {workout.lastCompletedAt
+                                      ? ` • Last: ${new Date(workout.lastCompletedAt).toLocaleDateString()}`
+                                      : ' • Not yet completed'
+                                    }
+                                  </span>
+                                </div>
+
+                                {isSelected && (
+                                  <svg className="w-5 h-5 text-[#FF6B6B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                  </svg>
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+
                     <p className="text-[#64748B]">
-                      {currentWorkout.nextWorkout.focus} • {currentWorkout.nextWorkout.exerciseCount} exercises
+                      {selectedWorkout.focus} • {selectedWorkout.exerciseCount} exercises
                     </p>
                   </div>
                   <div className="flex flex-col sm:flex-row gap-3">
                     <Link
-                      href={`/workout/${currentWorkout.nextWorkout.id}`}
+                      href={`/workout/${selectedWorkoutId}`}
                       className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-[#FF6B6B] text-white font-semibold rounded-xl hover:bg-[#EF5350] transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-[#FF6B6B]/25"
                     >
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
