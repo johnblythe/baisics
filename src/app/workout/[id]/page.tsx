@@ -13,6 +13,7 @@ import { BigSetInputCard } from '@/components/workout/BigSetInputCard';
 import { RestTimerControl } from '@/components/workout/RestTimerControl';
 import { WorkoutProgressBar } from '@/components/workout/WorkoutProgressBar';
 import RestPeriodIndicator from '@/app/components/RestPeriodIndicator';
+import { WorkoutShareCard, WorkoutShareData } from '@/components/share/WorkoutShareCard';
 
 // Helper to format date for display
 function formatDateForDisplay(date: Date): string {
@@ -88,7 +89,6 @@ export default function WorkoutPage() {
   const [error, setError] = useState<string | null>(null);
   const [workoutStarted, setWorkoutStarted] = useState(false);
   const [workoutLog, setWorkoutLog] = useState<any>(null);
-  const [showCompletion, setShowCompletion] = useState(false);
   const [swapModalOpen, setSwapModalOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   // Store chat messages per exercise for persistence
@@ -104,6 +104,10 @@ export default function WorkoutPage() {
   const [showRestTimer, setShowRestTimer] = useState(false);
   const [restTimerKey, setRestTimerKey] = useState(0); // Key to force timer restart
   const restTimerTriggerRef = useRef(false); // Track if we should auto-start
+  // Share modal state
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [shareData, setShareData] = useState<WorkoutShareData | null>(null);
+  const [workoutName, setWorkoutName] = useState('');
 
   const findFirstIncompletePosition = (exercises: ExerciseWithLogs[]) => {
     for (let i = 0; i < exercises.length; i++) {
@@ -143,6 +147,9 @@ export default function WorkoutPage() {
           throw new Error('Failed to fetch workout');
         }
         const data = await response.json();
+
+        // Store workout name for share card
+        setWorkoutName(data.name || 'Workout');
 
         if (!data.workoutLogs?.[0]) {
           const startWorkoutResponse = await fetch('/api/workout-logs', {
@@ -298,14 +305,29 @@ export default function WorkoutPage() {
         throw new Error('Failed to complete workout');
       }
 
-      setShowCompletion(true);
-      setTimeout(() => {
-        router.push('/dashboard');
-      }, 2500);
+      // Prepare share data and show share modal
+      const exercisesCompleted = exercises.filter(ex =>
+        ex.logs.every(l => l.isCompleted)
+      ).length;
+
+      setShareData({
+        workoutName: workoutName,
+        exercisesCompleted: exercisesCompleted,
+        totalExercises: exercises.length,
+        streak: 1, // TODO: Fetch actual streak from API if available
+        date: workoutDate,
+      });
+      setShowShareModal(true);
     } catch (error) {
       console.error('Failed to complete workout:', error);
       setError('Failed to complete workout. Please try again.');
     }
+  };
+
+  // Handle share modal close (skip sharing)
+  const handleShareClose = () => {
+    setShowShareModal(false);
+    router.push('/dashboard');
   };
 
   // Calculate progress
@@ -349,21 +371,15 @@ export default function WorkoutPage() {
     );
   }
 
-  if (showCompletion) {
+  // Show share modal after workout completion
+  if (showShareModal && shareData) {
     return (
-      <MainLayout>
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="text-center space-y-6 p-8 bg-white rounded-2xl border border-[#F1F5F9] shadow-lg max-w-md mx-auto">
-            <div className="w-20 h-20 mx-auto bg-green-100 rounded-full flex items-center justify-center">
-              <CheckCircle className="w-10 h-10 text-green-500" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold text-[#0F172A] mb-2">Workout Complete!</h2>
-              <p className="text-[#475569]">Great job! Redirecting to dashboard...</p>
-            </div>
-          </div>
-        </div>
-      </MainLayout>
+      <>
+        <WorkoutShareCard
+          data={shareData}
+          onClose={handleShareClose}
+        />
+      </>
     );
   }
 

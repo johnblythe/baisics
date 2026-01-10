@@ -1,0 +1,14 @@
+There are still 16 stories with `passes: false`. US-008 is complete. The next iteration will pick up US-009.
+
+## Summary
+
+**Completed: US-008 - Add audio alert to rest timer**
+
+- Added `playAlertSound()` function using Web Audio API with dual oscillators (800Hz + 1000Hz beeps)
+- Sound plays when rest timer reaches 0 (if enabled)
+- Added sound toggle button with Volume2/VolumeX icons
+- User preference stored in localStorage (`baisics_rest_timer_sound`)
+- Uses `hasPlayedSound` ref to prevent duplicate plays
+- Coral styling for enabled state, gray for disabled
+
+**Files changed:** `src/app/components/RestPeriodIndicator.tsx`

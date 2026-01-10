@@ -77,7 +77,7 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "Issue #227 - CTA prominence"
     },
     {
@@ -93,7 +93,7 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": "Issue #232 - Backdate workout logging UI"
     },
     {
@@ -108,7 +108,7 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "notes": "Issue #232 - API changes for backdating"
     },
     {
@@ -124,7 +124,7 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "Issue #224 - Rest timer audio"
     },
     {
@@ -139,7 +139,7 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 9,
-      "passes": false,
+      "passes": true,
       "notes": "Issue #224 - Auto-start functionality"
     },
     {
@@ -155,7 +155,7 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 10,
-      "passes": false,
+      "passes": true,
       "notes": "Issue #222 - Workout share card"
     },
     {
@@ -171,7 +171,7 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 11,
-      "passes": false,
+      "passes": true,
       "notes": "Issue #222 - Share flow integration"
     },
     {

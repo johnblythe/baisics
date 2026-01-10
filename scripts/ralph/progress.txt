@@ -72,3 +72,125 @@ Started: Sat Jan 10 16:52:02 EST 2026
   - Coral accent pattern: small vertical bar (w-1 h-5/h-6) next to heading in flex container
   - Stats can stand out more with color + increased font size (text-3xl → text-4xl)
 ---
+
+## 2026-01-10 17:XX - US-005: Make template detail CTA more prominent
+- **What was implemented:**
+  - Added coral gradient background to CTA section (`backgroundColor: COLORS.coralLight`)
+  - Updated CTA button with gradient: `linear-gradient(to right, #FF6B6B, #FF8E8E)`
+  - Added coral shadow: `boxShadow: '0 10px 15px -3px rgba(255, 107, 107, 0.25)'`
+  - Increased button padding (py-4) and rounded corners (rounded-xl)
+  - Added hover effects: `hover:shadow-xl hover:scale-[1.02]`
+  - Updated button text with arrow: `'Generate My Program →'`
+  - Changed day picker unselected state to white bg (better contrast on coral section)
+- **Files created/changed:**
+  - Modified: `src/app/templates/[slug]/TemplateDetailClient.tsx`
+- **Learnings for future iterations:**
+  - Inline styles needed for custom gradients/shadows not in Tailwind defaults
+  - Coral-tinted section backgrounds make CTAs pop more than white backgrounds
+  - Hover scale effects (scale-[1.02]) add nice micro-interaction
+---
+
+## 2026-01-10 17:XX - US-006: Add date picker to workout page
+- **What was implemented:**
+  - Added `workoutDate` state initialized to today's date
+  - Added date picker UI in progress header with Calendar icon from lucide-react
+  - Date picker button changes styling (coral bg) when a non-today date is selected
+  - Shows "Logging for [date]" indicator when backdating
+  - Uses native HTML date input with `max` attribute to prevent future dates
+  - v2a styling: coral accents (#FF6B6B, #FFE5E5), rounded corners, shadows
+- **Files created/changed:**
+  - Modified: `src/app/workout/[id]/page.tsx`
+- **Learnings for future iterations:**
+  - Added helper functions: `formatDateForDisplay`, `formatDateForInput`, `isSameDay`
+  - Native HTML date input with `max` attribute enforces date constraints
+  - Adding 'T12:00:00' when parsing date string avoids timezone edge cases
+  - Date picker state and UI separate from actual API calls (US-007 will wire it up)
+---
+
+## 2026-01-10 17:XX - US-007: Pass selected date to workout completion API
+- **What was implemented:**
+  - Updated POST /api/workout-logs to accept optional `date` param for backdating startedAt
+  - Updated POST /api/workout-logs/[id]/complete to accept optional `completedAt` param
+  - Both endpoints validate date is not in future (uses end of today for leniency)
+  - Exercise logs also use the custom completedAt time when completing workout
+- **Files created/changed:**
+  - Modified: `src/app/api/workout-logs/route.ts`
+  - Modified: `src/app/api/workout-logs/[id]/complete/route.ts`
+- **Learnings for future iterations:**
+  - Use try/catch when parsing optional JSON body (request.json() throws if no body)
+  - Spread operator with conditional: `...(logDate && { startedAt: logDate })`
+  - Date validation: compare against end of today (23:59:59.999) for better UX
+---
+
+## 2026-01-10 17:XX - US-008: Add audio alert to rest timer
+- **What was implemented:**
+  - Added `playAlertSound()` function using Web Audio API with dual oscillators
+  - Sound is two short beeps (800Hz + 1000Hz) with gentle attack/decay envelope
+  - Added `soundEnabled` state with localStorage persistence (`baisics_rest_timer_sound`)
+  - Added sound toggle button with Volume2/VolumeX icons from lucide-react
+  - Sound plays when timer reaches 0 (if enabled), uses `hasPlayedSound` ref to prevent duplicates
+  - Toggle button uses coral styling when enabled, gray when disabled
+- **Files created/changed:**
+  - Modified: `src/app/components/RestPeriodIndicator.tsx`
+- **Learnings for future iterations:**
+  - Web Audio API: create AudioContext, oscillator, gainNode for sound generation
+  - Safari fallback: `window.webkitAudioContext` for older Safari versions
+  - Use empty catch block for graceful fallback when audio unavailable
+  - useRef for preventing duplicate sound plays in setState callbacks
+  - localStorage key pattern: `baisics_[feature]_[setting]`
+---
+
+## 2026-01-10 18:XX - US-009: Auto-start rest timer after set completion
+- **What was implemented:**
+  - Added `autoStart` prop to RestPeriodIndicator component
+  - Added auto-start effect that starts timer immediately on mount when `autoStart={true}`
+  - Added `showRestTimer` state and `restTimerKey` to workout page for timer visibility control
+  - Added `triggerRestTimer()` callback that shows timer and increments key (forces fresh instance)
+  - Wired up `onComplete` in BigSetInputCard to call `triggerRestTimer()` after marking set complete
+  - Timer appears with fade-in animation after completing a set (if auto-start enabled)
+  - Timer hides when navigating between exercises or when auto-start is toggled off
+  - Timer uses exercise's restPeriod from current exercise
+- **Files created/changed:**
+  - Modified: `src/app/components/RestPeriodIndicator.tsx` (added autoStart prop and effect)
+  - Modified: `src/app/workout/[id]/page.tsx` (added timer state, trigger, and rendering)
+- **Learnings for future iterations:**
+  - Use key prop to force re-mount of timer component for fresh countdown
+  - useCallback for trigger function to avoid re-renders in dependency arrays
+  - Animate-in classes from Tailwind: `animate-in fade-in slide-in-from-top-2 duration-300`
+  - Effect with `[autoStart, restPeriod, timeRemaining]` deps handles auto-start on mount only
+---
+
+## 2026-01-10 18:XX - US-010: Create workout share card component
+- **What was implemented:**
+  - Created WorkoutShareCard component for sharing workout completions
+  - Card displays: workout name, exercises completed count, duration (optional), streak count
+  - Branded design with coral gradient header (#FF6B6B to #FF8E8E) and navy background
+  - Uses html2canvas for PNG image generation with 2x scale for quality
+  - Share options: Web Share API (with image support), Twitter/X, Copy Link, Download PNG
+  - Handles mobile (Web Share API) and desktop (fallback buttons) gracefully
+- **Files created/changed:**
+  - Created: `src/components/share/WorkoutShareCard.tsx`
+- **Learnings for future iterations:**
+  - html2canvas 1.4.1 has built-in types; don't install @types/html2canvas (outdated)
+  - html2canvas options: `backgroundColor`, `scale`, `useCORS`, `logging` are valid
+  - Web Share API `navigator.canShare()` checks if file sharing is supported
+  - Pattern for generating shareable images: useRef on card div + html2canvas + toBlob
+  - Existing share cards in `src/components/share/` (AchievementCard, ProgramCard) for reference
+---
+
+## 2026-01-10 18:XX - US-011: Add share prompt after workout completion
+- **What was implemented:**
+  - Integrated WorkoutShareCard modal into workout completion flow
+  - After clicking "Complete Workout", share modal now appears instead of simple completion screen
+  - Share modal displays workout stats (name, exercises completed, streak, date)
+  - Share options: Web Share API (mobile), Twitter/X, Copy Link, Download Image
+  - Close/dismiss button redirects to dashboard
+  - Removed old showCompletion state, replaced with showShareModal flow
+- **Files created/changed:**
+  - Modified: `src/app/workout/[id]/page.tsx` (integrated WorkoutShareCard, added share modal state)
+- **Learnings for future iterations:**
+  - WorkoutShareCard already exists with full functionality - reuse rather than recreate
+  - The workout API returns `name` field on workout object for display
+  - Use separate state for shareData (WorkoutShareData type) to pass to share card
+  - handleShareClose callback handles dismiss/close and redirects to dashboard
+---

@@ -1,0 +1,9 @@
+There are still 18 stories with `passes: false`. US-006 is complete. The next iteration will pick up US-007.
+
+**Summary of US-006 implementation:**
+- Added `workoutDate` state defaulting to today
+- Added date picker UI in the progress header with Calendar icon
+- Date picker button uses coral styling when a non-today date is selected
+- Shows "Logging for [date]" indicator when backdating
+- Uses native HTML date input with `max` attribute to prevent future date selection
+- v2a styling applied: coral accents (#FF6B6B, #FFE5E5), rounded-xl corners, shadows, focus rings
