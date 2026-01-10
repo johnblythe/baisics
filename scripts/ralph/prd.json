@@ -249,7 +249,7 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 16,
-      "passes": false,
+      "passes": true,
       "notes": "Issue #125 - Meal ingredient swap UI"
     },
     {
@@ -265,7 +265,7 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 17,
-      "passes": false,
+      "passes": true,
       "notes": "Issue #125 - API for swap suggestions"
     },
     {
@@ -280,7 +280,7 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 18,
-      "passes": false,
+      "passes": true,
       "notes": "Issue #125 - Integration"
     },
     {
@@ -296,7 +296,7 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 19,
-      "passes": false,
+      "passes": true,
       "notes": "Issue #219 - Base email template"
     },
     {
@@ -311,7 +311,7 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 20,
-      "passes": false,
+      "passes": true,
       "notes": "Issue #219 - Magic link email"
     },
     {
@@ -326,7 +326,7 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 21,
-      "passes": false,
+      "passes": true,
       "notes": "Issue #219 - Welcome email"
     },
     {
@@ -341,7 +341,7 @@
         "Save as markdown template or component"
       ],
       "priority": 22,
-      "passes": false,
+      "passes": true,
       "notes": "Issue #218 - Blog template"
     },
     {
@@ -357,7 +357,7 @@
         "Include meta description and title for SEO"
       ],
       "priority": 23,
-      "passes": false,
+      "passes": true,
       "notes": "Issue #218 - First comparison post"
     },
     {
@@ -371,7 +371,7 @@
         "Visual spot check of template pages, workout page, dashboard"
       ],
       "priority": 24,
-      "passes": false,
+      "passes": true,
       "notes": "Final verification"
     }
   ]
