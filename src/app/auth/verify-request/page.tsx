@@ -1,14 +1,12 @@
 import MainLayout from "@/app/components/layouts/MainLayout";
 import { Mail, Inbox, Link as LinkIcon } from "lucide-react";
 import Link from "next/link";
-import { getDevMagicLink } from "@/lib/dev-magic-link";
-
-const isDev = process.env.NODE_ENV === "development";
+import { cookies } from "next/headers";
 
 export default async function VerifyRequest() {
-  const devLink = isDev ? getDevMagicLink() : null;
-  const magicLink = devLink?.url;
-  const email = devLink?.email;
+  const cookieStore = await cookies();
+  const magicLink = cookieStore.get("__dev_magic_link")?.value;
+  const email = cookieStore.get("__dev_magic_email")?.value;
 
   return (
     <MainLayout>

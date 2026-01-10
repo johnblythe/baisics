@@ -613,9 +613,9 @@ function DashboardContent() {
             )}
             {/* Quick Workout Start Card - v2a coral accent theme */}
             {currentWorkout?.nextWorkout && selectedWorkout && (
-              <div className="relative overflow-hidden bg-white rounded-2xl border-l-4 border-l-[#FF6B6B] border border-[#E2E8F0] shadow-md p-6 lg:p-8">
+              <div className="relative bg-white rounded-2xl border-l-4 border-l-[#FF6B6B] border border-[#E2E8F0] shadow-md p-6 lg:p-8">
                 {/* Decorative coral accent */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-[#FF6B6B]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                <div className="absolute top-0 right-0 w-64 h-64 bg-[#FF6B6B]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none overflow-hidden"></div>
 
                 <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="space-y-2">

@@ -2,10 +2,10 @@ import { NextAuthOptions, getServerSession } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import EmailProvider from "next-auth/providers/email";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { cookies } from "next/headers";
 import { prisma } from "./prisma";
 import { sendEmail, emailConfig } from "./email";
 import { magicLinkTemplate } from "./email/templates/magic-link";
-import { setDevMagicLink } from "./dev-magic-link";
 
 // Helper to get session (v4 pattern that mimics v5's auth())
 export async function auth() {
@@ -27,10 +27,25 @@ export const authOptions: NextAuthOptions = {
       },
       from: emailConfig.from,
       sendVerificationRequest: async ({ identifier, url }) => {
-        // Dev mode: store for display on verify page
+        // Dev mode: store in cookie for display on verify page
         if (process.env.NODE_ENV !== "production") {
           console.log(`\n🔗 MAGIC LINK for ${identifier}:\n${url}\n`);
-          setDevMagicLink(identifier, url);
+
+          const cookieStore = await cookies();
+          cookieStore.set("__dev_magic_link", url, {
+            httpOnly: false,
+            secure: false,
+            sameSite: "lax",
+            maxAge: 60 * 10, // 10 minutes
+            path: "/",
+          });
+          cookieStore.set("__dev_magic_email", identifier, {
+            httpOnly: false,
+            secure: false,
+            sameSite: "lax",
+            maxAge: 60 * 10,
+            path: "/",
+          });
           return;
         }
 
