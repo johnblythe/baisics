@@ -179,3 +179,32 @@ Started: Sat Jan 10 13:08:32 EST 2026
   - ExerciseCard handles YouTube video links internally, no need to duplicate
   - The table header (`grid-cols-12` with Type/Exercise/Sets×Reps/Rest columns) was removed
 ---
+
+## 2026-01-10 - US-013: Update library-cards dev page with production component
+- Modified `src/app/dev/library-cards/page.tsx`
+- Imported actual ProgramCard component from `@/app/components/ProgramCard`
+- Added Option E (OptionEProduction) that renders the production ProgramCard
+- Updated state type to include 'E' option: `useState<'A' | 'B' | 'C' | 'D' | 'E'>('A')`
+- Added description for Option E: "Production Component (after changes)"
+- Mapped mock data to ProgramCard props (slug generated from name)
+- Updated Key Differences section to include Option E
+- Allows side-by-side comparison of dev mock (Option D) vs production component (Option E)
+- **Learnings for future iterations:**
+  - Dev pages are useful for verifying production components match design specs
+  - ProgramCard requires slug prop - can generate from name.toLowerCase().replace(/\s+/g, '-')
+  - Mock data needs source='database' for template cards (not 'user')
+  - onClaim can use empty callback `() => {}` in dev pages
+---
+
+## 2026-01-10 - US-014: Final verification and cleanup
+- Ran `npm run lint` and `npm run build` - both pass successfully
+- Removed unused SetInput component from `src/app/workout/[id]/page.tsx` (lines 57-214)
+- Cleaned up unused imports: Circle, Pencil, formatExerciseUnit from workout page
+- Removed unused ExerciseRow component from `src/app/components/ProgramDisplay.tsx` (lines 59-165)
+- Removed unused CATEGORY_STYLES and formatExerciseMeasure/formatRestPeriod imports from ProgramDisplay
+- All production pages verified to build correctly
+- **Learnings for future iterations:**
+  - When replacing components, track unused code for cleanup in final story
+  - Check for orphaned imports after removing components
+  - The getCategoryFromExercise function is still used by ExerciseCard integration, so keep it
+---

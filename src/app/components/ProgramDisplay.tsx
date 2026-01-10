@@ -8,7 +8,6 @@ import { getUser } from '@/lib/actions/user';
 import { DisclaimerBanner } from '@/components/DisclaimerBanner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { generateWorkoutPDF } from '@/utils/pdf';
-import { formatExerciseMeasure, formatRestPeriod } from '@/utils/formatters';
 import { getMacros } from '@/utils/formatting';
 import { WorkoutPlan } from '@/types/program';
 import { MacroDisplay } from '@/components/MacroDisplay';
@@ -25,17 +24,6 @@ interface ProgramDisplayProps {
 export interface ProgramDisplayRef {
   generateWorkoutPDF: (programId: string) => Promise<void>;
 }
-
-// Category styling - matching StreamingPhasePreview
-const CATEGORY_STYLES: Record<string, { bg: string; text: string; label: string }> = {
-  primary: { bg: 'bg-[#FFE5E5]', text: 'text-[#EF5350]', label: 'PRI' },
-  secondary: { bg: 'bg-[#E0F2FE]', text: 'text-[#0284C7]', label: 'SEC' },
-  isolation: { bg: 'bg-[#F3E8FF]', text: 'text-[#9333EA]', label: 'ISO' },
-  cardio: { bg: 'bg-[#FEF3C7]', text: 'text-[#D97706]', label: 'CAR' },
-  flexibility: { bg: 'bg-[#D1FAE5]', text: 'text-[#059669]', label: 'FLX' },
-  compound: { bg: 'bg-[#FFE5E5]', text: 'text-[#EF5350]', label: 'COM' },
-  accessory: { bg: 'bg-[#E0F2FE]', text: 'text-[#0284C7]', label: 'ACC' },
-};
 
 function getCategoryFromExercise(exercise: any): string {
   if (exercise.category) return exercise.category;
@@ -54,115 +42,6 @@ function getCategoryFromExercise(exercise: any): string {
     return 'flexibility';
   }
   return 'secondary';
-}
-
-// Exercise Row Component
-function ExerciseRow({ exercise, index }: { exercise: any; index: number }) {
-  const category = getCategoryFromExercise(exercise);
-  const style = CATEGORY_STYLES[category] || CATEGORY_STYLES.secondary;
-  const [showDetails, setShowDetails] = useState(false);
-  const hasDetails = exercise.notes || (exercise.instructions && exercise.instructions.length > 0);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: -10 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: index * 0.02 }}
-    >
-      <div
-        className={`flex items-center gap-3 py-3 px-2 border-b border-[#F1F5F9] last:border-0 hover:bg-[#FAFAFA] transition-colors ${hasDetails ? 'cursor-pointer' : ''}`}
-        onClick={() => hasDetails && setShowDetails(!showDetails)}
-      >
-        {/* Category badge */}
-        <div className={`w-10 h-6 rounded-md ${style.bg} flex items-center justify-center flex-shrink-0`}>
-          <span className={`text-[10px] font-bold ${style.text} tracking-wider`} style={{ fontFamily: "'Space Mono', monospace" }}>
-            {style.label}
-          </span>
-        </div>
-
-        {/* Exercise name */}
-        <span className="flex-1 text-sm text-[#0F172A] font-medium">{exercise.name}</span>
-
-        {/* Sets x Reps */}
-        <div className="flex items-center gap-1.5 text-xs text-[#475569] tabular-nums flex-shrink-0" style={{ fontFamily: "'Space Mono', monospace" }}>
-          <span className="text-[#0F172A] font-semibold">{exercise.sets}</span>
-          <span className="text-[#94A3B8]">×</span>
-          <span className="text-[#0F172A] font-semibold">
-            {(() => {
-              const formatted = formatExerciseMeasure(exercise);
-              return formatted.replace('reps', '').trim();
-            })()}
-          </span>
-        </div>
-
-        {/* Rest */}
-        <div className="w-16 text-xs text-[#94A3B8] text-right flex-shrink-0" style={{ fontFamily: "'Space Mono', monospace" }}>
-          {formatRestPeriod(typeof exercise.restPeriod === 'string' ? parseInt(exercise.restPeriod) : exercise.restPeriod)}
-        </div>
-
-        {/* Details indicator */}
-        {hasDetails && (
-          <motion.div
-            animate={{ rotate: showDetails ? 180 : 0 }}
-            className="w-5 h-5 rounded-full bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-center flex-shrink-0"
-          >
-            <svg className="w-3 h-3 text-[#94A3B8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </motion.div>
-        )}
-      </div>
-
-      {/* Expanded details */}
-      <AnimatePresence>
-        {showDetails && hasDetails && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="overflow-hidden"
-          >
-            <div className="px-4 py-3 bg-[#F8FAFC] text-sm text-[#475569] border-b border-[#F1F5F9] space-y-3">
-              {/* Instructions */}
-              {exercise.instructions && exercise.instructions.length > 0 && (
-                <div>
-                  <p className="text-xs font-semibold text-[#94A3B8] uppercase tracking-wider mb-2">How to perform</p>
-                  <ol className="list-decimal list-inside space-y-1 text-[#475569]">
-                    {exercise.instructions.map((instruction: string, i: number) => (
-                      <li key={i} className="text-sm">{instruction}</li>
-                    ))}
-                  </ol>
-                </div>
-              )}
-
-              {/* Notes */}
-              {exercise.notes && (
-                <div>
-                  <p className="text-xs font-semibold text-[#94A3B8] uppercase tracking-wider mb-1">Notes</p>
-                  <p className="text-sm text-[#475569]">{exercise.notes}</p>
-                </div>
-              )}
-
-              {/* Tutorial link */}
-              <a
-                href={`https://www.youtube.com/results?search_query=${encodeURIComponent(exercise.name)} how to`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center text-[#FF6B6B] hover:text-[#EF5350] gap-1 text-xs font-medium"
-                onClick={(e) => e.stopPropagation()}
-              >
-                Watch tutorial
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </a>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
-  );
 }
 
 // Workout Day Card Component
