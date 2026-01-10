@@ -233,7 +233,7 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 15,
-      "passes": false,
+      "passes": true,
       "notes": "Issue #221 - Integration"
     },
     {

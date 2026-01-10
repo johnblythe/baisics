@@ -250,3 +250,20 @@ Started: Sat Jan 10 16:52:02 EST 2026
   - Pattern: `useMemo(() => checkIn?.photos || [], [checkIn])` instead of direct `checkIn?.photos || []`
   - Native HTML datalist provides date hints but doesn't restrict input
 ---
+
+## 2026-01-10 19:XX - US-015: Add photo comparison view to check-in history
+- **What was implemented:**
+  - Added Check-in History section to the `/check-in` page below the form
+  - Displays past check-ins with photos (fetched from existing compare API)
+  - Added "Compare Photos" button with coral gradient styling (only shows when 2+ check-ins exist)
+  - Button opens existing PhotoComparison modal component with programId
+  - Shows loading state while fetching, empty state when no photos
+  - Each check-in row shows date and photo count
+- **Files created/changed:**
+  - Modified: `src/app/check-in/page.tsx` (added history section, PhotoComparison modal integration, fetch logic)
+- **Learnings for future iterations:**
+  - `/api/programs/latest` endpoint returns current program for the user
+  - Reuse existing PhotoComparison component from `src/components/` - it already handles date selection and defaults to first/last check-ins
+  - Pattern for conditional modal: `{programId && <PhotoComparison programId={programId} isOpen={...} />}`
+  - Check-in page didn't have a "history" view previously - this adds visibility into past check-ins
+---
