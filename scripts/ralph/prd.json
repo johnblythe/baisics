@@ -202,7 +202,7 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 13,
-      "passes": false,
+      "passes": true,
       "notes": "Issue #223 - Dashboard integration"
     },
     {

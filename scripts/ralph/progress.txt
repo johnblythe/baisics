@@ -212,3 +212,21 @@ Started: Sat Jan 10 16:52:02 EST 2026
   - Conditional grid columns based on hidden content: `${hideStats ? 'grid-cols-1' : 'grid-cols-2'}`
   - Weight change coloring: emerald-400 for gain, sky-400 for loss, white for no change
 ---
+
+## 2026-01-10 19:XX - US-013: Add share progress button to dashboard
+- **What was implemented:**
+  - Added 'Share Progress' button to dashboard stats card (appears only when workouts completed > 0)
+  - Button uses coral gradient styling: `bg-gradient-to-r from-[#FF6B6B] to-[#FF8E8E]`
+  - Added `isProgressShareModalOpen` state and wired into existing modal URL system
+  - ProgressShareCard modal opens with computed progress data from existing dashboard state
+  - Progress data includes: weeks completed, total workouts, weight change, before/after photos
+  - Same share options as workout share (Twitter, Copy, Download) - already in ProgressShareCard
+- **Files created/changed:**
+  - Modified: `src/app/dashboard/[programId]/page.tsx` (added import, state, button, and modal rendering)
+- **Learnings for future iterations:**
+  - Dashboard already has modal URL pattern with `openModal()` and `closeModal()` callbacks
+  - Modal types defined inline in the function: `'upload' | 'compare' | 'share' | 'nutrition' | 'progress-share'`
+  - Progress data computed from existing state: `programStats`, `weightData`, `progressPhotos`, `session`
+  - Weeks calculated by dividing completed workouts by workouts per week from workout plan
+  - ProgressShareCard already includes privacy toggles and share options - no extra wiring needed
+---
