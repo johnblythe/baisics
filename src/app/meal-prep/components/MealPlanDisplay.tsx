@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { MealPlan, DayPlan, Meal } from '../page';
+import { IngredientSwapModal, Ingredient } from '@/components/nutrition/IngredientSwapModal';
 
 interface MealPlanDisplayProps {
   plan: MealPlan;
@@ -13,16 +14,26 @@ interface MealPlanDisplayProps {
     fat: number;
     calories: number;
   };
+  /** User goals for ingredient swap context */
+  userGoals?: string[];
+  /** Program ID for swap suggestions */
+  programId?: string;
+  /** Callback when an ingredient is swapped */
+  onIngredientSwap?: (dayIndex: number, mealIndex: number, oldIngredient: Ingredient, newIngredient: Ingredient | null) => void;
 }
 
 interface MealCardProps {
   meal: Meal;
   isPro: boolean;
   onRegenerate?: () => void;
+  onIngredientClick?: (ingredient: Ingredient) => void;
+  /** Whether to show upgrade prompt instead of swap modal for free users */
+  showUpgradePrompt?: boolean;
 }
 
-function MealCard({ meal, isPro, onRegenerate }: MealCardProps) {
+function MealCard({ meal, isPro, onRegenerate, onIngredientClick, showUpgradePrompt }: MealCardProps) {
   const [expanded, setExpanded] = useState(false);
+  const [showUpgradeToast, setShowUpgradeToast] = useState(false);
 
   const mealTypeLabels: Record<string, string> = {
     breakfast: 'BREAKFAST',
@@ -31,11 +42,35 @@ function MealCard({ meal, isPro, onRegenerate }: MealCardProps) {
     snack: 'SNACK',
   };
 
+  const handleIngredientClick = (ing: { name: string; amount: string }) => {
+    if (showUpgradePrompt) {
+      // Show upgrade toast for free users
+      setShowUpgradeToast(true);
+      setTimeout(() => setShowUpgradeToast(false), 3000);
+      return;
+    }
+    if (onIngredientClick) {
+      onIngredientClick({ name: ing.name, amount: ing.amount });
+    }
+  };
+
   return (
     <div
-      className="border-l-2 transition-colors"
+      className="border-l-2 transition-colors relative"
       style={{ borderLeftColor: expanded ? '#FF6B6B' : 'transparent' }}
     >
+      {/* Upgrade toast for free users */}
+      {showUpgradeToast && (
+        <div className="absolute top-0 left-0 right-0 z-10 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="mx-3 mt-2 px-3 py-2 bg-[#0F172A] text-white text-xs rounded-lg flex items-center gap-2 shadow-lg">
+            <svg className="w-4 h-4 text-[#FF6B6B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            <span>Upgrade to swap ingredients</span>
+            <a href="/upgrade" className="ml-auto text-[#FF6B6B] font-medium hover:underline">Upgrade</a>
+          </div>
+        </div>
+      )}
       <button
         onClick={() => setExpanded(!expanded)}
         className="w-full py-2 px-3 text-left hover:bg-[#F8FAFC] transition-colors flex items-center gap-3"
@@ -70,12 +105,29 @@ function MealCard({ meal, isPro, onRegenerate }: MealCardProps) {
       {expanded && (
         <div className="px-3 pb-3 bg-[#F8FAFC] border-t border-[#E2E8F0]">
           <div className="py-2">
-            <div className="text-[10px] font-medium text-[#94A3B8] uppercase tracking-wider mb-1.5">
+            <div className="text-[10px] font-medium text-[#94A3B8] uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
               Ingredients
+              {isPro && (
+                <span className="text-[8px] px-1.5 py-0.5 rounded bg-[#FFE5E5] text-[#FF6B6B] font-semibold">
+                  TAP TO SWAP
+                </span>
+              )}
             </div>
             <ul className="grid grid-cols-2 gap-x-2 gap-y-0.5">
               {meal.ingredients.map((ing, idx) => (
-                <li key={idx} className="text-xs text-[#475569] truncate">
+                <li
+                  key={idx}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleIngredientClick(ing);
+                  }}
+                  className={`text-xs truncate rounded px-1 -mx-1 py-0.5 transition-colors ${
+                    isPro
+                      ? 'text-[#475569] hover:bg-[#FFE5E5] hover:text-[#EF5350] cursor-pointer'
+                      : 'text-[#475569] hover:bg-[#F1F5F9] cursor-pointer'
+                  }`}
+                  title={isPro ? 'Tap to swap ingredient' : 'Upgrade to swap ingredients'}
+                >
                   {ing.amount} {ing.name}
                 </li>
               ))}
@@ -113,7 +165,15 @@ function MealCard({ meal, isPro, onRegenerate }: MealCardProps) {
   );
 }
 
-function DayCard({ day, isPro, targetMacros }: { day: DayPlan; isPro: boolean; targetMacros: MealPlanDisplayProps['targetMacros'] }) {
+interface DayCardProps {
+  day: DayPlan;
+  dayIndex: number;
+  isPro: boolean;
+  targetMacros: MealPlanDisplayProps['targetMacros'];
+  onIngredientClick?: (dayIndex: number, mealIndex: number, mealName: string, mealType: string, ingredient: Ingredient) => void;
+}
+
+function DayCard({ day, dayIndex, isPro, targetMacros, onIngredientClick }: DayCardProps) {
   const caloriesDiff = day.totalMacros.calories - targetMacros.calories;
   const proteinDiff = day.totalMacros.protein - targetMacros.protein;
 
@@ -144,21 +204,71 @@ function DayCard({ day, isPro, targetMacros }: { day: DayPlan; isPro: boolean; t
 
       {/* Meals - compact list */}
       <div className="divide-y divide-[#F1F5F9]">
-        {day.meals.map((meal, idx) => (
-          <MealCard key={idx} meal={meal} isPro={isPro} />
+        {day.meals.map((meal, mealIdx) => (
+          <MealCard
+            key={mealIdx}
+            meal={meal}
+            isPro={isPro}
+            showUpgradePrompt={!isPro}
+            onIngredientClick={(ingredient) => {
+              if (onIngredientClick) {
+                onIngredientClick(dayIndex, mealIdx, meal.name, meal.type, ingredient);
+              }
+            }}
+          />
         ))}
       </div>
     </div>
   );
 }
 
-export function MealPlanDisplay({ plan, isPro, onSave, targetMacros }: MealPlanDisplayProps) {
+interface SwapModalState {
+  isOpen: boolean;
+  ingredient: Ingredient | null;
+  mealName: string;
+  mealType: string;
+  dayIndex: number;
+  mealIndex: number;
+}
+
+export function MealPlanDisplay({ plan, isPro, onSave, targetMacros, userGoals = [], programId, onIngredientSwap }: MealPlanDisplayProps) {
   const [saved, setSaved] = useState(false);
+  const [swapModal, setSwapModal] = useState<SwapModalState>({
+    isOpen: false,
+    ingredient: null,
+    mealName: '',
+    mealType: '',
+    dayIndex: 0,
+    mealIndex: 0,
+  });
 
   const handleSave = () => {
     onSave();
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handleIngredientClick = (dayIndex: number, mealIndex: number, mealName: string, mealType: string, ingredient: Ingredient) => {
+    if (!isPro) return; // Extra guard, should be handled by MealCard
+    setSwapModal({
+      isOpen: true,
+      ingredient,
+      mealName,
+      mealType,
+      dayIndex,
+      mealIndex,
+    });
+  };
+
+  const handleSwap = (newIngredient: Ingredient | null) => {
+    if (swapModal.ingredient && onIngredientSwap) {
+      onIngredientSwap(swapModal.dayIndex, swapModal.mealIndex, swapModal.ingredient, newIngredient);
+    }
+    setSwapModal(prev => ({ ...prev, isOpen: false }));
+  };
+
+  const closeSwapModal = () => {
+    setSwapModal(prev => ({ ...prev, isOpen: false }));
   };
 
   return (
@@ -206,10 +316,31 @@ export function MealPlanDisplay({ plan, isPro, onSave, targetMacros }: MealPlanD
       </div>
 
       <div className="space-y-4">
-        {plan.days.map((day) => (
-          <DayCard key={day.day} day={day} isPro={isPro} targetMacros={targetMacros} />
+        {plan.days.map((day, dayIndex) => (
+          <DayCard
+            key={day.day}
+            day={day}
+            dayIndex={dayIndex}
+            isPro={isPro}
+            targetMacros={targetMacros}
+            onIngredientClick={handleIngredientClick}
+          />
         ))}
       </div>
+
+      {/* Ingredient Swap Modal - only for Pro users */}
+      {isPro && swapModal.ingredient && (
+        <IngredientSwapModal
+          isOpen={swapModal.isOpen}
+          onClose={closeSwapModal}
+          currentIngredient={swapModal.ingredient}
+          mealName={swapModal.mealName}
+          mealType={swapModal.mealType}
+          onSwap={handleSwap}
+          userGoals={userGoals}
+          programId={programId}
+        />
+      )}
     </div>
   );
 }
