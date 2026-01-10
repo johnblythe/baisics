@@ -1,0 +1,9 @@
+US-006 is complete. There are still stories with `passes: false` (US-007 through US-014), so another iteration will pick up the next story.
+
+**Summary of US-006 completion:**
+- Updated `src/app/components/ProgramCard.tsx` with Option D header styling
+- Changed gradient from diagonal to 180deg vertical fade (#0F172A → #1E293B → #334155)
+- Description text now uses #CBD5E1 for better readability
+- Category badge uses white/30 border instead of white/20 background
+- Both card variants (user's program and template) updated
+- Build and lint pass successfully

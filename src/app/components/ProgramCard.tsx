@@ -96,37 +96,38 @@ export default function ProgramCard({
         {description && (
           <p className="text-sm line-clamp-2" style={{ color: COLORS.descriptionText }}>{description}</p>
         )}
+
+        {/* Elevated Stats - overlapping header/content */}
+        {(daysPerWeek || durationWeeks) && (
+          <div className="flex gap-4 mt-4 -mb-8 relative z-10">
+            {daysPerWeek && (
+              <div
+                className="flex-1 text-center py-3 rounded-lg bg-white shadow-lg border"
+                style={{ borderColor: COLORS.gray100 }}
+              >
+                <div className="text-xl font-bold" style={{ color: COLORS.navy }}>
+                  {daysPerWeek}
+                </div>
+                <div className="text-xs" style={{ color: COLORS.gray600 }}>Days/Week</div>
+              </div>
+            )}
+            {durationWeeks && (
+              <div
+                className="flex-1 text-center py-3 rounded-lg bg-white shadow-lg border"
+                style={{ borderColor: COLORS.gray100 }}
+              >
+                <div className="text-xl font-bold" style={{ color: COLORS.navy }}>
+                  {durationWeeks}
+                </div>
+                <div className="text-xs" style={{ color: COLORS.gray600 }}>Weeks</div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
-      {/* Stats */}
-      <div className="p-5">
-        <div className="grid grid-cols-3 gap-3 mb-4">
-          {daysPerWeek && (
-            <div className="text-center">
-              <div className="text-xl font-bold" style={{ color: COLORS.navy }}>
-                {daysPerWeek}
-              </div>
-              <div className="text-xs" style={{ color: COLORS.gray400 }}>Days/Week</div>
-            </div>
-          )}
-          {durationWeeks && (
-            <div className="text-center">
-              <div className="text-xl font-bold" style={{ color: COLORS.navy }}>
-                {durationWeeks}
-              </div>
-              <div className="text-xs" style={{ color: COLORS.gray400 }}>Weeks</div>
-            </div>
-          )}
-          {cloneCount > 0 && (
-            <div className="text-center">
-              <div className="text-xl font-bold" style={{ color: COLORS.navy }}>
-                {cloneCount}
-              </div>
-              <div className="text-xs" style={{ color: COLORS.gray400 }}>Users</div>
-            </div>
-          )}
-        </div>
-
+      {/* Body content with padding for overlapping stats */}
+      <div className="p-5 pt-12" style={{ backgroundColor: '#FAFAFA' }}>
         {/* Goals */}
         {goals.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-4">
@@ -249,38 +250,39 @@ export default function ProgramCard({
           {description && (
             <p className="text-sm line-clamp-2" style={{ color: COLORS.descriptionText }}>{description}</p>
           )}
+
+          {/* Elevated Stats - overlapping header/content */}
+          {(daysPerWeek || durationWeeks) && (
+            <div className="flex gap-4 mt-4 -mb-8 relative z-10">
+              {daysPerWeek && (
+                <div
+                  className="flex-1 text-center py-3 rounded-lg bg-white shadow-lg border"
+                  style={{ borderColor: COLORS.gray100 }}
+                >
+                  <div className="text-xl font-bold" style={{ color: COLORS.navy }}>
+                    {daysPerWeek}
+                  </div>
+                  <div className="text-xs" style={{ color: COLORS.gray600 }}>Days/Week</div>
+                </div>
+              )}
+              {durationWeeks && (
+                <div
+                  className="flex-1 text-center py-3 rounded-lg bg-white shadow-lg border"
+                  style={{ borderColor: COLORS.gray100 }}
+                >
+                  <div className="text-xl font-bold" style={{ color: COLORS.navy }}>
+                    {durationWeeks}
+                  </div>
+                  <div className="text-xs" style={{ color: COLORS.gray600 }}>Weeks</div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </Link>
 
-      {/* Stats */}
-      <div className="p-5">
-        <div className="grid grid-cols-3 gap-3 mb-4">
-          {daysPerWeek && (
-            <div className="text-center">
-              <div className="text-xl font-bold" style={{ color: COLORS.navy }}>
-                {daysPerWeek}
-              </div>
-              <div className="text-xs" style={{ color: COLORS.gray400 }}>Days/Week</div>
-            </div>
-          )}
-          {durationWeeks && (
-            <div className="text-center">
-              <div className="text-xl font-bold" style={{ color: COLORS.navy }}>
-                {durationWeeks}
-              </div>
-              <div className="text-xs" style={{ color: COLORS.gray400 }}>Weeks</div>
-            </div>
-          )}
-          {cloneCount > 0 && (
-            <div className="text-center">
-              <div className="text-xl font-bold" style={{ color: COLORS.navy }}>
-                {cloneCount}
-              </div>
-              <div className="text-xs" style={{ color: COLORS.gray400 }}>Users</div>
-            </div>
-          )}
-        </div>
-
+      {/* Body content with padding for overlapping stats */}
+      <div className="p-5 pt-12" style={{ backgroundColor: '#FAFAFA' }}>
         {/* Goals */}
         {goals.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-4">

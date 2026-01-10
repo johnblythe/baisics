@@ -84,3 +84,18 @@ Started: Sat Jan 10 13:08:32 EST 2026
   - Exercise navigation resets selection state to avoid stale selectedIndex
   - The old SetInput component is still defined in file - could be removed in cleanup story
 ---
+
+## 2026-01-10 - US-006: Update ProgramCard header with gradient fade styling
+- Modified `src/app/components/ProgramCard.tsx`
+- Changed header gradient from 'to bottom right' to 180deg vertical
+- Gradient stops: #0F172A at 0%, #1E293B at 60%, #334155 at 100%
+- Added `navyMid: '#334155'` and `descriptionText: '#CBD5E1'` to COLORS
+- Description text uses #CBD5E1 for better contrast on gradient
+- Category badge changed from bg-white/20 to border-white/30 with text-white/90
+- Updated both card variants (CardContent for user's program, Link wrapper for templates)
+- **Learnings for future iterations:**
+  - ProgramCard has two rendering paths: CardContent (for user's programs with Link wrapper) and a separate template in the return for non-user cards
+  - Reference design is `/dev/library-cards` Option D (OptionDGradient function)
+  - US-007 will add overlapping stats to header - requires negative margin (-mb-8) and pt-12 on body
+  - US-008 will change goals to coral badges and CTA to gradient button
+---
