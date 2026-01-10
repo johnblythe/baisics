@@ -99,3 +99,20 @@ Started: Sat Jan 10 13:08:32 EST 2026
   - US-007 will add overlapping stats to header - requires negative margin (-mb-8) and pt-12 on body
   - US-008 will change goals to coral badges and CTA to gradient button
 ---
+
+## 2026-01-10 - US-007: Add elevated overlapping stats to ProgramCard
+- Modified `src/app/components/ProgramCard.tsx`
+- Stats section moved inside header div with negative margin (-mb-8) and relative z-10
+- Stats now appear as white cards with shadow-lg and border border-[#E2E8F0]
+- Stats use flex gap-4 layout horizontally instead of grid
+- Each stat card: flex-1 text-center py-3 rounded-lg bg-white shadow-lg
+- Body content gets pt-12 padding to accommodate overlap
+- Body background changes to #FAFAFA
+- Stats show only Days/Week and Weeks (removed cloneCount from overlap section)
+- Updated both card variants (CardContent and template Link variant)
+- **Learnings for future iterations:**
+  - Reference design is `/dev/library-cards` Option D lines 218-228
+  - Overlapping stats pattern: place inside header, use -mb-8 on stats container, pt-12 on body
+  - Use gray600 (#64748B) for stat labels instead of gray400 for better contrast on white cards
+  - Border uses COLORS.gray100 (#F1F5F9) for subtle definition
+---

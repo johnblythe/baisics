@@ -1,0 +1,11 @@
+There are still stories with `passes: false` (US-008 through US-014). The iteration completed successfully:
+
+**Summary of US-007 completion:**
+- Modified `src/app/components/ProgramCard.tsx`
+- Stats section moved inside header with negative margin (`-mb-8`) and `relative z-10`
+- Stats displayed as white cards with `shadow-lg` and border
+- Stats use `flex gap-4` layout horizontally (Days/Week and Weeks only)
+- Body content gets `pt-12` padding and `#FAFAFA` background
+- Updated both card variants (CardContent and template Link variant)
+- Build and lint pass
+- Committed: `feat: US-007 - Add elevated overlapping stats to ProgramCard`

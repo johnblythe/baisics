@@ -128,14 +128,14 @@ export default function ProgramCard({
 
       {/* Body content with padding for overlapping stats */}
       <div className="p-5 pt-12" style={{ backgroundColor: '#FAFAFA' }}>
-        {/* Goals */}
+        {/* Goals - coral highlight badges */}
         {goals.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-4">
             {goals.slice(0, 2).map((goal) => (
               <span
                 key={goal}
-                className="text-xs px-2 py-1 rounded"
-                style={{ backgroundColor: COLORS.gray100, color: COLORS.gray600 }}
+                className="text-xs px-2 py-1 rounded-full font-medium"
+                style={{ backgroundColor: COLORS.coralLight, color: COLORS.coralDark }}
               >
                 {goal}
               </span>
@@ -154,9 +154,8 @@ export default function ProgramCard({
             {equipment.slice(0, 3).map((eq) => (
               <span
                 key={eq}
-                className="text-xs px-2 py-0.5 rounded border"
+                className="text-xs px-2 py-0.5 rounded border bg-white"
                 style={{
-                  backgroundColor: COLORS.gray50,
                   color: COLORS.gray600,
                   borderColor: COLORS.gray100
                 }}
@@ -193,13 +192,7 @@ export default function ProgramCard({
             <button
               onClick={handleClaim}
               disabled={isLoading}
-              className="text-xs px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50 font-medium"
-              style={{
-                backgroundColor: COLORS.coral,
-                color: 'white',
-              }}
-              onMouseOver={(e) => e.currentTarget.style.backgroundColor = COLORS.coralDark}
-              onMouseOut={(e) => e.currentTarget.style.backgroundColor = COLORS.coral}
+              className="text-xs px-4 py-2 rounded-lg transition-opacity disabled:opacity-50 font-semibold text-white hover:opacity-90 bg-gradient-to-r from-[#FF6B6B] to-[#FF8E8E] shadow-md shadow-[#FF6B6B]/25"
             >
               {isLoading ? 'Claiming...' : 'Claim Program'}
             </button>
@@ -283,14 +276,14 @@ export default function ProgramCard({
 
       {/* Body content with padding for overlapping stats */}
       <div className="p-5 pt-12" style={{ backgroundColor: '#FAFAFA' }}>
-        {/* Goals */}
+        {/* Goals - coral highlight badges */}
         {goals.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-4">
             {goals.slice(0, 2).map((goal) => (
               <span
                 key={goal}
-                className="text-xs px-2 py-1 rounded"
-                style={{ backgroundColor: COLORS.gray100, color: COLORS.gray600 }}
+                className="text-xs px-2 py-1 rounded-full font-medium"
+                style={{ backgroundColor: COLORS.coralLight, color: COLORS.coralDark }}
               >
                 {goal}
               </span>
@@ -309,9 +302,8 @@ export default function ProgramCard({
             {equipment.slice(0, 3).map((eq) => (
               <span
                 key={eq}
-                className="text-xs px-2 py-0.5 rounded border"
+                className="text-xs px-2 py-0.5 rounded border bg-white"
                 style={{
-                  backgroundColor: COLORS.gray50,
                   color: COLORS.gray600,
                   borderColor: COLORS.gray100
                 }}
@@ -342,13 +334,7 @@ export default function ProgramCard({
           <button
             onClick={handleClaim}
             disabled={isLoading}
-            className="text-xs px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50 font-medium"
-            style={{
-              backgroundColor: COLORS.coral,
-              color: 'white',
-            }}
-            onMouseOver={(e) => e.currentTarget.style.backgroundColor = COLORS.coralDark}
-            onMouseOut={(e) => e.currentTarget.style.backgroundColor = COLORS.coral}
+            className="text-xs px-4 py-2 rounded-lg transition-opacity disabled:opacity-50 font-semibold text-white hover:opacity-90 bg-gradient-to-r from-[#FF6B6B] to-[#FF8E8E] shadow-md shadow-[#FF6B6B]/25"
           >
             {isLoading ? 'Claiming...' : 'Claim Program'}
           </button>
