@@ -5,10 +5,20 @@ import { useParams, useRouter } from 'next/navigation';
 import { CheckCircle, Pencil, Circle, PlayCircle, ChevronLeft, ChevronRight, Dumbbell, MessageCircle } from 'lucide-react';
 import MainLayout from '@/app/components/layouts/MainLayout';
 import { formatExerciseMeasure, formatExerciseUnit } from '@/utils/formatters';
-import RestPeriodIndicator from '@/app/components/RestPeriodIndicator';
 import ExerciseSwapModal from '@/components/ExerciseSwapModal';
 import WorkoutChatPanel from '@/components/WorkoutChatPanel';
 import { clearWelcomeData } from '@/components/ClaimWelcomeBanner';
+import { SetProgressGrid } from '@/components/workout/SetProgressGrid';
+import { BigSetInputCard } from '@/components/workout/BigSetInputCard';
+import { RestTimerControl } from '@/components/workout/RestTimerControl';
+import { WorkoutProgressBar } from '@/components/workout/WorkoutProgressBar';
+
+// Helper to format rest duration in "M:SS" format
+function formatRestDuration(seconds: number): string {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+}
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -216,6 +226,9 @@ export default function WorkoutPage() {
   const [chatOpen, setChatOpen] = useState(false);
   // Store chat messages per exercise for persistence
   const [chatMessages, setChatMessages] = useState<Record<string, ChatMessage[]>>({});
+  // New UI state for the redesigned workout tracker
+  const [selectedSetIndex, setSelectedSetIndex] = useState<number | null>(null);
+  const [autoStartTimer, setAutoStartTimer] = useState(true);
 
   const findFirstIncompletePosition = (exercises: ExerciseWithLogs[]) => {
     for (let i = 0; i < exercises.length; i++) {
@@ -545,40 +558,89 @@ export default function WorkoutPage() {
             )}
           </div>
 
-          {/* Sets Section */}
-          <div className="p-6 space-y-4">
-            {currentExercise?.logs.map((log, setIndex) => {
-              const previousSet = setIndex > 0 ? currentExercise.logs[setIndex - 1] : null;
-              const isLastSetOfWorkout = currentExerciseIndex === exercises.length - 1 &&
-                setIndex === currentExercise.logs.length - 1;
+          {/* Sets Section - New redesigned UI */}
+          {currentExercise && (
+            <div className="p-6 space-y-4">
+              {/* Set Progress Grid */}
+              <SetProgressGrid
+                logs={currentExercise.logs.map(log => ({
+                  setNumber: log.setNumber,
+                  weight: log.weight ?? 0,
+                  reps: log.reps,
+                  isCompleted: log.isCompleted ?? false,
+                }))}
+                activeIndex={currentExercise.logs.findIndex(l => !l.isCompleted)}
+                selectedIndex={selectedSetIndex}
+                onSelect={setSelectedSetIndex}
+              />
 
-              return (
-                <React.Fragment key={setIndex}>
-                  <SetInput
-                    log={log}
-                    exercise={currentExercise}
-                    previousSetWeight={previousSet?.weight}
-                    isLastSetOfWorkout={isLastSetOfWorkout}
-                    isActive={!log.isCompleted && setIndex === currentExercise.logs.findIndex(l => !l.isCompleted)}
-                    onComplete={(data) => updateSet(currentExerciseIndex, setIndex, data)}
-                    onUpdate={(data) => updateSet(currentExerciseIndex, setIndex, data)}
+              {/* Progress Bar */}
+              <WorkoutProgressBar
+                completedCount={currentExercise.logs.filter(l => l.isCompleted).length}
+                totalCount={currentExercise.logs.length}
+              />
+
+              {/* Big Set Input Card */}
+              {(() => {
+                const activeIndex = currentExercise.logs.findIndex(l => !l.isCompleted);
+                const currentSetIndex = selectedSetIndex !== null ? selectedSetIndex : activeIndex;
+                const currentLog = currentExercise.logs[currentSetIndex >= 0 ? currentSetIndex : 0];
+                const previousLog = currentSetIndex > 0 ? currentExercise.logs[currentSetIndex - 1] : null;
+
+                // If all sets are completed, don't show input card
+                if (activeIndex === -1 && selectedSetIndex === null) {
+                  return (
+                    <div className="bg-green-50 rounded-2xl p-5 border-2 border-green-200 text-center">
+                      <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3" />
+                      <p className="text-lg font-semibold text-green-700">All sets complete!</p>
+                      <p className="text-sm text-green-600">Great work on this exercise.</p>
+                    </div>
+                  );
+                }
+
+                return (
+                  <BigSetInputCard
+                    setNumber={currentLog.setNumber}
+                    targetReps={String(currentExercise.reps)}
+                    weight={currentLog.weight ?? previousLog?.weight ?? ''}
+                    reps={currentLog.reps > 0 ? currentLog.reps : ''}
+                    onWeightChange={(value) => {
+                      updateSet(currentExerciseIndex, currentSetIndex, { weight: value });
+                    }}
+                    onRepsChange={(value) => {
+                      updateSet(currentExerciseIndex, currentSetIndex, { reps: value });
+                    }}
+                    onComplete={() => {
+                      const setIndex = currentSetIndex >= 0 ? currentSetIndex : 0;
+                      const log = currentExercise.logs[setIndex];
+                      updateSet(currentExerciseIndex, setIndex, {
+                        weight: log.weight,
+                        reps: log.reps,
+                        isCompleted: true,
+                      });
+                      // Clear selection to auto-advance to next incomplete set
+                      setSelectedSetIndex(null);
+                    }}
                   />
-                  {setIndex < currentExercise.logs.length - 1 && (
-                    <RestPeriodIndicator
-                      restPeriod={currentExercise.restPeriod}
-                      isCompleted={log.isCompleted}
-                      isActive={log.isCompleted && !currentExercise.logs[setIndex + 1].isCompleted}
-                    />
-                  )}
-                </React.Fragment>
-              );
-            })}
-          </div>
+                );
+              })()}
+
+              {/* Rest Timer Control */}
+              <RestTimerControl
+                restDuration={formatRestDuration(currentExercise.restPeriod)}
+                autoStart={autoStartTimer}
+                onAutoStartChange={setAutoStartTimer}
+              />
+            </div>
+          )}
 
           {/* Navigation */}
           <div className="flex justify-between items-center px-6 py-4 border-t border-[#F1F5F9] bg-[#F8FAFC]">
             <button
-              onClick={() => setCurrentExerciseIndex(prev => prev - 1)}
+              onClick={() => {
+                setCurrentExerciseIndex(prev => prev - 1);
+                setSelectedSetIndex(null);
+              }}
               disabled={currentExerciseIndex === 0}
               className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium transition-all duration-200 ${
                 currentExerciseIndex === 0
@@ -592,7 +654,10 @@ export default function WorkoutPage() {
 
             {currentExerciseIndex < exercises.length - 1 ? (
               <button
-                onClick={() => setCurrentExerciseIndex(prev => prev + 1)}
+                onClick={() => {
+                  setCurrentExerciseIndex(prev => prev + 1);
+                  setSelectedSetIndex(null);
+                }}
                 className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#FF6B6B] text-white font-medium hover:bg-[#EF5350] transition-colors shadow-lg shadow-[#FF6B6B]/25"
               >
                 Next
@@ -617,7 +682,10 @@ export default function WorkoutPage() {
             return (
               <button
                 key={ex.id}
-                onClick={() => setCurrentExerciseIndex(idx)}
+                onClick={() => {
+                  setCurrentExerciseIndex(idx);
+                  setSelectedSetIndex(null);
+                }}
                 className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-medium transition-all ${
                   isComplete
                     ? 'bg-emerald-100 text-emerald-600 border border-emerald-200'

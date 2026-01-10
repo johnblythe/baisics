@@ -39,7 +39,7 @@
         "npm run typecheck passes"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Reference: /dev/workout-tracker Option B - the big coral gradient card with large inputs"
     },
     {
@@ -57,7 +57,7 @@
         "npm run typecheck passes"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Reference: /dev/workout-tracker Option B - the rest timer row at bottom"
     },
     {
@@ -75,7 +75,7 @@
         "npm run typecheck passes"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "Reference: /dev/workout-tracker Option B - the progress bar between grid and input card"
     },
     {
@@ -95,7 +95,7 @@
         "Verify UI renders correctly in browser at /workout/[id]"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "This integrates US-001 through US-004 into the production workout page"
     },
     {

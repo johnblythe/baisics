@@ -1,27 +1,86 @@
+# Ralph Progress Log
+Started: Sat Jan 10 13:08:32 EST 2026
+---
+
 ## Codebase Patterns
-- Dashboard page: src/app/dashboard/[programId]/page.tsx
-- API fetch pattern: check response.ok before parsing JSON, validate data type before setState
-- ProgramSelector component available at @/components/ProgramSelector for dropdown styling reference
+
+- **Workout components location**: Create new workout components in `src/components/workout/`
+- **Design reference**: Option B from `/dev/workout-tracker` is the approved design
+- **Style tokens**: Use coral (#FF6B6B, #EF5350), light coral (#FFE5E5), and green-100/300 for completed states
+- **Component patterns**: Export named functions (not default), include 'use client' directive for client components
 
 ---
 
-## 2026-01-09 - US-001: Fix program selector fetch error handling
-- Updated fetchAllPrograms in dashboard page to check response.ok before parsing
-- Added console.error logging with status/statusText on failure
-- Added Array.isArray check before calling setAllPrograms
+## 2026-01-10 - US-004: Add progress bar component for workout completion
+- Created `src/components/workout/WorkoutProgressBar.tsx`
+- Horizontal progress bar with coral gradient fill (from-[#FF6B6B] to-[#EF5350])
+- Completion count text displayed next to bar (e.g., '2/4')
+- Bar container: bg-[#F1F5F9] rounded-full
+- Width transitions smoothly with transition-all
+- Props: completedCount (number), totalCount (number)
 - **Learnings for future iterations:**
-  - Dashboard has many parallel API calls in fetchData() useEffect - same pattern should apply
-  - The allPrograms state is used by ProgramSelector component
-  - Pre-existing lint warnings exist (react-hooks/exhaustive-deps, img elements) - these are not blockers
+  - Reference design is lines 202-211 in `/dev/workout-tracker/page.tsx` (OptionBHybrid)
+  - Use inline style for dynamic width percentage, Tailwind for static styling
+  - Simple component, no icons needed
 ---
 
-## 2026-01-09 - US-002: Add allWorkouts to current-workout API response
-- Added prisma.workoutLog.groupBy query to get most recent completion per workout
-- Created completionMap to efficiently look up lastCompletedAt by workoutId
-- Added allWorkouts array to response with: id, dayNumber, name, focus, exerciseCount, lastCompletedAt
-- Existing response fields unchanged (nextWorkout, totalWorkouts, lastCompletedAt)
+## 2026-01-10 14:XX - US-001: Create SetProgressGrid component for workout tracker
+- Created `src/components/workout/SetProgressGrid.tsx`
+- Grid layout with 4 columns showing set progress
+- Completed sets: green-100 bg, green-300 border, checkmark badge
+- Active/selected set: coral highlight with ring-2 ring-offset-2
+- Pending sets: clickable gray cells
+- Props: logs (SetLog[]), activeIndex, selectedIndex, onSelect callback
 - **Learnings for future iterations:**
-  - Prisma groupBy with _max is efficient way to get aggregate per-group values
-  - workoutSequence already contains exercises, so exerciseCount is available without extra query
-  - The allWorkouts array is ordered by dayNumber (inherits from workoutSequence ordering)
+  - `/dev/workout-tracker` page shows all design options - Option B is "hybrid" approach
+  - lucide-react already installed, use for icons (CheckCircle, etc.)
+  - Component follows 4-column grid matching typical 4-set exercises
+---
+
+## 2026-01-10 - US-002: Create BigSetInputCard component with coral gradient
+- Created `src/components/workout/BigSetInputCard.tsx`
+- Big touch-friendly coral gradient card (from-[#FF6B6B] to-[#EF5350])
+- Shows set number (text-3xl font-bold) and target reps
+- Large inputs with white/20 bg and text-xl font-bold styling
+- Complete Set button: white bg, coral text, py-4, full width
+- Props: setNumber, targetReps, weight, reps, onWeightChange, onRepsChange, onComplete
+- **Learnings for future iterations:**
+  - Reference design is lines 213-250 in `/dev/workout-tracker/page.tsx` (OptionBHybrid)
+  - Input styling uses bg-white/20 border-white/30 for translucent effect on gradient
+  - Button has active:scale-[0.98] for tactile feedback on mobile
+---
+
+## 2026-01-10 - US-003: Create RestTimerControl component with auto-start toggle
+- Created `src/components/workout/RestTimerControl.tsx`
+- White card with coral-tinted clock icon (w-10 h-10 bg-[#FFE5E5])
+- Shows "Rest Timer" label with rest duration text below
+- Auto-start toggle using styled peer checkbox pattern
+- Toggle is coral (#FF6B6B) when checked
+- Props: restDuration (string), autoStart (boolean), onAutoStartChange (callback)
+- **Learnings for future iterations:**
+  - Reference design is lines 252-270 in `/dev/workout-tracker/page.tsx` (OptionBHybrid)
+  - Toggle pattern: sr-only input + sibling div with peer-checked styling
+  - Use peer-focus:ring for accessibility on toggle
+---
+
+## 2026-01-10 - US-005: Integrate new workout tracker components into workout page
+- Modified `src/app/workout/[id]/page.tsx` to use new redesigned components
+- Imported SetProgressGrid, BigSetInputCard, RestTimerControl, WorkoutProgressBar
+- Added `selectedSetIndex` state to track which set is selected in the grid
+- Added `autoStartTimer` state to control rest timer auto-start preference
+- Replaced old SetInput-based UI with new component layout:
+  - SetProgressGrid at top showing 4-column set overview
+  - WorkoutProgressBar showing exercise-level progress
+  - BigSetInputCard for logging current/selected set
+  - RestTimerControl at bottom with auto-start toggle
+- Added helper function `formatRestDuration()` to format seconds as "M:SS"
+- Reset selectedSetIndex when navigating between exercises (prev/next buttons and quick nav)
+- Shows completion state when all sets are done instead of input card
+- Kept old SetInput component in file for backwards compatibility (not rendered)
+- **Learnings for future iterations:**
+  - Page has complex state management with exercises array containing logs
+  - Grid needs SetLog type matching but page uses slightly different interface (optional weight)
+  - Need to handle "all sets completed" edge case gracefully
+  - Exercise navigation resets selection state to avoid stale selectedIndex
+  - The old SetInput component is still defined in file - could be removed in cleanup story
 ---
