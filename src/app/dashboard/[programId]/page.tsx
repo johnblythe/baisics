@@ -21,6 +21,7 @@ import { NutritionLogModal } from '@/components/NutritionLogModal';
 import { NutritionWidget } from '@/components/NutritionWidget';
 import { ClaimWelcomeBanner, storeWelcomeData, getWelcomeData } from '@/components/ClaimWelcomeBanner';
 import { StreakBadge } from '@/components/StreakBadge';
+import { ProgressShareCard, ProgressShareData } from '@/components/share/ProgressShareCard';
 
 // Types for our API responses
 interface ProgramOverview {
@@ -228,10 +229,11 @@ function DashboardContent() {
   const [session, setSession] = useState<any | null>(null);
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isProgressShareModalOpen, setIsProgressShareModalOpen] = useState(false);
   const [isNutritionModalOpen, setIsNutritionModalOpen] = useState(false);
 
   // Modal URL state helpers
-  const openModal = useCallback((modalName: 'upload' | 'compare' | 'share' | 'nutrition') => {
+  const openModal = useCallback((modalName: 'upload' | 'compare' | 'share' | 'nutrition' | 'progress-share') => {
     // Upload redirects to dedicated import page
     if (modalName === 'upload') {
       router.push('/import');
@@ -245,6 +247,7 @@ function DashboardContent() {
     switch (modalName) {
       case 'compare': setIsCompareModalOpen(true); break;
       case 'share': setIsShareModalOpen(true); break;
+      case 'progress-share': setIsProgressShareModalOpen(true); break;
       case 'nutrition': setIsNutritionModalOpen(true); break;
     }
   }, [router, searchParams]);
@@ -257,6 +260,7 @@ function DashboardContent() {
 
     setIsCompareModalOpen(false);
     setIsShareModalOpen(false);
+    setIsProgressShareModalOpen(false);
     setIsNutritionModalOpen(false);
   }, [router, searchParams]);
 
@@ -270,6 +274,7 @@ function DashboardContent() {
           break;
         case 'compare': setIsCompareModalOpen(true); break;
         case 'share': setIsShareModalOpen(true); break;
+        case 'progress-share': setIsProgressShareModalOpen(true); break;
         case 'nutrition': setIsNutritionModalOpen(true); break;
       }
     }
@@ -879,6 +884,21 @@ function DashboardContent() {
                         </div>
                       )}
 
+                      {/* Share Progress Button */}
+                      {(programStats?.completedWorkouts ?? 0) > 0 && (
+                        <div className="pt-2 border-t border-[#E2E8F0]">
+                          <button
+                            onClick={() => openModal('progress-share')}
+                            className="w-full px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 bg-gradient-to-r from-[#FF6B6B] to-[#FF8E8E] text-white hover:shadow-lg hover:shadow-[#FF6B6B]/25 hover:scale-[1.02]"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                            </svg>
+                            Share Progress
+                          </button>
+                        </div>
+                      )}
+
                       {/* Next Check-in */}
                       <div className="pt-2 border-t border-[#E2E8F0]">
                         {programStats?.checkIn ? (
@@ -1395,6 +1415,26 @@ function DashboardContent() {
                   closeModal();
                   setShareData(null);
                 }}
+              />
+            )}
+
+            {/* Progress Share Modal */}
+            {isProgressShareModalOpen && (
+              <ProgressShareCard
+                data={{
+                  weeksCompleted: Math.ceil((programStats?.completedWorkouts || 0) / (program?.workoutPlans?.[0]?.workouts?.length || 1)),
+                  totalWorkouts: programStats?.completedWorkouts || 0,
+                  weightChange: weightData.startWeight && weightData.currentWeight
+                    ? weightData.currentWeight - weightData.startWeight
+                    : undefined,
+                  startWeight: weightData.startWeight || undefined,
+                  currentWeight: weightData.currentWeight || undefined,
+                  beforePhotoUrl: progressPhotos.length > 0 ? progressPhotos[0]?.base64Data : undefined,
+                  afterPhotoUrl: progressPhotos.length > 1 ? progressPhotos[progressPhotos.length - 1]?.base64Data : undefined,
+                  startDate: program?.startDate ? new Date(program.startDate) : new Date(),
+                  userName: session?.user?.name || undefined,
+                }}
+                onClose={closeModal}
               />
             )}
 

@@ -194,3 +194,21 @@ Started: Sat Jan 10 16:52:02 EST 2026
   - Use separate state for shareData (WorkoutShareData type) to pass to share card
   - handleShareClose callback handles dismiss/close and redirects to dashboard
 ---
+
+## 2026-01-10 19:XX - US-012: Create progress share card component
+- **What was implemented:**
+  - Created ProgressShareCard component for sharing fitness transformation stats
+  - Card displays: weeks completed, total workouts, weight change (optional), weight range (start → current)
+  - Optional before/after photo comparison slots with side-by-side layout
+  - Privacy toggles: "Hide stats" (blurs numbers) and "Hide photos" (removes photo section)
+  - Branded design matching WorkoutShareCard: coral gradient header, navy background
+  - Uses html2canvas for PNG image generation with 2x scale
+  - Share options: Web Share API (mobile), Twitter/X, Copy Link, Download PNG
+- **Files created/changed:**
+  - Created: `src/components/share/ProgressShareCard.tsx`
+- **Learnings for future iterations:**
+  - ProgressShareData interface: weeksCompleted, totalWorkouts, weightChange, startWeight, currentWeight, beforePhotoUrl, afterPhotoUrl, startDate, userName
+  - Privacy toggle pattern: checkbox controls visibility, blur-sm class for blurred text
+  - Conditional grid columns based on hidden content: `${hideStats ? 'grid-cols-1' : 'grid-cols-2'}`
+  - Weight change coloring: emerald-400 for gain, sky-400 for loss, white for no change
+---
