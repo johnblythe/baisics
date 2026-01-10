@@ -598,28 +598,28 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
     return (
       <form
         onSubmit={handleSubmit}
-        className={`mt-4 ${showDataReview || isGeneratingProgram ? 'hidden' : ''}`}
+        className={`mt-6 ${showDataReview || isGeneratingProgram ? 'hidden' : ''}`}
       >
-        <div className="flex flex-col space-y-4">
+        <div className="flex flex-col space-y-5">
           <div className="relative">
             <textarea
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder={!extractedData && !messages ? "Share your fitness journey and goals..." : "Keep the info coming!"}
-              rows={3}
+              rows={4}
               autoFocus={true}
-              className="w-full p-4 border-2 border-[#F1F5F9] rounded-xl bg-[#F8FAFC] text-[#0F172A] placeholder-[#94A3B8] focus:ring-2 focus:ring-[#FF6B6B]/20 focus:border-[#FF6B6B] resize-none transition-all duration-300"
+              className="w-full p-5 border-2 border-[#F1F5F9] rounded-xl bg-[#F8FAFC] text-[#0F172A] placeholder-[#94A3B8] focus:ring-2 focus:ring-[#FF6B6B]/20 focus:border-[#FF6B6B] resize-none transition-all duration-300 text-base"
               style={{ fontFamily: "'Outfit', sans-serif" }}
             />
-            <div className="hidden lg:block absolute bottom-3 right-3 text-xs text-[#94A3B8]" style={{ fontFamily: "'Space Mono', monospace" }}>
+            <div className="hidden lg:block absolute bottom-4 right-4 text-xs text-[#94A3B8]" style={{ fontFamily: "'Space Mono', monospace" }}>
               ⌘ + Return to send
             </div>
           </div>
           <button
             type="submit"
             disabled={!inputValue.trim() || isTyping}
-            className="px-8 py-4 bg-[#FF6B6B] hover:bg-[#EF5350] text-white text-base font-semibold rounded-xl shadow-lg shadow-[#FF6B6B]/25 hover:shadow-xl hover:shadow-[#FF6B6B]/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+            className="px-8 py-4 bg-[#FF6B6B] hover:bg-[#EF5350] text-white text-lg font-semibold rounded-xl shadow-lg shadow-[#FF6B6B]/25 hover:shadow-xl hover:shadow-[#FF6B6B]/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
           >
             {!extractedData || !messages ? "Share Your Story" : "Tell me more"}
           </button>
@@ -646,7 +646,7 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
       `}</style>
 
       <div
-        className={`flex flex-col min-h-[calc(100vh-10rem)] ${program ? 'max-w-full' : 'max-w-3xl mx-auto px-4 py-8'}`}
+        className={`flex flex-col min-h-[calc(100vh-10rem)] ${program ? 'max-w-full' : 'max-w-5xl mx-auto px-6 py-10'}`}
         style={{ fontFamily: "'Outfit', sans-serif" }}
       >
         {program ? (
@@ -676,19 +676,19 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-center mb-6"
+                className="text-center mb-8"
               >
-                <h1 className="text-3xl md:text-4xl font-bold text-[#0F172A] mb-2">
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#0F172A] mb-3">
                   Let&apos;s Build Your Program
                 </h1>
-                <p className="text-[#64748B] text-lg">
+                <p className="text-[#64748B] text-lg md:text-xl">
                   Tell me about your goals, or pick one below to get started
                 </p>
               </motion.div>
             )}
 
             {/* Chat Messages Container */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-6 messages-container relative bg-white rounded-2xl border border-[#F1F5F9] shadow-sm">
+            <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 messages-container relative bg-white rounded-2xl border border-[#F1F5F9] shadow-sm">
               <AnimatePresence>
                 {messages.map((message, index) => (
                   <motion.div
@@ -733,10 +733,10 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="mt-4"
+                className="mt-6"
               >
-                <p className="text-sm text-[#94A3B8] mb-3 text-center">Quick start:</p>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                <p className="text-sm text-[#94A3B8] mb-4 text-center">Quick start:</p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {QUICK_PROMPTS.map((prompt, idx) => (
                     <button
                       key={idx}
@@ -748,7 +748,7 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
                           handleSubmit({ preventDefault: () => {} } as React.FormEvent);
                         }, 100);
                       }}
-                      className="px-4 py-3 bg-[#F8FAFC] hover:bg-[#FFE5E5] border border-[#E2E8F0] hover:border-[#FF6B6B] rounded-xl text-sm font-medium text-[#0F172A] transition-all duration-200"
+                      className="px-5 py-4 bg-[#F8FAFC] hover:bg-[#FFE5E5] border border-[#E2E8F0] hover:border-[#FF6B6B] rounded-xl text-sm font-medium text-[#0F172A] transition-all duration-200"
                     >
                       {prompt.label}
                     </button>
