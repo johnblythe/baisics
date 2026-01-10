@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { CheckCircle, PlayCircle, ChevronLeft, ChevronRight, Dumbbell, MessageCircle, Calendar } from 'lucide-react';
 import MainLayout from '@/app/components/layouts/MainLayout';
@@ -12,6 +12,7 @@ import { SetProgressGrid } from '@/components/workout/SetProgressGrid';
 import { BigSetInputCard } from '@/components/workout/BigSetInputCard';
 import { RestTimerControl } from '@/components/workout/RestTimerControl';
 import { WorkoutProgressBar } from '@/components/workout/WorkoutProgressBar';
+import RestPeriodIndicator from '@/app/components/RestPeriodIndicator';
 
 // Helper to format date for display
 function formatDateForDisplay(date: Date): string {
@@ -99,6 +100,10 @@ export default function WorkoutPage() {
   const [workoutDate, setWorkoutDate] = useState<Date>(() => new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const today = new Date();
+  // Rest timer state for auto-start after set completion
+  const [showRestTimer, setShowRestTimer] = useState(false);
+  const [restTimerKey, setRestTimerKey] = useState(0); // Key to force timer restart
+  const restTimerTriggerRef = useRef(false); // Track if we should auto-start
 
   const findFirstIncompletePosition = (exercises: ExerciseWithLogs[]) => {
     for (let i = 0; i < exercises.length; i++) {
@@ -110,6 +115,25 @@ export default function WorkoutPage() {
     }
     return exercises.length - 1;
   };
+
+  // Trigger rest timer after set completion (if auto-start is enabled)
+  const triggerRestTimer = useCallback(() => {
+    if (autoStartTimer) {
+      setShowRestTimer(true);
+      setRestTimerKey(prev => prev + 1); // Force new timer instance
+      restTimerTriggerRef.current = true;
+    }
+  }, [autoStartTimer]);
+
+  // Handle rest timer completion
+  const handleRestTimerComplete = useCallback(() => {
+    // Timer completed - could add additional feedback here
+  }, []);
+
+  // Hide rest timer when changing exercises
+  useEffect(() => {
+    setShowRestTimer(false);
+  }, [currentExerciseIndex]);
 
   useEffect(() => {
     const fetchWorkout = async () => {
@@ -584,6 +608,8 @@ export default function WorkoutPage() {
                         reps: log.reps,
                         isCompleted: true,
                       });
+                      // Trigger rest timer if auto-start is enabled
+                      triggerRestTimer();
                       // Clear selection to auto-advance to next incomplete set
                       setSelectedSetIndex(null);
                     }}
@@ -591,11 +617,30 @@ export default function WorkoutPage() {
                 );
               })()}
 
+              {/* Rest Timer - Shows after set completion when auto-start is enabled */}
+              {showRestTimer && (
+                <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                  <RestPeriodIndicator
+                    key={restTimerKey}
+                    restPeriod={currentExercise.restPeriod}
+                    isActive={true}
+                    autoStart={true}
+                    onTimerComplete={handleRestTimerComplete}
+                  />
+                </div>
+              )}
+
               {/* Rest Timer Control */}
               <RestTimerControl
                 restDuration={formatRestDuration(currentExercise.restPeriod)}
                 autoStart={autoStartTimer}
-                onAutoStartChange={setAutoStartTimer}
+                onAutoStartChange={(checked) => {
+                  setAutoStartTimer(checked);
+                  // Hide timer when disabling auto-start
+                  if (!checked) {
+                    setShowRestTimer(false);
+                  }
+                }}
               />
             </div>
           )}

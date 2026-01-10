@@ -62,6 +62,7 @@ interface RestPeriodIndicatorProps {
   restPeriod: number;
   isCompleted?: boolean;
   isActive?: boolean;
+  autoStart?: boolean; // Automatically start the timer on mount
   className?: string;
   onTimerComplete?: () => void;
 }
@@ -70,6 +71,7 @@ export default function RestPeriodIndicator({
   restPeriod,
   isCompleted = false,
   isActive = false,
+  autoStart = false,
   className = '',
   onTimerComplete,
 }: RestPeriodIndicatorProps) {
@@ -85,6 +87,14 @@ export default function RestPeriodIndicator({
       setSoundEnabled(savedPref === 'true');
     }
   }, []);
+
+  // Auto-start timer if autoStart prop is true
+  useEffect(() => {
+    if (autoStart && timeRemaining === null) {
+      setTimeRemaining(restPeriod);
+      setIsRunning(true);
+    }
+  }, [autoStart, restPeriod, timeRemaining]);
 
   // Toggle sound preference
   const toggleSound = useCallback(() => {
