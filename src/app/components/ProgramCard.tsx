@@ -29,10 +29,12 @@ const COLORS = {
   coralLight: '#FFE5E5',
   navy: '#0F172A',
   navyLight: '#1E293B',
+  navyMid: '#334155',
   gray50: '#F8FAFC',
   gray100: '#F1F5F9',
   gray400: '#94A3B8',
   gray600: '#475569',
+  descriptionText: '#CBD5E1',
 };
 
 const DIFFICULTY_COLORS: Record<string, string> = {
@@ -70,10 +72,10 @@ export default function ProgramCard({
 
   const CardContent = () => (
     <>
-      {/* Header - Navy gradient */}
+      {/* Header - Navy gradient with vertical fade */}
       <div
         className="p-5 text-white"
-        style={{ background: `linear-gradient(to bottom right, ${COLORS.navy}, ${COLORS.navyLight})` }}
+        style={{ background: `linear-gradient(180deg, ${COLORS.navy} 0%, ${COLORS.navyLight} 60%, ${COLORS.navyMid} 100%)` }}
       >
         <div className="flex items-start justify-between mb-3">
           {difficulty && (
@@ -83,8 +85,8 @@ export default function ProgramCard({
           )}
           {category && (
             <span
-              className="text-xs px-2 py-1 rounded-full capitalize"
-              style={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
+              className="text-xs px-2 py-1 rounded-full capitalize border"
+              style={{ borderColor: 'rgba(255,255,255,0.3)', color: 'rgba(255,255,255,0.9)' }}
             >
               {category}
             </span>
@@ -92,7 +94,7 @@ export default function ProgramCard({
         </div>
         <h3 className="text-lg font-bold mb-1 line-clamp-1">{name}</h3>
         {description && (
-          <p className="text-sm text-white/70 line-clamp-2">{description}</p>
+          <p className="text-sm line-clamp-2" style={{ color: COLORS.descriptionText }}>{description}</p>
         )}
       </div>
 
@@ -226,7 +228,7 @@ export default function ProgramCard({
       <Link href={`/templates/${slug}`}>
         <div
           className="p-5 text-white"
-          style={{ background: `linear-gradient(to bottom right, ${COLORS.navy}, ${COLORS.navyLight})` }}
+          style={{ background: `linear-gradient(180deg, ${COLORS.navy} 0%, ${COLORS.navyLight} 60%, ${COLORS.navyMid} 100%)` }}
         >
           <div className="flex items-start justify-between mb-3">
             {difficulty && (
@@ -236,8 +238,8 @@ export default function ProgramCard({
             )}
             {category && (
               <span
-                className="text-xs px-2 py-1 rounded-full capitalize"
-                style={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
+                className="text-xs px-2 py-1 rounded-full capitalize border"
+                style={{ borderColor: 'rgba(255,255,255,0.3)', color: 'rgba(255,255,255,0.9)' }}
               >
                 {category}
               </span>
@@ -245,7 +247,7 @@ export default function ProgramCard({
           </div>
           <h3 className="text-lg font-bold mb-1 line-clamp-1">{name}</h3>
           {description && (
-            <p className="text-sm text-white/70 line-clamp-2">{description}</p>
+            <p className="text-sm line-clamp-2" style={{ color: COLORS.descriptionText }}>{description}</p>
           )}
         </div>
       </Link>
