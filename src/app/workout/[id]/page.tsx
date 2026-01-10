@@ -60,6 +60,7 @@ export default function WorkoutPage() {
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [exercises, setExercises] = useState<ExerciseWithLogs[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [workoutStarted, setWorkoutStarted] = useState(false);
   const [workoutLog, setWorkoutLog] = useState<any>(null);
   const [showCompletion, setShowCompletion] = useState(false);
@@ -140,9 +141,9 @@ export default function WorkoutPage() {
 
             return {
               ...exercise,
-              exerciseLogId: existingLogs.id,
+              exerciseLogId: existingLogs?.id,
               logs: Array(exercise.sets).fill(null).map((_, i) => {
-                const existingSet = existingLogs.setLogs.find(
+                const existingSet = existingLogs?.setLogs?.find(
                   (set: any) => set.setNumber === i + 1
                 );
                 return existingSet ? {
@@ -169,6 +170,8 @@ export default function WorkoutPage() {
         setIsLoading(false);
       } catch (error) {
         console.error('Failed to fetch workout:', error);
+        setError(error instanceof Error ? error.message : 'Failed to load workout');
+        setIsLoading(false);
       }
     };
 
@@ -183,11 +186,15 @@ export default function WorkoutPage() {
       return;
     }
 
+    // Capture previous state for rollback
+    const previousLog = { ...exercise.logs[setIndex] };
+
+    // Optimistic update
     setExercises(prev => {
       const newExercises = [...prev];
-      const exercise = newExercises[exerciseIndex];
-      exercise.logs[setIndex] = {
-        ...exercise.logs[setIndex],
+      const ex = newExercises[exerciseIndex];
+      ex.logs[setIndex] = {
+        ...ex.logs[setIndex],
         ...logData,
       };
       return newExercises;
@@ -218,15 +225,14 @@ export default function WorkoutPage() {
 
     } catch (error) {
       console.error('Failed to update set:', error);
+      // Rollback to previous state
       setExercises(prev => {
         const newExercises = [...prev];
-        const exercise = newExercises[exerciseIndex];
-        exercise.logs[setIndex] = {
-          ...exercise.logs[setIndex],
-          ...logData,
-        };
+        const ex = newExercises[exerciseIndex];
+        ex.logs[setIndex] = previousLog;
         return newExercises;
       });
+      setError('Failed to save set. Please try again.');
     }
   };
 
@@ -246,6 +252,7 @@ export default function WorkoutPage() {
       }, 2500);
     } catch (error) {
       console.error('Failed to complete workout:', error);
+      setError('Failed to complete workout. Please try again.');
     }
   };
 
@@ -259,6 +266,32 @@ export default function WorkoutPage() {
       <MainLayout>
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="w-8 h-8 border-2 border-[#F1F5F9] border-t-[#FF6B6B] rounded-full animate-spin" />
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (error && !exercises.length) {
+    return (
+      <MainLayout>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center space-y-4 p-8 bg-white rounded-2xl border border-red-200 shadow-lg max-w-md mx-auto">
+            <div className="w-16 h-16 mx-auto bg-red-100 rounded-full flex items-center justify-center">
+              <svg className="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-[#0F172A] mb-2">Unable to Load Workout</h2>
+              <p className="text-[#475569] mb-4">{error}</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="px-6 py-2.5 rounded-xl bg-[#FF6B6B] text-white font-medium hover:bg-[#EF5350] transition-colors"
+              >
+                Try Again
+              </button>
+            </div>
+          </div>
         </div>
       </MainLayout>
     );
@@ -295,6 +328,27 @@ export default function WorkoutPage() {
   return (
     <MainLayout>
       <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Error Toast */}
+        {error && exercises.length > 0 && (
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center justify-between max-w-4xl mx-auto">
+            <div className="flex items-center gap-3">
+              <svg className="w-5 h-5 text-red-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <p className="text-sm text-red-700">{error}</p>
+            </div>
+            <button
+              onClick={() => setError(null)}
+              className="text-red-500 hover:text-red-700 p-1"
+              aria-label="Dismiss error"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        )}
+
         <div className="flex gap-6">
           {/* Main Content */}
           <div className={`flex-1 ${chatOpen ? 'lg:max-w-3xl' : 'max-w-4xl mx-auto'}`}>

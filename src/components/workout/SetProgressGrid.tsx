@@ -32,7 +32,7 @@ export function SetProgressGrid({
 
         return (
           <button
-            key={idx}
+            key={log.setNumber}
             onClick={() => {
               if (!log.isCompleted) {
                 onSelect(idx === selectedIndex ? null : idx);

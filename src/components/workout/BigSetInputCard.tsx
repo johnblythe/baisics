@@ -34,8 +34,9 @@ export function BigSetInputCard({
 
       <div className="grid grid-cols-2 gap-3 mb-5">
         <div>
-          <label className="block text-white/70 text-xs font-medium mb-1.5">Weight (lbs)</label>
+          <label htmlFor={`weight-input-${setNumber}`} className="block text-white/70 text-xs font-medium mb-1.5">Weight (lbs)</label>
           <input
+            id={`weight-input-${setNumber}`}
             type="number"
             placeholder="185"
             value={weight || ''}
@@ -44,8 +45,9 @@ export function BigSetInputCard({
           />
         </div>
         <div>
-          <label className="block text-white/70 text-xs font-medium mb-1.5">Reps</label>
+          <label htmlFor={`reps-input-${setNumber}`} className="block text-white/70 text-xs font-medium mb-1.5">Reps</label>
           <input
+            id={`reps-input-${setNumber}`}
             type="number"
             placeholder="10"
             value={reps || ''}

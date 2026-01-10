@@ -25,15 +25,18 @@ export function RestTimerControl({
         </div>
       </div>
       <div className="flex items-center gap-3">
-        <span className="text-xs text-[#64748B]">Auto-start</span>
+        <span id="auto-start-label" className="text-xs text-[#64748B]">Auto-start</span>
         <label className="relative inline-flex items-center cursor-pointer">
           <input
             type="checkbox"
             checked={autoStart}
             onChange={(e) => onAutoStartChange(e.target.checked)}
             className="sr-only peer"
+            aria-labelledby="auto-start-label"
+            aria-describedby="auto-start-description"
           />
           <div className="w-11 h-6 bg-[#E2E8F0] peer-focus:ring-2 peer-focus:ring-[#FF6B6B]/20 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#FF6B6B]"></div>
+          <span id="auto-start-description" className="sr-only">Automatically start rest timer after completing a set</span>
         </label>
       </div>
     </div>
