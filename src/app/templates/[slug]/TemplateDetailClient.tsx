@@ -263,7 +263,13 @@ export default function TemplateDetailClient({ template }: TemplateDetailClientP
             {/* Sidebar */}
             <div className="space-y-6">
               {/* Generate CTA */}
-              <div className="bg-white rounded-xl p-6 sticky top-24 border" style={{ borderColor: COLORS.gray100 }}>
+              <div
+                className="rounded-xl p-6 sticky top-24 border"
+                style={{
+                  borderColor: COLORS.coralLight,
+                  backgroundColor: COLORS.coralLight,
+                }}
+              >
                 <h3 className="font-semibold mb-4" style={{ color: COLORS.navy }}>
                   Start This Program
                 </h3>
@@ -291,7 +297,7 @@ export default function TemplateDetailClient({ template }: TemplateDetailClientP
                             (customDays === days) ||
                             (customDays === null && days === template.daysPerWeek)
                               ? COLORS.navy
-                              : COLORS.gray100,
+                              : 'white',
                           color:
                             (customDays === days) ||
                             (customDays === null && days === template.daysPerWeek)
@@ -308,13 +314,16 @@ export default function TemplateDetailClient({ template }: TemplateDetailClientP
                 <button
                   onClick={handleGenerate}
                   disabled={generating}
-                  className="w-full px-4 py-3 text-white rounded-lg font-bold transition-colors disabled:opacity-50"
-                  style={{ backgroundColor: COLORS.coral }}
+                  className="w-full px-4 py-4 text-white rounded-xl font-bold transition-all disabled:opacity-50 shadow-lg hover:shadow-xl hover:scale-[1.02]"
+                  style={{
+                    background: 'linear-gradient(to right, #FF6B6B, #FF8E8E)',
+                    boxShadow: '0 10px 15px -3px rgba(255, 107, 107, 0.25), 0 4px 6px -4px rgba(255, 107, 107, 0.25)',
+                  }}
                 >
-                  {generating ? 'Preparing...' : 'Generate My Program'}
+                  {generating ? 'Preparing...' : 'Generate My Program →'}
                 </button>
 
-                <p className="text-xs text-center mt-4" style={{ color: COLORS.gray400 }}>
+                <p className="text-xs text-center mt-4" style={{ color: COLORS.gray600 }}>
                   Our AI will customize this template based on your profile
                 </p>
               </div>

@@ -62,7 +62,7 @@
         "Verify visually at /templates/[slug]"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "Issue #227 - Template detail visual polish"
     },
     {

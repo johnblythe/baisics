@@ -58,3 +58,17 @@ Started: Sat Jan 10 16:52:02 EST 2026
   - v2a design pattern uses max-w-5xl or max-w-6xl with px-6 padding
   - Responsive padding with md: breakpoints helps mobile experience
 ---
+
+## 2026-01-10 17:XX - US-004: Add coral accents to template detail page
+- **What was implemented:**
+  - Stats numbers in header now use coral (#FF6B6B) color and larger size (text-4xl)
+  - Added coral accent bars (w-1 h-6 rounded-full) next to all section headers
+  - Goals section, Features section, Workout Preview, Equipment, and Structure all have coral dividers
+  - Goals/features tags already had coral styling (coralLight bg, coralDark text)
+- **Files created/changed:**
+  - Modified: `src/app/templates/[slug]/TemplateDetailClient.tsx`
+- **Learnings for future iterations:**
+  - Template detail already had v2a COLORS object defined at top of file
+  - Coral accent pattern: small vertical bar (w-1 h-5/h-6) next to heading in flex container
+  - Stats can stand out more with color + increased font size (text-3xl → text-4xl)
+---
