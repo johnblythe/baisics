@@ -1,0 +1,13 @@
+There are still 2 stories with `passes: false` (US-013 and US-014). My iteration is complete for US-012. Another iteration will pick up the next story.
+
+**Summary of this iteration:**
+
+**US-010 & US-011** were already implemented as part of US-009 (ExerciseCard component) - marked as complete.
+
+**US-012: Replace ExerciseRow with ExerciseCard in ProgramDisplay**
+- Imported ExerciseCard into ProgramDisplay.tsx
+- Replaced the table-style layout (grid header + ExerciseRow) with a card-based layout using ExerciseCard
+- Changed container from table style to `space-y-3` stack
+- Mapped exercise data to ExerciseCard props with proper field mapping (restPeriod → rest, etc.)
+- Build and lint pass ✓
+- Committed: `feat: US-012 - Replace ExerciseRow with ExerciseCard in ProgramDisplay`

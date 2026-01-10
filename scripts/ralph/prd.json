@@ -226,7 +226,7 @@
         "Verify UI renders correctly in browser at /program/[programId]"
       ],
       "priority": 12,
-      "passes": false,
+      "passes": true,
       "notes": "This integrates US-009 through US-011 into the production program display"
     },
     {

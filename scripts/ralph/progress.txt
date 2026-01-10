@@ -150,3 +150,32 @@ Started: Sat Jan 10 13:08:32 EST 2026
   - Use lucide-react icons (PlayCircle, ArrowLeftRight, ChevronDown) instead of inline SVGs
   - Group action buttons with stopPropagation to prevent card click triggering expand
 ---
+
+## 2026-01-10 - US-010 & US-011: Action buttons and expandable details (Already implemented)
+- US-010 and US-011 were already implemented as part of US-009
+- All acceptance criteria already met in ExerciseCard component
+- Verified via lint and build checks
+- **Learnings for future iterations:**
+  - ExerciseCard was implemented comprehensively in US-009, covering US-010 and US-011 scope
+  - Future PRDs should consider merging tightly coupled stories
+---
+
+## 2026-01-10 - US-012: Replace ExerciseRow with ExerciseCard in ProgramDisplay
+- Modified `src/app/components/ProgramDisplay.tsx`
+- Imported ExerciseCard from `src/components/exercise/ExerciseCard.tsx`
+- Replaced table-style exercise header and ExerciseRow with ExerciseCard
+- Changed exercise list container to `space-y-3` stack with `p-3` padding
+- Mapped exercise data to ExerciseCard props:
+  - name, sets from exercise directly
+  - reps uses exercise.reps || exercise.measure || '10' as fallback
+  - rest uses exercise.restPeriod
+  - category uses getCategoryFromExercise() for inference
+  - notes and instructions passed through
+- Kept existing workout day card collapse/expand behavior unchanged
+- Old ExerciseRow component still in file (unused) - to be cleaned up in US-014
+- **Learnings for future iterations:**
+  - ProgramDisplay uses `exercise.restPeriod` not `exercise.rest` - need proper mapping
+  - getCategoryFromExercise() exists in file and handles inference from name
+  - ExerciseCard handles YouTube video links internally, no need to duplicate
+  - The table header (`grid-cols-12` with Type/Exercise/Sets×Reps/Rest columns) was removed
+---

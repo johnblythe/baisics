@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import ProgramCard from '@/app/components/ProgramCard';
 
 // Mock program data matching the screenshot
 const MOCK_PROGRAMS = [
@@ -257,10 +258,38 @@ function OptionDGradient({ programs }: { programs: typeof MOCK_PROGRAMS }) {
 }
 
 // ============================================
+// OPTION E: Production Component (after changes)
+// ============================================
+function OptionEProduction({ programs }: { programs: typeof MOCK_PROGRAMS }) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {programs.map((p) => (
+        <ProgramCard
+          key={p.id}
+          id={p.id}
+          name={p.name}
+          slug={p.name.toLowerCase().replace(/\s+/g, '-')}
+          description={p.description}
+          category={p.category}
+          difficulty={p.difficulty}
+          durationWeeks={p.weeks}
+          daysPerWeek={p.daysPerWeek}
+          equipment={p.equipment}
+          goals={p.goals}
+          author={p.author}
+          source="database"
+          onClaim={() => {}}
+        />
+      ))}
+    </div>
+  );
+}
+
+// ============================================
 // Main Page
 // ============================================
 export default function LibraryCardsDemoPage() {
-  const [activeOption, setActiveOption] = useState<'A' | 'B' | 'C' | 'D'>('A');
+  const [activeOption, setActiveOption] = useState<'A' | 'B' | 'C' | 'D' | 'E'>('A');
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] py-8 px-4" style={{ fontFamily: "'Outfit', sans-serif" }}>
@@ -273,7 +302,7 @@ export default function LibraryCardsDemoPage() {
 
         {/* Option Selector */}
         <div className="flex flex-wrap gap-2 mb-6 p-1 bg-white rounded-xl border border-[#E2E8F0]">
-          {(['A', 'B', 'C', 'D'] as const).map((opt) => (
+          {(['A', 'B', 'C', 'D', 'E'] as const).map((opt) => (
             <button
               key={opt}
               onClick={() => setActiveOption(opt)}
@@ -314,6 +343,12 @@ export default function LibraryCardsDemoPage() {
               <p className="text-sm text-[#475569]">Header gradient fades to lighter navy. Stats cards overlap header/body with shadow elevation. Body is subtle gray. Gradient CTA button.</p>
             </>
           )}
+          {activeOption === 'E' && (
+            <>
+              <h3 className="font-semibold text-[#0F172A] mb-1">Option E: Production Component (after changes)</h3>
+              <p className="text-sm text-[#475569]">This is the actual ProgramCard component from src/app/components/ProgramCard.tsx. Compare to Option D to verify implementation matches design.</p>
+            </>
+          )}
         </div>
 
         {/* Demo */}
@@ -322,6 +357,7 @@ export default function LibraryCardsDemoPage() {
           {activeOption === 'B' && <OptionBSubtle programs={MOCK_PROGRAMS} />}
           {activeOption === 'C' && <OptionCBordered programs={MOCK_PROGRAMS} />}
           {activeOption === 'D' && <OptionDGradient programs={MOCK_PROGRAMS} />}
+          {activeOption === 'E' && <OptionEProduction programs={MOCK_PROGRAMS} />}
         </div>
 
         {/* Comparison Notes */}
@@ -335,6 +371,7 @@ export default function LibraryCardsDemoPage() {
                 <li>B: Coral accent line, softer gradient</li>
                 <li>C: Solid navy, coral category badge</li>
                 <li>D: Fading gradient, overlapping stats</li>
+                <li>E: Production (same as D)</li>
               </ul>
             </div>
             <div>
@@ -344,6 +381,7 @@ export default function LibraryCardsDemoPage() {
                 <li>B: White body on #FAFAFA card</li>
                 <li>C: White with coral stats bar</li>
                 <li>D: #FAFAFA body, elevated white stat cards</li>
+                <li>E: Production (same as D)</li>
               </ul>
             </div>
           </div>
