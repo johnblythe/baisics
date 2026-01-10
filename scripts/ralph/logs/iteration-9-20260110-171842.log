@@ -1,0 +1,12 @@
+There are 15 more stories with `passes: false`. Story US-009 is complete and there are more stories to work on. My task for this iteration is done - I completed one user story as instructed.
+
+**Summary of US-009 implementation:**
+
+- Added `autoStart` prop to `RestPeriodIndicator` component with an effect that starts the timer immediately on mount
+- Added `showRestTimer` state and `restTimerKey` to workout page for controlling timer visibility
+- Added `triggerRestTimer()` callback that shows timer with a fresh instance after set completion
+- Wired up the `onComplete` handler in `BigSetInputCard` to trigger the rest timer
+- Timer appears with animation after completing a set (if auto-start is enabled)
+- Timer hides when changing exercises or toggling auto-start off
+
+All quality checks pass (`npm run lint`, `npm run build`, `npx tsc --noEmit`), commit created.

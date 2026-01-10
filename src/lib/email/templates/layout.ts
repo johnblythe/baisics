@@ -6,6 +6,7 @@ interface EmailLayoutProps {
     text: string;
     url: string;
   };
+  unsubscribeUrl?: string;
 }
 
 const skipCTA = true;
@@ -15,6 +16,7 @@ export const createEmailLayout = ({
   preheader = '',
   content,
   callToAction,
+  unsubscribeUrl,
 }: EmailLayoutProps) => `
 <!DOCTYPE html>
 <html>
@@ -115,11 +117,43 @@ export const createEmailLayout = ({
 
     /* Footer styles */
     .footer {
-      background-color: #f8fafc;
-      padding: 24px;
+      background: linear-gradient(135deg, #0F172A, #1E293B);
+      padding: 32px 24px;
       text-align: center;
-      color: #6b7280;
+      color: rgba(255, 255, 255, 0.8);
       font-size: 14px;
+    }
+
+    .footer p {
+      margin: 0 0 12px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .social-links {
+      margin: 16px 0;
+    }
+
+    .social-link {
+      display: inline-block;
+      margin: 0 8px;
+      color: #FF6B6B;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .social-link:hover {
+      color: #FF8E8E;
+    }
+
+    .divider {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 16px 0;
+    }
+
+    .unsubscribe-link {
+      color: rgba(255, 255, 255, 0.5);
+      text-decoration: underline;
+      font-size: 12px;
     }
 
     @media screen and (max-width: 600px) {
@@ -149,8 +183,16 @@ export const createEmailLayout = ({
       </tr>
       <tr>
         <td class="footer">
+          <div class="social-links">
+            <a href="https://twitter.com/baisicsapp" class="social-link">Twitter</a>
+            <a href="https://instagram.com/baisicsapp" class="social-link">Instagram</a>
+          </div>
+          <div class="divider"></div>
           <p>&copy; ${new Date().getFullYear()} baisics. All rights reserved.</p>
-          <p>♥️ from Indy</p>
+          <p style="margin-bottom: 16px;">Made with ♥️ in Indy</p>
+          ${unsubscribeUrl ? `
+          <a href="${unsubscribeUrl}" class="unsubscribe-link">Unsubscribe from these emails</a>
+          ` : ''}
         </td>
       </tr>
     </table>

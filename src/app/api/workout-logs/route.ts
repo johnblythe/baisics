@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { Exercise } from '@prisma/client';
 import { auth } from '@/auth';
+
 export async function POST(request: Request) {
   try {
     const session = await auth();
@@ -13,7 +14,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'User ID not found' });
     }
     const body = await request.json();
-    const { workoutId } = body;
+    const { workoutId, date } = body;
+
+    // Validate date if provided - must not be in the future
+    let logDate: Date | undefined;
+    if (date) {
+      logDate = new Date(date);
+      const now = new Date();
+      // Set to end of today to allow logging for today
+      const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+      if (logDate > endOfToday) {
+        return NextResponse.json({ error: 'Cannot log workouts for future dates' }, { status: 400 });
+      }
+    }
 
     // Get the workout to verify it exists and get its program
     const workout = await prisma.workout.findUnique({
@@ -39,6 +52,7 @@ export async function POST(request: Request) {
         workoutId,
         programId: workout.workoutPlan.program.id,
         status: 'in_progress',
+        ...(logDate && { startedAt: logDate }),
       },
       include: {
         workout: {

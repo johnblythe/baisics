@@ -1,0 +1,9 @@
+US-005 is complete. There are still stories with `passes: false` in the PRD (US-006 through US-024), so I'm ending this iteration normally. The next iteration will pick up US-006.
+
+**Summary of US-005 implementation:**
+- Updated the CTA section in `/templates/[slug]` with a coral-tinted background (`#FFE5E5`)
+- Applied coral gradient to the "Generate My Program" button: `linear-gradient(to right, #FF6B6B, #FF8E8E)`
+- Added coral shadow: `rgba(255, 107, 107, 0.25)`
+- Enhanced button with larger padding, rounded-xl corners, and hover scale effect
+- Added arrow to button text: "Generate My Program →"
+- Changed day picker unselected buttons to white for better contrast on coral background

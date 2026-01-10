@@ -1,0 +1,10 @@
+**US-002 completed.** 
+
+Summary:
+- Added JSON-LD structured data to template detail pages using `@type: 'ExercisePlan'` schema
+- Includes: name, description, exerciseType, activityDuration (ISO 8601 format), activityFrequency
+- Also added difficulty and splitType as additional properties
+- TypeScript and build pass
+- Committed: `feat: US-002 - Add JSON-LD structured data to template pages`
+
+There are still more stories with `passes: false` (US-003 through US-024), so another iteration will continue with the next highest priority story.

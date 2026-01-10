@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { CheckCircle, PlayCircle, ChevronLeft, ChevronRight, Dumbbell, MessageCircle } from 'lucide-react';
+import { CheckCircle, PlayCircle, ChevronLeft, ChevronRight, Dumbbell, MessageCircle, Calendar } from 'lucide-react';
 import MainLayout from '@/app/components/layouts/MainLayout';
 import { formatExerciseMeasure } from '@/utils/formatters';
 import ExerciseSwapModal from '@/components/ExerciseSwapModal';
@@ -12,6 +12,32 @@ import { SetProgressGrid } from '@/components/workout/SetProgressGrid';
 import { BigSetInputCard } from '@/components/workout/BigSetInputCard';
 import { RestTimerControl } from '@/components/workout/RestTimerControl';
 import { WorkoutProgressBar } from '@/components/workout/WorkoutProgressBar';
+import RestPeriodIndicator from '@/app/components/RestPeriodIndicator';
+import { WorkoutShareCard, WorkoutShareData } from '@/components/share/WorkoutShareCard';
+
+// Helper to format date for display
+function formatDateForDisplay(date: Date): string {
+  return date.toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric'
+  });
+}
+
+// Helper to format date for input value (YYYY-MM-DD)
+function formatDateForInput(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+// Check if two dates are the same day
+function isSameDay(date1: Date, date2: Date): boolean {
+  return date1.getFullYear() === date2.getFullYear() &&
+         date1.getMonth() === date2.getMonth() &&
+         date1.getDate() === date2.getDate();
+}
 
 // Helper to format rest duration in "M:SS" format
 function formatRestDuration(seconds: number): string {
@@ -63,7 +89,6 @@ export default function WorkoutPage() {
   const [error, setError] = useState<string | null>(null);
   const [workoutStarted, setWorkoutStarted] = useState(false);
   const [workoutLog, setWorkoutLog] = useState<any>(null);
-  const [showCompletion, setShowCompletion] = useState(false);
   const [swapModalOpen, setSwapModalOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   // Store chat messages per exercise for persistence
@@ -71,6 +96,18 @@ export default function WorkoutPage() {
   // New UI state for the redesigned workout tracker
   const [selectedSetIndex, setSelectedSetIndex] = useState<number | null>(null);
   const [autoStartTimer, setAutoStartTimer] = useState(true);
+  // Date picker state for backdating workouts
+  const [workoutDate, setWorkoutDate] = useState<Date>(() => new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const today = new Date();
+  // Rest timer state for auto-start after set completion
+  const [showRestTimer, setShowRestTimer] = useState(false);
+  const [restTimerKey, setRestTimerKey] = useState(0); // Key to force timer restart
+  const restTimerTriggerRef = useRef(false); // Track if we should auto-start
+  // Share modal state
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [shareData, setShareData] = useState<WorkoutShareData | null>(null);
+  const [workoutName, setWorkoutName] = useState('');
 
   const findFirstIncompletePosition = (exercises: ExerciseWithLogs[]) => {
     for (let i = 0; i < exercises.length; i++) {
@@ -83,6 +120,25 @@ export default function WorkoutPage() {
     return exercises.length - 1;
   };
 
+  // Trigger rest timer after set completion (if auto-start is enabled)
+  const triggerRestTimer = useCallback(() => {
+    if (autoStartTimer) {
+      setShowRestTimer(true);
+      setRestTimerKey(prev => prev + 1); // Force new timer instance
+      restTimerTriggerRef.current = true;
+    }
+  }, [autoStartTimer]);
+
+  // Handle rest timer completion
+  const handleRestTimerComplete = useCallback(() => {
+    // Timer completed - could add additional feedback here
+  }, []);
+
+  // Hide rest timer when changing exercises
+  useEffect(() => {
+    setShowRestTimer(false);
+  }, [currentExerciseIndex]);
+
   useEffect(() => {
     const fetchWorkout = async () => {
       try {
@@ -91,6 +147,9 @@ export default function WorkoutPage() {
           throw new Error('Failed to fetch workout');
         }
         const data = await response.json();
+
+        // Store workout name for share card
+        setWorkoutName(data.name || 'Workout');
 
         if (!data.workoutLogs?.[0]) {
           const startWorkoutResponse = await fetch('/api/workout-logs', {
@@ -246,14 +305,29 @@ export default function WorkoutPage() {
         throw new Error('Failed to complete workout');
       }
 
-      setShowCompletion(true);
-      setTimeout(() => {
-        router.push('/dashboard');
-      }, 2500);
+      // Prepare share data and show share modal
+      const exercisesCompleted = exercises.filter(ex =>
+        ex.logs.every(l => l.isCompleted)
+      ).length;
+
+      setShareData({
+        workoutName: workoutName,
+        exercisesCompleted: exercisesCompleted,
+        totalExercises: exercises.length,
+        streak: 1, // TODO: Fetch actual streak from API if available
+        date: workoutDate,
+      });
+      setShowShareModal(true);
     } catch (error) {
       console.error('Failed to complete workout:', error);
       setError('Failed to complete workout. Please try again.');
     }
+  };
+
+  // Handle share modal close (skip sharing)
+  const handleShareClose = () => {
+    setShowShareModal(false);
+    router.push('/dashboard');
   };
 
   // Calculate progress
@@ -297,21 +371,15 @@ export default function WorkoutPage() {
     );
   }
 
-  if (showCompletion) {
+  // Show share modal after workout completion
+  if (showShareModal && shareData) {
     return (
-      <MainLayout>
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="text-center space-y-6 p-8 bg-white rounded-2xl border border-[#F1F5F9] shadow-lg max-w-md mx-auto">
-            <div className="w-20 h-20 mx-auto bg-green-100 rounded-full flex items-center justify-center">
-              <CheckCircle className="w-10 h-10 text-green-500" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold text-[#0F172A] mb-2">Workout Complete!</h2>
-              <p className="text-[#475569]">Great job! Redirecting to dashboard...</p>
-            </div>
-          </div>
-        </div>
-      </MainLayout>
+      <>
+        <WorkoutShareCard
+          data={shareData}
+          onClose={handleShareClose}
+        />
+      </>
     );
   }
 
@@ -371,6 +439,49 @@ export default function WorkoutPage() {
               className="h-full bg-gradient-to-r from-[#FF6B6B] to-[#EF5350] rounded-full transition-all duration-500"
               style={{ width: `${progressPercent}%` }}
             />
+          </div>
+
+          {/* Date Picker for Backdating */}
+          <div className="mt-4 flex items-center gap-3">
+            <div className="relative">
+              <button
+                onClick={() => setShowDatePicker(!showDatePicker)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all ${
+                  !isSameDay(workoutDate, today)
+                    ? 'bg-[#FFE5E5] border-[#FF6B6B] text-[#FF6B6B]'
+                    : 'bg-white border-[#E2E8F0] text-[#475569] hover:border-[#FF6B6B]/50'
+                }`}
+              >
+                <Calendar className="w-4 h-4" />
+                <span className="text-sm font-medium">{formatDateForDisplay(workoutDate)}</span>
+              </button>
+
+              {showDatePicker && (
+                <div className="absolute top-full left-0 mt-2 z-50 bg-white rounded-xl shadow-lg border border-[#E2E8F0] p-3">
+                  <input
+                    type="date"
+                    value={formatDateForInput(workoutDate)}
+                    max={formatDateForInput(today)}
+                    onChange={(e) => {
+                      const newDate = new Date(e.target.value + 'T12:00:00');
+                      setWorkoutDate(newDate);
+                      setShowDatePicker(false);
+                    }}
+                    className="px-3 py-2 rounded-lg border border-[#E2E8F0] text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]/50 focus:border-[#FF6B6B]"
+                    style={{ colorScheme: 'light' }}
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* "Logging for [date]" indicator when not today */}
+            {!isSameDay(workoutDate, today) && (
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#FFE5E5] text-[#FF6B6B]">
+                <span className="text-sm font-medium">
+                  Logging for {formatDateForDisplay(workoutDate)}
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -513,6 +624,8 @@ export default function WorkoutPage() {
                         reps: log.reps,
                         isCompleted: true,
                       });
+                      // Trigger rest timer if auto-start is enabled
+                      triggerRestTimer();
                       // Clear selection to auto-advance to next incomplete set
                       setSelectedSetIndex(null);
                     }}
@@ -520,11 +633,30 @@ export default function WorkoutPage() {
                 );
               })()}
 
+              {/* Rest Timer - Shows after set completion when auto-start is enabled */}
+              {showRestTimer && (
+                <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                  <RestPeriodIndicator
+                    key={restTimerKey}
+                    restPeriod={currentExercise.restPeriod}
+                    isActive={true}
+                    autoStart={true}
+                    onTimerComplete={handleRestTimerComplete}
+                  />
+                </div>
+              )}
+
               {/* Rest Timer Control */}
               <RestTimerControl
                 restDuration={formatRestDuration(currentExercise.restPeriod)}
                 autoStart={autoStartTimer}
-                onAutoStartChange={setAutoStartTimer}
+                onAutoStartChange={(checked) => {
+                  setAutoStartTimer(checked);
+                  // Hide timer when disabling auto-start
+                  if (!checked) {
+                    setShowRestTimer(false);
+                  }
+                }}
               />
             </div>
           )}

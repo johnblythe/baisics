@@ -18,6 +18,23 @@ export async function POST(
       return NextResponse.json({ error: 'User ID not found' }, { status: 401 });
     }
 
+    // Parse optional completedAt from request body
+    let customCompletedAt: Date | undefined;
+    try {
+      const body = await request.json();
+      if (body.completedAt) {
+        customCompletedAt = new Date(body.completedAt);
+        const now = new Date();
+        // Set to end of today to allow completing for today
+        const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+        if (customCompletedAt > endOfToday) {
+          return NextResponse.json({ error: 'Cannot complete workouts for future dates' }, { status: 400 });
+        }
+      }
+    } catch {
+      // No body or invalid JSON - use default (now)
+    }
+
     // Get the workout log to verify ownership
     const workoutLog = await prisma.workoutLog.findUnique({
       where: { id },
@@ -31,12 +48,14 @@ export async function POST(
       return new NextResponse('Unauthorized', { status: 401 });
     }
 
+    const completionTime = customCompletedAt || new Date();
+
     // Update the workout log status and completedAt
     const updatedWorkoutLog = await prisma.workoutLog.update({
       where: { id },
       data: {
         status: 'completed',
-        completedAt: new Date(),
+        completedAt: completionTime,
       },
       include: {
         exerciseLogs: {
@@ -54,7 +73,7 @@ export async function POST(
         completedAt: null,
       },
       data: {
-        completedAt: new Date(),
+        completedAt: completionTime,
       },
     });
 
