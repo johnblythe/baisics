@@ -119,7 +119,7 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "notes": "Error: Image with src data:image/png;base64... has both fill and style.width properties"
     },
     {
@@ -136,7 +136,7 @@
         "Manually verify: photo comparison renders without errors"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "Final verification of all fixes"
     }
   ]
