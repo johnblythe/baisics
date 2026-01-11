@@ -300,7 +300,12 @@ export default function BaisicsVsTrainerize() {
         <div className="not-prose flex gap-4 flex-wrap">
           <Link
             href="/hi"
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FF6B6B] to-[#FF8E8E] text-white font-semibold px-6 py-3 rounded-lg shadow-lg shadow-[#FF6B6B]/25 hover:shadow-xl hover:scale-[1.02] transition-all"
+            className="inline-flex items-center gap-2 font-semibold px-6 py-3 rounded-lg transition-all hover:scale-105"
+            style={{
+              background: 'linear-gradient(to right, #FF6B6B, #FF8E8E)',
+              color: 'white',
+              boxShadow: '0 10px 25px -5px rgba(255, 107, 107, 0.25)'
+            }}
           >
             Get My Free Program
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

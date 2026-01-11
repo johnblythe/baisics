@@ -4,6 +4,7 @@ import React, { useState, useRef, useCallback } from 'react';
 import html2canvas from 'html2canvas';
 
 export interface ProgressShareData {
+  programId: string;
   weeksCompleted: number;
   totalWorkouts: number;
   weightChange?: number; // in lbs (positive = gained, negative = lost)
@@ -29,7 +30,7 @@ export function ProgressShareCard({ data, onClose }: ProgressShareCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
 
   const shareUrl = typeof window !== 'undefined'
-    ? `${window.location.origin}/share/progress`
+    ? `${window.location.origin}/share/progress/${data.programId}`
     : '';
 
   const formatWeight = (weight: number): string => {

@@ -4,6 +4,7 @@ import React, { useState, useRef, useCallback } from 'react';
 import html2canvas from 'html2canvas';
 
 export interface WorkoutShareData {
+  workoutLogId: string;
   workoutName: string;
   exercisesCompleted: number;
   totalExercises: number;
@@ -25,7 +26,7 @@ export function WorkoutShareCard({ data, onClose }: WorkoutShareCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
 
   const shareUrl = typeof window !== 'undefined'
-    ? `${window.location.origin}/share/workout?date=${data.date.toISOString()}`
+    ? `${window.location.origin}/share/workout/${data.workoutLogId}`
     : '';
 
   const formatDuration = (minutes: number): string => {

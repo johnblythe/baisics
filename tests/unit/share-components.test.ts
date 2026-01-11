@@ -93,13 +93,13 @@ describe('WorkoutShareCard behavior', () => {
   });
 
   describe('share URL generation', () => {
-    it('should generate correct share URL format', () => {
-      const date = new Date('2026-01-15T12:00:00');
+    it('should generate correct share URL format with workoutLogId', () => {
+      const workoutLogId = '123e4567-e89b-12d3-a456-426614174000';
       const baseUrl = 'https://baisics.app';
-      const shareUrl = `${baseUrl}/share/workout?date=${date.toISOString()}`;
+      const shareUrl = `${baseUrl}/share/workout/${workoutLogId}`;
 
-      expect(shareUrl).toContain('share/workout');
-      expect(shareUrl).toContain('date=');
+      expect(shareUrl).toContain('share/workout/');
+      expect(shareUrl).toContain(workoutLogId);
     });
   });
 
@@ -110,7 +110,8 @@ describe('WorkoutShareCard behavior', () => {
         exercisesCompleted: 5,
         streak: 3,
       };
-      const shareUrl = 'https://baisics.app/share/workout';
+      const workoutLogId = 'abc123';
+      const shareUrl = `https://baisics.app/share/workout/${workoutLogId}`;
 
       const text = `Just completed ${data.workoutName} on @BAISICS_app! ${data.exercisesCompleted} exercises done 💪${data.streak > 1 ? ` | ${data.streak} day streak 🔥` : ''}\n${shareUrl}`;
 
@@ -126,7 +127,8 @@ describe('WorkoutShareCard behavior', () => {
         exercisesCompleted: 5,
         streak: 1,
       };
-      const shareUrl = 'https://baisics.app/share/workout';
+      const workoutLogId = 'abc123';
+      const shareUrl = `https://baisics.app/share/workout/${workoutLogId}`;
 
       const text = `Just completed ${data.workoutName} on @BAISICS_app! ${data.exercisesCompleted} exercises done 💪${data.streak > 1 ? ` | ${data.streak} day streak 🔥` : ''}\n${shareUrl}`;
 

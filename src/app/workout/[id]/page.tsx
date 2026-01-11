@@ -304,6 +304,7 @@ export default function WorkoutPage() {
       ).length;
 
       setShareData({
+        workoutLogId: workoutLog.id,
         workoutName: workoutName,
         exercisesCompleted: exercisesCompleted,
         totalExercises: exercises.length,
