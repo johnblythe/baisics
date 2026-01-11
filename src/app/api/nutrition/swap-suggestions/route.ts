@@ -70,32 +70,52 @@ export async function POST(request: NextRequest) {
     // Build prompt for AI
     const prompt = buildSwapPrompt(ingredient, mealContext, userGoals);
 
-    const message = await anthropic.messages.create({
-      model: process.env.HAIKU_MODEL || 'claude-3-5-haiku-20241022',
-      max_tokens: 512,
-      messages: [
-        {
-          role: 'user',
-          content: prompt,
-        },
-      ],
-    });
+    let suggestions: SwapSuggestion[];
 
-    const textContent = message.content[0];
-    if (textContent.type !== 'text') {
-      return NextResponse.json(
-        { error: 'Failed to generate suggestions' },
-        { status: 500 }
-      );
+    try {
+      // Check if Anthropic API key is configured
+      if (!process.env.ANTHROPIC_API_KEY) {
+        console.warn('ANTHROPIC_API_KEY not configured, using fallback suggestions');
+        suggestions = getFallbackSuggestions(ingredient);
+      } else {
+        const message = await anthropic.messages.create({
+          model: process.env.HAIKU_MODEL || 'claude-3-5-haiku-20241022',
+          max_tokens: 512,
+          messages: [
+            {
+              role: 'user',
+              content: prompt,
+            },
+          ],
+        });
+
+        const textContent = message.content[0];
+        if (textContent.type !== 'text') {
+          console.warn('AI response was not text, using fallback suggestions');
+          suggestions = getFallbackSuggestions(ingredient);
+        } else {
+          suggestions = parseSwapSuggestions(textContent.text);
+
+          // If parsing failed or returned empty, use fallback
+          if (suggestions.length === 0) {
+            console.warn('Failed to parse AI response, using fallback suggestions');
+            suggestions = getFallbackSuggestions(ingredient);
+          }
+        }
+      }
+    } catch (aiError) {
+      // Log the specific AI error for debugging
+      console.error('AI call failed:', aiError instanceof Error ? aiError.message : aiError);
+      // Fall back to hardcoded suggestions
+      suggestions = getFallbackSuggestions(ingredient);
     }
-
-    const suggestions = parseSwapSuggestions(textContent.text);
 
     return NextResponse.json({ suggestions });
   } catch (error) {
+    // Only truly unexpected errors reach here (auth, rate limit, parsing request body, etc.)
     console.error('Error in swap-suggestions route:', error);
     return NextResponse.json(
-      { error: 'Failed to generate swap suggestions' },
+      { error: 'Failed to process request' },
       { status: 500 }
     );
   }
@@ -141,6 +161,72 @@ Rules:
 - Use positive numbers for increases, negative for decreases
 - Keep reasons concise (under 15 words)
 - Do not include any text outside the JSON array`;
+}
+
+// Fallback suggestions by ingredient category when AI fails
+function getFallbackSuggestions(ingredient: Ingredient): SwapSuggestion[] {
+  const name = ingredient.name.toLowerCase();
+
+  // Protein sources
+  if (name.includes('chicken') || name.includes('beef') || name.includes('pork') || name.includes('steak')) {
+    return [
+      { ingredient: { name: 'Turkey breast', amount: ingredient.amount }, macroDelta: { protein: 2, carbs: 0, fat: -5, calories: -30 }, reason: 'Leaner protein option' },
+      { ingredient: { name: 'Salmon fillet', amount: ingredient.amount }, macroDelta: { protein: 0, carbs: 0, fat: 5, calories: 20 }, reason: 'Rich in omega-3 fatty acids' },
+      { ingredient: { name: 'Tofu (firm)', amount: ingredient.amount }, macroDelta: { protein: -8, carbs: 2, fat: -5, calories: -80 }, reason: 'Plant-based, lower calorie option' },
+    ];
+  }
+
+  // Dairy
+  if (name.includes('milk') || name.includes('cream') || name.includes('cheese')) {
+    return [
+      { ingredient: { name: 'Greek yogurt', amount: ingredient.amount }, macroDelta: { protein: 8, carbs: -2, fat: -5, calories: -20 }, reason: 'Higher protein, lower fat' },
+      { ingredient: { name: 'Almond milk (unsweetened)', amount: ingredient.amount }, macroDelta: { protein: -6, carbs: -10, fat: -5, calories: -100 }, reason: 'Lower calorie dairy alternative' },
+      { ingredient: { name: 'Cottage cheese', amount: ingredient.amount }, macroDelta: { protein: 12, carbs: 2, fat: -8, calories: -40 }, reason: 'High protein, versatile substitute' },
+    ];
+  }
+
+  // Carbs/Grains
+  if (name.includes('rice') || name.includes('pasta') || name.includes('bread') || name.includes('noodle')) {
+    return [
+      { ingredient: { name: 'Quinoa', amount: ingredient.amount }, macroDelta: { protein: 4, carbs: -5, fat: 2, calories: -20 }, reason: 'Complete protein, more fiber' },
+      { ingredient: { name: 'Cauliflower rice', amount: ingredient.amount }, macroDelta: { protein: -4, carbs: -35, fat: 0, calories: -150 }, reason: 'Low carb alternative' },
+      { ingredient: { name: 'Sweet potato', amount: ingredient.amount }, macroDelta: { protein: 0, carbs: 5, fat: 0, calories: 10 }, reason: 'More vitamins and fiber' },
+    ];
+  }
+
+  // Oils/Fats
+  if (name.includes('oil') || name.includes('butter') || name.includes('margarine')) {
+    return [
+      { ingredient: { name: 'Olive oil', amount: ingredient.amount }, macroDelta: { protein: 0, carbs: 0, fat: 0, calories: 0 }, reason: 'Heart-healthy monounsaturated fats' },
+      { ingredient: { name: 'Avocado oil', amount: ingredient.amount }, macroDelta: { protein: 0, carbs: 0, fat: 0, calories: 0 }, reason: 'High smoke point, nutrient rich' },
+      { ingredient: { name: 'Coconut oil', amount: ingredient.amount }, macroDelta: { protein: 0, carbs: 0, fat: 0, calories: 0 }, reason: 'MCTs for quick energy' },
+    ];
+  }
+
+  // Sugar/Sweeteners
+  if (name.includes('sugar') || name.includes('honey') || name.includes('syrup')) {
+    return [
+      { ingredient: { name: 'Stevia', amount: '1 packet' }, macroDelta: { protein: 0, carbs: -15, fat: 0, calories: -60 }, reason: 'Zero calorie natural sweetener' },
+      { ingredient: { name: 'Monk fruit sweetener', amount: '1 tbsp' }, macroDelta: { protein: 0, carbs: -15, fat: 0, calories: -60 }, reason: 'Natural, no blood sugar spike' },
+      { ingredient: { name: 'Mashed banana', amount: '1/4 cup' }, macroDelta: { protein: 0, carbs: 10, fat: 0, calories: 25 }, reason: 'Natural sweetness with potassium' },
+    ];
+  }
+
+  // Vegetables (generic)
+  if (name.includes('lettuce') || name.includes('spinach') || name.includes('kale') || name.includes('greens')) {
+    return [
+      { ingredient: { name: 'Arugula', amount: ingredient.amount }, macroDelta: { protein: 0, carbs: 0, fat: 0, calories: 0 }, reason: 'Peppery flavor, rich in vitamin K' },
+      { ingredient: { name: 'Mixed baby greens', amount: ingredient.amount }, macroDelta: { protein: 1, carbs: 0, fat: 0, calories: 5 }, reason: 'Variety of nutrients' },
+      { ingredient: { name: 'Swiss chard', amount: ingredient.amount }, macroDelta: { protein: 1, carbs: 1, fat: 0, calories: 5 }, reason: 'High in magnesium and iron' },
+    ];
+  }
+
+  // Default/generic fallback
+  return [
+    { ingredient: { name: 'Similar lower-calorie option', amount: ingredient.amount }, macroDelta: { protein: 0, carbs: -5, fat: -3, calories: -50 }, reason: 'Generic lighter alternative' },
+    { ingredient: { name: 'Higher protein alternative', amount: ingredient.amount }, macroDelta: { protein: 10, carbs: 0, fat: 0, calories: 40 }, reason: 'Boost protein intake' },
+    { ingredient: { name: 'Whole food version', amount: ingredient.amount }, macroDelta: { protein: 0, carbs: 0, fat: 0, calories: 0 }, reason: 'Less processed, more nutrients' },
+  ];
 }
 
 function parseSwapSuggestions(responseText: string): SwapSuggestion[] {
