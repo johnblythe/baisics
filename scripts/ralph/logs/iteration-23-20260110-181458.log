@@ -1,0 +1,13 @@
+There's still one story with `passes: false` - that's US-024 (Final verification and build check). The next iteration will handle that.
+
+**Summary: US-023 Complete**
+
+Created a comprehensive "Baisics vs Trainerize" comparison blog post at `/blog/baisics-vs-trainerize`:
+
+- **Researched Trainerize**: Pricing tiers (Free → Studio at $225/mo), features (client management, exercise library, wearable integrations), add-ons (nutrition, video coaching, branded apps)
+- **Compared with Baisics**: Highlighted the fundamental difference - Trainerize is B2B for trainers, Baisics is B2C for self-directed individuals
+- **Content structure**: Quick comparison table, "What is X" sections, pricing breakdown, feature deep-dive, decision framework, CTA, FAQ
+- **SEO optimized**: Proper frontmatter with keywords, meta description, tags, and categories
+- **Factual tone**: Acknowledged Trainerize strengths, positioned comparison around use-case fit rather than feature superiority
+
+Build and lint checks pass. Committed and PRD updated.

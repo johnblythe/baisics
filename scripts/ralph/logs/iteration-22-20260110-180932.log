@@ -1,0 +1,18 @@
+There are still 2 stories with `passes: false` (US-023 and US-024). My iteration is complete - another iteration will pick up the next story.
+
+**Summary of US-022 completion:**
+
+- Created `src/content/blog/_templates/competitor-comparison-template.tsx` - A comprehensive blog template for competitor comparison posts with:
+  - Quick comparison table section
+  - "What is [Competitor]?" section
+  - "What is Baisics?" section
+  - Pricing comparison section
+  - Feature deep dive section
+  - Decision framework ("Choose X if...")
+  - CTA section
+  - FAQ section (optional)
+  - SEO-optimized frontmatter with placeholder keywords
+
+- Created `src/content/blog/_templates/README.md` with usage guidelines and writing tips
+
+- Fixed `src/app/blog/page.tsx` to filter out folders starting with `_` or `.` from the blog post listing

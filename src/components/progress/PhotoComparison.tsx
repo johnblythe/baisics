@@ -245,14 +245,14 @@ export function PhotoComparison({ programId, onClose }: PhotoComparisonProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Before Photo */}
           <div className="space-y-2">
-            <div className="aspect-[3/4] rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
+            <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
               {beforePhoto ? (
                 <Image
                   src={beforePhoto.base64Data}
                   alt={`Before - ${PHOTO_TYPE_LABELS[selectedType]}`}
-                  width={400}
-                  height={533}
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
+                  unoptimized
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -276,14 +276,14 @@ export function PhotoComparison({ programId, onClose }: PhotoComparisonProps) {
 
           {/* After Photo */}
           <div className="space-y-2">
-            <div className="aspect-[3/4] rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
+            <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
               {afterPhoto ? (
                 <Image
                   src={afterPhoto.base64Data}
                   alt={`After - ${PHOTO_TYPE_LABELS[selectedType]}`}
-                  width={400}
-                  height={533}
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
+                  unoptimized
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-gray-400">

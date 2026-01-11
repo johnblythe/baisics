@@ -17,7 +17,7 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 1,
-      "passes": true,
+      "passes": false,
       "notes": "Current flow: click button → shows input → click input → shows calendar. Should be: click button → shows styled calendar directly"
     },
     {
@@ -35,7 +35,7 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 2,
-      "passes": true,
+      "passes": false,
       "notes": "URL format: /share/workout?date=2026-01-07T17:00:00.000Z"
     },
     {
@@ -52,7 +52,7 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 3,
-      "passes": true,
+      "passes": false,
       "notes": "Bottom of blog post has invisible/white button where CTA should be"
     },
     {
@@ -69,7 +69,7 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 4,
-      "passes": true,
+      "passes": false,
       "notes": "Currently returns 'Failed to generate swap suggestions' - needs fallback"
     },
     {
@@ -85,7 +85,7 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 5,
-      "passes": true,
+      "passes": false,
       "notes": "Header shows non-auth'd version even when logged in on template pages"
     },
     {
@@ -102,7 +102,7 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 6,
-      "passes": true,
+      "passes": false,
       "notes": "Currently must scroll to bottom, expand progress section, then drag. Should allow drag anywhere."
     },
     {
