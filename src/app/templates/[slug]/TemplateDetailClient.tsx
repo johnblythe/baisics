@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ProgramTemplate, PROGRAM_TEMPLATES } from '@/data/templates';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 const DIFFICULTY_COLORS: Record<ProgramTemplate['difficulty'], string> = {
   beginner: 'bg-emerald-100 text-emerald-700',
@@ -68,40 +70,10 @@ export default function TemplateDetailClient({ template }: TemplateDetailClientP
       `}</style>
 
       <div className="template-detail min-h-screen" style={{ backgroundColor: COLORS.gray50 }}>
-        {/* Header */}
-        <header
-          className="sticky top-0 z-50 backdrop-blur-md border-b"
-          style={{ backgroundColor: 'rgba(255,255,255,0.95)', borderColor: COLORS.gray100 }}
-        >
-          <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16 lg:h-20">
-              <Link href="/" className="flex items-center gap-2">
-                <div
-                  className="w-8 h-8 rounded-lg flex items-center justify-center"
-                  style={{ backgroundColor: COLORS.coral }}
-                >
-                  <span className="text-white font-bold text-sm">B</span>
-                </div>
-                <span className="font-bold text-xl" style={{ color: COLORS.navy }}>baisics</span>
-              </Link>
+        {/* Header with auth state */}
+        <Header />
 
-              <nav className="hidden md:flex items-center gap-8">
-                <Link href="/library" className="text-sm font-medium" style={{ color: COLORS.gray600 }}>Library</Link>
-                <Link href="/templates" className="text-sm font-medium" style={{ color: COLORS.coral }}>Templates</Link>
-              </nav>
-
-              <Link
-                href="/hi"
-                className="px-5 py-2.5 text-sm font-semibold text-white rounded-lg"
-                style={{ backgroundColor: COLORS.navy }}
-              >
-                Create Program
-              </Link>
-            </div>
-          </div>
-        </header>
-
-        <div className="max-w-4xl mx-auto px-4 py-12">
+        <div className="max-w-4xl mx-auto px-4 py-12 pt-24 lg:pt-28">
           {/* Back Link */}
           <Link
             href="/templates"
@@ -413,15 +385,7 @@ export default function TemplateDetailClient({ template }: TemplateDetailClientP
         </div>
 
         {/* Footer */}
-        <footer className="py-12 px-6 lg:px-8 border-t" style={{ borderColor: COLORS.gray100 }}>
-          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-md" style={{ backgroundColor: COLORS.coral }}></div>
-              <span className="font-bold" style={{ color: COLORS.navy }}>baisics</span>
-            </div>
-            <p className="text-sm" style={{ color: COLORS.gray400 }}>&copy; {new Date().getFullYear()} baisics. Made with <span className="text-[#FF6B6B]">&hearts;</span> in Indy.</p>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </>
   );
