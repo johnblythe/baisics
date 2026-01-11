@@ -14,6 +14,7 @@ import { RestTimerControl } from '@/components/workout/RestTimerControl';
 import { WorkoutProgressBar } from '@/components/workout/WorkoutProgressBar';
 import RestPeriodIndicator from '@/app/components/RestPeriodIndicator';
 import { WorkoutShareCard, WorkoutShareData } from '@/components/share/WorkoutShareCard';
+import { CalendarPicker } from '@/components/ui/CalendarPicker';
 
 // Helper to format date for display
 function formatDateForDisplay(date: Date): string {
@@ -22,14 +23,6 @@ function formatDateForDisplay(date: Date): string {
     month: 'short',
     day: 'numeric'
   });
-}
-
-// Helper to format date for input value (YYYY-MM-DD)
-function formatDateForInput(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
 }
 
 // Check if two dates are the same day
@@ -457,20 +450,14 @@ export default function WorkoutPage() {
               </button>
 
               {showDatePicker && (
-                <div className="absolute top-full left-0 mt-2 z-50 bg-white rounded-xl shadow-lg border border-[#E2E8F0] p-3">
-                  <input
-                    type="date"
-                    value={formatDateForInput(workoutDate)}
-                    max={formatDateForInput(today)}
-                    onChange={(e) => {
-                      const newDate = new Date(e.target.value + 'T12:00:00');
-                      setWorkoutDate(newDate);
-                      setShowDatePicker(false);
-                    }}
-                    className="px-3 py-2 rounded-lg border border-[#E2E8F0] text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]/50 focus:border-[#FF6B6B]"
-                    style={{ colorScheme: 'light' }}
-                  />
-                </div>
+                <CalendarPicker
+                  selectedDate={workoutDate}
+                  onDateSelect={(date) => {
+                    setWorkoutDate(date);
+                  }}
+                  maxDate={today}
+                  onClose={() => setShowDatePicker(false)}
+                />
               )}
             </div>
 
