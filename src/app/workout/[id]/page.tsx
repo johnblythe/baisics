@@ -610,18 +610,12 @@ export default function WorkoutPage() {
                     targetReps={String(currentExercise.reps)}
                     weight={currentLog.weight ?? previousLog?.weight ?? ''}
                     reps={currentLog.reps > 0 ? currentLog.reps : ''}
-                    onWeightChange={(value) => {
-                      updateSet(currentExerciseIndex, currentSetIndex, { weight: value });
-                    }}
-                    onRepsChange={(value) => {
-                      updateSet(currentExerciseIndex, currentSetIndex, { reps: value });
-                    }}
-                    onComplete={() => {
+                    onComplete={(weight, reps) => {
                       const setIndex = currentSetIndex >= 0 ? currentSetIndex : 0;
-                      const log = currentExercise.logs[setIndex];
+                      // Save all data in one API call when completing
                       updateSet(currentExerciseIndex, setIndex, {
-                        weight: log.weight,
-                        reps: log.reps,
+                        weight,
+                        reps,
                         isCompleted: true,
                       });
                       // Trigger rest timer if auto-start is enabled

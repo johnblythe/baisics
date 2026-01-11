@@ -1,15 +1,13 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 
 interface BigSetInputCardProps {
   setNumber: number;
   targetReps: string;
   weight: number | string;
   reps: number | string;
-  onWeightChange: (value: number) => void;
-  onRepsChange: (value: number) => void;
-  onComplete: () => void;
+  onComplete: (weight: number, reps: number) => void;
 }
 
 export function BigSetInputCard({
@@ -17,91 +15,24 @@ export function BigSetInputCard({
   targetReps,
   weight,
   reps,
-  onWeightChange,
-  onRepsChange,
   onComplete,
 }: BigSetInputCardProps) {
-  // Local state for immediate UI response
+  // Local state for immediate UI response - NO auto-saving until complete
   const [localWeight, setLocalWeight] = useState<string>(weight ? String(weight) : '');
   const [localReps, setLocalReps] = useState<string>(reps ? String(reps) : '');
 
-  // Debounce timers
-  const weightTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const repsTimerRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Track if we're the source of the change to avoid loops
-  const isLocalChangeRef = useRef(false);
-
   // Sync local state when props change (e.g., switching sets)
   useEffect(() => {
-    if (!isLocalChangeRef.current) {
-      setLocalWeight(weight ? String(weight) : '');
-      setLocalReps(reps ? String(reps) : '');
-    }
-    isLocalChangeRef.current = false;
+    setLocalWeight(weight ? String(weight) : '');
+    setLocalReps(reps ? String(reps) : '');
   }, [weight, reps, setNumber]);
 
-  // Cleanup timers on unmount
-  useEffect(() => {
-    return () => {
-      if (weightTimerRef.current) clearTimeout(weightTimerRef.current);
-      if (repsTimerRef.current) clearTimeout(repsTimerRef.current);
-    };
-  }, []);
-
-  const handleWeightChange = useCallback((value: string) => {
-    isLocalChangeRef.current = true;
-    setLocalWeight(value);
-
-    // Clear existing timer
-    if (weightTimerRef.current) clearTimeout(weightTimerRef.current);
-
-    // Debounce API call (800ms)
-    weightTimerRef.current = setTimeout(() => {
-      const numValue = Number(value);
-      if (!isNaN(numValue) && value !== '') {
-        onWeightChange(numValue);
-      }
-    }, 800);
-  }, [onWeightChange]);
-
-  const handleRepsChange = useCallback((value: string) => {
-    isLocalChangeRef.current = true;
-    setLocalReps(value);
-
-    // Clear existing timer
-    if (repsTimerRef.current) clearTimeout(repsTimerRef.current);
-
-    // Debounce API call (800ms)
-    repsTimerRef.current = setTimeout(() => {
-      const numValue = Number(value);
-      if (!isNaN(numValue) && value !== '') {
-        onRepsChange(numValue);
-      }
-    }, 800);
-  }, [onRepsChange]);
-
-  const handleComplete = useCallback(() => {
-    // Clear any pending debounce timers
-    if (weightTimerRef.current) clearTimeout(weightTimerRef.current);
-    if (repsTimerRef.current) clearTimeout(repsTimerRef.current);
-
-    // Sync final values before completing
-    const finalWeight = Number(localWeight);
-    const finalReps = Number(localReps);
-
-    if (!isNaN(finalWeight) && localWeight !== '') {
-      onWeightChange(finalWeight);
-    }
-    if (!isNaN(finalReps) && localReps !== '') {
-      onRepsChange(finalReps);
-    }
-
-    // Small delay to ensure state updates propagate before completion
-    setTimeout(() => {
-      onComplete();
-    }, 50);
-  }, [localWeight, localReps, onWeightChange, onRepsChange, onComplete]);
+  // Only save when user explicitly completes the set - pass values directly
+  const handleComplete = () => {
+    const finalWeight = Number(localWeight) || 0;
+    const finalReps = Number(localReps) || Number(targetReps) || 0;
+    onComplete(finalWeight, finalReps);
+  };
 
   return (
     <div className="bg-gradient-to-br from-[#FF6B6B] to-[#EF5350] rounded-2xl p-5 text-white shadow-xl shadow-[#FF6B6B]/30">
@@ -124,7 +55,7 @@ export function BigSetInputCard({
             type="number"
             placeholder="185"
             value={localWeight}
-            onChange={(e) => handleWeightChange(e.target.value)}
+            onChange={(e) => setLocalWeight(e.target.value)}
             className="w-full px-4 py-3.5 rounded-xl bg-white/20 border border-white/30 text-white text-xl font-bold placeholder-white/50 focus:bg-white/30 focus:outline-none"
           />
         </div>
@@ -135,7 +66,7 @@ export function BigSetInputCard({
             type="number"
             placeholder="10"
             value={localReps}
-            onChange={(e) => handleRepsChange(e.target.value)}
+            onChange={(e) => setLocalReps(e.target.value)}
             className="w-full px-4 py-3.5 rounded-xl bg-white/20 border border-white/30 text-white text-xl font-bold placeholder-white/50 focus:bg-white/30 focus:outline-none"
           />
         </div>
