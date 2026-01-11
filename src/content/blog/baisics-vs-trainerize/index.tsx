@@ -297,10 +297,10 @@ export default function BaisicsVsTrainerize() {
           personalized program in under 2 minutes - no credit card, no commitment.
         </p>
 
-        <div className="flex gap-4 flex-wrap">
+        <div className="not-prose flex gap-4 flex-wrap">
           <Link
             href="/hi"
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FF6B6B] to-[#FF8E8E] text-white font-semibold px-6 py-3 rounded-lg shadow-lg shadow-[#FF6B6B]/25 hover:shadow-xl transition-shadow"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FF6B6B] to-[#FF8E8E] text-white font-semibold px-6 py-3 rounded-lg shadow-lg shadow-[#FF6B6B]/25 hover:shadow-xl hover:scale-[1.02] transition-all"
           >
             Get My Free Program
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
