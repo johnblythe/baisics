@@ -1,9 +1,9 @@
 'use client';
 
-import React, { Suspense, useState, useEffect } from 'react';
+import React, { Suspense, useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { createCheckIn } from './actions';
-import { Camera, Scale, Ruler, Heart, FileText, Calendar, ChevronDown, ChevronUp, ImageIcon } from 'lucide-react';
+import { Camera, Scale, Ruler, Heart, FileText, Calendar, ChevronDown, ChevronUp, ImageIcon, Upload } from 'lucide-react';
 import { PhotoComparison } from '@/components/PhotoComparison';
 
 interface Photo {
@@ -49,25 +49,40 @@ interface PastCheckIn {
   photoCount: number;
 }
 
-// Collapsible section component
+// Collapsible section component with optional external control
 const CollapsibleSection = ({
   title,
   icon: Icon,
   children,
-  defaultOpen = true
+  defaultOpen = true,
+  isOpen: externalIsOpen,
+  onToggle,
 }: {
   title: string;
   icon: React.ElementType;
   children: React.ReactNode;
   defaultOpen?: boolean;
+  isOpen?: boolean;
+  onToggle?: (open: boolean) => void;
 }) => {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
+  const [internalIsOpen, setInternalIsOpen] = useState(defaultOpen);
+
+  // Use external state if provided, otherwise use internal state
+  const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
+  const handleToggle = () => {
+    const newState = !isOpen;
+    if (onToggle) {
+      onToggle(newState);
+    } else {
+      setInternalIsOpen(newState);
+    }
+  };
 
   return (
     <div className="bg-white rounded-2xl border border-[#F1F5F9] shadow-sm overflow-hidden">
       <button
         type="button"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleToggle}
         className="w-full px-6 py-4 flex items-center justify-between hover:bg-[#F8FAFC] transition-colors"
       >
         <div className="flex items-center gap-3">
@@ -130,6 +145,11 @@ function CheckInPageContent() {
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
   const [loadingHistory, setLoadingHistory] = useState(true);
 
+  // Page-level drag-drop state for photos
+  const [isDraggingOverPage, setIsDraggingOverPage] = useState(false);
+  const [photosExpanded, setPhotosExpanded] = useState(false);
+  const dragCounterRef = useRef(0);
+
   // Fetch past check-ins with photos
   useEffect(() => {
     async function fetchCheckInHistory() {
@@ -172,6 +192,74 @@ function CheckInPageContent() {
     setFormData(prev => ({ ...prev, date: checkInDate }));
   }, [checkInDate]);
 
+  // Process dropped/selected photos
+  const processPhotoFiles = useCallback(async (files: File[]) => {
+    const photoTypes = ['FRONT', 'BACK', 'SIDE_LEFT', 'SIDE_RIGHT'] as const;
+    const imageFiles = files.filter(f => f.type.startsWith('image/'));
+
+    if (imageFiles.length === 0) return;
+
+    const newPhotos = await Promise.all(imageFiles.map(async (file, index) => {
+      const base64Data = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.readAsDataURL(file);
+      });
+
+      // Determine type based on existing photos count + new index
+      const existingPhotoCount = formData.photos.filter(p => p.file).length;
+      const typeIndex = existingPhotoCount + index;
+
+      return {
+        type: typeIndex < 4 ? photoTypes[typeIndex] : ('CUSTOM' as const),
+        file,
+        base64Data
+      };
+    }));
+
+    setFormData(prev => ({
+      ...prev,
+      photos: [...prev.photos, ...newPhotos].slice(0, 8)
+    }));
+
+    // Auto-expand photos section after adding
+    setPhotosExpanded(true);
+  }, [formData.photos]);
+
+  // Page-level drag handlers
+  const handlePageDragEnter = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounterRef.current++;
+    if (e.dataTransfer?.types.includes('Files')) {
+      setIsDraggingOverPage(true);
+    }
+  }, []);
+
+  const handlePageDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounterRef.current--;
+    if (dragCounterRef.current === 0) {
+      setIsDraggingOverPage(false);
+    }
+  }, []);
+
+  const handlePageDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, []);
+
+  const handlePageDrop = useCallback(async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounterRef.current = 0;
+    setIsDraggingOverPage(false);
+
+    const files = Array.from(e.dataTransfer?.files || []);
+    await processPhotoFiles(files);
+  }, [processPhotoFiles]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -195,12 +283,32 @@ function CheckInPageContent() {
   const labelClasses = "block text-sm font-medium text-[#475569] mb-1";
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      {/* Page Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-[#0F172A] mb-2">Weekly Check-in</h1>
-        <p className="text-[#475569]">Track your progress and update your measurements</p>
-      </div>
+    <div
+      className="relative min-h-screen"
+      onDragEnter={handlePageDragEnter}
+      onDragLeave={handlePageDragLeave}
+      onDragOver={handlePageDragOver}
+      onDrop={handlePageDrop}
+    >
+      {/* Full-page drop overlay */}
+      {isDraggingOverPage && (
+        <div className="fixed inset-0 z-50 bg-[#FF6B6B]/10 backdrop-blur-sm flex items-center justify-center">
+          <div className="bg-white rounded-2xl shadow-2xl p-12 text-center border-4 border-dashed border-[#FF6B6B] animate-in fade-in zoom-in duration-200">
+            <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-[#FF6B6B] to-[#FF8E8E] rounded-2xl flex items-center justify-center shadow-lg shadow-[#FF6B6B]/30">
+              <Upload className="w-10 h-10 text-white" />
+            </div>
+            <h3 className="text-2xl font-bold text-[#0F172A] mb-2">Drop your photos here</h3>
+            <p className="text-[#475569]">Release to add progress photos</p>
+          </div>
+        </div>
+      )}
+
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        {/* Page Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-[#0F172A] mb-2">Weekly Check-in</h1>
+          <p className="text-[#475569]">Track your progress and update your measurements</p>
+        </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Date Picker Section */}
@@ -484,9 +592,31 @@ function CheckInPageContent() {
         </CollapsibleSection>
 
         {/* Photos Section */}
-        <CollapsibleSection title="Progress Photos" icon={Camera} defaultOpen={false}>
+        <CollapsibleSection
+          title="Progress Photos"
+          icon={Camera}
+          isOpen={photosExpanded}
+          onToggle={setPhotosExpanded}
+        >
+          {/* Prominent Add Photos CTA when no photos */}
+          {!formData.photos.some(p => p.file) && (
+            <div className="mb-6 p-6 bg-gradient-to-br from-[#FFE5E5] to-[#FFF5F5] rounded-xl border border-[#FF6B6B]/20">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 bg-gradient-to-br from-[#FF6B6B] to-[#FF8E8E] rounded-xl flex items-center justify-center shadow-lg shadow-[#FF6B6B]/20 flex-shrink-0">
+                  <Camera className="w-7 h-7 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-[#0F172A] mb-1">Add Progress Photos</h3>
+                  <p className="text-sm text-[#475569]">
+                    Drag photos anywhere on this page or click below to upload
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Photo Instructions */}
-          <div className="mb-6 bg-[#FFE5E5] rounded-xl p-4">
+          <div className="mb-6 bg-[#F8FAFC] rounded-xl p-4">
             <h3 className="text-sm font-medium text-[#0F172A] mb-2">Tips for Great Progress Photos</h3>
             <ul className="text-sm text-[#475569] space-y-1">
               <li className="flex items-start gap-2">
@@ -514,7 +644,7 @@ function CheckInPageContent() {
               className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200
                 ${formData.photos.some(p => p.file)
                   ? 'border-green-300 bg-green-50'
-                  : 'border-[#F1F5F9] hover:border-[#FF6B6B] hover:bg-[#FFE5E5]/20'}`}
+                  : 'border-[#FF6B6B]/30 hover:border-[#FF6B6B] bg-[#FFE5E5]/10 hover:bg-[#FFE5E5]/20'}`}
             >
               <input
                 type="file"
@@ -522,40 +652,21 @@ function CheckInPageContent() {
                 multiple
                 onChange={async (e) => {
                   const files = Array.from(e.target.files || []);
-                  const photoTypes = ['FRONT', 'BACK', 'SIDE_LEFT', 'SIDE_RIGHT'] as const;
-
-                  const newPhotos = await Promise.all(files.map(async (file, index) => {
-                    const base64Data = await new Promise<string>((resolve) => {
-                      const reader = new FileReader();
-                      reader.onload = () => resolve(reader.result as string);
-                      reader.readAsDataURL(file);
-                    });
-
-                    return {
-                      type: photoTypes[index] || 'CUSTOM',
-                      file,
-                      base64Data
-                    };
-                  }));
-
-                  setFormData(prev => ({
-                    ...prev,
-                    photos: [...prev.photos, ...newPhotos].slice(0, 8)
-                  }));
+                  await processPhotoFiles(files);
                 }}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
               />
 
               <div className="space-y-3">
-                <div className="w-12 h-12 mx-auto bg-[#F8FAFC] rounded-full flex items-center justify-center">
-                  <Camera className="w-6 h-6 text-[#94A3B8]" />
+                <div className="w-14 h-14 mx-auto bg-gradient-to-br from-[#FF6B6B] to-[#FF8E8E] rounded-xl flex items-center justify-center shadow-md shadow-[#FF6B6B]/20">
+                  <Upload className="w-7 h-7 text-white" />
                 </div>
                 <div>
-                  <p className="text-base font-medium text-[#0F172A]">
-                    Drop your progress photos here
+                  <p className="text-lg font-semibold text-[#0F172A]">
+                    {formData.photos.some(p => p.file) ? 'Add more photos' : 'Click to select photos'}
                   </p>
-                  <p className="mt-1 text-sm text-[#94A3B8]">
-                    or click to select files
+                  <p className="mt-1 text-sm text-[#475569]">
+                    or drag & drop anywhere on this page
                   </p>
                 </div>
               </div>
@@ -712,6 +823,7 @@ function CheckInPageContent() {
           onClose={() => setIsCompareModalOpen(false)}
         />
       )}
+      </div>
     </div>
   );
 }
