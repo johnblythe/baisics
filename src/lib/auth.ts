@@ -14,6 +14,35 @@ export async function auth() {
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as any,
+  // Use project-specific cookie names to avoid collision with other localhost apps
+  cookies: {
+    sessionToken: {
+      name: 'baisics.session-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      },
+    },
+    callbackUrl: {
+      name: 'baisics.callback-url',
+      options: {
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      },
+    },
+    csrfToken: {
+      name: 'baisics.csrf-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      },
+    },
+  },
   providers: [
     EmailProvider({
       server: {
@@ -32,14 +61,14 @@ export const authOptions: NextAuthOptions = {
           console.log(`\n🔗 MAGIC LINK for ${identifier}:\n${url}\n`);
 
           const cookieStore = await cookies();
-          cookieStore.set("__dev_magic_link", url, {
+          cookieStore.set("baisics.__dev_magic_link", url, {
             httpOnly: false,
             secure: false,
             sameSite: "lax",
             maxAge: 60 * 10, // 10 minutes
             path: "/",
           });
-          cookieStore.set("__dev_magic_email", identifier, {
+          cookieStore.set("baisics.__dev_magic_email", identifier, {
             httpOnly: false,
             secure: false,
             sameSite: "lax",

@@ -1,0 +1,17 @@
+There are still 17 stories with `passes: false`. US-007 has been completed successfully.
+
+## Summary: US-007 Complete
+
+**Story:** #232 - Pass selected date to workout completion API
+
+**What was implemented:**
+- Updated `POST /api/workout-logs` to accept optional `date` param for backdating the `startedAt` timestamp
+- Updated `POST /api/workout-logs/[id]/complete` to accept optional `completedAt` param
+- Both endpoints validate that dates are not in the future
+- Exercise logs also use the custom completion time when completing a workout
+
+**Files changed:**
+- `src/app/api/workout-logs/route.ts`
+- `src/app/api/workout-logs/[id]/complete/route.ts`
+
+**Quality checks passed:** `npm run lint` ✓, `npm run build` ✓

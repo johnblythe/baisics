@@ -26,7 +26,8 @@ export const metadata: Metadata = {
 async function getBlogPosts(): Promise<BlogPost[]> {
   const postsDirectory = path.join(process.cwd(), 'src/content/blog')
   const folders = fs.readdirSync(postsDirectory)
-  
+    .filter(folder => !folder.startsWith('_') && !folder.startsWith('.'))
+
   const posts = await Promise.all(
     folders.map(async (folder) => {
       try {

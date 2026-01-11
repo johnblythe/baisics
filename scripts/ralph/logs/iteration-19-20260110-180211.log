@@ -1,0 +1,16 @@
+US-019 is complete. Checking the PRD for remaining stories with `passes: false`:
+- US-020: Update magic-link email template (priority 20)
+- US-021: Update welcome email template (priority 21)
+- US-022: Create competitor comparison blog template (priority 22)
+- US-023: Write baisics vs Trainerize comparison post (priority 23)
+- US-024: Final verification and build check (priority 24)
+
+There are still stories with `passes: false`, so I'll end my response normally for the next iteration to continue.
+
+---
+
+**US-019 Complete**: Updated `src/lib/email/templates/layout.ts` with v2a design:
+- Footer now has navy gradient background matching header
+- Added social links (Twitter, Instagram) in coral
+- Added optional `unsubscribeUrl` prop for unsubscribe link
+- Improved footer typography for navy background contrast

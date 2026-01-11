@@ -1,0 +1,12 @@
+**US-017 Complete.** I've implemented the ingredient swap suggestions API endpoint.
+
+**Summary:**
+- Created `POST /api/nutrition/swap-suggestions` endpoint
+- Uses Claude Haiku for fast AI-generated contextual swap suggestions
+- Accepts ingredient info, meal context, and user goals
+- Returns 3-4 suggestions with macro deltas (protein, carbs, fat, calories) and reasons
+- Rate limited to 10 requests per minute
+- Requires premium subscription (returns 403 for free tier users)
+- Lint and build pass
+
+There are still stories with `passes: false` remaining (US-018 through US-024), so another iteration will pick up the next story.

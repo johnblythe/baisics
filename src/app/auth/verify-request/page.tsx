@@ -5,8 +5,8 @@ import { cookies } from "next/headers";
 
 export default async function VerifyRequest() {
   const cookieStore = await cookies();
-  const magicLink = cookieStore.get("__dev_magic_link")?.value;
-  const email = cookieStore.get("__dev_magic_email")?.value;
+  const magicLink = cookieStore.get("baisics.__dev_magic_link")?.value;
+  const email = cookieStore.get("baisics.__dev_magic_email")?.value;
 
   return (
     <MainLayout>

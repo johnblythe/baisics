@@ -1,0 +1,10 @@
+US-012 is complete. There are still stories with `passes: false` remaining (US-013 through US-024), so another iteration will pick up the next story.
+
+**Summary:**
+- Created `src/components/share/ProgressShareCard.tsx` for sharing fitness transformation stats
+- Component shows: weeks completed, total workouts, weight change (if tracked), weight range
+- Optional before/after photo slots with side-by-side layout
+- Privacy toggles to blur stats or hide photos
+- Branded styling matching WorkoutShareCard (coral gradient header, navy background)
+- Uses html2canvas for PNG generation, Web Share API for mobile sharing
+- Lint and build pass, committed as `feat: US-012 - Create progress share card component`

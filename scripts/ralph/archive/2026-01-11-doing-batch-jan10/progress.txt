@@ -1,0 +1,439 @@
+# Ralph Progress Log
+Started: Sat Jan 10 16:52:02 EST 2026
+---
+
+## Codebase Patterns
+
+### Template Pages SEO Pattern
+- Template detail pages need server/client split for SEO metadata
+- Server component exports `generateMetadata` and renders client component
+- Client component handles all interactive state (useState, useRouter, etc.)
+- Pattern: `page.tsx` (server) imports `*Client.tsx` (client)
+- Next.js 15: params is now a Promise, use `const { slug } = await params`
+
+---
+
+## 2026-01-10 17:XX - US-001: Add generateMetadata to template detail page
+- **What was implemented:**
+  - Converted template detail page to server component pattern
+  - Added generateMetadata with title format: `{Template Name} - Free Workout Program | baisics`
+  - Used template.description for meta description
+  - Added OpenGraph tags (title, description, type: 'article')
+- **Files created/changed:**
+  - Created: `src/app/templates/[slug]/TemplateDetailClient.tsx` (client component)
+  - Modified: `src/app/templates/[slug]/page.tsx` (server component with generateMetadata)
+- **Learnings for future iterations:**
+  - Next.js 15 requires `params` to be awaited: `const { slug } = await params`
+  - The `PageProps` interface should be: `{ params: Promise<{ slug: string }> }`
+  - Server/client component split is required for `generateMetadata` with client interactivity
+---
+
+## 2026-01-10 17:XX - US-002: Add JSON-LD structured data to template pages
+- **What was implemented:**
+  - Added `generateJsonLd` function to create ExercisePlan schema.org structured data
+  - JSON-LD includes: name, description, exerciseType, activityDuration (ISO 8601), activityFrequency
+  - Added additional properties for difficulty and splitType
+  - Rendered as script tag with type application/ld+json in page body
+- **Files created/changed:**
+  - Modified: `src/app/templates/[slug]/page.tsx` (added JSON-LD generation and rendering)
+- **Learnings for future iterations:**
+  - JSON-LD for ExercisePlan uses ISO 8601 duration format: `P${weeks}W`
+  - JSON.stringify of trusted server-side template data is safe for inline scripts
+  - Schema.org additionalProperty can extend ExercisePlan with custom fields
+---
+
+## 2026-01-10 17:XX - US-003: Widen program generation page layout
+- **What was implemented:**
+  - Widened layout from max-w-3xl to max-w-5xl for more spacious feel
+  - Updated padding to v2a pattern: px-6 py-10
+  - Enlarged hero section with responsive text sizes (lg:text-5xl)
+  - Added more breathing room to chat container (md:p-8)
+  - Increased form spacing (mt-6, space-y-5)
+  - Enlarged textarea (rows 4, p-5) and button text (text-lg)
+  - Increased quick prompt button padding (px-5 py-4) and grid gaps (gap-3)
+- **Files created/changed:**
+  - Modified: `src/app/hi/components/ConversationalInterface.tsx`
+- **Learnings for future iterations:**
+  - The /hi page layout is in ConversationalInterface.tsx, not page.tsx
+  - v2a design pattern uses max-w-5xl or max-w-6xl with px-6 padding
+  - Responsive padding with md: breakpoints helps mobile experience
+---
+
+## 2026-01-10 17:XX - US-004: Add coral accents to template detail page
+- **What was implemented:**
+  - Stats numbers in header now use coral (#FF6B6B) color and larger size (text-4xl)
+  - Added coral accent bars (w-1 h-6 rounded-full) next to all section headers
+  - Goals section, Features section, Workout Preview, Equipment, and Structure all have coral dividers
+  - Goals/features tags already had coral styling (coralLight bg, coralDark text)
+- **Files created/changed:**
+  - Modified: `src/app/templates/[slug]/TemplateDetailClient.tsx`
+- **Learnings for future iterations:**
+  - Template detail already had v2a COLORS object defined at top of file
+  - Coral accent pattern: small vertical bar (w-1 h-5/h-6) next to heading in flex container
+  - Stats can stand out more with color + increased font size (text-3xl → text-4xl)
+---
+
+## 2026-01-10 17:XX - US-005: Make template detail CTA more prominent
+- **What was implemented:**
+  - Added coral gradient background to CTA section (`backgroundColor: COLORS.coralLight`)
+  - Updated CTA button with gradient: `linear-gradient(to right, #FF6B6B, #FF8E8E)`
+  - Added coral shadow: `boxShadow: '0 10px 15px -3px rgba(255, 107, 107, 0.25)'`
+  - Increased button padding (py-4) and rounded corners (rounded-xl)
+  - Added hover effects: `hover:shadow-xl hover:scale-[1.02]`
+  - Updated button text with arrow: `'Generate My Program →'`
+  - Changed day picker unselected state to white bg (better contrast on coral section)
+- **Files created/changed:**
+  - Modified: `src/app/templates/[slug]/TemplateDetailClient.tsx`
+- **Learnings for future iterations:**
+  - Inline styles needed for custom gradients/shadows not in Tailwind defaults
+  - Coral-tinted section backgrounds make CTAs pop more than white backgrounds
+  - Hover scale effects (scale-[1.02]) add nice micro-interaction
+---
+
+## 2026-01-10 17:XX - US-006: Add date picker to workout page
+- **What was implemented:**
+  - Added `workoutDate` state initialized to today's date
+  - Added date picker UI in progress header with Calendar icon from lucide-react
+  - Date picker button changes styling (coral bg) when a non-today date is selected
+  - Shows "Logging for [date]" indicator when backdating
+  - Uses native HTML date input with `max` attribute to prevent future dates
+  - v2a styling: coral accents (#FF6B6B, #FFE5E5), rounded corners, shadows
+- **Files created/changed:**
+  - Modified: `src/app/workout/[id]/page.tsx`
+- **Learnings for future iterations:**
+  - Added helper functions: `formatDateForDisplay`, `formatDateForInput`, `isSameDay`
+  - Native HTML date input with `max` attribute enforces date constraints
+  - Adding 'T12:00:00' when parsing date string avoids timezone edge cases
+  - Date picker state and UI separate from actual API calls (US-007 will wire it up)
+---
+
+## 2026-01-10 17:XX - US-007: Pass selected date to workout completion API
+- **What was implemented:**
+  - Updated POST /api/workout-logs to accept optional `date` param for backdating startedAt
+  - Updated POST /api/workout-logs/[id]/complete to accept optional `completedAt` param
+  - Both endpoints validate date is not in future (uses end of today for leniency)
+  - Exercise logs also use the custom completedAt time when completing workout
+- **Files created/changed:**
+  - Modified: `src/app/api/workout-logs/route.ts`
+  - Modified: `src/app/api/workout-logs/[id]/complete/route.ts`
+- **Learnings for future iterations:**
+  - Use try/catch when parsing optional JSON body (request.json() throws if no body)
+  - Spread operator with conditional: `...(logDate && { startedAt: logDate })`
+  - Date validation: compare against end of today (23:59:59.999) for better UX
+---
+
+## 2026-01-10 17:XX - US-008: Add audio alert to rest timer
+- **What was implemented:**
+  - Added `playAlertSound()` function using Web Audio API with dual oscillators
+  - Sound is two short beeps (800Hz + 1000Hz) with gentle attack/decay envelope
+  - Added `soundEnabled` state with localStorage persistence (`baisics_rest_timer_sound`)
+  - Added sound toggle button with Volume2/VolumeX icons from lucide-react
+  - Sound plays when timer reaches 0 (if enabled), uses `hasPlayedSound` ref to prevent duplicates
+  - Toggle button uses coral styling when enabled, gray when disabled
+- **Files created/changed:**
+  - Modified: `src/app/components/RestPeriodIndicator.tsx`
+- **Learnings for future iterations:**
+  - Web Audio API: create AudioContext, oscillator, gainNode for sound generation
+  - Safari fallback: `window.webkitAudioContext` for older Safari versions
+  - Use empty catch block for graceful fallback when audio unavailable
+  - useRef for preventing duplicate sound plays in setState callbacks
+  - localStorage key pattern: `baisics_[feature]_[setting]`
+---
+
+## 2026-01-10 18:XX - US-009: Auto-start rest timer after set completion
+- **What was implemented:**
+  - Added `autoStart` prop to RestPeriodIndicator component
+  - Added auto-start effect that starts timer immediately on mount when `autoStart={true}`
+  - Added `showRestTimer` state and `restTimerKey` to workout page for timer visibility control
+  - Added `triggerRestTimer()` callback that shows timer and increments key (forces fresh instance)
+  - Wired up `onComplete` in BigSetInputCard to call `triggerRestTimer()` after marking set complete
+  - Timer appears with fade-in animation after completing a set (if auto-start enabled)
+  - Timer hides when navigating between exercises or when auto-start is toggled off
+  - Timer uses exercise's restPeriod from current exercise
+- **Files created/changed:**
+  - Modified: `src/app/components/RestPeriodIndicator.tsx` (added autoStart prop and effect)
+  - Modified: `src/app/workout/[id]/page.tsx` (added timer state, trigger, and rendering)
+- **Learnings for future iterations:**
+  - Use key prop to force re-mount of timer component for fresh countdown
+  - useCallback for trigger function to avoid re-renders in dependency arrays
+  - Animate-in classes from Tailwind: `animate-in fade-in slide-in-from-top-2 duration-300`
+  - Effect with `[autoStart, restPeriod, timeRemaining]` deps handles auto-start on mount only
+---
+
+## 2026-01-10 18:XX - US-010: Create workout share card component
+- **What was implemented:**
+  - Created WorkoutShareCard component for sharing workout completions
+  - Card displays: workout name, exercises completed count, duration (optional), streak count
+  - Branded design with coral gradient header (#FF6B6B to #FF8E8E) and navy background
+  - Uses html2canvas for PNG image generation with 2x scale for quality
+  - Share options: Web Share API (with image support), Twitter/X, Copy Link, Download PNG
+  - Handles mobile (Web Share API) and desktop (fallback buttons) gracefully
+- **Files created/changed:**
+  - Created: `src/components/share/WorkoutShareCard.tsx`
+- **Learnings for future iterations:**
+  - html2canvas 1.4.1 has built-in types; don't install @types/html2canvas (outdated)
+  - html2canvas options: `backgroundColor`, `scale`, `useCORS`, `logging` are valid
+  - Web Share API `navigator.canShare()` checks if file sharing is supported
+  - Pattern for generating shareable images: useRef on card div + html2canvas + toBlob
+  - Existing share cards in `src/components/share/` (AchievementCard, ProgramCard) for reference
+---
+
+## 2026-01-10 18:XX - US-011: Add share prompt after workout completion
+- **What was implemented:**
+  - Integrated WorkoutShareCard modal into workout completion flow
+  - After clicking "Complete Workout", share modal now appears instead of simple completion screen
+  - Share modal displays workout stats (name, exercises completed, streak, date)
+  - Share options: Web Share API (mobile), Twitter/X, Copy Link, Download Image
+  - Close/dismiss button redirects to dashboard
+  - Removed old showCompletion state, replaced with showShareModal flow
+- **Files created/changed:**
+  - Modified: `src/app/workout/[id]/page.tsx` (integrated WorkoutShareCard, added share modal state)
+- **Learnings for future iterations:**
+  - WorkoutShareCard already exists with full functionality - reuse rather than recreate
+  - The workout API returns `name` field on workout object for display
+  - Use separate state for shareData (WorkoutShareData type) to pass to share card
+  - handleShareClose callback handles dismiss/close and redirects to dashboard
+---
+
+## 2026-01-10 19:XX - US-012: Create progress share card component
+- **What was implemented:**
+  - Created ProgressShareCard component for sharing fitness transformation stats
+  - Card displays: weeks completed, total workouts, weight change (optional), weight range (start → current)
+  - Optional before/after photo comparison slots with side-by-side layout
+  - Privacy toggles: "Hide stats" (blurs numbers) and "Hide photos" (removes photo section)
+  - Branded design matching WorkoutShareCard: coral gradient header, navy background
+  - Uses html2canvas for PNG image generation with 2x scale
+  - Share options: Web Share API (mobile), Twitter/X, Copy Link, Download PNG
+- **Files created/changed:**
+  - Created: `src/components/share/ProgressShareCard.tsx`
+- **Learnings for future iterations:**
+  - ProgressShareData interface: weeksCompleted, totalWorkouts, weightChange, startWeight, currentWeight, beforePhotoUrl, afterPhotoUrl, startDate, userName
+  - Privacy toggle pattern: checkbox controls visibility, blur-sm class for blurred text
+  - Conditional grid columns based on hidden content: `${hideStats ? 'grid-cols-1' : 'grid-cols-2'}`
+  - Weight change coloring: emerald-400 for gain, sky-400 for loss, white for no change
+---
+
+## 2026-01-10 19:XX - US-013: Add share progress button to dashboard
+- **What was implemented:**
+  - Added 'Share Progress' button to dashboard stats card (appears only when workouts completed > 0)
+  - Button uses coral gradient styling: `bg-gradient-to-r from-[#FF6B6B] to-[#FF8E8E]`
+  - Added `isProgressShareModalOpen` state and wired into existing modal URL system
+  - ProgressShareCard modal opens with computed progress data from existing dashboard state
+  - Progress data includes: weeks completed, total workouts, weight change, before/after photos
+  - Same share options as workout share (Twitter, Copy, Download) - already in ProgressShareCard
+- **Files created/changed:**
+  - Modified: `src/app/dashboard/[programId]/page.tsx` (added import, state, button, and modal rendering)
+- **Learnings for future iterations:**
+  - Dashboard already has modal URL pattern with `openModal()` and `closeModal()` callbacks
+  - Modal types defined inline in the function: `'upload' | 'compare' | 'share' | 'nutrition' | 'progress-share'`
+  - Progress data computed from existing state: `programStats`, `weightData`, `progressPhotos`, `session`
+  - Weeks calculated by dividing completed workouts by workouts per week from workout plan
+  - ProgressShareCard already includes privacy toggles and share options - no extra wiring needed
+---
+
+## 2026-01-10 19:XX - US-014: Create progress photo comparison component
+- **What was implemented:**
+  - Created new PhotoComparison component at `src/components/progress/PhotoComparison.tsx`
+  - Uses date pickers (native HTML `<input type="date">`) with Calendar icon
+  - Responsive layout: `grid-cols-1 md:grid-cols-2` (stacked mobile, side-by-side desktop)
+  - Date labels under each photo with "Before"/"After" badges
+  - Photo type tabs (Front, Back, Left Side, Right Side)
+  - Auto-selects first and last check-ins with photos
+  - Fetches photos from `/api/programs/[programId]/progress-photos/compare`
+  - Datalist hints for available dates with check-in photos
+- **Files created/changed:**
+  - Created: `src/components/progress/PhotoComparison.tsx`
+- **Learnings for future iterations:**
+  - Existing `PhotoComparison.tsx` at `src/components/` is used by dashboard modal - more feature-rich (slider view)
+  - New component in `progress/` folder is simpler, focused on date picker UX per story requirements
+  - Memoize array extractions from optional chaining to avoid useMemo dependency warnings
+  - Pattern: `useMemo(() => checkIn?.photos || [], [checkIn])` instead of direct `checkIn?.photos || []`
+  - Native HTML datalist provides date hints but doesn't restrict input
+---
+
+## 2026-01-10 19:XX - US-015: Add photo comparison view to check-in history
+- **What was implemented:**
+  - Added Check-in History section to the `/check-in` page below the form
+  - Displays past check-ins with photos (fetched from existing compare API)
+  - Added "Compare Photos" button with coral gradient styling (only shows when 2+ check-ins exist)
+  - Button opens existing PhotoComparison modal component with programId
+  - Shows loading state while fetching, empty state when no photos
+  - Each check-in row shows date and photo count
+- **Files created/changed:**
+  - Modified: `src/app/check-in/page.tsx` (added history section, PhotoComparison modal integration, fetch logic)
+- **Learnings for future iterations:**
+  - `/api/programs/latest` endpoint returns current program for the user
+  - Reuse existing PhotoComparison component from `src/components/` - it already handles date selection and defaults to first/last check-ins
+  - Pattern for conditional modal: `{programId && <PhotoComparison programId={programId} isOpen={...} />}`
+  - Check-in page didn't have a "history" view previously - this adds visibility into past check-ins
+---
+
+## 2026-01-10 20:XX - US-016: Create ingredient swap modal component
+- **What was implemented:**
+  - Created IngredientSwapModal component for swapping meal ingredients
+  - Modal displays current ingredient with amount and name
+  - Shows 3-4 AI-generated swap suggestions with macro deltas
+  - Each suggestion shows formatted macro impact (e.g., "+10g P | -35g C | +50 cal")
+  - Color-coded macro changes: green for protein up, red for high calorie, blue for reductions
+  - "Remove entirely" option for users who want to omit the ingredient
+  - Loading state with spinner while fetching AI suggestions
+  - Error state with retry button
+  - Selection state for choosing a swap option before confirming
+  - v2a design system: coral header, navy text, coral gradient CTA button
+- **Files created/changed:**
+  - Created: `src/components/nutrition/IngredientSwapModal.tsx`
+- **Learnings for future iterations:**
+  - Modal pattern: backdrop with onClick={onClose}, inner div with e.stopPropagation()
+  - MacroDelta formatting: handle all macro types (P, C, F, cal) with +/- signs
+  - API endpoint will be `/api/nutrition/swap-suggestions` (created in US-017)
+  - Types exported: Ingredient, MacroDelta, SwapSuggestion, IngredientSwapModalProps
+  - Component receives onSwap callback with Ingredient|null (null = remove)
+---
+
+## 2026-01-10 20:XX - US-017: Add API endpoint for ingredient swap suggestions
+- **What was implemented:**
+  - Created POST /api/nutrition/swap-suggestions endpoint
+  - Accepts: ingredient (name, amount), mealContext (name, type), userGoals array, programId
+  - Returns: array of 3-4 swap suggestions with macro deltas and reasons
+  - Uses Claude Haiku for fast, cost-effective AI suggestions
+  - Rate limited: 10 swaps per minute per user
+  - Requires isPremium: true (403 if free tier user)
+  - Prompt provides nutritional context and user goals to AI
+  - JSON parsing with markdown code block handling
+- **Files created/changed:**
+  - Created: `src/app/api/nutrition/swap-suggestions/route.ts`
+- **Learnings for future iterations:**
+  - Use Haiku model for simple JSON generation tasks (faster, cheaper)
+  - Pattern: separate `buildPrompt()` and `parseResponse()` functions for AI routes
+  - isPremium check: `prisma.user.findUnique({ where: { id }, select: { isPremium: true } })`
+  - Validate parsed JSON array items before returning (filter + slice for max count)
+  - Request body typing with interface for type safety
+---
+
+## 2026-01-10 21:XX - US-018: Make meal card ingredients tappable
+- **What was implemented:**
+  - Made each ingredient in MealCard clickable with visual hover effects
+  - Pro users: coral hover background (#FFE5E5), coral text on hover (#EF5350)
+  - Free users: subtle gray hover, shows upgrade toast with link to /upgrade
+  - Added "TAP TO SWAP" badge in ingredients header for Pro users
+  - Integrated IngredientSwapModal: opens when Pro user clicks an ingredient
+  - Added new props to MealPlanDisplay: userGoals, programId, onIngredientSwap
+  - Modal receives meal context (name, type) and ingredient for contextual swap suggestions
+- **Files created/changed:**
+  - Modified: `src/app/meal-prep/components/MealPlanDisplay.tsx`
+- **Learnings for future iterations:**
+  - MealCard is defined inside MealPlanDisplay.tsx, not a separate file
+  - Added SwapModalState interface to track: isOpen, ingredient, mealName, mealType, dayIndex, mealIndex
+  - DayCard now receives dayIndex and onIngredientClick callback to bubble up to parent
+  - Upgrade toast pattern: absolute positioned banner with animate-in classes, auto-dismiss with setTimeout
+  - e.stopPropagation() on ingredient click prevents collapse/expand toggle from firing
+---
+
+## 2026-01-10 21:XX - US-019: Update email layout.ts with v2a design
+- **What was implemented:**
+  - Updated footer background to navy gradient matching header (linear-gradient #0F172A to #1E293B)
+  - Added social links section with Twitter and Instagram links in coral (#FF6B6B)
+  - Added optional unsubscribeUrl prop to EmailLayoutProps interface
+  - Conditional unsubscribe link renders when unsubscribeUrl is provided
+  - Footer text now uses white/light colors for navy background contrast
+  - Added divider between social links and copyright
+- **Files created/changed:**
+  - Modified: `src/lib/email/templates/layout.ts`
+- **Learnings for future iterations:**
+  - Email layout already had v2a colors (navy, coral, Outfit font) before this story
+  - Footer styling should match header for visual cohesion
+  - Optional props in template string templates: `${prop ? \`...\` : ''}`
+  - Social link styling: coral color (#FF6B6B) on navy background provides good contrast
+---
+
+## 2026-01-10 21:XX - US-020: Update magic-link email template
+- **What was implemented:**
+  - Updated magic-link.ts with v2a design system styling
+  - Inline coral gradient CTA button: `linear-gradient(to right, #FF6B6B, #FF8E8E)`
+  - Added coral shadow: `box-shadow: 0 10px 15px -3px rgba(255, 107, 107, 0.25)`
+  - Clear, concise copy: "Your sign-in link is ready", "Click to securely sign in"
+  - Added security note about 24h expiration with subtle gray (#94A3B8) styling
+  - Removed redundant callToAction prop since button is now inline in content
+  - Better preheader: "Your secure sign-in link is ready - click to access your account"
+- **Files created/changed:**
+  - Modified: `src/lib/email/templates/magic-link.ts`
+- **Learnings for future iterations:**
+  - Email templates can use inline styles for custom gradients instead of layout CTA
+  - Inline button styles ensure gradient renders in all email clients
+  - Keep security messaging subtle (gray) so it doesn't distract from main CTA
+  - Email subject should be lowercase "baisics" to match brand
+---
+
+## 2026-01-10 22:XX - US-021: Update welcome email template
+- **What was implemented:**
+  - Updated both welcomeFreeTemplate and welcomePremiumTemplate with v2a design
+  - Energetic, encouraging tone: "You're in! Let's do this 💪" and "Welcome to the crew 🔥"
+  - Added coral gradient CTA buttons with shadow matching magic-link template pattern
+  - Free template: "What's next" section with clear onboarding steps
+  - Premium template: "Your premium perks" section with feature highlights in coral gradient box
+  - Both templates end with friendly "reply to this email" contact note
+  - Clear CTAs: "Start Your First Workout →" (free) and "Start Training →" (premium)
+- **Files created/changed:**
+  - Modified: `src/lib/email/templates/welcome.ts`
+- **Learnings for future iterations:**
+  - Email templates follow consistent pattern: h1 heading, intro paragraph, CTA button, info box, footer note
+  - Inline styles for gradients: `background: linear-gradient(to right, #FF6B6B, #FF8E8E)`
+  - Box styling: light background (#F8FAFC for free, coral gradient #FFE5E5 to #FFF5F5 for premium)
+  - Emoji in email subject/headers adds energy but should be used sparingly
+  - Fallback URLs pattern: `${variable || 'https://baisics.app/dashboard'}`
+---
+
+## 2026-01-10 22:XX - US-022: Create competitor comparison blog template
+- **What was implemented:**
+  - Created reusable blog template for "Baisics vs X" competitor comparison posts
+  - Template includes all required sections: quick comparison table, pricing, features, decision framework, CTA
+  - Comprehensive placeholder content with clear instructions for content creators
+  - SEO-friendly structure with proper h1/h2/h3 hierarchy
+  - Frontmatter with SEO-optimized fields (title, metaDescription, keywords)
+  - Created README.md with usage guidelines and writing tips
+  - Fixed blog page to filter out `_templates` folder from post listing
+- **Files created/changed:**
+  - Created: `src/content/blog/_templates/competitor-comparison-template.tsx`
+  - Created: `src/content/blog/_templates/README.md`
+  - Modified: `src/app/blog/page.tsx` (filter underscore-prefixed folders)
+- **Learnings for future iterations:**
+  - Blog posts live in `src/content/blog/[slug]/index.tsx` with exported frontmatter
+  - BlogPost, BlogSection, BlogQuote, BlogList, BlogTable, BlogCode components available
+  - Folders starting with `_` or `.` should be filtered from blog listing (added filter)
+  - Template pattern: TSX file with frontmatter export + default component function
+  - Use `published: false` in frontmatter for draft/template content
+---
+
+## 2026-01-10 23:XX - US-023: Write baisics vs Trainerize comparison post
+- **What was implemented:**
+  - Created comprehensive "Baisics vs Trainerize" comparison blog post
+  - Researched Trainerize pricing: Free (1 client), Grow ($9/mo), Pro ($20-$100/mo), Studio ($225/mo)
+  - Researched Trainerize features: client management, exercise library, wearable integrations, add-ons
+  - Compared against Baisics pricing: Free (4 gens/mo), Jacked ($5/mo unlimited)
+  - Highlighted key difference: Trainerize is for trainers managing clients, Baisics is for self-directed individuals
+  - Factual, non-disparaging tone throughout
+  - SEO-optimized frontmatter with keywords, meta description, and proper title format
+  - Included quick comparison table, feature deep-dive, decision framework, FAQ section
+- **Files created/changed:**
+  - Created: `src/content/blog/baisics-vs-trainerize/index.tsx`
+- **Learnings for future iterations:**
+  - Baisics pricing in `src/lib/user-tiers.ts`: FREE (4 gens, 1 program, 1 meal day), JACKED ($5, unlimited)
+  - Trainerize pricing is tiered by client count + add-ons, making direct comparison complex
+  - Position comparison around use-case differences, not feature checklist competition
+  - BlogTable component uses thead/tbody structure with Tailwind classes
+  - WebSearch + WebFetch workflow for gathering competitor pricing info
+---
+
+## 2026-01-10 23:XX - US-024: Final verification and build check
+- **What was implemented:**
+  - Ran TypeScript type check (npx tsc --noEmit) - passed with no errors
+  - Ran lint check (npm run lint) - passed with only pre-existing warnings
+  - Ran production build (npm run build) - succeeded with 97 static pages generated
+  - All quality checks confirmed for the complete DOING batch
+- **Files created/changed:**
+  - Modified: `scripts/ralph/prd.json` (marked US-024 as passes: true)
+- **Learnings for future iterations:**
+  - Pre-existing lint warnings (img vs Image, useEffect deps) are acceptable in codebase
+  - Build generates 97 static pages for this Next.js 15 app
+  - All 24 user stories in this batch now have passes: true
+---

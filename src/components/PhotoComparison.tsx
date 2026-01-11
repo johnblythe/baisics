@@ -304,7 +304,7 @@ export function PhotoComparison({ programId, isOpen, onClose }: PhotoComparisonP
                         </div>
                       </div>
                     ) : (
-                      /* Slider View */
+                      /* Slider View - Standard approach: Before on left, After on right */
                       <div className="space-y-2">
                         <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400">
                           <span>Before ({beforeDate && new Date(beforeDate).toLocaleDateString()})</span>
@@ -315,41 +315,38 @@ export function PhotoComparison({ programId, isOpen, onClose }: PhotoComparisonP
                           onMouseMove={handleSliderDrag}
                           onMouseDown={handleSliderDrag}
                         >
-                          {/* After image (background) */}
-                          {afterPhoto ? (
-                            <Image
-                              src={afterPhoto.base64Data}
-                              alt={`After - ${selectedType}`}
-                              fill
-                              className="object-cover"
+                          {/* Before image - full size, underneath */}
+                          {beforePhoto ? (
+                            <img
+                              src={beforePhoto.base64Data}
+                              alt={`Before - ${selectedType}`}
+                              className="absolute inset-0 w-full h-full object-cover"
                             />
                           ) : (
                             <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                              <span className="text-gray-400">No after photo</span>
+                              <span className="text-gray-400">No before photo</span>
                             </div>
                           )}
 
-                          {/* Before image (clipped) */}
-                          <div
-                            className="absolute inset-0 overflow-hidden"
-                            style={{ width: `${sliderPosition}%` }}
-                          >
-                            {beforePhoto ? (
-                              <Image
-                                src={beforePhoto.base64Data}
-                                alt={`Before - ${selectedType}`}
-                                fill
-                                className="object-cover"
-                                style={{ maxWidth: 'none', width: `${100 / (sliderPosition / 100)}%` }}
-                              />
-                            ) : (
-                              <div className="absolute inset-0 bg-gray-300 dark:bg-gray-600 flex items-center justify-center">
-                                <span className="text-gray-500">No before photo</span>
-                              </div>
-                            )}
-                          </div>
+                          {/* After image - clipped from left, on top */}
+                          {/* Both clip and handle use sliderPosition so they align */}
+                          {afterPhoto ? (
+                            <img
+                              src={afterPhoto.base64Data}
+                              alt={`After - ${selectedType}`}
+                              className="absolute inset-0 w-full h-full object-cover"
+                              style={{ clipPath: `inset(0 0 0 ${sliderPosition}%)` }}
+                            />
+                          ) : (
+                            <div
+                              className="absolute inset-0 bg-gray-300 dark:bg-gray-600 flex items-center justify-center"
+                              style={{ clipPath: `inset(0 0 0 ${sliderPosition}%)` }}
+                            >
+                              <span className="text-gray-500">No after photo</span>
+                            </div>
+                          )}
 
-                          {/* Slider handle */}
+                          {/* Slider handle - at sliderPosition */}
                           <div
                             className="absolute top-0 bottom-0 w-1 bg-white shadow-lg cursor-ew-resize"
                             style={{ left: `${sliderPosition}%`, transform: 'translateX(-50%)' }}

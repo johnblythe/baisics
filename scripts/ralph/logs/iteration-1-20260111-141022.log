@@ -1,0 +1,11 @@
+**US-001 completed successfully.**
+
+Summary:
+- Created a new `CalendarPicker` component with v2a styling (coral #FF6B6B for selected day, navy text)
+- Replaced the intermediate date input with a direct calendar dropdown
+- Calendar prevents selecting future dates
+- Closes on date selection, click outside, or Escape key
+- Includes "Today" quick button
+- Build and lint pass
+
+There are still stories with `passes: false` in the PRD (US-002 through US-008), so another iteration will pick up the next story.

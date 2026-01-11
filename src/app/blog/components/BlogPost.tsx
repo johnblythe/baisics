@@ -146,12 +146,17 @@ export const BlogCTA = ({
   buttonText?: string
   href?: string
 }) => (
-  <div className="my-12 p-8 bg-gradient-to-br from-coral-light to-white dark:from-coral/10 dark:to-gray-900 rounded-2xl border border-coral/20">
-    <h3 className="text-2xl font-bold text-navy dark:text-white mb-2">{title}</h3>
-    <p className="text-gray-600 dark:text-gray-300 mb-6">{description}</p>
+  <div className="my-12 p-8 rounded-2xl border" style={{ background: 'linear-gradient(to bottom right, #FFE5E5, white)', borderColor: 'rgba(255, 107, 107, 0.2)' }}>
+    <h3 className="text-2xl font-bold mb-2" style={{ color: '#0F172A' }}>{title}</h3>
+    <p className="mb-6" style={{ color: '#475569' }}>{description}</p>
     <a
       href={href}
-      className="inline-flex items-center gap-2 bg-coral hover:bg-coral-dark text-white font-semibold px-6 py-3 rounded-lg transition-colors shadow-coral"
+      className="inline-flex items-center gap-2 font-semibold px-6 py-3 rounded-lg transition-all hover:scale-105"
+      style={{
+        background: 'linear-gradient(to right, #FF6B6B, #FF8E8E)',
+        color: 'white',
+        boxShadow: '0 10px 25px -5px rgba(255, 107, 107, 0.25)'
+      }}
     >
       {buttonText}
       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

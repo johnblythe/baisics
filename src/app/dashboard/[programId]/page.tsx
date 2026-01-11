@@ -21,6 +21,7 @@ import { NutritionLogModal } from '@/components/NutritionLogModal';
 import { NutritionWidget } from '@/components/NutritionWidget';
 import { ClaimWelcomeBanner, storeWelcomeData, getWelcomeData } from '@/components/ClaimWelcomeBanner';
 import { StreakBadge } from '@/components/StreakBadge';
+import { ProgressShareCard, ProgressShareData } from '@/components/share/ProgressShareCard';
 
 // Types for our API responses
 interface ProgramOverview {
@@ -93,6 +94,9 @@ interface RecentActivity {
   dayNumber: number;
   focus: string;
   completedAt: string;
+  exerciseCount: number;
+  totalVolume: number;
+  duration: number | null;
 }
 
 interface WorkoutOption {
@@ -223,15 +227,18 @@ function DashboardContent() {
   const [showDisclaimer, setShowDisclaimer] = useState(true);
   const [programStats, setProgramStats] = useState<ProgramStats | null>(null);
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
+  const [workoutStreak, setWorkoutStreak] = useState(0);
+  const [copiedWorkoutId, setCopiedWorkoutId] = useState<string | null>(null);
   const [currentWorkout, setCurrentWorkout] = useState<CurrentWorkout | null>(null);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [session, setSession] = useState<any | null>(null);
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isProgressShareModalOpen, setIsProgressShareModalOpen] = useState(false);
   const [isNutritionModalOpen, setIsNutritionModalOpen] = useState(false);
 
   // Modal URL state helpers
-  const openModal = useCallback((modalName: 'upload' | 'compare' | 'share' | 'nutrition') => {
+  const openModal = useCallback((modalName: 'upload' | 'compare' | 'share' | 'nutrition' | 'progress-share') => {
     // Upload redirects to dedicated import page
     if (modalName === 'upload') {
       router.push('/import');
@@ -245,6 +252,7 @@ function DashboardContent() {
     switch (modalName) {
       case 'compare': setIsCompareModalOpen(true); break;
       case 'share': setIsShareModalOpen(true); break;
+      case 'progress-share': setIsProgressShareModalOpen(true); break;
       case 'nutrition': setIsNutritionModalOpen(true); break;
     }
   }, [router, searchParams]);
@@ -257,6 +265,7 @@ function DashboardContent() {
 
     setIsCompareModalOpen(false);
     setIsShareModalOpen(false);
+    setIsProgressShareModalOpen(false);
     setIsNutritionModalOpen(false);
   }, [router, searchParams]);
 
@@ -270,6 +279,7 @@ function DashboardContent() {
           break;
         case 'compare': setIsCompareModalOpen(true); break;
         case 'share': setIsShareModalOpen(true); break;
+        case 'progress-share': setIsProgressShareModalOpen(true); break;
         case 'nutrition': setIsNutritionModalOpen(true); break;
       }
     }
@@ -350,12 +360,12 @@ function DashboardContent() {
         const programAccess = await fetch(`/api/programs/${programId}`);
         if (!programId) return;
 
-        const [overview, stats, weightDataResponse, progressPhotos, activity, currentWorkout, activities] = await Promise.all([
+        const [overview, stats, weightDataResponse, progressPhotos, activityResponse, currentWorkout, activities] = await Promise.all([
           fetch(`/api/programs/${programId}/overview`).then(r => r.json()) as Promise<ProgramOverview>,
           fetch(`/api/programs/${programId}/stats`).then(r => r.json()) as Promise<ProgramStats>,
           fetch(`/api/programs/${programId}/weight-tracking`).then(r => r.json()) as Promise<WeightData>,
           fetch(`/api/programs/${programId}/progress-photos`).then(r => r.json()) as Promise<ProgressPhoto[]>,
-          fetch(`/api/programs/${programId}/recent-activity`).then(r => r.json()) as Promise<RecentActivity[]>,
+          fetch(`/api/programs/${programId}/recent-activity`).then(r => r.json()) as Promise<{ workouts: RecentActivity[]; streak: number }>,
           fetch(`/api/programs/${programId}/current-workout`).then(r => r.json()) as Promise<CurrentWorkout>,
           fetch(`/api/programs/${programId}/activity`).then(r => r.json()) as Promise<Activity[]>
         ]);
@@ -364,7 +374,8 @@ function DashboardContent() {
         setProgramStats(stats);
         setWeightData(weightDataResponse);
         setProgressPhotos(progressPhotos || []);
-        setRecentActivity(activity);
+        setRecentActivity(activityResponse.workouts || []);
+        setWorkoutStreak(activityResponse.streak || 0);
         setCurrentWorkout(currentWorkout);
         setActivities(activities);
 
@@ -879,6 +890,21 @@ function DashboardContent() {
                         </div>
                       )}
 
+                      {/* Share Progress Button */}
+                      {(programStats?.completedWorkouts ?? 0) > 0 && (
+                        <div className="pt-2 border-t border-[#E2E8F0]">
+                          <button
+                            onClick={() => openModal('progress-share')}
+                            className="w-full px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 bg-gradient-to-r from-[#FF6B6B] to-[#FF8E8E] text-white hover:shadow-lg hover:shadow-[#FF6B6B]/25 hover:scale-[1.02]"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                            </svg>
+                            Share Progress
+                          </button>
+                        </div>
+                      )}
+
                       {/* Next Check-in */}
                       <div className="pt-2 border-t border-[#E2E8F0]">
                         {programStats?.checkIn ? (
@@ -1345,29 +1371,99 @@ function DashboardContent() {
             {/* Recent Activity Card - v2a styling */}
             <div className="relative overflow-hidden bg-white rounded-2xl border-l-4 border-l-[#94A3B8] border border-[#E2E8F0] shadow-md">
               <div className="p-6 lg:p-8 space-y-6">
-                <h2 className="text-sm font-medium text-[#94A3B8] uppercase tracking-wider" style={{ fontFamily: "'Space Mono', monospace" }}>Recent Activity</h2>
+                {/* Header with streak */}
+                <div className="flex items-center justify-between">
+                  <h2 className="text-sm font-medium text-[#94A3B8] uppercase tracking-wider" style={{ fontFamily: "'Space Mono', monospace" }}>Recent Activity</h2>
+                  {workoutStreak > 0 && (
+                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-orange-500 to-red-500 text-white text-sm font-bold">
+                      <span>🔥</span>
+                      <span>{workoutStreak} day streak</span>
+                    </div>
+                  )}
+                </div>
+
                 {recentActivity.length > 0 ? (
-                  <div className="space-y-4">
-                    {recentActivity.map((activity) => (
+                  <div className="space-y-3">
+                    {recentActivity.map((activity, index) => (
                       <div
                         key={activity.id}
-                        className="group/item flex items-center justify-between p-4 rounded-xl border border-[#F1F5F9] hover:border-[#FF6B6B]/50 hover:shadow-lg transition-all duration-200"
+                        className="group/item p-4 rounded-xl bg-gradient-to-r from-[#F8FAFC] to-white border border-[#E2E8F0] hover:border-[#FF6B6B]/50 hover:shadow-lg transition-all duration-200"
                       >
-                        <div className="space-y-1">
-                          <p className="font-medium text-[#0F172A]">
-                            Day {activity.dayNumber} - {activity.workoutName}
-                          </p>
-                          <p className="text-sm text-[#94A3B8]">
-                            Completed {new Date(activity.completedAt).toLocaleDateString()}
-                          </p>
+                        {/* Top row: title + share */}
+                        <div className="flex items-start justify-between gap-4 mb-3">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[#FF6B6B] text-white text-xs font-bold">
+                                {activity.dayNumber}
+                              </span>
+                              <h3 className="font-semibold text-[#0F172A] truncate">{activity.workoutName}</h3>
+                            </div>
+                            <p className="text-sm text-[#64748B]">
+                              {new Date(activity.completedAt).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => {
+                              const shareUrl = `${window.location.origin}/share/workout/${activity.id}`;
+                              navigator.clipboard.writeText(shareUrl);
+                              setCopiedWorkoutId(activity.id);
+                              setTimeout(() => setCopiedWorkoutId(null), 2000);
+                            }}
+                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                              copiedWorkoutId === activity.id
+                                ? 'bg-green-100 text-green-700'
+                                : 'bg-[#FFE5E5] text-[#FF6B6B] hover:bg-[#FF6B6B] hover:text-white'
+                            }`}
+                          >
+                            {copiedWorkoutId === activity.id ? (
+                              <>
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                                Copied!
+                              </>
+                            ) : (
+                              <>
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                                </svg>
+                                Share
+                              </>
+                            )}
+                          </button>
+                        </div>
+
+                        {/* Stats row */}
+                        <div className="flex flex-wrap items-center gap-3">
+                          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-[#E2E8F0]">
+                            <span className="text-[#FF6B6B]">💪</span>
+                            <span className="text-sm font-medium text-[#475569]">{activity.exerciseCount} exercises</span>
+                          </div>
+                          {activity.duration && (
+                            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-[#E2E8F0]">
+                              <span className="text-amber-500">⏱️</span>
+                              <span className="text-sm font-medium text-[#475569]">{activity.duration} min</span>
+                            </div>
+                          )}
+                          {activity.totalVolume > 0 && (
+                            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-[#E2E8F0]">
+                              <span className="text-blue-500">🏋️</span>
+                              <span className="text-sm font-medium text-[#475569]">{activity.totalVolume.toLocaleString()} lbs</span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center py-12 text-center space-y-4">
-                    <p className="text-[#475569]">No workouts completed yet.</p>
-                    <p className="text-[#94A3B8]">Start your first workout above to begin tracking your progress!</p>
+                    <div className="w-16 h-16 rounded-full bg-[#F1F5F9] flex items-center justify-center">
+                      <span className="text-3xl">🏃</span>
+                    </div>
+                    <div>
+                      <p className="text-[#475569] font-medium">No workouts completed yet</p>
+                      <p className="text-sm text-[#94A3B8]">Start your first workout above to begin tracking!</p>
+                    </div>
                   </div>
                 )}
               </div>
@@ -1395,6 +1491,27 @@ function DashboardContent() {
                   closeModal();
                   setShareData(null);
                 }}
+              />
+            )}
+
+            {/* Progress Share Modal */}
+            {isProgressShareModalOpen && program && (
+              <ProgressShareCard
+                data={{
+                  programId: program.id,
+                  weeksCompleted: Math.ceil((programStats?.completedWorkouts || 0) / (program?.workoutPlans?.[0]?.workouts?.length || 1)),
+                  totalWorkouts: programStats?.completedWorkouts || 0,
+                  weightChange: weightData.startWeight && weightData.currentWeight
+                    ? weightData.currentWeight - weightData.startWeight
+                    : undefined,
+                  startWeight: weightData.startWeight || undefined,
+                  currentWeight: weightData.currentWeight || undefined,
+                  beforePhotoUrl: progressPhotos.length > 0 ? progressPhotos[progressPhotos.length - 1]?.base64Data : undefined,  // oldest
+                  afterPhotoUrl: progressPhotos.length > 1 ? progressPhotos[0]?.base64Data : undefined,  // newest
+                  startDate: program?.startDate ? new Date(program.startDate) : new Date(),
+                  userName: session?.user?.name || undefined,
+                }}
+                onClose={closeModal}
               />
             )}
 

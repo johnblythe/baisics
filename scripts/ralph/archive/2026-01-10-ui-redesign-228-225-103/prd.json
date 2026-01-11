@@ -1,0 +1,378 @@
+{
+  "project": "baisics",
+  "branchName": "ralph/doing-batch-jan10",
+  "description": "DOING batch: SEO (#226), UI polish (#230, #227), workout features (#232, #224), social sharing (#222, #223), progress photos (#221), meal swap (#125), emails (#219), blog content (#218)",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "#226 - Add generateMetadata to template detail page",
+      "description": "As a user searching for workout programs, I want template pages to have proper SEO metadata so they appear in search results.",
+      "acceptanceCriteria": [
+        "Convert src/app/templates/[slug]/page.tsx to use generateMetadata",
+        "Title format: '{Template Name} - Free Workout Program | baisics'",
+        "Description uses template.description field",
+        "Add OpenGraph tags (title, description, type: 'article')",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Issue #226 - High priority SEO fix"
+    },
+    {
+      "id": "US-002",
+      "title": "#226 - Add JSON-LD structured data to template pages",
+      "description": "As a search engine, I want structured data on template pages so I can display rich snippets.",
+      "acceptanceCriteria": [
+        "Add JSON-LD script to template detail page",
+        "Use @type: 'ExercisePlan' schema",
+        "Include: name, description, exerciseType, activityDuration",
+        "Render in <head> or as script tag in body",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Issue #226 - Structured data for rich snippets"
+    },
+    {
+      "id": "US-003",
+      "title": "#230 - Widen program generation page layout",
+      "description": "As a user, I want the program generation page to match the spacious feel of the rest of the app.",
+      "acceptanceCriteria": [
+        "Update src/app/hi/page.tsx (or equivalent program gen page)",
+        "Increase max-width to match dashboard patterns (max-w-6xl or similar)",
+        "Add consistent padding matching v2a design system",
+        "Cards and form elements should breathe more",
+        "npx tsc --noEmit passes",
+        "Verify visually at /hi"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Issue #230 - Quick UI polish"
+    },
+    {
+      "id": "US-004",
+      "title": "#227 - Add coral accents to template detail page",
+      "description": "As a user, I want the template detail page to have more visual punch with strategic coral highlights.",
+      "acceptanceCriteria": [
+        "Update src/app/templates/[slug]/page.tsx",
+        "Stats numbers get coral color (#FF6B6B) or larger treatment",
+        "Add coral accents to section dividers or icons",
+        "Goals/features tags use coral bg (#FFE5E5) like ProgramCard",
+        "npx tsc --noEmit passes",
+        "Verify visually at /templates/[slug]"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Issue #227 - Template detail visual polish"
+    },
+    {
+      "id": "US-005",
+      "title": "#227 - Make template detail CTA more prominent",
+      "description": "As a user, I want a clear, prominent call-to-action to generate my program.",
+      "acceptanceCriteria": [
+        "CTA button uses gradient: bg-gradient-to-r from-[#FF6B6B] to-[#FF8E8E]",
+        "Add shadow: shadow-lg shadow-[#FF6B6B]/25",
+        "Consider coral-tinted CTA section background",
+        "Button text is clear: 'Generate My Program' or similar",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Issue #227 - CTA prominence"
+    },
+    {
+      "id": "US-006",
+      "title": "#232 - Add date picker to workout page",
+      "description": "As a user, I want to select a date when logging a workout so I can backdate missed sessions.",
+      "acceptanceCriteria": [
+        "Add workoutDate state to src/app/workout/[id]/page.tsx (default: today)",
+        "Add date picker UI near workout header",
+        "Show 'Logging for [date]' indicator when not today",
+        "Prevent selecting future dates",
+        "Date picker uses v2a styling (coral accents)",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "Issue #232 - Backdate workout logging UI"
+    },
+    {
+      "id": "US-007",
+      "title": "#232 - Pass selected date to workout completion API",
+      "description": "As a developer, I need the workout completion API to accept a custom date.",
+      "acceptanceCriteria": [
+        "Update POST /api/workout-logs to accept optional 'date' param",
+        "Update POST /api/workout-logs/[id]/complete to accept optional 'completedAt' override",
+        "If date provided, use it instead of new Date()",
+        "Validate date is not in future",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "Issue #232 - API changes for backdating"
+    },
+    {
+      "id": "US-008",
+      "title": "#224 - Add audio alert to rest timer",
+      "description": "As a user in the gym, I want an audio alert when my rest period ends so I know to start my next set.",
+      "acceptanceCriteria": [
+        "Add audio notification when RestPeriodIndicator timer reaches 0",
+        "Use Web Audio API or HTML5 audio element",
+        "Sound should be short, non-intrusive chime/beep",
+        "Add user preference toggle to enable/disable sound",
+        "Store preference in localStorage",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "Issue #224 - Rest timer audio"
+    },
+    {
+      "id": "US-009",
+      "title": "#224 - Auto-start rest timer after set completion",
+      "description": "As a user, I want the rest timer to automatically start when I complete a set.",
+      "acceptanceCriteria": [
+        "When set is marked complete, auto-trigger rest timer if autoStart is enabled",
+        "RestTimerControl already has autoStart toggle - wire it up",
+        "Timer should start counting down immediately after 'Complete Set' click",
+        "Show visual feedback that timer started",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 9,
+      "passes": false,
+      "notes": "Issue #224 - Auto-start functionality"
+    },
+    {
+      "id": "US-010",
+      "title": "#222 - Create workout share card component",
+      "description": "As a user, I want a shareable card image generated after completing a workout.",
+      "acceptanceCriteria": [
+        "Create src/components/share/WorkoutShareCard.tsx",
+        "Card shows: workout name, exercises completed count, duration (if tracked), streak count",
+        "Branded with baisics logo and coral gradient header",
+        "Render as canvas or use html2canvas for image generation",
+        "Export as PNG for sharing",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 10,
+      "passes": false,
+      "notes": "Issue #222 - Workout share card"
+    },
+    {
+      "id": "US-011",
+      "title": "#222 - Add share prompt after workout completion",
+      "description": "As a user, I want to be prompted to share my workout after completing it.",
+      "acceptanceCriteria": [
+        "After workout complete, show share modal/prompt",
+        "Options: Share to Twitter/X, Copy Link, Download Image",
+        "Use Web Share API where available (mobile)",
+        "Fallback buttons for desktop",
+        "Optional: Skip/dismiss button",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 11,
+      "passes": false,
+      "notes": "Issue #222 - Share flow integration"
+    },
+    {
+      "id": "US-012",
+      "title": "#223 - Create progress share card component",
+      "description": "As a user, I want a shareable progress card showing my transformation stats.",
+      "acceptanceCriteria": [
+        "Create src/components/share/ProgressShareCard.tsx",
+        "Card shows: weeks completed, total workouts, weight change (if tracked)",
+        "Optional photo comparison slot (before/after)",
+        "Privacy toggle to blur/hide sensitive stats",
+        "Branded styling matching WorkoutShareCard",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 12,
+      "passes": false,
+      "notes": "Issue #223 - Progress share card"
+    },
+    {
+      "id": "US-013",
+      "title": "#223 - Add share progress button to dashboard",
+      "description": "As a user, I want to share my progress from the dashboard.",
+      "acceptanceCriteria": [
+        "Add 'Share Progress' button to dashboard",
+        "Opens modal with ProgressShareCard preview",
+        "Same share options as workout share (Twitter, Copy, Download)",
+        "Button uses coral styling",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 13,
+      "passes": false,
+      "notes": "Issue #223 - Dashboard integration"
+    },
+    {
+      "id": "US-014",
+      "title": "#221 - Create progress photo comparison component",
+      "description": "As a user, I want to compare my progress photos side-by-side.",
+      "acceptanceCriteria": [
+        "Create src/components/progress/PhotoComparison.tsx",
+        "Two photo slots with date pickers to select which check-in photos",
+        "Side-by-side layout on desktop, stacked on mobile",
+        "Show date labels under each photo",
+        "Fetch photos from user's check-in history",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 14,
+      "passes": false,
+      "notes": "Issue #221 - Photo comparison component"
+    },
+    {
+      "id": "US-015",
+      "title": "#221 - Add photo comparison view to check-in history",
+      "description": "As a user, I want to access photo comparison from my check-in history.",
+      "acceptanceCriteria": [
+        "Add 'Compare Photos' button/link to check-in history page",
+        "Opens PhotoComparison component in modal or dedicated view",
+        "Default to first and most recent photos with photos",
+        "Allow changing date selection",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 15,
+      "passes": false,
+      "notes": "Issue #221 - Integration"
+    },
+    {
+      "id": "US-016",
+      "title": "#125 - Create ingredient swap modal component",
+      "description": "As a paid user, I want to tap an ingredient and see swap suggestions.",
+      "acceptanceCriteria": [
+        "Create src/components/nutrition/IngredientSwapModal.tsx",
+        "Modal shows current ingredient and 3-4 swap options",
+        "Each option shows macro impact (e.g., '-35g C', '+fat')",
+        "Include 'Remove entirely' option",
+        "Loading state while fetching AI suggestions",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 16,
+      "passes": false,
+      "notes": "Issue #125 - Meal ingredient swap UI"
+    },
+    {
+      "id": "US-017",
+      "title": "#125 - Add API endpoint for ingredient swap suggestions",
+      "description": "As a developer, I need an API to get contextual ingredient swap suggestions.",
+      "acceptanceCriteria": [
+        "Create POST /api/nutrition/swap-suggestions endpoint",
+        "Input: ingredient name, meal context, user goals",
+        "Output: array of 3-4 suggestions with macro deltas",
+        "Use AI to generate contextual suggestions",
+        "Require paid tier (check user subscription)",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 17,
+      "passes": false,
+      "notes": "Issue #125 - API for swap suggestions"
+    },
+    {
+      "id": "US-018",
+      "title": "#125 - Make meal card ingredients tappable",
+      "description": "As a user, I want to tap ingredients in meal cards to open swap modal.",
+      "acceptanceCriteria": [
+        "Update meal card component to make ingredients clickable",
+        "Tap opens IngredientSwapModal with that ingredient",
+        "Visual affordance (hover/tap state) on ingredients",
+        "Only enabled for paid users (show upgrade prompt for free)",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 18,
+      "passes": false,
+      "notes": "Issue #125 - Integration"
+    },
+    {
+      "id": "US-019",
+      "title": "#219 - Update email layout.ts with v2a design",
+      "description": "As a developer, I need the base email layout updated to v2a design system.",
+      "acceptanceCriteria": [
+        "Update src/lib/email/templates/layout.ts",
+        "Colors: Navy (#0F172A), Coral (#FF6B6B), White",
+        "Font: Outfit (with web-safe fallbacks)",
+        "Header with baisics logo",
+        "Footer with unsubscribe and social links",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 19,
+      "passes": false,
+      "notes": "Issue #219 - Base email template"
+    },
+    {
+      "id": "US-020",
+      "title": "#219 - Update magic-link email template",
+      "description": "As a user, I want the magic link email to match the app's design.",
+      "acceptanceCriteria": [
+        "Update src/lib/email/templates/magic-link.ts",
+        "Use updated layout",
+        "Coral CTA button for the magic link",
+        "Clear, concise copy",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 20,
+      "passes": false,
+      "notes": "Issue #219 - Magic link email"
+    },
+    {
+      "id": "US-021",
+      "title": "#219 - Update welcome email template",
+      "description": "As a new user, I want a welcoming first email that matches the brand.",
+      "acceptanceCriteria": [
+        "Update src/lib/email/templates/welcome.ts",
+        "Energetic, encouraging tone",
+        "Clear next steps CTA",
+        "v2a styling throughout",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 21,
+      "passes": false,
+      "notes": "Issue #219 - Welcome email"
+    },
+    {
+      "id": "US-022",
+      "title": "#218 - Create competitor comparison blog template",
+      "description": "As a content creator, I need a reusable template for competitor comparison posts.",
+      "acceptanceCriteria": [
+        "Create template/structure for comparison blog posts",
+        "Sections: Overview table, Pricing, Features, Decision framework, CTA",
+        "Placeholder content with clear instructions",
+        "SEO-friendly structure (h1, h2 hierarchy)",
+        "Save as markdown template or component"
+      ],
+      "priority": 22,
+      "passes": false,
+      "notes": "Issue #218 - Blog template"
+    },
+    {
+      "id": "US-023",
+      "title": "#218 - Write baisics vs Trainerize comparison post",
+      "description": "As a potential customer, I want to compare baisics to Trainerize.",
+      "acceptanceCriteria": [
+        "Research current Trainerize pricing and features",
+        "Write comparison using template from US-022",
+        "Factual, non-disparaging tone",
+        "Highlight baisics differentiators (AI, simplicity, pricing)",
+        "Add to blog at /blog/baisics-vs-trainerize",
+        "Include meta description and title for SEO"
+      ],
+      "priority": 23,
+      "passes": false,
+      "notes": "Issue #218 - First comparison post"
+    },
+    {
+      "id": "US-024",
+      "title": "Final verification and build check",
+      "description": "As a developer, I want to verify all changes build and work together.",
+      "acceptanceCriteria": [
+        "npx tsc --noEmit passes",
+        "npm run build succeeds",
+        "No console errors on affected pages",
+        "Visual spot check of template pages, workout page, dashboard"
+      ],
+      "priority": 24,
+      "passes": false,
+      "notes": "Final verification"
+    }
+  ]
+}

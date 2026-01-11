@@ -1,0 +1,8 @@
+US-004 is complete. There are still user stories with `passes: false` in the PRD (US-005 through US-024), so this iteration ends normally for the next iteration to pick up US-005.
+
+**Summary of US-004 completion:**
+- Added coral color (#FF6B6B) to stats numbers in header section + increased to text-4xl
+- Added coral accent bars beside all section headers (Program Goals, Key Features, Workout Preview, Equipment Needed, Structure)
+- Goals and feature tags already used coral styling
+- Build and lint pass
+- Committed: `feat: US-004 - Add coral accents to template detail page`

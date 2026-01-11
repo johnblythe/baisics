@@ -1,13 +1,13 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+
 interface BigSetInputCardProps {
   setNumber: number;
   targetReps: string;
   weight: number | string;
   reps: number | string;
-  onWeightChange: (value: number) => void;
-  onRepsChange: (value: number) => void;
-  onComplete: () => void;
+  onComplete: (weight: number, reps: number) => void;
 }
 
 export function BigSetInputCard({
@@ -15,10 +15,25 @@ export function BigSetInputCard({
   targetReps,
   weight,
   reps,
-  onWeightChange,
-  onRepsChange,
   onComplete,
 }: BigSetInputCardProps) {
+  // Local state for immediate UI response - NO auto-saving until complete
+  const [localWeight, setLocalWeight] = useState<string>(weight ? String(weight) : '');
+  const [localReps, setLocalReps] = useState<string>(reps ? String(reps) : '');
+
+  // Sync local state when props change (e.g., switching sets)
+  useEffect(() => {
+    setLocalWeight(weight ? String(weight) : '');
+    setLocalReps(reps ? String(reps) : '');
+  }, [weight, reps, setNumber]);
+
+  // Only save when user explicitly completes the set - pass values directly
+  const handleComplete = () => {
+    const finalWeight = Number(localWeight) || 0;
+    const finalReps = Number(localReps) || Number(targetReps) || 0;
+    onComplete(finalWeight, finalReps);
+  };
+
   return (
     <div className="bg-gradient-to-br from-[#FF6B6B] to-[#EF5350] rounded-2xl p-5 text-white shadow-xl shadow-[#FF6B6B]/30">
       <div className="flex items-center justify-between mb-5">
@@ -39,8 +54,8 @@ export function BigSetInputCard({
             id={`weight-input-${setNumber}`}
             type="number"
             placeholder="185"
-            value={weight || ''}
-            onChange={(e) => onWeightChange(Number(e.target.value))}
+            value={localWeight}
+            onChange={(e) => setLocalWeight(e.target.value)}
             className="w-full px-4 py-3.5 rounded-xl bg-white/20 border border-white/30 text-white text-xl font-bold placeholder-white/50 focus:bg-white/30 focus:outline-none"
           />
         </div>
@@ -50,15 +65,15 @@ export function BigSetInputCard({
             id={`reps-input-${setNumber}`}
             type="number"
             placeholder="10"
-            value={reps || ''}
-            onChange={(e) => onRepsChange(Number(e.target.value))}
+            value={localReps}
+            onChange={(e) => setLocalReps(e.target.value)}
             className="w-full px-4 py-3.5 rounded-xl bg-white/20 border border-white/30 text-white text-xl font-bold placeholder-white/50 focus:bg-white/30 focus:outline-none"
           />
         </div>
       </div>
 
       <button
-        onClick={onComplete}
+        onClick={handleComplete}
         className="w-full py-4 rounded-xl bg-white text-[#FF6B6B] font-bold text-lg shadow-lg active:scale-[0.98] transition-transform"
       >
         Complete Set {setNumber}

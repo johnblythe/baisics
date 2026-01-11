@@ -20,6 +20,14 @@ export async function PUT(
     const body = await request.json();
     const { weight, reps, notes } = body;
 
+    // Validate required fields
+    if (reps === undefined || reps === null || typeof reps !== 'number') {
+      return NextResponse.json(
+        { error: 'reps is required and must be a number' },
+        { status: 400 }
+      );
+    }
+
     // Get the exercise log to verify ownership
     const exerciseLog = await prisma.exerciseLog.findUnique({
       where: { id },

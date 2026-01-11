@@ -1,210 +1,158 @@
 # Ralph Progress Log
-Started: Sat Jan 10 13:08:32 EST 2026
+Started: Sun Jan 11 14:10:22 EST 2026
 ---
 
 ## Codebase Patterns
 
-- **Workout components location**: Create new workout components in `src/components/workout/`
-- **Design reference**: Option B from `/dev/workout-tracker` is the approved design
-- **Style tokens**: Use coral (#FF6B6B, #EF5350), light coral (#FFE5E5), and green-100/300 for completed states
-- **Component patterns**: Export named functions (not default), include 'use client' directive for client components
+### UI Components
+- Reusable UI components go in `src/components/ui/`
+- v2a design colors: coral #FF6B6B (primary), navy #0F172A (text), #E2E8F0 (borders), #F1F5F9 (backgrounds)
+- Use Tailwind animate-in classes for smooth animations: `animate-in fade-in slide-in-from-top-2 duration-200`
+- Click-outside and Escape key handling pattern in CalendarPicker.tsx
+
+### Blog Components
+- BlogPost wraps content in `prose prose-lg dark:prose-invert` (Tailwind Typography)
+- Custom-styled buttons/links inside prose MUST use `not-prose` wrapper to escape link color overrides
+- Example: `<div className="not-prose">...</div>` around CTA buttons
+
+### Next.js Image Component
+- For container-filling images: use `fill` prop + `relative` on parent container + `object-cover` className
+- Never combine `fill` with explicit width/height or className w-full/h-full
+- Base64 data URLs require `unoptimized` prop (can't be optimized by Next.js)
+- Use aspect ratio on parent (e.g., `aspect-[3/4]`) to control size when using `fill`
 
 ---
 
-## 2026-01-10 - US-004: Add progress bar component for workout completion
-- Created `src/components/workout/WorkoutProgressBar.tsx`
-- Horizontal progress bar with coral gradient fill (from-[#FF6B6B] to-[#EF5350])
-- Completion count text displayed next to bar (e.g., '2/4')
-- Bar container: bg-[#F1F5F9] rounded-full
-- Width transitions smoothly with transition-all
-- Props: completedCount (number), totalCount (number)
+## 2026-01-11 14:15 - US-001: Fix date picker UX - remove intermediate step
+- What was implemented:
+  - Created new `CalendarPicker` component at `src/components/ui/CalendarPicker.tsx`
+  - Custom styled calendar with v2a design (coral selected day, navy text)
+  - Replaced intermediate `<input type="date">` with direct calendar popover
+  - Calendar prevents future dates with `maxDate` prop
+  - Auto-closes on date selection or click outside
+  - Includes "Today" quick button
+- Files created: `src/components/ui/CalendarPicker.tsx`
+- Files changed: `src/app/workout/[id]/page.tsx`
 - **Learnings for future iterations:**
-  - Reference design is lines 202-211 in `/dev/workout-tracker/page.tsx` (OptionBHybrid)
-  - Use inline style for dynamic width percentage, Tailwind for static styling
-  - Simple component, no icons needed
+  - The workout page had an unused `formatDateForInput` helper - removed it during cleanup
+  - Existing `isSameDay` helper was already in the file, so didn't need to add it
+  - CalendarPicker handles its own click-outside detection with useEffect + refs
 ---
 
-## 2026-01-10 14:XX - US-001: Create SetProgressGrid component for workout tracker
-- Created `src/components/workout/SetProgressGrid.tsx`
-- Grid layout with 4 columns showing set progress
-- Completed sets: green-100 bg, green-300 border, checkmark badge
-- Active/selected set: coral highlight with ring-2 ring-offset-2
-- Pending sets: clickable gray cells
-- Props: logs (SetLog[]), activeIndex, selectedIndex, onSelect callback
+## 2026-01-11 15:30 - US-002: Create /share/workout route
+- What was implemented:
+  - Created public share page at `src/app/share/workout/page.tsx`
+  - Parses `date` query param from URL (e.g., `/share/workout?date=2026-01-07T17:00:00.000Z`)
+  - Shows "Workout Completed!" with formatted date when valid date param provided
+  - Shows "Link Not Found" error state when date is missing or invalid
+  - Coral gradient header with baisics logo
+  - CTA button linking to `/hi` for signups
+  - v2a design system: coral gradient header, navy text, Outfit/Space Mono fonts
+  - Wrapped in Suspense for useSearchParams SSR compatibility
+- Files created: `src/app/share/workout/page.tsx`
 - **Learnings for future iterations:**
-  - `/dev/workout-tracker` page shows all design options - Option B is "hybrid" approach
-  - lucide-react already installed, use for icons (CheckCircle, etc.)
-  - Component follows 4-column grid matching typical 4-set exercises
+  - useSearchParams() requires Suspense boundary in Next.js App Router
+  - CSS-in-JS with `<style jsx global>` works well for standalone pages with specific styling
+  - Date parsing should always check `isNaN(date.getTime())` to validate Date objects
 ---
 
-## 2026-01-10 - US-002: Create BigSetInputCard component with coral gradient
-- Created `src/components/workout/BigSetInputCard.tsx`
-- Big touch-friendly coral gradient card (from-[#FF6B6B] to-[#EF5350])
-- Shows set number (text-3xl font-bold) and target reps
-- Large inputs with white/20 bg and text-xl font-bold styling
-- Complete Set button: white bg, coral text, py-4, full width
-- Props: setNumber, targetReps, weight, reps, onWeightChange, onRepsChange, onComplete
+## 2026-01-11 16:00 - US-003: Fix blog post CTA styling
+- What was implemented:
+  - Added `not-prose` class to the CTA button container in baisics-vs-trainerize blog post
+  - This escapes Tailwind Typography prose styling that was overriding button colors
+  - Added subtle hover scale effect for better interaction feedback
+- Files changed: `src/content/blog/baisics-vs-trainerize/index.tsx`
 - **Learnings for future iterations:**
-  - Reference design is lines 213-250 in `/dev/workout-tracker/page.tsx` (OptionBHybrid)
-  - Input styling uses bg-white/20 border-white/30 for translucent effect on gradient
-  - Button has active:scale-[0.98] for tactile feedback on mobile
+  - BlogPost component wraps content in `prose prose-lg dark:prose-invert` classes
+  - Tailwind Typography (prose) overrides link colors, making custom-styled buttons invisible
+  - Use `not-prose` class on containers with custom-styled buttons/links inside BlogPost
+  - This pattern applies to any styled elements inside prose containers
 ---
 
-## 2026-01-10 - US-003: Create RestTimerControl component with auto-start toggle
-- Created `src/components/workout/RestTimerControl.tsx`
-- White card with coral-tinted clock icon (w-10 h-10 bg-[#FFE5E5])
-- Shows "Rest Timer" label with rest duration text below
-- Auto-start toggle using styled peer checkbox pattern
-- Toggle is coral (#FF6B6B) when checked
-- Props: restDuration (string), autoStart (boolean), onAutoStartChange (callback)
+## 2026-01-11 16:45 - US-004: Fix swap suggestions API
+- What was implemented:
+  - Added `getFallbackSuggestions()` function with category-based swap suggestions
+  - Categories covered: proteins (chicken/beef/pork), dairy (milk/cream/cheese), carbs (rice/pasta/bread), oils/fats, sugars/sweeteners, vegetables/greens
+  - Each category returns 3 relevant alternatives with realistic macro deltas
+  - Generic fallback for unrecognized ingredients
+  - Updated error handling to use fallbacks when:
+    - `ANTHROPIC_API_KEY` is missing
+    - AI response is not text
+    - AI response parsing fails or returns empty
+    - Any AI call error occurs
+  - Improved error logging with specific messages for debugging
+- Files changed: `src/app/api/nutrition/swap-suggestions/route.ts`
 - **Learnings for future iterations:**
-  - Reference design is lines 252-270 in `/dev/workout-tracker/page.tsx` (OptionBHybrid)
-  - Toggle pattern: sr-only input + sibling div with peer-checked styling
-  - Use peer-focus:ring for accessibility on toggle
+  - The anthropic client is already initialized in `@/lib/anthropic`, no need to check if it exists
+  - Check `process.env.ANTHROPIC_API_KEY` directly before making AI calls to fail fast
+  - When AI calls can fail, always have a reasonable fallback that provides user value
+  - Category-based fallbacks work well for nutrition APIs - users get helpful suggestions even without AI
 ---
 
-## 2026-01-10 - US-005: Integrate new workout tracker components into workout page
-- Modified `src/app/workout/[id]/page.tsx` to use new redesigned components
-- Imported SetProgressGrid, BigSetInputCard, RestTimerControl, WorkoutProgressBar
-- Added `selectedSetIndex` state to track which set is selected in the grid
-- Added `autoStartTimer` state to control rest timer auto-start preference
-- Replaced old SetInput-based UI with new component layout:
-  - SetProgressGrid at top showing 4-column set overview
-  - WorkoutProgressBar showing exercise-level progress
-  - BigSetInputCard for logging current/selected set
-  - RestTimerControl at bottom with auto-start toggle
-- Added helper function `formatRestDuration()` to format seconds as "M:SS"
-- Reset selectedSetIndex when navigating between exercises (prev/next buttons and quick nav)
-- Shows completion state when all sets are done instead of input card
-- Kept old SetInput component in file for backwards compatibility (not rendered)
+## 2026-01-11 17:15 - US-005: Fix template page header auth state
+- What was implemented:
+  - TemplateDetailClient had its own custom static header that didn't check auth state
+  - Replaced inline header with shared `Header` component from `src/components/Header.tsx`
+  - Replaced inline footer with shared `Footer` component
+  - Added padding-top (pt-24 lg:pt-28) to main content to account for fixed Header
+  - Header component uses `useSession()` hook to properly show auth state
+- Files changed: `src/app/templates/[slug]/TemplateDetailClient.tsx`
 - **Learnings for future iterations:**
-  - Page has complex state management with exercises array containing logs
-  - Grid needs SetLog type matching but page uses slightly different interface (optional weight)
-  - Need to handle "all sets completed" edge case gracefully
-  - Exercise navigation resets selection state to avoid stale selectedIndex
-  - The old SetInput component is still defined in file - could be removed in cleanup story
+  - Always use shared `Header` and `Footer` components instead of inline custom headers/footers
+  - `Header` component uses `useSession()` from next-auth/react for auth state
+  - When using fixed Header, add appropriate padding-top to content container
+  - MainLayout pattern: Header (fixed) → main (pt-16 lg:pt-20) → Footer
 ---
 
-## 2026-01-10 - US-006: Update ProgramCard header with gradient fade styling
-- Modified `src/app/components/ProgramCard.tsx`
-- Changed header gradient from 'to bottom right' to 180deg vertical
-- Gradient stops: #0F172A at 0%, #1E293B at 60%, #334155 at 100%
-- Added `navyMid: '#334155'` and `descriptionText: '#CBD5E1'` to COLORS
-- Description text uses #CBD5E1 for better contrast on gradient
-- Category badge changed from bg-white/20 to border-white/30 with text-white/90
-- Updated both card variants (CardContent for user's program, Link wrapper for templates)
+## 2026-01-11 18:00 - US-006: Improve progress photos UX on check-in
+- What was implemented:
+  - Added page-level drag-drop detection with `dragCounterRef` for reliable enter/leave tracking
+  - Full-page drop overlay indicator with coral gradient styling and Upload icon
+  - Auto-expands Progress Photos section when photos are dropped using external state control
+  - Enhanced CollapsibleSection component to accept optional `isOpen` and `onToggle` props
+  - Created shared `processPhotoFiles` function for consistent photo handling
+  - Made Add Photos CTA more prominent with coral gradient icon and clear instructions
+  - Updated upload area styling with coral borders and larger icons
+- Files changed: `src/app/check-in/page.tsx`
 - **Learnings for future iterations:**
-  - ProgramCard has two rendering paths: CardContent (for user's programs with Link wrapper) and a separate template in the return for non-user cards
-  - Reference design is `/dev/library-cards` Option D (OptionDGradient function)
-  - US-007 will add overlapping stats to header - requires negative margin (-mb-8) and pt-12 on body
-  - US-008 will change goals to coral badges and CTA to gradient button
+  - Use `dragCounterRef` pattern to track drag enter/leave events reliably (child elements trigger multiple events)
+  - CollapsibleSection with external state control allows parent components to programmatically open/close
+  - `useCallback` with proper dependencies for drag handlers to avoid stale closures
+  - Full-page drop overlay should use `fixed inset-0 z-50` for proper positioning above all content
 ---
 
-## 2026-01-10 - US-007: Add elevated overlapping stats to ProgramCard
-- Modified `src/app/components/ProgramCard.tsx`
-- Stats section moved inside header div with negative margin (-mb-8) and relative z-10
-- Stats now appear as white cards with shadow-lg and border border-[#E2E8F0]
-- Stats use flex gap-4 layout horizontally instead of grid
-- Each stat card: flex-1 text-center py-3 rounded-lg bg-white shadow-lg
-- Body content gets pt-12 padding to accommodate overlap
-- Body background changes to #FAFAFA
-- Stats show only Days/Week and Weeks (removed cloneCount from overlap section)
-- Updated both card variants (CardContent and template Link variant)
+## 2026-01-11 19:30 - US-007: Fix PhotoComparison Image error
+- What was implemented:
+  - Fixed Next.js Image component errors in PhotoComparison.tsx
+  - Changed from explicit `width={400} height={533}` with `className="w-full h-full object-cover"` to `fill` prop
+  - Added `relative` class to parent containers (required for `fill` prop)
+  - Added `unoptimized` prop since images are base64 data URLs (can't be optimized by Next.js)
+  - Removed conflicting className sizing (`w-full h-full`) when using `fill`
+- Files changed: `src/components/progress/PhotoComparison.tsx`
 - **Learnings for future iterations:**
-  - Reference design is `/dev/library-cards` Option D lines 218-228
-  - Overlapping stats pattern: place inside header, use -mb-8 on stats container, pt-12 on body
-  - Use gray600 (#64748B) for stat labels instead of gray400 for better contrast on white cards
-  - Border uses COLORS.gray100 (#F1F5F9) for subtle definition
+  - Next.js Image with `fill` prop requires parent container to have `position: relative`
+  - Cannot combine `fill` with explicit width/height or className width/height
+  - Use `unoptimized` prop for base64 data URLs - Next.js image optimization doesn't work with them
+  - `aspect-[3/4]` on parent container with `fill` creates correct aspect ratio sizing
 ---
 
-## 2026-01-10 - US-008: Update ProgramCard goals and CTA styling
-- Modified `src/app/components/ProgramCard.tsx`
-- Goals badges changed from gray to coral: bg-[#FFE5E5] text-[#EF5350] rounded-full font-medium
-- Equipment badges changed from gray50 bg to white bg
-- CTA button now uses gradient: bg-gradient-to-r from-[#FF6B6B] to-[#FF8E8E]
-- CTA button has shadow: shadow-md shadow-[#FF6B6B]/25
-- Removed inline onMouseOver/onMouseOut handlers, replaced with Tailwind hover:opacity-90
-- Updated both card variants (CardContent and template Link variant)
-- **Learnings for future iterations:**
-  - ProgramCard has duplicate code for CardContent and template variant - use replace_all when making same change to both
-  - Reference design is `/dev/library-cards` Option D lines 233-247
-  - For buttons, prefer Tailwind classes over inline styles for hover effects
-  - Use font-semibold (not font-medium) on CTA buttons for better visual weight
----
-
-## 2026-01-10 - US-009: Create ExerciseCard component with emoji category icons
-- Created `src/components/exercise/ExerciseCard.tsx`
-- Card layout with white bg, rounded-xl, border-[#E2E8F0], hover:shadow-md
-- Category icon: 56x56px (w-14 h-14) rounded-xl with emoji and category label
-- CATEGORY_STYLES exported with icon property for all categories
-- Exercise name with font-semibold, sets/reps/rest shown below
-- Three action buttons (40x40px): Video (PlayCircle), Swap (ArrowLeftRight), Expand (ChevronDown)
-- Video button links to YouTube search for exercise
-- Supports both controlled and uncontrolled expand state
-- AnimatePresence for smooth expand/collapse animation
-- Notes shown in amber-tinted box with lightbulb emoji prefix
-- **Learnings for future iterations:**
-  - Reference design is `/dev/exercise-cards` Option B (OptionBCards function lines 107-202)
-  - Component supports both controlled (isExpanded + onToggleExpand) and uncontrolled mode
-  - Exercise interface is flexible - rest can be string or number, reps can be string or number
-  - Use lucide-react icons (PlayCircle, ArrowLeftRight, ChevronDown) instead of inline SVGs
-  - Group action buttons with stopPropagation to prevent card click triggering expand
----
-
-## 2026-01-10 - US-010 & US-011: Action buttons and expandable details (Already implemented)
-- US-010 and US-011 were already implemented as part of US-009
-- All acceptance criteria already met in ExerciseCard component
-- Verified via lint and build checks
-- **Learnings for future iterations:**
-  - ExerciseCard was implemented comprehensively in US-009, covering US-010 and US-011 scope
-  - Future PRDs should consider merging tightly coupled stories
----
-
-## 2026-01-10 - US-012: Replace ExerciseRow with ExerciseCard in ProgramDisplay
-- Modified `src/app/components/ProgramDisplay.tsx`
-- Imported ExerciseCard from `src/components/exercise/ExerciseCard.tsx`
-- Replaced table-style exercise header and ExerciseRow with ExerciseCard
-- Changed exercise list container to `space-y-3` stack with `p-3` padding
-- Mapped exercise data to ExerciseCard props:
-  - name, sets from exercise directly
-  - reps uses exercise.reps || exercise.measure || '10' as fallback
-  - rest uses exercise.restPeriod
-  - category uses getCategoryFromExercise() for inference
-  - notes and instructions passed through
-- Kept existing workout day card collapse/expand behavior unchanged
-- Old ExerciseRow component still in file (unused) - to be cleaned up in US-014
-- **Learnings for future iterations:**
-  - ProgramDisplay uses `exercise.restPeriod` not `exercise.rest` - need proper mapping
-  - getCategoryFromExercise() exists in file and handles inference from name
-  - ExerciseCard handles YouTube video links internally, no need to duplicate
-  - The table header (`grid-cols-12` with Type/Exercise/Sets×Reps/Rest columns) was removed
----
-
-## 2026-01-10 - US-013: Update library-cards dev page with production component
-- Modified `src/app/dev/library-cards/page.tsx`
-- Imported actual ProgramCard component from `@/app/components/ProgramCard`
-- Added Option E (OptionEProduction) that renders the production ProgramCard
-- Updated state type to include 'E' option: `useState<'A' | 'B' | 'C' | 'D' | 'E'>('A')`
-- Added description for Option E: "Production Component (after changes)"
-- Mapped mock data to ProgramCard props (slug generated from name)
-- Updated Key Differences section to include Option E
-- Allows side-by-side comparison of dev mock (Option D) vs production component (Option E)
-- **Learnings for future iterations:**
-  - Dev pages are useful for verifying production components match design specs
-  - ProgramCard requires slug prop - can generate from name.toLowerCase().replace(/\s+/g, '-')
-  - Mock data needs source='database' for template cards (not 'user')
-  - onClaim can use empty callback `() => {}` in dev pages
----
-
-## 2026-01-10 - US-014: Final verification and cleanup
-- Ran `npm run lint` and `npm run build` - both pass successfully
-- Removed unused SetInput component from `src/app/workout/[id]/page.tsx` (lines 57-214)
-- Cleaned up unused imports: Circle, Pencil, formatExerciseUnit from workout page
-- Removed unused ExerciseRow component from `src/app/components/ProgramDisplay.tsx` (lines 59-165)
-- Removed unused CATEGORY_STYLES and formatExerciseMeasure/formatRestPeriod imports from ProgramDisplay
-- All production pages verified to build correctly
-- **Learnings for future iterations:**
-  - When replacing components, track unused code for cleanup in final story
-  - Check for orphaned imports after removing components
-  - The getCategoryFromExercise function is still used by ExerciseCard integration, so keep it
+## 2026-01-11 20:00 - US-008: Final verification
+- What was verified:
+  - `npx tsc --noEmit` passes without errors
+  - `npm run build` succeeds (98 pages generated)
+  - All 7 previous user stories have been implemented
+- Automated checks:
+  - TypeScript: ✓ No errors
+  - Build: ✓ Successful
+  - Lint: ✓ Only pre-existing warnings (not from this PR)
+- Manual verification needed by user:
+  - Date picker shows calendar directly on /workout/[id]
+  - /share/workout?date=... shows public page
+  - Blog CTA button visible at /blog/baisics-vs-trainerize
+  - Template header shows auth state when logged in
+  - Photo comparison renders without errors
+- **Summary:**
+  - All user stories US-001 through US-007 implemented
+  - All automated quality checks pass
+  - PR #235 fixes are complete and ready for manual review
 ---

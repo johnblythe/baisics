@@ -1,0 +1,143 @@
+{
+  "project": "baisics",
+  "branchName": "ralph/pr235-fixes",
+  "description": "Fixes for PR #235 issues found during manual testing",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Fix date picker UX - remove intermediate step",
+      "description": "As a user logging a workout, I want to click the date button and immediately see a beautiful calendar picker without an intermediate input step.",
+      "acceptanceCriteria": [
+        "Remove the intermediate date input that appears after clicking the date button in src/app/workout/[id]/page.tsx",
+        "Show calendar picker directly on button click using a dropdown/popover",
+        "Style calendar with v2a design (coral #FF6B6B for selected day, navy #0F172A text)",
+        "Calendar should prevent selecting future dates (max={today})",
+        "Selected date updates the button text immediately",
+        "Close calendar when date is selected",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Current flow: click button → shows input → click input → shows calendar. Should be: click button → shows styled calendar directly"
+    },
+    {
+      "id": "US-002",
+      "title": "Create /share/workout route",
+      "description": "As a user who shared their workout, I want the share URL to actually work so people can see my achievement.",
+      "acceptanceCriteria": [
+        "Create src/app/share/workout/page.tsx",
+        "Parse date query param from URL",
+        "Show a public-facing workout summary (no auth required)",
+        "Display: 'Workout completed on [date]' with baisics branding",
+        "Add CTA to sign up/try baisics",
+        "If invalid/missing date, show friendly message",
+        "Style matches v2a design system (coral gradient header, navy text)",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "URL format: /share/workout?date=2026-01-07T17:00:00.000Z"
+    },
+    {
+      "id": "US-003",
+      "title": "Fix blog post CTA styling",
+      "description": "As a reader of the comparison blog post, I want to see a properly styled CTA button so I can take action.",
+      "acceptanceCriteria": [
+        "Fix CTA section in src/content/blog/baisics-vs-trainerize/index.tsx",
+        "CTA button should have coral gradient: bg-gradient-to-r from-[#FF6B6B] to-[#FF8E8E]",
+        "Button text should be white and visible",
+        "Button should have shadow: shadow-lg shadow-[#FF6B6B]/25",
+        "CTA section background should have proper contrast",
+        "Button should link to /hi or signup",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Bottom of blog post has invisible/white button where CTA should be"
+    },
+    {
+      "id": "US-004",
+      "title": "Fix swap suggestions API",
+      "description": "As a paid user, I want ingredient swap suggestions to work so I can customize my meal plan.",
+      "acceptanceCriteria": [
+        "Debug /api/nutrition/swap-suggestions endpoint in src/app/api/nutrition/swap-suggestions/route.ts",
+        "Check for missing ANTHROPIC_API_KEY or other env vars",
+        "Add proper error handling with specific error messages",
+        "If AI call fails, return hardcoded fallback suggestions based on ingredient category",
+        "Fallback suggestions should include reasonable macro deltas",
+        "Log errors for debugging but return user-friendly message",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Currently returns 'Failed to generate swap suggestions' - needs fallback"
+    },
+    {
+      "id": "US-005",
+      "title": "Fix template page header auth state",
+      "description": "As a logged-in user viewing a template, I want the header to show my authenticated state.",
+      "acceptanceCriteria": [
+        "Check src/app/templates/[slug]/page.tsx and TemplateDetailClient.tsx",
+        "Ensure page is not using 'force-static' or other caching that prevents auth check",
+        "Header component should receive session from MainLayout",
+        "If using client component, fetch session with useSession hook",
+        "Verify auth state shows correctly when logged in",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Header shows non-auth'd version even when logged in on template pages"
+    },
+    {
+      "id": "US-006",
+      "title": "Improve progress photos UX on check-in",
+      "description": "As a user doing a check-in, I want to easily add progress photos by dragging them anywhere on the screen.",
+      "acceptanceCriteria": [
+        "Update src/app/check-in/page.tsx to add page-level drag-drop zone",
+        "When dragging file over page, show full-page drop overlay indicator",
+        "Drop anywhere on page should add photo to progress photos section",
+        "Auto-expand progress photos section after drop",
+        "Make 'Add Photos' link more prominent (larger, coral colored)",
+        "Keep existing click-to-upload functionality",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "Currently must scroll to bottom, expand progress section, then drag. Should allow drag anywhere."
+    },
+    {
+      "id": "US-007",
+      "title": "Fix PhotoComparison Image error",
+      "description": "As a user comparing progress photos, I want the comparison to work without errors.",
+      "acceptanceCriteria": [
+        "Fix src/components/progress/PhotoComparison.tsx",
+        "Next.js Image error: cannot have both 'fill' and 'style.width' or explicit width/height",
+        "Either use fill with parent container sizing, OR use explicit width/height",
+        "Remove conflicting width/height/style.width when using fill prop",
+        "Photo comparison renders without console errors",
+        "Both before and after photos display correctly",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "Error: Image with src data:image/png;base64... has both fill and style.width properties"
+    },
+    {
+      "id": "US-008",
+      "title": "Final verification",
+      "description": "Verify all fixes work together.",
+      "acceptanceCriteria": [
+        "npx tsc --noEmit passes",
+        "npm run build succeeds",
+        "Manually verify: date picker shows calendar directly on /workout/[id]",
+        "Manually verify: /share/workout?date=... shows public page",
+        "Manually verify: blog CTA button visible at /blog/baisics-vs-trainerize",
+        "Manually verify: template header shows auth state when logged in",
+        "Manually verify: photo comparison renders without errors"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "Final verification of all fixes"
+    }
+  ]
+}

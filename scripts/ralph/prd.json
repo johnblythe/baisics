@@ -1,266 +1,143 @@
 {
   "project": "baisics",
-  "branchName": "ralph/ui-redesign-228-225-103",
-  "description": "UI redesign for workout tracker (#228), library cards (#225), and exercise cards (#103) - implementing approved design options from /dev exploration pages",
+  "branchName": "ralph/pr235-fixes",
+  "description": "Fixes for PR #235 issues found during manual testing",
   "userStories": [
     {
       "id": "US-001",
-      "title": "Create SetProgressGrid component for workout tracker",
-      "description": "As a user, I want to see all my sets at a glance in a grid layout so I can track workout progress visually.",
+      "title": "Fix date picker UX - remove intermediate step",
+      "description": "As a user logging a workout, I want to click the date button and immediately see a beautiful calendar picker without an intermediate input step.",
       "acceptanceCriteria": [
-        "Create new component at src/components/workout/SetProgressGrid.tsx",
-        "Grid shows 4 columns (for typical 4-set exercises)",
-        "Each cell shows set number and weight×reps when completed",
-        "Completed sets have green background (bg-green-100 border-green-300)",
-        "Active set has coral highlight (bg-[#FF6B6B] text-white ring-2 ring-offset-2)",
-        "Pending sets are clickable to select (unless completed)",
-        "Component accepts logs array, activeIndex, selectedIndex, and onSelect callback",
-        "Checkmark badge appears on completed sets",
-        "npm run typecheck passes"
+        "Remove the intermediate date input that appears after clicking the date button in src/app/workout/[id]/page.tsx",
+        "Show calendar picker directly on button click using a dropdown/popover",
+        "Style calendar with v2a design (coral #FF6B6B for selected day, navy #0F172A text)",
+        "Calendar should prevent selecting future dates (max={today})",
+        "Selected date updates the button text immediately",
+        "Close calendar when date is selected",
+        "npx tsc --noEmit passes"
       ],
       "priority": 1,
       "passes": true,
-      "notes": "Reference: /dev/workout-tracker Option B - the grid at the top showing Set 1-4 cells"
+      "notes": "Current flow: click button → shows input → click input → shows calendar. Should be: click button → shows styled calendar directly"
     },
     {
       "id": "US-002",
-      "title": "Create BigSetInputCard component with coral gradient",
-      "description": "As a mobile user, I want large touch-friendly inputs for logging weight and reps so I can easily log sets at the gym.",
+      "title": "Create /share/workout route",
+      "description": "As a user who shared their workout, I want the share URL to actually work so people can see my achievement.",
       "acceptanceCriteria": [
-        "Create new component at src/components/workout/BigSetInputCard.tsx",
-        "Card has coral gradient background (from-[#FF6B6B] to-[#EF5350])",
-        "Shows current set number in large text (text-3xl font-bold)",
-        "Shows target reps on right side",
-        "Weight input with white/20 background, white text, text-xl font-bold",
-        "Reps input with same styling",
-        "Complete Set button is white bg with coral text, full width, py-4",
-        "Component accepts setNumber, targetReps, weight, reps, onWeightChange, onRepsChange, onComplete",
-        "Inputs have proper labels (Weight lbs, Reps)",
-        "npm run typecheck passes"
+        "Create src/app/share/workout/page.tsx",
+        "Parse date query param from URL",
+        "Show a public-facing workout summary (no auth required)",
+        "Display: 'Workout completed on [date]' with baisics branding",
+        "Add CTA to sign up/try baisics",
+        "If invalid/missing date, show friendly message",
+        "Style matches v2a design system (coral gradient header, navy text)",
+        "npx tsc --noEmit passes"
       ],
       "priority": 2,
       "passes": true,
-      "notes": "Reference: /dev/workout-tracker Option B - the big coral gradient card with large inputs"
+      "notes": "URL format: /share/workout?date=2026-01-07T17:00:00.000Z"
     },
     {
       "id": "US-003",
-      "title": "Create RestTimerControl component with auto-start toggle",
-      "description": "As a user, I want to control rest timer settings including auto-start so I can customize my workout flow.",
+      "title": "Fix blog post CTA styling",
+      "description": "As a reader of the comparison blog post, I want to see a properly styled CTA button so I can take action.",
       "acceptanceCriteria": [
-        "Create new component at src/components/workout/RestTimerControl.tsx",
-        "Shows clock icon in coral-tinted circle (w-10 h-10 bg-[#FFE5E5])",
-        "Displays 'Rest Timer' label with rest duration below",
-        "Auto-start toggle on right side using styled checkbox/toggle",
-        "Toggle uses coral color when checked (peer-checked:bg-[#FF6B6B])",
-        "Component accepts restDuration, autoStart, onAutoStartChange props",
-        "Styled with white bg, rounded-xl, border border-[#E2E8F0]",
-        "npm run typecheck passes"
+        "Fix CTA section in src/content/blog/baisics-vs-trainerize/index.tsx",
+        "CTA button should have coral gradient: bg-gradient-to-r from-[#FF6B6B] to-[#FF8E8E]",
+        "Button text should be white and visible",
+        "Button should have shadow: shadow-lg shadow-[#FF6B6B]/25",
+        "CTA section background should have proper contrast",
+        "Button should link to /hi or signup",
+        "npx tsc --noEmit passes"
       ],
       "priority": 3,
       "passes": true,
-      "notes": "Reference: /dev/workout-tracker Option B - the rest timer row at bottom"
+      "notes": "Bottom of blog post has invisible/white button where CTA should be"
     },
     {
       "id": "US-004",
-      "title": "Add progress bar component for workout completion",
-      "description": "As a user, I want to see my overall workout progress as a visual bar so I know how far along I am.",
+      "title": "Fix swap suggestions API",
+      "description": "As a paid user, I want ingredient swap suggestions to work so I can customize my meal plan.",
       "acceptanceCriteria": [
-        "Create new component at src/components/workout/WorkoutProgressBar.tsx",
-        "Shows horizontal progress bar with coral gradient fill",
-        "Displays completion count text (e.g., '2/4') next to bar",
-        "Bar container has bg-[#F1F5F9] rounded-full",
-        "Fill uses bg-gradient-to-r from-[#FF6B6B] to-[#EF5350]",
-        "Component accepts completedCount and totalCount props",
-        "Width transitions smoothly (transition-all)",
-        "npm run typecheck passes"
+        "Debug /api/nutrition/swap-suggestions endpoint in src/app/api/nutrition/swap-suggestions/route.ts",
+        "Check for missing ANTHROPIC_API_KEY or other env vars",
+        "Add proper error handling with specific error messages",
+        "If AI call fails, return hardcoded fallback suggestions based on ingredient category",
+        "Fallback suggestions should include reasonable macro deltas",
+        "Log errors for debugging but return user-friendly message",
+        "npx tsc --noEmit passes"
       ],
       "priority": 4,
       "passes": true,
-      "notes": "Reference: /dev/workout-tracker Option B - the progress bar between grid and input card"
+      "notes": "Currently returns 'Failed to generate swap suggestions' - needs fallback"
     },
     {
       "id": "US-005",
-      "title": "Integrate new workout tracker components into workout page",
-      "description": "As a developer, I need to integrate the new SetProgressGrid, BigSetInputCard, RestTimerControl, and WorkoutProgressBar into the workout page.",
+      "title": "Fix template page header auth state",
+      "description": "As a logged-in user viewing a template, I want the header to show my authenticated state.",
       "acceptanceCriteria": [
-        "Import all four new components into src/app/workout/[id]/page.tsx",
-        "Replace the existing SetInput section with: SetProgressGrid at top, WorkoutProgressBar below, BigSetInputCard in middle, RestTimerControl at bottom",
-        "Wire up selectedSetIndex state for grid selection",
-        "Connect BigSetInputCard to existing updateSet function",
-        "RestTimerControl controls existing rest timer behavior",
-        "Keep existing exercise navigation (prev/next buttons)",
-        "Keep existing exercise quick nav at bottom",
-        "Remove old SetInput component usage (can keep component for backwards compatibility)",
-        "npm run typecheck passes",
-        "Verify UI renders correctly in browser at /workout/[id]"
+        "Check src/app/templates/[slug]/page.tsx and TemplateDetailClient.tsx",
+        "Ensure page is not using 'force-static' or other caching that prevents auth check",
+        "Header component should receive session from MainLayout",
+        "If using client component, fetch session with useSession hook",
+        "Verify auth state shows correctly when logged in",
+        "npx tsc --noEmit passes"
       ],
       "priority": 5,
       "passes": true,
-      "notes": "This integrates US-001 through US-004 into the production workout page"
+      "notes": "Header shows non-auth'd version even when logged in on template pages"
     },
     {
       "id": "US-006",
-      "title": "Update ProgramCard header with gradient fade styling",
-      "description": "As a user, I want library cards with a smoother visual transition from header to content so they look more polished.",
+      "title": "Improve progress photos UX on check-in",
+      "description": "As a user doing a check-in, I want to easily add progress photos by dragging them anywhere on the screen.",
       "acceptanceCriteria": [
-        "Update src/app/components/ProgramCard.tsx header gradient",
-        "Change gradient from 'to bottom right' to 180deg vertical",
-        "Gradient stops: #0F172A at 0%, #1E293B at 60%, #334155 at 100%",
-        "Description text color changes to #CBD5E1 for better contrast",
-        "Category badge gets white/30 border instead of white/20 bg",
-        "Both card variants (Link wrapper and div wrapper) updated",
-        "npm run typecheck passes",
-        "Verify component renders correctly in browser at /library"
+        "Update src/app/check-in/page.tsx to add page-level drag-drop zone",
+        "When dragging file over page, show full-page drop overlay indicator",
+        "Drop anywhere on page should add photo to progress photos section",
+        "Auto-expand progress photos section after drop",
+        "Make 'Add Photos' link more prominent (larger, coral colored)",
+        "Keep existing click-to-upload functionality",
+        "npx tsc --noEmit passes"
       ],
       "priority": 6,
       "passes": true,
-      "notes": "Reference: /dev/library-cards Option D header styling"
+      "notes": "Currently must scroll to bottom, expand progress section, then drag. Should allow drag anywhere."
     },
     {
       "id": "US-007",
-      "title": "Add elevated overlapping stats to ProgramCard",
-      "description": "As a user, I want stats (Days/Week, Weeks) to visually bridge header and content for better visual hierarchy.",
+      "title": "Fix PhotoComparison Image error",
+      "description": "As a user comparing progress photos, I want the comparison to work without errors.",
       "acceptanceCriteria": [
-        "Stats section moves inside header div with negative margin (-mb-8)",
-        "Stats appear as white cards with shadow-lg and border",
-        "Stats use flex gap-4 layout horizontally",
-        "Each stat card: flex-1 text-center py-3 rounded-lg bg-white shadow-lg border-[#E2E8F0]",
-        "Body content gets padding-top increased (pt-12) to accommodate overlap",
-        "Body background changes to #FAFAFA",
-        "Stats show Days/Week and Weeks only (remove cloneCount from overlap)",
-        "npm run typecheck passes",
-        "Verify component renders correctly in browser at /library"
+        "Fix src/components/progress/PhotoComparison.tsx",
+        "Next.js Image error: cannot have both 'fill' and 'style.width' or explicit width/height",
+        "Either use fill with parent container sizing, OR use explicit width/height",
+        "Remove conflicting width/height/style.width when using fill prop",
+        "Photo comparison renders without console errors",
+        "Both before and after photos display correctly",
+        "npx tsc --noEmit passes"
       ],
       "priority": 7,
       "passes": true,
-      "notes": "Reference: /dev/library-cards Option D - elevated stats overlapping header/body"
+      "notes": "Error: Image with src data:image/png;base64... has both fill and style.width properties"
     },
     {
       "id": "US-008",
-      "title": "Update ProgramCard goals and CTA styling",
-      "description": "As a user, I want goal tags with coral highlight and a gradient CTA button for better visual appeal.",
+      "title": "Final verification",
+      "description": "Verify all fixes work together.",
       "acceptanceCriteria": [
-        "Goals badges change from gray to coral: bg-[#FFE5E5] text-[#EF5350] rounded-full",
-        "Goals badges get font-medium class",
-        "Equipment badges get bg-white instead of gray50",
-        "CTA button uses gradient: bg-gradient-to-r from-[#FF6B6B] to-[#FF8E8E]",
-        "CTA button adds shadow: shadow-md shadow-[#FF6B6B]/25",
-        "CTA button hover uses hover:opacity-90 instead of background change",
-        "Remove inline style handlers for hover (use Tailwind)",
-        "npm run typecheck passes",
-        "Verify component renders correctly in browser at /library"
+        "npx tsc --noEmit passes",
+        "npm run build succeeds",
+        "Manually verify: date picker shows calendar directly on /workout/[id]",
+        "Manually verify: /share/workout?date=... shows public page",
+        "Manually verify: blog CTA button visible at /blog/baisics-vs-trainerize",
+        "Manually verify: template header shows auth state when logged in",
+        "Manually verify: photo comparison renders without errors"
       ],
       "priority": 8,
       "passes": true,
-      "notes": "Reference: /dev/library-cards Option D - coral goals and gradient CTA"
-    },
-    {
-      "id": "US-009",
-      "title": "Create ExerciseCard component with emoji category icons",
-      "description": "As a user, I want exercise cards with larger touch targets and visual category icons so I can quickly identify exercise types.",
-      "acceptanceCriteria": [
-        "Create new component at src/components/exercise/ExerciseCard.tsx",
-        "Card is full width with white bg, rounded-xl, border-[#E2E8F0], hover:shadow-md",
-        "Category icon: 56x56px (w-14 h-14) rounded-xl with bg color and emoji",
-        "CATEGORY_STYLES includes icon property: primary='🔥', secondary='💪', isolation='🎯', cardio='❤️', compound='🏋️'",
-        "Exercise name is font-semibold text-[#0F172A]",
-        "Sets/reps shown below name: 'X sets • Y reps • Zs rest'",
-        "Component accepts exercise object with name, sets, reps, rest, category, notes, instructions",
-        "Supports expanded/collapsed state for details",
-        "npm run typecheck passes"
-      ],
-      "priority": 9,
-      "passes": true,
-      "notes": "Reference: /dev/exercise-cards Option B - card layout with emoji icons"
-    },
-    {
-      "id": "US-010",
-      "title": "Add action buttons to ExerciseCard",
-      "description": "As a user, I want always-visible video and swap buttons on exercise cards so I can quickly access these features.",
-      "acceptanceCriteria": [
-        "Video button: 40x40px (w-10 h-10) rounded-lg, gray bg/border, hover turns coral-tinted",
-        "Swap button: 40x40px, same base styling, hover turns blue-tinted (#E0F2FE, #0284C7)",
-        "Expand button: 40x40px, only shows if exercise has notes or instructions",
-        "Buttons use Lucide icons: PlayCircle for video, ArrowLeftRight for swap, ChevronDown for expand",
-        "Video button links to YouTube search for exercise name",
-        "Swap button is placeholder (onClick optional callback)",
-        "Buttons grouped in flex row with gap-2",
-        "Hover states: video=#FFE5E5 border-[#FF6B6B]/30, swap=#E0F2FE border-[#0284C7]/30",
-        "npm run typecheck passes"
-      ],
-      "priority": 10,
-      "passes": true,
-      "notes": "Reference: /dev/exercise-cards Option B - the 40x40px action buttons on the right"
-    },
-    {
-      "id": "US-011",
-      "title": "Add expandable details section to ExerciseCard",
-      "description": "As a user, I want to expand exercise cards to see instructions and notes with smooth animation.",
-      "acceptanceCriteria": [
-        "Use framer-motion AnimatePresence for expand/collapse animation",
-        "Expanded section has border-t border-[#F1F5F9] separator",
-        "Instructions shown as numbered list if available",
-        "Notes shown in amber-tinted box: bg-[#FEF3C7]/50 border-[#FEF3C7] with lightbulb emoji prefix",
-        "Initial/animate/exit height and opacity transitions",
-        "Section has px-4 pb-4 padding",
-        "isExpanded and onToggleExpand props for controlled mode",
-        "npm run typecheck passes"
-      ],
-      "priority": 11,
-      "passes": true,
-      "notes": "Reference: /dev/exercise-cards Option B - the animated expand section"
-    },
-    {
-      "id": "US-012",
-      "title": "Replace ExerciseRow with ExerciseCard in ProgramDisplay",
-      "description": "As a developer, I need to integrate the new ExerciseCard component into ProgramDisplay so program reviews use the new card-based layout.",
-      "acceptanceCriteria": [
-        "Import ExerciseCard into src/app/components/ProgramDisplay.tsx",
-        "Replace ExerciseRow usage with ExerciseCard in workout sections",
-        "Change exercise list container from table-style to space-y-3 stack",
-        "Pass exercise data to ExerciseCard with proper prop mapping",
-        "Handle exercise category inference using existing getCategoryFromExercise function",
-        "Keep existing workout day card collapse/expand behavior",
-        "Video links continue using YouTube search pattern",
-        "npm run typecheck passes",
-        "Verify UI renders correctly in browser at /program/[programId]"
-      ],
-      "priority": 12,
-      "passes": true,
-      "notes": "This integrates US-009 through US-011 into the production program display"
-    },
-    {
-      "id": "US-013",
-      "title": "Update library-cards dev page with production component",
-      "description": "As a developer, I want the dev exploration page to use the actual ProgramCard component to verify changes look correct.",
-      "acceptanceCriteria": [
-        "Update /dev/library-cards/page.tsx to import actual ProgramCard from src/app/components/ProgramCard",
-        "Add Option E that renders actual ProgramCard with mock data",
-        "Option E description: 'Production Component (after changes)'",
-        "This allows side-by-side comparison of dev mock vs production component",
-        "npm run typecheck passes",
-        "Verify page renders at /dev/library-cards"
-      ],
-      "priority": 13,
-      "passes": true,
-      "notes": "This helps verify the production component matches the approved design"
-    },
-    {
-      "id": "US-014",
-      "title": "Final verification and cleanup",
-      "description": "As a developer, I want to verify all changes work together and clean up unused code.",
-      "acceptanceCriteria": [
-        "Run npm run build successfully",
-        "All three production pages render correctly: /workout/[id], /library, /program/[programId]",
-        "No console errors in browser",
-        "Old SetInput component in workout page can be removed if fully replaced",
-        "Old ExerciseRow component in ProgramDisplay can be removed if fully replaced",
-        "npm run typecheck passes",
-        "npm run build succeeds without errors"
-      ],
-      "priority": 14,
-      "passes": true,
-      "notes": "Final integration verification across all three features"
+      "notes": "Final verification of all fixes"
     }
   ]
 }
