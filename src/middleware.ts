@@ -13,7 +13,11 @@ export async function middleware(request: NextRequest) {
   }
 
   // Protect dashboard and other routes
-  const token = await getToken({ req: request });
+  // Use custom cookie name to match authOptions.cookies configuration
+  const token = await getToken({
+    req: request,
+    cookieName: 'baisics.session-token',
+  });
 
   if (!token) {
     const signInUrl = new URL("/auth/signin", request.url);
