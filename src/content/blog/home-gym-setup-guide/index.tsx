@@ -3,17 +3,16 @@ import { BlogPost, BlogSection, BlogQuote, BlogList, BlogCode } from '@/app/blog
 import { BlogPostFrontmatter } from '@/types/blog'
 
 export const frontmatter: BlogPostFrontmatter = {
-  title: "The Ultimate Home Gym Setup Guide: From Minimal to Complete",
+  title: "Home Gym Setup: What You Actually Need (And What's a Waste)",
   date: "2024-03-14",
-  excerpt: "Learn how to build the perfect home gym for your space and budget. From essential equipment to optimal layout, discover everything you need for an effective home training setup.",
-  metaDescription: "Master home gym setup with our comprehensive guide. Learn how to choose equipment, optimize space, and create the perfect training environment for your goals and budget.",
+  excerpt: "You don't need $5,000 worth of equipment to train at home. Here's how to build an effective home gym for any budget, from $100 to $2,000+.",
+  metaDescription: "Build an effective home gym on any budget. Learn what equipment actually matters, what's a waste of money, and how to set up your space for real results.",
   published: true,
   featured: false,
   categories: [
     "Equipment",
     "Home Training",
-    "Setup Guide",
-    "Training Environment"
+    "Setup Guide"
   ],
   tags: [
     "home gym",
@@ -21,314 +20,304 @@ export const frontmatter: BlogPostFrontmatter = {
     "training space",
     "gym equipment",
     "home workout",
-    "space optimization",
-    "training environment",
-    "workout space"
+    "training environment"
   ],
   keywords: [
     "home gym setup",
     "home gym equipment",
     "home workout space",
     "gym setup guide",
-    "training equipment",
-    "home gym design",
-    "workout room setup",
-    "exercise space"
+    "home gym essentials",
+    "budget home gym",
+    "home gym ideas"
   ]
 }
 
 export default function HomeGymSetupGuide() {
   return (
     <BlogPost frontmatter={frontmatter}>
-      <p className="italic">
-        Learn how to build the perfect home gym for your space and budget. From essential equipment to 
-        optimal layout, discover everything you need for an effective home training setup.
+      <p className="text-lg mb-6">
+        A home gym can be three things: a $100 setup in a corner of your bedroom,
+        a $2,000 garage gym that rivals commercial facilities, or a $5,000 graveyard
+        of equipment you never use. The difference isn&apos;t budget—it&apos;s knowing what
+        you actually need.
       </p>
 
       <p className="mb-6">
-        Creating a home gym isn&apos;t just about buying equipment – it&apos;s about designing a space that 
-        motivates you to train consistently and effectively. This guide helps you build the perfect 
-        setup, whether you have a dedicated room or just a corner to work with.
+        This guide covers the equipment that matters at every price point, the stuff
+        that&apos;s a waste of money, and how to set up your space so you actually use it.
       </p>
 
-      <BlogQuote>
-        <p><strong>Let Baisics Design Your Setup</strong></p>
-        <p>
-          Not sure what equipment you need? <Link href="/hi">Let our AI analyze your goals and space</Link> to 
-          recommend the perfect home gym setup.
-        </p>
-      </BlogQuote>
-
       <BlogSection>
-        <h2 className="text-3xl font-bold mb-4">Space Planning Fundamentals</h2>
+        <h2 className="text-3xl font-bold mb-4">Before You Buy Anything</h2>
 
-        <h3 className="text-2xl font-semibold mb-4">Minimum Requirements</h3>
-        <BlogCode>
-          {`Training Space:
-- 6x6 feet (minimal)
-- 8x10 feet (comfortable)
-- 10x12 feet (optimal)
-
-Ceiling Height:
-- 7 feet (minimal)
-- 8 feet (standard)
-- 9+ feet (optimal)`}
-        </BlogCode>
-
-        <h3 className="text-2xl font-semibold mt-6 mb-4">Layout Considerations</h3>
-        <BlogList items={[
-          "Equipment access",
-          "Movement paths",
-          "Mirror placement",
-          "Storage solutions",
-          "Ventilation needs"
-        ]} />
-      </BlogSection>
-
-      <BlogSection>
-        <h2 className="text-3xl font-bold mb-4">Essential Equipment Tiers</h2>
-
-        <h3 className="text-2xl font-semibold mb-4">Tier 1: Minimal Setup ($100-200)</h3>
         <p className="mb-4">
-          Building on our <Link href="/blog/resistance-bands-vs-weights">resistance bands guide</Link>:
+          Two questions that will save you hundreds of dollars:
         </p>
-        <BlogList items={[
-          "Resistance bands set",
-          "Exercise mat",
-          "Door anchor",
-          "Recovery tools",
-          "Storage solution"
-        ]} />
 
-        <h3 className="text-2xl font-semibold mt-6 mb-4">Tier 2: Basic Setup ($500-750)</h3>
-        <BlogCode>
-          {`Core Equipment:
-- Adjustable dumbbells
-- Flat bench
-- Pull-up bar
-- Resistance bands
-- Recovery tools`}
-        </BlogCode>
-
-        <h3 className="text-2xl font-semibold mt-6 mb-4">Tier 3: Complete Setup ($1500-2000)</h3>
-        <BlogCode>
-          {`Full Equipment:
-- Power rack
-- Barbell + plates
-- Adjustable bench
-- Dumbbells
-- Accessories`}
-        </BlogCode>
-
-        <BlogQuote>
-          <p><strong>Budget-Optimized Selection</strong></p>
-          <p>
-            <Link href="/hi">Let Baisics recommend equipment</Link> that maximizes your training 
-            potential within your budget.
-          </p>
-        </BlogQuote>
-      </BlogSection>
-
-      <BlogSection>
-        <h2 className="text-3xl font-bold mb-4">Space-Efficient Solutions</h2>
-
-        <h3 className="text-2xl font-semibold mb-4">Multi-Purpose Equipment</h3>
         <p className="mb-4">
-          Following our <Link href="/blog/program-design-guide">program design principles</Link>:
+          <strong>1. What will you actually do?</strong> Be honest. If you hate cardio,
+          don&apos;t buy a treadmill. If you&apos;ve never touched a barbell, maybe don&apos;t start
+          with a full power rack. Buy for the workouts you&apos;ll do, not the person you
+          wish you were.
         </p>
-        <BlogList items={[
-          "Adjustable benches",
-          "Modular racks",
-          "Folding equipment",
-          "Wall-mounted options",
-          "Stackable items"
-        ]} />
 
-        <h3 className="text-2xl font-semibold mt-6 mb-4">Storage Solutions</h3>
-        <BlogCode>
-          {`Vertical Storage:
-- Wall-mounted racks
-- Pegboard systems
-- Corner organizers
-- Ceiling hooks
-- Door solutions`}
-        </BlogCode>
-      </BlogSection>
-
-      <BlogSection>
-        <h2 className="text-3xl font-bold mb-4">Flooring Options</h2>
-
-        <h3 className="text-2xl font-semibold mb-4">Basic Protection</h3>
-        <BlogList items={[
-          "Horse stall mats",
-          "Interlocking tiles",
-          "Dense foam tiles",
-          "Rubber rolls",
-          "Impact zones"
-        ]} />
-
-        <h3 className="text-2xl font-semibold mt-6 mb-4">Installation Tips</h3>
-        <BlogCode>
-          {`Preparation:
-- Level surface
-- Moisture barrier
-- Edge finishing
-- Transition pieces
-- Equipment pads`}
-        </BlogCode>
-      </BlogSection>
-
-      <BlogSection>
-        <h2 className="text-3xl font-bold mb-4">Equipment Selection Guide</h2>
-
-        <h3 className="text-2xl font-semibold mb-4">Strength Training Focus</h3>
         <p className="mb-4">
-          Building on our <Link href="/blog/compound-vs-isolation-exercises">compound movement guide</Link>:
+          <strong>2. What space do you have?</strong> Measure it. A basic strength setup
+          needs about 6×6 feet minimum. A full power rack setup needs 8×10 or more.
+          Ceiling height matters too—can you overhead press without hitting the ceiling?
         </p>
-        <BlogList items={[
-          "Power rack/squat stand",
-          "Olympic barbell",
-          "Weight plates",
-          "Adjustable bench",
-          "Safety equipment"
-        ]} />
-
-        <h3 className="text-2xl font-semibold mt-6 mb-4">Conditioning Focus</h3>
-        <BlogCode>
-          {`Cardio Options:
-- Rowing machine
-- Jump rope
-- Kettlebells
-- Battle ropes
-- Conditioning tools`}
-        </BlogCode>
-
-        <BlogQuote>
-          <p><strong>Smart Equipment Selection</strong></p>
-          <p>
-            <Link href="/dashboard">Baisics users</Link> get personalized equipment recommendations 
-            based on their goals and available space.
-          </p>
-        </BlogQuote>
       </BlogSection>
 
       <BlogSection>
-        <h2 className="text-3xl font-bold mb-4">Safety Considerations</h2>
+        <h2 className="text-3xl font-bold mb-4">The $100-200 Setup (Minimalist)</h2>
 
-        <h3 className="text-2xl font-semibold mb-4">Equipment Placement</h3>
         <p className="mb-4">
-          From our <Link href="/blog/injury-prevention-guide">injury prevention guide</Link>:
+          This is all you need to get stronger than 90% of people who don&apos;t train:
         </p>
-        <BlogList items={[
-          "Safe spacing",
-          "Secure mounting",
-          "Floor protection",
-          "Wall reinforcement",
-          "Equipment stability"
-        ]} />
 
-        <h3 className="text-2xl font-semibold mt-6 mb-4">Training Environment</h3>
         <BlogCode>
-          {`Safety Checklist:
-- First aid kit
-- Good lighting
-- Proper ventilation
-- Non-slip surfaces
-- Clear pathways`}
-        </BlogCode>
-      </BlogSection>
+          {`Essential purchases:
+• Resistance band set ($25-40)
+• Adjustable dumbbells OR a few fixed pairs ($50-100)
+• Pull-up bar (doorframe) ($25-35)
+• Exercise mat ($20-30)
 
-      <BlogSection>
-        <h2 className="text-3xl font-bold mb-4">Progressive Building Plan</h2>
-
-        <h3 className="text-2xl font-semibold mb-4">Phase 1: Foundation</h3>
-        <BlogCode>
-          {`Week 1-4:
-- Basic equipment
-- Space setup
-- Safety checks
-- Storage solutions`}
+Total: $120-205`}
         </BlogCode>
 
-        <h3 className="text-2xl font-semibold mt-6 mb-4">Phase 2: Expansion</h3>
-        <BlogCode>
-          {`Month 2-3:
-- Additional equipment
-- Workflow optimization
-- Environment upgrades
-- Recovery tools`}
-        </BlogCode>
-      </BlogSection>
+        <p className="mt-4 mb-4">
+          With this setup you can do push-ups, rows, squats, lunges, overhead presses,
+          curls, tricep work, and pull-ups. That covers every muscle group. Add progressive
+          overload by increasing band resistance, going heavier on dumbbells, or adding reps.
+        </p>
 
-      <BlogSection>
-        <h2 className="text-3xl font-bold mb-4">Environment Optimization</h2>
-
-        <h3 className="text-2xl font-semibold mb-4">Lighting</h3>
-        <BlogList items={[
-          "Natural light",
-          "Overhead lighting",
-          "Task lighting",
-          "Mirror placement",
-          "Video recording"
-        ]} />
-
-        <h3 className="text-2xl font-semibold mt-6 mb-4">Temperature Control</h3>
-        <BlogCode>
-          {`Climate Factors:
-- Ventilation
-- Air circulation
-- Temperature range
-- Humidity control
-- Equipment care`}
-        </BlogCode>
-      </BlogSection>
-
-      <BlogSection>
-        <h2 className="text-3xl font-bold mb-4">Training Zone Setup</h2>
-
-        <h3 className="text-2xl font-semibold mb-4">Movement Zones</h3>
         <p className="mb-4">
-          Building on our <Link href="/blog/mobility-and-flexibility-guide">mobility guide</Link>:
+          This isn&apos;t a &quot;beginner&quot; setup you&apos;ll outgrow in a month. People have built
+          impressive physiques with less. If budget is tight, start here and upgrade later.
         </p>
-        <BlogList items={[
-          "Lifting area",
-          "Mobility space",
-          "Recovery corner",
-          "Storage section",
-          "Transition zones"
-        ]} />
-
-        <h3 className="text-2xl font-semibold mt-6 mb-4">Workout Flow</h3>
-        <BlogCode>
-          {`Zone Layout:
-- Warm-up area
-- Main lifting space
-- Accessory zone
-- Recovery station
-- Storage access`}
-        </BlogCode>
       </BlogSection>
 
       <BlogSection>
-        <h2 className="text-3xl font-bold mb-4">Technology Integration</h2>
+        <h2 className="text-3xl font-bold mb-4">The $500-800 Setup (Solid Foundation)</h2>
 
-        <h3 className="text-2xl font-semibold mb-4">Training Tech</h3>
-        <BlogList items={[
-          "Mirrors/camera setup",
-          "Music system",
-          "Lighting control",
-          "Climate control",
-          "Training apps"
-        ]} />
+        <p className="mb-4">
+          This is where home training starts matching gym training for most goals:
+        </p>
 
-        <h3 className="text-2xl font-semibold mt-6 mb-4">Smart Features</h3>
         <BlogCode>
-          {`Optional Upgrades:
-- WiFi speakers
-- Smart lighting
-- Air quality monitor`}
+          {`Core equipment:
+• Adjustable dumbbells (5-50lb range) ($200-350)
+• Flat/incline adjustable bench ($150-250)
+• Pull-up bar (wall-mounted or tower) ($50-150)
+• Resistance bands ($30)
+• Mat/flooring ($30-50)
+
+Total: $460-830`}
         </BlogCode>
+
+        <p className="mt-4 mb-4">
+          Adjustable dumbbells are the MVP here. One pair that goes from 5 to 50+ pounds
+          replaces an entire dumbbell rack. Brands like Bowflex and PowerBlock work well.
+          Used ones are often available for less.
+        </p>
+
+        <p className="mb-4">
+          The bench unlocks chest press, incline press, rows, step-ups, and more.
+          Get one that inclines—flat-only benches are limiting.
+        </p>
+      </BlogSection>
+
+      <BlogSection>
+        <h2 className="text-3xl font-bold mb-4">The $1,500-2,500 Setup (Full Gym)</h2>
+
+        <p className="mb-4">
+          This replaces a gym membership entirely:
+        </p>
+
+        <BlogCode>
+          {`Full setup:
+• Power rack or squat stand ($300-600)
+• Olympic barbell ($150-300)
+• Weight plates, 300lb set ($300-500)
+• Adjustable bench ($150-250)
+• Pull-up bar (usually included with rack)
+• Flooring/horse stall mats ($100-200)
+• Adjustable dumbbells ($200-350)
+
+Total: $1,200-2,200`}
+        </BlogCode>
+
+        <p className="mt-4 mb-4">
+          The power rack is the centerpiece. It lets you squat, bench, and overhead press
+          safely with heavy weight. Get one with safety bars/pins—they let you fail
+          without a spotter.
+        </p>
+
+        <p className="mb-4">
+          Flooring matters more than people think. Dropping weights on concrete damages
+          both. Horse stall mats from farm supply stores are the budget-friendly standard.
+        </p>
+      </BlogSection>
+
+      <BlogSection>
+        <h2 className="text-3xl font-bold mb-4">Equipment That&apos;s Overrated</h2>
+
+        <p className="mb-4">
+          <strong>Cable machines</strong> - Nice to have, but dumbbells and bands cover
+          most of what cables do. Not worth the $1,000+ unless you have money to burn.
+        </p>
+
+        <p className="mb-4">
+          <strong>Cardio machines</strong> - A treadmill takes up massive space and usually
+          becomes a clothes hanger. Walking outside is free. If you must, a jump rope ($10)
+          or a used bike is far better value.
+        </p>
+
+        <p className="mb-4">
+          <strong>Smith machines</strong> - Fixed bar path creates problems. A real squat
+          rack is better and often cheaper.
+        </p>
+
+        <p className="mb-4">
+          <strong>Leg press machines</strong> - Heavy, expensive, does one thing. Squats
+          and lunges with free weights work the same muscles better.
+        </p>
+
+        <p className="mb-4">
+          <strong>Most &quot;as seen on TV&quot; equipment</strong> - Ab rollers, shake weights,
+          thigh masters. You know what I mean.
+        </p>
+      </BlogSection>
+
+      <BlogSection>
+        <h2 className="text-3xl font-bold mb-4">Equipment That&apos;s Underrated</h2>
+
+        <p className="mb-4">
+          <strong>Resistance bands</strong> - Cheap, portable, surprisingly effective.
+          Add them to barbell lifts for accommodating resistance or use alone for
+          high-rep pump work.
+        </p>
+
+        <p className="mb-4">
+          <strong>Kettlebells</strong> - One or two covers conditioning, swings, goblet
+          squats, Turkish get-ups. Great if you like circuit-style training.
+        </p>
+
+        <p className="mb-4">
+          <strong>Gymnastics rings</strong> - $30-40 for a brutal upper body workout.
+          Ring push-ups, rows, and dips are harder than their fixed equivalents.
+        </p>
+
+        <p className="mb-4">
+          <strong>Dip belt</strong> - $30 lets you add weight to pull-ups and dips.
+          Essential once bodyweight becomes easy.
+        </p>
+      </BlogSection>
+
+      <BlogSection>
+        <h2 className="text-3xl font-bold mb-4">Buying Used</h2>
+
+        <p className="mb-4">
+          Gym equipment is durable. A used barbell works exactly like a new one.
+          Facebook Marketplace, Craigslist, and OfferUp usually have people selling
+          equipment they never used.
+        </p>
+
+        <p className="mb-4">
+          <strong>Good to buy used:</strong> Barbells, weight plates, racks, benches,
+          dumbbells. Basically anything that&apos;s just metal.
+        </p>
+
+        <p className="mb-4">
+          <strong>Buy new:</strong> Resistance bands (they wear out), anything with
+          cables/pulleys that could fail.
+        </p>
+
+        <p className="mb-4">
+          Post-New-Year (February-March) is prime buying season. People sell their
+          resolution equipment cheap.
+        </p>
+      </BlogSection>
+
+      <BlogSection>
+        <h2 className="text-3xl font-bold mb-4">Setting Up Your Space</h2>
+
+        <p className="mb-4">
+          <strong>Flooring first.</strong> Protect your floor and your equipment.
+          Horse stall mats (3/4&quot; rubber) are the go-to. About $50 for a 4×6 mat
+          at Tractor Supply.
+        </p>
+
+        <p className="mb-4">
+          <strong>Leave room around equipment.</strong> You need space to load plates,
+          to bail out of lifts, to move freely. Don&apos;t cram a rack into a space where
+          you can barely squeeze around it.
+        </p>
+
+        <p className="mb-4">
+          <strong>Lighting matters.</strong> Nobody wants to train in a dark basement.
+          Good lighting makes the space feel less like a dungeon and more like a gym.
+          LED shop lights are cheap and bright.
+        </p>
+
+        <p className="mb-4">
+          <strong>Climate control if possible.</strong> Training in a 100°F garage in
+          summer or 40°F basement in winter sucks. A fan, space heater, or dehumidifier
+          can make the difference between using your gym and avoiding it.
+        </p>
+      </BlogSection>
+
+      <BlogSection>
+        <h2 className="text-3xl font-bold mb-4">The Psychology of Home Training</h2>
+
+        <p className="mb-4">
+          The biggest challenge isn&apos;t equipment—it&apos;s actually using it.
+        </p>
+
+        <p className="mb-4">
+          At a commercial gym, you drove there. You&apos;re surrounded by other people training.
+          There&apos;s social pressure to actually work out.
+        </p>
+
+        <p className="mb-4">
+          At home, your couch is right there. Your phone is right there. &quot;I&apos;ll just do
+          it later&quot; is the easiest thought in the world.
+        </p>
+
+        <p className="mb-4">
+          What helps:
+        </p>
+
+        <BlogList items={[
+          "Dedicate the space. A corner of your bedroom that's \"gym only\" beats equipment scattered around.",
+          "Schedule it. Put workouts in your calendar like meetings.",
+          "Change clothes. Putting on gym clothes is a trigger that says \"now we train.\"",
+          "Phone stays outside. Or at minimum, airplane mode.",
+          "Track everything. Seeing your progress builds momentum."
+        ]} />
+      </BlogSection>
+
+      <BlogSection>
+        <h2 className="text-3xl font-bold mb-4">Start Small, Add Later</h2>
+
+        <p className="mb-4">
+          The best home gym is one you use. A $200 setup you train in 4x/week beats
+          a $3,000 setup you avoid.
+        </p>
+
+        <p className="mb-4">
+          Start with the minimum. Prove to yourself you&apos;ll actually train at home.
+          Then upgrade based on what you wish you had, not what Instagram tells you
+          to buy.
+        </p>
+
+        <p className="mt-6">
+          <Link href="/hi">Get a program designed for your equipment</Link>—whether
+          that&apos;s just dumbbells and bands or a full garage gym. We&apos;ll build around
+          what you actually have.
+        </p>
       </BlogSection>
     </BlogPost>
   )
-} 
+}
