@@ -1,5 +1,8 @@
 # Project Instructions
 
+## Domain
+**The domain is baisics.app** - NOT baisics.co, NOT baisics.com. Always use baisics.app.
+
 ## Development
 - **Dev server runs on port 3001**: `http://localhost:3001`
 - Run with `npm run dev`
