@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sendEmail, emailConfig } from "@/lib/email";
 import { magicLinkTemplate } from "@/lib/email/templates/magic-link";
+import { adminToolUsageTemplate } from "@/lib/email/templates/admin";
 import crypto from "crypto";
 
 // Create a magic link token and send email (v4 compatible)
@@ -91,6 +92,31 @@ export async function POST(request: NextRequest) {
     // The callbackUrl includes the claim token so we can process it on login
     const callbackUrl = `/dashboard?claim=${claimToken}`;
     await sendMagicLinkEmail(email.toLowerCase(), callbackUrl);
+
+    // Send admin notification (fire-and-forget, don't block user)
+    if (process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
+      const toolNameMap: Record<string, string> = {
+        'macro-calculator': 'Macro Calculator',
+        'body-fat': 'Body Fat Calculator',
+        'tdee': 'TDEE Calculator',
+        'one-rep-max': 'One Rep Max Calculator',
+        'program-import': 'Program Import',
+        'program-page': 'Program Page',
+      };
+      const toolName = toolNameMap[source] || source;
+
+      sendEmail({
+        to: process.env.NEXT_PUBLIC_ADMIN_EMAIL,
+        subject: `🛠️ Free Tool Used: ${toolName}`,
+        html: adminToolUsageTemplate({
+          toolName,
+          userEmail: email.toLowerCase(),
+          details: toolData ? { inputs: toolData } : undefined,
+        }),
+      }).catch((err) => {
+        console.error('Failed to send admin notification:', err);
+      });
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
