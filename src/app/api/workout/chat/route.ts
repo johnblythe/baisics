@@ -56,7 +56,7 @@ export async function POST(req: Request) {
     let coachingNotes: string | null = null;
     try {
       const exercise = await prisma.exerciseLibrary.findFirst({
-        where: { name: { contains: context.exerciseName, mode: 'insensitive' } },
+        where: { name: { contains: sanitizedContext.exerciseName, mode: 'insensitive' } },
         select: { coachingNotes: true },
       });
       coachingNotes = exercise?.coachingNotes || null;
