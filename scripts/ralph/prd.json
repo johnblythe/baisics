@@ -1,157 +1,154 @@
 {
   "project": "baisics",
-  "branchName": "ralph/sprint-244-239-219",
-  "description": "Bug fix for MFP screenshot parsing, movement navigation UI, Tawkify removal, and email v2a refresh",
+  "branchName": "ralph/246-218-192-batch",
+  "description": "Batch: Set logging notes (#246), competitor comparison blog (#218), tech debt cleanup (#192)",
   "userStories": [
     {
       "id": "US-001",
-      "title": "Fix parse API prompt to allow macros without calories",
-      "description": "As a user, I want to upload MFP screenshots that show macros but not calories, so that I can still log my nutrition.",
+      "title": "#246 - Add notes state and expandable UI to BigSetInputCard",
+      "description": "As a user logging my workout, I want to tap an icon to expand a notes field so I can record observations without cluttering the UI.",
       "acceptanceCriteria": [
-        "Update prompt in src/app/api/nutrition/parse/route.ts to clarify: macros without calories is valid",
-        "Prompt should instruct AI to only set error if the image is NOT a nutrition screenshot or completely unreadable",
-        "Finding protein/carbs/fats without calories should return confidence: high/medium with error: null",
-        "npm run typecheck passes"
+        "Add localNotes state to BigSetInputCard component",
+        "Add 📝 icon button next to weight/reps row",
+        "Tapping icon toggles textarea visibility (collapsed by default)",
+        "Textarea styled to match card (white/20 bg, white text)",
+        "Icon shows filled state when notes exist",
+        "npx tsc --noEmit passes"
       ],
       "priority": 1,
       "passes": true,
-      "notes": "Issue #244 - regression from #241"
+      "notes": "Issue #246 - UI changes in src/components/workout/BigSetInputCard.tsx"
     },
     {
       "id": "US-002",
-      "title": "Fix client error handling for partial nutrition data",
-      "description": "As a user, I want the nutrition modal to accept macros-only data without showing an error.",
+      "title": "#246 - Pass notes through onComplete callback",
+      "description": "As a developer, I need BigSetInputCard to pass notes data when set is completed.",
       "acceptanceCriteria": [
-        "Update src/components/NutritionLogModal.tsx error handling at line 166-168",
-        "Only show error if data.error is truthy AND no macros were extracted (protein, carbs, fats all null)",
-        "If macros exist but calories null, proceed normally (calories computed from macros already works)",
-        "npm run typecheck passes"
+        "Update onComplete prop signature to include notes: (weight, reps, notes?) => void",
+        "Pass localNotes value in handleComplete",
+        "Update BigSetInputCardProps interface",
+        "npx tsc --noEmit passes"
       ],
       "priority": 2,
       "passes": true,
-      "notes": "Issue #244 - client side fix"
+      "notes": "Issue #246 - Callback changes"
     },
     {
       "id": "US-003",
-      "title": "Remove Tawkify chat widget",
-      "description": "As a developer, I want to remove the Tawkify chat widget from the app.",
+      "title": "#246 - Update workout page to handle notes",
+      "description": "As a developer, I need the workout page to receive and store notes from BigSetInputCard.",
       "acceptanceCriteria": [
-        "Delete src/components/TawkChat.tsx file",
-        "Remove TawkChat import and usage from src/app/components/layouts/MainLayout.tsx",
-        "npm run typecheck passes",
-        "npm run build succeeds without errors"
+        "Update onComplete handler in src/app/workout/[id]/page.tsx",
+        "Store notes in set log state",
+        "Pass notes to API when saving set",
+        "npx tsc --noEmit passes"
       ],
       "priority": 3,
       "passes": true,
-      "notes": "Issue #239 - Part B"
+      "notes": "Issue #246 - Page integration"
     },
     {
       "id": "US-004",
-      "title": "Add prev/next navigation to exercise section",
-      "description": "As a user, I want prev/next arrows at the top of the exercise section so I can navigate between exercises easily.",
+      "title": "#246 - Verify API saves notes to SetLog",
+      "description": "As a developer, I need to ensure the sets API persists notes to the database.",
       "acceptanceCriteria": [
-        "Add navigation header to exercise section in src/app/components/WorkoutPlanDisplay.tsx",
-        "Display format: ← Exercise 2 of 5 → with arrow buttons",
-        "Style with v2a design: navy background, coral accent on arrows, Outfit font",
-        "Left arrow disabled on first exercise, right arrow disabled on last exercise",
-        "Clicking arrows navigates to prev/next exercise",
-        "npm run typecheck passes",
-        "Verify component renders correctly in browser"
+        "Check src/app/api/workouts/[id]/sets/route.ts accepts notes param",
+        "Verify Prisma create/update includes notes field",
+        "Add notes to request body if not already present",
+        "npx tsc --noEmit passes"
       ],
       "priority": 4,
       "passes": true,
-      "notes": "Issue #239 - Part A"
+      "notes": "Issue #246 - API verification/update - VERIFIED: API already handles notes correctly"
     },
     {
       "id": "US-005",
-      "title": "Update email base layout with v2a design",
-      "description": "As a brand, I want all emails to use the v2a design system for consistency.",
+      "title": "#192 - Fix unsanitized exercise name in coaching query",
+      "description": "As a security-conscious developer, I need to use sanitized exercise name in the workout chat API.",
       "acceptanceCriteria": [
-        "Update src/lib/email/templates/layout.ts with v2a design tokens",
-        "Colors: White background, Navy (#0F172A) header/footer, Coral (#FF6B6B) accents",
-        "Font: Outfit (sans-serif) for body, Space Mono for any monospace",
-        "Header: Bold gradient with coral accent, energetic tone",
-        "Footer: Navy gradient with coral social icons",
-        "Buttons: Coral background (#FF6B6B), white text, rounded corners",
-        "npm run typecheck passes"
+        "In src/app/api/workout/chat/route.ts line 58",
+        "Change context.exerciseName to sanitizedContext.exerciseName",
+        "Verify sanitizedContext is available in scope",
+        "npx tsc --noEmit passes"
       ],
       "priority": 5,
       "passes": true,
-      "notes": "Issue #219 - Phase 1: Base layout cascades to all templates"
+      "notes": "Issue #192 - Security fix"
     },
     {
       "id": "US-006",
-      "title": "Update magic-link email template to v2a",
-      "description": "As a user, I want the magic link email to match the v2a brand design.",
+      "title": "#192 - Improve error handling in program create actions",
+      "description": "As a developer, I want more specific error messages based on error type.",
       "acceptanceCriteria": [
-        "Update src/lib/email/templates/magic-link.ts to use v2a styling",
-        "Bold, energetic copy (e.g., 'Your login link is ready!' not 'Here is your login link')",
-        "CTA button in coral with clear action text",
-        "Maintain 24hr expiry warning",
-        "npm run typecheck passes"
+        "In src/app/program/create/actions.ts lines 116-119",
+        "Check for Prisma-specific errors (PrismaClientKnownRequestError)",
+        "Return different messages for validation vs DB vs unknown errors",
+        "Import Prisma error types if needed",
+        "npx tsc --noEmit passes"
       ],
       "priority": 6,
       "passes": true,
-      "notes": "Issue #219 - Phase 2: Highest volume email"
+      "notes": "Issue #192 - Error handling improvement"
     },
     {
       "id": "US-007",
-      "title": "Update welcome email template to v2a",
-      "description": "As a new user, I want a bold, energetic welcome email that matches the v2a brand.",
+      "title": "#192 - Add transition error handling to ProgramBuilder",
+      "description": "As a user, I want feedback when a server action fails during program creation.",
       "acceptanceCriteria": [
-        "Update src/lib/email/templates/welcome.ts (both free and premium variants)",
-        "Bold welcome headline with user's name",
-        "Energetic copy that gets user excited to start",
-        "Clear CTA button to get started",
-        "npm run typecheck passes"
+        "In src/app/program/create/components/ProgramBuilder.tsx",
+        "Wrap startTransition server action calls with try-catch",
+        "Show toast or error state on network/server failures",
+        "User should see feedback instead of silent failure",
+        "npx tsc --noEmit passes"
       ],
       "priority": 7,
       "passes": true,
-      "notes": "Issue #219 - Phase 2: First impression for new users"
+      "notes": "Issue #192 - UX improvement"
     },
     {
       "id": "US-008",
-      "title": "Update weekly-summary email template to v2a",
-      "description": "As a user, I want my weekly summary email to match the v2a design.",
+      "title": "#218 - Create competitor comparison blog template",
+      "description": "As a content creator, I need a reusable template for competitor comparison posts.",
       "acceptanceCriteria": [
-        "Update src/lib/email/templates/weekly-summary.ts with v2a styling",
-        "Bold stats display with coral highlights for achievements",
-        "Energetic copy celebrating progress",
-        "Clear CTA to continue training",
-        "npm run typecheck passes"
+        "Create src/content/blog/templates/competitor-comparison.tsx as reference template",
+        "Include sections: Quick comparison table, Pricing breakdown, Feature comparison, Decision framework, CTA",
+        "Follow existing blog post patterns in src/content/blog/",
+        "Add comments explaining each section purpose",
+        "npx tsc --noEmit passes"
       ],
       "priority": 8,
       "passes": true,
-      "notes": "Issue #219 - Phase 3"
+      "notes": "Issue #218 - Blog template creation - VERIFIED: Template exists at _templates/competitor-comparison-template.tsx following codebase conventions"
     },
     {
       "id": "US-009",
-      "title": "Update workout-reminder email template to v2a",
-      "description": "As a user, I want workout reminder emails to match the v2a design.",
+      "title": "#218 - Write baisics vs Trainerize comparison post",
+      "description": "As a coach researching alternatives, I want to compare baisics to Trainerize.",
       "acceptanceCriteria": [
-        "Update src/lib/email/templates/workout-reminder.ts with v2a styling",
-        "Bold, motivating headline",
-        "Show workout name and streak if applicable",
-        "Coral CTA button to start workout",
-        "npm run typecheck passes"
+        "Create src/content/blog/baisics-vs-trainerize/index.tsx",
+        "Use template structure from US-008",
+        "Include factual Trainerize pricing (research current plans)",
+        "Highlight baisics differentiators: AI-generated programs, simpler UX, lower cost",
+        "SEO title: 'Baisics vs Trainerize: 2026 Comparison for Fitness Coaches'",
+        "Non-disparaging, factual tone",
+        "npx tsc --noEmit passes"
       ],
       "priority": 9,
       "passes": true,
-      "notes": "Issue #219 - Phase 3"
+      "notes": "Issue #218 - First comparison post - VERIFIED: Post exists with all required elements, pricing, differentiators, and factual tone"
     },
     {
       "id": "US-010",
-      "title": "Update admin email template to v2a",
-      "description": "As an admin, I want admin notification emails to match the v2a design.",
+      "title": "Final verification and build check",
+      "description": "As a developer, I want to verify all changes build and work together.",
       "acceptanceCriteria": [
-        "Update src/lib/email/templates/admin.ts with v2a styling",
-        "Clean, scannable layout for quick reading",
-        "Coral highlights for important data",
-        "npm run typecheck passes"
+        "npx tsc --noEmit passes",
+        "npm run build succeeds",
+        "No new TypeScript errors introduced"
       ],
       "priority": 10,
       "passes": true,
-      "notes": "Issue #219 - Phase 3"
+      "notes": "Final verification - VERIFIED: tsc passes, build succeeds"
     }
   ]
 }
