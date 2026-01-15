@@ -1,6 +1,6 @@
 import { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { WorkoutPlan } from '@/types/program';
-import { Target, Brain, Activity, Key, Dumbbell, Apple, ChartLine, Info } from 'lucide-react';
+import { Target, Brain, Activity, Key, Dumbbell, Apple, ChartLine, Info, ChevronLeft, ChevronRight } from 'lucide-react';
 import { formatExerciseMeasure, formatRestPeriod } from '@/utils/formatters';
 import { Program } from '@/types/program';
 import { User } from '@prisma/client';
@@ -42,6 +42,7 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
   const [userEmail, setUserEmail] = useState(initialUserEmail);
   const [expandedNotes, setExpandedNotes] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState<Record<string, number>>({});
 
   // Initialize expandedNotes with first exercise's ID
   useEffect(() => {
@@ -87,11 +88,25 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
 
 
   const toggleNotes = (exerciseId: string) => {
-    setExpandedNotes(prev => 
-      prev.includes(exerciseId) 
+    setExpandedNotes(prev =>
+      prev.includes(exerciseId)
         ? prev.filter(id => id !== exerciseId)
         : [...prev, exerciseId]
     );
+  };
+
+  const getCurrentExerciseIndex = (workoutId: string) => {
+    return currentExerciseIndex[workoutId] ?? 0;
+  };
+
+  const navigateExercise = (workoutId: string, direction: 'prev' | 'next', totalExercises: number) => {
+    setCurrentExerciseIndex(prev => {
+      const currentIdx = prev[workoutId] ?? 0;
+      const newIdx = direction === 'prev'
+        ? Math.max(0, currentIdx - 1)
+        : Math.min(totalExercises - 1, currentIdx + 1);
+      return { ...prev, [workoutId]: newIdx };
+    });
   };
 
   const nutrition = getMacros(plan as WorkoutPlan);  
@@ -444,6 +459,49 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
 
                 {/* Main Workout */}
                 <div>
+                  {/* Exercise Navigation */}
+                  {workout.exercises.length > 0 && (() => {
+                    const workoutId = workout.id || `workout-${workout.dayNumber}`;
+                    const currentIdx = getCurrentExerciseIndex(workoutId);
+                    const totalExercises = workout.exercises.length;
+                    const isFirst = currentIdx === 0;
+                    const isLast = currentIdx === totalExercises - 1;
+
+                    return (
+                      <div className="flex items-center justify-between bg-[#0F172A] rounded-lg p-3 mb-4">
+                        <button
+                          onClick={() => navigateExercise(workoutId, 'prev', totalExercises)}
+                          disabled={isFirst}
+                          className={`flex items-center gap-1 px-3 py-1.5 rounded-md font-medium text-sm transition-colors ${
+                            isFirst
+                              ? 'text-gray-500 cursor-not-allowed'
+                              : 'text-[#FF6B6B] hover:bg-[#1E293B]'
+                          }`}
+                          aria-label="Previous exercise"
+                        >
+                          <ChevronLeft className="w-4 h-4" />
+                          <span className="hidden sm:inline">Prev</span>
+                        </button>
+                        <span className="text-white font-medium text-sm" style={{ fontFamily: 'Outfit, sans-serif' }}>
+                          Exercise {currentIdx + 1} of {totalExercises}
+                        </span>
+                        <button
+                          onClick={() => navigateExercise(workoutId, 'next', totalExercises)}
+                          disabled={isLast}
+                          className={`flex items-center gap-1 px-3 py-1.5 rounded-md font-medium text-sm transition-colors ${
+                            isLast
+                              ? 'text-gray-500 cursor-not-allowed'
+                              : 'text-[#FF6B6B] hover:bg-[#1E293B]'
+                          }`}
+                          aria-label="Next exercise"
+                        >
+                          <span className="hidden sm:inline">Next</span>
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                      </div>
+                    );
+                  })()}
+
                   {/* Header */}
                   <div className="hidden md:grid grid-cols-12 gap-4 text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg border border-gray-100 dark:border-gray-700">
                     <div className="col-span-6">Exercise</div>
@@ -455,6 +513,11 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
                   {/* Exercise Rows */}
                   <div className="space-y-2">
                     {workout.exercises.map((exercise, exerciseIndex) => {
+                      const workoutId = workout.id || `workout-${workout.dayNumber}`;
+                      const currentIdx = getCurrentExerciseIndex(workoutId);
+                      // Only show the current exercise based on navigation
+                      if (exerciseIndex !== currentIdx) return null;
+
                       const exerciseId = exercise.id || `exercise-${workout.id}-${exercise.name}-${exerciseIndex}`;
                       const isExpanded = expandedNotes.includes(exerciseId);
                       

@@ -14,7 +14,7 @@
         "npm run typecheck passes"
       ],
       "priority": 1,
-      "passes": true,
+      "passes": false,
       "notes": "Issue #244 - regression from #241"
     },
     {
@@ -28,7 +28,7 @@
         "npm run typecheck passes"
       ],
       "priority": 2,
-      "passes": true,
+      "passes": false,
       "notes": "Issue #244 - client side fix"
     },
     {
@@ -42,7 +42,7 @@
         "npm run build succeeds without errors"
       ],
       "priority": 3,
-      "passes": true,
+      "passes": false,
       "notes": "Issue #239 - Part B"
     },
     {
