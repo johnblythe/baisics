@@ -163,7 +163,10 @@ export function NutritionLogModal({
         throw new Error(data.error || 'Failed to parse screenshot');
       }
 
-      if (data.error) {
+      // Only show error if no macros were extracted
+      // If macros exist but calories null, proceed normally (calories computed from macros)
+      const hasMacros = data.protein != null || data.carbs != null || data.fats != null;
+      if (data.error && !hasMacros) {
         setError(data.error);
         return;
       }
