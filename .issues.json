@@ -1,6 +1,18 @@
 {
   "issues": [
     {
+      "id": "241",
+      "number": 241,
+      "title": "MyFitnessPal screenshot upload doesn't trigger calorie calculation",
+      "labels": ["bug"],
+      "status": "open",
+      "priority": "med",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2026-01-14T00:00:00Z",
+      "updatedAt": "2026-01-14T00:00:00Z"
+    },
+    {
       "id": "195",
       "number": 195,
       "title": "feat: Progress photos with comparison view",
