@@ -140,79 +140,155 @@ function SortableExerciseRow({
     <div
       ref={setNodeRef}
       style={style}
-      className={`grid grid-cols-12 gap-2 px-4 py-3 items-center ${
+      className={`px-4 py-3 ${
         index % 2 === 0 ? 'bg-white' : 'bg-[#FAFAFA]'
       } ${isEditMode ? 'hover:bg-[#FFF5F5]' : ''} ${isDragging ? 'z-10 shadow-lg' : ''}`}
     >
-      {isEditMode && (
-        <div className="col-span-1 flex justify-center">
-          <button
-            {...attributes}
-            {...listeners}
-            className="cursor-grab active:cursor-grabbing p-1"
-          >
-            <GripVertical className="w-4 h-4 text-[#CBD5E1]" />
-          </button>
+      {/* Mobile Edit Layout */}
+      <div className="md:hidden">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            {isEditMode && (
+              <button
+                {...attributes}
+                {...listeners}
+                className="cursor-grab active:cursor-grabbing p-1"
+              >
+                <GripVertical className="w-4 h-4 text-[#CBD5E1]" />
+              </button>
+            )}
+            <span className="font-medium text-[#0F172A]">{exercise.name}</span>
+          </div>
+          {isEditMode && (
+            <button
+              onClick={() => onRemoveExercise(workout.id, exercise.id)}
+              className="p-1 text-[#94A3B8] hover:text-[#EF5350] transition-colors"
+              title="Remove exercise"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          )}
         </div>
-      )}
-      <div className={isEditMode ? "col-span-4" : "col-span-5"}>
-        <span className="font-medium text-[#0F172A]">{exercise.name}</span>
-        {exercise.notes && !isEditMode && (
-          <p className="text-xs text-[#94A3B8] mt-0.5">{exercise.notes}</p>
-        )}
-      </div>
-      <div className="col-span-2 text-center">
         {isEditMode ? (
-          <input
-            type="number"
-            value={exercise.sets}
-            onChange={(e) => onExerciseChange(workout.id, exercise.id, 'sets', parseInt(e.target.value) || 0)}
-            className="w-12 text-center border border-[#E2E8F0] rounded px-2 py-1 focus:border-[#FF6B6B] focus:outline-none"
-            min="1"
-          />
+          <div className="flex flex-wrap gap-2">
+            <div className="flex items-center gap-1">
+              <span className="text-xs text-[#64748B]">Sets:</span>
+              <input
+                type="number"
+                value={exercise.sets}
+                onChange={(e) => onExerciseChange(workout.id, exercise.id, 'sets', parseInt(e.target.value) || 0)}
+                className="w-12 text-center border border-[#E2E8F0] rounded px-2 py-1 text-sm focus:border-[#FF6B6B] focus:outline-none"
+                min="1"
+              />
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="text-xs text-[#64748B]">Reps:</span>
+              <input
+                type="number"
+                value={exercise.reps || ''}
+                onChange={(e) => onExerciseChange(workout.id, exercise.id, 'reps', parseInt(e.target.value) || null)}
+                className="w-12 text-center border border-[#E2E8F0] rounded px-2 py-1 text-sm focus:border-[#FF6B6B] focus:outline-none"
+                min="1"
+                placeholder="-"
+              />
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="text-xs text-[#64748B]">Rest:</span>
+              <input
+                type="number"
+                value={exercise.restPeriod}
+                onChange={(e) => onExerciseChange(workout.id, exercise.id, 'restPeriod', parseInt(e.target.value) || 0)}
+                className="w-14 text-center border border-[#E2E8F0] rounded px-2 py-1 text-sm focus:border-[#FF6B6B] focus:outline-none"
+                min="0"
+                step="15"
+              />
+            </div>
+          </div>
         ) : (
-          <span className="text-[#475569]">{exercise.sets}</span>
+          <>
+            <div className="flex gap-4 text-sm text-[#475569]">
+              <span>{exercise.sets} sets</span>
+              <span>{formatMeasure(exercise)}</span>
+              <span>{formatRestPeriod(exercise.restPeriod)} rest</span>
+            </div>
+            {exercise.notes && (
+              <p className="text-xs text-[#94A3B8] mt-2">{exercise.notes}</p>
+            )}
+          </>
         )}
       </div>
-      <div className="col-span-2 text-center">
-        {isEditMode ? (
-          <input
-            type="number"
-            value={exercise.reps || ''}
-            onChange={(e) => onExerciseChange(workout.id, exercise.id, 'reps', parseInt(e.target.value) || null)}
-            className="w-12 text-center border border-[#E2E8F0] rounded px-2 py-1 focus:border-[#FF6B6B] focus:outline-none"
-            min="1"
-            placeholder="-"
-          />
-        ) : (
-          <span className="text-[#475569]">{formatMeasure(exercise)}</span>
+      {/* Desktop Layout */}
+      <div className="hidden md:grid grid-cols-12 gap-2 items-center">
+        {isEditMode && (
+          <div className="col-span-1 flex justify-center">
+            <button
+              {...attributes}
+              {...listeners}
+              className="cursor-grab active:cursor-grabbing p-1"
+            >
+              <GripVertical className="w-4 h-4 text-[#CBD5E1]" />
+            </button>
+          </div>
         )}
-      </div>
-      <div className="col-span-2 text-center">
-        {isEditMode ? (
-          <input
-            type="number"
-            value={exercise.restPeriod}
-            onChange={(e) => onExerciseChange(workout.id, exercise.id, 'restPeriod', parseInt(e.target.value) || 0)}
-            className="w-16 text-center border border-[#E2E8F0] rounded px-2 py-1 focus:border-[#FF6B6B] focus:outline-none"
-            min="0"
-            step="15"
-          />
-        ) : (
-          <span className="text-[#475569]">{formatRestPeriod(exercise.restPeriod)}</span>
-        )}
-      </div>
-      {isEditMode && (
-        <div className="col-span-1 flex justify-center">
-          <button
-            onClick={() => onRemoveExercise(workout.id, exercise.id)}
-            className="p-1 text-[#94A3B8] hover:text-[#EF5350] transition-colors"
-            title="Remove exercise"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
+        <div className={isEditMode ? "col-span-4" : "col-span-5"}>
+          <span className="font-medium text-[#0F172A]">{exercise.name}</span>
+          {exercise.notes && !isEditMode && (
+            <p className="text-xs text-[#94A3B8] mt-0.5">{exercise.notes}</p>
+          )}
         </div>
-      )}
+        <div className="col-span-2 text-center">
+          {isEditMode ? (
+            <input
+              type="number"
+              value={exercise.sets}
+              onChange={(e) => onExerciseChange(workout.id, exercise.id, 'sets', parseInt(e.target.value) || 0)}
+              className="w-12 text-center border border-[#E2E8F0] rounded px-2 py-1 focus:border-[#FF6B6B] focus:outline-none"
+              min="1"
+            />
+          ) : (
+            <span className="text-[#475569]">{exercise.sets}</span>
+          )}
+        </div>
+        <div className="col-span-2 text-center">
+          {isEditMode ? (
+            <input
+              type="number"
+              value={exercise.reps || ''}
+              onChange={(e) => onExerciseChange(workout.id, exercise.id, 'reps', parseInt(e.target.value) || null)}
+              className="w-12 text-center border border-[#E2E8F0] rounded px-2 py-1 focus:border-[#FF6B6B] focus:outline-none"
+              min="1"
+              placeholder="-"
+            />
+          ) : (
+            <span className="text-[#475569]">{formatMeasure(exercise)}</span>
+          )}
+        </div>
+        <div className="col-span-2 text-center">
+          {isEditMode ? (
+            <input
+              type="number"
+              value={exercise.restPeriod}
+              onChange={(e) => onExerciseChange(workout.id, exercise.id, 'restPeriod', parseInt(e.target.value) || 0)}
+              className="w-16 text-center border border-[#E2E8F0] rounded px-2 py-1 focus:border-[#FF6B6B] focus:outline-none"
+              min="0"
+              step="15"
+            />
+          ) : (
+            <span className="text-[#475569]">{formatRestPeriod(exercise.restPeriod)}</span>
+          )}
+        </div>
+        {isEditMode && (
+          <div className="col-span-1 flex justify-center">
+            <button
+              onClick={() => onRemoveExercise(workout.id, exercise.id)}
+              className="p-1 text-[#94A3B8] hover:text-[#EF5350] transition-colors"
+              title="Remove exercise"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -685,7 +761,7 @@ export default function ProgramPage() {
                   {isExpanded && (
                     <div className="border-t border-[#E2E8F0]">
                       {/* Header Row */}
-                      <div className="grid grid-cols-12 gap-2 px-4 py-2 bg-[#F8FAFC] text-xs font-medium text-[#64748B] uppercase tracking-wider">
+                      <div className="hidden md:grid grid-cols-12 gap-2 px-4 py-2 bg-[#F8FAFC] text-xs font-medium text-[#64748B] uppercase tracking-wider">
                         {isEditMode && <div className="col-span-1"></div>}
                         <div className={isEditMode ? "col-span-4" : "col-span-5"}>Exercise</div>
                         <div className="col-span-2 text-center">Sets</div>
@@ -722,24 +798,39 @@ export default function ProgramPage() {
                         visibleExercises.map((exercise, index) => (
                           <div
                             key={exercise.id}
-                            className={`grid grid-cols-12 gap-2 px-4 py-3 items-center ${
+                            className={`px-4 py-3 ${
                               index % 2 === 0 ? 'bg-white' : 'bg-[#FAFAFA]'
                             }`}
                           >
-                            <div className="col-span-5">
-                              <span className="font-medium text-[#0F172A]">{exercise.name}</span>
+                            {/* Mobile Layout */}
+                            <div className="md:hidden">
+                              <div className="font-medium text-[#0F172A] mb-1">{exercise.name}</div>
+                              <div className="flex gap-4 text-sm text-[#475569]">
+                                <span>{exercise.sets} sets</span>
+                                <span>{formatMeasure(exercise)}</span>
+                                <span>{formatRestPeriod(exercise.restPeriod)} rest</span>
+                              </div>
                               {exercise.notes && (
-                                <p className="text-xs text-[#94A3B8] mt-0.5">{exercise.notes}</p>
+                                <p className="text-xs text-[#94A3B8] mt-2">{exercise.notes}</p>
                               )}
                             </div>
-                            <div className="col-span-2 text-center">
-                              <span className="text-[#475569]">{exercise.sets}</span>
-                            </div>
-                            <div className="col-span-2 text-center">
-                              <span className="text-[#475569]">{formatMeasure(exercise)}</span>
-                            </div>
-                            <div className="col-span-2 text-center">
-                              <span className="text-[#475569]">{formatRestPeriod(exercise.restPeriod)}</span>
+                            {/* Desktop Layout */}
+                            <div className="hidden md:grid grid-cols-12 gap-2 items-center">
+                              <div className="col-span-5">
+                                <span className="font-medium text-[#0F172A]">{exercise.name}</span>
+                                {exercise.notes && (
+                                  <p className="text-xs text-[#94A3B8] mt-0.5">{exercise.notes}</p>
+                                )}
+                              </div>
+                              <div className="col-span-2 text-center">
+                                <span className="text-[#475569]">{exercise.sets}</span>
+                              </div>
+                              <div className="col-span-2 text-center">
+                                <span className="text-[#475569]">{formatMeasure(exercise)}</span>
+                              </div>
+                              <div className="col-span-2 text-center">
+                                <span className="text-[#475569]">{formatRestPeriod(exercise.restPeriod)}</span>
+                              </div>
                             </div>
                           </div>
                         ))

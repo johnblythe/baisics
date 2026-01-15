@@ -6,7 +6,7 @@ export const frontmatter: BlogPostFrontmatter = {
   title: "The Complete Guide to Deload Weeks: When and How to Reduce Training",
   date: "2024-03-14",
   excerpt: "Learn how to properly implement deload weeks to maximize recovery and prevent plateaus. Discover the science behind strategic training reduction and how it leads to better gains.",
-  metaDescription: "Master the art of deload weeks with our comprehensive guide. Learn when and how to reduce training volume for optimal recovery and continued progress.",
+  metaDescription: "When and how to take deload weeks. Learn to reduce training volume strategically for optimal recovery and continued progress.",
   published: true,
   featured: false,
   categories: [

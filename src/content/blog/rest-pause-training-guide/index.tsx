@@ -6,7 +6,7 @@ export const frontmatter: BlogPostFrontmatter = {
   title: "Rest-Pause Training: Break Through Plateaus with This Advanced Technique",
   date: "2024-03-14",
   excerpt: "Master the art of rest-pause training to stimulate new muscle growth and strength gains. Learn how to implement this advanced technique safely and effectively in your workouts.",
-  metaDescription: "Learn how to use rest-pause training to break through plateaus and stimulate new muscle growth. Master this advanced technique with our comprehensive guide.",
+  metaDescription: "Learn how to use rest-pause training to break through plateaus and stimulate new muscle growth. Step-by-step implementation with example workouts.",
   published: false,
   featured: false,
   categories: [
@@ -46,9 +46,9 @@ export default function RestPauseTrainingGuide() {
       </p>
 
       <p className="mb-6">
-        Rest-pause training has gained popularity among advanced lifters as a powerful method to break 
-        through plateaus and stimulate new growth. This intensive technique can be a game-changer when 
-        properly implemented into your <Link href="/blog/ultimate-guide-progressive-overload">progressive overload strategy</Link>.
+        Rest-pause training has gained popularity among advanced lifters as a powerful method to break
+        through plateaus and stimulate new growth. When properly implemented into your <Link href="/blog/ultimate-guide-progressive-overload">progressive overload strategy</Link>,
+        it can add meaningful volume without extending your workout time.
       </p>
 
       <BlogQuote>

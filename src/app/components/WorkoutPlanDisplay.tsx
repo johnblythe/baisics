@@ -445,7 +445,7 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
                 {/* Main Workout */}
                 <div>
                   {/* Header */}
-                  <div className="grid grid-cols-12 gap-4 text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg border border-gray-100 dark:border-gray-700">
+                  <div className="hidden md:grid grid-cols-12 gap-4 text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg border border-gray-100 dark:border-gray-700">
                     <div className="col-span-6">Exercise</div>
                     <div className="col-span-1">Sets</div>
                     <div className="col-span-2">Reps</div>
@@ -464,33 +464,62 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
                           className="group relative overflow-hidden rounded-lg border border-gray-100 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-200"
                         >
                           <div className="absolute inset-0 bg-gradient-to-br from-[#FFE5E5]/50 via-transparent to-[#F8FAFC]/50 dark:from-[#FF6B6B]/20 dark:via-transparent dark:to-[#1E293B]/30 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                          <div className="relative grid grid-cols-12 gap-4 p-4">
-                            <div className="col-span-6 font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                              {exercise.name}
-                              {exercise.notes && (
-                                <button
-                                  onClick={() => toggleNotes(exerciseId)}
-                                  className="group relative p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                                  aria-label={isExpanded ? "Hide exercise notes" : "Show exercise notes"}
-                                >
-                                  <Info className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                                  <span className="invisible group-hover:visible absolute left-1/2 -translate-x-1/2 -top-10 w-64 px-2 py-1 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-md whitespace-nowrap">
-                                    Click to view exercise notes and video
-                                  </span>
-                                </button>
-                              )}
+                          <div className="relative p-4">
+                            {/* Mobile Layout */}
+                            <div className="md:hidden">
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="font-medium text-gray-900 dark:text-white">{exercise.name}</span>
+                                {exercise.notes && (
+                                  <button
+                                    onClick={() => toggleNotes(exerciseId)}
+                                    className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                    aria-label={isExpanded ? "Hide exercise notes" : "Show exercise notes"}
+                                  >
+                                    <Info className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                                  </button>
+                                )}
+                              </div>
+                              <div className="flex gap-4 text-sm text-gray-600 dark:text-gray-400">
+                                <span>{exercise.sets} sets</span>
+                                <span>{(() => {
+                                  const formatted = formatExerciseMeasure(exercise);
+                                  if (formatted.includes('reps')) {
+                                    return formatted.replace('reps', '') + ' reps';
+                                  }
+                                  return formatted;
+                                })()}</span>
+                                <span>{formatRestPeriod(typeof exercise.restPeriod === 'string' ? parseInt(exercise.restPeriod) : exercise.restPeriod)} rest</span>
+                              </div>
                             </div>
-                            <div className="col-span-1 text-gray-600 dark:text-gray-400">{exercise.sets}</div>
-                            <div className="col-span-2 text-gray-600 dark:text-gray-400">
-                              {(() => {
-                                const formatted = formatExerciseMeasure(exercise);
-                                if (formatted.includes('reps')) {
-                                  return formatted.replace('reps', '');
-                                }
-                                return formatted;
-                              })()}
+                            {/* Desktop Layout */}
+                            <div className="hidden md:grid grid-cols-12 gap-4">
+                              <div className="col-span-6 font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                                {exercise.name}
+                                {exercise.notes && (
+                                  <button
+                                    onClick={() => toggleNotes(exerciseId)}
+                                    className="group relative p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                    aria-label={isExpanded ? "Hide exercise notes" : "Show exercise notes"}
+                                  >
+                                    <Info className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                                    <span className="invisible group-hover:visible absolute left-1/2 -translate-x-1/2 -top-10 w-64 px-2 py-1 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-md whitespace-nowrap">
+                                      Click to view exercise notes and video
+                                    </span>
+                                  </button>
+                                )}
+                              </div>
+                              <div className="col-span-1 text-gray-600 dark:text-gray-400">{exercise.sets}</div>
+                              <div className="col-span-2 text-gray-600 dark:text-gray-400">
+                                {(() => {
+                                  const formatted = formatExerciseMeasure(exercise);
+                                  if (formatted.includes('reps')) {
+                                    return formatted.replace('reps', '');
+                                  }
+                                  return formatted;
+                                })()}
+                              </div>
+                              <div className="col-span-3 text-gray-600 dark:text-gray-400">{formatRestPeriod(typeof exercise.restPeriod === 'string' ? parseInt(exercise.restPeriod) : exercise.restPeriod)}</div>
                             </div>
-                            <div className="col-span-3 text-gray-600 dark:text-gray-400">{formatRestPeriod(typeof exercise.restPeriod === 'string' ? parseInt(exercise.restPeriod) : exercise.restPeriod)}</div>
                           </div>
                           
                           {/* Expandable Notes Section */}
