@@ -5,8 +5,8 @@ import { BlogPostFrontmatter } from '@/types/blog'
 export const frontmatter: BlogPostFrontmatter = {
   title: "Foam Rolling Guide: Target the Right Muscles for Faster Recovery",
   date: "2024-03-14",
-  excerpt: "Master the art of foam rolling with this comprehensive guide. Learn proper techniques, optimal timing, and targeted approaches for every major muscle group.",
-  metaDescription: "Master foam rolling techniques with our comprehensive guide. Learn the right muscles to target, proper timing, and expert tips for faster recovery and better performance.",
+  excerpt: "Learn proper foam rolling techniques, optimal timing, and targeted approaches for every major muscle group.",
+  metaDescription: "Foam rolling techniques explained. Learn which muscles to target, when to roll, and tips for faster recovery and better performance.",
   published: false,
   featured: false,
   categories: [
@@ -41,8 +41,8 @@ export default function FoamRollingGuide() {
   return (
     <BlogPost frontmatter={frontmatter}>
       <p className="italic">
-        Master the art of foam rolling with this comprehensive guide. Learn proper techniques, optimal 
-        timing, and targeted approaches for every major muscle group.
+        Learn proper foam rolling techniques, optimal timing, and targeted approaches for every major
+        muscle group.
       </p>
 
       <p className="mb-6">

@@ -6,7 +6,7 @@ export const frontmatter: BlogPostFrontmatter = {
   title: "The Complete Guide to Mobility and Flexibility for Lifters",
   date: "2024-03-14",
   excerpt: "Learn how to improve your mobility and flexibility for better lifts and reduced injury risk. Discover targeted routines and techniques to enhance your range of motion.",
-  metaDescription: "Master mobility and flexibility with our comprehensive guide. Learn evidence-based techniques to improve your range of motion, enhance lifting performance, and reduce injury risk.",
+  metaDescription: "Mobility and flexibility for lifters. Evidence-based techniques to improve range of motion, enhance lifting performance, and reduce injury risk.",
   published: false,
   featured: false,
   categories: [

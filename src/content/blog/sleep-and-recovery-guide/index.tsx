@@ -5,8 +5,8 @@ import { BlogPostFrontmatter } from '@/types/blog'
 export const frontmatter: BlogPostFrontmatter = {
   title: "Sleep and Recovery: The Ultimate Guide to Training Recovery",
   date: "2024-03-14",
-  excerpt: "Discover how sleep impacts your training results and learn science-backed strategies to optimize your recovery. Master the art of rest for maximum gains.",
-  metaDescription: "Learn how to optimize your sleep for better training results. Science-backed strategies for recovery, performance enhancement, and long-term progress in your fitness journey.",
+  excerpt: "How sleep impacts your training results and science-backed strategies to optimize your recovery for better gains.",
+  metaDescription: "Optimize your sleep for better training results. Science-backed strategies for recovery, performance, and long-term progress.",
   published: false,
   featured: false,
   categories: [
@@ -39,14 +39,14 @@ export default function SleepAndRecoveryGuide() {
   return (
     <BlogPost frontmatter={frontmatter}>
       <p className="italic">
-        Discover how sleep impacts your training results and learn science-backed strategies to optimize 
-        your recovery. Master the art of rest for maximum gains.
+        How sleep impacts your training results and science-backed strategies to optimize your recovery
+        for better gains.
       </p>
 
       <p className="mb-6">
-        While we often focus on training intensity and <Link href="/blog/recovery-and-rest-guide">proper recovery protocols</Link>, 
-        sleep might be the most underrated factor in your fitness journey. Research shows that sleep 
-        quality can make or break your progress, affecting everything from muscle growth 
+        While we often focus on training intensity and <Link href="/blog/recovery-and-rest-guide">proper recovery protocols</Link>,
+        sleep might be the most underrated factor in your training. Research shows that sleep
+        quality can make or break your progress, affecting everything from muscle growth
         to <Link href="/blog/breaking-through-strength-plateaus">strength gains</Link>.
       </p>
 

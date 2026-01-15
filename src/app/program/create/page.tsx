@@ -17,7 +17,7 @@ export default async function CreateProgramPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#F8FAFC] to-white">
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
           <Link

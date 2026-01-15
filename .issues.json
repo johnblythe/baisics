@@ -5,6 +5,114 @@
       "number": 241,
       "title": "MyFitnessPal screenshot upload doesn't trigger calorie calculation",
       "labels": ["bug"],
+      "status": "closed",
+      "priority": "med",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2026-01-14T00:00:00Z",
+      "updatedAt": "2026-01-14T00:00:00Z"
+    },
+    {
+      "id": "239",
+      "number": 239,
+      "title": "Navigate movements",
+      "labels": [],
+      "status": "open",
+      "priority": "med",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2026-01-14T00:00:00Z",
+      "updatedAt": "2026-01-14T00:00:00Z"
+    },
+    {
+      "id": "238",
+      "number": 238,
+      "title": "No notes in mobile",
+      "labels": ["bug", "enhancement"],
+      "status": "open",
+      "priority": "med",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2026-01-14T00:00:00Z",
+      "updatedAt": "2026-01-14T00:00:00Z"
+    },
+    {
+      "id": "236",
+      "number": 236,
+      "title": "Psychological UX hacks for program adherence",
+      "labels": [],
+      "status": "open",
+      "priority": "med",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2026-01-14T00:00:00Z",
+      "updatedAt": "2026-01-14T00:00:00Z"
+    },
+    {
+      "id": "233",
+      "number": 233,
+      "title": "Rest Day Experience: Schema + UI",
+      "labels": [],
+      "status": "open",
+      "priority": "med",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2026-01-14T00:00:00Z",
+      "updatedAt": "2026-01-14T00:00:00Z"
+    },
+    {
+      "id": "230",
+      "number": 230,
+      "title": "design: program generation page too narrow, diverges from design system",
+      "labels": [],
+      "status": "open",
+      "priority": "med",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2026-01-14T00:00:00Z",
+      "updatedAt": "2026-01-14T00:00:00Z"
+    },
+    {
+      "id": "227",
+      "number": 227,
+      "title": "UI: Template Detail Page - Visual Polish",
+      "labels": ["enhancement"],
+      "status": "open",
+      "priority": "med",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2026-01-14T00:00:00Z",
+      "updatedAt": "2026-01-14T00:00:00Z"
+    },
+    {
+      "id": "221",
+      "number": 221,
+      "title": "Feature: Progress Photo Comparison View",
+      "labels": ["enhancement"],
+      "status": "open",
+      "priority": "med",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2026-01-14T00:00:00Z",
+      "updatedAt": "2026-01-14T00:00:00Z"
+    },
+    {
+      "id": "219",
+      "number": 219,
+      "title": "Email System: v2a Design Refresh + Engagement Email Plan",
+      "labels": [],
+      "status": "open",
+      "priority": "med",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2026-01-14T00:00:00Z",
+      "updatedAt": "2026-01-14T00:00:00Z"
+    },
+    {
+      "id": "218",
+      "number": 218,
+      "title": "Content: Competitor comparison blog posts",
+      "labels": [],
       "status": "open",
       "priority": "med",
       "needsSync": false,
@@ -137,12 +245,12 @@
       "number": 168,
       "title": "Clean up legacy verbose generation after lean rollout",
       "labels": [],
-      "status": "open",
+      "status": "closed",
       "priority": "low",
       "needsSync": false,
       "localOnly": false,
       "createdAt": "2025-12-25T00:00:00Z",
-      "updatedAt": "2025-12-25T00:00:00Z"
+      "updatedAt": "2026-01-14T00:00:00Z"
     },
     {
       "id": "166",
@@ -173,12 +281,12 @@
       "number": 158,
       "title": "Coach Tier: B2B2C Model for Fitness Coaches",
       "labels": ["enhancement"],
-      "status": "open",
+      "status": "closed",
       "priority": "med",
       "needsSync": false,
       "localOnly": false,
       "createdAt": "2025-12-20T00:00:00Z",
-      "updatedAt": "2025-12-20T00:00:00Z"
+      "updatedAt": "2026-01-14T00:00:00Z"
     },
     {
       "id": "157",
@@ -269,13 +377,13 @@
       "number": 103,
       "title": "UI: Exercise Cards - Interactive & Engaging Design",
       "labels": ["enhancement"],
-      "status": "open",
+      "status": "closed",
       "priority": "med",
       "needsSync": false,
       "localOnly": false,
       "createdAt": "2025-12-06T15:48:41Z",
-      "updatedAt": "2025-12-06T15:48:41Z"
+      "updatedAt": "2026-01-14T00:00:00Z"
     }
   ],
-  "lastSyncedAt": "2026-01-03T19:00:00Z"
+  "lastSyncedAt": "2026-01-14T00:00:00Z"
 }

@@ -6,7 +6,7 @@ export const frontmatter: BlogPostFrontmatter = {
   title: "The Complete Guide to Injury Prevention & Prehab Training",
   date: "2024-03-14",
   excerpt: "Learn how to prevent common lifting injuries and build resilience with smart prehab training. Discover evidence-based strategies for long-term joint health and performance.",
-  metaDescription: "Master injury prevention and prehab training with our comprehensive guide. Learn evidence-based techniques to protect your joints, improve mobility, and maintain long-term training success.",
+  metaDescription: "Injury prevention and prehab training explained. Evidence-based techniques to protect your joints, improve mobility, and train longer without setbacks.",
   published: false,
   featured: false,
   categories: [
@@ -55,7 +55,7 @@ export default function InjuryPreventionGuide() {
         <p><strong>Let Baisics Protect Your Progress</strong></p>
         <p>
           Get a training program that automatically includes appropriate prehab work based on your 
-          needs. <Link href="/hi">Start your injury-free journey</Link>.
+          needs. <Link href="/hi">Get your personalized program</Link>.
         </p>
       </BlogQuote>
 

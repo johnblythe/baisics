@@ -6,7 +6,7 @@ export const frontmatter: BlogPostFrontmatter = {
   title: "Recovery and Rest Days: The Missing Key to Training Success",
   date: "2024-03-14",
   excerpt: "Learn why rest is crucial for gains and how to optimize your recovery days. Discover science-backed strategies to maximize your results while minimizing injury risk.",
-  metaDescription: "Master the art of recovery with our comprehensive guide to rest days. Learn how to optimize your downtime for better gains, prevent overtraining, and maintain long-term progress.",
+  metaDescription: "Why rest days matter and how to use them effectively. Optimize your downtime for better gains, prevent overtraining, and maintain long-term progress.",
   published: false,
   featured: false,
   categories: [
