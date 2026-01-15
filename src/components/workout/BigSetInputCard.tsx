@@ -7,7 +7,7 @@ interface BigSetInputCardProps {
   targetReps: string;
   weight: number | string;
   reps: number | string;
-  onComplete: (weight: number, reps: number) => void;
+  onComplete: (weight: number, reps: number, notes?: string) => void;
 }
 
 export function BigSetInputCard({
@@ -35,7 +35,7 @@ export function BigSetInputCard({
   const handleComplete = () => {
     const finalWeight = Number(localWeight) || 0;
     const finalReps = Number(localReps) || Number(targetReps) || 0;
-    onComplete(finalWeight, finalReps);
+    onComplete(finalWeight, finalReps, localNotes || undefined);
   };
 
   return (
