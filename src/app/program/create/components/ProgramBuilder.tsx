@@ -5,6 +5,7 @@ import { createManualProgram, type ProgramFormData, type WorkoutFormData } from 
 import { WorkoutSection } from './WorkoutSection';
 import { ExerciseSearchModal } from './ExerciseSearchModal';
 import { Plus, X, Layers } from 'lucide-react';
+import { toast } from 'sonner';
 
 const GOALS = [
   { value: 'strength', label: 'Strength' },
@@ -201,15 +202,27 @@ export function ProgramBuilder() {
     };
 
     startTransition(async () => {
-      const result = await createManualProgram(data);
-      if (result?.error) {
-        setError(
-          'formErrors' in result.error
+      try {
+        const result = await createManualProgram(data);
+        if (result?.error) {
+          const errorMessage = 'formErrors' in result.error
             ? result.error.formErrors.join(', ')
-            : 'Failed to create program'
-        );
+            : 'Failed to create program';
+          setError(errorMessage);
+          toast.error('Failed to save program', {
+            description: errorMessage,
+          });
+        }
+        // If successful, redirect happens in server action
+      } catch (err) {
+        const errorMessage = err instanceof Error
+          ? err.message
+          : 'An unexpected error occurred. Please try again.';
+        setError(errorMessage);
+        toast.error('Connection error', {
+          description: 'Unable to save program. Please check your connection and try again.',
+        });
       }
-      // If successful, redirect happens in server action
     });
   };
 
