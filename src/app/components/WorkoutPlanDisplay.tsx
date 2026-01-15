@@ -459,8 +459,8 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
 
                 {/* Main Workout */}
                 <div>
-                  {/* Exercise Navigation */}
-                  {workout.exercises.length > 0 && (() => {
+                  {/* Exercise Navigation - Mobile Only */}
+                  {workout.exercises.length > 1 && (() => {
                     const workoutId = workout.id || `workout-${workout.dayNumber}`;
                     const currentIdx = getCurrentExerciseIndex(workoutId);
                     const totalExercises = workout.exercises.length;
@@ -468,7 +468,7 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
                     const isLast = currentIdx === totalExercises - 1;
 
                     return (
-                      <div className="flex items-center justify-between bg-[#0F172A] rounded-lg p-3 mb-4">
+                      <div className="flex md:hidden items-center justify-between bg-[#0F172A] rounded-lg p-3 mb-4">
                         <button
                           onClick={() => navigateExercise(workoutId, 'prev', totalExercises)}
                           disabled={isFirst}
@@ -515,16 +515,17 @@ export const WorkoutPlanDisplay = forwardRef<WorkoutPlanDisplayRef, WorkoutPlanD
                     {workout.exercises.map((exercise, exerciseIndex) => {
                       const workoutId = workout.id || `workout-${workout.dayNumber}`;
                       const currentIdx = getCurrentExerciseIndex(workoutId);
-                      // Only show the current exercise based on navigation
-                      if (exerciseIndex !== currentIdx) return null;
+                      // On mobile, only show the current exercise based on navigation
+                      // On desktop (md+), show all exercises
+                      const isMobileHidden = exerciseIndex !== currentIdx;
 
                       const exerciseId = exercise.id || `exercise-${workout.id}-${exercise.name}-${exerciseIndex}`;
                       const isExpanded = expandedNotes.includes(exerciseId);
-                      
+
                       return (
                         <div
                           key={exerciseId}
-                          className="group relative overflow-hidden rounded-lg border border-gray-100 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-200"
+                          className={`group relative overflow-hidden rounded-lg border border-gray-100 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-200 ${isMobileHidden ? 'hidden md:block' : ''}`}
                         >
                           <div className="absolute inset-0 bg-gradient-to-br from-[#FFE5E5]/50 via-transparent to-[#F8FAFC]/50 dark:from-[#FF6B6B]/20 dark:via-transparent dark:to-[#1E293B]/30 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                           <div className="relative p-4">

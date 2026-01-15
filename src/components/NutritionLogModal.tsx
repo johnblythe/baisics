@@ -49,6 +49,7 @@ export function NutritionLogModal({
   const [loadingExisting, setLoadingExisting] = useState(false);
   const [existingLog, setExistingLog] = useState<ExistingLog | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [parseWarning, setParseWarning] = useState<string | null>(null);
   const [parseConfidence, setParseConfidence] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -100,6 +101,7 @@ export function NutritionLogModal({
   const handleDateChange = (newDate: string) => {
     setDate(newDate);
     setParseConfidence(null);
+    setParseWarning(null);
     setError(null);
   };
 
@@ -138,6 +140,7 @@ export function NutritionLogModal({
   const processImage = async (file: File) => {
     setParsing(true);
     setError(null);
+    setParseWarning(null);
     setParseConfidence(null);
 
     try {
@@ -163,12 +166,24 @@ export function NutritionLogModal({
         throw new Error(data.error || 'Failed to parse screenshot');
       }
 
-      // Only show error if no macros were extracted
-      // If macros exist but calories null, proceed normally (calories computed from macros)
+      // Check if we got any macros
       const hasMacros = data.protein != null || data.carbs != null || data.fats != null;
-      if (data.error && !hasMacros) {
-        setError(data.error);
-        return;
+
+      // Handle errors and warnings from API
+      if (data.error) {
+        if (hasMacros) {
+          // Show as warning - user can proceed but is informed of potential issues
+          setParseWarning(data.error);
+        } else {
+          // No macros extracted - show as blocking error
+          setError(data.error);
+          return;
+        }
+      }
+
+      // Show warning from API if present (non-blocking)
+      if (data.warning) {
+        setParseWarning(data.warning);
       }
 
       // Pre-fill form with parsed values
@@ -291,6 +306,7 @@ export function NutritionLogModal({
     setValues({ protein: '', carbs: '', fats: '', calories: '' });
     setNotes('');
     setError(null);
+    setParseWarning(null);
     setParseConfidence(null);
     setActiveTab('quick');
     setExistingLog(null);
@@ -413,6 +429,16 @@ export function NutritionLogModal({
                 {parseConfidence === 'high' && '✓ Values extracted with high confidence'}
                 {parseConfidence === 'medium' && '⚠ Some values may need verification'}
                 {parseConfidence === 'low' && '⚠ Please verify extracted values'}
+              </div>
+            )}
+
+            {/* Parse warning - shown when we got data but with caveats */}
+            {parseWarning && (
+              <div className="mb-4 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-700 flex items-start gap-2">
+                <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                <span>{parseWarning}</span>
               </div>
             )}
 
