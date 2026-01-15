@@ -1,0 +1,11 @@
+**US-002 Complete.** 
+
+Summary of what was done:
+- Updated `src/components/NutritionLogModal.tsx` lines 166-172
+- Added a `hasMacros` check that uses `!= null` to detect if protein, carbs, or fats exist
+- Error is now only shown if `data.error` is truthy AND no macros were extracted
+- If macros exist but calories is null, processing continues normally (calories are auto-computed)
+- Lint and build pass ✓
+- Committed: `feat: [US-002] - Fix client error handling for partial nutrition data`
+
+There are still stories with `passes: false` (US-003 through US-010), so another iteration will pick up the next story.

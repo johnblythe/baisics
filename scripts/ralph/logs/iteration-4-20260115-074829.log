@@ -1,0 +1,10 @@
+There are still 6 stories with `passes: false` (US-005 through US-010). The sprint is not complete.
+
+**US-004 completed successfully:**
+- Added prev/next navigation to exercise section in WorkoutPlanDisplay.tsx
+- Navigation shows "Exercise X of Y" with prev/next arrows
+- Styled with v2a design tokens (navy #0F172A background, coral #FF6B6B arrows)
+- Prev disabled on first exercise, next disabled on last
+- Clicking arrows navigates between exercises
+- Lint and build pass
+- Committed: `feat: [US-004] - Add prev/next navigation to exercise section`

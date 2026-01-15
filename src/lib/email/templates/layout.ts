@@ -9,8 +9,12 @@ interface EmailLayoutProps {
   unsubscribeUrl?: string;
 }
 
-const skipCTA = true;
-
+/**
+ * v2a Design System Email Layout
+ * Colors: White (#FFFFFF), Navy (#0F172A), Coral (#FF6B6B)
+ * Fonts: Outfit (sans-serif), Space Mono (monospace)
+ * Tone: Bold, confident, energetic
+ */
 export const createEmailLayout = ({
   subject,
   preheader = '',
@@ -25,21 +29,41 @@ export const createEmailLayout = ({
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${subject}</title>
   ${preheader ? `<meta name="description" content="${preheader}">` : ''}
+  <!--[if mso]>
+  <style type="text/css">
+    body, table, td { font-family: Arial, sans-serif !important; }
+  </style>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
+    /* v2a Design Tokens */
+    :root {
+      --color-white: #FFFFFF;
+      --color-navy: #0F172A;
+      --color-navy-light: #1E293B;
+      --color-coral: #FF6B6B;
+      --color-coral-dark: #EF5350;
+      --color-coral-light: #FFE5E5;
+      --color-gray-50: #F8FAFC;
+      --color-gray-100: #F1F5F9;
+      --color-gray-400: #94A3B8;
+      --color-gray-600: #475569;
+    }
+
     /* Reset styles */
-    body { margin: 0; padding: 0; width: 100%; background-color: #f8fafc; }
+    body { margin: 0; padding: 0; width: 100%; background-color: #F8FAFC; }
     table { border-spacing: 0; }
     td { padding: 0; }
     img { border: 0; }
-    
+
     /* Base styles */
     .wrapper {
       width: 100%;
       table-layout: fixed;
-      background-color: #f8fafc;
+      background-color: #F8FAFC;
       padding: 40px 20px;
     }
-    
+
     .main {
       margin: 0 auto;
       width: 100%;
@@ -52,39 +76,56 @@ export const createEmailLayout = ({
       overflow: hidden;
     }
 
-    /* Header styles */
+    /* Header styles - Bold gradient with coral accent */
     .header {
-      background: linear-gradient(135deg, #0F172A, #1E293B);
-      padding: 24px 30px;
+      background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+      padding: 32px 30px;
       text-align: center;
+      border-bottom: 4px solid #FF6B6B;
     }
-    
+
     .logo {
-      font-size: 32px;
-      font-weight: bold;
-      color: #ffffff;
+      font-size: 36px;
+      font-weight: 800;
+      color: #FFFFFF;
       text-decoration: none;
       display: inline-block;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-accent {
+      color: #FF6B6B;
     }
 
     .tagline {
       color: rgba(255, 255, 255, 0.9);
-      font-size: 16px;
-      margin-top: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      margin-top: 8px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
     }
 
     /* Content styles */
     .content {
-      background-color: #ffffff;
+      background-color: #FFFFFF;
       padding: 40px 30px;
       line-height: 1.6;
     }
 
     .content h1 {
       color: #0F172A;
-      font-size: 24px;
-      font-weight: bold;
+      font-size: 28px;
+      font-weight: 700;
       margin: 0 0 20px;
+      line-height: 1.2;
+    }
+
+    .content h2 {
+      color: #0F172A;
+      font-size: 22px;
+      font-weight: 600;
+      margin: 0 0 16px;
     }
 
     .content p {
@@ -100,27 +141,64 @@ export const createEmailLayout = ({
 
     .content li {
       margin-bottom: 8px;
-      color: #4b5563;
+      color: #475569;
     }
 
-    /* Button styles */
+    .content strong {
+      color: #0F172A;
+      font-weight: 600;
+    }
+
+    .content .highlight {
+      color: #FF6B6B;
+      font-weight: 600;
+    }
+
+    .content code, .content .mono {
+      font-family: 'Space Mono', 'Courier New', monospace;
+      background-color: #F8FAFC;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    /* Button styles - Coral with hover effect */
     .button {
       display: inline-block;
-      padding: 12px 24px;
+      padding: 16px 32px;
       background-color: #FF6B6B;
-      color: #ffffff !important;
+      color: #FFFFFF !important;
       text-decoration: none;
       border-radius: 8px;
-      font-weight: 600;
-      margin: 20px 0;
+      font-weight: 700;
+      font-size: 16px;
+      margin: 24px 0;
+      text-align: center;
+      box-shadow: 0 4px 14px 0 rgba(255, 107, 107, 0.39);
     }
 
-    /* Footer styles */
+    .button:hover {
+      background-color: #EF5350;
+    }
+
+    .button-secondary {
+      display: inline-block;
+      padding: 12px 24px;
+      background-color: transparent;
+      color: #FF6B6B !important;
+      text-decoration: none;
+      border: 2px solid #FF6B6B;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      margin: 16px 0;
+    }
+
+    /* Footer styles - Navy gradient with coral social icons */
     .footer {
-      background: linear-gradient(135deg, #0F172A, #1E293B);
+      background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
       padding: 32px 24px;
       text-align: center;
-      color: rgba(255, 255, 255, 0.8);
       font-size: 14px;
     }
 
@@ -130,35 +208,59 @@ export const createEmailLayout = ({
     }
 
     .social-links {
-      margin: 16px 0;
+      margin: 20px 0;
     }
 
     .social-link {
       display: inline-block;
-      margin: 0 8px;
-      color: #FF6B6B;
+      margin: 0 12px;
+      padding: 8px 16px;
+      color: #FF6B6B !important;
       text-decoration: none;
       font-weight: 600;
+      border: 1px solid rgba(255, 107, 107, 0.3);
+      border-radius: 20px;
+      transition: all 0.2s ease;
     }
 
     .social-link:hover {
-      color: #FF8E8E;
+      background-color: rgba(255, 107, 107, 0.1);
+      border-color: #FF6B6B;
     }
 
     .divider {
+      border: none;
       border-top: 1px solid rgba(255, 255, 255, 0.1);
-      margin: 16px 0;
+      margin: 20px 0;
     }
 
     .unsubscribe-link {
-      color: rgba(255, 255, 255, 0.5);
+      color: rgba(255, 255, 255, 0.5) !important;
       text-decoration: underline;
       font-size: 12px;
+    }
+
+    .footer-brand {
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .footer-tagline {
+      color: #FF6B6B;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
     }
 
     @media screen and (max-width: 600px) {
       .wrapper { padding: 20px 10px; }
       .content { padding: 30px 20px; }
+      .header { padding: 24px 20px; }
+      .logo { font-size: 28px; }
+      .button { padding: 14px 24px; }
     }
   </style>
 </head>
@@ -167,29 +269,33 @@ export const createEmailLayout = ({
     <table class="main" role="presentation">
       <tr>
         <td class="header">
-          <a href="https://baisics.app" class="logo">baisics</a>
-          <div class="tagline">fitness for the rest of us</div>
+          <a href="https://baisics.app" class="logo">baisics<span class="logo-accent">.</span></a>
+          <div class="tagline">Fitness for the rest of us</div>
         </td>
       </tr>
       <tr>
         <td class="content">
           ${content}
           ${callToAction ? `
-          <a href="${callToAction.url}" class="button">
-            ${callToAction.text}
-          </a>
+          <div style="text-align: center;">
+            <a href="${callToAction.url}" class="button">
+              ${callToAction.text}
+            </a>
+          </div>
           ` : ''}
         </td>
       </tr>
       <tr>
         <td class="footer">
+          <div class="footer-brand">baisics</div>
+          <div class="footer-tagline">Your fitness journey starts here</div>
           <div class="social-links">
             <a href="https://twitter.com/baisicsapp" class="social-link">Twitter</a>
             <a href="https://instagram.com/baisicsapp" class="social-link">Instagram</a>
           </div>
           <div class="divider"></div>
           <p>&copy; ${new Date().getFullYear()} baisics. All rights reserved.</p>
-          <p style="margin-bottom: 16px;">Made with ♥️ in Indy</p>
+          <p style="margin-bottom: 16px; color: rgba(255,255,255,0.6);">Made with ♥️ in Indy</p>
           ${unsubscribeUrl ? `
           <a href="${unsubscribeUrl}" class="unsubscribe-link">Unsubscribe from these emails</a>
           ` : ''}

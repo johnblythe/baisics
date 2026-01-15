@@ -1,0 +1,16 @@
+There's still US-010 with `passes: false`. The sprint is not complete yet.
+
+**Summary of US-009 completion:**
+
+- Updated `src/lib/email/templates/workout-reminder.ts` with full v2a design
+- Bold, motivating headline: "Time to crush it, [name]! 💪"
+- Coral gradient streak badge with uppercase styling
+- Navy gradient workout card with coral-highlighted workout name
+- Dynamic motivational messages based on streak length
+- Dynamic subject lines and preheaders based on streak status
+- "Not feeling 100%?" encouragement section
+- Uppercase "LET'S GO →" CTA button
+- Lint and build pass ✅
+- Committed with message: `feat: [US-009] - Update workout-reminder email template to v2a`
+
+US-010 (admin email template) remains with `passes: false`. Another iteration will pick it up.

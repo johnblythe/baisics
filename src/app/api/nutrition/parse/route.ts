@@ -11,7 +11,8 @@ type ParsedNutrition = {
   fats: number | null;
   calories: number | null;
   confidence: 'high' | 'medium' | 'low';
-  error: string | null;
+  error: string | null;      // Fatal error - no usable data extracted
+  warning: string | null;    // Non-fatal warning - data extracted but with caveats
 };
 
 async function parseNutritionScreenshot(base64Image: string): Promise<ParsedNutrition> {
@@ -39,15 +40,19 @@ Return ONLY valid JSON with these exact keys:
   "fats": number or null,
   "calories": number or null,
   "confidence": "high" | "medium" | "low",
-  "error": string or null
+  "error": string or null,
+  "warning": string or null
 }
 
 Rules:
 - Use null for any value you cannot clearly read
-- Set confidence to "high" if all values are clearly visible
+- Macros (protein, carbs, fats) without calories is VALID - many screenshots show macros only
+- If you can extract ANY macros (protein, carbs, or fats), this is a successful parse with error: null
+- Set confidence to "high" if macros are clearly visible (even without calories)
 - Set confidence to "medium" if some values are estimated or partially visible
 - Set confidence to "low" if the image quality is poor or values are unclear
-- Set error to a brief description if there's an issue (e.g., "Image too blurry", "Not a nutrition screenshot")
+- ONLY set error if: the image is NOT a nutrition screenshot, OR the image is completely unreadable
+- Set warning (not error) if: image is blurry but readable, values are partially obscured, or estimates were made
 - Do not include any text outside the JSON object`;
 
     const message = await anthropic.messages.create({
@@ -78,6 +83,7 @@ Rules:
         calories: null,
         confidence: 'low',
         error: 'Failed to get text response from AI',
+        warning: null,
       };
     }
 
@@ -97,6 +103,7 @@ Rules:
         calories: typeof parsed.calories === 'number' ? Math.round(parsed.calories) : null,
         confidence: parsed.confidence || 'medium',
         error: parsed.error || null,
+        warning: parsed.warning || null,
       };
     } catch {
       return {
@@ -106,6 +113,7 @@ Rules:
         calories: null,
         confidence: 'low',
         error: 'Failed to parse nutrition values from screenshot',
+        warning: null,
       };
     }
   } catch (error) {
@@ -117,6 +125,7 @@ Rules:
       calories: null,
       confidence: 'low',
       error: 'Failed to analyze screenshot',
+      warning: null,
     };
   }
 }

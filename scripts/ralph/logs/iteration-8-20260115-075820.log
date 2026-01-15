@@ -1,0 +1,5 @@
+**US-008 completed.** There are still 2 more stories with `passes: false`:
+- US-009: Update workout-reminder email template to v2a
+- US-010: Update admin email template to v2a
+
+The iteration is complete for US-008. The next iteration will pick up US-009.

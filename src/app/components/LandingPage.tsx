@@ -6,7 +6,6 @@ import { useState } from 'react'
 import BetaModal from '../components/BetaModal'
 import { useRouter } from 'next/navigation'
 import { sendGTMEvent } from '@next/third-parties/google'
-// import TawkChat from '@/components/TawkChat'
 
 // Track when user opens the modal
 const trackGetStartedClick = () => {
@@ -782,7 +781,6 @@ export default function LandingPage() {
           </div>
         </footer>
       </div>
-      {/* <TawkChat /> */}
     </div>
   )
 } 

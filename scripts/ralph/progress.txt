@@ -1,158 +1,157 @@
 # Ralph Progress Log
-Started: Sun Jan 11 14:10:22 EST 2026
+Started: Thu Jan 15 07:42:29 EST 2026
 ---
 
 ## Codebase Patterns
-
-### UI Components
-- Reusable UI components go in `src/components/ui/`
-- v2a design colors: coral #FF6B6B (primary), navy #0F172A (text), #E2E8F0 (borders), #F1F5F9 (backgrounds)
-- Use Tailwind animate-in classes for smooth animations: `animate-in fade-in slide-in-from-top-2 duration-200`
-- Click-outside and Escape key handling pattern in CalendarPicker.tsx
-
-### Blog Components
-- BlogPost wraps content in `prose prose-lg dark:prose-invert` (Tailwind Typography)
-- Custom-styled buttons/links inside prose MUST use `not-prose` wrapper to escape link color overrides
-- Example: `<div className="not-prose">...</div>` around CTA buttons
-
-### Next.js Image Component
-- For container-filling images: use `fill` prop + `relative` on parent container + `object-cover` className
-- Never combine `fill` with explicit width/height or className w-full/h-full
-- Base64 data URLs require `unoptimized` prop (can't be optimized by Next.js)
-- Use aspect ratio on parent (e.g., `aspect-[3/4]`) to control size when using `fill`
+- Email templates location: src/lib/email/templates/
+- v2a design tokens: Navy #0F172A, Coral #FF6B6B, Outfit font
+- API routes: src/app/api/
+- Component location: src/components/ and src/app/components/
 
 ---
 
-## 2026-01-11 14:15 - US-001: Fix date picker UX - remove intermediate step
-- What was implemented:
-  - Created new `CalendarPicker` component at `src/components/ui/CalendarPicker.tsx`
-  - Custom styled calendar with v2a design (coral selected day, navy text)
-  - Replaced intermediate `<input type="date">` with direct calendar popover
-  - Calendar prevents future dates with `maxDate` prop
-  - Auto-closes on date selection or click outside
-  - Includes "Today" quick button
-- Files created: `src/components/ui/CalendarPicker.tsx`
-- Files changed: `src/app/workout/[id]/page.tsx`
+## 2026-01-15 08:15 - US-001: Fix parse API prompt to allow macros without calories
+- Updated prompt in src/app/api/nutrition/parse/route.ts
+- Clarified that macros without calories is a valid parse result
+- Changed error rules to only set error for non-nutrition screenshots or completely unreadable images
 - **Learnings for future iterations:**
-  - The workout page had an unused `formatDateForInput` helper - removed it during cleanup
-  - Existing `isSameDay` helper was already in the file, so didn't need to add it
-  - CalendarPicker handles its own click-outside detection with useEffect + refs
+  - The AI prompt controls how nutrition screenshots are validated
+  - Confidence should be high/medium if macros are extracted, even without calories
+  - Error should only be set for truly invalid cases, not missing data
 ---
 
-## 2026-01-11 15:30 - US-002: Create /share/workout route
-- What was implemented:
-  - Created public share page at `src/app/share/workout/page.tsx`
-  - Parses `date` query param from URL (e.g., `/share/workout?date=2026-01-07T17:00:00.000Z`)
-  - Shows "Workout Completed!" with formatted date when valid date param provided
-  - Shows "Link Not Found" error state when date is missing or invalid
-  - Coral gradient header with baisics logo
-  - CTA button linking to `/hi` for signups
-  - v2a design system: coral gradient header, navy text, Outfit/Space Mono fonts
-  - Wrapped in Suspense for useSearchParams SSR compatibility
-- Files created: `src/app/share/workout/page.tsx`
+## 2026-01-15 08:45 - US-002: Fix client error handling for partial nutrition data
+- Updated src/components/NutritionLogModal.tsx error handling in processImage function
+- Added `hasMacros` check before showing error: only show error if `data.error` AND no macros extracted
+- Changed lines 166-172: error now only triggers if `data.error && !hasMacros`
 - **Learnings for future iterations:**
-  - useSearchParams() requires Suspense boundary in Next.js App Router
-  - CSS-in-JS with `<style jsx global>` works well for standalone pages with specific styling
-  - Date parsing should always check `isNaN(date.getTime())` to validate Date objects
+  - NutritionLogModal.tsx handles screenshot processing in `processImage` function
+  - Calories are auto-computed from macros (P*4 + C*4 + F*9) so null calories is fine
+  - The `!= null` check is used to properly detect if macro values exist (handles 0 as valid)
 ---
 
-## 2026-01-11 16:00 - US-003: Fix blog post CTA styling
-- What was implemented:
-  - Added `not-prose` class to the CTA button container in baisics-vs-trainerize blog post
-  - This escapes Tailwind Typography prose styling that was overriding button colors
-  - Added subtle hover scale effect for better interaction feedback
-- Files changed: `src/content/blog/baisics-vs-trainerize/index.tsx`
+## 2026-01-15 09:30 - US-003: Remove Tawkify chat widget
+- Deleted src/components/TawkChat.tsx
+- Removed import and <TawkChat /> usage from src/app/components/layouts/MainLayout.tsx
+- Removed commented-out TawkChat references from LandingPage.tsx and VariantLandingPage.tsx
 - **Learnings for future iterations:**
-  - BlogPost component wraps content in `prose prose-lg dark:prose-invert` classes
-  - Tailwind Typography (prose) overrides link colors, making custom-styled buttons invisible
-  - Use `not-prose` class on containers with custom-styled buttons/links inside BlogPost
-  - This pattern applies to any styled elements inside prose containers
+  - TawkChat was only actively used in MainLayout.tsx
+  - Other landing pages had TawkChat commented out already
+  - Always clean up dead code (commented imports) when removing a component
 ---
 
-## 2026-01-11 16:45 - US-004: Fix swap suggestions API
-- What was implemented:
-  - Added `getFallbackSuggestions()` function with category-based swap suggestions
-  - Categories covered: proteins (chicken/beef/pork), dairy (milk/cream/cheese), carbs (rice/pasta/bread), oils/fats, sugars/sweeteners, vegetables/greens
-  - Each category returns 3 relevant alternatives with realistic macro deltas
-  - Generic fallback for unrecognized ingredients
-  - Updated error handling to use fallbacks when:
-    - `ANTHROPIC_API_KEY` is missing
-    - AI response is not text
-    - AI response parsing fails or returns empty
-    - Any AI call error occurs
-  - Improved error logging with specific messages for debugging
-- Files changed: `src/app/api/nutrition/swap-suggestions/route.ts`
+## 2026-01-15 10:15 - US-004: Add prev/next navigation to exercise section
+- Added `currentExerciseIndex` state to track current exercise per workout
+- Added `getCurrentExerciseIndex` and `navigateExercise` helper functions
+- Added ChevronLeft, ChevronRight imports from lucide-react
+- Added exercise navigation bar above exercise list in WorkoutPlanDisplay.tsx
+- Styled with v2a design: navy background (#0F172A), coral arrows (#FF6B6B), Outfit font
+- Prev/Next buttons disabled at boundaries (first/last exercise)
+- Only shows current exercise; navigation updates which exercise is visible
 - **Learnings for future iterations:**
-  - The anthropic client is already initialized in `@/lib/anthropic`, no need to check if it exists
-  - Check `process.env.ANTHROPIC_API_KEY` directly before making AI calls to fail fast
-  - When AI calls can fail, always have a reasonable fallback that provides user value
-  - Category-based fallbacks work well for nutrition APIs - users get helpful suggestions even without AI
+  - WorkoutPlanDisplay uses workout.id || `workout-${workout.dayNumber}` as unique key
+  - State is per-workout so users can navigate each workout's exercises independently
+  - IIFE pattern `{(() => { ... })()}` used inline for complex JSX logic with local variables
 ---
 
-## 2026-01-11 17:15 - US-005: Fix template page header auth state
-- What was implemented:
-  - TemplateDetailClient had its own custom static header that didn't check auth state
-  - Replaced inline header with shared `Header` component from `src/components/Header.tsx`
-  - Replaced inline footer with shared `Footer` component
-  - Added padding-top (pt-24 lg:pt-28) to main content to account for fixed Header
-  - Header component uses `useSession()` hook to properly show auth state
-- Files changed: `src/app/templates/[slug]/TemplateDetailClient.tsx`
+## 2026-01-15 11:00 - US-005: Update email base layout with v2a design
+- Updated src/lib/email/templates/layout.ts with full v2a design system
+- Added Google Fonts import for Outfit and Space Mono
+- Header: Bold navy gradient with 4px coral accent border, larger logo (36px, weight 800), coral dot accent
+- Tagline: Uppercase "FITNESS FOR THE REST OF US" with 2px letter-spacing
+- Content: Improved typography with h2 support, .highlight class for coral text, .mono class for Space Mono
+- Buttons: Larger padding (16px 32px), coral shadow effect (box-shadow), centered with wrapper div
+- Added .button-secondary class for outline-style buttons
+- Footer: Added footer-brand and footer-tagline sections, pill-style social links with coral border
+- Removed unused `skipCTA` variable
+- Added JSDoc comment documenting design tokens for future reference
 - **Learnings for future iterations:**
-  - Always use shared `Header` and `Footer` components instead of inline custom headers/footers
-  - `Header` component uses `useSession()` from next-auth/react for auth state
-  - When using fixed Header, add appropriate padding-top to content container
-  - MainLayout pattern: Header (fixed) → main (pt-16 lg:pt-20) → Footer
+  - Email templates use inline styles; CSS variables are defined but email clients may ignore them
+  - Include MSO conditional comments for Outlook compatibility
+  - Google Fonts link in email may not work in all clients; fallback fonts are critical
+  - Base layout changes cascade to all email templates automatically
 ---
 
-## 2026-01-11 18:00 - US-006: Improve progress photos UX on check-in
-- What was implemented:
-  - Added page-level drag-drop detection with `dragCounterRef` for reliable enter/leave tracking
-  - Full-page drop overlay indicator with coral gradient styling and Upload icon
-  - Auto-expands Progress Photos section when photos are dropped using external state control
-  - Enhanced CollapsibleSection component to accept optional `isOpen` and `onToggle` props
-  - Created shared `processPhotoFiles` function for consistent photo handling
-  - Made Add Photos CTA more prominent with coral gradient icon and clear instructions
-  - Updated upload area styling with coral borders and larger icons
-- Files changed: `src/app/check-in/page.tsx`
+## 2026-01-15 11:45 - US-006: Update magic-link email template to v2a
+- Updated src/lib/email/templates/magic-link.ts with bold, energetic v2a copy
+- Headline: "Ready to crush it? 💪" (bold, energetic tone)
+- Body: Highlights "one-click login" in coral, casual friendly tone
+- CTA: "LET'S GO →" in coral button with uppercase styling and coral shadow
+- Updated subject line to "Your login link is ready! 🚀"
+- Updated preheader to match energetic tone
+- Maintained 24hr expiry warning with "Heads up:" prefix
 - **Learnings for future iterations:**
-  - Use `dragCounterRef` pattern to track drag enter/leave events reliably (child elements trigger multiple events)
-  - CollapsibleSection with external state control allows parent components to programmatically open/close
-  - `useCallback` with proper dependencies for drag handlers to avoid stale closures
-  - Full-page drop overlay should use `fixed inset-0 z-50` for proper positioning above all content
+  - Email templates inherit base layout from layout.ts, only need content customization
+  - Use inline styles for any template-specific overrides (e.g., larger heading font)
+  - Energetic copy examples: "Ready to crush it?", "Let's Go", "No hassle"
+  - Keep expiry warnings but make them friendly ("Heads up" vs dry "This link expires")
 ---
 
-## 2026-01-11 19:30 - US-007: Fix PhotoComparison Image error
-- What was implemented:
-  - Fixed Next.js Image component errors in PhotoComparison.tsx
-  - Changed from explicit `width={400} height={533}` with `className="w-full h-full object-cover"` to `fill` prop
-  - Added `relative` class to parent containers (required for `fill` prop)
-  - Added `unoptimized` prop since images are base64 data URLs (can't be optimized by Next.js)
-  - Removed conflicting className sizing (`w-full h-full`) when using `fill`
-- Files changed: `src/components/progress/PhotoComparison.tsx`
+## 2026-01-15 12:30 - US-007: Update welcome email template to v2a
+- Updated src/lib/email/templates/welcome.ts (both free and premium variants)
+- Added optional `userName` parameter to both templates for personalized greeting
+- Free template: "You're in! Let's crush it. 💪" with coral highlights
+- Premium template: "You're all in! Welcome to the crew. 🔥" with premium perks list
+- Both templates now use v2a styling: coral accents, bold 800 weight headings, coral-left-bordered info boxes
+- CTAs: Uppercase "START YOUR FIRST WORKOUT →" and "LET'S GO →" with coral shadow
+- Personalized subject lines when userName provided
+- "Your Game Plan" / "Your Premium Arsenal" sections with coral left border accent
 - **Learnings for future iterations:**
-  - Next.js Image with `fill` prop requires parent container to have `position: relative`
-  - Cannot combine `fill` with explicit width/height or className width/height
-  - Use `unoptimized` prop for base64 data URLs - Next.js image optimization doesn't work with them
-  - `aspect-[3/4]` on parent container with `fill` creates correct aspect ratio sizing
+  - WelcomeEmailData interface extended with optional `userName` for personalization
+  - Default parameter `= {}` allows calling welcomePremiumTemplate() with no args
+  - Subject line personalization: `userName ? \`${userName}, welcome...\` : 'Welcome...'`
+  - Info box pattern: coral left border (4px) with gradient background looks premium
 ---
 
-## 2026-01-11 20:00 - US-008: Final verification
-- What was verified:
-  - `npx tsc --noEmit` passes without errors
-  - `npm run build` succeeds (98 pages generated)
-  - All 7 previous user stories have been implemented
-- Automated checks:
-  - TypeScript: ✓ No errors
-  - Build: ✓ Successful
-  - Lint: ✓ Only pre-existing warnings (not from this PR)
-- Manual verification needed by user:
-  - Date picker shows calendar directly on /workout/[id]
-  - /share/workout?date=... shows public page
-  - Blog CTA button visible at /blog/baisics-vs-trainerize
-  - Template header shows auth state when logged in
-  - Photo comparison renders without errors
-- **Summary:**
-  - All user stories US-001 through US-007 implemented
-  - All automated quality checks pass
-  - PR #235 fixes are complete and ready for manual review
+## 2026-01-15 13:15 - US-008: Update weekly-summary email template to v2a
+- Updated src/lib/email/templates/weekly-summary.ts with full v2a design system
+- Bold headline: "Week X: The Recap 📈" with coral span, font-weight 800
+- Energetic copy: "here's how you crushed [program]" with coral program name highlight
+- Stats grid: 40px font-weight 800 numbers, gradient backgrounds, uppercase labels with letter-spacing
+- Streak section: coral border, uppercase "X WEEK STREAK!", celebratory text
+- Weight progress: coral left border, table layout, larger typography
+- Next workout section: coral heading in navy card, 22px font-weight 800 workout name
+- Motivational messages: updated to energetic v2a tone ("Unstoppable", "built different", "champions are made")
+- Subject lines: dynamic emoji (🔥 for perfect week, 📈 otherwise), "crushed" language
+- CTAs: uppercase "CRUSH YOUR NEXT WORKOUT →" / "VIEW YOUR PROGRESS →"
+- Text version: structured with emoji headers, uppercase sections, dashboard URL
+- **Learnings for future iterations:**
+  - Stats grids use border-collapse: separate with border-spacing for visual gaps
+  - Dynamic subject lines based on completion rate add personalization
+  - Text email version should mirror HTML structure but be more scannable
+  - Streak celebrations work well with border + gradient background combo
+---
+
+## 2026-01-15 14:00 - US-009: Update workout-reminder email template to v2a
+- Updated src/lib/email/templates/workout-reminder.ts with full v2a design system
+- Bold headline: "Time to crush it, [name]! 💪" with font-weight 800, 32px
+- Streak badge: Coral gradient pill with uppercase "X DAY STREAK" and box shadow
+- Workout card: Navy gradient card with coral-highlighted workout name, centered layout
+- Dynamic motivational messages based on streak length (14+, 7+, 3+, default)
+- Dynamic subject lines with emoji: streak users get 🔥, others get 💪
+- Dynamic preheader text based on streak status
+- "Not feeling 100%?" encouragement section with subtle top border
+- CTA: Uppercase "LET'S GO →" with coral button
+- **Learnings for future iterations:**
+  - Streak-based personalization makes emails feel more individualized
+  - Helper functions (getMotivationalMessage) keep template clean
+  - Pill badges with gradient + box-shadow work well for streak highlighting
+  - Navy cards with coral text create strong visual hierarchy
+---
+
+## 2026-01-15 14:45 - US-010: Update admin email template to v2a
+- Updated src/lib/email/templates/admin.ts with full v2a design system
+- Three templates updated: adminSignupNotificationTemplate, adminToolUsageTemplate, adminProgramCreationTemplate
+- All templates now use: Navy gradients (#0F172A), Coral accents (#FF6B6B), Outfit font, uppercase labels
+- Added JSDoc comment documenting v2a design tokens
+- adminSignupNotificationTemplate: Header badge, navy card header with coral border, 2x2 grid for user details, premium users get coral gradient background on plan cell
+- adminToolUsageTemplate: Gray header badge (tool usage category), coral tool name highlight, details table with alternating styles
+- adminProgramCreationTemplate: Coral header badge with shadow, program header with truncated description, phase breakdown with stats grid, workout cards with coral left border, exercise pills
+- All templates have consistent footer with coral "baisics" branding
+- **Learnings for future iterations:**
+  - Admin templates don't need base layout wrapper since they're internal notifications
+  - Grid layouts with separate border-spacing give clean visual separation
+  - Conditional styling (e.g., premium vs free) can use ternary in inline styles
+  - Truncate long text with substring() + ellipsis for cleaner layouts
+  - Exercise pill pattern (inline-block spans with padding/background) works well for compact lists
 ---
