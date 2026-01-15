@@ -7,7 +7,7 @@ interface BigSetInputCardProps {
   targetReps: string;
   weight: number | string;
   reps: number | string;
-  onComplete: (weight: number, reps: number) => void;
+  onComplete: (weight: number, reps: number, notes?: string) => void;
 }
 
 export function BigSetInputCard({
@@ -20,18 +20,22 @@ export function BigSetInputCard({
   // Local state for immediate UI response - NO auto-saving until complete
   const [localWeight, setLocalWeight] = useState<string>(weight ? String(weight) : '');
   const [localReps, setLocalReps] = useState<string>(reps ? String(reps) : '');
+  const [localNotes, setLocalNotes] = useState<string>('');
+  const [showNotes, setShowNotes] = useState<boolean>(false);
 
   // Sync local state when props change (e.g., switching sets)
   useEffect(() => {
     setLocalWeight(weight ? String(weight) : '');
     setLocalReps(reps ? String(reps) : '');
+    setLocalNotes('');
+    setShowNotes(false);
   }, [weight, reps, setNumber]);
 
   // Only save when user explicitly completes the set - pass values directly
   const handleComplete = () => {
     const finalWeight = Number(localWeight) || 0;
     const finalReps = Number(localReps) || Number(targetReps) || 0;
-    onComplete(finalWeight, finalReps);
+    onComplete(finalWeight, finalReps, localNotes || undefined);
   };
 
   return (
@@ -47,8 +51,8 @@ export function BigSetInputCard({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 mb-5">
-        <div>
+      <div className="flex gap-3 mb-5">
+        <div className="flex-1">
           <label htmlFor={`weight-input-${setNumber}`} className="block text-white/70 text-xs font-medium mb-1.5">Weight (lbs)</label>
           <input
             id={`weight-input-${setNumber}`}
@@ -59,7 +63,7 @@ export function BigSetInputCard({
             className="w-full px-4 py-3.5 rounded-xl bg-white/20 border border-white/30 text-white text-xl font-bold placeholder-white/50 focus:bg-white/30 focus:outline-none"
           />
         </div>
-        <div>
+        <div className="flex-1">
           <label htmlFor={`reps-input-${setNumber}`} className="block text-white/70 text-xs font-medium mb-1.5">Reps</label>
           <input
             id={`reps-input-${setNumber}`}
@@ -70,7 +74,35 @@ export function BigSetInputCard({
             className="w-full px-4 py-3.5 rounded-xl bg-white/20 border border-white/30 text-white text-xl font-bold placeholder-white/50 focus:bg-white/30 focus:outline-none"
           />
         </div>
+        <div className="flex flex-col justify-end">
+          <button
+            type="button"
+            onClick={() => setShowNotes(!showNotes)}
+            className={`p-3.5 rounded-xl border transition-colors ${
+              localNotes
+                ? 'bg-white/40 border-white/50'
+                : 'bg-white/20 border-white/30 hover:bg-white/30'
+            }`}
+            title={showNotes ? 'Hide notes' : 'Add notes'}
+          >
+            <span className="text-xl">📝</span>
+          </button>
+        </div>
       </div>
+
+      {showNotes && (
+        <div className="mb-5">
+          <label htmlFor={`notes-input-${setNumber}`} className="block text-white/70 text-xs font-medium mb-1.5">Notes</label>
+          <textarea
+            id={`notes-input-${setNumber}`}
+            placeholder="How did this set feel? Any observations..."
+            value={localNotes}
+            onChange={(e) => setLocalNotes(e.target.value)}
+            rows={3}
+            className="w-full px-4 py-3 rounded-xl bg-white/20 border border-white/30 text-white placeholder-white/50 focus:bg-white/30 focus:outline-none resize-none"
+          />
+        </div>
+      )}
 
       <button
         onClick={handleComplete}

@@ -2,6 +2,7 @@
 
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
@@ -117,6 +118,27 @@ export async function createManualProgram(data: ProgramFormData) {
     programId = program.id;
   } catch (error) {
     console.error('Failed to create program:', error);
+
+    // Handle Prisma-specific errors with more helpful messages
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      switch (error.code) {
+        case 'P2002':
+          return { error: { formErrors: ['A program with this name already exists.'], fieldErrors: {} } };
+        case 'P2003':
+          return { error: { formErrors: ['Invalid exercise reference. Please refresh and try again.'], fieldErrors: {} } };
+        case 'P2025':
+          return { error: { formErrors: ['Referenced data not found. Please refresh and try again.'], fieldErrors: {} } };
+        default:
+          return { error: { formErrors: ['Database error. Please try again.'], fieldErrors: {} } };
+      }
+    }
+
+    // Handle validation errors from Prisma
+    if (error instanceof Prisma.PrismaClientValidationError) {
+      return { error: { formErrors: ['Invalid data format. Please check your inputs.'], fieldErrors: {} } };
+    }
+
+    // Generic fallback for unknown errors
     return { error: { formErrors: ['Failed to create program. Please try again.'], fieldErrors: {} } };
   }
 
@@ -223,6 +245,6 @@ export async function getExerciseFilterOptions() {
     return { categories, equipment, muscles };
   } catch (error) {
     console.error('Failed to get filter options:', error);
-    return { categories: [], equipment: [], muscles: [] };
+    return { categories: [], equipment: [], muscles: [], error: 'Unable to load filter options' };
   }
 }

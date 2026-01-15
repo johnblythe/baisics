@@ -16,7 +16,7 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 1,
-      "passes": true,
+      "passes": false,
       "notes": "Issue #246 - UI changes in src/components/workout/BigSetInputCard.tsx"
     },
     {
@@ -30,7 +30,7 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 2,
-      "passes": true,
+      "passes": false,
       "notes": "Issue #246 - Callback changes"
     },
     {
@@ -44,7 +44,7 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 3,
-      "passes": true,
+      "passes": false,
       "notes": "Issue #246 - Page integration"
     },
     {
@@ -58,8 +58,8 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 4,
-      "passes": true,
-      "notes": "Issue #246 - API verification/update - VERIFIED: API already handles notes correctly"
+      "passes": false,
+      "notes": "Issue #246 - API verification/update"
     },
     {
       "id": "US-005",
@@ -72,7 +72,7 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 5,
-      "passes": true,
+      "passes": false,
       "notes": "Issue #192 - Security fix"
     },
     {
@@ -87,7 +87,7 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 6,
-      "passes": true,
+      "passes": false,
       "notes": "Issue #192 - Error handling improvement"
     },
     {
@@ -102,7 +102,7 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 7,
-      "passes": true,
+      "passes": false,
       "notes": "Issue #192 - UX improvement"
     },
     {
@@ -117,8 +117,8 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 8,
-      "passes": true,
-      "notes": "Issue #218 - Blog template creation - VERIFIED: Template exists at _templates/competitor-comparison-template.tsx following codebase conventions"
+      "passes": false,
+      "notes": "Issue #218 - Blog template creation"
     },
     {
       "id": "US-009",
@@ -134,8 +134,8 @@
         "npx tsc --noEmit passes"
       ],
       "priority": 9,
-      "passes": true,
-      "notes": "Issue #218 - First comparison post - VERIFIED: Post exists with all required elements, pricing, differentiators, and factual tone"
+      "passes": false,
+      "notes": "Issue #218 - First comparison post"
     },
     {
       "id": "US-010",
@@ -147,8 +147,8 @@
         "No new TypeScript errors introduced"
       ],
       "priority": 10,
-      "passes": true,
-      "notes": "Final verification - VERIFIED: tsc passes, build succeeds"
+      "passes": false,
+      "notes": "Final verification"
     }
   ]
 }
