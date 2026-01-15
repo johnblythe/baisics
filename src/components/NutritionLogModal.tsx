@@ -169,11 +169,17 @@ export function NutritionLogModal({
       }
 
       // Pre-fill form with parsed values
+      // Compute calories from macros to ensure consistency (same formula as handleValueChange)
+      const p = parseInt(data.protein, 10) || 0;
+      const c = parseInt(data.carbs, 10) || 0;
+      const f = parseInt(data.fats, 10) || 0;
+      const computedCalories = (p || c || f) ? String(p * 4 + c * 4 + f * 9) : '';
+
       setValues({
         protein: data.protein?.toString() || '',
         carbs: data.carbs?.toString() || '',
         fats: data.fats?.toString() || '',
-        calories: data.calories?.toString() || '',
+        calories: computedCalories,
       });
       setParseConfidence(data.confidence);
     } catch (err) {
