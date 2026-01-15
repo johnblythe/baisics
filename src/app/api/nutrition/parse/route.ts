@@ -44,10 +44,12 @@ Return ONLY valid JSON with these exact keys:
 
 Rules:
 - Use null for any value you cannot clearly read
-- Set confidence to "high" if all values are clearly visible
+- Macros (protein, carbs, fats) without calories is VALID - many screenshots show macros only
+- If you can extract ANY macros (protein, carbs, or fats), this is a successful parse with error: null
+- Set confidence to "high" if macros are clearly visible (even without calories)
 - Set confidence to "medium" if some values are estimated or partially visible
 - Set confidence to "low" if the image quality is poor or values are unclear
-- Set error to a brief description if there's an issue (e.g., "Image too blurry", "Not a nutrition screenshot")
+- ONLY set error if: the image is NOT a nutrition screenshot, OR the image is completely unreadable
 - Do not include any text outside the JSON object`;
 
     const message = await anthropic.messages.create({
