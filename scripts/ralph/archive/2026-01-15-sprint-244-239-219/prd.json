@@ -1,0 +1,154 @@
+{
+  "project": "baisics",
+  "branchName": "ralph/246-218-192-batch",
+  "description": "Batch: Set logging notes (#246), competitor comparison blog (#218), tech debt cleanup (#192)",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "#246 - Add notes state and expandable UI to BigSetInputCard",
+      "description": "As a user logging my workout, I want to tap an icon to expand a notes field so I can record observations without cluttering the UI.",
+      "acceptanceCriteria": [
+        "Add localNotes state to BigSetInputCard component",
+        "Add 📝 icon button next to weight/reps row",
+        "Tapping icon toggles textarea visibility (collapsed by default)",
+        "Textarea styled to match card (white/20 bg, white text)",
+        "Icon shows filled state when notes exist",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Issue #246 - UI changes in src/components/workout/BigSetInputCard.tsx"
+    },
+    {
+      "id": "US-002",
+      "title": "#246 - Pass notes through onComplete callback",
+      "description": "As a developer, I need BigSetInputCard to pass notes data when set is completed.",
+      "acceptanceCriteria": [
+        "Update onComplete prop signature to include notes: (weight, reps, notes?) => void",
+        "Pass localNotes value in handleComplete",
+        "Update BigSetInputCardProps interface",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Issue #246 - Callback changes"
+    },
+    {
+      "id": "US-003",
+      "title": "#246 - Update workout page to handle notes",
+      "description": "As a developer, I need the workout page to receive and store notes from BigSetInputCard.",
+      "acceptanceCriteria": [
+        "Update onComplete handler in src/app/workout/[id]/page.tsx",
+        "Store notes in set log state",
+        "Pass notes to API when saving set",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Issue #246 - Page integration"
+    },
+    {
+      "id": "US-004",
+      "title": "#246 - Verify API saves notes to SetLog",
+      "description": "As a developer, I need to ensure the sets API persists notes to the database.",
+      "acceptanceCriteria": [
+        "Check src/app/api/workouts/[id]/sets/route.ts accepts notes param",
+        "Verify Prisma create/update includes notes field",
+        "Add notes to request body if not already present",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Issue #246 - API verification/update"
+    },
+    {
+      "id": "US-005",
+      "title": "#192 - Fix unsanitized exercise name in coaching query",
+      "description": "As a security-conscious developer, I need to use sanitized exercise name in the workout chat API.",
+      "acceptanceCriteria": [
+        "In src/app/api/workout/chat/route.ts line 58",
+        "Change context.exerciseName to sanitizedContext.exerciseName",
+        "Verify sanitizedContext is available in scope",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Issue #192 - Security fix"
+    },
+    {
+      "id": "US-006",
+      "title": "#192 - Improve error handling in program create actions",
+      "description": "As a developer, I want more specific error messages based on error type.",
+      "acceptanceCriteria": [
+        "In src/app/program/create/actions.ts lines 116-119",
+        "Check for Prisma-specific errors (PrismaClientKnownRequestError)",
+        "Return different messages for validation vs DB vs unknown errors",
+        "Import Prisma error types if needed",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "Issue #192 - Error handling improvement"
+    },
+    {
+      "id": "US-007",
+      "title": "#192 - Add transition error handling to ProgramBuilder",
+      "description": "As a user, I want feedback when a server action fails during program creation.",
+      "acceptanceCriteria": [
+        "In src/app/program/create/components/ProgramBuilder.tsx",
+        "Wrap startTransition server action calls with try-catch",
+        "Show toast or error state on network/server failures",
+        "User should see feedback instead of silent failure",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "Issue #192 - UX improvement"
+    },
+    {
+      "id": "US-008",
+      "title": "#218 - Create competitor comparison blog template",
+      "description": "As a content creator, I need a reusable template for competitor comparison posts.",
+      "acceptanceCriteria": [
+        "Create src/content/blog/templates/competitor-comparison.tsx as reference template",
+        "Include sections: Quick comparison table, Pricing breakdown, Feature comparison, Decision framework, CTA",
+        "Follow existing blog post patterns in src/content/blog/",
+        "Add comments explaining each section purpose",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "Issue #218 - Blog template creation"
+    },
+    {
+      "id": "US-009",
+      "title": "#218 - Write baisics vs Trainerize comparison post",
+      "description": "As a coach researching alternatives, I want to compare baisics to Trainerize.",
+      "acceptanceCriteria": [
+        "Create src/content/blog/baisics-vs-trainerize/index.tsx",
+        "Use template structure from US-008",
+        "Include factual Trainerize pricing (research current plans)",
+        "Highlight baisics differentiators: AI-generated programs, simpler UX, lower cost",
+        "SEO title: 'Baisics vs Trainerize: 2026 Comparison for Fitness Coaches'",
+        "Non-disparaging, factual tone",
+        "npx tsc --noEmit passes"
+      ],
+      "priority": 9,
+      "passes": false,
+      "notes": "Issue #218 - First comparison post"
+    },
+    {
+      "id": "US-010",
+      "title": "Final verification and build check",
+      "description": "As a developer, I want to verify all changes build and work together.",
+      "acceptanceCriteria": [
+        "npx tsc --noEmit passes",
+        "npm run build succeeds",
+        "No new TypeScript errors introduced"
+      ],
+      "priority": 10,
+      "passes": false,
+      "notes": "Final verification"
+    }
+  ]
+}

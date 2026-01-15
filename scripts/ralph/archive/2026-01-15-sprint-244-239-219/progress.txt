@@ -1,0 +1,157 @@
+# Ralph Progress Log
+Started: Thu Jan 15 07:42:29 EST 2026
+---
+
+## Codebase Patterns
+- Email templates location: src/lib/email/templates/
+- v2a design tokens: Navy #0F172A, Coral #FF6B6B, Outfit font
+- API routes: src/app/api/
+- Component location: src/components/ and src/app/components/
+
+---
+
+## 2026-01-15 08:15 - US-001: Fix parse API prompt to allow macros without calories
+- Updated prompt in src/app/api/nutrition/parse/route.ts
+- Clarified that macros without calories is a valid parse result
+- Changed error rules to only set error for non-nutrition screenshots or completely unreadable images
+- **Learnings for future iterations:**
+  - The AI prompt controls how nutrition screenshots are validated
+  - Confidence should be high/medium if macros are extracted, even without calories
+  - Error should only be set for truly invalid cases, not missing data
+---
+
+## 2026-01-15 08:45 - US-002: Fix client error handling for partial nutrition data
+- Updated src/components/NutritionLogModal.tsx error handling in processImage function
+- Added `hasMacros` check before showing error: only show error if `data.error` AND no macros extracted
+- Changed lines 166-172: error now only triggers if `data.error && !hasMacros`
+- **Learnings for future iterations:**
+  - NutritionLogModal.tsx handles screenshot processing in `processImage` function
+  - Calories are auto-computed from macros (P*4 + C*4 + F*9) so null calories is fine
+  - The `!= null` check is used to properly detect if macro values exist (handles 0 as valid)
+---
+
+## 2026-01-15 09:30 - US-003: Remove Tawkify chat widget
+- Deleted src/components/TawkChat.tsx
+- Removed import and <TawkChat /> usage from src/app/components/layouts/MainLayout.tsx
+- Removed commented-out TawkChat references from LandingPage.tsx and VariantLandingPage.tsx
+- **Learnings for future iterations:**
+  - TawkChat was only actively used in MainLayout.tsx
+  - Other landing pages had TawkChat commented out already
+  - Always clean up dead code (commented imports) when removing a component
+---
+
+## 2026-01-15 10:15 - US-004: Add prev/next navigation to exercise section
+- Added `currentExerciseIndex` state to track current exercise per workout
+- Added `getCurrentExerciseIndex` and `navigateExercise` helper functions
+- Added ChevronLeft, ChevronRight imports from lucide-react
+- Added exercise navigation bar above exercise list in WorkoutPlanDisplay.tsx
+- Styled with v2a design: navy background (#0F172A), coral arrows (#FF6B6B), Outfit font
+- Prev/Next buttons disabled at boundaries (first/last exercise)
+- Only shows current exercise; navigation updates which exercise is visible
+- **Learnings for future iterations:**
+  - WorkoutPlanDisplay uses workout.id || `workout-${workout.dayNumber}` as unique key
+  - State is per-workout so users can navigate each workout's exercises independently
+  - IIFE pattern `{(() => { ... })()}` used inline for complex JSX logic with local variables
+---
+
+## 2026-01-15 11:00 - US-005: Update email base layout with v2a design
+- Updated src/lib/email/templates/layout.ts with full v2a design system
+- Added Google Fonts import for Outfit and Space Mono
+- Header: Bold navy gradient with 4px coral accent border, larger logo (36px, weight 800), coral dot accent
+- Tagline: Uppercase "FITNESS FOR THE REST OF US" with 2px letter-spacing
+- Content: Improved typography with h2 support, .highlight class for coral text, .mono class for Space Mono
+- Buttons: Larger padding (16px 32px), coral shadow effect (box-shadow), centered with wrapper div
+- Added .button-secondary class for outline-style buttons
+- Footer: Added footer-brand and footer-tagline sections, pill-style social links with coral border
+- Removed unused `skipCTA` variable
+- Added JSDoc comment documenting design tokens for future reference
+- **Learnings for future iterations:**
+  - Email templates use inline styles; CSS variables are defined but email clients may ignore them
+  - Include MSO conditional comments for Outlook compatibility
+  - Google Fonts link in email may not work in all clients; fallback fonts are critical
+  - Base layout changes cascade to all email templates automatically
+---
+
+## 2026-01-15 11:45 - US-006: Update magic-link email template to v2a
+- Updated src/lib/email/templates/magic-link.ts with bold, energetic v2a copy
+- Headline: "Ready to crush it? 💪" (bold, energetic tone)
+- Body: Highlights "one-click login" in coral, casual friendly tone
+- CTA: "LET'S GO →" in coral button with uppercase styling and coral shadow
+- Updated subject line to "Your login link is ready! 🚀"
+- Updated preheader to match energetic tone
+- Maintained 24hr expiry warning with "Heads up:" prefix
+- **Learnings for future iterations:**
+  - Email templates inherit base layout from layout.ts, only need content customization
+  - Use inline styles for any template-specific overrides (e.g., larger heading font)
+  - Energetic copy examples: "Ready to crush it?", "Let's Go", "No hassle"
+  - Keep expiry warnings but make them friendly ("Heads up" vs dry "This link expires")
+---
+
+## 2026-01-15 12:30 - US-007: Update welcome email template to v2a
+- Updated src/lib/email/templates/welcome.ts (both free and premium variants)
+- Added optional `userName` parameter to both templates for personalized greeting
+- Free template: "You're in! Let's crush it. 💪" with coral highlights
+- Premium template: "You're all in! Welcome to the crew. 🔥" with premium perks list
+- Both templates now use v2a styling: coral accents, bold 800 weight headings, coral-left-bordered info boxes
+- CTAs: Uppercase "START YOUR FIRST WORKOUT →" and "LET'S GO →" with coral shadow
+- Personalized subject lines when userName provided
+- "Your Game Plan" / "Your Premium Arsenal" sections with coral left border accent
+- **Learnings for future iterations:**
+  - WelcomeEmailData interface extended with optional `userName` for personalization
+  - Default parameter `= {}` allows calling welcomePremiumTemplate() with no args
+  - Subject line personalization: `userName ? \`${userName}, welcome...\` : 'Welcome...'`
+  - Info box pattern: coral left border (4px) with gradient background looks premium
+---
+
+## 2026-01-15 13:15 - US-008: Update weekly-summary email template to v2a
+- Updated src/lib/email/templates/weekly-summary.ts with full v2a design system
+- Bold headline: "Week X: The Recap 📈" with coral span, font-weight 800
+- Energetic copy: "here's how you crushed [program]" with coral program name highlight
+- Stats grid: 40px font-weight 800 numbers, gradient backgrounds, uppercase labels with letter-spacing
+- Streak section: coral border, uppercase "X WEEK STREAK!", celebratory text
+- Weight progress: coral left border, table layout, larger typography
+- Next workout section: coral heading in navy card, 22px font-weight 800 workout name
+- Motivational messages: updated to energetic v2a tone ("Unstoppable", "built different", "champions are made")
+- Subject lines: dynamic emoji (🔥 for perfect week, 📈 otherwise), "crushed" language
+- CTAs: uppercase "CRUSH YOUR NEXT WORKOUT →" / "VIEW YOUR PROGRESS →"
+- Text version: structured with emoji headers, uppercase sections, dashboard URL
+- **Learnings for future iterations:**
+  - Stats grids use border-collapse: separate with border-spacing for visual gaps
+  - Dynamic subject lines based on completion rate add personalization
+  - Text email version should mirror HTML structure but be more scannable
+  - Streak celebrations work well with border + gradient background combo
+---
+
+## 2026-01-15 14:00 - US-009: Update workout-reminder email template to v2a
+- Updated src/lib/email/templates/workout-reminder.ts with full v2a design system
+- Bold headline: "Time to crush it, [name]! 💪" with font-weight 800, 32px
+- Streak badge: Coral gradient pill with uppercase "X DAY STREAK" and box shadow
+- Workout card: Navy gradient card with coral-highlighted workout name, centered layout
+- Dynamic motivational messages based on streak length (14+, 7+, 3+, default)
+- Dynamic subject lines with emoji: streak users get 🔥, others get 💪
+- Dynamic preheader text based on streak status
+- "Not feeling 100%?" encouragement section with subtle top border
+- CTA: Uppercase "LET'S GO →" with coral button
+- **Learnings for future iterations:**
+  - Streak-based personalization makes emails feel more individualized
+  - Helper functions (getMotivationalMessage) keep template clean
+  - Pill badges with gradient + box-shadow work well for streak highlighting
+  - Navy cards with coral text create strong visual hierarchy
+---
+
+## 2026-01-15 14:45 - US-010: Update admin email template to v2a
+- Updated src/lib/email/templates/admin.ts with full v2a design system
+- Three templates updated: adminSignupNotificationTemplate, adminToolUsageTemplate, adminProgramCreationTemplate
+- All templates now use: Navy gradients (#0F172A), Coral accents (#FF6B6B), Outfit font, uppercase labels
+- Added JSDoc comment documenting v2a design tokens
+- adminSignupNotificationTemplate: Header badge, navy card header with coral border, 2x2 grid for user details, premium users get coral gradient background on plan cell
+- adminToolUsageTemplate: Gray header badge (tool usage category), coral tool name highlight, details table with alternating styles
+- adminProgramCreationTemplate: Coral header badge with shadow, program header with truncated description, phase breakdown with stats grid, workout cards with coral left border, exercise pills
+- All templates have consistent footer with coral "baisics" branding
+- **Learnings for future iterations:**
+  - Admin templates don't need base layout wrapper since they're internal notifications
+  - Grid layouts with separate border-spacing give clean visual separation
+  - Conditional styling (e.g., premium vs free) can use ternary in inline styles
+  - Truncate long text with substring() + ellipsis for cleaner layouts
+  - Exercise pill pattern (inline-block spans with padding/background) works well for compact lists
+---

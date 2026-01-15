@@ -215,12 +215,18 @@ export function ProgramBuilder() {
         }
         // If successful, redirect happens in server action
       } catch (err) {
+        // Log for debugging (Issue #192)
+        console.error('Program creation failed:', {
+          error: err instanceof Error ? err.message : err,
+          stack: err instanceof Error ? err.stack : undefined,
+        });
+
         const errorMessage = err instanceof Error
           ? err.message
           : 'An unexpected error occurred. Please try again.';
         setError(errorMessage);
-        toast.error('Connection error', {
-          description: 'Unable to save program. Please check your connection and try again.',
+        toast.error('Failed to save program', {
+          description: errorMessage,
         });
       }
     });

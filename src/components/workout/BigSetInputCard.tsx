@@ -85,7 +85,7 @@ export function BigSetInputCard({
             }`}
             title={showNotes ? 'Hide notes' : 'Add notes'}
           >
-            <span className="text-xl">{localNotes ? '📝' : '📝'}</span>
+            <span className="text-xl">📝</span>
           </button>
         </div>
       </div>

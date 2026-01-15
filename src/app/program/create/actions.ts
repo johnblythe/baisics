@@ -245,6 +245,6 @@ export async function getExerciseFilterOptions() {
     return { categories, equipment, muscles };
   } catch (error) {
     console.error('Failed to get filter options:', error);
-    return { categories: [], equipment: [], muscles: [] };
+    return { categories: [], equipment: [], muscles: [], error: 'Unable to load filter options' };
   }
 }

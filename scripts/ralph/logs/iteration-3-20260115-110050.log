@@ -1,0 +1,9 @@
+**US-003 completed successfully.** 
+
+Summary:
+- Updated `onComplete` callback in `/src/app/workout/[id]/page.tsx` to accept the `notes` parameter
+- Added `notes` to the `logData` object passed to `updateSet`, which saves it via the API
+- TypeScript check, lint, and build all pass
+- Committed: `feat: US-003 - Update workout page to handle notes`
+
+Remaining stories with `passes: false`: US-004 through US-010 (7 stories remaining).
