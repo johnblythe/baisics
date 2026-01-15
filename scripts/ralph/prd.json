@@ -59,7 +59,7 @@
         "Verify component renders correctly in browser"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "Issue #239 - Part A"
     },
     {
@@ -76,7 +76,7 @@
         "npm run typecheck passes"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "Issue #219 - Phase 1: Base layout cascades to all templates"
     },
     {
@@ -91,7 +91,7 @@
         "npm run typecheck passes"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": "Issue #219 - Phase 2: Highest volume email"
     },
     {
@@ -106,7 +106,7 @@
         "npm run typecheck passes"
       ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "notes": "Issue #219 - Phase 2: First impression for new users"
     },
     {
@@ -121,7 +121,7 @@
         "npm run typecheck passes"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "Issue #219 - Phase 3"
     },
     {
@@ -136,7 +136,7 @@
         "npm run typecheck passes"
       ],
       "priority": 9,
-      "passes": false,
+      "passes": true,
       "notes": "Issue #219 - Phase 3"
     },
     {
@@ -150,7 +150,7 @@
         "npm run typecheck passes"
       ],
       "priority": 10,
-      "passes": false,
+      "passes": true,
       "notes": "Issue #219 - Phase 3"
     }
   ]

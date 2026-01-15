@@ -1,0 +1,11 @@
+There are still 4 stories with `passes: false` (US-007 through US-010). The sprint is not complete yet.
+
+**Summary of US-006 completion:**
+- Updated `src/lib/email/templates/magic-link.ts` with bold, energetic v2a copy
+- Headline: "Ready to crush it? 💪"
+- Body: Highlights "one-click login" in coral
+- CTA: "LET'S GO →" in coral button
+- Subject: "Your login link is ready! 🚀"
+- Maintained 24hr expiry warning
+- Lint and build pass
+- Committed as `feat: [US-006] - Update magic-link email template to v2a`

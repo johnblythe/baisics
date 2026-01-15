@@ -1,0 +1,11 @@
+There are still 3 stories with `passes: false` (US-008, US-009, US-010). Story US-007 is complete. Another iteration will pick up US-008 (weekly-summary email).
+
+**Summary of US-007 completion:**
+- Updated `src/lib/email/templates/welcome.ts` with v2a design
+- Added `userName` parameter for personalized greetings in both free and premium templates
+- Bold, energetic copy with coral highlights: "You're in! Let's crush it." / "You're all in! Welcome to the crew."
+- v2a styling: 32px/800 weight headings, coral accents, coral-left-bordered info boxes
+- Uppercase CTAs with coral shadow: "START YOUR FIRST WORKOUT →" / "LET'S GO →"
+- Personalized subject lines when userName provided
+- Lint and build pass ✓
+- Committed: `feat: [US-007] - Update welcome email template to v2a`
