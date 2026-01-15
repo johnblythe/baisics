@@ -598,12 +598,13 @@ export default function WorkoutPage() {
                     targetReps={String(currentExercise.reps)}
                     weight={currentLog.weight ?? previousLog?.weight ?? ''}
                     reps={currentLog.reps > 0 ? currentLog.reps : ''}
-                    onComplete={(weight, reps) => {
+                    onComplete={(weight, reps, notes) => {
                       const setIndex = currentSetIndex >= 0 ? currentSetIndex : 0;
                       // Save all data in one API call when completing
                       updateSet(currentExerciseIndex, setIndex, {
                         weight,
                         reps,
+                        notes,
                         isCompleted: true,
                       });
                       // Trigger rest timer if auto-start is enabled
