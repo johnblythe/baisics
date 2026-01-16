@@ -1,154 +1,142 @@
 {
   "project": "baisics",
-  "branchName": "ralph/246-218-192-batch",
-  "description": "Batch: Set logging notes (#246), competitor comparison blog (#218), tech debt cleanup (#192)",
+  "branchName": "ralph/233-rest-day-prototypes",
+  "description": "Generate multiple rest day UI prototypes on dev page for comparison",
   "userStories": [
     {
       "id": "US-001",
-      "title": "#246 - Add notes state and expandable UI to BigSetInputCard",
-      "description": "As a user logging my workout, I want to tap an icon to expand a notes field so I can record observations without cluttering the UI.",
+      "title": "Create dev page scaffold for rest day prototypes",
+      "description": "As a developer, I need a dev page to hold all rest day UI variations for comparison.",
       "acceptanceCriteria": [
-        "Add localNotes state to BigSetInputCard component",
-        "Add 📝 icon button next to weight/reps row",
-        "Tapping icon toggles textarea visibility (collapsed by default)",
-        "Textarea styled to match card (white/20 bg, white text)",
-        "Icon shows filled state when notes exist",
-        "npx tsc --noEmit passes"
+        "Create src/app/dev/rest-day/page.tsx",
+        "Page has toggle buttons to switch between Option A, B, C, D, E",
+        "Uses same styling pattern as other dev pages (dark bg, coral accents)",
+        "Add entry to DEV_PAGES array in src/app/dev/page.tsx",
+        "npm run typecheck passes",
+        "Page renders at localhost:3001/dev/rest-day"
       ],
       "priority": 1,
       "passes": true,
-      "notes": "Issue #246 - UI changes in src/components/workout/BigSetInputCard.tsx"
+      "notes": "Scaffold only - no actual rest day components yet"
     },
     {
       "id": "US-002",
-      "title": "#246 - Pass notes through onComplete callback",
-      "description": "As a developer, I need BigSetInputCard to pass notes data when set is completed.",
+      "title": "Option A: Minimal zen rest card",
+      "description": "As a user on a rest day, I want a calm, minimal card that doesn't pressure me.",
       "acceptanceCriteria": [
-        "Update onComplete prop signature to include notes: (weight, reps, notes?) => void",
-        "Pass localNotes value in handleComplete",
-        "Update BigSetInputCardProps interface",
-        "npx tsc --noEmit passes"
+        "Create src/app/dev/rest-day/components/RestDayOptionA.tsx",
+        "Design: white/light card, subtle gradient, minimal text",
+        "Shows: 'Rest Day' title, encouraging 1-line message, next workout preview (small)",
+        "No CTAs except maybe 'View Next Workout'",
+        "Feels: calm, zen, permission to rest",
+        "Mobile-first, max-width container",
+        "npm run typecheck passes"
       ],
       "priority": 2,
       "passes": true,
-      "notes": "Issue #246 - Callback changes"
+      "notes": "Minimal approach - anti-hustle culture"
     },
     {
       "id": "US-003",
-      "title": "#246 - Update workout page to handle notes",
-      "description": "As a developer, I need the workout page to receive and store notes from BigSetInputCard.",
+      "title": "Option B: Achievement celebration card",
+      "description": "As a user on a rest day, I want to feel good about the work I've done this week.",
       "acceptanceCriteria": [
-        "Update onComplete handler in src/app/workout/[id]/page.tsx",
-        "Store notes in set log state",
-        "Pass notes to API when saving set",
-        "npx tsc --noEmit passes"
+        "Create src/app/dev/rest-day/components/RestDayOptionB.tsx",
+        "Design: celebratory, shows week progress prominently",
+        "Shows: 'You crushed it!' message, workout count this week (3/4 done), streak if applicable",
+        "Visual: progress bar or ring showing weekly completion",
+        "Optional confetti or subtle animation on load",
+        "Next workout teaser at bottom",
+        "npm run typecheck passes"
       ],
       "priority": 3,
       "passes": true,
-      "notes": "Issue #246 - Page integration"
+      "notes": "Celebration/reward approach"
     },
     {
       "id": "US-004",
-      "title": "#246 - Verify API saves notes to SetLog",
-      "description": "As a developer, I need to ensure the sets API persists notes to the database.",
+      "title": "Option C: Active recovery suggestions card",
+      "description": "As a user on a rest day, I might want light activity options instead of full rest.",
       "acceptanceCriteria": [
-        "Check src/app/api/workouts/[id]/sets/route.ts accepts notes param",
-        "Verify Prisma create/update includes notes field",
-        "Add notes to request body if not already present",
-        "npx tsc --noEmit passes"
+        "Create src/app/dev/rest-day/components/RestDayOptionC.tsx",
+        "Design: card with 2-3 optional activity tiles",
+        "Options: 'Log Nutrition', 'Light Stretch (10 min)', 'Train Anyway'",
+        "Each option is a tappable card/button",
+        "One option can be locked/premium (stretch video)",
+        "Clear that these are OPTIONAL - rest is fine",
+        "npm run typecheck passes"
       ],
       "priority": 4,
       "passes": true,
-      "notes": "Issue #246 - API verification/update - VERIFIED: API already handles notes correctly"
+      "notes": "Active recovery with options"
     },
     {
       "id": "US-005",
-      "title": "#192 - Fix unsanitized exercise name in coaching query",
-      "description": "As a security-conscious developer, I need to use sanitized exercise name in the workout chat API.",
+      "title": "Option D: Coach wisdom card",
+      "description": "As a user on a rest day, I want educational content about why rest matters.",
       "acceptanceCriteria": [
-        "In src/app/api/workout/chat/route.ts line 58",
-        "Change context.exerciseName to sanitizedContext.exerciseName",
-        "Verify sanitizedContext is available in scope",
-        "npx tsc --noEmit passes"
+        "Create src/app/dev/rest-day/components/RestDayOptionD.tsx",
+        "Design: card with rotating 'tip of the day' about recovery",
+        "Shows: tip icon, recovery fact/wisdom, source attribution",
+        "Examples: 'Muscle growth happens during rest, not during workouts', 'Sleep 7-9 hours for optimal recovery'",
+        "Subtle, not preachy - builds trust",
+        "Next workout preview below",
+        "npm run typecheck passes"
       ],
       "priority": 5,
       "passes": true,
-      "notes": "Issue #192 - Security fix"
+      "notes": "Educational/coaching approach"
     },
     {
       "id": "US-006",
-      "title": "#192 - Improve error handling in program create actions",
-      "description": "As a developer, I want more specific error messages based on error type.",
+      "title": "Option E: Gamified rest card",
+      "description": "As a user on a rest day, I want to feel like resting is part of the game/progress.",
       "acceptanceCriteria": [
-        "In src/app/program/create/actions.ts lines 116-119",
-        "Check for Prisma-specific errors (PrismaClientKnownRequestError)",
-        "Return different messages for validation vs DB vs unknown errors",
-        "Import Prisma error types if needed",
-        "npx tsc --noEmit passes"
+        "Create src/app/dev/rest-day/components/RestDayOptionE.tsx",
+        "Design: rest day as an 'achievement' or 'mission'",
+        "Shows: 'Recovery Mission' badge, XP or points for taking rest day",
+        "Progress indicator: 'Recovery: 0/24 hours' that fills over the day",
+        "Maybe: streak includes rest days ('7 day training streak' counts rest)",
+        "Gamified but not annoying",
+        "npm run typecheck passes"
       ],
       "priority": 6,
       "passes": true,
-      "notes": "Issue #192 - Error handling improvement"
+      "notes": "Gamification approach - rest = progress"
     },
     {
       "id": "US-007",
-      "title": "#192 - Add transition error handling to ProgramBuilder",
-      "description": "As a user, I want feedback when a server action fails during program creation.",
+      "title": "Option F: Social proof card",
+      "description": "As a user on a rest day, I want to see that other users also rest.",
       "acceptanceCriteria": [
-        "In src/app/program/create/components/ProgramBuilder.tsx",
-        "Wrap startTransition server action calls with try-catch",
-        "Show toast or error state on network/server failures",
-        "User should see feedback instead of silent failure",
-        "npx tsc --noEmit passes"
+        "Create src/app/dev/rest-day/components/RestDayOptionF.tsx",
+        "Design: shows community rest day activity",
+        "Shows: '2,847 others are resting today', or 'Top performers rest 2x/week'",
+        "Maybe: anonymous avatars of others resting",
+        "Normalizes rest, reduces guilt",
+        "Light, not heavy-handed",
+        "npm run typecheck passes"
       ],
       "priority": 7,
       "passes": true,
-      "notes": "Issue #192 - UX improvement"
+      "notes": "Social proof approach"
     },
     {
       "id": "US-008",
-      "title": "#218 - Create competitor comparison blog template",
-      "description": "As a content creator, I need a reusable template for competitor comparison posts.",
+      "title": "Wire up all options with toggle",
+      "description": "As a reviewer, I need to easily switch between all options on the dev page.",
       "acceptanceCriteria": [
-        "Create src/content/blog/templates/competitor-comparison.tsx as reference template",
-        "Include sections: Quick comparison table, Pricing breakdown, Feature comparison, Decision framework, CTA",
-        "Follow existing blog post patterns in src/content/blog/",
-        "Add comments explaining each section purpose",
-        "npx tsc --noEmit passes"
+        "Update src/app/dev/rest-day/page.tsx to import all 6 options",
+        "Toggle buttons show: A (Zen), B (Celebrate), C (Active), D (Coach), E (Game), F (Social)",
+        "Selected option renders below toggle",
+        "Mock data for: workoutsThisWeek=3, weeklyTarget=4, nextWorkout='Legs', streak=7",
+        "Page works on mobile and desktop",
+        "npm run typecheck passes",
+        "All 6 options render without errors"
       ],
       "priority": 8,
       "passes": true,
-      "notes": "Issue #218 - Blog template creation - VERIFIED: Template exists at _templates/competitor-comparison-template.tsx following codebase conventions"
-    },
-    {
-      "id": "US-009",
-      "title": "#218 - Write baisics vs Trainerize comparison post",
-      "description": "As a coach researching alternatives, I want to compare baisics to Trainerize.",
-      "acceptanceCriteria": [
-        "Create src/content/blog/baisics-vs-trainerize/index.tsx",
-        "Use template structure from US-008",
-        "Include factual Trainerize pricing (research current plans)",
-        "Highlight baisics differentiators: AI-generated programs, simpler UX, lower cost",
-        "SEO title: 'Baisics vs Trainerize: 2026 Comparison for Fitness Coaches'",
-        "Non-disparaging, factual tone",
-        "npx tsc --noEmit passes"
-      ],
-      "priority": 9,
-      "passes": true,
-      "notes": "Issue #218 - First comparison post - VERIFIED: Post exists with all required elements, pricing, differentiators, and factual tone"
-    },
-    {
-      "id": "US-010",
-      "title": "Final verification and build check",
-      "description": "As a developer, I want to verify all changes build and work together.",
-      "acceptanceCriteria": [
-        "npx tsc --noEmit passes",
-        "npm run build succeeds",
-        "No new TypeScript errors introduced"
-      ],
-      "priority": 10,
-      "passes": true,
-      "notes": "Final verification - VERIFIED: tsc passes, build succeeds"
+      "notes": "Final assembly"
     }
   ]
 }

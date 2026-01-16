@@ -1,136 +1,123 @@
 # Ralph Progress Log
-Started: Thu Jan 15 10:56:24 EST 2026
+Started: Thu Jan 15 20:17:50 EST 2026
 ---
 
-## 2026-01-15 - US-001: Add notes state and expandable UI to BigSetInputCard
-- Added `localNotes` and `showNotes` state variables
-- Added 📝 icon button in a new flex column next to weight/reps inputs
-- Icon toggles textarea visibility (collapsed by default)
-- Textarea styled with white/20 bg, white text to match card style
-- Icon shows filled state (brighter bg: white/40) when notes exist
-- Reset notes state when switching sets (in useEffect)
-- Files changed: `src/components/workout/BigSetInputCard.tsx`
+## 2026-01-15 20:25 - US-001: Create dev page scaffold for rest day prototypes
+- Created src/app/dev/rest-day/page.tsx with toggle buttons for Options A-F
+- Added rest-day entry to DEV_PAGES array in src/app/dev/page.tsx
+- Page uses dark bg (#0F172A) with coral accents (#FF6B6B) matching other dev pages
+- Created components subdirectory for future option components
 - **Learnings for future iterations:**
-  - BigSetInputCard uses local state + useEffect sync pattern for switching sets
-  - Card styling uses white/20 bg with border-white/30 for inputs
-  - Changed grid-cols-2 to flex layout to accommodate the notes button
+  - Dev pages follow consistent pattern: dark background, coral accents, toggle selector, description panel
+  - Look at src/app/dev/exercise-cards/page.tsx for full component example with options
+  - Options are labeled with short names (Zen, Celebrate, Active, Coach, Game, Social)
+  - Component preview area uses light bg (#F8FAFC) for contrast
 ---
 
-## 2026-01-15 - US-002: Pass notes through onComplete callback
-- Updated `BigSetInputCardProps` interface: `onComplete: (weight, reps, notes?) => void`
-- Modified `handleComplete` to pass `localNotes || undefined` as third param
-- Files changed: `src/components/workout/BigSetInputCard.tsx`
+## 2026-01-15 20:45 - US-002: Option A: Minimal zen rest card
+- Created src/app/dev/rest-day/components/RestDayOptionA.tsx
+- Design: Calm white/light gradient card, moon icon, minimal text
+- Shows: "Rest Day" title, encouraging message ("Your body grows stronger during rest"), next workout preview
+- Added subtle "Preview next workout" CTA
+- Updated page.tsx to import and render Option A component
 - **Learnings for future iterations:**
-  - Optional params should be passed as `value || undefined` to keep them truly optional
-  - Interface changes don't require updating consumers until they want to use the new param
+  - Rest day components receive `nextWorkout` prop with `name` and `dayOfWeek`
+  - Use subtle gradients (white → gray-50 → gray-100) for calm feel
+  - Preview area renders conditionally based on `activeOption` state
+  - SVG icons from heroicons work well, use low opacity for zen aesthetic
 ---
 
-## 2026-01-15 - US-003: Update workout page to handle notes
-- Updated `onComplete` callback to accept third `notes` parameter
-- Added `notes` field to the `logData` object passed to `updateSet`
-- The API at `/api/exercise-logs/[id]/sets/[setNumber]` already accepts `notes` in request body
-- Files changed: `src/app/workout/[id]/page.tsx`
+## 2026-01-15 21:05 - US-003: Option B: Achievement celebration card
+- Created src/app/dev/rest-day/components/RestDayOptionB.tsx
+- Design: Warm orange gradient card with trophy icon and sparkle animations
+- Shows: "You crushed it!" message, progress ring (3/4 workouts), streak display (7 days)
+- Progress ring uses SVG with animated stroke-dashoffset for smooth appearance
+- Next workout teaser with "Preview →" button
+- Updated page.tsx to import and render Option B with mock data
 - **Learnings for future iterations:**
-  - The `SetLog` interface already has `notes?: string` defined
-  - The API route already handles notes field - just needed to pass it through
-  - The data flow is: BigSetInputCard → onComplete → updateSet → API (PUT request body)
+  - SVG progress rings: circumference = 2 * PI * radius, use strokeDashoffset for fill animation
+  - Props pattern: workoutsCompleted, weeklyTarget, streak, nextWorkout
+  - Orange warm palette: #FFF7ED → #FFEDD5 → #FED7AA gradients, #F97316 accents
+  - Ping animation creates subtle celebration effect with multiple offset dots
 ---
 
-## 2026-01-15 - US-004: Verify API saves notes to SetLog
-- **Verification complete**: API already fully supports notes
-- Actual API path: `src/app/api/exercise-logs/[id]/sets/[setNumber]/route.ts` (not the path in PRD)
-- Line 21: `const { weight, reps, notes } = body;` - extracts notes from request
-- Lines 62, 72: `notes: notes || null` - saves in both update and create
-- Prisma schema `SetLog` model has `notes String? @db.Text` at line 455
-- **No code changes needed** - this was a verification story
+## 2026-01-15 21:30 - US-004: Option C: Active recovery suggestions card
+- Created src/app/dev/rest-day/components/RestDayOptionC.tsx
+- Design: Green gradient card with heart icon, 3 tappable activity tiles
+- Options: "Log Nutrition" (yellow), "Light Stretch" (purple, locked/premium), "Train Anyway" (blue)
+- Premium badge on locked option with lock icon, dashed border indicates unavailable
+- Emphasized "optional" messaging - rest is totally fine
+- Next workout preview at bottom
+- Updated page.tsx to import and render Option C
 - **Learnings for future iterations:**
-  - API route for sets is `/api/exercise-logs/[id]/sets/[setNumber]`, NOT `/api/workouts/[id]/sets`
-  - Always verify actual file paths before assuming they match PRD
-  - Some stories are verification-only and don't require code changes
+  - Green palette: #F0FDF4 → #DCFCE7 → #BBF7D0 gradients, #22C55E accents, #166534 text
+  - Premium/locked features: use dashed border, reduced opacity, "Premium" badge, lock icon
+  - Activity tiles pattern: icon box (gradient bg) + text + chevron, hover states
+  - Escape apostrophes in JSX: use &apos; to pass lint
 ---
 
-## 2026-01-15 - US-005: Fix unsanitized exercise name in coaching query
-- Changed line 59 in `src/app/api/workout/chat/route.ts`
-- Was: `context.exerciseName` (unsanitized user input)
-- Now: `sanitizedContext.exerciseName` (properly sanitized)
-- `sanitizedContext` already defined at lines 49-53, just needed to use it
-- Files changed: `src/app/api/workout/chat/route.ts`
+## 2026-01-15 21:55 - US-005: Option D: Coach wisdom card
+- Created src/app/dev/rest-day/components/RestDayOptionD.tsx
+- Design: Purple gradient card with lightbulb icon, rotating recovery tips
+- 5 science-backed tips with source attributions (sleep, hydration, active recovery, protein synthesis, muscle growth)
+- Tips rotate based on day of week for consistency across sessions
+- Each tip has a contextual icon (moon for sleep, heart for active recovery, etc.)
+- Subtle reassuring message: "Your body is recovering and getting stronger today"
+- Next workout preview at bottom
+- Updated page.tsx to import and render Option D
 - **Learnings for future iterations:**
-  - The chat API has good security patterns: sanitizes inputs at lines 43, 49-53
-  - When adding new uses of user input, always check if sanitized version exists
-  - Prisma queries with user input should use sanitized values to prevent injection
+  - Purple palette: #F5F3FF → #EDE9FE → #DDD6FE gradients, #8B5CF6/#7C3AED accents, #5B21B6 text
+  - Rotating content: use `new Date().getDay() % array.length` for day-based "random" selection
+  - Props pattern for all rest day components: `nextWorkout?: { name: string; dayOfWeek: string }`
+  - Icon component with switch statement keeps SVGs organized in one place
 ---
 
-## 2026-01-15 - US-006: Improve error handling in program create actions
-- Added `Prisma` import from `@prisma/client`
-- Enhanced catch block in `createManualProgram` with specific error handling:
-  - `P2002`: Unique constraint violation → "A program with this name already exists."
-  - `P2003`: Foreign key constraint → "Invalid exercise reference. Please refresh and try again."
-  - `P2025`: Record not found → "Referenced data not found. Please refresh and try again."
-  - Default Prisma errors → "Database error. Please try again."
-  - `PrismaClientValidationError` → "Invalid data format. Please check your inputs."
-  - Generic fallback for unknown errors
-- Files changed: `src/app/program/create/actions.ts`
+## 2026-01-15 22:30 - US-006: Option E: Gamified rest card
+- Created src/app/dev/rest-day/components/RestDayOptionE.tsx
+- Design: Fuchsia/purple gradient card with star badge, gamification elements
+- Shows: "Recovery Mission" badge with +50 XP reward overlay
+- Progress bar: "Recovery Progress" fills based on hours elapsed (0-24)
+- Streak display with "Includes rest" badge showing rest protects streak
+- Mini badges earned today: Rest Champion, Recovery Master, Streak Shield
+- Next workout preview at bottom with "+100 XP" reward teaser
+- Updated page.tsx to import and render Option E with mock data (streak=7, restDayXP=50)
 - **Learnings for future iterations:**
-  - Codebase pattern: import `{ Prisma } from '@prisma/client'`, use `error instanceof Prisma.PrismaClientKnownRequestError`
-  - Check `error.code` for specific Prisma error codes (P2002, P2003, P2025, etc.)
-  - Reference implementation: `src/lib/actions/user.ts` lines 27-31
+  - Fuchsia palette: #FDF4FF → #FAE8FF → #F5D0FE gradients, #A855F7/#D946EF accents, #86198F text
+  - Props pattern: streak, restDayXP, nextWorkout
+  - Time-based progress: use `new Date().getHours() + new Date().getMinutes() / 60` for smooth calc
+  - Badge row with gradient backgrounds creates visual reward collection
+  - Subtle rotate transform on hover adds playfulness without being annoying
+  - Yellow accents (#FEF08A → #FDE047) work well for XP/reward elements
 ---
 
-## 2026-01-15 - US-007: Add transition error handling to ProgramBuilder
-- Added `toast` import from `sonner` (existing toast library used in the app)
-- Wrapped `startTransition` async callback with try-catch block
-- On server action error (result.error): shows error in both state and toast
-- On network/unexpected error (catch): shows connection error toast
-- Toast uses `toast.error()` with title and description
-- Files changed: `src/app/program/create/components/ProgramBuilder.tsx`
+## 2026-01-15 23:00 - US-007: Option F: Social proof card
+- Created src/app/dev/rest-day/components/RestDayOptionF.tsx
+- Design: Cyan/teal gradient card with community icon, social proof elements
+- Shows: "2,847 others are resting today" with avatar stack
+- Avatar stack: 6 anonymous gradient avatars + "+Xk" indicator
+- Top performers insight: "Top performers rest 2x per week"
+- Reassuring message: "Smart athletes prioritize recovery"
+- Next workout preview at bottom
+- Updated page.tsx to import and render Option F with mock data
 - **Learnings for future iterations:**
-  - App uses `sonner` for toasts, imported as `import { toast } from 'sonner'`
-  - Toast patterns: `toast.error('Title', { description: 'Details' })`
-  - Toaster component already mounted in `src/app/layout.tsx` with `richColors position="top-center"`
-  - Reference implementation: `src/app/import/page.tsx` lines 258, 329
+  - Cyan/teal palette: #ECFEFF → #CFFAFE → #A5F3FC gradients, #22D3EE/#06B6D4 accents, #0E7490 text
+  - Props pattern: othersResting, topPerformerRestDays, nextWorkout
+  - Avatar stack: use -space-x-3 for overlapping, z-index for stacking order
+  - Social proof messaging: normalize the behavior ("others are doing it"), cite authority ("top performers")
+  - Number formatting: use .toLocaleString() for thousands separators (2,847 not 2847)
 ---
 
-## 2026-01-15 - US-008: Create competitor comparison blog template
-- **VERIFIED EXISTING**: Template already exists at `src/content/blog/_templates/competitor-comparison-template.tsx`
-- PRD specified `templates/` but codebase convention is `_templates/` (underscore prefix)
-- Template includes all required sections with detailed comments:
-  - Quick comparison table
-  - What is [Competitor]? section
-  - What is Baisics? section
-  - Pricing comparison
-  - Feature comparison
-  - Decision framework ("Choose X if...")
-  - CTA section
-  - FAQ section
-- README.md in _templates/ documents usage, tone guidelines, and SEO checklist
-- **No code changes needed** - template was already complete
+## 2026-01-15 23:30 - US-008: Wire up all options with toggle
+- Verified all 6 options (A-F) are imported and wired up in page.tsx
+- Toggle buttons show correctly: A (Zen), B (Celebrate), C (Active), D (Coach), E (Game), F (Social)
+- Mock data in place: workoutsThisWeek=3, weeklyTarget=4, nextWorkout='Legs', streak=7
+- Responsive grid: 3 columns mobile, 6 columns desktop (grid-cols-3 sm:grid-cols-6)
+- npm run lint passes (only pre-existing warnings from other files)
+- npm run build passes successfully (page builds at 6.86 kB)
+- All 6 options render without errors
 - **Learnings for future iterations:**
-  - Blog templates live in `src/content/blog/_templates/` (underscore prefix)
-  - Always check existing files before implementing - work may already be done
-  - PRD paths may differ slightly from actual codebase conventions
----
-
-## 2026-01-15 - US-009: Write baisics vs Trainerize comparison post
-- **VERIFIED EXISTING**: Post exists at `src/content/blog/baisics-vs-trainerize/index.tsx`
-- Post follows template structure with all required sections
-- Includes factual Trainerize pricing (Basic free, Grow $9/mo, Pro $20-100/mo, Studio $225/mo)
-- Highlights baisics differentiators: AI-generated programs, $5/mo flat pricing, simpler UX
-- Title: "Baisics vs Trainerize: Which Fitness App Is Right for You?" (similar to SEO requirement)
-- Tone is factual and non-disparaging throughout
-- **No code changes needed** - post was already complete
-- **Learnings for future iterations:**
-  - Check if content already exists before starting to write new content
-  - Existing baisics-vs-trainerize post is good reference for future competitor comparisons
----
-
-## 2026-01-15 - US-010: Final verification and build check
-- Verified `npx tsc --noEmit` passes (no TypeScript errors)
-- Verified `npm run build` succeeds (all pages compile)
-- Lint passes (only pre-existing warnings, no errors)
-- All 10 user stories now have `passes: true`
-- **Sprint complete** - all issues (#246, #218, #192) implemented
-- **Learnings for future iterations:**
-  - Sprint included mix of: new features (notes), security fixes (sanitization), improvements (error handling), verification (existing work)
-  - Some stories were verification-only - always check existing code first
+  - Each story (US-002 through US-007) incrementally added its component AND wired it into page.tsx
+  - Final assembly story (US-008) was mostly complete by the time we got here
+  - Always verify final state before marking complete - work may have been done incrementally
+  - Props consistency across all options: nextWorkout={ name, dayOfWeek } is the common pattern
 ---
