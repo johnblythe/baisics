@@ -28,6 +28,8 @@ import { CompletionRing, WeeklyDayIndicators, WeeklyDayLegend } from '@/componen
 import type { DayInfo } from '@/components/weekly-progress';
 import { RecoveryScreen } from '@/components/recovery';
 import type { RecoveryData } from '@/app/api/programs/[programId]/recovery/route';
+import { Week2CheckInModal } from '@/components/week2-checkin';
+import type { Week2CheckInData } from '@/app/api/programs/[programId]/week2-checkin/route';
 
 // Types for our API responses
 interface ProgramOverview {
@@ -312,6 +314,8 @@ function DashboardContent() {
   const [restDayData, setRestDayData] = useState<RestDayData | null>(null);
   const [recoveryData, setRecoveryData] = useState<RecoveryData | null>(null);
   const [showRecoveryScreen, setShowRecoveryScreen] = useState(false);
+  const [week2CheckInData, setWeek2CheckInData] = useState<Week2CheckInData | null>(null);
+  const [showWeek2CheckIn, setShowWeek2CheckIn] = useState(false);
 
   useEffect(() => {
     const disclaimerAcknowledged = localStorage.getItem('disclaimer-acknowledged');
@@ -369,7 +373,7 @@ function DashboardContent() {
         const programAccess = await fetch(`/api/programs/${programId}`);
         if (!programId) return;
 
-        const [overview, stats, weightDataResponse, progressPhotos, activityResponse, currentWorkout, activities, restDay, recovery] = await Promise.all([
+        const [overview, stats, weightDataResponse, progressPhotos, activityResponse, currentWorkout, activities, restDay, recovery, week2CheckIn] = await Promise.all([
           fetch(`/api/programs/${programId}/overview`).then(r => r.json()) as Promise<ProgramOverview>,
           fetch(`/api/programs/${programId}/stats`).then(r => r.json()) as Promise<ProgramStats>,
           fetch(`/api/programs/${programId}/weight-tracking`).then(r => r.json()) as Promise<WeightData>,
@@ -378,7 +382,8 @@ function DashboardContent() {
           fetch(`/api/programs/${programId}/current-workout`).then(r => r.json()) as Promise<CurrentWorkout>,
           fetch(`/api/programs/${programId}/activity`).then(r => r.json()) as Promise<Activity[]>,
           fetch(`/api/programs/${programId}/rest-day`).then(r => r.json()) as Promise<RestDayData>,
-          fetch(`/api/programs/${programId}/recovery`).then(r => r.json()) as Promise<RecoveryData>
+          fetch(`/api/programs/${programId}/recovery`).then(r => r.json()) as Promise<RecoveryData>,
+          fetch(`/api/programs/${programId}/week2-checkin`).then(r => r.json()) as Promise<Week2CheckInData>
         ]);
 
         setProgram(overview);
@@ -391,6 +396,7 @@ function DashboardContent() {
         setActivities(activities);
         setRestDayData(restDay);
         setRecoveryData(recovery);
+        setWeek2CheckInData(week2CheckIn);
 
         // Show recovery screen if needed and not already dismissed this session
         if (recovery?.needsRecovery) {
@@ -398,6 +404,16 @@ function DashboardContent() {
           const lastDismissed = sessionStorage.getItem(recoveryDismissedKey);
           if (!lastDismissed) {
             setShowRecoveryScreen(true);
+          }
+        }
+
+        // Show Week 2 check-in if needed and not showing recovery screen
+        // Recovery takes priority over check-in
+        if (week2CheckIn?.shouldShow && !recovery?.needsRecovery) {
+          const week2DismissedKey = `week2-checkin-dismissed-${programId}`;
+          const lastDismissed = sessionStorage.getItem(week2DismissedKey);
+          if (!lastDismissed) {
+            setShowWeek2CheckIn(true);
           }
         }
 
@@ -538,6 +554,20 @@ function DashboardContent() {
     handleRecoveryDismiss();
   }, [program?.id, recoveryData?.daysSinceLastWorkout, handleRecoveryDismiss]);
 
+  // Handle Week 2 check-in dismiss (ask me later)
+  const handleWeek2CheckInDismiss = useCallback(() => {
+    if (program?.id) {
+      sessionStorage.setItem(`week2-checkin-dismissed-${program.id}`, 'true');
+    }
+    setShowWeek2CheckIn(false);
+  }, [program?.id]);
+
+  // Handle Week 2 check-in complete
+  const handleWeek2CheckInComplete = useCallback((option: string) => {
+    setShowWeek2CheckIn(false);
+    // No need to set session storage here since the API already marked it as shown
+  }, []);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -618,6 +648,16 @@ function DashboardContent() {
           programId={program.id}
           onDismiss={handleRecoveryDismiss}
           onSelectOption={handleRecoveryOptionSelect}
+        />
+      )}
+
+      {/* Week 2 Check-in Modal - shown once per program around workouts 5-8 */}
+      {showWeek2CheckIn && week2CheckInData?.shouldShow && program?.id && (
+        <Week2CheckInModal
+          data={week2CheckInData}
+          programId={program.id}
+          onComplete={handleWeek2CheckInComplete}
+          onDismiss={handleWeek2CheckInDismiss}
         />
       )}
 

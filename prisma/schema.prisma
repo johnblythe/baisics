@@ -298,6 +298,11 @@ model Program {
   // Sharing
   shareId String? @unique @map("share_id")
 
+  // Week 2 check-in intervention (shown once per program)
+  week2CheckInShown   Boolean   @default(false) @map("week2_check_in_shown")
+  week2CheckInShownAt DateTime? @map("week2_check_in_shown_at")
+  week2CheckInOption  String?   @map("week2_check_in_option") // "going_great", "too_hard", "too_easy", "life_happened"
+
   createdByUser User           @relation("ProgramAuthor", fields: [createdBy], references: [id])
   ownerUser     User?          @relation("ProgramOwner", fields: [userId], references: [id])
   clonedFrom    Program?       @relation("ProgramClones", fields: [clonedFromId], references: [id])
