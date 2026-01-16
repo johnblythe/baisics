@@ -63,3 +63,67 @@ All public-facing pages should match the v2a landing page styling:
   - `--color-coral-dark: #EF5350`
   - `--color-coral-light: #FFE5E5`
 - Reference: `src/app/landing-v2a/page.tsx`
+
+## Debug System for Condition-Based Testing
+
+**Location**: `src/lib/debug/` (client + API utilities)
+
+For testing features that trigger on specific conditions (user states, data thresholds, etc.), use the debug system. **This works at the API level** - components receive modified data and don't need debug-aware code.
+
+### How It Works
+1. Set state via URL: `?debug_state=rest_day` (sets cookie, page reloads)
+2. Or via console: `window.baisicsDebug.setState('missed_3_days')`
+3. Debug panel appears in bottom-right corner (dev only)
+4. API routes check the cookie and return modified response data
+5. Components "just work" - they see the simulated user state
+
+### Available States
+```typescript
+type DebugState =
+  | 'normal'                  // Default - no overrides
+  | 'first_workout'           // User has 0 workouts
+  | 'first_workout_complete'  // Just completed first workout
+  | 'rest_day'                // Force rest day dashboard
+  | 'missed_1_day'            // 1-day recovery screen
+  | 'missed_3_days'           // 3+ day recovery screen
+  | 'missed_7_days'           // Extended absence
+  | 'week_2_checkin'          // Trigger week 2 modal
+  | 'milestone_10'            // Next workout = 10th milestone
+  | 'milestone_25'            // Next workout = 25th milestone
+  | 'milestone_50'            // Next workout = 50th milestone
+  | 'program_complete'        // Program completion celebration
+  | 'program_almost_done';    // 95% through program
+```
+
+### Adding New Debug States
+When building features with condition-based triggers:
+1. Add state to `DebugState` type in `src/lib/debug/index.ts`
+2. Add to `DEBUG_STATES` array (label + description)
+3. Create override function in `src/lib/debug/api.ts`
+4. Add case to `withDebugOverrides()` switch
+5. Call `withDebugOverrides(data, 'route-type')` in your API route
+
+### Example: Adding Debug to an API Route
+```typescript
+// In your API route
+import { withDebugOverrides, logDebugState } from '@/lib/debug/api';
+
+export async function GET(req: Request) {
+  // ... fetch real data ...
+
+  const response = { isRestDay, stats, ... };
+
+  // Apply debug overrides (only affects dev, no-op in prod)
+  await logDebugState('my-route');
+  const finalResponse = await withDebugOverrides(response, 'rest-day');
+
+  return NextResponse.json(finalResponse);
+}
+```
+
+### Wired Routes
+- `/api/programs/[programId]/rest-day` - `rest_day` state
+- `/api/programs/[programId]/recovery` - `missed_*` states
+- `/api/programs/[programId]/week2-checkin` - `week_2_checkin` state
+- `/api/milestones` - `milestone_*` states
+- `/api/programs/[programId]/completion` - `program_complete` state

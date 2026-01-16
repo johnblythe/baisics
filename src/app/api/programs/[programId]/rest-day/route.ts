@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
+import { withDebugOverrides, logDebugState } from '@/lib/debug/api';
 
 // Educational content for rest days (rotating)
 const RECOVERY_TIPS = [
@@ -33,6 +34,96 @@ const RECOVERY_TIPS = [
     tip: 'Protein synthesis remains elevated 24-48 hours after training. Today is when gains are made.',
     source: 'Muscle & Fitness Research',
     icon: 'chart',
+  },
+  {
+    title: 'Stress Impacts Recovery',
+    tip: 'High cortisol from stress can slow muscle repair. Use rest days for mental recovery too - meditate, read, or relax.',
+    source: 'Psychophysiology Research',
+    icon: 'heart',
+  },
+  {
+    title: 'Nutrition Timing Matters Less Than You Think',
+    tip: 'Total daily protein intake matters more than timing. Focus on hitting your daily target across all meals.',
+    source: 'International Journal of Sport Nutrition',
+    icon: 'chart',
+  },
+  {
+    title: 'Foam Rolling Reduces DOMS',
+    tip: 'Self-myofascial release for 10-15 minutes can reduce delayed onset muscle soreness and improve flexibility.',
+    source: 'Journal of Athletic Training',
+    icon: 'muscle',
+  },
+  {
+    title: 'Cold Exposure Has Benefits',
+    tip: 'A cold shower or ice bath can reduce inflammation and speed recovery, especially after intense sessions.',
+    source: 'Sports Medicine Research',
+    icon: 'water',
+  },
+  {
+    title: 'Your Nervous System Needs Rest Too',
+    tip: 'Heavy training taxes your central nervous system. Rest days allow neural pathways to recover for better performance.',
+    source: 'Neuromuscular Research',
+    icon: 'muscle',
+  },
+  {
+    title: 'Walking is Underrated',
+    tip: 'A 20-30 minute walk promotes blood flow to muscles, aiding nutrient delivery and waste removal.',
+    source: 'Active Recovery Studies',
+    icon: 'heart',
+  },
+  {
+    title: 'Magnesium Supports Recovery',
+    tip: 'Magnesium helps with muscle relaxation and sleep quality. Consider foods like spinach, almonds, and dark chocolate.',
+    source: 'Nutritional Biochemistry',
+    icon: 'chart',
+  },
+  {
+    title: 'Rest Days Prevent Overtraining',
+    tip: 'Overtraining syndrome leads to decreased performance, fatigue, and injury. Strategic rest prevents burnout.',
+    source: 'Sports Medicine Journal',
+    icon: 'muscle',
+  },
+  {
+    title: 'Consistency Over Intensity',
+    tip: 'Taking rest days helps you train consistently long-term. Pushing through fatigue leads to forced time off from injury.',
+    source: 'Training Periodization Research',
+    icon: 'chart',
+  },
+  {
+    title: 'Sleep Quality Over Quantity',
+    tip: 'Deep sleep phases matter most for recovery. Limit screens before bed and keep your room cool and dark.',
+    source: 'Sleep Research',
+    icon: 'moon',
+  },
+  {
+    title: 'Glycogen Replenishment',
+    tip: 'Carbs on rest days help restore muscle glycogen. Don\'t skip them - they fuel your next workout.',
+    source: 'Sports Nutrition Science',
+    icon: 'chart',
+  },
+  {
+    title: 'Mental Benefits of Rest',
+    tip: 'Rest days reduce exercise burnout and keep motivation high. Missing workouts strategically is different from quitting.',
+    source: 'Sports Psychology',
+    icon: 'heart',
+  },
+  {
+    title: 'Contrast Therapy Works',
+    tip: 'Alternating hot and cold (showers, baths) can improve circulation and reduce muscle soreness effectively.',
+    source: 'Physical Therapy Research',
+    icon: 'water',
+  },
+  {
+    title: 'Omega-3s Fight Inflammation',
+    tip: 'Fatty fish, walnuts, and flaxseeds contain omega-3s that help reduce exercise-induced inflammation.',
+    source: 'Nutritional Science',
+    icon: 'chart',
+  },
+  {
+    title: 'Your Body Adapts During Rest',
+    tip: 'Supercompensation happens during recovery - your body rebuilds stronger than before. Trust the process.',
+    source: 'Training Adaptation Theory',
+    icon: 'muscle',
   },
 ];
 
@@ -325,7 +416,11 @@ export async function GET(
       programWeek,
     };
 
-    return NextResponse.json(response);
+    // Apply debug overrides if in development
+    await logDebugState('rest-day');
+    const finalResponse = await withDebugOverrides(response, 'rest-day');
+
+    return NextResponse.json(finalResponse);
   } catch (error) {
     console.error('Error fetching rest day data:', error);
     return NextResponse.json(

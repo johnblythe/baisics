@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { withDebugOverrides, logDebugState } from '@/lib/debug/api';
 
 export async function GET() {
   try {
@@ -64,7 +65,7 @@ export async function GET() {
       return sum + (set.weight || 0) * set.reps;
     }, 0);
 
-    return NextResponse.json({
+    const response = {
       milestones: milestones.map((m) => ({
         type: m.type,
         earnedAt: m.earnedAt,
@@ -75,7 +76,13 @@ export async function GET() {
         totalWorkouts,
         totalVolume,
       },
-    });
+    };
+
+    // Apply debug overrides if in development
+    await logDebugState('milestones');
+    const finalResponse = await withDebugOverrides(response, 'milestones');
+
+    return NextResponse.json(finalResponse);
   } catch (error) {
     console.error('Error fetching milestones:', error);
     return NextResponse.json(

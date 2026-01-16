@@ -4,6 +4,7 @@ import { GoogleAnalytics } from '@next/third-parties/google'
 import Providers from "@/components/Providers";
 import { GoogleTagManager } from '@next/third-parties/google'
 import { Toaster } from 'sonner';
+import { DebugPanelWrapper } from '@/components/debug/DebugPanelWrapper';
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://www.baisics.app'),
@@ -88,6 +89,7 @@ export default async function RootLayout({
           {children}
         </Providers>
         <Toaster richColors position="top-center" />
+        <DebugPanelWrapper />
       </body>
       <GoogleAnalytics gaId={process.env.GA_MEASUREMENT_ID || ""} />
     </html>

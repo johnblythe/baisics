@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { withDebugOverrides, logDebugState } from '@/lib/debug/api';
 
 // Types for API response
 export interface Week2CheckInData {
@@ -93,7 +94,11 @@ export async function GET(
       },
     };
 
-    return NextResponse.json(data);
+    // Apply debug overrides if in development
+    await logDebugState('week2-checkin');
+    const finalData = await withDebugOverrides(data, 'week2-checkin');
+
+    return NextResponse.json(finalData);
   } catch (error) {
     console.error('Error checking Week 2 check-in:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

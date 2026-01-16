@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
+import { withDebugOverrides, logDebugState } from '@/lib/debug/api';
 
 // Recovery tier messaging
 interface RecoveryTier {
@@ -298,7 +299,11 @@ export async function GET(
       quickComebackWorkout,
     };
 
-    return NextResponse.json(response);
+    // Apply debug overrides if in development
+    await logDebugState('recovery');
+    const finalResponse = await withDebugOverrides(response, 'recovery');
+
+    return NextResponse.json(finalResponse);
   } catch (error) {
     console.error('Error fetching recovery data:', error);
     return NextResponse.json(

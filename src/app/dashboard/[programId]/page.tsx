@@ -731,13 +731,6 @@ function DashboardContent() {
               <RestDayDashboard
                 data={restDayData}
                 programId={program.id}
-                onLogActivity={(type) => {
-                  // For now, just log to console - could integrate with API later
-                  console.log('Activity logged:', type);
-                }}
-                onStartWorkout={() => {
-                  // User chose to "Go HAM" - no special action needed, they'll use the link
-                }}
               />
             )}
             {/* Weekly Progress + Workout Card - Split view on desktop, stacked on mobile */}
@@ -885,15 +878,6 @@ function DashboardContent() {
                           router.refresh();
                         }}
                       />
-                      <button
-                        onClick={() => openModal('nutrition')}
-                        className="inline-flex items-center justify-center gap-3 px-6 py-4 bg-white text-[#0F172A] font-semibold rounded-xl border-2 border-[#E2E8F0] hover:border-[#FF6B6B] hover:text-[#FF6B6B] transition-all duration-200"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                        </svg>
-                        Log Nutrition
-                      </button>
                     </div>
                   </div>
                 </div>

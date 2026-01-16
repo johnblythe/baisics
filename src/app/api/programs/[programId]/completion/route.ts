@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
+import { withDebugOverrides, logDebugState } from '@/lib/debug/api';
 
 export interface ProgramCompletionData {
   isComplete: boolean;
@@ -184,7 +185,11 @@ export async function GET(
       userName: program.ownerUser?.name || undefined,
     };
 
-    return NextResponse.json(data);
+    // Apply debug overrides if in development
+    await logDebugState('program-completion');
+    const finalData = await withDebugOverrides(data, 'program-completion');
+
+    return NextResponse.json(finalData);
   } catch (error) {
     console.error('Error checking program completion:', error);
     return NextResponse.json(
