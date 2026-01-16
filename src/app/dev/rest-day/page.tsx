@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { RestDayOptionA } from './components/RestDayOptionA';
+import { RestDayOptionB } from './components/RestDayOptionB';
 
 type OptionKey = 'A' | 'B' | 'C' | 'D' | 'E' | 'F';
 
@@ -70,7 +71,15 @@ export default function RestDayDevPage() {
               nextWorkout={{ name: 'Legs', dayOfWeek: 'Tomorrow' }}
             />
           )}
-          {activeOption !== 'A' && (
+          {activeOption === 'B' && (
+            <RestDayOptionB
+              workoutsCompleted={3}
+              weeklyTarget={4}
+              streak={7}
+              nextWorkout={{ name: 'Legs', dayOfWeek: 'Tomorrow' }}
+            />
+          )}
+          {activeOption !== 'A' && activeOption !== 'B' && (
             <div className="text-center">
               <p className="text-[#94A3B8] mb-2">Option {activeOption} component</p>
               <p className="text-sm text-[#CBD5E1]">Component not yet implemented</p>
