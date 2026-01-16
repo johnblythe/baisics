@@ -248,3 +248,75 @@ Started: Fri Jan 16 10:51:03 EST 2026
   - UserIntake table stores original user goals for reminder display
 
 ---
+
+## 2026-01-16 18:XX - US-008: Weekly Summary Notification
+- What was implemented:
+  - Added `weeklySummaryEnabled` (Boolean) and `weeklySummaryDay` (String: "sunday" or "monday") fields to User model
+  - Database migration for weekly summary preferences
+  - Updated `/api/cron/weekly-summary` route with stricter auth and day logging
+  - Updated weekly summary service (`src/services/weeklySummary/index.ts`) to respect user preferences
+  - Service filters by weeklySummaryEnabled=true AND weeklySummaryDay matches current day
+  - Added weekly summary cron to vercel.json (runs daily at 8am UTC, service filters by day)
+  - Created `/api/user/notifications` endpoint (GET/PATCH) for notification preferences
+  - Added Notification Preferences section to `/settings` page with toggles and day selector
+  - Weekly summary and daily reminders run at different times (8am vs 2pm UTC) - no stacking
+
+- Files created:
+  - prisma/migrations/20260116180000_add_weekly_summary_preferences/migration.sql
+  - src/app/api/user/notifications/route.ts
+
+- Files modified:
+  - prisma/schema.prisma (added weeklySummaryEnabled, weeklySummaryDay to User)
+  - src/services/weeklySummary/index.ts (added getCurrentDayName, filter by user prefs)
+  - src/app/api/cron/weekly-summary/route.ts (stricter auth, logging)
+  - vercel.json (added weekly-summary cron at 8am UTC)
+  - src/app/settings/page.tsx (notification preferences UI)
+
+- **Learnings for future iterations:**
+  - Weekly summary service already existed - just needed preference filtering
+  - Cron runs daily at 8am UTC, service filters users by their preferred day
+  - "No stacking" achieved by running weekly (8am) and daily (2pm) at different times
+  - User preference API pattern: GET for current values, PATCH for updates
+  - Settings page already had dev toggles pattern - reused toggle UI style for notifications
+
+---
+
+## 2026-01-16 19:XX - US-009: Program Completion Notification
+- What was implemented:
+  - `/api/programs/[programId]/completion` API endpoint to detect program completion
+  - Program completion detection: all unique workouts have been completed at least once
+  - ProgramCompletionCelebration component with full-screen celebration experience
+  - Stats display: total workouts, total volume, total sets, duration in weeks
+  - Before/after comparison: Week 1 vs Final Week volume with growth percentage
+  - Share functionality: native share, Twitter/X, copy-to-clipboard
+  - `/share/program-completion` page for social sharing with OG metadata
+  - `/api/og/program-completion` edge function for OG image generation
+  - Email template for program completion notification
+  - Auto-sends celebration email when program is completed
+  - "Start Your Next Program" CTA linking to /hi for new program generation
+  - Integration into workout completion API (checks for completion after each workout)
+  - Workout page renders celebration when programCompletion.isComplete is true
+
+- Files created:
+  - src/app/api/programs/[programId]/completion/route.ts
+  - src/components/program-completion/ProgramCompletionCelebration.tsx
+  - src/components/program-completion/index.ts
+  - src/app/share/program-completion/page.tsx
+  - src/app/api/og/program-completion/route.tsx
+  - src/lib/email/templates/program-completion.ts
+
+- Files modified:
+  - src/app/api/workout-logs/[id]/complete/route.ts (added programCompletion check + email)
+  - src/app/workout/[id]/page.tsx (import, state, conditional render for program completion)
+  - src/lib/email/templates/index.ts (exported program-completion template)
+
+- **Learnings for future iterations:**
+  - Program completion detection: check if every unique workout ID in program has been completed
+  - Use completedWorkoutIds Set to track which workouts have been done
+  - Volume growth calculation: (final - first) / first * 100 for percentage
+  - Duration calculation: Math.ceil(ms difference / week in ms)
+  - Email sent fire-and-forget with .catch() to not block response
+  - OG image route uses query params since edge runtime can't access Prisma
+  - Celebration hierarchy: First workout > Program completion > Regular share modal
+
+---

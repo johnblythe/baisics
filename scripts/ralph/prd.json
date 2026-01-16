@@ -152,7 +152,7 @@
         "Does not stack with other notifications same day"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "User requested weekly pushes as default. Low pressure, informational."
     },
     {
@@ -170,7 +170,7 @@
         "Prompt for next program selection"
       ],
       "priority": 9,
-      "passes": false,
+      "passes": true,
       "notes": "Important milestone celebration. Transitions user to next program."
     }
   ]

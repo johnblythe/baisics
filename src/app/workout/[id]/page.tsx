@@ -16,6 +16,8 @@ import RestPeriodIndicator from '@/app/components/RestPeriodIndicator';
 import { WorkoutShareCard, WorkoutShareData } from '@/components/share/WorkoutShareCard';
 import { CalendarPicker } from '@/components/ui/CalendarPicker';
 import { FirstWorkoutCelebration } from '@/components/first-workout';
+import { ProgramCompletionCelebration } from '@/components/program-completion';
+import type { ProgramCompletionData } from '@/app/api/programs/[programId]/completion/route';
 
 // Helper to format date for display
 function formatDateForDisplay(date: Date): string {
@@ -105,6 +107,9 @@ export default function WorkoutPage() {
   // First workout celebration state
   const [showFirstWorkoutCelebration, setShowFirstWorkoutCelebration] = useState(false);
   const [firstWorkoutStats, setFirstWorkoutStats] = useState<{ setsCompleted: number; totalVolume: number } | null>(null);
+  // Program completion celebration state
+  const [showProgramCompletion, setShowProgramCompletion] = useState(false);
+  const [programCompletionData, setProgramCompletionData] = useState<ProgramCompletionData | null>(null);
 
   const findFirstIncompletePosition = (exercises: ExerciseWithLogs[]) => {
     for (let i = 0; i < exercises.length; i++) {
@@ -312,6 +317,10 @@ export default function WorkoutPage() {
           totalVolume: data.workoutStats?.totalVolume || 0,
         });
         setShowFirstWorkoutCelebration(true);
+      } else if (data.programCompletion?.isComplete) {
+        // Show program completion celebration
+        setProgramCompletionData(data.programCompletion);
+        setShowProgramCompletion(true);
       } else {
         // Prepare share data and show regular share modal
         const exercisesCompleted = exercises.filter(ex =>
@@ -391,6 +400,22 @@ export default function WorkoutPage() {
         onClose={() => {
           setShowFirstWorkoutCelebration(false);
           router.push('/dashboard');
+        }}
+      />
+    );
+  }
+
+  // Show program completion celebration (special experience when program is finished)
+  if (showProgramCompletion && programCompletionData) {
+    return (
+      <ProgramCompletionCelebration
+        data={programCompletionData}
+        onClose={() => {
+          setShowProgramCompletion(false);
+          router.push(`/dashboard/${programCompletionData.programId}`);
+        }}
+        onNextProgram={() => {
+          router.push('/hi');
         }}
       />
     );
