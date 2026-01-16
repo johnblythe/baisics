@@ -21,6 +21,12 @@ const DEV_PAGES = [
     description: 'Exercise logging flow, set inputs, rest timer prominence and integration',
     status: 'ready',
   },
+  {
+    path: '/dev/rest-day',
+    title: 'Rest Day UI (#233)',
+    description: 'Exploring rest day UX approaches - zen, celebration, active recovery, coaching, gamification, social proof',
+    status: 'ready',
+  },
 ];
 
 export default function DevIndexPage() {
