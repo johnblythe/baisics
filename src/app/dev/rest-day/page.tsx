@@ -7,6 +7,7 @@ import { RestDayOptionB } from './components/RestDayOptionB';
 import { RestDayOptionC } from './components/RestDayOptionC';
 import { RestDayOptionD } from './components/RestDayOptionD';
 import { RestDayOptionE } from './components/RestDayOptionE';
+import { RestDayOptionF } from './components/RestDayOptionF';
 
 type OptionKey = 'A' | 'B' | 'C' | 'D' | 'E' | 'F';
 
@@ -100,10 +101,11 @@ export default function RestDayDevPage() {
             />
           )}
           {activeOption === 'F' && (
-            <div className="text-center">
-              <p className="text-[#94A3B8] mb-2">Option {activeOption} component</p>
-              <p className="text-sm text-[#CBD5E1]">Component not yet implemented</p>
-            </div>
+            <RestDayOptionF
+              othersResting={2847}
+              topPerformerRestDays={2}
+              nextWorkout={{ name: 'Legs', dayOfWeek: 'Tomorrow' }}
+            />
           )}
         </div>
 
