@@ -34,14 +34,14 @@ export function SetProgressGrid({
           <button
             key={log.setNumber}
             onClick={() => {
-              if (!log.isCompleted) {
-                onSelect(idx === selectedIndex ? null : idx);
-              }
+              // Allow selecting completed sets for editing
+              onSelect(idx === selectedIndex ? null : idx);
             }}
-            disabled={log.isCompleted}
             className={`relative rounded-xl p-2.5 text-center transition-all ${
               log.isCompleted
-                ? 'bg-green-100 border-2 border-green-300 cursor-default'
+                ? isSelected
+                  ? 'bg-green-200 border-2 border-green-500 ring-2 ring-green-500 ring-offset-2'
+                  : 'bg-green-100 border-2 border-green-300 hover:border-green-400 cursor-pointer'
                 : isSelected
                   ? 'bg-[#FF6B6B] text-white ring-2 ring-[#FF6B6B] ring-offset-2'
                   : isActive

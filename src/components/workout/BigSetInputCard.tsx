@@ -7,6 +7,8 @@ interface BigSetInputCardProps {
   targetReps: string;
   weight: number | string;
   reps: number | string;
+  notes?: string;
+  isEditing?: boolean;
   onComplete: (weight: number, reps: number, notes?: string) => void;
 }
 
@@ -15,21 +17,23 @@ export function BigSetInputCard({
   targetReps,
   weight,
   reps,
+  notes = '',
+  isEditing = false,
   onComplete,
 }: BigSetInputCardProps) {
   // Local state for immediate UI response - NO auto-saving until complete
   const [localWeight, setLocalWeight] = useState<string>(weight ? String(weight) : '');
   const [localReps, setLocalReps] = useState<string>(reps ? String(reps) : '');
-  const [localNotes, setLocalNotes] = useState<string>('');
-  const [showNotes, setShowNotes] = useState<boolean>(false);
+  const [localNotes, setLocalNotes] = useState<string>(notes || '');
+  const [showNotes, setShowNotes] = useState<boolean>(!!notes);
 
   // Sync local state when props change (e.g., switching sets)
   useEffect(() => {
     setLocalWeight(weight ? String(weight) : '');
     setLocalReps(reps ? String(reps) : '');
-    setLocalNotes('');
-    setShowNotes(false);
-  }, [weight, reps, setNumber]);
+    setLocalNotes(notes || '');
+    setShowNotes(!!notes || isEditing); // Show notes field when editing
+  }, [weight, reps, notes, setNumber, isEditing]);
 
   // Only save when user explicitly completes the set - pass values directly
   const handleComplete = () => {
@@ -106,9 +110,13 @@ export function BigSetInputCard({
 
       <button
         onClick={handleComplete}
-        className="w-full py-4 rounded-xl bg-white text-[#FF6B6B] font-bold text-lg shadow-lg active:scale-[0.98] transition-transform"
+        className={`w-full py-4 rounded-xl font-bold text-lg shadow-lg active:scale-[0.98] transition-transform ${
+          isEditing
+            ? 'bg-green-500 text-white'
+            : 'bg-white text-[#FF6B6B]'
+        }`}
       >
-        Complete Set {setNumber}
+        {isEditing ? `Update Set ${setNumber}` : `Complete Set ${setNumber}`}
       </button>
     </div>
   );
