@@ -1,0 +1,40 @@
+There are still 4 stories with `passes: false` (US-006, US-007, US-008, US-009). The iteration is complete for US-005.
+
+**Summary of US-005 Implementation:**
+
+## Completed: US-005 - Completion Ring + Weekly Progress
+
+**What was implemented:**
+1. **CompletionRing component** (`src/components/weekly-progress/CompletionRing.tsx`)
+   - SVG ring with framer-motion animated fill
+   - Shows "X of Y workouts this week" in center
+   - Progress messages based on state: "Fresh week", "Off to a good start", "Halfway there", etc.
+   - Navy stroke (#E2E8F0 background), coral fill (#FF6B6B)
+   - Accessibility: aria-label announces progress
+
+2. **WeeklyDayIndicators component** (`src/components/weekly-progress/WeeklyDayIndicators.tsx`)
+   - Day-by-day status display: [check] completed, [arrow] today, [R] rest, [·] scheduled
+   - Animated entrance with framer-motion
+   - WeeklyDayLegend component for explaining indicators
+
+3. **Enhanced rest-day API** (`src/app/api/programs/[programId]/rest-day/route.ts`)
+   - Added `days` array with per-day status calculation
+   - Logic for expected workout days based on `daysPerWeek` (3-day = Mon/Wed/Fri, etc.)
+   - Kind approach: doesn't shame users for missed days
+
+4. **Dashboard integration** (`src/app/dashboard/[programId]/page.tsx`)
+   - Split view layout: ring left (1/3), workout card right (2/3) on desktop
+   - Mobile: stacked layout with ring centered above fold
+   - Integrates with existing rest-day data
+
+**All acceptance criteria met:**
+- ✅ SVG ring with animated fill
+- ✅ Shows X of Y workouts in center
+- ✅ Day indicators with proper status
+- ✅ Weekly framing (protects rest days)
+- ✅ Brand colors (coral fill, navy accents)
+- ✅ Desktop split view layout
+- ✅ Mobile ring ~40% viewport
+- ✅ Copy variants by progress
+- ✅ Accessible (screen reader support)
+- ✅ Smooth animation

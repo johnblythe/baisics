@@ -76,7 +76,7 @@
         "Uses milestone badge system for Day One badge"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "Peak-end rule. Critical moment - 4/5 dropout risk. Reference 236-design-concepts.md Concept 2."
     },
     {
@@ -96,7 +96,7 @@
         "Smooth animation on workout completion"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "Apple-proven pattern. Zeigarnik effect. Reference 236-design-concepts.md Concept 1."
     },
     {
@@ -117,7 +117,7 @@
         "Track analytics: recovery shown -> option selected -> workout completed"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": "Addresses #1 dropout cause (shame spiral). Reference 236-design-concepts.md Concept 3."
     },
     {

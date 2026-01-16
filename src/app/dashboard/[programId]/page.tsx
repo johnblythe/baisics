@@ -26,6 +26,8 @@ import { RestDayDashboard, RestDayData } from '@/components/rest-day';
 import { QuickLogButton } from '@/components/quick-log';
 import { CompletionRing, WeeklyDayIndicators, WeeklyDayLegend } from '@/components/weekly-progress';
 import type { DayInfo } from '@/components/weekly-progress';
+import { RecoveryScreen } from '@/components/recovery';
+import type { RecoveryData } from '@/app/api/programs/[programId]/recovery/route';
 
 // Types for our API responses
 interface ProgramOverview {
@@ -308,6 +310,8 @@ function DashboardContent() {
   const [isWorkoutSelectorOpen, setIsWorkoutSelectorOpen] = useState(false);
   const workoutSelectorRef = useRef<HTMLDivElement>(null);
   const [restDayData, setRestDayData] = useState<RestDayData | null>(null);
+  const [recoveryData, setRecoveryData] = useState<RecoveryData | null>(null);
+  const [showRecoveryScreen, setShowRecoveryScreen] = useState(false);
 
   useEffect(() => {
     const disclaimerAcknowledged = localStorage.getItem('disclaimer-acknowledged');
@@ -365,7 +369,7 @@ function DashboardContent() {
         const programAccess = await fetch(`/api/programs/${programId}`);
         if (!programId) return;
 
-        const [overview, stats, weightDataResponse, progressPhotos, activityResponse, currentWorkout, activities, restDay] = await Promise.all([
+        const [overview, stats, weightDataResponse, progressPhotos, activityResponse, currentWorkout, activities, restDay, recovery] = await Promise.all([
           fetch(`/api/programs/${programId}/overview`).then(r => r.json()) as Promise<ProgramOverview>,
           fetch(`/api/programs/${programId}/stats`).then(r => r.json()) as Promise<ProgramStats>,
           fetch(`/api/programs/${programId}/weight-tracking`).then(r => r.json()) as Promise<WeightData>,
@@ -373,7 +377,8 @@ function DashboardContent() {
           fetch(`/api/programs/${programId}/recent-activity`).then(r => r.json()) as Promise<{ workouts: RecentActivity[]; streak: number }>,
           fetch(`/api/programs/${programId}/current-workout`).then(r => r.json()) as Promise<CurrentWorkout>,
           fetch(`/api/programs/${programId}/activity`).then(r => r.json()) as Promise<Activity[]>,
-          fetch(`/api/programs/${programId}/rest-day`).then(r => r.json()) as Promise<RestDayData>
+          fetch(`/api/programs/${programId}/rest-day`).then(r => r.json()) as Promise<RestDayData>,
+          fetch(`/api/programs/${programId}/recovery`).then(r => r.json()) as Promise<RecoveryData>
         ]);
 
         setProgram(overview);
@@ -385,6 +390,16 @@ function DashboardContent() {
         setCurrentWorkout(currentWorkout);
         setActivities(activities);
         setRestDayData(restDay);
+        setRecoveryData(recovery);
+
+        // Show recovery screen if needed and not already dismissed this session
+        if (recovery?.needsRecovery) {
+          const recoveryDismissedKey = `recovery-dismissed-${programId}`;
+          const lastDismissed = sessionStorage.getItem(recoveryDismissedKey);
+          if (!lastDismissed) {
+            setShowRecoveryScreen(true);
+          }
+        }
 
       } catch (error) {
         console.error('Failed to fetch program:', error);
@@ -492,6 +507,37 @@ function DashboardContent() {
     }
   };
 
+  // Handle recovery screen dismiss
+  const handleRecoveryDismiss = useCallback(() => {
+    if (program?.id) {
+      sessionStorage.setItem(`recovery-dismissed-${program.id}`, 'true');
+    }
+    setShowRecoveryScreen(false);
+  }, [program?.id]);
+
+  // Handle recovery option selection (for analytics)
+  const handleRecoveryOptionSelect = useCallback(async (option: 'full' | 'quick' | 'not_today') => {
+    // Track the recovery option selection
+    if (program?.id) {
+      try {
+        await fetch('/api/analytics/recovery', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            programId: program.id,
+            action: 'option_selected',
+            option,
+            daysMissed: recoveryData?.daysSinceLastWorkout || 0,
+          }),
+        });
+      } catch (error) {
+        // Silent fail for analytics
+        console.error('Failed to track recovery option:', error);
+      }
+    }
+    handleRecoveryDismiss();
+  }, [program?.id, recoveryData?.daysSinceLastWorkout, handleRecoveryDismiss]);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -564,6 +610,17 @@ function DashboardContent() {
           onAcknowledge={() => setShowDisclaimer(false)}
         />
       )}
+
+      {/* Recovery Screen - shown when user returns after missing workouts */}
+      {showRecoveryScreen && recoveryData?.needsRecovery && program?.id && (
+        <RecoveryScreen
+          data={recoveryData}
+          programId={program.id}
+          onDismiss={handleRecoveryDismiss}
+          onSelectOption={handleRecoveryOptionSelect}
+        />
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         {/* Welcome banner for claim flow users */}
         {welcomeData?.show && program?.id && (

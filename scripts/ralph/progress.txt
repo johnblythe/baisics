@@ -121,3 +121,95 @@ Started: Fri Jan 16 10:51:03 EST 2026
   - API reuses existing updateStreak and checkAndAwardMilestone helpers
 
 ---
+
+## 2026-01-16 14:XX - US-004: First Workout Celebration
+- What was implemented:
+  - FirstWorkoutCelebration component with full-screen celebration experience
+  - Tasteful confetti animation (2-3 seconds, then stops)
+  - Day One badge display using existing MilestoneBadge component
+  - Animated workout stats counter (sets completed, total volume)
+  - Share functionality: native share, Twitter/X, copy-to-clipboard
+  - Auto-advance countdown (5 seconds) - pauses on user interaction
+  - Detection via `isFirstWorkout` flag in workout completion API response
+  - Workout stats calculation in completion API (setsCompleted, totalVolume)
+
+- Files created:
+  - src/components/first-workout/FirstWorkoutCelebration.tsx
+  - src/components/first-workout/index.ts (barrel export)
+
+- Files modified:
+  - src/app/api/workout-logs/[id]/complete/route.ts (added isFirstWorkout flag, workoutStats)
+  - src/app/workout/[id]/page.tsx (import, state, conditional render for first workout)
+
+- **Learnings for future iterations:**
+  - First workout detection: milestone type 'WORKOUT_1' just unlocked
+  - Auto-advance pattern: useEffect with interval, cancel on user interaction
+  - Stats animation: requestAnimationFrame with easing function for smooth counting
+  - Reuse existing MilestoneBadge component - don't create duplicate badge components
+  - workout completion API now returns: isFirstWorkout, workoutStats, streak, milestone
+
+---
+
+## 2026-01-16 15:XX - US-005: Completion Ring + Weekly Progress
+- What was implemented:
+  - CompletionRing component with SVG animated fill using framer-motion
+  - WeeklyDayIndicators component showing day-by-day status
+  - WeeklyDayLegend component explaining indicator meanings
+  - WeeklyProgressCard component combining ring + indicators
+  - Enhanced rest-day API with per-day status calculation
+  - Dashboard integration with split view layout (ring left, workout card right)
+  - Copy variants based on progress: "Fresh week", "Off to a good start", etc.
+  - Accessibility: aria-label with "X of Y workouts completed this week"
+
+- Files created:
+  - src/components/weekly-progress/CompletionRing.tsx
+  - src/components/weekly-progress/WeeklyDayIndicators.tsx
+  - src/components/weekly-progress/WeeklyProgressCard.tsx
+  - src/components/weekly-progress/index.ts (barrel export)
+
+- Files modified:
+  - src/app/api/programs/[programId]/rest-day/route.ts (added days array with per-day status)
+  - src/app/dashboard/[programId]/page.tsx (integrated CompletionRing, WeeklyDayIndicators)
+  - src/components/rest-day/RestDayDashboard.tsx (updated to use WeeklyDayIndicators, added DayInfo type)
+
+- **Learnings for future iterations:**
+  - SVG ring animation: use strokeDasharray/strokeDashoffset for progress fill
+  - Per-day status logic considers: completed workouts this week, expected workout days based on daysPerWeek
+  - Expected workout days heuristic: 3-day = Mon/Wed/Fri, 4-day = Mon/Tue/Thu/Fri, etc.
+  - Desktop split view: lg:flex-row with lg:w-1/3 for ring section
+  - Mobile: stacked layout with ring centered above fold
+  - Don't shame users for missed days - show as 'scheduled' not 'missed' to be kind
+
+---
+
+## 2026-01-16 16:XX - US-006: Missed Workout Recovery Flow
+- What was implemented:
+  - `/api/programs/[programId]/recovery` API endpoint for detecting missed workouts
+  - Two-tier recovery messaging: "Welcome back" (1-2 days) vs "No judgment" (3+ days)
+  - RecoveryScreen modal component with supportive messaging
+  - Lifetime stats display: total workouts, volume lifted, program progress %
+  - Three workout options: Today's Workout (full), Quick Comeback (3 exercises), Not Today
+  - Quick Comeback Workout generator: selects 3 compound exercises, 50% sets
+  - Program adjustment link for 3+ day absences
+  - Session-based dismissal (shows once per absence per session)
+  - Analytics tracking via `/api/analytics/recovery` endpoint
+  - Recovery screen never shows on rest days (integrates with rest-day logic)
+
+- Files created:
+  - src/app/api/programs/[programId]/recovery/route.ts (detection + comeback workout gen)
+  - src/components/recovery/RecoveryScreen.tsx (main modal component)
+  - src/components/recovery/index.ts (barrel export)
+  - src/app/api/analytics/recovery/route.ts (analytics tracking)
+
+- Files modified:
+  - src/app/dashboard/[programId]/page.tsx (import, state, fetch, conditional render)
+
+- **Learnings for future iterations:**
+  - Recovery detection: daysSinceLastWorkout >= 1 AND not a rest day
+  - Quick Comeback prefers compound exercises from ExerciseLibrary.isCompound field
+  - Session-based dismissal uses sessionStorage with programId key
+  - useCallback hooks must be called before any early returns (React rules of hooks)
+  - Analytics uses AppLog table with category='recovery_flow' for tracking
+  - Two recovery tiers based on daysSinceLastWorkout threshold (< 3 vs >= 3)
+
+---
