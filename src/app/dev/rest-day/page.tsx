@@ -6,6 +6,7 @@ import { RestDayOptionA } from './components/RestDayOptionA';
 import { RestDayOptionB } from './components/RestDayOptionB';
 import { RestDayOptionC } from './components/RestDayOptionC';
 import { RestDayOptionD } from './components/RestDayOptionD';
+import { RestDayOptionE } from './components/RestDayOptionE';
 
 type OptionKey = 'A' | 'B' | 'C' | 'D' | 'E' | 'F';
 
@@ -91,7 +92,14 @@ export default function RestDayDevPage() {
               nextWorkout={{ name: 'Legs', dayOfWeek: 'Tomorrow' }}
             />
           )}
-          {activeOption !== 'A' && activeOption !== 'B' && activeOption !== 'C' && activeOption !== 'D' && (
+          {activeOption === 'E' && (
+            <RestDayOptionE
+              streak={7}
+              restDayXP={50}
+              nextWorkout={{ name: 'Legs', dayOfWeek: 'Tomorrow' }}
+            />
+          )}
+          {activeOption === 'F' && (
             <div className="text-center">
               <p className="text-[#94A3B8] mb-2">Option {activeOption} component</p>
               <p className="text-sm text-[#CBD5E1]">Component not yet implemented</p>
