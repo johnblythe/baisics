@@ -1,8 +1,94 @@
 # Ralph Progress Log
-Started: Wed Jan 15 21:45:00 EST 2026
-PRD: 236-psych-ux-research - Psychological UX patterns for workout adherence
+Started: Fri Jan 16 10:51:03 EST 2026
+---
 
 ## Codebase Patterns
-(Patterns discovered during this research spike will be added here)
+
+### Achievement/Badge Patterns
+- Use framer-motion for animations (already in project)
+- Use react-confetti for celebration effects (already in project)
+- Share functionality: Native share API, Twitter/X integration, copy-to-clipboard
+- Modal pattern: Full-screen overlay with backdrop-blur-sm, rounded-2xl cards
+- Color gradient pattern: `bg-gradient-to-br from-[color1] to-[color2]`
+
+### API Pattern
+- Auth: Use `auth()` from `@/auth` for API routes (not getServerSession)
+- Error handling: Return NextResponse.json with status codes
+- Prisma: Use `@/lib/prisma` singleton
+
+### Component Patterns
+- Use `'use client'` directive for client components
+- Wrap useSearchParams in Suspense boundary (Next.js 15 requirement)
+- MainLayout wrapper for authenticated pages
+- Brand colors: #FF6B6B (coral), #0F172A (navy), #F8FAFC (bg)
+
+---
+
+## 2026-01-16 11:XX - US-001: Lifetime Milestone Badges System
+- What was implemented:
+  - MilestoneType enum + MilestoneAchievement model in Prisma
+  - Database migration for milestone_achievements table
+  - MilestoneBadge component with earned/locked visual states
+  - MilestoneBadgeGrid component showing all badges with progress bar
+  - MilestoneCelebrationModal with confetti, journey display, share options
+  - /achievements page showing all badges, stats summary, progress to next
+  - /api/milestones endpoint to fetch user milestones and stats
+  - Integration into workout completion API to check/award milestones
+  - /share/milestone page for social sharing with OG metadata
+  - /api/og/milestone edge function for OG image generation
+
+- Files created:
+  - prisma/migrations/20260116105341_add_milestone_achievements/migration.sql
+  - src/lib/milestones.ts (config + helper functions)
+  - src/lib/milestone-service.ts (check/award logic)
+  - src/components/milestones/MilestoneBadge.tsx
+  - src/components/milestones/MilestoneCelebrationModal.tsx
+  - src/components/milestones/index.ts
+  - src/app/achievements/page.tsx
+  - src/app/api/milestones/route.ts
+  - src/app/share/milestone/page.tsx
+  - src/app/api/og/milestone/route.tsx
+
+- Files modified:
+  - prisma/schema.prisma (added MilestoneType enum, MilestoneAchievement model, User relation)
+  - src/app/api/workout-logs/[id]/complete/route.ts (added milestone check)
+
+- **Learnings for future iterations:**
+  - useSearchParams requires Suspense wrapper in Next.js 15 for static generation
+  - API routes use `auth()` not `getServerSession(authOptions)`
+  - OG image routes should use `runtime = 'edge'` for performance
+  - Milestone thresholds: 1, 10, 25, 50, 100, 250, 365, 500, 1000
+  - Volume calculation: sum of (weight * reps) from all completed SetLogs
+
+---
+
+## 2026-01-16 12:XX - US-002: Rest Day Affirmation Screen
+- What was implemented:
+  - REST API endpoint `/api/programs/[programId]/rest-day` for rest day detection
+  - Rest day detection logic: completed weekly target OR already worked out today
+  - RestDayDashboard component with calmer visual design (gray/slate tones)
+  - Weekly progress ring showing X/Y workouts with animated SVG
+  - Lifetime stats display: total workouts, total volume, current streak
+  - Rotating educational coaching tips (5 recovery tips based on day of year)
+  - Optional activity logging: nutrition, stretching, foam rolling (zero-pressure)
+  - "Go HAM" option to start workout anyway on rest days
+  - Weekly schedule indicator with [R] markers for rest days
+  - Dashboard integration: shows RestDayDashboard when isRestDay=true, hides workout card
+
+- Files created:
+  - src/app/api/programs/[programId]/rest-day/route.ts (detection + stats API)
+  - src/components/rest-day/RestDayDashboard.tsx (main component)
+  - src/components/rest-day/index.ts (barrel export)
+
+- Files modified:
+  - src/app/dashboard/[programId]/page.tsx (import, state, fetch, conditional render)
+
+- **Learnings for future iterations:**
+  - Rest day detection uses simple logic: weekly completed >= weekly target OR worked out today
+  - WorkoutPlan has `daysPerWeek` field for determining weekly target
+  - Recovery tips rotate based on day of year modulo tip count
+  - formatVolume helper exists in src/lib/milestones.ts for displaying volume
+  - Conditional dashboard rendering: show rest day OR workout card (not both)
+  - Activity logging is client-side only for now (could add API endpoint later)
 
 ---

@@ -22,6 +22,7 @@ import { NutritionWidget } from '@/components/NutritionWidget';
 import { ClaimWelcomeBanner, storeWelcomeData, getWelcomeData } from '@/components/ClaimWelcomeBanner';
 import { StreakBadge } from '@/components/StreakBadge';
 import { ProgressShareCard, ProgressShareData } from '@/components/share/ProgressShareCard';
+import { RestDayDashboard, RestDayData } from '@/components/rest-day';
 
 // Types for our API responses
 interface ProgramOverview {
@@ -303,6 +304,7 @@ function DashboardContent() {
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null);
   const [isWorkoutSelectorOpen, setIsWorkoutSelectorOpen] = useState(false);
   const workoutSelectorRef = useRef<HTMLDivElement>(null);
+  const [restDayData, setRestDayData] = useState<RestDayData | null>(null);
 
   useEffect(() => {
     const disclaimerAcknowledged = localStorage.getItem('disclaimer-acknowledged');
@@ -360,14 +362,15 @@ function DashboardContent() {
         const programAccess = await fetch(`/api/programs/${programId}`);
         if (!programId) return;
 
-        const [overview, stats, weightDataResponse, progressPhotos, activityResponse, currentWorkout, activities] = await Promise.all([
+        const [overview, stats, weightDataResponse, progressPhotos, activityResponse, currentWorkout, activities, restDay] = await Promise.all([
           fetch(`/api/programs/${programId}/overview`).then(r => r.json()) as Promise<ProgramOverview>,
           fetch(`/api/programs/${programId}/stats`).then(r => r.json()) as Promise<ProgramStats>,
           fetch(`/api/programs/${programId}/weight-tracking`).then(r => r.json()) as Promise<WeightData>,
           fetch(`/api/programs/${programId}/progress-photos`).then(r => r.json()) as Promise<ProgressPhoto[]>,
           fetch(`/api/programs/${programId}/recent-activity`).then(r => r.json()) as Promise<{ workouts: RecentActivity[]; streak: number }>,
           fetch(`/api/programs/${programId}/current-workout`).then(r => r.json()) as Promise<CurrentWorkout>,
-          fetch(`/api/programs/${programId}/activity`).then(r => r.json()) as Promise<Activity[]>
+          fetch(`/api/programs/${programId}/activity`).then(r => r.json()) as Promise<Activity[]>,
+          fetch(`/api/programs/${programId}/rest-day`).then(r => r.json()) as Promise<RestDayData>
         ]);
 
         setProgram(overview);
@@ -378,6 +381,7 @@ function DashboardContent() {
         setWorkoutStreak(activityResponse.streak || 0);
         setCurrentWorkout(currentWorkout);
         setActivities(activities);
+        setRestDayData(restDay);
 
       } catch (error) {
         console.error('Failed to fetch program:', error);
@@ -622,8 +626,22 @@ function DashboardContent() {
                 </div>
               </div>
             )}
-            {/* Quick Workout Start Card - v2a coral accent theme */}
-            {currentWorkout?.nextWorkout && selectedWorkout && (
+            {/* Rest Day Dashboard - shown when user has completed their weekly workouts or worked out today */}
+            {restDayData?.isRestDay && program?.id && (
+              <RestDayDashboard
+                data={restDayData}
+                programId={program.id}
+                onLogActivity={(type) => {
+                  // For now, just log to console - could integrate with API later
+                  console.log('Activity logged:', type);
+                }}
+                onStartWorkout={() => {
+                  // User chose to "Go HAM" - no special action needed, they'll use the link
+                }}
+              />
+            )}
+            {/* Quick Workout Start Card - v2a coral accent theme - hidden on rest days */}
+            {!restDayData?.isRestDay && currentWorkout?.nextWorkout && selectedWorkout && (
               <div className="relative bg-white rounded-2xl border-l-4 border-l-[#FF6B6B] border border-[#E2E8F0] shadow-md p-6 lg:p-8">
                 {/* Decorative coral accent */}
                 <div className="absolute top-0 right-0 w-64 h-64 bg-[#FF6B6B]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none overflow-hidden"></div>

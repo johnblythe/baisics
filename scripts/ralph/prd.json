@@ -1,158 +1,177 @@
 {
   "project": "baisics",
-  "branchName": "ralph/236-psych-ux-research",
-  "description": "Research spike: Evidence-based psychological UX patterns for workout program adherence",
+  "branchName": "ralph/psych-ux-mvp",
+  "description": "MVP implementation of psychological UX patterns for workout adherence - milestone badges, rest days, progress rings, recovery flows",
   "userStories": [
     {
       "id": "US-001",
-      "title": "Research behavioral psychology foundations",
-      "description": "As a product designer, I need to understand the core psychological principles that drive behavior change so I can apply them intentionally.",
+      "title": "Lifetime Milestone Badges System",
+      "description": "As a user, I want to earn permanent badges for workout milestones so my progress is never lost even if I take breaks.",
       "acceptanceCriteria": [
-        "Create docs/research/236-psych-foundations.md",
-        "Cover: variable reward schedules, loss aversion, commitment devices, implementation intentions, identity-based habits",
-        "Each principle has: definition, research citation, fitness app example, risk of misuse",
-        "Minimum 5 principles documented with depth",
-        "File exists and is well-structured markdown"
+        "Add milestone thresholds: 1, 10, 25, 50, 100, 250, 365, 500, 1000 workouts",
+        "Create MilestoneBadge component with earned/locked states",
+        "Badge unlock triggers on workout completion when threshold crossed",
+        "Full-screen celebration modal on badge unlock with animation",
+        "Profile/achievements page showing all badges with progress to next",
+        "Badge quotes for each tier (see 236-design-concepts.md)",
+        "Share card generation for earned badges",
+        "Badges persist forever - never lost on breaks",
+        "Mobile-first responsive design"
       ],
       "priority": 1,
-      "passes": false,
-      "notes": "Research task - produce markdown documentation"
+      "passes": true,
+      "notes": "Foundation feature. Extends existing AchievementType. Reference 236-design-concepts.md Concept 5 for wireframes."
     },
     {
       "id": "US-002",
-      "title": "Deep dive Duolingo retention mechanics",
-      "description": "As a product designer, I need to understand how Duolingo achieves industry-leading retention through UX psychology.",
+      "title": "Rest Day Affirmation Screen",
+      "description": "As a user, I want rest days to feel like progress (not absence) so I don't feel guilty for not working out.",
       "acceptanceCriteria": [
-        "Create docs/research/236-competitor-duolingo.md",
-        "Document: streak system (mechanics, recovery, streak freeze), hearts/lives system, leagues/leaderboards, XP and levels, notification strategy, celebration moments",
-        "For each mechanic: what it is, why it works psychologically, screenshot/description, what baisics could adapt",
-        "Include what NOT to copy (dark patterns, aggressive tactics)",
-        "File exists and is well-structured markdown"
+        "Detect rest days from program schedule (non-workout days)",
+        "Dashboard variant for rest days - different visual treatment",
+        "Praise/progress section: show lifetime stats, weekly progress, encouraging message",
+        "Educational coaching content: why rest works, muscle growth science (rotating)",
+        "Optional activity logging: nutrition, stretching, foam rolling, extra workout",
+        "Activity log is zero-pressure (optional, clearly labeled)",
+        "'Go HAM' option - let users do another workout if they want",
+        "Weekly progress indicator shows [R] for rest days (protected, not missed)",
+        "Rest days NEVER break any streak or consistency metric",
+        "Mobile-first calmer visual design (less saturated colors)"
       ],
       "priority": 2,
-      "passes": false,
-      "notes": "Research task - analyze Duolingo app/website"
+      "passes": true,
+      "notes": "User feedback: B=praise, C=log options, D=coaching. Reference 236-design-concepts.md Concept 4."
     },
     {
       "id": "US-003",
-      "title": "Deep dive Strava social mechanics",
-      "description": "As a product designer, I need to understand how Strava uses social psychology to drive engagement.",
+      "title": "Quick Log - I Did It Button",
+      "description": "As a busy user, I want to quickly confirm I completed a workout without full logging so I maintain consistency even when rushed.",
       "acceptanceCriteria": [
-        "Create docs/research/236-competitor-strava.md",
-        "Document: kudos system, segments and local legends, activity feed, clubs, challenges, year-in-review",
-        "For each mechanic: what it is, why it works psychologically, what baisics could adapt",
-        "Note: Strava's audience (endurance athletes) vs ours (gym beginners) - what translates?",
-        "File exists and is well-structured markdown"
+        "One-tap 'I Did It' button on dashboard for scheduled workout days",
+        "Counts toward weekly progress and lifetime totals",
+        "Option to backfill details later (within 48 hours)",
+        "Works for: gym without phone, travel workouts, busy days",
+        "Visual confirmation on tap (checkmark animation)",
+        "Appears alongside 'Start Full Workout' - not a replacement",
+        "Clear messaging: 'Log that you worked out'",
+        "Updates completion ring immediately"
       ],
       "priority": 3,
       "passes": false,
-      "notes": "Research task - analyze Strava app/website"
+      "notes": "High impact, low effort. Reduces friction for maintaining consistency."
     },
     {
       "id": "US-004",
-      "title": "Deep dive Noom psychology-first approach",
-      "description": "As a product designer, I need to understand how Noom applies CBT and psychology explicitly in their UX.",
+      "title": "First Workout Celebration",
+      "description": "As a new user, I want my first workout to feel special so I'm motivated to come back for workout #2.",
       "acceptanceCriteria": [
-        "Create docs/research/236-competitor-noom.md",
-        "Document: color-coded food system, daily lessons/education, coach interactions, thought logging, progress psychology",
-        "Focus on: how they teach users about their own psychology (meta-awareness)",
-        "For each mechanic: what it is, why it works, what baisics could adapt",
-        "File exists and is well-structured markdown"
+        "Detect first workout completion per user",
+        "Full-screen celebration with tasteful confetti (2-3 sec max)",
+        "Day One badge unlocked with special quote",
+        "Show workout stats: sets completed, total volume lifted",
+        "Share card generation for social",
+        "Differentiated from subsequent workout completions (subsequent = shorter celebration)",
+        "Auto-advance after 5s if no interaction",
+        "Schedule 24h follow-up: 'Ready for workout #2?' (excitement, not guilt)",
+        "Uses milestone badge system for Day One badge"
       ],
       "priority": 4,
       "passes": false,
-      "notes": "Research task - analyze Noom app/website"
+      "notes": "Peak-end rule. Critical moment - 4/5 dropout risk. Reference 236-design-concepts.md Concept 2."
     },
     {
       "id": "US-005",
-      "title": "Analyze Apple Fitness rings and awards",
-      "description": "As a product designer, I need to understand Apple's minimalist but effective gamification approach.",
+      "title": "Completion Ring + Weekly Progress",
+      "description": "As a user, I want a visual ring showing my weekly workout progress so I can see how close I am to completing my week.",
       "acceptanceCriteria": [
-        "Create docs/research/236-competitor-apple-fitness.md",
-        "Document: ring mechanics (move/exercise/stand), award badges, sharing, competitions, monthly challenges",
-        "Focus on: simplicity, visual design, celebration timing",
-        "For each mechanic: what it is, why it works, what baisics could adapt",
-        "File exists and is well-structured markdown"
+        "SVG ring component with animated fill on completion",
+        "Shows 'X of Y workouts this week' in center",
+        "Day indicators below ring: [check] completed, [arrow] today, [R] rest, [empty] scheduled",
+        "Weekly framing (not daily) - protects rest days",
+        "Ring colors: navy stroke, coral fill (brand colors)",
+        "Desktop: split view with ring left, workout card right",
+        "Mobile: ring takes ~40% viewport above fold",
+        "Copy variants by progress (see 236-design-concepts.md)",
+        "Accessible: screen reader announces progress",
+        "Smooth animation on workout completion"
       ],
       "priority": 5,
       "passes": false,
-      "notes": "Research task - analyze Apple Fitness"
+      "notes": "Apple-proven pattern. Zeigarnik effect. Reference 236-design-concepts.md Concept 1."
     },
     {
       "id": "US-006",
-      "title": "Map baisics user journey intervention points",
-      "description": "As a product designer, I need to identify exactly WHERE in our user journey psychological interventions would have maximum impact.",
+      "title": "Missed Workout Recovery Flow",
+      "description": "As a user who missed workouts, I want a supportive recovery path so I can get back on track without shame.",
       "acceptanceCriteria": [
-        "Create docs/research/236-journey-map.md",
-        "Map key moments: first visit, program generation, first workout, day 3-7 (habit window), week 2 (dropout cliff), rest days, missed workout, milestones, program completion",
-        "For each moment: current UX, dropout risk level, psychological opportunity, intervention ideas",
-        "Include ASCII or mermaid diagram of journey with intervention points marked",
-        "File exists and is well-structured markdown"
+        "Detect absence: 1 day missed vs 3+ days absent",
+        "Recovery screen shown on return (before home, once per absence)",
+        "1-day miss: 'Welcome back' + progress safe messaging",
+        "3+ days: 'No judgment' + lifetime progress emphasis",
+        "Show: total workouts, week/program progress, volume lifted",
+        "Options: Today's Workout (full), Quick Session (3 exercises, 20 min), Not Today (defer)",
+        "Quick Comeback Workout generator: 3 compound movements, 50% sets, 70% weights",
+        "Program adjustment offer for 3+ day absence ('Make it easier' option)",
+        "'Not today' schedules reminder for tomorrow (not guilt-based)",
+        "Never shows on rest days",
+        "Track analytics: recovery shown -> option selected -> workout completed"
       ],
       "priority": 6,
       "passes": false,
-      "notes": "Research task - map our specific user journey"
+      "notes": "Addresses #1 dropout cause (shame spiral). Reference 236-design-concepts.md Concept 3."
     },
     {
       "id": "US-007",
-      "title": "Create pattern library with tasteful vs kitsch ratings",
-      "description": "As a product designer, I need a catalog of psychological patterns rated for brand fit so we can choose wisely.",
+      "title": "Week 2 Check-in Intervention",
+      "description": "As a user in week 2, I want a proactive check-in so I can adjust my program before I quit.",
       "acceptanceCriteria": [
-        "Create docs/research/236-pattern-library.md",
-        "Catalog minimum 15 patterns across: streaks, achievements, social, progress, celebration, commitment",
-        "Each pattern has: name, psychological principle, implementation example, baisics adaptation idea, tasteful rating (1-5), manipulation risk rating (1-5)",
-        "Separate section for 'patterns to avoid' with explanation",
-        "File exists and is well-structured markdown"
+        "Detect Week 2 of program (around workout 5-8 depending on schedule)",
+        "Check-in modal/screen: 'How's it going?'",
+        "Options: Going great, Too hard, Too easy, Life got in the way",
+        "Show original goals as reminder",
+        "Program difficulty adjustment flow if 'Too hard' selected",
+        "Reduce volume/frequency options",
+        "Encouraging message regardless of selection",
+        "Only shows once per program",
+        "Track: check-in shown -> option selected -> week 3 retention"
       ],
       "priority": 7,
       "passes": false,
-      "notes": "Research task - synthesize findings into actionable catalog"
+      "notes": "50%+ users quit by Week 2. Critical intervention point."
     },
     {
       "id": "US-008",
-      "title": "Design top 5 concepts with wireframes",
-      "description": "As a product designer, I need concrete design concepts for our highest-impact patterns so we can evaluate feasibility.",
+      "title": "Weekly Summary Notification",
+      "description": "As a user, I want a weekly summary push notification so I can see my progress at a glance.",
       "acceptanceCriteria": [
-        "Create docs/research/236-design-concepts.md",
-        "Select top 5 patterns from library based on: impact, feasibility, brand fit",
-        "Each concept has: pattern name, where it appears in UX, ASCII wireframe mockup, copy/messaging examples, implementation notes",
-        "Include mobile-first consideration for each",
-        "File exists and is well-structured markdown"
+        "Weekly notification (Sunday evening or Monday morning - configurable)",
+        "Content: workouts completed this week, total volume, streak/consistency status",
+        "Positive framing regardless of performance",
+        "Deep link to dashboard/progress view",
+        "Respects notification preferences (can disable)",
+        "Does not stack with other notifications same day"
       ],
       "priority": 8,
       "passes": false,
-      "notes": "Research task - create concrete design proposals"
+      "notes": "User requested weekly pushes as default. Low pressure, informational."
     },
     {
       "id": "US-009",
-      "title": "Create prioritized implementation roadmap",
-      "description": "As a product owner, I need a prioritized roadmap so we know what to build first.",
+      "title": "Program Completion Notification",
+      "description": "As a user who finishes a program, I want to be notified and celebrated so the milestone feels meaningful.",
       "acceptanceCriteria": [
-        "Create docs/research/236-roadmap.md",
-        "Prioritize all concepts by: retention impact (high/med/low), implementation effort (S/M/L/XL), brand alignment score",
-        "Group into: MVP (ship first), V2 (next iteration), Future (nice to have), Never (doesn't fit)",
-        "For MVP items: rough scope estimate, dependencies, risks",
-        "Include recommendation for first 1-2 features to prototype",
-        "File exists and is well-structured markdown"
+        "Detect program completion (all scheduled workouts done)",
+        "Push notification: 'You completed [Program Name]!'",
+        "Deep link to completion summary screen",
+        "Summary shows: total workouts, volume progress, time invested",
+        "Before/after stats comparison (Week 1 vs final week)",
+        "Program completion badge earned",
+        "Share card for social",
+        "Prompt for next program selection"
       ],
       "priority": 9,
       "passes": false,
-      "notes": "Research task - synthesize into actionable plan"
-    },
-    {
-      "id": "US-010",
-      "title": "Compile final research summary",
-      "description": "As a stakeholder, I need a single summary document that captures key findings and recommendations.",
-      "acceptanceCriteria": [
-        "Create docs/research/236-summary.md",
-        "Executive summary (1 page max): problem, approach, key findings, top recommendations",
-        "Link to all detailed research docs",
-        "Clear next steps section",
-        "File exists and is well-structured markdown"
-      ],
-      "priority": 10,
-      "passes": false,
-      "notes": "Research task - final synthesis"
+      "notes": "Important milestone celebration. Transitions user to next program."
     }
   ]
 }
