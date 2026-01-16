@@ -92,3 +92,32 @@ Started: Fri Jan 16 10:51:03 EST 2026
   - Activity logging is client-side only for now (could add API endpoint later)
 
 ---
+
+## 2026-01-16 13:XX - US-003: Quick Log - I Did It Button
+- What was implemented:
+  - Added `quickLog` and `quickLogExpiry` fields to WorkoutLog Prisma model
+  - Database migration for new quick_log fields
+  - `/api/workout-logs/quick-log` API endpoint for quick logging workouts
+  - QuickLogButton component with framer-motion animations
+  - Multi-state button: idle -> confirming -> loading -> success/error
+  - Integrated into dashboard alongside "Start Workout" button
+  - Updates streak and milestone tracking on quick log
+
+- Files created:
+  - prisma/migrations/20260116130000_add_quick_log_fields/migration.sql
+  - src/app/api/workout-logs/quick-log/route.ts
+  - src/components/quick-log/QuickLogButton.tsx
+  - src/components/quick-log/index.ts
+
+- Files modified:
+  - prisma/schema.prisma (added quickLog, quickLogExpiry fields to WorkoutLog)
+  - src/app/dashboard/[programId]/page.tsx (import + integration of QuickLogButton)
+
+- **Learnings for future iterations:**
+  - Quick log creates WorkoutLog with status='completed' immediately (no exercise logs)
+  - 48-hour expiry stored for potential backfill feature
+  - Button pattern: idle state, confirm step, loading, success animation
+  - Use framer-motion AnimatePresence with mode="wait" for smooth state transitions
+  - API reuses existing updateStreak and checkAndAwardMilestone helpers
+
+---

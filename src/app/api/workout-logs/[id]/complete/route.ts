@@ -102,6 +102,21 @@ export async function POST(
       });
     }
 
+    // Calculate workout stats for this specific workout
+    let workoutStats = { setsCompleted: 0, totalVolume: 0 };
+    try {
+      const completedSets = updatedWorkoutLog.exerciseLogs.flatMap(el => el.setLogs.filter(s => s.completedAt));
+      workoutStats.setsCompleted = completedSets.length;
+      workoutStats.totalVolume = completedSets.reduce((sum, set) => {
+        return sum + ((set.weight || 0) * set.reps);
+      }, 0);
+    } catch (statsError) {
+      console.error('Failed to calculate workout stats:', statsError);
+    }
+
+    // Determine if this is the user's first workout (WORKOUT_1 milestone just unlocked)
+    const isFirstWorkout = milestoneData.unlocked && milestoneData.milestone === 'WORKOUT_1';
+
     return NextResponse.json({
       ...updatedWorkoutLog,
       streak: {
@@ -114,7 +129,9 @@ export async function POST(
         type: milestoneData.milestone,
         totalWorkouts: milestoneData.totalWorkouts,
         totalVolume: milestoneData.totalVolume,
-      } : null
+      } : null,
+      isFirstWorkout,
+      workoutStats,
     });
   } catch (error) {
     console.error('Error completing workout:', error);

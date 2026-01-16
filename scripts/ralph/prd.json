@@ -57,7 +57,7 @@
         "Updates completion ring immediately"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "High impact, low effort. Reduces friction for maintaining consistency."
     },
     {
