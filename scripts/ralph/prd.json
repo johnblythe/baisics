@@ -1,154 +1,158 @@
 {
   "project": "baisics",
-  "branchName": "ralph/246-218-192-batch",
-  "description": "Batch: Set logging notes (#246), competitor comparison blog (#218), tech debt cleanup (#192)",
+  "branchName": "ralph/236-psych-ux-research",
+  "description": "Research spike: Evidence-based psychological UX patterns for workout program adherence",
   "userStories": [
     {
       "id": "US-001",
-      "title": "#246 - Add notes state and expandable UI to BigSetInputCard",
-      "description": "As a user logging my workout, I want to tap an icon to expand a notes field so I can record observations without cluttering the UI.",
+      "title": "Research behavioral psychology foundations",
+      "description": "As a product designer, I need to understand the core psychological principles that drive behavior change so I can apply them intentionally.",
       "acceptanceCriteria": [
-        "Add localNotes state to BigSetInputCard component",
-        "Add 📝 icon button next to weight/reps row",
-        "Tapping icon toggles textarea visibility (collapsed by default)",
-        "Textarea styled to match card (white/20 bg, white text)",
-        "Icon shows filled state when notes exist",
-        "npx tsc --noEmit passes"
+        "Create docs/research/236-psych-foundations.md",
+        "Cover: variable reward schedules, loss aversion, commitment devices, implementation intentions, identity-based habits",
+        "Each principle has: definition, research citation, fitness app example, risk of misuse",
+        "Minimum 5 principles documented with depth",
+        "File exists and is well-structured markdown"
       ],
       "priority": 1,
-      "passes": true,
-      "notes": "Issue #246 - UI changes in src/components/workout/BigSetInputCard.tsx"
+      "passes": false,
+      "notes": "Research task - produce markdown documentation"
     },
     {
       "id": "US-002",
-      "title": "#246 - Pass notes through onComplete callback",
-      "description": "As a developer, I need BigSetInputCard to pass notes data when set is completed.",
+      "title": "Deep dive Duolingo retention mechanics",
+      "description": "As a product designer, I need to understand how Duolingo achieves industry-leading retention through UX psychology.",
       "acceptanceCriteria": [
-        "Update onComplete prop signature to include notes: (weight, reps, notes?) => void",
-        "Pass localNotes value in handleComplete",
-        "Update BigSetInputCardProps interface",
-        "npx tsc --noEmit passes"
+        "Create docs/research/236-competitor-duolingo.md",
+        "Document: streak system (mechanics, recovery, streak freeze), hearts/lives system, leagues/leaderboards, XP and levels, notification strategy, celebration moments",
+        "For each mechanic: what it is, why it works psychologically, screenshot/description, what baisics could adapt",
+        "Include what NOT to copy (dark patterns, aggressive tactics)",
+        "File exists and is well-structured markdown"
       ],
       "priority": 2,
-      "passes": true,
-      "notes": "Issue #246 - Callback changes"
+      "passes": false,
+      "notes": "Research task - analyze Duolingo app/website"
     },
     {
       "id": "US-003",
-      "title": "#246 - Update workout page to handle notes",
-      "description": "As a developer, I need the workout page to receive and store notes from BigSetInputCard.",
+      "title": "Deep dive Strava social mechanics",
+      "description": "As a product designer, I need to understand how Strava uses social psychology to drive engagement.",
       "acceptanceCriteria": [
-        "Update onComplete handler in src/app/workout/[id]/page.tsx",
-        "Store notes in set log state",
-        "Pass notes to API when saving set",
-        "npx tsc --noEmit passes"
+        "Create docs/research/236-competitor-strava.md",
+        "Document: kudos system, segments and local legends, activity feed, clubs, challenges, year-in-review",
+        "For each mechanic: what it is, why it works psychologically, what baisics could adapt",
+        "Note: Strava's audience (endurance athletes) vs ours (gym beginners) - what translates?",
+        "File exists and is well-structured markdown"
       ],
       "priority": 3,
-      "passes": true,
-      "notes": "Issue #246 - Page integration"
+      "passes": false,
+      "notes": "Research task - analyze Strava app/website"
     },
     {
       "id": "US-004",
-      "title": "#246 - Verify API saves notes to SetLog",
-      "description": "As a developer, I need to ensure the sets API persists notes to the database.",
+      "title": "Deep dive Noom psychology-first approach",
+      "description": "As a product designer, I need to understand how Noom applies CBT and psychology explicitly in their UX.",
       "acceptanceCriteria": [
-        "Check src/app/api/workouts/[id]/sets/route.ts accepts notes param",
-        "Verify Prisma create/update includes notes field",
-        "Add notes to request body if not already present",
-        "npx tsc --noEmit passes"
+        "Create docs/research/236-competitor-noom.md",
+        "Document: color-coded food system, daily lessons/education, coach interactions, thought logging, progress psychology",
+        "Focus on: how they teach users about their own psychology (meta-awareness)",
+        "For each mechanic: what it is, why it works, what baisics could adapt",
+        "File exists and is well-structured markdown"
       ],
       "priority": 4,
-      "passes": true,
-      "notes": "Issue #246 - API verification/update - VERIFIED: API already handles notes correctly"
+      "passes": false,
+      "notes": "Research task - analyze Noom app/website"
     },
     {
       "id": "US-005",
-      "title": "#192 - Fix unsanitized exercise name in coaching query",
-      "description": "As a security-conscious developer, I need to use sanitized exercise name in the workout chat API.",
+      "title": "Analyze Apple Fitness rings and awards",
+      "description": "As a product designer, I need to understand Apple's minimalist but effective gamification approach.",
       "acceptanceCriteria": [
-        "In src/app/api/workout/chat/route.ts line 58",
-        "Change context.exerciseName to sanitizedContext.exerciseName",
-        "Verify sanitizedContext is available in scope",
-        "npx tsc --noEmit passes"
+        "Create docs/research/236-competitor-apple-fitness.md",
+        "Document: ring mechanics (move/exercise/stand), award badges, sharing, competitions, monthly challenges",
+        "Focus on: simplicity, visual design, celebration timing",
+        "For each mechanic: what it is, why it works, what baisics could adapt",
+        "File exists and is well-structured markdown"
       ],
       "priority": 5,
-      "passes": true,
-      "notes": "Issue #192 - Security fix"
+      "passes": false,
+      "notes": "Research task - analyze Apple Fitness"
     },
     {
       "id": "US-006",
-      "title": "#192 - Improve error handling in program create actions",
-      "description": "As a developer, I want more specific error messages based on error type.",
+      "title": "Map baisics user journey intervention points",
+      "description": "As a product designer, I need to identify exactly WHERE in our user journey psychological interventions would have maximum impact.",
       "acceptanceCriteria": [
-        "In src/app/program/create/actions.ts lines 116-119",
-        "Check for Prisma-specific errors (PrismaClientKnownRequestError)",
-        "Return different messages for validation vs DB vs unknown errors",
-        "Import Prisma error types if needed",
-        "npx tsc --noEmit passes"
+        "Create docs/research/236-journey-map.md",
+        "Map key moments: first visit, program generation, first workout, day 3-7 (habit window), week 2 (dropout cliff), rest days, missed workout, milestones, program completion",
+        "For each moment: current UX, dropout risk level, psychological opportunity, intervention ideas",
+        "Include ASCII or mermaid diagram of journey with intervention points marked",
+        "File exists and is well-structured markdown"
       ],
       "priority": 6,
-      "passes": true,
-      "notes": "Issue #192 - Error handling improvement"
+      "passes": false,
+      "notes": "Research task - map our specific user journey"
     },
     {
       "id": "US-007",
-      "title": "#192 - Add transition error handling to ProgramBuilder",
-      "description": "As a user, I want feedback when a server action fails during program creation.",
+      "title": "Create pattern library with tasteful vs kitsch ratings",
+      "description": "As a product designer, I need a catalog of psychological patterns rated for brand fit so we can choose wisely.",
       "acceptanceCriteria": [
-        "In src/app/program/create/components/ProgramBuilder.tsx",
-        "Wrap startTransition server action calls with try-catch",
-        "Show toast or error state on network/server failures",
-        "User should see feedback instead of silent failure",
-        "npx tsc --noEmit passes"
+        "Create docs/research/236-pattern-library.md",
+        "Catalog minimum 15 patterns across: streaks, achievements, social, progress, celebration, commitment",
+        "Each pattern has: name, psychological principle, implementation example, baisics adaptation idea, tasteful rating (1-5), manipulation risk rating (1-5)",
+        "Separate section for 'patterns to avoid' with explanation",
+        "File exists and is well-structured markdown"
       ],
       "priority": 7,
-      "passes": true,
-      "notes": "Issue #192 - UX improvement"
+      "passes": false,
+      "notes": "Research task - synthesize findings into actionable catalog"
     },
     {
       "id": "US-008",
-      "title": "#218 - Create competitor comparison blog template",
-      "description": "As a content creator, I need a reusable template for competitor comparison posts.",
+      "title": "Design top 5 concepts with wireframes",
+      "description": "As a product designer, I need concrete design concepts for our highest-impact patterns so we can evaluate feasibility.",
       "acceptanceCriteria": [
-        "Create src/content/blog/templates/competitor-comparison.tsx as reference template",
-        "Include sections: Quick comparison table, Pricing breakdown, Feature comparison, Decision framework, CTA",
-        "Follow existing blog post patterns in src/content/blog/",
-        "Add comments explaining each section purpose",
-        "npx tsc --noEmit passes"
+        "Create docs/research/236-design-concepts.md",
+        "Select top 5 patterns from library based on: impact, feasibility, brand fit",
+        "Each concept has: pattern name, where it appears in UX, ASCII wireframe mockup, copy/messaging examples, implementation notes",
+        "Include mobile-first consideration for each",
+        "File exists and is well-structured markdown"
       ],
       "priority": 8,
-      "passes": true,
-      "notes": "Issue #218 - Blog template creation - VERIFIED: Template exists at _templates/competitor-comparison-template.tsx following codebase conventions"
+      "passes": false,
+      "notes": "Research task - create concrete design proposals"
     },
     {
       "id": "US-009",
-      "title": "#218 - Write baisics vs Trainerize comparison post",
-      "description": "As a coach researching alternatives, I want to compare baisics to Trainerize.",
+      "title": "Create prioritized implementation roadmap",
+      "description": "As a product owner, I need a prioritized roadmap so we know what to build first.",
       "acceptanceCriteria": [
-        "Create src/content/blog/baisics-vs-trainerize/index.tsx",
-        "Use template structure from US-008",
-        "Include factual Trainerize pricing (research current plans)",
-        "Highlight baisics differentiators: AI-generated programs, simpler UX, lower cost",
-        "SEO title: 'Baisics vs Trainerize: 2026 Comparison for Fitness Coaches'",
-        "Non-disparaging, factual tone",
-        "npx tsc --noEmit passes"
+        "Create docs/research/236-roadmap.md",
+        "Prioritize all concepts by: retention impact (high/med/low), implementation effort (S/M/L/XL), brand alignment score",
+        "Group into: MVP (ship first), V2 (next iteration), Future (nice to have), Never (doesn't fit)",
+        "For MVP items: rough scope estimate, dependencies, risks",
+        "Include recommendation for first 1-2 features to prototype",
+        "File exists and is well-structured markdown"
       ],
       "priority": 9,
-      "passes": true,
-      "notes": "Issue #218 - First comparison post - VERIFIED: Post exists with all required elements, pricing, differentiators, and factual tone"
+      "passes": false,
+      "notes": "Research task - synthesize into actionable plan"
     },
     {
       "id": "US-010",
-      "title": "Final verification and build check",
-      "description": "As a developer, I want to verify all changes build and work together.",
+      "title": "Compile final research summary",
+      "description": "As a stakeholder, I need a single summary document that captures key findings and recommendations.",
       "acceptanceCriteria": [
-        "npx tsc --noEmit passes",
-        "npm run build succeeds",
-        "No new TypeScript errors introduced"
+        "Create docs/research/236-summary.md",
+        "Executive summary (1 page max): problem, approach, key findings, top recommendations",
+        "Link to all detailed research docs",
+        "Clear next steps section",
+        "File exists and is well-structured markdown"
       ],
       "priority": 10,
-      "passes": true,
-      "notes": "Final verification - VERIFIED: tsc passes, build succeeds"
+      "passes": false,
+      "notes": "Research task - final synthesis"
     }
   ]
 }
