@@ -1,142 +1,158 @@
 {
   "project": "baisics",
-  "branchName": "ralph/233-rest-day-prototypes",
-  "description": "Generate multiple rest day UI prototypes on dev page for comparison",
+  "branchName": "ralph/236-psych-ux-research",
+  "description": "Research spike: Evidence-based psychological UX patterns for workout program adherence",
   "userStories": [
     {
       "id": "US-001",
-      "title": "Create dev page scaffold for rest day prototypes",
-      "description": "As a developer, I need a dev page to hold all rest day UI variations for comparison.",
+      "title": "Research behavioral psychology foundations",
+      "description": "As a product designer, I need to understand the core psychological principles that drive behavior change so I can apply them intentionally.",
       "acceptanceCriteria": [
-        "Create src/app/dev/rest-day/page.tsx",
-        "Page has toggle buttons to switch between Option A, B, C, D, E",
-        "Uses same styling pattern as other dev pages (dark bg, coral accents)",
-        "Add entry to DEV_PAGES array in src/app/dev/page.tsx",
-        "npm run typecheck passes",
-        "Page renders at localhost:3001/dev/rest-day"
+        "Create docs/research/236-psych-foundations.md",
+        "Cover: variable reward schedules, loss aversion, commitment devices, implementation intentions, identity-based habits",
+        "Each principle has: definition, research citation, fitness app example, risk of misuse",
+        "Minimum 5 principles documented with depth",
+        "File exists and is well-structured markdown"
       ],
       "priority": 1,
-      "passes": true,
-      "notes": "Scaffold only - no actual rest day components yet"
+      "passes": false,
+      "notes": "Research task - produce markdown documentation"
     },
     {
       "id": "US-002",
-      "title": "Option A: Minimal zen rest card",
-      "description": "As a user on a rest day, I want a calm, minimal card that doesn't pressure me.",
+      "title": "Deep dive Duolingo retention mechanics",
+      "description": "As a product designer, I need to understand how Duolingo achieves industry-leading retention through UX psychology.",
       "acceptanceCriteria": [
-        "Create src/app/dev/rest-day/components/RestDayOptionA.tsx",
-        "Design: white/light card, subtle gradient, minimal text",
-        "Shows: 'Rest Day' title, encouraging 1-line message, next workout preview (small)",
-        "No CTAs except maybe 'View Next Workout'",
-        "Feels: calm, zen, permission to rest",
-        "Mobile-first, max-width container",
-        "npm run typecheck passes"
+        "Create docs/research/236-competitor-duolingo.md",
+        "Document: streak system (mechanics, recovery, streak freeze), hearts/lives system, leagues/leaderboards, XP and levels, notification strategy, celebration moments",
+        "For each mechanic: what it is, why it works psychologically, screenshot/description, what baisics could adapt",
+        "Include what NOT to copy (dark patterns, aggressive tactics)",
+        "File exists and is well-structured markdown"
       ],
       "priority": 2,
-      "passes": true,
-      "notes": "Minimal approach - anti-hustle culture"
+      "passes": false,
+      "notes": "Research task - analyze Duolingo app/website"
     },
     {
       "id": "US-003",
-      "title": "Option B: Achievement celebration card",
-      "description": "As a user on a rest day, I want to feel good about the work I've done this week.",
+      "title": "Deep dive Strava social mechanics",
+      "description": "As a product designer, I need to understand how Strava uses social psychology to drive engagement.",
       "acceptanceCriteria": [
-        "Create src/app/dev/rest-day/components/RestDayOptionB.tsx",
-        "Design: celebratory, shows week progress prominently",
-        "Shows: 'You crushed it!' message, workout count this week (3/4 done), streak if applicable",
-        "Visual: progress bar or ring showing weekly completion",
-        "Optional confetti or subtle animation on load",
-        "Next workout teaser at bottom",
-        "npm run typecheck passes"
+        "Create docs/research/236-competitor-strava.md",
+        "Document: kudos system, segments and local legends, activity feed, clubs, challenges, year-in-review",
+        "For each mechanic: what it is, why it works psychologically, what baisics could adapt",
+        "Note: Strava's audience (endurance athletes) vs ours (gym beginners) - what translates?",
+        "File exists and is well-structured markdown"
       ],
       "priority": 3,
-      "passes": true,
-      "notes": "Celebration/reward approach"
+      "passes": false,
+      "notes": "Research task - analyze Strava app/website"
     },
     {
       "id": "US-004",
-      "title": "Option C: Active recovery suggestions card",
-      "description": "As a user on a rest day, I might want light activity options instead of full rest.",
+      "title": "Deep dive Noom psychology-first approach",
+      "description": "As a product designer, I need to understand how Noom applies CBT and psychology explicitly in their UX.",
       "acceptanceCriteria": [
-        "Create src/app/dev/rest-day/components/RestDayOptionC.tsx",
-        "Design: card with 2-3 optional activity tiles",
-        "Options: 'Log Nutrition', 'Light Stretch (10 min)', 'Train Anyway'",
-        "Each option is a tappable card/button",
-        "One option can be locked/premium (stretch video)",
-        "Clear that these are OPTIONAL - rest is fine",
-        "npm run typecheck passes"
+        "Create docs/research/236-competitor-noom.md",
+        "Document: color-coded food system, daily lessons/education, coach interactions, thought logging, progress psychology",
+        "Focus on: how they teach users about their own psychology (meta-awareness)",
+        "For each mechanic: what it is, why it works, what baisics could adapt",
+        "File exists and is well-structured markdown"
       ],
       "priority": 4,
-      "passes": true,
-      "notes": "Active recovery with options"
+      "passes": false,
+      "notes": "Research task - analyze Noom app/website"
     },
     {
       "id": "US-005",
-      "title": "Option D: Coach wisdom card",
-      "description": "As a user on a rest day, I want educational content about why rest matters.",
+      "title": "Analyze Apple Fitness rings and awards",
+      "description": "As a product designer, I need to understand Apple's minimalist but effective gamification approach.",
       "acceptanceCriteria": [
-        "Create src/app/dev/rest-day/components/RestDayOptionD.tsx",
-        "Design: card with rotating 'tip of the day' about recovery",
-        "Shows: tip icon, recovery fact/wisdom, source attribution",
-        "Examples: 'Muscle growth happens during rest, not during workouts', 'Sleep 7-9 hours for optimal recovery'",
-        "Subtle, not preachy - builds trust",
-        "Next workout preview below",
-        "npm run typecheck passes"
+        "Create docs/research/236-competitor-apple-fitness.md",
+        "Document: ring mechanics (move/exercise/stand), award badges, sharing, competitions, monthly challenges",
+        "Focus on: simplicity, visual design, celebration timing",
+        "For each mechanic: what it is, why it works, what baisics could adapt",
+        "File exists and is well-structured markdown"
       ],
       "priority": 5,
-      "passes": true,
-      "notes": "Educational/coaching approach"
+      "passes": false,
+      "notes": "Research task - analyze Apple Fitness"
     },
     {
       "id": "US-006",
-      "title": "Option E: Gamified rest card",
-      "description": "As a user on a rest day, I want to feel like resting is part of the game/progress.",
+      "title": "Map baisics user journey intervention points",
+      "description": "As a product designer, I need to identify exactly WHERE in our user journey psychological interventions would have maximum impact.",
       "acceptanceCriteria": [
-        "Create src/app/dev/rest-day/components/RestDayOptionE.tsx",
-        "Design: rest day as an 'achievement' or 'mission'",
-        "Shows: 'Recovery Mission' badge, XP or points for taking rest day",
-        "Progress indicator: 'Recovery: 0/24 hours' that fills over the day",
-        "Maybe: streak includes rest days ('7 day training streak' counts rest)",
-        "Gamified but not annoying",
-        "npm run typecheck passes"
+        "Create docs/research/236-journey-map.md",
+        "Map key moments: first visit, program generation, first workout, day 3-7 (habit window), week 2 (dropout cliff), rest days, missed workout, milestones, program completion",
+        "For each moment: current UX, dropout risk level, psychological opportunity, intervention ideas",
+        "Include ASCII or mermaid diagram of journey with intervention points marked",
+        "File exists and is well-structured markdown"
       ],
       "priority": 6,
-      "passes": true,
-      "notes": "Gamification approach - rest = progress"
+      "passes": false,
+      "notes": "Research task - map our specific user journey"
     },
     {
       "id": "US-007",
-      "title": "Option F: Social proof card",
-      "description": "As a user on a rest day, I want to see that other users also rest.",
+      "title": "Create pattern library with tasteful vs kitsch ratings",
+      "description": "As a product designer, I need a catalog of psychological patterns rated for brand fit so we can choose wisely.",
       "acceptanceCriteria": [
-        "Create src/app/dev/rest-day/components/RestDayOptionF.tsx",
-        "Design: shows community rest day activity",
-        "Shows: '2,847 others are resting today', or 'Top performers rest 2x/week'",
-        "Maybe: anonymous avatars of others resting",
-        "Normalizes rest, reduces guilt",
-        "Light, not heavy-handed",
-        "npm run typecheck passes"
+        "Create docs/research/236-pattern-library.md",
+        "Catalog minimum 15 patterns across: streaks, achievements, social, progress, celebration, commitment",
+        "Each pattern has: name, psychological principle, implementation example, baisics adaptation idea, tasteful rating (1-5), manipulation risk rating (1-5)",
+        "Separate section for 'patterns to avoid' with explanation",
+        "File exists and is well-structured markdown"
       ],
       "priority": 7,
-      "passes": true,
-      "notes": "Social proof approach"
+      "passes": false,
+      "notes": "Research task - synthesize findings into actionable catalog"
     },
     {
       "id": "US-008",
-      "title": "Wire up all options with toggle",
-      "description": "As a reviewer, I need to easily switch between all options on the dev page.",
+      "title": "Design top 5 concepts with wireframes",
+      "description": "As a product designer, I need concrete design concepts for our highest-impact patterns so we can evaluate feasibility.",
       "acceptanceCriteria": [
-        "Update src/app/dev/rest-day/page.tsx to import all 6 options",
-        "Toggle buttons show: A (Zen), B (Celebrate), C (Active), D (Coach), E (Game), F (Social)",
-        "Selected option renders below toggle",
-        "Mock data for: workoutsThisWeek=3, weeklyTarget=4, nextWorkout='Legs', streak=7",
-        "Page works on mobile and desktop",
-        "npm run typecheck passes",
-        "All 6 options render without errors"
+        "Create docs/research/236-design-concepts.md",
+        "Select top 5 patterns from library based on: impact, feasibility, brand fit",
+        "Each concept has: pattern name, where it appears in UX, ASCII wireframe mockup, copy/messaging examples, implementation notes",
+        "Include mobile-first consideration for each",
+        "File exists and is well-structured markdown"
       ],
       "priority": 8,
-      "passes": true,
-      "notes": "Final assembly"
+      "passes": false,
+      "notes": "Research task - create concrete design proposals"
+    },
+    {
+      "id": "US-009",
+      "title": "Create prioritized implementation roadmap",
+      "description": "As a product owner, I need a prioritized roadmap so we know what to build first.",
+      "acceptanceCriteria": [
+        "Create docs/research/236-roadmap.md",
+        "Prioritize all concepts by: retention impact (high/med/low), implementation effort (S/M/L/XL), brand alignment score",
+        "Group into: MVP (ship first), V2 (next iteration), Future (nice to have), Never (doesn't fit)",
+        "For MVP items: rough scope estimate, dependencies, risks",
+        "Include recommendation for first 1-2 features to prototype",
+        "File exists and is well-structured markdown"
+      ],
+      "priority": 9,
+      "passes": false,
+      "notes": "Research task - synthesize into actionable plan"
+    },
+    {
+      "id": "US-010",
+      "title": "Compile final research summary",
+      "description": "As a stakeholder, I need a single summary document that captures key findings and recommendations.",
+      "acceptanceCriteria": [
+        "Create docs/research/236-summary.md",
+        "Executive summary (1 page max): problem, approach, key findings, top recommendations",
+        "Link to all detailed research docs",
+        "Clear next steps section",
+        "File exists and is well-structured markdown"
+      ],
+      "priority": 10,
+      "passes": false,
+      "notes": "Research task - final synthesis"
     }
   ]
 }
