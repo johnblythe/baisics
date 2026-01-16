@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 import { updateStreak } from '@/lib/streaks';
+import { checkAndAwardMilestone } from '@/lib/milestone-service';
 
 export async function POST(
   request: Request,
@@ -89,13 +90,31 @@ export async function POST(
       });
     }
 
+    // Check for milestone achievements (non-blocking)
+    let milestoneData = { unlocked: false, milestone: null as string | null, totalWorkouts: 0, totalVolume: 0 };
+    try {
+      milestoneData = await checkAndAwardMilestone(userId);
+    } catch (milestoneError) {
+      console.error('Failed to check milestones (workout still completed):', {
+        userId,
+        workoutLogId: id,
+        error: milestoneError instanceof Error ? milestoneError.message : String(milestoneError)
+      });
+    }
+
     return NextResponse.json({
       ...updatedWorkoutLog,
       streak: {
         current: streakData.current,
         longest: streakData.longest,
         extended: streakData.extended
-      }
+      },
+      milestone: milestoneData.unlocked ? {
+        unlocked: true,
+        type: milestoneData.milestone,
+        totalWorkouts: milestoneData.totalWorkouts,
+        totalVolume: milestoneData.totalVolume,
+      } : null
     });
   } catch (error) {
     console.error('Error completing workout:', error);

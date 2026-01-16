@@ -123,6 +123,9 @@ model User {
   programGenerationsThisMonth Int       @default(0) @map("program_generations_this_month")
   generationsResetAt          DateTime  @default(now()) @map("generations_reset_at")
 
+  // Lifetime milestones
+  milestoneAchievements MilestoneAchievement[]
+
   @@index([email])
   @@map("users")
 }
@@ -780,4 +783,35 @@ model PendingClaim {
   @@index([email])
   @@index([token])
   @@map("pending_claims")
+}
+
+// Lifetime milestone achievements - badges that persist forever
+enum MilestoneType {
+  WORKOUT_1     // Day One - 1 workout
+  WORKOUT_10    // Getting Started - 10 workouts
+  WORKOUT_25    // Quarter Century - 25 workouts
+  WORKOUT_50    // Fifty Strong - 50 workouts
+  WORKOUT_100   // Century Club - 100 workouts
+  WORKOUT_250   // Two-Fifty - 250 workouts
+  WORKOUT_365   // Year's Worth - 365 workouts
+  WORKOUT_500   // Five Hundred - 500 workouts
+  WORKOUT_1000  // The Thousand - 1000 workouts
+}
+
+model MilestoneAchievement {
+  id        String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String        @map("user_id") @db.Uuid
+  type      MilestoneType @map("type")
+  earnedAt  DateTime      @default(now()) @map("earned_at")
+
+  // Snapshot of stats at time of achievement
+  totalWorkouts Int       @map("total_workouts")
+  totalVolume   Float?    @map("total_volume") // lbs lifted
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, type])
+  @@index([userId])
+  @@index([type])
+  @@map("milestone_achievements")
 }
