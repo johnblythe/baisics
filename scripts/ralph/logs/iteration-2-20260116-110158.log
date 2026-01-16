@@ -1,0 +1,34 @@
+There are still 7 stories with `passes: false` (US-003 through US-009). My task was to complete ONE story per iteration, and I have completed US-002.
+
+**Summary of US-002 Implementation:**
+
+## US-002: Rest Day Affirmation Screen - COMPLETE
+
+**What was implemented:**
+1. **REST API endpoint** `/api/programs/[programId]/rest-day` - Detects rest days and returns:
+   - `isRestDay` flag based on weekly workout completion or same-day workout
+   - Weekly progress stats (completed/target/percent)
+   - Lifetime stats (total workouts, volume, streak)
+   - Next workout info
+   - Rotating educational recovery tip
+
+2. **RestDayDashboard component** with:
+   - Calmer visual design (gray/slate gradient backgrounds, less saturated)
+   - Weekly progress ring (SVG with animated stroke)
+   - Lifetime stats display (total workouts, volume lifted, streak badge)
+   - Educational coaching content that rotates daily (5 recovery tips)
+   - Optional activity logging buttons (nutrition, stretching, foam rolling) - zero pressure
+   - "Go HAM" option to start a workout anyway
+   - Weekly schedule indicator with [R] markers for rest days
+
+3. **Dashboard integration** - When `restDayData.isRestDay` is true, shows RestDayDashboard instead of the workout start card
+
+**Files created:**
+- `src/app/api/programs/[programId]/rest-day/route.ts`
+- `src/components/rest-day/RestDayDashboard.tsx`
+- `src/components/rest-day/index.ts`
+
+**Files modified:**
+- `src/app/dashboard/[programId]/page.tsx` (integrated rest day detection)
+- `scripts/ralph/prd.json` (marked US-002 as passes: true)
+- `scripts/ralph/progress.txt` (added implementation notes)

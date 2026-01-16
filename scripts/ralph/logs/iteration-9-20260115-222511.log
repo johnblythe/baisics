@@ -1,0 +1,15 @@
+There's still one story with `passes: false` - that's US-010 (Compile final research summary). The iteration is complete for US-009. Another iteration will pick up US-010.
+
+**Summary of completed work:**
+
+**US-009: Create prioritized implementation roadmap** - COMPLETE
+
+Created `docs/research/236-roadmap.md` (676 lines) containing:
+- 3-dimension prioritization framework (Impact/Effort/Brand Alignment)
+- 17 features categorized into MVP, V2, Future, and Never tiers
+- 6 MVP features with scope estimates, dependencies, and risks
+- Recommended first prototypes: Lifetime Milestones + Rest Day Affirmation
+- Technical prerequisites and success metrics
+- Risk assessment table
+
+US-010 (final summary) remains with `passes: false` for the next iteration.

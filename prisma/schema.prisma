@@ -413,14 +413,16 @@ enum ExerciseTier {
 }
 
 model WorkoutLog {
-  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId      String    @map("user_id") @db.Uuid
-  workoutId   String    @map("workout_id") @db.Uuid
-  programId   String    @map("program_id") @db.Uuid
-  startedAt   DateTime  @default(now()) @map("started_at")
-  completedAt DateTime? @map("completed_at")
-  status      String    @default("in_progress") // in_progress, completed, abandoned
-  notes       String?   @db.Text
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId         String    @map("user_id") @db.Uuid
+  workoutId      String    @map("workout_id") @db.Uuid
+  programId      String    @map("program_id") @db.Uuid
+  startedAt      DateTime  @default(now()) @map("started_at")
+  completedAt    DateTime? @map("completed_at")
+  status         String    @default("in_progress") // in_progress, completed, abandoned
+  notes          String?   @db.Text
+  quickLog       Boolean   @default(false) @map("quick_log") // "I Did It" quick log without details
+  quickLogExpiry DateTime? @map("quick_log_expiry") // 48h window to backfill details
 
   user         User          @relation(fields: [userId], references: [id])
   workout      Workout       @relation(fields: [workoutId], references: [id])

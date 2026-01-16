@@ -1,0 +1,136 @@
+# Ralph Progress Log
+Started: Thu Jan 15 10:56:24 EST 2026
+---
+
+## 2026-01-15 - US-001: Add notes state and expandable UI to BigSetInputCard
+- Added `localNotes` and `showNotes` state variables
+- Added 📝 icon button in a new flex column next to weight/reps inputs
+- Icon toggles textarea visibility (collapsed by default)
+- Textarea styled with white/20 bg, white text to match card style
+- Icon shows filled state (brighter bg: white/40) when notes exist
+- Reset notes state when switching sets (in useEffect)
+- Files changed: `src/components/workout/BigSetInputCard.tsx`
+- **Learnings for future iterations:**
+  - BigSetInputCard uses local state + useEffect sync pattern for switching sets
+  - Card styling uses white/20 bg with border-white/30 for inputs
+  - Changed grid-cols-2 to flex layout to accommodate the notes button
+---
+
+## 2026-01-15 - US-002: Pass notes through onComplete callback
+- Updated `BigSetInputCardProps` interface: `onComplete: (weight, reps, notes?) => void`
+- Modified `handleComplete` to pass `localNotes || undefined` as third param
+- Files changed: `src/components/workout/BigSetInputCard.tsx`
+- **Learnings for future iterations:**
+  - Optional params should be passed as `value || undefined` to keep them truly optional
+  - Interface changes don't require updating consumers until they want to use the new param
+---
+
+## 2026-01-15 - US-003: Update workout page to handle notes
+- Updated `onComplete` callback to accept third `notes` parameter
+- Added `notes` field to the `logData` object passed to `updateSet`
+- The API at `/api/exercise-logs/[id]/sets/[setNumber]` already accepts `notes` in request body
+- Files changed: `src/app/workout/[id]/page.tsx`
+- **Learnings for future iterations:**
+  - The `SetLog` interface already has `notes?: string` defined
+  - The API route already handles notes field - just needed to pass it through
+  - The data flow is: BigSetInputCard → onComplete → updateSet → API (PUT request body)
+---
+
+## 2026-01-15 - US-004: Verify API saves notes to SetLog
+- **Verification complete**: API already fully supports notes
+- Actual API path: `src/app/api/exercise-logs/[id]/sets/[setNumber]/route.ts` (not the path in PRD)
+- Line 21: `const { weight, reps, notes } = body;` - extracts notes from request
+- Lines 62, 72: `notes: notes || null` - saves in both update and create
+- Prisma schema `SetLog` model has `notes String? @db.Text` at line 455
+- **No code changes needed** - this was a verification story
+- **Learnings for future iterations:**
+  - API route for sets is `/api/exercise-logs/[id]/sets/[setNumber]`, NOT `/api/workouts/[id]/sets`
+  - Always verify actual file paths before assuming they match PRD
+  - Some stories are verification-only and don't require code changes
+---
+
+## 2026-01-15 - US-005: Fix unsanitized exercise name in coaching query
+- Changed line 59 in `src/app/api/workout/chat/route.ts`
+- Was: `context.exerciseName` (unsanitized user input)
+- Now: `sanitizedContext.exerciseName` (properly sanitized)
+- `sanitizedContext` already defined at lines 49-53, just needed to use it
+- Files changed: `src/app/api/workout/chat/route.ts`
+- **Learnings for future iterations:**
+  - The chat API has good security patterns: sanitizes inputs at lines 43, 49-53
+  - When adding new uses of user input, always check if sanitized version exists
+  - Prisma queries with user input should use sanitized values to prevent injection
+---
+
+## 2026-01-15 - US-006: Improve error handling in program create actions
+- Added `Prisma` import from `@prisma/client`
+- Enhanced catch block in `createManualProgram` with specific error handling:
+  - `P2002`: Unique constraint violation → "A program with this name already exists."
+  - `P2003`: Foreign key constraint → "Invalid exercise reference. Please refresh and try again."
+  - `P2025`: Record not found → "Referenced data not found. Please refresh and try again."
+  - Default Prisma errors → "Database error. Please try again."
+  - `PrismaClientValidationError` → "Invalid data format. Please check your inputs."
+  - Generic fallback for unknown errors
+- Files changed: `src/app/program/create/actions.ts`
+- **Learnings for future iterations:**
+  - Codebase pattern: import `{ Prisma } from '@prisma/client'`, use `error instanceof Prisma.PrismaClientKnownRequestError`
+  - Check `error.code` for specific Prisma error codes (P2002, P2003, P2025, etc.)
+  - Reference implementation: `src/lib/actions/user.ts` lines 27-31
+---
+
+## 2026-01-15 - US-007: Add transition error handling to ProgramBuilder
+- Added `toast` import from `sonner` (existing toast library used in the app)
+- Wrapped `startTransition` async callback with try-catch block
+- On server action error (result.error): shows error in both state and toast
+- On network/unexpected error (catch): shows connection error toast
+- Toast uses `toast.error()` with title and description
+- Files changed: `src/app/program/create/components/ProgramBuilder.tsx`
+- **Learnings for future iterations:**
+  - App uses `sonner` for toasts, imported as `import { toast } from 'sonner'`
+  - Toast patterns: `toast.error('Title', { description: 'Details' })`
+  - Toaster component already mounted in `src/app/layout.tsx` with `richColors position="top-center"`
+  - Reference implementation: `src/app/import/page.tsx` lines 258, 329
+---
+
+## 2026-01-15 - US-008: Create competitor comparison blog template
+- **VERIFIED EXISTING**: Template already exists at `src/content/blog/_templates/competitor-comparison-template.tsx`
+- PRD specified `templates/` but codebase convention is `_templates/` (underscore prefix)
+- Template includes all required sections with detailed comments:
+  - Quick comparison table
+  - What is [Competitor]? section
+  - What is Baisics? section
+  - Pricing comparison
+  - Feature comparison
+  - Decision framework ("Choose X if...")
+  - CTA section
+  - FAQ section
+- README.md in _templates/ documents usage, tone guidelines, and SEO checklist
+- **No code changes needed** - template was already complete
+- **Learnings for future iterations:**
+  - Blog templates live in `src/content/blog/_templates/` (underscore prefix)
+  - Always check existing files before implementing - work may already be done
+  - PRD paths may differ slightly from actual codebase conventions
+---
+
+## 2026-01-15 - US-009: Write baisics vs Trainerize comparison post
+- **VERIFIED EXISTING**: Post exists at `src/content/blog/baisics-vs-trainerize/index.tsx`
+- Post follows template structure with all required sections
+- Includes factual Trainerize pricing (Basic free, Grow $9/mo, Pro $20-100/mo, Studio $225/mo)
+- Highlights baisics differentiators: AI-generated programs, $5/mo flat pricing, simpler UX
+- Title: "Baisics vs Trainerize: Which Fitness App Is Right for You?" (similar to SEO requirement)
+- Tone is factual and non-disparaging throughout
+- **No code changes needed** - post was already complete
+- **Learnings for future iterations:**
+  - Check if content already exists before starting to write new content
+  - Existing baisics-vs-trainerize post is good reference for future competitor comparisons
+---
+
+## 2026-01-15 - US-010: Final verification and build check
+- Verified `npx tsc --noEmit` passes (no TypeScript errors)
+- Verified `npm run build` succeeds (all pages compile)
+- Lint passes (only pre-existing warnings, no errors)
+- All 10 user stories now have `passes: true`
+- **Sprint complete** - all issues (#246, #218, #192) implemented
+- **Learnings for future iterations:**
+  - Sprint included mix of: new features (notes), security fixes (sanitization), improvements (error handling), verification (existing work)
+  - Some stories were verification-only - always check existing code first
+---

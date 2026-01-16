@@ -23,6 +23,7 @@ import { ClaimWelcomeBanner, storeWelcomeData, getWelcomeData } from '@/componen
 import { StreakBadge } from '@/components/StreakBadge';
 import { ProgressShareCard, ProgressShareData } from '@/components/share/ProgressShareCard';
 import { RestDayDashboard, RestDayData } from '@/components/rest-day';
+import { QuickLogButton } from '@/components/quick-log';
 
 // Types for our API responses
 interface ProgramOverview {
@@ -748,6 +749,14 @@ function DashboardContent() {
                       </svg>
                       Start Workout
                     </Link>
+                    <QuickLogButton
+                      workoutId={selectedWorkoutId || ''}
+                      workoutName={selectedWorkout.name}
+                      onSuccess={() => {
+                        // Refresh dashboard data after successful quick log
+                        router.refresh();
+                      }}
+                    />
                     <button
                       onClick={() => openModal('nutrition')}
                       className="inline-flex items-center justify-center gap-3 px-6 py-4 bg-white text-[#0F172A] font-semibold rounded-xl border-2 border-[#E2E8F0] hover:border-[#FF6B6B] hover:text-[#FF6B6B] transition-all duration-200"

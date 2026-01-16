@@ -1,0 +1,142 @@
+{
+  "project": "baisics",
+  "branchName": "ralph/233-rest-day-prototypes",
+  "description": "Generate multiple rest day UI prototypes on dev page for comparison",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Create dev page scaffold for rest day prototypes",
+      "description": "As a developer, I need a dev page to hold all rest day UI variations for comparison.",
+      "acceptanceCriteria": [
+        "Create src/app/dev/rest-day/page.tsx",
+        "Page has toggle buttons to switch between Option A, B, C, D, E",
+        "Uses same styling pattern as other dev pages (dark bg, coral accents)",
+        "Add entry to DEV_PAGES array in src/app/dev/page.tsx",
+        "npm run typecheck passes",
+        "Page renders at localhost:3001/dev/rest-day"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Scaffold only - no actual rest day components yet"
+    },
+    {
+      "id": "US-002",
+      "title": "Option A: Minimal zen rest card",
+      "description": "As a user on a rest day, I want a calm, minimal card that doesn't pressure me.",
+      "acceptanceCriteria": [
+        "Create src/app/dev/rest-day/components/RestDayOptionA.tsx",
+        "Design: white/light card, subtle gradient, minimal text",
+        "Shows: 'Rest Day' title, encouraging 1-line message, next workout preview (small)",
+        "No CTAs except maybe 'View Next Workout'",
+        "Feels: calm, zen, permission to rest",
+        "Mobile-first, max-width container",
+        "npm run typecheck passes"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Minimal approach - anti-hustle culture"
+    },
+    {
+      "id": "US-003",
+      "title": "Option B: Achievement celebration card",
+      "description": "As a user on a rest day, I want to feel good about the work I've done this week.",
+      "acceptanceCriteria": [
+        "Create src/app/dev/rest-day/components/RestDayOptionB.tsx",
+        "Design: celebratory, shows week progress prominently",
+        "Shows: 'You crushed it!' message, workout count this week (3/4 done), streak if applicable",
+        "Visual: progress bar or ring showing weekly completion",
+        "Optional confetti or subtle animation on load",
+        "Next workout teaser at bottom",
+        "npm run typecheck passes"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Celebration/reward approach"
+    },
+    {
+      "id": "US-004",
+      "title": "Option C: Active recovery suggestions card",
+      "description": "As a user on a rest day, I might want light activity options instead of full rest.",
+      "acceptanceCriteria": [
+        "Create src/app/dev/rest-day/components/RestDayOptionC.tsx",
+        "Design: card with 2-3 optional activity tiles",
+        "Options: 'Log Nutrition', 'Light Stretch (10 min)', 'Train Anyway'",
+        "Each option is a tappable card/button",
+        "One option can be locked/premium (stretch video)",
+        "Clear that these are OPTIONAL - rest is fine",
+        "npm run typecheck passes"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Active recovery with options"
+    },
+    {
+      "id": "US-005",
+      "title": "Option D: Coach wisdom card",
+      "description": "As a user on a rest day, I want educational content about why rest matters.",
+      "acceptanceCriteria": [
+        "Create src/app/dev/rest-day/components/RestDayOptionD.tsx",
+        "Design: card with rotating 'tip of the day' about recovery",
+        "Shows: tip icon, recovery fact/wisdom, source attribution",
+        "Examples: 'Muscle growth happens during rest, not during workouts', 'Sleep 7-9 hours for optimal recovery'",
+        "Subtle, not preachy - builds trust",
+        "Next workout preview below",
+        "npm run typecheck passes"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Educational/coaching approach"
+    },
+    {
+      "id": "US-006",
+      "title": "Option E: Gamified rest card",
+      "description": "As a user on a rest day, I want to feel like resting is part of the game/progress.",
+      "acceptanceCriteria": [
+        "Create src/app/dev/rest-day/components/RestDayOptionE.tsx",
+        "Design: rest day as an 'achievement' or 'mission'",
+        "Shows: 'Recovery Mission' badge, XP or points for taking rest day",
+        "Progress indicator: 'Recovery: 0/24 hours' that fills over the day",
+        "Maybe: streak includes rest days ('7 day training streak' counts rest)",
+        "Gamified but not annoying",
+        "npm run typecheck passes"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "Gamification approach - rest = progress"
+    },
+    {
+      "id": "US-007",
+      "title": "Option F: Social proof card",
+      "description": "As a user on a rest day, I want to see that other users also rest.",
+      "acceptanceCriteria": [
+        "Create src/app/dev/rest-day/components/RestDayOptionF.tsx",
+        "Design: shows community rest day activity",
+        "Shows: '2,847 others are resting today', or 'Top performers rest 2x/week'",
+        "Maybe: anonymous avatars of others resting",
+        "Normalizes rest, reduces guilt",
+        "Light, not heavy-handed",
+        "npm run typecheck passes"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "Social proof approach"
+    },
+    {
+      "id": "US-008",
+      "title": "Wire up all options with toggle",
+      "description": "As a reviewer, I need to easily switch between all options on the dev page.",
+      "acceptanceCriteria": [
+        "Update src/app/dev/rest-day/page.tsx to import all 6 options",
+        "Toggle buttons show: A (Zen), B (Celebrate), C (Active), D (Coach), E (Game), F (Social)",
+        "Selected option renders below toggle",
+        "Mock data for: workoutsThisWeek=3, weeklyTarget=4, nextWorkout='Legs', streak=7",
+        "Page works on mobile and desktop",
+        "npm run typecheck passes",
+        "All 6 options render without errors"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "Final assembly"
+    }
+  ]
+}

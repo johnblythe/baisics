@@ -1,0 +1,8 @@
+# Ralph Progress Log
+Started: Wed Jan 15 21:45:00 EST 2026
+PRD: 236-psych-ux-research - Psychological UX patterns for workout adherence
+
+## Codebase Patterns
+(Patterns discovered during this research spike will be added here)
+
+---
