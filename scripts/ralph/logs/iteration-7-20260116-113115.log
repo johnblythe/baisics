@@ -1,0 +1,26 @@
+There are still 2 stories with `passes: false` (US-008 and US-009). The iteration is complete for US-007.
+
+**Summary of US-007 Implementation:**
+
+Completed the **Week 2 Check-in Intervention** feature:
+
+1. **Database Schema**: Added `week2CheckInShown`, `week2CheckInShownAt`, and `week2CheckInOption` fields to the Program model to track check-in state permanently.
+
+2. **API Endpoint** (`/api/programs/[programId]/week2-checkin`):
+   - GET: Detects if Week 2 check-in should be shown (workouts 4-10 range)
+   - POST: Records user's response and persists to database
+
+3. **Week2CheckInModal Component**:
+   - Full-screen modal with 4 options: Going great, Too hard, Too easy, Life got in the way
+   - Shows original training goals as reminder
+   - Encouraging messages for each selection
+   - "Too hard" offers link to program adjustment page
+   - Animated success state after submission
+
+4. **Dashboard Integration**:
+   - Fetches check-in data alongside other dashboard data
+   - Shows modal once per program (DB-persisted)
+   - "Ask me later" temporarily dismisses via sessionStorage
+   - Yields priority to RecoveryScreen
+
+5. **Analytics**: Tracks responses via AppLog with `category='week2_checkin'`

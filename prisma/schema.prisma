@@ -106,7 +106,9 @@ model User {
   coachOf          CoachClient[] @relation("ClientRelation") // Coaches managing this user
 
   // Email preferences
-  emailReminders Boolean @default(true) @map("email_reminders")
+  emailReminders       Boolean @default(true) @map("email_reminders")
+  weeklySummaryEnabled Boolean @default(true) @map("weekly_summary_enabled")
+  weeklySummaryDay     String  @default("monday") @map("weekly_summary_day") // "sunday" or "monday"
 
   // Coach branding
   brandName  String? @map("brand_name")

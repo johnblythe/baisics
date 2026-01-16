@@ -213,3 +213,38 @@ Started: Fri Jan 16 10:51:03 EST 2026
   - Two recovery tiers based on daysSinceLastWorkout threshold (< 3 vs >= 3)
 
 ---
+
+## 2026-01-16 17:XX - US-007: Week 2 Check-in Intervention
+- What was implemented:
+  - Added week2CheckInShown, week2CheckInShownAt, week2CheckInOption fields to Program model
+  - Database migration for new Week 2 check-in tracking fields
+  - `/api/programs/[programId]/week2-checkin` API endpoint (GET + POST)
+  - Week 2 detection logic: show when completedWorkouts between 4-10 AND not already shown
+  - Week2CheckInModal component with 4 response options
+  - Options: "Going great", "Too hard", "Too easy", "Life got in the way"
+  - Shows original training goals as reminder (from UserIntake)
+  - "Too hard" selection offers link to program adjustment page
+  - Encouraging response messages for each option
+  - Analytics tracking via AppLog with category='week2_checkin'
+  - Dashboard integration with session-based dismiss for "ask me later"
+  - Check-in only shows once per program (persisted to DB on submit)
+
+- Files created:
+  - prisma/migrations/20260116170000_add_week2_check_in_fields/migration.sql
+  - src/app/api/programs/[programId]/week2-checkin/route.ts
+  - src/components/week2-checkin/Week2CheckInModal.tsx
+  - src/components/week2-checkin/index.ts
+
+- Files modified:
+  - prisma/schema.prisma (added week2CheckInShown, week2CheckInShownAt, week2CheckInOption to Program)
+  - src/app/dashboard/[programId]/page.tsx (import, state, fetch, modal render, handlers)
+
+- **Learnings for future iterations:**
+  - Prisma exports named: use `import { prisma } from '@/lib/prisma'` not default import
+  - Week 2 detection uses workout count (4-10 range) not calendar days
+  - week2CheckInShown persists to DB for permanent "only once" tracking
+  - sessionStorage used for temporary "ask me later" dismissal
+  - Check-in modal yields to RecoveryScreen (recovery takes priority)
+  - UserIntake table stores original user goals for reminder display
+
+---

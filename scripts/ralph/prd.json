@@ -136,7 +136,7 @@
         "Track: check-in shown -> option selected -> week 3 retention"
       ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "notes": "50%+ users quit by Week 2. Critical intervention point."
     },
     {
