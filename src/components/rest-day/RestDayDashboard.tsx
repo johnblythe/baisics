@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { formatVolume } from '@/lib/milestones';
+import { WeeklyDayIndicators, WeeklyDayLegend } from '@/components/weekly-progress';
 
 // Icons for recovery tips
 function TipIcon({ type }: { type: string }) {
@@ -71,12 +72,21 @@ function TipIcon({ type }: { type: string }) {
   }
 }
 
+export type DayStatus = 'completed' | 'today' | 'rest' | 'scheduled' | 'missed';
+
+export interface DayInfo {
+  dayName: string;
+  status: DayStatus;
+  isToday: boolean;
+}
+
 export interface RestDayData {
   isRestDay: boolean;
   weeklyProgress: {
     completed: number;
     target: number;
     percent: number;
+    days?: DayInfo[];
   };
   lifetimeStats: {
     totalWorkouts: number;
@@ -420,50 +430,18 @@ export function RestDayDashboard({
         </div>
       </div>
 
-      {/* Weekly Progress Indicator with [R] marker */}
-      <div className="bg-white rounded-2xl p-6 border border-[#E2E8F0] shadow-sm">
-        <p className="text-xs text-[#64748B] uppercase tracking-wider font-medium mb-4">
-          This Week&apos;s Schedule
-        </p>
-        <div className="flex justify-between items-center">
-          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, index) => {
-            const today = new Date().getDay();
-            const isToday = index === today;
-            // Mark completed days (simplified - in production, get from actual data)
-            const dayStatus = isToday ? 'rest' : index < today ? 'completed' : 'scheduled';
-
-            return (
-              <div key={day} className="flex flex-col items-center gap-2">
-                <span className={`text-xs ${isToday ? 'text-[#FF6B6B] font-bold' : 'text-[#64748B]'}`}>
-                  {day}
-                </span>
-                <div
-                  className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-medium transition-all ${
-                    dayStatus === 'rest'
-                      ? 'bg-[#F1F5F9] text-[#64748B] border-2 border-[#FF6B6B]'
-                      : dayStatus === 'completed'
-                      ? 'bg-[#FF6B6B] text-white'
-                      : 'bg-[#F8FAFC] text-[#94A3B8] border border-[#E2E8F0]'
-                  }`}
-                >
-                  {dayStatus === 'rest' ? (
-                    <span className="text-[#64748B] font-bold">R</span>
-                  ) : dayStatus === 'completed' ? (
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                  ) : (
-                    <span className="text-[#CBD5E1]">·</span>
-                  )}
-                </div>
-              </div>
-            );
-          })}
+      {/* Weekly Progress Indicator with day status from API */}
+      {weeklyProgress.days && weeklyProgress.days.length > 0 && (
+        <div className="bg-white rounded-2xl p-6 border border-[#E2E8F0] shadow-sm">
+          <p className="text-xs text-[#64748B] uppercase tracking-wider font-medium mb-4">
+            This Week&apos;s Schedule
+          </p>
+          <WeeklyDayIndicators days={weeklyProgress.days} />
+          <div className="mt-4 pt-4 border-t border-[#E2E8F0]">
+            <WeeklyDayLegend />
+          </div>
         </div>
-        <p className="text-center text-sm text-[#64748B] mt-4">
-          [R] = Rest day (protected, not missed)
-        </p>
-      </div>
+      )}
     </div>
   );
 }

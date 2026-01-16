@@ -36,6 +36,15 @@ const RECOVERY_TIPS = [
   },
 ];
 
+// Day status types for weekly progress indicators
+type DayStatus = 'completed' | 'today' | 'rest' | 'scheduled' | 'missed';
+
+interface DayInfo {
+  dayName: string;
+  status: DayStatus;
+  isToday: boolean;
+}
+
 // Response type
 interface RestDayData {
   isRestDay: boolean;
@@ -43,6 +52,7 @@ interface RestDayData {
     completed: number;
     target: number;
     percent: number;
+    days: DayInfo[];
   };
   lifetimeStats: {
     totalWorkouts: number;
@@ -203,12 +213,98 @@ export async function GET(
     const tipIndex = dayOfYear % RECOVERY_TIPS.length;
     const recoveryTip = RECOVERY_TIPS[tipIndex];
 
+    // Build per-day status for the week indicators
+    // Logic:
+    // - Days with completed workouts this week = 'completed'
+    // - Today = 'today' (or 'rest' if weekly target met or already worked out)
+    // - Past days without workout when one was expected = based on schedule
+    // - Future days = 'scheduled' or 'rest' based on typical workout schedule
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const todayIndex = now.getDay();
+
+    // Map of day index -> completion date for workouts this week
+    const completionsByDay = new Map<number, boolean>();
+    workoutsThisWeek.forEach((log) => {
+      const completedAt = new Date(log.completedAt!);
+      completionsByDay.set(completedAt.getDay(), true);
+    });
+
+    // Determine how many workout days have passed and been completed
+    // Simple heuristic: distribute workout days evenly across the week
+    // For a 3-day program, typical days might be Mon/Wed/Fri = indices 1, 3, 5
+    // For a 4-day program: Mon/Tue/Thu/Fri = indices 1, 2, 4, 5
+    const getExpectedWorkoutDays = (daysPerWeek: number): number[] => {
+      switch (daysPerWeek) {
+        case 1: return [1]; // Monday
+        case 2: return [1, 4]; // Mon, Thu
+        case 3: return [1, 3, 5]; // Mon, Wed, Fri
+        case 4: return [1, 2, 4, 5]; // Mon, Tue, Thu, Fri
+        case 5: return [1, 2, 3, 4, 5]; // Mon-Fri
+        case 6: return [1, 2, 3, 4, 5, 6]; // Mon-Sat
+        case 7: return [0, 1, 2, 3, 4, 5, 6]; // Every day
+        default: return [1, 3, 5]; // Default to 3 days
+      }
+    };
+
+    const expectedWorkoutDays = new Set(getExpectedWorkoutDays(daysPerWeek));
+
+    const weekDays: DayInfo[] = dayNames.map((dayName, dayIndex) => {
+      const dayIsToday = dayIndex === todayIndex;
+      const wasCompleted = completionsByDay.has(dayIndex);
+      const isExpectedWorkoutDay = expectedWorkoutDays.has(dayIndex);
+      const isPastDay = dayIndex < todayIndex;
+
+      let status: DayStatus;
+
+      if (wasCompleted) {
+        status = 'completed';
+      } else if (dayIsToday) {
+        // Today: if it's expected workout day and not done yet, show as 'today'
+        // If weekly target met or already worked out today, it's a rest day
+        if (isRestDay) {
+          status = 'rest';
+        } else if (isExpectedWorkoutDay) {
+          status = 'today';
+        } else {
+          status = 'rest';
+        }
+      } else if (isPastDay) {
+        // Past day without completion
+        if (isExpectedWorkoutDay) {
+          // Expected to work out but didn't - could show as missed, but let's be kind
+          // Only show missed if they're behind on their weekly target
+          if (weeklyCompleted < expectedWorkoutDays.size &&
+              Array.from(expectedWorkoutDays).filter(d => d <= todayIndex).length > weeklyCompleted) {
+            status = 'scheduled'; // Don't shame - just show as scheduled
+          } else {
+            status = 'rest';
+          }
+        } else {
+          status = 'rest';
+        }
+      } else {
+        // Future day
+        if (isExpectedWorkoutDay && weeklyCompleted < weeklyTarget) {
+          status = 'scheduled';
+        } else {
+          status = 'rest';
+        }
+      }
+
+      return {
+        dayName,
+        status,
+        isToday: dayIsToday,
+      };
+    });
+
     const response: RestDayData = {
       isRestDay,
       weeklyProgress: {
         completed: weeklyCompleted,
         target: weeklyTarget,
         percent: Math.min(100, weeklyPercent),
+        days: weekDays,
       },
       lifetimeStats: {
         totalWorkouts,

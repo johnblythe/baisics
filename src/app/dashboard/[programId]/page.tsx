@@ -24,6 +24,8 @@ import { StreakBadge } from '@/components/StreakBadge';
 import { ProgressShareCard, ProgressShareData } from '@/components/share/ProgressShareCard';
 import { RestDayDashboard, RestDayData } from '@/components/rest-day';
 import { QuickLogButton } from '@/components/quick-log';
+import { CompletionRing, WeeklyDayIndicators, WeeklyDayLegend } from '@/components/weekly-progress';
+import type { DayInfo } from '@/components/weekly-progress';
 
 // Types for our API responses
 interface ProgramOverview {
@@ -641,15 +643,43 @@ function DashboardContent() {
                 }}
               />
             )}
-            {/* Quick Workout Start Card - v2a coral accent theme - hidden on rest days */}
+            {/* Weekly Progress + Workout Card - Split view on desktop, stacked on mobile */}
             {!restDayData?.isRestDay && currentWorkout?.nextWorkout && selectedWorkout && (
               <div className="relative bg-white rounded-2xl border-l-4 border-l-[#FF6B6B] border border-[#E2E8F0] shadow-md p-6 lg:p-8">
                 {/* Decorative coral accent */}
                 <div className="absolute top-0 right-0 w-64 h-64 bg-[#FF6B6B]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none overflow-hidden"></div>
 
-                <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                  <div className="space-y-2">
-                    <p className="text-[#64748B] text-sm font-medium uppercase tracking-wider" style={{ fontFamily: "'Space Mono', monospace" }}>Ready to train?</p>
+                <div className="relative flex flex-col lg:flex-row gap-8">
+                  {/* Left: Completion Ring + Day Indicators */}
+                  <div className="lg:w-1/3 flex flex-col items-center lg:items-start">
+                    <p className="text-[#94A3B8] text-xs font-medium uppercase tracking-wider mb-4" style={{ fontFamily: "'Space Mono', monospace" }}>
+                      Weekly Progress
+                    </p>
+
+                    {/* Completion Ring */}
+                    <div className="flex justify-center lg:justify-start">
+                      <CompletionRing
+                        completed={restDayData?.weeklyProgress?.completed || 0}
+                        target={restDayData?.weeklyProgress?.target || 3}
+                        size="lg"
+                        showLabel={true}
+                      />
+                    </div>
+
+                    {/* Day Indicators - shown below ring */}
+                    {restDayData?.weeklyProgress?.days && restDayData.weeklyProgress.days.length > 0 && (
+                      <div className="mt-6 w-full">
+                        <WeeklyDayIndicators days={restDayData.weeklyProgress.days as DayInfo[]} />
+                        <div className="mt-4 hidden lg:block">
+                          <WeeklyDayLegend />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Right: Today's Workout Card */}
+                  <div className="flex-1 flex flex-col">
+                    <p className="text-[#64748B] text-sm font-medium uppercase tracking-wider mb-2" style={{ fontFamily: "'Space Mono', monospace" }}>Ready to train?</p>
 
                     {/* Workout Selector Dropdown */}
                     <div className="relative" ref={workoutSelectorRef}>
@@ -734,38 +764,40 @@ function DashboardContent() {
                       )}
                     </div>
 
-                    <p className="text-[#64748B]">
+                    <p className="text-[#64748B] mt-2">
                       {selectedWorkout.focus} • {selectedWorkout.exerciseCount} exercises
                     </p>
-                  </div>
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <Link
-                      href={`/workout/${selectedWorkoutId}`}
-                      className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-[#FF6B6B] text-white font-semibold rounded-xl hover:bg-[#EF5350] transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-[#FF6B6B]/25"
-                    >
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      Start Workout
-                    </Link>
-                    <QuickLogButton
-                      workoutId={selectedWorkoutId || ''}
-                      workoutName={selectedWorkout.name}
-                      onSuccess={() => {
-                        // Refresh dashboard data after successful quick log
-                        router.refresh();
-                      }}
-                    />
-                    <button
-                      onClick={() => openModal('nutrition')}
-                      className="inline-flex items-center justify-center gap-3 px-6 py-4 bg-white text-[#0F172A] font-semibold rounded-xl border-2 border-[#E2E8F0] hover:border-[#FF6B6B] hover:text-[#FF6B6B] transition-all duration-200"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                      </svg>
-                      Log Nutrition
-                    </button>
+
+                    {/* Action Buttons */}
+                    <div className="flex flex-col sm:flex-row gap-3 mt-6">
+                      <Link
+                        href={`/workout/${selectedWorkoutId}`}
+                        className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-[#FF6B6B] text-white font-semibold rounded-xl hover:bg-[#EF5350] transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-[#FF6B6B]/25"
+                      >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Start Workout
+                      </Link>
+                      <QuickLogButton
+                        workoutId={selectedWorkoutId || ''}
+                        workoutName={selectedWorkout.name}
+                        onSuccess={() => {
+                          // Refresh dashboard data after successful quick log
+                          router.refresh();
+                        }}
+                      />
+                      <button
+                        onClick={() => openModal('nutrition')}
+                        className="inline-flex items-center justify-center gap-3 px-6 py-4 bg-white text-[#0F172A] font-semibold rounded-xl border-2 border-[#E2E8F0] hover:border-[#FF6B6B] hover:text-[#FF6B6B] transition-all duration-200"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        Log Nutrition
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
