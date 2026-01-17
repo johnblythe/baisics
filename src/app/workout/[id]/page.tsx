@@ -796,6 +796,31 @@ export default function WorkoutPage() {
         </div>
       </div>
 
+      {/* Chat Panel - Mobile modal/sheet */}
+      {currentExercise && chatOpen && (
+        <div className="lg:hidden fixed inset-0 z-50 flex flex-col">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setChatOpen(false)}
+          />
+          {/* Chat sheet - slides up from bottom */}
+          <div className="relative mt-auto h-[85vh] bg-white rounded-t-2xl shadow-xl overflow-hidden animate-in slide-in-from-bottom duration-300">
+            <WorkoutChatPanel
+              exerciseName={currentExercise.name}
+              currentSet={currentExercise.logs.findIndex(l => !l.isCompleted) + 1 || currentExercise.sets}
+              totalSets={currentExercise.sets}
+              userEquipment="standard gym equipment"
+              experienceLevel="intermediate"
+              isOpen={chatOpen}
+              onClose={() => setChatOpen(false)}
+              messages={currentMessages}
+              onMessagesChange={setCurrentMessages}
+            />
+          </div>
+        </div>
+      )}
+
       {currentExercise && (
         <ExerciseSwapModal
           isOpen={swapModalOpen}
