@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactConfetti from 'react-confetti';
 import { Star, Share2, X, Check, ArrowRight } from 'lucide-react';
@@ -29,10 +29,6 @@ export function FirstWorkoutCelebration({
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
   const [animatedSets, setAnimatedSets] = useState(0);
   const [animatedVolume, setAnimatedVolume] = useState(0);
-
-  // Auto-advance timer (5 seconds)
-  const [autoAdvanceTimer, setAutoAdvanceTimer] = useState(5);
-  const [userInteracted, setUserInteracted] = useState(false);
 
   useEffect(() => {
     setWindowSize({ width: window.innerWidth, height: window.innerHeight });
@@ -75,28 +71,6 @@ export function FirstWorkoutCelebration({
     return () => clearTimeout(startDelay);
   }, [setsCompleted, totalVolume]);
 
-  // Auto-advance countdown
-  useEffect(() => {
-    if (userInteracted) return;
-
-    const timer = setInterval(() => {
-      setAutoAdvanceTimer(prev => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          onClose();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [userInteracted, onClose]);
-
-  const handleInteraction = useCallback(() => {
-    setUserInteracted(true);
-  }, []);
-
   const shareUrl = typeof window !== 'undefined'
     ? `${window.location.origin}/achievements?milestone=WORKOUT_1`
     : '';
@@ -104,7 +78,6 @@ export function FirstWorkoutCelebration({
   const shareText = `I just completed my first workout on BAISICS! \n\n${animatedSets} sets \u2022 ${formatVolume(animatedVolume)} volume\n\n"The first rep is the hardest one to take."`;
 
   const handleShare = async () => {
-    handleInteraction();
     if (navigator.share) {
       try {
         await navigator.share({
@@ -122,7 +95,6 @@ export function FirstWorkoutCelebration({
   };
 
   const handleCopy = async () => {
-    handleInteraction();
     try {
       await navigator.clipboard.writeText(`${shareText}\n\n${shareUrl}`);
       setCopied(true);
@@ -133,7 +105,6 @@ export function FirstWorkoutCelebration({
   };
 
   const handleTwitterShare = () => {
-    handleInteraction();
     const text = encodeURIComponent(
       `I just completed my first workout on @baisicsapp! \n\n${animatedSets} sets \u2022 ${formatVolume(animatedVolume)} volume\n\n"The first rep is the hardest one to take."\n\n${shareUrl}`
     );
@@ -141,7 +112,6 @@ export function FirstWorkoutCelebration({
   };
 
   const handleContinue = () => {
-    handleInteraction();
     onClose();
   };
 
@@ -152,7 +122,6 @@ export function FirstWorkoutCelebration({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-        onClick={handleInteraction}
       >
         {/* Confetti - tasteful, 2-3 seconds max */}
         {showConfetti && (
@@ -178,7 +147,7 @@ export function FirstWorkoutCelebration({
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.8, opacity: 0 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+          className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Close button */}
@@ -358,11 +327,6 @@ export function FirstWorkoutCelebration({
                 onClick={handleContinue}
                 className="w-full flex items-center justify-center gap-2 px-4 py-3 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
               >
-                {!userInteracted && (
-                  <span className="text-sm text-gray-400">
-                    ({autoAdvanceTimer}s)
-                  </span>
-                )}
                 <span>Continue to Home</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
