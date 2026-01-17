@@ -22,7 +22,7 @@ import { NutritionWidget } from '@/components/NutritionWidget';
 import { ClaimWelcomeBanner, storeWelcomeData, getWelcomeData } from '@/components/ClaimWelcomeBanner';
 import { StreakBadge } from '@/components/StreakBadge';
 import { ProgressShareCard, ProgressShareData } from '@/components/share/ProgressShareCard';
-import { RestDayDashboard, RestDayData } from '@/components/rest-day';
+import type { RestDayData } from '@/components/rest-day';
 import { CompletionRing, WeeklyDayIndicators, WeeklyDayLegend } from '@/components/weekly-progress';
 import type { DayInfo } from '@/components/weekly-progress';
 import { RecoveryScreen } from '@/components/recovery';
@@ -731,25 +731,56 @@ function DashboardContent() {
           </div>
         </div>
 
-        {/* Rest Day Dashboard - shown when user has completed their weekly workouts or worked out today */}
-        {restDayData?.isRestDay && program?.id && (
-          <RestDayDashboard data={restDayData} programId={program.id} />
-        )}
-
         {/* ═══════════════════════════════════════════════════════════════════
-            COMMAND CENTER - 3 COLUMN GRID (non-rest day)
+            COMMAND CENTER - 3 COLUMN GRID (always shown, with rest day variation)
         ═══════════════════════════════════════════════════════════════════ */}
-        {!restDayData?.isRestDay && (
-          <div className="grid grid-cols-12 gap-4 mb-4">
+        <div className="grid grid-cols-12 gap-4 mb-4">
             {/* ─────────────────────────────────────────────────────────────────
-                LEFT COLUMN: Today's Workout
+                LEFT COLUMN: Today's Workout (or Rest Day)
             ───────────────────────────────────────────────────────────────── */}
-            <div className="col-span-12 lg:col-span-4 bg-white rounded-2xl border border-[#E2E8F0] p-6">
-              <div className="text-xs font-medium text-[#FF6B6B] uppercase tracking-wider mb-3" style={{ fontFamily: "'Space Mono', monospace" }}>
-                Today&apos;s Workout
+            <div className={`col-span-12 lg:col-span-4 bg-white rounded-2xl border p-6 ${restDayData?.isRestDay ? 'border-emerald-200 bg-gradient-to-b from-emerald-50/50 to-white' : 'border-[#E2E8F0]'}`}>
+              <div className={`text-xs font-medium uppercase tracking-wider mb-3 ${restDayData?.isRestDay ? 'text-emerald-600' : 'text-[#FF6B6B]'}`} style={{ fontFamily: "'Space Mono', monospace" }}>
+                {restDayData?.isRestDay ? 'Rest Day' : "Today's Workout"}
               </div>
 
-              {currentWorkout?.nextWorkout && selectedWorkout ? (
+              {restDayData?.isRestDay ? (
+                /* ─── REST DAY VARIATION ─── */
+                <>
+                  <div className="text-xl font-bold text-[#0F172A] mb-1">
+                    Time to recover 💪
+                  </div>
+                  <p className="text-[#64748B] text-sm mb-4">
+                    {weeklyCompleted >= weeklyTarget
+                      ? "You've hit your weekly target! Your muscles grow during rest."
+                      : "You worked out today. Recovery is when gains happen."}
+                  </p>
+
+                  {/* Recovery Tip */}
+                  {restDayData.recoveryTip && (
+                    <div className="bg-emerald-50 rounded-xl p-4 mb-4">
+                      <div className="text-xs font-medium text-emerald-600 uppercase tracking-wider mb-1" style={{ fontFamily: "'Space Mono', monospace" }}>
+                        Recovery Tip
+                      </div>
+                      <div className="font-medium text-[#0F172A] text-sm mb-1">{restDayData.recoveryTip.title}</div>
+                      <p className="text-[#64748B] text-xs">{restDayData.recoveryTip.tip}</p>
+                    </div>
+                  )}
+
+                  {/* Train Anyway Option */}
+                  {selectedWorkout && (
+                    <div className="pt-3 border-t border-gray-100">
+                      <p className="text-xs text-[#64748B] mb-2">Feeling energized?</p>
+                      <Link
+                        href={`/workout/${selectedWorkoutId}`}
+                        className="w-full border border-[#E2E8F0] hover:border-[#FF6B6B] text-[#0F172A] hover:text-[#FF6B6B] font-medium py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm"
+                      >
+                        Train anyway: {selectedWorkout.name}
+                      </Link>
+                    </div>
+                  )}
+                </>
+              ) : currentWorkout?.nextWorkout && selectedWorkout ? (
+                /* ─── REGULAR WORKOUT DAY ─── */
                 <>
                   {/* Workout Selector */}
                   <div className="relative" ref={workoutSelectorRef}>
@@ -831,6 +862,7 @@ function DashboardContent() {
                   </p>
                 </>
               ) : (
+                /* ─── PROGRAM COMPLETE ─── */
                 <div className="text-center py-8">
                   <div className="text-4xl mb-2">🎉</div>
                   <p className="font-semibold text-[#0F172A]">Program Complete!</p>
@@ -900,195 +932,53 @@ function DashboardContent() {
                 {selectedWorkoutId && (
                   <Link
                     href={`/workout/${selectedWorkoutId}`}
-                    className="w-full flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-[#FFE5E5] transition-colors text-left"
+                    className="w-full flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-[#FF6B6B] transition-colors text-left group"
                   >
                     <span className="text-lg">🏋️</span>
                     <div>
-                      <div className="font-medium text-sm text-[#0F172A]">Start workout</div>
-                      <div className="text-xs text-gray-500">{selectedWorkout?.name || 'Begin tracking'}</div>
+                      <div className="font-medium text-sm text-[#0F172A] group-hover:text-white">Start workout</div>
+                      <div className="text-xs text-gray-500 group-hover:text-white/80">{selectedWorkout?.name || 'Begin tracking'}</div>
                     </div>
                   </Link>
                 )}
                 <button
                   onClick={() => openModal('nutrition')}
-                  className="w-full flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-[#FFE5E5] transition-colors text-left"
+                  className="w-full flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-[#FF6B6B] transition-colors text-left group"
                 >
                   <span className="text-lg">🍎</span>
                   <div>
-                    <div className="font-medium text-sm text-[#0F172A]">Log food</div>
-                    <div className="text-xs text-gray-500">Track nutrition</div>
+                    <div className="font-medium text-sm text-[#0F172A] group-hover:text-white">Log food</div>
+                    <div className="text-xs text-gray-500 group-hover:text-white/80">Track nutrition</div>
                   </div>
                 </button>
                 <Link
                   href="/check-in"
-                  className="w-full flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-[#FFE5E5] transition-colors text-left"
+                  className="w-full flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-[#FF6B6B] transition-colors text-left group"
                 >
                   <span className="text-lg">⚖️</span>
                   <div>
-                    <div className="font-medium text-sm text-[#0F172A]">Log weight</div>
-                    <div className="text-xs text-gray-500">{weightData.currentWeight ? `${weightData.currentWeight} lbs` : 'Not logged'}</div>
+                    <div className="font-medium text-sm text-[#0F172A] group-hover:text-white">Log weight</div>
+                    <div className="text-xs text-gray-500 group-hover:text-white/80">{weightData.currentWeight ? `${weightData.currentWeight} lbs` : 'Not logged'}</div>
                   </div>
                 </Link>
                 <Link
                   href="/check-in"
-                  className="w-full flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-[#FFE5E5] transition-colors text-left"
+                  className="w-full flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-[#FF6B6B] transition-colors text-left group"
                 >
                   <span className="text-lg">📷</span>
                   <div>
-                    <div className="font-medium text-sm text-[#0F172A]">Add photo</div>
-                    <div className="text-xs text-gray-500">Track progress</div>
+                    <div className="font-medium text-sm text-[#0F172A] group-hover:text-white">Add photo</div>
+                    <div className="text-xs text-gray-500 group-hover:text-white/80">Track progress</div>
                   </div>
                 </Link>
               </div>
             </div>
           </div>
-        )}
 
         {/* ═══════════════════════════════════════════════════════════════════
-            COMMAND CENTER - BOTTOM ROW (Activity Grid + Recent Activity)
+            COMMAND CENTER - HELPER LINKS ROW (between top and bottom)
         ═══════════════════════════════════════════════════════════════════ */}
-        <div className="grid grid-cols-12 gap-4 mb-4">
-          {/* ─────────────────────────────────────────────────────────────────
-              LEFT: Activity Grid + Streak Stats (Compact)
-          ───────────────────────────────────────────────────────────────── */}
-          <div className="col-span-12 lg:col-span-6 bg-white rounded-2xl border border-[#E2E8F0] p-4">
-            <div className="flex items-center justify-between mb-2">
-              <div className="text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ fontFamily: "'Space Mono', monospace" }}>
-                Activity (12 weeks)
-              </div>
-              <div className="flex items-center gap-3 text-xs text-[#64748B]">
-                <span>{streak.current > 0 ? `🔥 ${streak.current} day streak` : ''}</span>
-                <span>Best: {streak.longest}</span>
-              </div>
-            </div>
-
-            {/* Compact Activity Grid */}
-            <div className="flex gap-0.5 flex-wrap">
-              {tooltipContent && (
-                <div
-                  className="fixed px-2 py-1 bg-[#475569] text-white text-xs rounded whitespace-pre pointer-events-none min-w-[120px] z-[60]"
-                  style={{ left: tooltipContent.x, top: tooltipContent.y - 10, transform: 'translateX(-50%)' }}
-                >
-                  {tooltipContent.content}
-                </div>
-              )}
-              {Array.from({ length: 84 }).map((_, i) => {
-                const date = new Date();
-                date.setDate(date.getDate() - (83 - i));
-                const dateStr = date.toISOString().split('T')[0];
-                const dayActivities = activities?.filter(a => a.date.startsWith(dateStr)) || [];
-                const classes = dayActivities.length > 0
-                  ? dayActivities.some(a => a.type === 'check-in') ? 'bg-emerald-400'
-                  : dayActivities.some(a => a.type === 'workout') ? 'bg-[#FF6B6B]'
-                  : 'bg-[#CBD5E1]'
-                  : 'bg-gray-100';
-
-                return (
-                  <div
-                    key={i}
-                    className={`w-2.5 h-2.5 rounded-sm ${classes} hover:scale-150 cursor-help transition-transform`}
-                    onMouseEnter={(e) => {
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      setTooltipContent({
-                        x: rect.left + rect.width / 2,
-                        y: rect.top,
-                        content: (
-                          <>
-                            {date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-                            {dayActivities.length > 0 ? (
-                              dayActivities.map((activity, idx) => (
-                                <div key={idx} className="mt-1 text-gray-200">
-                                  {activity.type === 'check-in' && 'Check-in'}
-                                  {activity.type === 'workout' && 'Workout'}
-                                  {activity.type === 'visit' && 'Visit'}
-                                </div>
-                              ))
-                            ) : (
-                              <div className="mt-1 text-gray-400">No activity</div>
-                            )}
-                          </>
-                        )
-                      });
-                    }}
-                    onMouseLeave={() => setTooltipContent(null)}
-                  />
-                );
-              })}
-            </div>
-            <div className="mt-2 flex items-center justify-end gap-2 text-[10px] text-[#94A3B8]">
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-gray-100" />None</span>
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-[#FF6B6B]" />Workout</span>
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-emerald-400" />Check-in</span>
-            </div>
-          </div>
-
-          {/* ─────────────────────────────────────────────────────────────────
-              RIGHT: Recent Activity
-          ───────────────────────────────────────────────────────────────── */}
-          <div className="col-span-12 lg:col-span-6 bg-white rounded-2xl border border-[#E2E8F0] p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ fontFamily: "'Space Mono', monospace" }}>
-                Recent Activity
-              </div>
-              {workoutStreak > 0 && (
-                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold">
-                  🔥 {workoutStreak} day streak
-                </div>
-              )}
-            </div>
-
-            {recentActivity.length > 0 ? (
-              <div className="space-y-2 max-h-[280px] overflow-y-auto pr-1">
-                {recentActivity.map((activity) => (
-                  <div
-                    key={activity.id}
-                    className="flex items-center justify-between p-3 rounded-xl bg-gray-50 hover:bg-[#FFE5E5]/30 transition-colors"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-[#FF6B6B]/10 text-[#FF6B6B] flex items-center justify-center font-bold text-sm">
-                        {activity.dayNumber}
-                      </div>
-                      <div>
-                        <div className="font-medium text-sm text-[#0F172A]">{activity.workoutName}</div>
-                        <div className="text-xs text-[#64748B]">
-                          {new Date(activity.completedAt).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-                          {activity.totalVolume > 0 && ` • ${activity.totalVolume.toLocaleString()} lbs`}
-                        </div>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => {
-                        navigator.clipboard.writeText(`${window.location.origin}/share/workout/${activity.id}`);
-                        setCopiedWorkoutId(activity.id);
-                        setTimeout(() => setCopiedWorkoutId(null), 2000);
-                      }}
-                      className={`text-xs px-2 py-1 rounded transition-colors ${
-                        copiedWorkoutId === activity.id
-                          ? 'bg-green-100 text-green-700'
-                          : 'text-[#FF6B6B] hover:bg-[#FFE5E5]'
-                      }`}
-                    >
-                      {copiedWorkoutId === activity.id ? '✓ Copied' : 'Share'}
-                    </button>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center py-8 text-center">
-                <div className="w-12 h-12 rounded-full bg-[#F1F5F9] flex items-center justify-center mb-3">
-                  <span className="text-2xl">🏃</span>
-                </div>
-                <p className="text-[#475569] font-medium">No workouts yet</p>
-                <p className="text-sm text-[#94A3B8]">Complete your first workout to start tracking!</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* ═══════════════════════════════════════════════════════════════════
-            COMMAND CENTER - HELPER LINKS ROW
-        ═══════════════════════════════════════════════════════════════════ */}
-        <div className="bg-white rounded-xl border border-[#E2E8F0] p-4 mb-4">
+        <div className="bg-white rounded-xl border border-[#E2E8F0] p-3 mb-4">
           <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
             <button onClick={handleDownloadPDF} className="inline-flex items-center gap-1.5 text-sm text-[#475569] hover:text-[#FF6B6B] transition-colors">
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none"><path d="M7 18H17V16H7V18Z" fill="currentColor"/><path d="M17 14H7V12H17V14Z" fill="currentColor"/><path d="M7 10H11V8H7V10Z" fill="currentColor"/><path fillRule="evenodd" clipRule="evenodd" d="M6 2C4.34315 2 3 3.34315 3 5V19C3 20.6569 4.34315 22 6 22H18C19.6569 22 21 20.6569 21 19V9C21 5.13401 17.866 2 14 2H6ZM6 4H13V9H19V19C19 19.5523 18.5523 20 18 20H6C5.44772 20 5 19.5523 5 19V5C5 4.44772 5.44772 4 6 4ZM15 4.10002C16.6113 4.4271 17.9413 5.52906 18.584 7H15V4.10002Z" fill="currentColor"/></svg>
@@ -1110,6 +1000,139 @@ function DashboardContent() {
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" strokeWidth="2"/><path d="M9 9C9 7.34315 10.3431 6 12 6C13.6569 6 15 7.34315 15 9C15 10.6569 13.6569 12 12 12V14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg>
               Help
             </button>
+          </div>
+        </div>
+
+        {/* ═══════════════════════════════════════════════════════════════════
+            COMMAND CENTER - BOTTOM ROW (Activity Grid + Recent Activity)
+        ═══════════════════════════════════════════════════════════════════ */}
+        <div className="grid grid-cols-12 gap-4 mb-4">
+          {/* ─────────────────────────────────────────────────────────────────
+              LEFT: Activity Grid (4 weeks) + Stats
+          ───────────────────────────────────────────────────────────────── */}
+          <div className="col-span-12 lg:col-span-6 bg-white rounded-2xl border border-[#E2E8F0] p-4">
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ fontFamily: "'Space Mono', monospace" }}>
+                Last 4 Weeks
+              </div>
+              <div className="flex items-center gap-2 text-[10px] text-[#94A3B8]">
+                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-[#FF6B6B]" />Workout</span>
+                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-emerald-400" />Check-in</span>
+              </div>
+            </div>
+
+            {/* Grid + Stats side by side */}
+            <div className="flex gap-3">
+              {/* Activity Grid - 4 weeks, 7 columns, larger squares */}
+              <div className="grid grid-cols-7 gap-1.5 flex-1">
+                {/* Day labels */}
+                {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
+                  <div key={i} className="text-[10px] text-center text-[#94A3B8]">{day}</div>
+                ))}
+                {/* Tooltip */}
+                {tooltipContent && (
+                  <div
+                    className="fixed px-2 py-1 bg-[#475569] text-white text-xs rounded whitespace-pre pointer-events-none min-w-[120px] z-[60]"
+                    style={{ left: tooltipContent.x, top: tooltipContent.y - 10, transform: 'translateX(-50%)' }}
+                  >
+                    {tooltipContent.content}
+                  </div>
+                )}
+                {/* Grid squares - 28 days (4 weeks) */}
+                {Array.from({ length: 28 }).map((_, i) => {
+                  const date = new Date();
+                  date.setDate(date.getDate() - (27 - i));
+                  const dateStr = date.toISOString().split('T')[0];
+                  const dayActivities = activities?.filter(a => a.date.startsWith(dateStr)) || [];
+                  const isToday = i === 27;
+                  const classes = dayActivities.length > 0
+                    ? dayActivities.some(a => a.type === 'check-in') ? 'bg-emerald-400'
+                    : dayActivities.some(a => a.type === 'workout') ? 'bg-[#FF6B6B]'
+                    : 'bg-[#CBD5E1]'
+                    : 'bg-gray-100';
+
+                  return (
+                    <div
+                      key={i}
+                      className={`aspect-square rounded-md ${classes} ${isToday ? 'ring-2 ring-[#FF6B6B] ring-offset-1' : ''} hover:scale-105 cursor-help transition-transform`}
+                      onMouseEnter={(e) => {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        setTooltipContent({
+                          x: rect.left + rect.width / 2,
+                          y: rect.top,
+                          content: (
+                            <>
+                              {date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                              {isToday && ' (Today)'}
+                              {dayActivities.length > 0 ? (
+                                dayActivities.map((activity, idx) => (
+                                  <div key={idx} className="mt-1 text-gray-200">
+                                    {activity.type === 'check-in' && '✓ Check-in'}
+                                    {activity.type === 'workout' && '💪 Workout'}
+                                    {activity.type === 'visit' && 'Visit'}
+                                  </div>
+                                ))
+                              ) : (
+                                <div className="mt-1 text-gray-400">No activity</div>
+                              )}
+                            </>
+                          )
+                        });
+                      }}
+                      onMouseLeave={() => setTooltipContent(null)}
+                    />
+                  );
+                })}
+              </div>
+
+              {/* Stats - compact right column */}
+              <div className="flex-shrink-0 w-20 flex flex-col justify-center items-center text-center border-l border-gray-100 pl-3">
+                <div className="text-xl font-bold text-[#0F172A] flex items-center gap-0.5">
+                  {streak.current > 0 ? streak.current : '0'}
+                  <span className="text-base">🔥</span>
+                </div>
+                <div className="text-[10px] text-[#64748B] mb-2">streak</div>
+                <div className="text-sm font-bold text-[#0F172A]">{restDayData?.lifetimeStats?.totalWorkouts || programStats?.completedWorkouts || 0}</div>
+                <div className="text-[10px] text-[#94A3B8]">workouts</div>
+              </div>
+            </div>
+          </div>
+
+          {/* ─────────────────────────────────────────────────────────────────
+              RIGHT: Recent Activity
+          ───────────────────────────────────────────────────────────────── */}
+          <div className="col-span-12 lg:col-span-6 bg-white rounded-2xl border border-[#E2E8F0] p-4">
+            <div className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2" style={{ fontFamily: "'Space Mono', monospace" }}>
+              Recent Activity
+            </div>
+
+            {recentActivity.length > 0 ? (
+              <div className="space-y-1.5 max-h-[140px] overflow-y-auto">
+                {recentActivity.slice(0, 5).map((activity) => (
+                  <div
+                    key={activity.id}
+                    className="flex items-center justify-between p-2 rounded-lg bg-gray-50 hover:bg-[#FFE5E5]/30 transition-colors"
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className="w-6 h-6 rounded-full bg-[#FF6B6B]/10 text-[#FF6B6B] flex items-center justify-center font-bold text-xs flex-shrink-0">
+                        {activity.dayNumber}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="font-medium text-xs text-[#0F172A] truncate">{activity.workoutName}</div>
+                        <div className="text-[10px] text-[#64748B]">
+                          {new Date(activity.completedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-6 text-center">
+                <span className="text-2xl mb-2">🏃</span>
+                <p className="text-xs text-[#94A3B8]">No workouts yet</p>
+              </div>
+            )}
           </div>
         </div>
 

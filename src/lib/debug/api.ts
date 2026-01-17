@@ -22,14 +22,17 @@ export async function getDebugState(): Promise<DebugState> {
     const cookieStore = await cookies();
     const debugCookie = cookieStore.get(DEBUG_COOKIE_NAME);
 
+    console.log('[DEBUG] Cookie check:', DEBUG_COOKIE_NAME, '=', debugCookie?.value);
+
     if (debugCookie?.value) {
       const state = debugCookie.value as DebugState;
       if (DEBUG_STATES.find(s => s.value === state)) {
+        console.log('[DEBUG] Valid state found:', state);
         return state;
       }
     }
-  } catch {
-    // Ignore cookie errors
+  } catch (e) {
+    console.log('[DEBUG] Cookie error:', e);
   }
 
   return 'normal';

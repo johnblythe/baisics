@@ -61,13 +61,32 @@ export async function GET(
       type: 'visit' as const
     }));
 
+    // De-duplicate workouts: only one workout entry per day
+    const seenWorkoutDays = new Set<string>();
+    const dedupedWorkoutLogs = program.workoutLogs.filter(log => {
+      if (!log.completedAt) return false;
+      const dayKey = log.completedAt.toISOString().split('T')[0];
+      if (seenWorkoutDays.has(dayKey)) return false;
+      seenWorkoutDays.add(dayKey);
+      return true;
+    });
+
+    // De-duplicate check-ins: only one check-in entry per day
+    const seenCheckInDays = new Set<string>();
+    const dedupedCheckIns = program.checkIns.filter(checkIn => {
+      const dayKey = checkIn.date.toISOString().split('T')[0];
+      if (seenCheckInDays.has(dayKey)) return false;
+      seenCheckInDays.add(dayKey);
+      return true;
+    });
+
     // Combine all activities
     const activities = [
-      ...program.workoutLogs.map(log => ({
+      ...dedupedWorkoutLogs.map(log => ({
         date: log.completedAt ? log.completedAt.toISOString() : '',
         type: 'workout' as const
       })),
-      ...program.checkIns.map(checkIn => ({
+      ...dedupedCheckIns.map(checkIn => ({
         date: checkIn.date.toISOString(),
         type: 'check-in' as const
       })),
