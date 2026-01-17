@@ -197,6 +197,9 @@ export default function Header() {
                     <Link href="#pricing" className="text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors">
                       Pricing
                     </Link>
+                    <Link href="/coaches" className="text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors">
+                      Coaches
+                    </Link>
                     <Link href="/blog" className="text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors">
                       Blog
                     </Link>
@@ -243,6 +246,13 @@ export default function Header() {
                           onClick={() => setIsMenuOpen(false)}
                         >
                           Pricing
+                        </Link>
+                        <Link
+                          href="/coaches"
+                          className="block px-4 py-2.5 text-sm font-medium text-[#475569] hover:bg-[#F8FAFC]"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          Coaches
                         </Link>
                         <Link
                           href="/blog"
