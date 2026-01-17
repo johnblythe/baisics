@@ -1,0 +1,19 @@
+There are still 5 stories with `passes: false` (US-006 through US-010). I've completed US-005. Another iteration will pick up the next story (US-006).
+
+**Summary of completed work:**
+
+**US-005: Analyze Apple Fitness rings and awards** - COMPLETE
+
+Created comprehensive research document at `docs/research/236-competitor-apple-fitness.md` covering:
+- Three Activity Rings (Move/Exercise/Stand) with psychological analysis
+- Award badges system (lifetime, limited-time, tiered)
+- Social sharing and competition mechanics
+- Monthly personalized challenges
+- Celebration design and timing
+- What NOT to copy (Apple-specific advantages, dark patterns to avoid)
+
+Key insights for Baisics:
+- "Simplicity is the ultimate sophistication" - three metrics beat dozens
+- Lifetime milestones (100/365/500/1000 workouts) preserve progress without streak pressure
+- Percentage-based scoring equalizes competition across fitness levels
+- Rest days need to be celebrated, not penalized (users report "ring anxiety")

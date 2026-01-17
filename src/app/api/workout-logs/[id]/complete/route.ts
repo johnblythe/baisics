@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 import { updateStreak } from '@/lib/streaks';
+import { checkAndAwardMilestone } from '@/lib/milestone-service';
+import { sendEmail } from '@/lib/email';
+import { createProgramCompletionEmail } from '@/lib/email/templates/program-completion';
 
 export async function POST(
   request: Request,
@@ -89,13 +92,209 @@ export async function POST(
       });
     }
 
+    // Check for milestone achievements (non-blocking)
+    let milestoneData = { unlocked: false, milestone: null as string | null, totalWorkouts: 0, totalVolume: 0 };
+    try {
+      milestoneData = await checkAndAwardMilestone(userId);
+    } catch (milestoneError) {
+      console.error('Failed to check milestones (workout still completed):', {
+        userId,
+        workoutLogId: id,
+        error: milestoneError instanceof Error ? milestoneError.message : String(milestoneError)
+      });
+    }
+
+    // Calculate workout stats for this specific workout
+    let workoutStats = { setsCompleted: 0, totalVolume: 0 };
+    try {
+      const completedSets = updatedWorkoutLog.exerciseLogs.flatMap(el => el.setLogs.filter(s => s.completedAt));
+      workoutStats.setsCompleted = completedSets.length;
+      workoutStats.totalVolume = completedSets.reduce((sum, set) => {
+        return sum + ((set.weight || 0) * set.reps);
+      }, 0);
+    } catch (statsError) {
+      console.error('Failed to calculate workout stats:', statsError);
+    }
+
+    // Determine if this is the user's first workout (WORKOUT_1 milestone just unlocked)
+    const isFirstWorkout = milestoneData.unlocked && milestoneData.milestone === 'WORKOUT_1';
+
+    // Check for program completion (non-blocking)
+    let programCompletion: {
+      isComplete: boolean;
+      programId: string;
+      programName: string;
+      totalWorkouts: number;
+      totalVolume: number;
+      totalSets: number;
+      durationWeeks: number;
+      firstWeekVolume: number;
+      finalWeekVolume: number;
+      volumeGrowth: number;
+      startDate: string;
+      completionDate: string;
+    } | null = null;
+
+    try {
+      const programId = workoutLog.programId;
+
+      // Get program with all workouts
+      const program = await prisma.program.findUnique({
+        where: { id: programId },
+        include: {
+          workoutPlans: {
+            include: {
+              workouts: true,
+            },
+          },
+          ownerUser: {
+            select: { name: true, email: true },
+          },
+        },
+      });
+
+      if (program) {
+        // Get all unique workouts in the program
+        const allWorkouts = program.workoutPlans.flatMap(wp => wp.workouts);
+
+        // Get all completed workouts for this program
+        const completedWorkoutLogs = await prisma.workoutLog.findMany({
+          where: {
+            userId,
+            programId,
+            status: 'completed',
+          },
+          include: {
+            exerciseLogs: {
+              include: {
+                setLogs: true,
+              },
+            },
+          },
+          orderBy: { completedAt: 'asc' },
+        });
+
+        // Check if every unique workout has been completed at least once
+        const completedWorkoutIds = new Set(completedWorkoutLogs.map(wl => wl.workoutId));
+        const isProgramComplete = allWorkouts.every(w => completedWorkoutIds.has(w.id));
+
+        if (isProgramComplete) {
+          // Calculate completion stats
+          let totalVolume = 0;
+          let totalSets = 0;
+
+          for (const log of completedWorkoutLogs) {
+            for (const exerciseLog of log.exerciseLogs) {
+              for (const setLog of exerciseLog.setLogs) {
+                totalSets++;
+                totalVolume += (setLog.weight || 0) * setLog.reps;
+              }
+            }
+          }
+
+          const firstWorkoutLog = completedWorkoutLogs[0];
+          const lastWorkoutLog = completedWorkoutLogs[completedWorkoutLogs.length - 1];
+          const startDate = firstWorkoutLog?.startedAt || program.createdAt;
+          const programCompletionDate = lastWorkoutLog?.completedAt || new Date();
+
+          const durationMs = programCompletionDate.getTime() - startDate.getTime();
+          const durationWeeks = Math.max(1, Math.ceil(durationMs / (7 * 24 * 60 * 60 * 1000)));
+
+          // Calculate first week vs final week volume
+          const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
+          const firstWeekEnd = new Date(startDate.getTime() + oneWeekMs);
+          const finalWeekStart = new Date(programCompletionDate.getTime() - oneWeekMs);
+
+          let firstWeekVolume = 0;
+          let finalWeekVolume = 0;
+
+          for (const log of completedWorkoutLogs) {
+            const logDate = log.completedAt || log.startedAt;
+            const logVolume = log.exerciseLogs.reduce((sum, el) => {
+              return sum + el.setLogs.reduce((setSum, sl) => setSum + (sl.weight || 0) * sl.reps, 0);
+            }, 0);
+
+            if (logDate <= firstWeekEnd) {
+              firstWeekVolume += logVolume;
+            }
+            if (logDate >= finalWeekStart) {
+              finalWeekVolume += logVolume;
+            }
+          }
+
+          const volumeGrowth = firstWeekVolume > 0
+            ? Math.round(((finalWeekVolume - firstWeekVolume) / firstWeekVolume) * 100)
+            : 0;
+
+          programCompletion = {
+            isComplete: true,
+            programId,
+            programName: program.name,
+            totalWorkouts: completedWorkoutLogs.length,
+            totalVolume: Math.round(totalVolume),
+            totalSets,
+            durationWeeks,
+            firstWeekVolume: Math.round(firstWeekVolume),
+            finalWeekVolume: Math.round(finalWeekVolume),
+            volumeGrowth,
+            startDate: startDate.toISOString(),
+            completionDate: programCompletionDate.toISOString(),
+          };
+
+          // Send program completion notification email (non-blocking)
+          if (program.ownerUser?.email) {
+            const emailData = {
+              userName: program.ownerUser.name || 'Athlete',
+              programName: program.name,
+              totalWorkouts: completedWorkoutLogs.length,
+              totalVolume: Math.round(totalVolume),
+              totalSets,
+              durationWeeks,
+              firstWeekVolume: Math.round(firstWeekVolume),
+              finalWeekVolume: Math.round(finalWeekVolume),
+              volumeGrowth,
+              completionDate: programCompletionDate.toISOString(),
+              programId,
+            };
+
+            const emailContent = createProgramCompletionEmail(emailData);
+
+            // Fire and forget - don't block the response
+            sendEmail({
+              to: program.ownerUser.email,
+              subject: emailContent.subject,
+              html: emailContent.html,
+              text: emailContent.text,
+            }).catch(emailError => {
+              console.error('Failed to send program completion email:', emailError);
+            });
+          }
+        }
+      }
+    } catch (programError) {
+      console.error('Failed to check program completion (workout still completed):', {
+        userId,
+        workoutLogId: id,
+        error: programError instanceof Error ? programError.message : String(programError)
+      });
+    }
+
     return NextResponse.json({
       ...updatedWorkoutLog,
       streak: {
         current: streakData.current,
         longest: streakData.longest,
         extended: streakData.extended
-      }
+      },
+      milestone: milestoneData.unlocked ? {
+        unlocked: true,
+        type: milestoneData.milestone,
+        totalWorkouts: milestoneData.totalWorkouts,
+        totalVolume: milestoneData.totalVolume,
+      } : null,
+      isFirstWorkout,
+      workoutStats,
+      programCompletion,
     });
   } catch (error) {
     console.error('Error completing workout:', error);

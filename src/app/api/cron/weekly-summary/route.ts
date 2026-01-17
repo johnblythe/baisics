@@ -1,22 +1,32 @@
 import { NextResponse } from 'next/server';
 import { sendAllWeeklySummaries, sendWeeklySummaryEmail } from '@/services/weeklySummary';
 
-// Vercel cron or external cron service should call this endpoint
-// Recommended: Run on Monday mornings at 8am
+// Vercel cron service calls this endpoint
+// Runs daily at 8am UTC - service filters by user's preferred day (Sunday or Monday)
+// Does not stack with daily reminders (daily reminders run at 2pm UTC)
 
 export async function GET(request: Request) {
-  // Verify cron secret to prevent unauthorized access
+  // Verify cron secret to prevent unauthorized access - fail closed if not configured
   const authHeader = request.headers.get('authorization');
   const cronSecret = process.env.CRON_SECRET;
 
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+  if (!cronSecret) {
+    console.error('CRON_SECRET not configured - rejecting request');
+    return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+  }
+
+  if (authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
+    // Get current day for logging
+    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const currentDay = days[new Date().getDay()];
+
     const results = await sendAllWeeklySummaries();
 
-    console.log(`Weekly summary emails: ${results.sent} sent, ${results.failed} failed`);
+    console.log(`Weekly summary emails (${currentDay}): ${results.sent} sent, ${results.failed} failed`);
 
     if (results.errors.length > 0) {
       console.error('Weekly summary errors:', results.errors);
@@ -27,6 +37,7 @@ export async function GET(request: Request) {
       sent: results.sent,
       failed: results.failed,
       errors: results.errors,
+      day: currentDay,
     });
   } catch (error) {
     console.error('Error sending weekly summaries:', error);

@@ -45,6 +45,59 @@ export async function POST(request: Request) {
       return new NextResponse('Workout or program not found', { status: 404 });
     }
 
+    // Check for existing in-progress or completed log for this workout today
+    const now = logDate || new Date();
+    const startOfDay = new Date(now);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(now);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    // First check for existing in_progress log (resume it)
+    const existingInProgress = await prisma.workoutLog.findFirst({
+      where: {
+        userId,
+        workoutId,
+        status: 'in_progress',
+        startedAt: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
+      },
+      include: {
+        workout: {
+          include: {
+            exercises: { orderBy: { sortOrder: 'asc' } }
+          }
+        },
+        exerciseLogs: true,
+      },
+    });
+
+    if (existingInProgress) {
+      // Resume existing in-progress workout
+      return NextResponse.json(existingInProgress);
+    }
+
+    // Check for already completed workout today
+    const existingCompleted = await prisma.workoutLog.findFirst({
+      where: {
+        userId,
+        workoutId,
+        status: 'completed',
+        completedAt: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
+      },
+    });
+
+    if (existingCompleted) {
+      return NextResponse.json(
+        { error: 'This workout was already completed today', alreadyCompleted: true },
+        { status: 400 }
+      );
+    }
+
     // Create the workout log
     const workoutLog = await prisma.workoutLog.create({
       data: {

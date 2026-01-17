@@ -106,7 +106,9 @@ model User {
   coachOf          CoachClient[] @relation("ClientRelation") // Coaches managing this user
 
   // Email preferences
-  emailReminders Boolean @default(true) @map("email_reminders")
+  emailReminders       Boolean @default(true) @map("email_reminders")
+  weeklySummaryEnabled Boolean @default(true) @map("weekly_summary_enabled")
+  weeklySummaryDay     String  @default("monday") @map("weekly_summary_day") // "sunday" or "monday"
 
   // Coach branding
   brandName  String? @map("brand_name")
@@ -122,6 +124,9 @@ model User {
   // Subscription limits tracking
   programGenerationsThisMonth Int       @default(0) @map("program_generations_this_month")
   generationsResetAt          DateTime  @default(now()) @map("generations_reset_at")
+
+  // Lifetime milestones
+  milestoneAchievements MilestoneAchievement[]
 
   @@index([email])
   @@map("users")
@@ -295,6 +300,11 @@ model Program {
   // Sharing
   shareId String? @unique @map("share_id")
 
+  // Week 2 check-in intervention (shown once per program)
+  week2CheckInShown   Boolean   @default(false) @map("week2_check_in_shown")
+  week2CheckInShownAt DateTime? @map("week2_check_in_shown_at")
+  week2CheckInOption  String?   @map("week2_check_in_option") // "going_great", "too_hard", "too_easy", "life_happened"
+
   createdByUser User           @relation("ProgramAuthor", fields: [createdBy], references: [id])
   ownerUser     User?          @relation("ProgramOwner", fields: [userId], references: [id])
   clonedFrom    Program?       @relation("ProgramClones", fields: [clonedFromId], references: [id])
@@ -410,14 +420,16 @@ enum ExerciseTier {
 }
 
 model WorkoutLog {
-  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId      String    @map("user_id") @db.Uuid
-  workoutId   String    @map("workout_id") @db.Uuid
-  programId   String    @map("program_id") @db.Uuid
-  startedAt   DateTime  @default(now()) @map("started_at")
-  completedAt DateTime? @map("completed_at")
-  status      String    @default("in_progress") // in_progress, completed, abandoned
-  notes       String?   @db.Text
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId         String    @map("user_id") @db.Uuid
+  workoutId      String    @map("workout_id") @db.Uuid
+  programId      String    @map("program_id") @db.Uuid
+  startedAt      DateTime  @default(now()) @map("started_at")
+  completedAt    DateTime? @map("completed_at")
+  status         String    @default("in_progress") // in_progress, completed, abandoned
+  notes          String?   @db.Text
+  quickLog       Boolean   @default(false) @map("quick_log") // "I Did It" quick log without details
+  quickLogExpiry DateTime? @map("quick_log_expiry") // 48h window to backfill details
 
   user         User          @relation(fields: [userId], references: [id])
   workout      Workout       @relation(fields: [workoutId], references: [id])
@@ -780,4 +792,35 @@ model PendingClaim {
   @@index([email])
   @@index([token])
   @@map("pending_claims")
+}
+
+// Lifetime milestone achievements - badges that persist forever
+enum MilestoneType {
+  WORKOUT_1     // Day One - 1 workout
+  WORKOUT_10    // Getting Started - 10 workouts
+  WORKOUT_25    // Quarter Century - 25 workouts
+  WORKOUT_50    // Fifty Strong - 50 workouts
+  WORKOUT_100   // Century Club - 100 workouts
+  WORKOUT_250   // Two-Fifty - 250 workouts
+  WORKOUT_365   // Year's Worth - 365 workouts
+  WORKOUT_500   // Five Hundred - 500 workouts
+  WORKOUT_1000  // The Thousand - 1000 workouts
+}
+
+model MilestoneAchievement {
+  id        String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String        @map("user_id") @db.Uuid
+  type      MilestoneType @map("type")
+  earnedAt  DateTime      @default(now()) @map("earned_at")
+
+  // Snapshot of stats at time of achievement
+  totalWorkouts Int       @map("total_workouts")
+  totalVolume   Float?    @map("total_volume") // lbs lifted
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, type])
+  @@index([userId])
+  @@index([type])
+  @@map("milestone_achievements")
 }

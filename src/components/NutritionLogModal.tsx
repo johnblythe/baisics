@@ -301,6 +301,47 @@ export function NutritionLogModal({
     }
   };
 
+  // Quick check-in handler - saves with just adherence note, no macros
+  const handleQuickCheckIn = async (adherence: 'struggled' | 'on_track' | 'nailed_it') => {
+    setSaving(true);
+    setError(null);
+
+    const adherenceNotes: Record<string, string> = {
+      struggled: 'Quick check-in: Struggled (~50% adherence)',
+      on_track: 'Quick check-in: On track (~80% adherence)',
+      nailed_it: 'Quick check-in: Nailed it (100% adherence)',
+    };
+
+    try {
+      const response = await fetch('/api/nutrition/log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          date,
+          protein: 0,
+          carbs: 0,
+          fats: 0,
+          calories: 0,
+          source: 'quick_checkin',
+          notes: adherenceNotes[adherence],
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to save quick check-in');
+      }
+
+      onSaved?.();
+      onClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleClose = () => {
     // Reset state
     setValues({ protein: '', carbs: '', fats: '', calories: '' });
@@ -317,7 +358,7 @@ export function NutritionLogModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
+    <div className="fixed inset-0 z-[100] overflow-y-auto">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
@@ -550,6 +591,47 @@ export function NutritionLogModal({
                 className="w-full px-3 py-2 border border-[#E2E8F0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B6B] focus:border-transparent resize-none"
               />
             </div>
+
+            {/* Quick Check-in Fallback - only show if no values entered */}
+            {!values.protein && !values.carbs && !values.fats && !values.calories && (
+              <div className="mb-6 pt-4 border-t border-dashed border-[#E2E8F0]">
+                <p className="text-center text-sm text-[#94A3B8] mb-3">
+                  Short on time? Quick check-in instead:
+                </p>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    onClick={() => handleQuickCheckIn('struggled')}
+                    disabled={saving}
+                    className="py-3 px-2 rounded-xl border border-[#E2E8F0] hover:border-amber-300 hover:bg-amber-50 transition-colors text-center"
+                  >
+                    <div className="text-xl mb-1">😬</div>
+                    <div className="text-xs font-medium text-[#475569]">Struggled</div>
+                    <div className="text-[10px] text-[#94A3B8]">~50%</div>
+                  </button>
+                  <button
+                    onClick={() => handleQuickCheckIn('on_track')}
+                    disabled={saving}
+                    className="py-3 px-2 rounded-xl border border-[#E2E8F0] hover:border-green-300 hover:bg-green-50 transition-colors text-center"
+                  >
+                    <div className="text-xl mb-1">👍</div>
+                    <div className="text-xs font-medium text-[#475569]">On track</div>
+                    <div className="text-[10px] text-[#94A3B8]">~80%</div>
+                  </button>
+                  <button
+                    onClick={() => handleQuickCheckIn('nailed_it')}
+                    disabled={saving}
+                    className="py-3 px-2 rounded-xl border border-[#E2E8F0] hover:border-emerald-400 hover:bg-emerald-50 transition-colors text-center"
+                  >
+                    <div className="text-xl mb-1">✓</div>
+                    <div className="text-xs font-medium text-[#475569]">Nailed it</div>
+                    <div className="text-[10px] text-[#94A3B8]">100%</div>
+                  </button>
+                </div>
+                <p className="text-center text-[10px] text-[#94A3B8] mt-2">
+                  Keeps your streak, less detail
+                </p>
+              </div>
+            )}
 
             {/* Error message */}
             {error && (

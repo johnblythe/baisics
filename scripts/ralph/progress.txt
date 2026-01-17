@@ -1,8 +1,322 @@
 # Ralph Progress Log
-Started: Wed Jan 15 21:45:00 EST 2026
-PRD: 236-psych-ux-research - Psychological UX patterns for workout adherence
+Started: Fri Jan 16 10:51:03 EST 2026
+---
 
 ## Codebase Patterns
-(Patterns discovered during this research spike will be added here)
+
+### Achievement/Badge Patterns
+- Use framer-motion for animations (already in project)
+- Use react-confetti for celebration effects (already in project)
+- Share functionality: Native share API, Twitter/X integration, copy-to-clipboard
+- Modal pattern: Full-screen overlay with backdrop-blur-sm, rounded-2xl cards
+- Color gradient pattern: `bg-gradient-to-br from-[color1] to-[color2]`
+
+### API Pattern
+- Auth: Use `auth()` from `@/auth` for API routes (not getServerSession)
+- Error handling: Return NextResponse.json with status codes
+- Prisma: Use `@/lib/prisma` singleton
+
+### Component Patterns
+- Use `'use client'` directive for client components
+- Wrap useSearchParams in Suspense boundary (Next.js 15 requirement)
+- MainLayout wrapper for authenticated pages
+- Brand colors: #FF6B6B (coral), #0F172A (navy), #F8FAFC (bg)
+
+---
+
+## 2026-01-16 11:XX - US-001: Lifetime Milestone Badges System
+- What was implemented:
+  - MilestoneType enum + MilestoneAchievement model in Prisma
+  - Database migration for milestone_achievements table
+  - MilestoneBadge component with earned/locked visual states
+  - MilestoneBadgeGrid component showing all badges with progress bar
+  - MilestoneCelebrationModal with confetti, journey display, share options
+  - /achievements page showing all badges, stats summary, progress to next
+  - /api/milestones endpoint to fetch user milestones and stats
+  - Integration into workout completion API to check/award milestones
+  - /share/milestone page for social sharing with OG metadata
+  - /api/og/milestone edge function for OG image generation
+
+- Files created:
+  - prisma/migrations/20260116105341_add_milestone_achievements/migration.sql
+  - src/lib/milestones.ts (config + helper functions)
+  - src/lib/milestone-service.ts (check/award logic)
+  - src/components/milestones/MilestoneBadge.tsx
+  - src/components/milestones/MilestoneCelebrationModal.tsx
+  - src/components/milestones/index.ts
+  - src/app/achievements/page.tsx
+  - src/app/api/milestones/route.ts
+  - src/app/share/milestone/page.tsx
+  - src/app/api/og/milestone/route.tsx
+
+- Files modified:
+  - prisma/schema.prisma (added MilestoneType enum, MilestoneAchievement model, User relation)
+  - src/app/api/workout-logs/[id]/complete/route.ts (added milestone check)
+
+- **Learnings for future iterations:**
+  - useSearchParams requires Suspense wrapper in Next.js 15 for static generation
+  - API routes use `auth()` not `getServerSession(authOptions)`
+  - OG image routes should use `runtime = 'edge'` for performance
+  - Milestone thresholds: 1, 10, 25, 50, 100, 250, 365, 500, 1000
+  - Volume calculation: sum of (weight * reps) from all completed SetLogs
+
+---
+
+## 2026-01-16 12:XX - US-002: Rest Day Affirmation Screen
+- What was implemented:
+  - REST API endpoint `/api/programs/[programId]/rest-day` for rest day detection
+  - Rest day detection logic: completed weekly target OR already worked out today
+  - RestDayDashboard component with calmer visual design (gray/slate tones)
+  - Weekly progress ring showing X/Y workouts with animated SVG
+  - Lifetime stats display: total workouts, total volume, current streak
+  - Rotating educational coaching tips (5 recovery tips based on day of year)
+  - Optional activity logging: nutrition, stretching, foam rolling (zero-pressure)
+  - "Go HAM" option to start workout anyway on rest days
+  - Weekly schedule indicator with [R] markers for rest days
+  - Dashboard integration: shows RestDayDashboard when isRestDay=true, hides workout card
+
+- Files created:
+  - src/app/api/programs/[programId]/rest-day/route.ts (detection + stats API)
+  - src/components/rest-day/RestDayDashboard.tsx (main component)
+  - src/components/rest-day/index.ts (barrel export)
+
+- Files modified:
+  - src/app/dashboard/[programId]/page.tsx (import, state, fetch, conditional render)
+
+- **Learnings for future iterations:**
+  - Rest day detection uses simple logic: weekly completed >= weekly target OR worked out today
+  - WorkoutPlan has `daysPerWeek` field for determining weekly target
+  - Recovery tips rotate based on day of year modulo tip count
+  - formatVolume helper exists in src/lib/milestones.ts for displaying volume
+  - Conditional dashboard rendering: show rest day OR workout card (not both)
+  - Activity logging is client-side only for now (could add API endpoint later)
+
+---
+
+## 2026-01-16 13:XX - US-003: Quick Log - I Did It Button
+- What was implemented:
+  - Added `quickLog` and `quickLogExpiry` fields to WorkoutLog Prisma model
+  - Database migration for new quick_log fields
+  - `/api/workout-logs/quick-log` API endpoint for quick logging workouts
+  - QuickLogButton component with framer-motion animations
+  - Multi-state button: idle -> confirming -> loading -> success/error
+  - Integrated into dashboard alongside "Start Workout" button
+  - Updates streak and milestone tracking on quick log
+
+- Files created:
+  - prisma/migrations/20260116130000_add_quick_log_fields/migration.sql
+  - src/app/api/workout-logs/quick-log/route.ts
+  - src/components/quick-log/QuickLogButton.tsx
+  - src/components/quick-log/index.ts
+
+- Files modified:
+  - prisma/schema.prisma (added quickLog, quickLogExpiry fields to WorkoutLog)
+  - src/app/dashboard/[programId]/page.tsx (import + integration of QuickLogButton)
+
+- **Learnings for future iterations:**
+  - Quick log creates WorkoutLog with status='completed' immediately (no exercise logs)
+  - 48-hour expiry stored for potential backfill feature
+  - Button pattern: idle state, confirm step, loading, success animation
+  - Use framer-motion AnimatePresence with mode="wait" for smooth state transitions
+  - API reuses existing updateStreak and checkAndAwardMilestone helpers
+
+---
+
+## 2026-01-16 14:XX - US-004: First Workout Celebration
+- What was implemented:
+  - FirstWorkoutCelebration component with full-screen celebration experience
+  - Tasteful confetti animation (2-3 seconds, then stops)
+  - Day One badge display using existing MilestoneBadge component
+  - Animated workout stats counter (sets completed, total volume)
+  - Share functionality: native share, Twitter/X, copy-to-clipboard
+  - Auto-advance countdown (5 seconds) - pauses on user interaction
+  - Detection via `isFirstWorkout` flag in workout completion API response
+  - Workout stats calculation in completion API (setsCompleted, totalVolume)
+
+- Files created:
+  - src/components/first-workout/FirstWorkoutCelebration.tsx
+  - src/components/first-workout/index.ts (barrel export)
+
+- Files modified:
+  - src/app/api/workout-logs/[id]/complete/route.ts (added isFirstWorkout flag, workoutStats)
+  - src/app/workout/[id]/page.tsx (import, state, conditional render for first workout)
+
+- **Learnings for future iterations:**
+  - First workout detection: milestone type 'WORKOUT_1' just unlocked
+  - Auto-advance pattern: useEffect with interval, cancel on user interaction
+  - Stats animation: requestAnimationFrame with easing function for smooth counting
+  - Reuse existing MilestoneBadge component - don't create duplicate badge components
+  - workout completion API now returns: isFirstWorkout, workoutStats, streak, milestone
+
+---
+
+## 2026-01-16 15:XX - US-005: Completion Ring + Weekly Progress
+- What was implemented:
+  - CompletionRing component with SVG animated fill using framer-motion
+  - WeeklyDayIndicators component showing day-by-day status
+  - WeeklyDayLegend component explaining indicator meanings
+  - WeeklyProgressCard component combining ring + indicators
+  - Enhanced rest-day API with per-day status calculation
+  - Dashboard integration with split view layout (ring left, workout card right)
+  - Copy variants based on progress: "Fresh week", "Off to a good start", etc.
+  - Accessibility: aria-label with "X of Y workouts completed this week"
+
+- Files created:
+  - src/components/weekly-progress/CompletionRing.tsx
+  - src/components/weekly-progress/WeeklyDayIndicators.tsx
+  - src/components/weekly-progress/WeeklyProgressCard.tsx
+  - src/components/weekly-progress/index.ts (barrel export)
+
+- Files modified:
+  - src/app/api/programs/[programId]/rest-day/route.ts (added days array with per-day status)
+  - src/app/dashboard/[programId]/page.tsx (integrated CompletionRing, WeeklyDayIndicators)
+  - src/components/rest-day/RestDayDashboard.tsx (updated to use WeeklyDayIndicators, added DayInfo type)
+
+- **Learnings for future iterations:**
+  - SVG ring animation: use strokeDasharray/strokeDashoffset for progress fill
+  - Per-day status logic considers: completed workouts this week, expected workout days based on daysPerWeek
+  - Expected workout days heuristic: 3-day = Mon/Wed/Fri, 4-day = Mon/Tue/Thu/Fri, etc.
+  - Desktop split view: lg:flex-row with lg:w-1/3 for ring section
+  - Mobile: stacked layout with ring centered above fold
+  - Don't shame users for missed days - show as 'scheduled' not 'missed' to be kind
+
+---
+
+## 2026-01-16 16:XX - US-006: Missed Workout Recovery Flow
+- What was implemented:
+  - `/api/programs/[programId]/recovery` API endpoint for detecting missed workouts
+  - Two-tier recovery messaging: "Welcome back" (1-2 days) vs "No judgment" (3+ days)
+  - RecoveryScreen modal component with supportive messaging
+  - Lifetime stats display: total workouts, volume lifted, program progress %
+  - Three workout options: Today's Workout (full), Quick Comeback (3 exercises), Not Today
+  - Quick Comeback Workout generator: selects 3 compound exercises, 50% sets
+  - Program adjustment link for 3+ day absences
+  - Session-based dismissal (shows once per absence per session)
+  - Analytics tracking via `/api/analytics/recovery` endpoint
+  - Recovery screen never shows on rest days (integrates with rest-day logic)
+
+- Files created:
+  - src/app/api/programs/[programId]/recovery/route.ts (detection + comeback workout gen)
+  - src/components/recovery/RecoveryScreen.tsx (main modal component)
+  - src/components/recovery/index.ts (barrel export)
+  - src/app/api/analytics/recovery/route.ts (analytics tracking)
+
+- Files modified:
+  - src/app/dashboard/[programId]/page.tsx (import, state, fetch, conditional render)
+
+- **Learnings for future iterations:**
+  - Recovery detection: daysSinceLastWorkout >= 1 AND not a rest day
+  - Quick Comeback prefers compound exercises from ExerciseLibrary.isCompound field
+  - Session-based dismissal uses sessionStorage with programId key
+  - useCallback hooks must be called before any early returns (React rules of hooks)
+  - Analytics uses AppLog table with category='recovery_flow' for tracking
+  - Two recovery tiers based on daysSinceLastWorkout threshold (< 3 vs >= 3)
+
+---
+
+## 2026-01-16 17:XX - US-007: Week 2 Check-in Intervention
+- What was implemented:
+  - Added week2CheckInShown, week2CheckInShownAt, week2CheckInOption fields to Program model
+  - Database migration for new Week 2 check-in tracking fields
+  - `/api/programs/[programId]/week2-checkin` API endpoint (GET + POST)
+  - Week 2 detection logic: show when completedWorkouts between 4-10 AND not already shown
+  - Week2CheckInModal component with 4 response options
+  - Options: "Going great", "Too hard", "Too easy", "Life got in the way"
+  - Shows original training goals as reminder (from UserIntake)
+  - "Too hard" selection offers link to program adjustment page
+  - Encouraging response messages for each option
+  - Analytics tracking via AppLog with category='week2_checkin'
+  - Dashboard integration with session-based dismiss for "ask me later"
+  - Check-in only shows once per program (persisted to DB on submit)
+
+- Files created:
+  - prisma/migrations/20260116170000_add_week2_check_in_fields/migration.sql
+  - src/app/api/programs/[programId]/week2-checkin/route.ts
+  - src/components/week2-checkin/Week2CheckInModal.tsx
+  - src/components/week2-checkin/index.ts
+
+- Files modified:
+  - prisma/schema.prisma (added week2CheckInShown, week2CheckInShownAt, week2CheckInOption to Program)
+  - src/app/dashboard/[programId]/page.tsx (import, state, fetch, modal render, handlers)
+
+- **Learnings for future iterations:**
+  - Prisma exports named: use `import { prisma } from '@/lib/prisma'` not default import
+  - Week 2 detection uses workout count (4-10 range) not calendar days
+  - week2CheckInShown persists to DB for permanent "only once" tracking
+  - sessionStorage used for temporary "ask me later" dismissal
+  - Check-in modal yields to RecoveryScreen (recovery takes priority)
+  - UserIntake table stores original user goals for reminder display
+
+---
+
+## 2026-01-16 18:XX - US-008: Weekly Summary Notification
+- What was implemented:
+  - Added `weeklySummaryEnabled` (Boolean) and `weeklySummaryDay` (String: "sunday" or "monday") fields to User model
+  - Database migration for weekly summary preferences
+  - Updated `/api/cron/weekly-summary` route with stricter auth and day logging
+  - Updated weekly summary service (`src/services/weeklySummary/index.ts`) to respect user preferences
+  - Service filters by weeklySummaryEnabled=true AND weeklySummaryDay matches current day
+  - Added weekly summary cron to vercel.json (runs daily at 8am UTC, service filters by day)
+  - Created `/api/user/notifications` endpoint (GET/PATCH) for notification preferences
+  - Added Notification Preferences section to `/settings` page with toggles and day selector
+  - Weekly summary and daily reminders run at different times (8am vs 2pm UTC) - no stacking
+
+- Files created:
+  - prisma/migrations/20260116180000_add_weekly_summary_preferences/migration.sql
+  - src/app/api/user/notifications/route.ts
+
+- Files modified:
+  - prisma/schema.prisma (added weeklySummaryEnabled, weeklySummaryDay to User)
+  - src/services/weeklySummary/index.ts (added getCurrentDayName, filter by user prefs)
+  - src/app/api/cron/weekly-summary/route.ts (stricter auth, logging)
+  - vercel.json (added weekly-summary cron at 8am UTC)
+  - src/app/settings/page.tsx (notification preferences UI)
+
+- **Learnings for future iterations:**
+  - Weekly summary service already existed - just needed preference filtering
+  - Cron runs daily at 8am UTC, service filters users by their preferred day
+  - "No stacking" achieved by running weekly (8am) and daily (2pm) at different times
+  - User preference API pattern: GET for current values, PATCH for updates
+  - Settings page already had dev toggles pattern - reused toggle UI style for notifications
+
+---
+
+## 2026-01-16 19:XX - US-009: Program Completion Notification
+- What was implemented:
+  - `/api/programs/[programId]/completion` API endpoint to detect program completion
+  - Program completion detection: all unique workouts have been completed at least once
+  - ProgramCompletionCelebration component with full-screen celebration experience
+  - Stats display: total workouts, total volume, total sets, duration in weeks
+  - Before/after comparison: Week 1 vs Final Week volume with growth percentage
+  - Share functionality: native share, Twitter/X, copy-to-clipboard
+  - `/share/program-completion` page for social sharing with OG metadata
+  - `/api/og/program-completion` edge function for OG image generation
+  - Email template for program completion notification
+  - Auto-sends celebration email when program is completed
+  - "Start Your Next Program" CTA linking to /hi for new program generation
+  - Integration into workout completion API (checks for completion after each workout)
+  - Workout page renders celebration when programCompletion.isComplete is true
+
+- Files created:
+  - src/app/api/programs/[programId]/completion/route.ts
+  - src/components/program-completion/ProgramCompletionCelebration.tsx
+  - src/components/program-completion/index.ts
+  - src/app/share/program-completion/page.tsx
+  - src/app/api/og/program-completion/route.tsx
+  - src/lib/email/templates/program-completion.ts
+
+- Files modified:
+  - src/app/api/workout-logs/[id]/complete/route.ts (added programCompletion check + email)
+  - src/app/workout/[id]/page.tsx (import, state, conditional render for program completion)
+  - src/lib/email/templates/index.ts (exported program-completion template)
+
+- **Learnings for future iterations:**
+  - Program completion detection: check if every unique workout ID in program has been completed
+  - Use completedWorkoutIds Set to track which workouts have been done
+  - Volume growth calculation: (final - first) / first * 100 for percentage
+  - Duration calculation: Math.ceil(ms difference / week in ms)
+  - Email sent fire-and-forget with .catch() to not block response
+  - OG image route uses query params since edge runtime can't access Prisma
+  - Celebration hierarchy: First workout > Program completion > Regular share modal
 
 ---

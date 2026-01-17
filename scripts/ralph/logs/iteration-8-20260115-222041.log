@@ -1,0 +1,18 @@
+Two stories remain with `passes: false`:
+- US-009: Create prioritized implementation roadmap
+- US-010: Compile final research summary
+
+US-008 is now complete. The next iteration will pick up US-009.
+
+**Summary of US-008 completion:**
+
+Created `docs/research/236-design-concepts.md` (848 lines) with:
+- **5 top patterns** selected based on impact, feasibility, and brand fit:
+  1. Completion Ring + Weekly Progress
+  2. First Workout Celebration
+  3. Missed Workout Recovery Flow
+  4. Rest Day Affirmation Screen
+  5. Lifetime Milestone Badges
+- Each concept includes ASCII wireframes (mobile-first + desktop variants), copy/messaging examples, and implementation notes
+- Added recommended build order with dependency diagram
+- All acceptance criteria met

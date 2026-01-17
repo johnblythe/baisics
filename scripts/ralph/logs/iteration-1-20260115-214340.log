@@ -1,0 +1,11 @@
+US-001 is complete. There are still 9 stories with `passes: false` (US-002 through US-010). Another iteration will pick up the next story.
+
+**Completed:** US-001 - Research behavioral psychology foundations
+
+**What was done:**
+- Created comprehensive `docs/research/236-psych-foundations.md` documenting 7 psychological principles
+- Each principle includes: definition, research citation, fitness app examples, baisics adaptation ideas, risk of misuse
+- Summary table ranks principles by baisics fit
+- Lint and build pass, committed to `ralph/236-psych-ux-research` branch
+
+**Remaining stories:** US-002 through US-010 (Duolingo, Strava, Noom, Apple Fitness analysis, journey map, pattern library, design concepts, roadmap, final summary)

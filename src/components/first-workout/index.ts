@@ -1,0 +1,1 @@
+export { FirstWorkoutCelebration } from './FirstWorkoutCelebration';

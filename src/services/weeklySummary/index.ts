@@ -8,6 +8,7 @@ interface UserWeeklyData {
   name: string;
   programId: string;
   programName: string;
+  weeklySummaryDay: string;
 }
 
 /**
@@ -251,12 +252,24 @@ export async function sendWeeklySummaryEmail(
 }
 
 /**
+ * Get the current day of week name
+ */
+function getCurrentDayName(): string {
+  const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+  return days[new Date().getDay()];
+}
+
+/**
  * Get all users who should receive weekly summaries
+ * Respects user preferences for weeklySummaryEnabled and weeklySummaryDay
  */
 export async function getUsersForWeeklySummary(): Promise<UserWeeklyData[]> {
+  const currentDay = getCurrentDayName();
+
   const users = await prisma.user.findMany({
     where: {
       email: { not: null },
+      weeklySummaryEnabled: true, // Only users who have enabled weekly summaries
       ownedPrograms: {
         some: { active: true }, // Has at least one active program
       },
@@ -265,6 +278,7 @@ export async function getUsersForWeeklySummary(): Promise<UserWeeklyData[]> {
       id: true,
       email: true,
       name: true,
+      weeklySummaryDay: true,
       ownedPrograms: {
         where: { active: true },
         orderBy: { createdAt: 'desc' },
@@ -277,14 +291,16 @@ export async function getUsersForWeeklySummary(): Promise<UserWeeklyData[]> {
     },
   });
 
+  // Filter by preferred day and map to UserWeeklyData
   return users
-    .filter(u => u.email && u.ownedPrograms.length > 0)
+    .filter(u => u.email && u.ownedPrograms.length > 0 && u.weeklySummaryDay === currentDay)
     .map(u => ({
       userId: u.id,
       email: u.email!,
       name: u.name || 'User',
       programId: u.ownedPrograms[0].id,
       programName: u.ownedPrograms[0].name,
+      weeklySummaryDay: u.weeklySummaryDay,
     }));
 }
 

@@ -1,0 +1,13 @@
+US-004 is now complete. There are still stories with `passes: false` (US-005 through US-009). My iteration is complete - another Ralph iteration will pick up US-005: Completion Ring + Weekly Progress next.
+
+**Summary of US-004: First Workout Celebration**
+
+Implemented a special celebration experience for users completing their first workout:
+
+- **Detection**: API detects when `WORKOUT_1` milestone is just unlocked
+- **Full-screen celebration**: `FirstWorkoutCelebration` component with confetti (2-3 sec, tasteful)
+- **Day One badge**: Uses existing `MilestoneBadge` component with special quote
+- **Workout stats**: Animated counters showing sets completed and total volume
+- **Share functionality**: Native share API, Twitter/X, clipboard copy
+- **Auto-advance**: 5 second countdown, pauses on user interaction
+- **Differentiation**: First workout shows special celebration; subsequent workouts show standard share modal

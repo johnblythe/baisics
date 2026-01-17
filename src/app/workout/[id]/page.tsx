@@ -15,6 +15,9 @@ import { WorkoutProgressBar } from '@/components/workout/WorkoutProgressBar';
 import RestPeriodIndicator from '@/app/components/RestPeriodIndicator';
 import { WorkoutShareCard, WorkoutShareData } from '@/components/share/WorkoutShareCard';
 import { CalendarPicker } from '@/components/ui/CalendarPicker';
+import { FirstWorkoutCelebration } from '@/components/first-workout';
+import { ProgramCompletionCelebration } from '@/components/program-completion';
+import type { ProgramCompletionData } from '@/app/api/programs/[programId]/completion/route';
 
 // Helper to format date for display
 function formatDateForDisplay(date: Date): string {
@@ -101,6 +104,12 @@ export default function WorkoutPage() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareData, setShareData] = useState<WorkoutShareData | null>(null);
   const [workoutName, setWorkoutName] = useState('');
+  // First workout celebration state
+  const [showFirstWorkoutCelebration, setShowFirstWorkoutCelebration] = useState(false);
+  const [firstWorkoutStats, setFirstWorkoutStats] = useState<{ setsCompleted: number; totalVolume: number } | null>(null);
+  // Program completion celebration state
+  const [showProgramCompletion, setShowProgramCompletion] = useState(false);
+  const [programCompletionData, setProgramCompletionData] = useState<ProgramCompletionData | null>(null);
 
   const findFirstIncompletePosition = (exercises: ExerciseWithLogs[]) => {
     for (let i = 0; i < exercises.length; i++) {
@@ -298,20 +307,36 @@ export default function WorkoutPage() {
         throw new Error('Failed to complete workout');
       }
 
-      // Prepare share data and show share modal
-      const exercisesCompleted = exercises.filter(ex =>
-        ex.logs.every(l => l.isCompleted)
-      ).length;
+      const data = await response.json();
 
-      setShareData({
-        workoutLogId: workoutLog.id,
-        workoutName: workoutName,
-        exercisesCompleted: exercisesCompleted,
-        totalExercises: exercises.length,
-        streak: 1, // TODO: Fetch actual streak from API if available
-        date: workoutDate,
-      });
-      setShowShareModal(true);
+      // Check if this is the user's first workout
+      if (data.isFirstWorkout) {
+        // Show special first workout celebration
+        setFirstWorkoutStats({
+          setsCompleted: data.workoutStats?.setsCompleted || 0,
+          totalVolume: data.workoutStats?.totalVolume || 0,
+        });
+        setShowFirstWorkoutCelebration(true);
+      } else if (data.programCompletion?.isComplete) {
+        // Show program completion celebration
+        setProgramCompletionData(data.programCompletion);
+        setShowProgramCompletion(true);
+      } else {
+        // Prepare share data and show regular share modal
+        const exercisesCompleted = exercises.filter(ex =>
+          ex.logs.every(l => l.isCompleted)
+        ).length;
+
+        setShareData({
+          workoutLogId: workoutLog.id,
+          workoutName: workoutName,
+          exercisesCompleted: exercisesCompleted,
+          totalExercises: exercises.length,
+          streak: data.streak?.current || 1,
+          date: workoutDate,
+        });
+        setShowShareModal(true);
+      }
     } catch (error) {
       console.error('Failed to complete workout:', error);
       setError('Failed to complete workout. Please try again.');
@@ -362,6 +387,37 @@ export default function WorkoutPage() {
           </div>
         </div>
       </MainLayout>
+    );
+  }
+
+  // Show first workout celebration (special experience for first completion)
+  if (showFirstWorkoutCelebration && firstWorkoutStats) {
+    return (
+      <FirstWorkoutCelebration
+        setsCompleted={firstWorkoutStats.setsCompleted}
+        totalVolume={firstWorkoutStats.totalVolume}
+        workoutName={workoutName}
+        onClose={() => {
+          setShowFirstWorkoutCelebration(false);
+          router.push('/dashboard');
+        }}
+      />
+    );
+  }
+
+  // Show program completion celebration (special experience when program is finished)
+  if (showProgramCompletion && programCompletionData) {
+    return (
+      <ProgramCompletionCelebration
+        data={programCompletionData}
+        onClose={() => {
+          setShowProgramCompletion(false);
+          router.push(`/dashboard/${programCompletionData.programId}`);
+        }}
+        onNextProgram={() => {
+          router.push('/hi');
+        }}
+      />
     );
   }
 

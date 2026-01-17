@@ -1,0 +1,9 @@
+US-005 complete. Checking remaining stories - US-006, US-007, and US-008 still have `passes: false`, so work continues. Another iteration will pick up US-006.
+
+**Summary:**
+- ✅ Created `RestDayOptionD.tsx` - Coach wisdom card with purple gradient, 5 rotating recovery tips with source attributions
+- ✅ Updated `page.tsx` to import and render Option D
+- ✅ Lint and build pass
+- ✅ Committed: `feat: US-005 - Option D: Coach wisdom card`
+- ✅ PRD updated (`passes: true`)
+- ✅ Progress logged
