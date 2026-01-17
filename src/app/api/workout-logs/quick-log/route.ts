@@ -46,6 +46,44 @@ export async function POST(request: Request) {
     const now = new Date();
     const expiryDate = new Date(now.getTime() + 48 * 60 * 60 * 1000); // 48 hours from now
 
+    // Check for existing completed log for this workout on the same day
+    const startOfDay = new Date(now);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(now);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const existingLog = await prisma.workoutLog.findFirst({
+      where: {
+        userId,
+        workoutId,
+        status: 'completed',
+        completedAt: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
+      },
+      include: {
+        workout: true,
+      },
+    });
+
+    // If already logged today, return existing log instead of creating duplicate
+    if (existingLog) {
+      return NextResponse.json({
+        success: true,
+        alreadyLogged: true,
+        workoutLog: {
+          id: existingLog.id,
+          workoutId: existingLog.workoutId,
+          workoutName: existingLog.workout.name,
+          completedAt: existingLog.completedAt,
+          quickLog: existingLog.quickLog,
+          quickLogExpiry: existingLog.quickLogExpiry,
+        },
+        message: 'This workout was already logged today.',
+      });
+    }
+
     // Create a completed workout log with quickLog flag
     const workoutLog = await prisma.workoutLog.create({
       data: {

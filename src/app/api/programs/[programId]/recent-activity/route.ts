@@ -87,7 +87,7 @@ export async function GET(
           orderBy: {
             completedAt: 'desc',
           },
-          take: 5,
+          take: 10,
           include: {
             exerciseLogs: {
               include: {
@@ -103,7 +103,19 @@ export async function GET(
       return NextResponse.json({ error: 'Program not found' }, { status: 404 });
     }
 
-    const recentActivity = program.workoutLogs.map(log => {
+    // De-duplicate: keep only first (most recent) entry per workout+day
+    const seenWorkoutDays = new Set<string>();
+    const deduplicatedLogs = program.workoutLogs.filter(log => {
+      const completedAt = new Date(log.completedAt!);
+      const dayKey = `${log.workoutId}-${completedAt.toDateString()}`;
+      if (seenWorkoutDays.has(dayKey)) {
+        return false;
+      }
+      seenWorkoutDays.add(dayKey);
+      return true;
+    });
+
+    const recentActivity = deduplicatedLogs.map(log => {
       const workout = program.workoutPlans?.[0]?.workouts.find(w => w.id === log.workoutId);
 
       // Calculate stats

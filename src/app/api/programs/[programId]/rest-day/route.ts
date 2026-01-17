@@ -229,7 +229,14 @@ export async function GET(
       return completedAt >= startOfWeek;
     });
 
-    const weeklyCompleted = workoutsThisWeek.length;
+    // De-duplicate: count unique workout+day combinations
+    const uniqueWorkoutDays = new Set<string>();
+    workoutsThisWeek.forEach((log) => {
+      const completedAt = new Date(log.completedAt!);
+      const dayKey = `${log.workoutId}-${completedAt.toDateString()}`;
+      uniqueWorkoutDays.add(dayKey);
+    });
+    const weeklyCompleted = uniqueWorkoutDays.size;
     const weeklyTarget = daysPerWeek;
     const weeklyPercent = Math.round((weeklyCompleted / weeklyTarget) * 100);
 
