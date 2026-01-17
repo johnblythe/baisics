@@ -191,7 +191,7 @@ export default function Header() {
                     <Link href="/library" className="text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors">
                       Programs
                     </Link>
-                    <Link href="#features" className="text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors">
+                    <Link href="/features" className="text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors">
                       Features
                     </Link>
                     <Link href="#pricing" className="text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors">
@@ -234,7 +234,7 @@ export default function Header() {
                           Programs
                         </Link>
                         <Link
-                          href="#features"
+                          href="/features"
                           className="block px-4 py-2.5 text-sm font-medium text-[#475569] hover:bg-[#F8FAFC]"
                           onClick={() => setIsMenuOpen(false)}
                         >
