@@ -6,6 +6,7 @@ import ReactConfetti from 'react-confetti';
 import { Star, Share2, X, Check, ArrowRight } from 'lucide-react';
 import { formatVolume } from '@/lib/milestones';
 import { MilestoneBadge } from '@/components/milestones/MilestoneBadge';
+import { isTripodModeEnabled, getSnarkyVolumeComment } from '@/lib/tripod-mode';
 
 interface FirstWorkoutCelebrationProps {
   setsCompleted: number;
@@ -29,9 +30,17 @@ export function FirstWorkoutCelebration({
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
   const [animatedSets, setAnimatedSets] = useState(0);
   const [animatedVolume, setAnimatedVolume] = useState(0);
+  const [tripodMode, setTripodMode] = useState(false);
+  const [snarkyComment, setSnarkyComment] = useState<string | null>(null);
 
   useEffect(() => {
     setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+
+    // Check tripod mode and set snarky comment
+    if (isTripodModeEnabled()) {
+      setTripodMode(true);
+      setSnarkyComment(getSnarkyVolumeComment(totalVolume));
+    }
 
     // Stop confetti after 3 seconds (tasteful, not overwhelming)
     const confettiTimer = setTimeout(() => setShowConfetti(false), 3000);
@@ -39,7 +48,7 @@ export function FirstWorkoutCelebration({
     return () => {
       clearTimeout(confettiTimer);
     };
-  }, []);
+  }, [totalVolume]);
 
   // Animate stats counting up
   useEffect(() => {
@@ -259,9 +268,16 @@ export function FirstWorkoutCelebration({
                   <div className="w-8 h-8 rounded-full bg-[#FF6B6B]/10 flex items-center justify-center">
                     <Check className="w-4 h-4 text-[#FF6B6B]" />
                   </div>
-                  <span className="text-gray-900 dark:text-white font-medium">
-                    ~{formatVolume(animatedVolume)} total volume
-                  </span>
+                  <div>
+                    <span className="text-gray-900 dark:text-white font-medium">
+                      ~{formatVolume(animatedVolume)} total volume
+                    </span>
+                    {tripodMode && snarkyComment && (
+                      <p className="text-xs text-[#FF6B6B] italic mt-0.5">
+                        {snarkyComment}
+                      </p>
+                    )}
+                  </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-[#FF6B6B]/10 flex items-center justify-center">
