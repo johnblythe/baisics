@@ -76,6 +76,11 @@ interface ExerciseWithLogs extends Exercise {
   exerciseLogId?: string;
 }
 
+interface ExerciseHistory {
+  pr: { weight: number; reps: number } | null;
+  lastSession: { weight: number; reps: number } | null;
+}
+
 export default function WorkoutPage() {
   const params = useParams();
   const router = useRouter();
@@ -110,6 +115,8 @@ export default function WorkoutPage() {
   // Program completion celebration state
   const [showProgramCompletion, setShowProgramCompletion] = useState(false);
   const [programCompletionData, setProgramCompletionData] = useState<ProgramCompletionData | null>(null);
+  // Exercise history (PR and last session data)
+  const [exerciseHistory, setExerciseHistory] = useState<Record<string, ExerciseHistory>>({});
 
   const findFirstIncompletePosition = (exercises: ExerciseWithLogs[]) => {
     for (let i = 0; i < exercises.length; i++) {
@@ -238,6 +245,34 @@ export default function WorkoutPage() {
 
     fetchWorkout();
   }, [params.id]);
+
+  // Fetch exercise history (PR and last session) for all exercises
+  useEffect(() => {
+    const fetchExerciseHistory = async () => {
+      if (exercises.length === 0) return;
+
+      const historyData: Record<string, ExerciseHistory> = {};
+
+      // Fetch history for all exercises in parallel
+      await Promise.all(
+        exercises.map(async (exercise) => {
+          try {
+            const response = await fetch(`/api/exercises/${exercise.id}/history`);
+            if (response.ok) {
+              const data = await response.json();
+              historyData[exercise.id] = data;
+            }
+          } catch (error) {
+            console.error(`Failed to fetch history for exercise ${exercise.id}:`, error);
+          }
+        })
+      );
+
+      setExerciseHistory(historyData);
+    };
+
+    fetchExerciseHistory();
+  }, [exercises]);
 
   const updateSet = async (exerciseIndex: number, setIndex: number, logData: Partial<SetLog>) => {
     const exercise = exercises[exerciseIndex];
@@ -658,6 +693,7 @@ export default function WorkoutPage() {
                     reps={currentLog.reps > 0 ? currentLog.reps : ''}
                     notes={currentLog.notes}
                     isEditing={isEditingCompletedSet}
+                    history={exerciseHistory[currentExercise.id]}
                     onComplete={(weight, reps, notes) => {
                       const setIndex = currentSetIndex >= 0 ? currentSetIndex : 0;
                       // Save all data in one API call when completing/updating
