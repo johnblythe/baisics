@@ -228,9 +228,42 @@ async function seedPersonas() {
 
     // 4. Seed Programs (delete existing for this user first for clean state)
     // Note: we delete programs owned by this user, not authored by
-    await prisma.program.deleteMany({
+    // First, find all programs for this user to get their IDs
+    const existingPrograms = await prisma.program.findMany({
       where: { userId: user.id },
+      select: { id: true },
     });
+    const existingProgramIds = existingPrograms.map((p) => p.id);
+
+    if (existingProgramIds.length > 0) {
+      // Delete dependent records in correct order (deepest first)
+      // 1. Delete CheckIns and their related UserStats
+      await prisma.userStats.deleteMany({
+        where: {
+          checkIn: {
+            programId: { in: existingProgramIds },
+          },
+        },
+      });
+      await prisma.checkIn.deleteMany({
+        where: { programId: { in: existingProgramIds } },
+      });
+
+      // 2. Delete WorkoutLogs (and their ExerciseLogs/SetLogs will cascade)
+      await prisma.workoutLog.deleteMany({
+        where: { programId: { in: existingProgramIds } },
+      });
+
+      // 3. Delete WorkoutPlans (Workouts and Exercises will cascade via onDelete)
+      await prisma.workoutPlan.deleteMany({
+        where: { programId: { in: existingProgramIds } },
+      });
+
+      // 4. Now safe to delete Programs
+      await prisma.program.deleteMany({
+        where: { userId: user.id },
+      });
+    }
 
     for (const programSeed of persona.programs) {
       // Create Program
