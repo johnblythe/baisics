@@ -104,3 +104,31 @@ Started: Sun Jan 18 15:32:16 EST 2026
   - Link component from next/link already imported (from US-006)
   - Space Mono font used for subtle UI elements per style guide
 ---
+
+## 2026-01-18 - US-008: Remove unused query params from /hi
+- Confirmed params NOT used in ConversationalIntakeContainer.tsx: template, prefill, source, invite
+- Confirmed params USED: userId, programId, persona
+- Removed unused `useRouter` import and `router` variable (dead code)
+- Added JSDoc comment documenting supported query params
+- Note: template and invite ARE passed from other routes but never read - future work needed
+- Files changed: src/app/hi/components/ConversationalIntakeContainer.tsx
+- **Learnings for future iterations:**
+  - Other routes (templates/[slug], coach/invite/[token], join/[slug]) pass template/invite params to /hi
+  - These params are silently ignored - potential feature gap or dead code in calling routes
+  - Always check for unused imports when cleaning up - `useRouter` was imported but never used
+  - JSDoc comments help document API contracts for components that accept query params
+---
+
+## 2026-01-18 - US-001: Fix undefined createNewProgram function
+- Removed dead code entirely rather than importing non-existent function
+- Removed `isSaving` state (line 90)
+- Removed `handleSaveProgram` function (lines 424-448) that referenced undefined `createNewProgram`
+- Removed dead `if (program)` branch in `renderFormSection` (hidden form with Save button)
+- The streaming generation hook already saves programs automatically (line 116-127)
+- Files changed: src/app/hi/components/ConversationalInterface.tsx (-62 lines)
+- **Learnings for future iterations:**
+  - The form with className="hidden" was dead code - never visible to users
+  - Program saving happens via `useStreamingGeneration` hook, not manual save button
+  - When a function references undefined dependencies, check if the entire code path is dead before fixing imports
+  - @ts-ignore comments often indicate dead or broken code paths
+---

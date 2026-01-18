@@ -250,28 +250,46 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
 
   // Work on getting the right data from the user to generate a program
   const handleInitialIntake = async (userMessage: Message, _: string) => {
-    // Pass existing extractedData so returning users don't get asked redundant questions (#107)
-    const result = await processUserMessage([...messages, userMessage], localUserId, extractedData as any);
-        
-    if (result.success) {
-      if (result.extractedData) {
-        setExtractedData(result.extractedData);
-      }
-      
-      if (result.readyForProgram && result.extractedData) {
-        setIsTyping(false);
-        setMessages(prev => [...prev, { 
-          role: "assistant", 
-          content: "Great! I have enough information. Let's review everything before creating your program." 
-        }]);
-        setShowDataReview(true);
-        return;
-      } else {
-        setTimeout(() => {
-          setMessages(prev => [...prev, { role: "assistant", content: result.message }]);
+    try {
+      // Pass existing extractedData so returning users don't get asked redundant questions (#107)
+      const result = await processUserMessage([...messages, userMessage], localUserId, extractedData as any);
+
+      if (result.success) {
+        if (result.extractedData) {
+          setExtractedData(result.extractedData);
+        }
+
+        if (result.readyForProgram && result.extractedData) {
           setIsTyping(false);
-        }, Math.random() * 1000 + 500);
+          setMessages(prev => [...prev, {
+            role: "assistant",
+            content: "Great! I have enough information. Let's review everything before creating your program."
+          }]);
+          setShowDataReview(true);
+          return;
+        } else {
+          setTimeout(() => {
+            setMessages(prev => [...prev, { role: "assistant", content: result.message }]);
+            setIsTyping(false);
+          }, Math.random() * 1000 + 500);
+        }
+      } else {
+        // Handle failure case from processUserMessage
+        console.error('processUserMessage returned failure:', result);
+        setIsTyping(false);
+        setMessages(prev => [...prev, {
+          role: "assistant",
+          content: result?.message || "I had trouble processing that. Could you try rephrasing?"
+        }]);
       }
+    } catch (error) {
+      // Handle network errors or unexpected exceptions
+      console.error('Error in handleInitialIntake:', error);
+      setIsTyping(false);
+      setMessages(prev => [...prev, {
+        role: "assistant",
+        content: "Something went wrong on my end. Please try again."
+      }]);
     }
   };
 
