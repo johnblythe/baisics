@@ -1,0 +1,837 @@
+{
+  "id": "maya",
+  "user": {
+    "email": "maya@test.baisics.app",
+    "name": "Maya Chen",
+    "isPremium": true,
+    "streakCurrent": 8,
+    "streakLongest": 24,
+    "streakLastActivityAt": { "daysAgo": 0 }
+  },
+  "subscription": {
+    "status": "ACTIVE",
+    "currentPeriodStartDaysAgo": 200,
+    "currentPeriodEndDaysAhead": 15,
+    "cancelAtPeriodEnd": false
+  },
+  "intake": {
+    "sex": "female",
+    "trainingGoal": "Strength training to support marathon running, injury prevention, maintain lean muscle",
+    "daysAvailable": 2,
+    "experienceLevel": "beginner",
+    "age": 29,
+    "weight": 128,
+    "height": 65,
+    "trainingPreferences": ["dumbbells", "bodyweight", "cable", "bands"],
+    "additionalInfo": "Marathon runner - qualified for Boston! Strength training 2x/week to supplement running. Focus on injury prevention, hip stability, and single-leg strength. Running is primary sport, lifting is supplemental. Home gym with dumbbells and bands, occasional gym access."
+  },
+  "programs": [
+    {
+      "name": "Runner's Strength Foundation",
+      "description": "2-day strength program designed for endurance athletes. Focus on hip stability, single-leg strength, and injury prevention. Light weights, higher reps, minimal fatigue to preserve running performance.",
+      "active": false,
+      "category": "sport_specific",
+      "difficulty": "beginner",
+      "durationWeeks": 24,
+      "daysPerWeek": 2,
+      "equipment": ["dumbbells", "bodyweight", "bands"],
+      "goals": ["Prevent running injuries", "Build hip stability", "Improve single-leg strength", "Core stability"],
+      "tags": ["runner", "injury-prevention", "2-day", "endurance-athlete", "supplemental"],
+      "week2CheckInShown": true,
+      "week2CheckInShownAtDaysAgo": 190,
+      "week2CheckInOption": "going_great",
+      "workoutPlan": {
+        "daysPerWeek": 2,
+        "phase": 1,
+        "phaseName": "Runner's Strength",
+        "phaseDurationWeeks": 24,
+        "phaseExplanation": "Light strength work to complement running training. Not designed to build mass - designed to prevent injuries and improve running efficiency.",
+        "splitType": "Full Body",
+        "workouts": [
+          {
+            "name": "Day A - Hip & Core Focus",
+            "focus": "Hip stability, glutes, core",
+            "dayNumber": 1,
+            "warmup": "5 min walk, leg swings, hip circles",
+            "cooldown": "Light stretching, foam roll IT band",
+            "exercises": [
+              {
+                "name": "Goblet Squat",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 60,
+                "notes": "Light weight, focus on depth and stability",
+                "sortOrder": 0
+              },
+              {
+                "name": "Dumbbell Romanian Deadlift",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 60,
+                "notes": "Single leg option when ready - hamstring focus",
+                "sortOrder": 1
+              },
+              {
+                "name": "Hip Thrust",
+                "sets": 3,
+                "reps": 15,
+                "restPeriod": 60,
+                "notes": "Glute activation for running power",
+                "sortOrder": 2
+              },
+              {
+                "name": "Plank",
+                "sets": 3,
+                "reps": 1,
+                "restPeriod": 45,
+                "notes": "30-45 sec hold - core stability",
+                "sortOrder": 3
+              },
+              {
+                "name": "Band Hip Adductions",
+                "sets": 2,
+                "reps": 15,
+                "restPeriod": 45,
+                "notes": "Injury prevention for inner thigh",
+                "sortOrder": 4
+              }
+            ]
+          },
+          {
+            "name": "Day B - Single Leg & Upper",
+            "focus": "Single-leg strength, upper body balance",
+            "dayNumber": 2,
+            "warmup": "5 min walk, arm circles, leg swings",
+            "cooldown": "Light stretching, foam roll quads",
+            "exercises": [
+              {
+                "name": "Bulgarian Split Squat",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 60,
+                "notes": "Each leg - running-specific single leg strength",
+                "sortOrder": 0
+              },
+              {
+                "name": "Dumbbell Lunges",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 60,
+                "notes": "Walking or stationary - each leg",
+                "sortOrder": 1
+              },
+              {
+                "name": "Dumbbell Row",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 60,
+                "notes": "Posture support for running form",
+                "sortOrder": 2
+              },
+              {
+                "name": "Push-Up",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 45,
+                "notes": "Core stability and upper body endurance",
+                "sortOrder": 3
+              },
+              {
+                "name": "Dead Bug",
+                "sets": 2,
+                "reps": 10,
+                "restPeriod": 45,
+                "notes": "Each side - core stability for running",
+                "sortOrder": 4
+              }
+            ]
+          }
+        ]
+      },
+      "workoutLogs": [
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 196, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 196, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "First strength session. Kept it light - 10 mile run tomorrow."
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 193, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 193, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Day B. Legs tired from tempo run but got it done."
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 189, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 189, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Week 2. Easy week for running so felt strong here."
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 186, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 186, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Lunges felt better than last week."
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 182, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 182, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Week 3. Hip thrusts getting easier."
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 179, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 179, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Long run day tomorrow - kept this short."
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 175, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 175, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Week 4. Glutes feel more activated during runs!"
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 172, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 172, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Month 1 done. No injuries - that's the goal!"
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 168, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 168, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Week 5. Added 5 lbs to goblet squat."
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 165, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 165, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Split squats improving my balance."
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 161, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 161, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Week 6. Recovery week for running, went heavier here."
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 158, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 158, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Rows feeling stronger - posture better on runs."
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 154, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 154, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Week 7. Hips feel so much more stable."
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 151, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 151, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Quick session before tempo run."
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 147, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 147, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Week 8. Two months! Still injury free."
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 144, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 144, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Lunges finally feel natural."
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 140, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 140, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Week 9. Race coming up - deload on weights."
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 137, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 137, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Last session before half marathon!"
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 130, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 130, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Week 10. Back at it after race. PR'd the half!"
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 127, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 127, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Easy week post-race. Light weights."
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 123, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 123, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Week 11. Building back up."
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 120, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 120, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Feeling strong. Marathon training block starting."
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 116, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 116, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Week 12. Halfway through program!"
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 113, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 113, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "3 months of consistent strength work. Huge for me!"
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 109, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 109, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Week 13. Marathon mileage up, keeping weights light."
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 106, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 106, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Single leg work is money for hill running."
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 102, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 102, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Week 14. High mileage week - deload weights."
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 99, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 99, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Just maintenance. 60 miles this week!"
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 95, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 95, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Week 15. Recovery week for running, normal lift."
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 92, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 92, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "4 months of strength work. Zero injuries!"
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 88, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 88, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Week 16. Peak training block - light weights."
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 85, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 85, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Just maintenance. Legs tired from 20 miler."
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 81, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 81, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Week 17. Another big week - keeping it simple."
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 78, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 78, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Hit 50 workouts total! Consistency pays off."
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 74, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 74, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Week 18. Last hard training week before taper."
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 71, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 71, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Good session. Ready for taper!"
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 67, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 67, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Week 19. Taper week 1 - lighter everything."
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 64, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 64, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Easy session. Feeling fresh!"
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 60, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 60, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Week 20. Taper week 2 - very light."
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 57, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 57, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Last session before marathon week. Feeling good!"
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 50, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 50, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Week 21. Post-marathon recovery - just moving."
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 47, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 47, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "BQ by 4 minutes! Strength work helped for sure."
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 43, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 43, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Week 22. Getting back into routine."
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 40, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 40, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Nice easy session. Body recovering well."
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 36, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 36, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Week 23. Almost done with this program!"
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 33, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 33, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Feeling strong. Ready for next training cycle."
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 29, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 29, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Week 24! Final week of program."
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 26, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 26, "hour": 7, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Program complete! 48 workouts, zero injuries. Starting new maintenance program."
+        }
+      ],
+      "checkIns": [
+        {
+          "type": "initial",
+          "date": { "daysAgo": 197 },
+          "notes": "Starting strength training to supplement my running. Goal is injury prevention - I've been injury-prone in the past. BQ attempt in 5 months!",
+          "stats": {
+            "weight": 128,
+            "sleepHours": 7,
+            "sleepQuality": 4,
+            "energyLevel": 4,
+            "stressLevel": 3,
+            "soreness": 2,
+            "recovery": 4
+          }
+        },
+        {
+          "type": "progress",
+          "date": { "daysAgo": 50 },
+          "notes": "Just finished the marathon - BQ by 4 minutes! No injuries during the entire training cycle. Strength work made a huge difference, especially in the hills and final miles. Hips felt stable the whole way.",
+          "stats": {
+            "weight": 126,
+            "sleepHours": 8,
+            "sleepQuality": 5,
+            "energyLevel": 5,
+            "stressLevel": 2,
+            "soreness": 3,
+            "recovery": 4
+          }
+        }
+      ]
+    },
+    {
+      "name": "2-Day Maintenance",
+      "description": "Simple 2-day maintenance program for endurance athletes. Keep strength gains while focusing on running. Light weights, efficient sessions.",
+      "active": true,
+      "category": "maintenance",
+      "difficulty": "beginner",
+      "durationWeeks": 12,
+      "daysPerWeek": 2,
+      "equipment": ["dumbbells", "bodyweight", "bands"],
+      "goals": ["Maintain strength", "Support running", "Prevent injury regression", "Stay consistent"],
+      "tags": ["runner", "maintenance", "2-day", "endurance-athlete"],
+      "week2CheckInShown": true,
+      "week2CheckInShownAtDaysAgo": 18,
+      "week2CheckInOption": "going_great",
+      "workoutPlan": {
+        "daysPerWeek": 2,
+        "phase": 1,
+        "phaseName": "Maintenance",
+        "phaseDurationWeeks": 12,
+        "phaseExplanation": "Maintenance phase to preserve strength gains while running remains the priority.",
+        "splitType": "Full Body",
+        "workouts": [
+          {
+            "name": "Day A - Lower & Core",
+            "focus": "Lower body and core maintenance",
+            "dayNumber": 1,
+            "warmup": "5 min walk, dynamic stretches",
+            "cooldown": "Light stretching",
+            "exercises": [
+              {
+                "name": "Goblet Squat",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 60,
+                "notes": "Maintenance weight - 25-30 lbs",
+                "sortOrder": 0
+              },
+              {
+                "name": "Hip Thrust",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 60,
+                "notes": "Glute maintenance",
+                "sortOrder": 1
+              },
+              {
+                "name": "Bulgarian Split Squat",
+                "sets": 2,
+                "reps": 10,
+                "restPeriod": 60,
+                "notes": "Each leg - running specific",
+                "sortOrder": 2
+              },
+              {
+                "name": "Plank",
+                "sets": 3,
+                "reps": 1,
+                "restPeriod": 45,
+                "notes": "45 sec holds",
+                "sortOrder": 3
+              }
+            ]
+          },
+          {
+            "name": "Day B - Upper & Balance",
+            "focus": "Upper body and stability",
+            "dayNumber": 2,
+            "warmup": "5 min walk, arm circles",
+            "cooldown": "Light stretching",
+            "exercises": [
+              {
+                "name": "Dumbbell Row",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 60,
+                "notes": "Posture support",
+                "sortOrder": 0
+              },
+              {
+                "name": "Push-Up",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 45,
+                "notes": "Core and upper body",
+                "sortOrder": 1
+              },
+              {
+                "name": "Dumbbell Romanian Deadlift",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 60,
+                "notes": "Hamstring maintenance",
+                "sortOrder": 2
+              },
+              {
+                "name": "Dead Bug",
+                "sets": 2,
+                "reps": 10,
+                "restPeriod": 45,
+                "notes": "Core stability",
+                "sortOrder": 3
+              }
+            ]
+          }
+        ]
+      },
+      "workoutLogs": [
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 25, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 25, "hour": 7, "minute": 0 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Starting new maintenance program! Keeping it simple."
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 22, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 22, "hour": 7, "minute": 0 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Day B. Easy session."
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 18, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 18, "hour": 7, "minute": 0 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Week 2. This program feels right for maintenance."
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 15, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 15, "hour": 7, "minute": 0 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Quick session before tempo run."
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 11, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 11, "hour": 7, "minute": 0 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Week 3. Building base for next marathon cycle."
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 8, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 8, "hour": 7, "minute": 0 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Easy session. 60 total workouts now!"
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 7, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 7, "hour": 7, "minute": 0 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Week 4. Consistent again."
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 6, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 6, "hour": 7, "minute": 0 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Good upper body session."
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 5, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 5, "hour": 7, "minute": 0 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Week 5. Love this routine."
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 4, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 4, "hour": 7, "minute": 0 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Quick session. 64 total workouts!"
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 3, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 3, "hour": 7, "minute": 0 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Week 6. On track."
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 2, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 2, "hour": 7, "minute": 0 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "65 workouts total! Milestone worthy?"
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 1, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 1, "hour": 7, "minute": 0 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Week 7. Easy run day today."
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 0, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 0, "hour": 7, "minute": 0 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Done! Feeling strong and injury free."
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 14, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 14, "hour": 7, "minute": 0 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Missed a few days due to travel - back at it."
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 12, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 12, "hour": 7, "minute": 0 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Good to be back in routine."
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 10, "hour": 6, "minute": 30 },
+          "completedAt": { "daysAgo": 10, "hour": 7, "minute": 0 },
+          "status": "completed",
+          "quickLog": true,
+          "notes": "Legs fresh after easy run week."
+        }
+      ],
+      "checkIns": [
+        {
+          "type": "progress",
+          "date": { "daysAgo": 10 },
+          "notes": "Loving this maintenance program. Running is going great, strength is maintained, and I'm staying injury free. Boston here I come!",
+          "stats": {
+            "weight": 126,
+            "sleepHours": 8,
+            "sleepQuality": 5,
+            "energyLevel": 5,
+            "stressLevel": 2,
+            "soreness": 2,
+            "recovery": 5
+          }
+        }
+      ]
+    }
+  ],
+  "milestones": [
+    {
+      "type": "WORKOUT_50",
+      "earnedAtDaysAgo": 8,
+      "totalWorkouts": 50
+    }
+  ]
+}

@@ -1,0 +1,196 @@
+{
+  "id": "alex",
+  "user": {
+    "email": "alex@test.baisics.app",
+    "name": "Alex Thompson",
+    "isPremium": false,
+    "streakCurrent": 0,
+    "streakLongest": 0
+  },
+  "intake": {
+    "sex": "male",
+    "trainingGoal": "Build muscle and get stronger",
+    "daysAvailable": 3,
+    "experienceLevel": "beginner",
+    "age": 28,
+    "weight": 175,
+    "height": 70,
+    "trainingPreferences": ["gym", "weights"],
+    "additionalInfo": "Complete beginner, never lifted weights before. Has gym membership."
+  },
+  "programs": [
+    {
+      "name": "Beginner Full Body",
+      "description": "A 3-day full body program designed for complete beginners to build foundational strength and muscle.",
+      "active": true,
+      "category": "strength",
+      "difficulty": "beginner",
+      "durationWeeks": 8,
+      "daysPerWeek": 3,
+      "equipment": ["barbell", "dumbbell", "cable", "machine"],
+      "goals": ["Build muscle", "Get stronger", "Learn proper form"],
+      "tags": ["beginner", "full-body", "3-day"],
+      "workoutPlan": {
+        "daysPerWeek": 3,
+        "dailyCalories": 2400,
+        "proteinGrams": 175,
+        "carbGrams": 250,
+        "fatGrams": 80,
+        "phase": 1,
+        "phaseName": "Foundation",
+        "phaseDurationWeeks": 8,
+        "phaseExplanation": "Build foundational strength and learn proper movement patterns.",
+        "splitType": "Full Body",
+        "workouts": [
+          {
+            "name": "Day 1 - Full Body A",
+            "focus": "Full Body - Squat Focus",
+            "dayNumber": 1,
+            "warmup": "5 minutes cardio, dynamic stretches",
+            "cooldown": "Static stretching for major muscle groups",
+            "exercises": [
+              {
+                "name": "Goblet Squat",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 90,
+                "notes": "Focus on depth and keeping chest up",
+                "sortOrder": 0
+              },
+              {
+                "name": "Dumbbell Bench Press",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 90,
+                "notes": "Control the weight on the way down",
+                "sortOrder": 1
+              },
+              {
+                "name": "Dumbbell Row",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 90,
+                "notes": "Pull elbow back, squeeze shoulder blade",
+                "sortOrder": 2
+              },
+              {
+                "name": "Dumbbell Shoulder Press",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 90,
+                "notes": "Keep core tight, don't arch back",
+                "sortOrder": 3
+              },
+              {
+                "name": "Plank",
+                "sets": 3,
+                "reps": 30,
+                "restPeriod": 60,
+                "notes": "Hold for 30 seconds each set",
+                "sortOrder": 4
+              }
+            ]
+          },
+          {
+            "name": "Day 2 - Full Body B",
+            "focus": "Full Body - Hinge Focus",
+            "dayNumber": 2,
+            "warmup": "5 minutes cardio, dynamic stretches",
+            "cooldown": "Static stretching for major muscle groups",
+            "exercises": [
+              {
+                "name": "Romanian Deadlift",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 90,
+                "notes": "Keep back flat, feel stretch in hamstrings",
+                "sortOrder": 0
+              },
+              {
+                "name": "Incline Dumbbell Press",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 90,
+                "notes": "30-45 degree incline",
+                "sortOrder": 1
+              },
+              {
+                "name": "Lat Pulldown",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 90,
+                "notes": "Pull to upper chest, control the negative",
+                "sortOrder": 2
+              },
+              {
+                "name": "Face Pull",
+                "sets": 3,
+                "reps": 15,
+                "restPeriod": 60,
+                "notes": "Pull to face level, squeeze rear delts",
+                "sortOrder": 3
+              },
+              {
+                "name": "Cable Crunch",
+                "sets": 3,
+                "reps": 15,
+                "restPeriod": 60,
+                "notes": "Focus on crunching ribs to hips",
+                "sortOrder": 4
+              }
+            ]
+          },
+          {
+            "name": "Day 3 - Full Body C",
+            "focus": "Full Body - Upper Emphasis",
+            "dayNumber": 3,
+            "warmup": "5 minutes cardio, dynamic stretches",
+            "cooldown": "Static stretching for major muscle groups",
+            "exercises": [
+              {
+                "name": "Bulgarian Split Squat",
+                "sets": 3,
+                "reps": 8,
+                "restPeriod": 90,
+                "notes": "8 reps per leg, keep torso upright",
+                "sortOrder": 0
+              },
+              {
+                "name": "Bench Press",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 90,
+                "notes": "Start light, focus on bar path",
+                "sortOrder": 1
+              },
+              {
+                "name": "Bent Over Barbell Row",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 90,
+                "notes": "Bend at hips, pull bar to lower chest",
+                "sortOrder": 2
+              },
+              {
+                "name": "Alternating Dumbbell Curls",
+                "sets": 2,
+                "reps": 12,
+                "restPeriod": 60,
+                "notes": "Full range of motion",
+                "sortOrder": 3
+              },
+              {
+                "name": "Cable One Arm Tricep Extension",
+                "sets": 2,
+                "reps": 12,
+                "restPeriod": 60,
+                "notes": "Keep elbow stationary",
+                "sortOrder": 4
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

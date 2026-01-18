@@ -1,0 +1,423 @@
+{
+  "id": "chris",
+  "user": {
+    "email": "chris@test.baisics.app",
+    "name": "Chris Martinez",
+    "isPremium": true,
+    "streakCurrent": 5,
+    "streakLongest": 8,
+    "streakLastActivityAt": { "daysAgo": 0 }
+  },
+  "intake": {
+    "sex": "male",
+    "trainingGoal": "Maintain fitness with minimal time investment during busy work weeks",
+    "daysAvailable": 3,
+    "experienceLevel": "intermediate",
+    "age": 38,
+    "weight": 185,
+    "height": 71,
+    "trainingPreferences": ["gym", "machines", "efficiency"],
+    "additionalInfo": "Senior software engineer, super busy with work. Only have 30 minutes max during lunch break. Office has a small gym with machines, dumbbells, and cable station. Just want to stay fit without thinking too much about programming my workouts."
+  },
+  "subscription": {
+    "status": "ACTIVE",
+    "currentPeriodStartDaysAgo": 15,
+    "currentPeriodEndDaysAhead": 15,
+    "cancelAtPeriodEnd": false
+  },
+  "programs": [
+    {
+      "name": "Express Full Body",
+      "description": "A time-efficient 3-day full body program for busy professionals. Focuses on compound movements with minimal rest for maximum efficiency.",
+      "active": true,
+      "category": "strength",
+      "difficulty": "intermediate",
+      "durationWeeks": 8,
+      "daysPerWeek": 3,
+      "equipment": ["machines", "dumbbells", "cable"],
+      "goals": ["Maintain fitness", "Time efficiency", "Full body strength"],
+      "tags": ["express", "full-body", "3-day", "lunch-workout"],
+      "workoutPlan": {
+        "daysPerWeek": 3,
+        "dailyCalories": 2400,
+        "proteinGrams": 160,
+        "carbGrams": 260,
+        "fatGrams": 85,
+        "phase": 1,
+        "phaseName": "Maintenance",
+        "phaseDurationWeeks": 8,
+        "phaseExplanation": "Maintain current fitness levels with efficient compound movements.",
+        "splitType": "Full Body",
+        "workouts": [
+          {
+            "name": "Day 1 - Express Full Body A",
+            "focus": "Push/Squat Emphasis",
+            "dayNumber": 1,
+            "warmup": "5 min bike, arm circles",
+            "cooldown": "Quick stretch if time",
+            "exercises": [
+              {
+                "name": "Leg Press",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 60,
+                "notes": "Quick setup, compound for quads",
+                "sortOrder": 0
+              },
+              {
+                "name": "Dumbbell Bench Press",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 60,
+                "notes": "Main chest movement",
+                "sortOrder": 1
+              },
+              {
+                "name": "Cable Row",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 60,
+                "notes": "Quick back work",
+                "sortOrder": 2
+              },
+              {
+                "name": "Dumbbell Shoulder Press",
+                "sets": 2,
+                "reps": 10,
+                "restPeriod": 45,
+                "notes": "Accessory - skip if short on time",
+                "sortOrder": 3
+              },
+              {
+                "name": "Cable Bicep Curls",
+                "sets": 2,
+                "reps": 12,
+                "restPeriod": 45,
+                "notes": "Accessory - skip if short on time",
+                "sortOrder": 4
+              }
+            ]
+          },
+          {
+            "name": "Day 2 - Express Full Body B",
+            "focus": "Pull/Hinge Emphasis",
+            "dayNumber": 2,
+            "warmup": "5 min bike, hip circles",
+            "cooldown": "Quick stretch if time",
+            "exercises": [
+              {
+                "name": "Dumbbell Romanian Deadlift",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 60,
+                "notes": "Hinge pattern, posterior chain",
+                "sortOrder": 0
+              },
+              {
+                "name": "Lat Pulldown",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 60,
+                "notes": "Main back movement",
+                "sortOrder": 1
+              },
+              {
+                "name": "Leverage Chest Press",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 60,
+                "notes": "Quick machine press",
+                "sortOrder": 2
+              },
+              {
+                "name": "Face Pull",
+                "sets": 2,
+                "reps": 15,
+                "restPeriod": 45,
+                "notes": "Accessory - skip if short on time",
+                "sortOrder": 3
+              },
+              {
+                "name": "Cable Rope Tricep Pushdown",
+                "sets": 2,
+                "reps": 12,
+                "restPeriod": 45,
+                "notes": "Accessory - skip if short on time",
+                "sortOrder": 4
+              }
+            ]
+          },
+          {
+            "name": "Day 3 - Express Full Body C",
+            "focus": "Mixed Compounds",
+            "dayNumber": 3,
+            "warmup": "5 min bike, dynamic stretches",
+            "cooldown": "Quick stretch if time",
+            "exercises": [
+              {
+                "name": "Goblet Squat",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 60,
+                "notes": "Squat variation for change",
+                "sortOrder": 0
+              },
+              {
+                "name": "Cable Chest Press",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 60,
+                "notes": "Cable pressing variation",
+                "sortOrder": 1
+              },
+              {
+                "name": "Dumbbell Row",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 60,
+                "notes": "One-arm row, each side",
+                "sortOrder": 2
+              },
+              {
+                "name": "Dumbbell Lateral Raise",
+                "sets": 2,
+                "reps": 12,
+                "restPeriod": 45,
+                "notes": "Accessory - skip if short on time",
+                "sortOrder": 3
+              },
+              {
+                "name": "Cable Crunch",
+                "sets": 2,
+                "reps": 15,
+                "restPeriod": 45,
+                "notes": "Accessory - skip if short on time",
+                "sortOrder": 4
+              }
+            ]
+          }
+        ]
+      },
+      "workoutLogs": [
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 10, "hour": 12, "minute": 0 },
+          "completedAt": { "daysAgo": 10, "hour": 12, "minute": 28 },
+          "status": "completed",
+          "notes": "Lunch workout, back to desk by 12:30",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Leg Press",
+              "sets": [
+                { "setNumber": 1, "weight": 180, "reps": 12 },
+                { "setNumber": 2, "weight": 200, "reps": 12 },
+                { "setNumber": 3, "weight": 200, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Dumbbell Bench Press",
+              "sets": [
+                { "setNumber": 1, "weight": 50, "reps": 10 },
+                { "setNumber": 2, "weight": 55, "reps": 10 },
+                { "setNumber": 3, "weight": 55, "reps": 8 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Row",
+              "sets": [
+                { "setNumber": 1, "weight": 70, "reps": 12 },
+                { "setNumber": 2, "weight": 80, "reps": 12 },
+                { "setNumber": 3, "weight": 80, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Dumbbell Shoulder Press",
+              "skipped": true,
+              "notes": "Meeting ran over, no time"
+            },
+            {
+              "exerciseName": "Cable Bicep Curls",
+              "skipped": true,
+              "notes": "Meeting ran over, no time"
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 8, "hour": 12, "minute": 5 },
+          "completedAt": { "daysAgo": 8, "hour": 12, "minute": 30 },
+          "status": "completed",
+          "notes": "Got a late start but hit the compounds",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Dumbbell Romanian Deadlift",
+              "sets": [
+                { "setNumber": 1, "weight": 40, "reps": 10 },
+                { "setNumber": 2, "weight": 45, "reps": 10 },
+                { "setNumber": 3, "weight": 45, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Lat Pulldown",
+              "sets": [
+                { "setNumber": 1, "weight": 100, "reps": 10 },
+                { "setNumber": 2, "weight": 110, "reps": 10 },
+                { "setNumber": 3, "weight": 110, "reps": 8 }
+              ]
+            },
+            {
+              "exerciseName": "Leverage Chest Press",
+              "sets": [
+                { "setNumber": 1, "weight": 100, "reps": 10 },
+                { "setNumber": 2, "weight": 110, "reps": 10 },
+                { "setNumber": 3, "weight": 110, "reps": 9 }
+              ]
+            },
+            {
+              "exerciseName": "Face Pull",
+              "skipped": true,
+              "notes": "Ran out of time"
+            },
+            {
+              "exerciseName": "Cable Rope Tricep Pushdown",
+              "skipped": true,
+              "notes": "Ran out of time"
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 3,
+          "startedAt": { "daysAgo": 6, "hour": 12, "minute": 0 },
+          "completedAt": { "daysAgo": 6, "hour": 12, "minute": 32 },
+          "status": "completed",
+          "notes": "Squeezed in a few extra minutes today",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Goblet Squat",
+              "sets": [
+                { "setNumber": 1, "weight": 45, "reps": 12 },
+                { "setNumber": 2, "weight": 50, "reps": 12 },
+                { "setNumber": 3, "weight": 50, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Chest Press",
+              "sets": [
+                { "setNumber": 1, "weight": 50, "reps": 12 },
+                { "setNumber": 2, "weight": 55, "reps": 12 },
+                { "setNumber": 3, "weight": 55, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Dumbbell Row",
+              "sets": [
+                { "setNumber": 1, "weight": 45, "reps": 10 },
+                { "setNumber": 2, "weight": 50, "reps": 10 },
+                { "setNumber": 3, "weight": 50, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Dumbbell Lateral Raise",
+              "skipped": true,
+              "notes": "Skipped to save time"
+            },
+            {
+              "exerciseName": "Cable Crunch",
+              "sets": [
+                { "setNumber": 1, "weight": 40, "reps": 15 },
+                { "setNumber": 2, "weight": 40, "reps": 12 }
+              ],
+              "notes": "Quick core work"
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 3, "hour": 12, "minute": 0 },
+          "completedAt": { "daysAgo": 3, "hour": 12, "minute": 26 },
+          "status": "completed",
+          "notes": "Week 2 Day 1, efficient session",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Leg Press",
+              "sets": [
+                { "setNumber": 1, "weight": 200, "reps": 12 },
+                { "setNumber": 2, "weight": 220, "reps": 10 },
+                { "setNumber": 3, "weight": 220, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Dumbbell Bench Press",
+              "sets": [
+                { "setNumber": 1, "weight": 55, "reps": 10 },
+                { "setNumber": 2, "weight": 60, "reps": 8 },
+                { "setNumber": 3, "weight": 55, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Row",
+              "sets": [
+                { "setNumber": 1, "weight": 80, "reps": 12 },
+                { "setNumber": 2, "weight": 85, "reps": 10 },
+                { "setNumber": 3, "weight": 85, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Dumbbell Shoulder Press",
+              "skipped": true,
+              "notes": "No time today"
+            },
+            {
+              "exerciseName": "Cable Bicep Curls",
+              "skipped": true,
+              "notes": "No time today"
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 0, "hour": 12, "minute": 0 },
+          "completedAt": { "daysAgo": 0, "hour": 12, "minute": 28 },
+          "status": "completed",
+          "notes": "Good efficient session, 5 day streak!",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Dumbbell Romanian Deadlift",
+              "sets": [
+                { "setNumber": 1, "weight": 45, "reps": 10 },
+                { "setNumber": 2, "weight": 50, "reps": 10 },
+                { "setNumber": 3, "weight": 50, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Lat Pulldown",
+              "sets": [
+                { "setNumber": 1, "weight": 110, "reps": 10 },
+                { "setNumber": 2, "weight": 120, "reps": 8 },
+                { "setNumber": 3, "weight": 110, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Leverage Chest Press",
+              "sets": [
+                { "setNumber": 1, "weight": 110, "reps": 10 },
+                { "setNumber": 2, "weight": 120, "reps": 8 },
+                { "setNumber": 3, "weight": 110, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Face Pull",
+              "skipped": true,
+              "notes": "Prioritized compounds"
+            },
+            {
+              "exerciseName": "Cable Rope Tricep Pushdown",
+              "skipped": true,
+              "notes": "Prioritized compounds"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

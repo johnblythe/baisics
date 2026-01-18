@@ -1,0 +1,1011 @@
+{
+  "id": "robert",
+  "user": {
+    "email": "robert@test.baisics.app",
+    "name": "Robert Chen",
+    "isPremium": false,
+    "streakCurrent": 16,
+    "streakLongest": 16,
+    "streakLastActivityAt": { "daysAgo": 0 }
+  },
+  "intake": {
+    "sex": "male",
+    "trainingGoal": "Maintain mobility, build functional strength, prevent injuries as I age",
+    "daysAvailable": 3,
+    "experienceLevel": "beginner",
+    "age": 67,
+    "weight": 172,
+    "height": 68,
+    "trainingPreferences": ["machines", "dumbbells", "cable", "mobility"],
+    "additionalInfo": "Retired engineer. Want to stay active and independent. Some mild arthritis in knees - doctor recommended strength training and mobility work. Taking it slow and steady. Very detail oriented - I track everything."
+  },
+  "programs": [
+    {
+      "name": "Senior Mobility & Strength",
+      "description": "A gentle 3-day program focusing on functional movements, joint mobility, and building strength safely. Machine-based with controlled movements.",
+      "active": true,
+      "category": "functional",
+      "difficulty": "beginner",
+      "durationWeeks": 10,
+      "daysPerWeek": 3,
+      "equipment": ["machines", "dumbbells", "cable", "bodyweight"],
+      "goals": ["Improve mobility", "Build functional strength", "Injury prevention", "Maintain independence"],
+      "tags": ["senior", "mobility", "functional", "3-day", "beginner"],
+      "week2CheckInShown": true,
+      "week2CheckInShownAtDaysAgo": 28,
+      "week2CheckInOption": "going_great",
+      "workoutPlan": {
+        "daysPerWeek": 3,
+        "dailyCalories": 1900,
+        "proteinGrams": 100,
+        "carbGrams": 200,
+        "fatGrams": 70,
+        "phase": 1,
+        "phaseName": "Foundation",
+        "phaseDurationWeeks": 10,
+        "phaseExplanation": "Building a strong foundation with controlled movements, proper form, and gradual progression. Focus on mobility and stability before adding significant load.",
+        "splitType": "Full Body",
+        "workouts": [
+          {
+            "name": "Day 1 - Lower Focus + Core",
+            "focus": "Legs, hips, core stability",
+            "dayNumber": 1,
+            "warmup": "5-10 min walking, leg swings, ankle circles, hip circles",
+            "cooldown": "Seated stretches, calf stretch, quad stretch",
+            "exercises": [
+              {
+                "name": "Leg Press",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 90,
+                "notes": "Controlled tempo - 3 seconds down, 1 second up",
+                "sortOrder": 0
+              },
+              {
+                "name": "Leg Curl",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 60,
+                "notes": "Hamstring focus, squeeze at top",
+                "sortOrder": 1
+              },
+              {
+                "name": "Leg Extension",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 60,
+                "notes": "Light weight, focus on quad engagement",
+                "sortOrder": 2
+              },
+              {
+                "name": "Seated Calf Raise",
+                "sets": 2,
+                "reps": 15,
+                "restPeriod": 45,
+                "notes": "Full range of motion",
+                "sortOrder": 3
+              },
+              {
+                "name": "Dead Bug",
+                "sets": 2,
+                "reps": 10,
+                "restPeriod": 60,
+                "notes": "Core stability - slow and controlled",
+                "sortOrder": 4
+              }
+            ]
+          },
+          {
+            "name": "Day 2 - Upper Push + Mobility",
+            "focus": "Chest, shoulders, triceps with mobility work",
+            "dayNumber": 2,
+            "warmup": "5 min walking, arm circles, shoulder rolls, band pull aparts",
+            "cooldown": "Chest stretch, shoulder stretch, tricep stretch",
+            "exercises": [
+              {
+                "name": "Leverage Chest Press",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 90,
+                "notes": "Machine chest press - safe and controlled",
+                "sortOrder": 0
+              },
+              {
+                "name": "Cable Shoulder Press",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 60,
+                "notes": "Seated, controlled press",
+                "sortOrder": 1
+              },
+              {
+                "name": "Face Pull",
+                "sets": 3,
+                "reps": 15,
+                "restPeriod": 60,
+                "notes": "Rear delt and posture - great for shoulders",
+                "sortOrder": 2
+              },
+              {
+                "name": "Cable Rope Tricep Pushdown",
+                "sets": 2,
+                "reps": 12,
+                "restPeriod": 45,
+                "notes": "Tricep isolation",
+                "sortOrder": 3
+              },
+              {
+                "name": "Pallof Press",
+                "sets": 2,
+                "reps": 10,
+                "restPeriod": 45,
+                "notes": "Anti-rotation core work",
+                "sortOrder": 4
+              }
+            ]
+          },
+          {
+            "name": "Day 3 - Upper Pull + Balance",
+            "focus": "Back, biceps, balance and stability",
+            "dayNumber": 3,
+            "warmup": "5 min walking, cat-cow stretches, shoulder circles",
+            "cooldown": "Lat stretch, bicep stretch, standing stretches",
+            "exercises": [
+              {
+                "name": "Lat Pulldown",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 90,
+                "notes": "Controlled pull, squeeze shoulder blades",
+                "sortOrder": 0
+              },
+              {
+                "name": "Cable Row",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 60,
+                "notes": "Seated row - focus on back engagement",
+                "sortOrder": 1
+              },
+              {
+                "name": "Dumbbell Row",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 60,
+                "notes": "One arm at a time, use bench for support",
+                "sortOrder": 2
+              },
+              {
+                "name": "Cable Bicep Curls",
+                "sets": 2,
+                "reps": 12,
+                "restPeriod": 45,
+                "notes": "Bicep isolation",
+                "sortOrder": 3
+              },
+              {
+                "name": "Plank",
+                "sets": 2,
+                "reps": 1,
+                "restPeriod": 60,
+                "notes": "Hold 20-30 seconds - core stability",
+                "sortOrder": 4
+              }
+            ]
+          }
+        ]
+      },
+      "workoutLogs": [
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 35, "hour": 9, "minute": 0 },
+          "completedAt": { "daysAgo": 35, "hour": 10, "minute": 5 },
+          "status": "completed",
+          "notes": "First day! Taking it easy. Focused on learning the machines and getting comfortable.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Leg Press",
+              "sets": [
+                { "setNumber": 1, "weight": 70, "reps": 12 },
+                { "setNumber": 2, "weight": 90, "reps": 12 },
+                { "setNumber": 3, "weight": 90, "reps": 12 }
+              ],
+              "notes": "Knees felt good, no pain"
+            },
+            {
+              "exerciseName": "Leg Curl",
+              "sets": [
+                { "setNumber": 1, "weight": 30, "reps": 12 },
+                { "setNumber": 2, "weight": 40, "reps": 12 },
+                { "setNumber": 3, "weight": 40, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Leg Extension",
+              "sets": [
+                { "setNumber": 1, "weight": 30, "reps": 12 },
+                { "setNumber": 2, "weight": 40, "reps": 12 },
+                { "setNumber": 3, "weight": 40, "reps": 12 }
+              ],
+              "notes": "Started light per trainer advice"
+            },
+            {
+              "exerciseName": "Seated Calf Raise",
+              "sets": [
+                { "setNumber": 1, "weight": 25, "reps": 15 },
+                { "setNumber": 2, "weight": 25, "reps": 15 }
+              ]
+            },
+            {
+              "exerciseName": "Dead Bug",
+              "sets": [
+                { "setNumber": 1, "reps": 10 },
+                { "setNumber": 2, "reps": 10 }
+              ],
+              "notes": "Harder than it looks! Good for core"
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 33, "hour": 9, "minute": 0 },
+          "completedAt": { "daysAgo": 33, "hour": 10, "minute": 10 },
+          "status": "completed",
+          "notes": "Upper body day. All machines easy to use. Love the cable face pulls.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Leverage Chest Press",
+              "sets": [
+                { "setNumber": 1, "weight": 40, "reps": 12 },
+                { "setNumber": 2, "weight": 50, "reps": 12 },
+                { "setNumber": 3, "weight": 50, "reps": 12 }
+              ],
+              "notes": "Machine feels stable and safe"
+            },
+            {
+              "exerciseName": "Cable Shoulder Press",
+              "sets": [
+                { "setNumber": 1, "weight": 15, "reps": 12 },
+                { "setNumber": 2, "weight": 20, "reps": 12 },
+                { "setNumber": 3, "weight": 20, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Face Pull",
+              "sets": [
+                { "setNumber": 1, "weight": 20, "reps": 15 },
+                { "setNumber": 2, "weight": 25, "reps": 15 },
+                { "setNumber": 3, "weight": 25, "reps": 15 }
+              ],
+              "notes": "Great for posture - will keep these forever"
+            },
+            {
+              "exerciseName": "Cable Rope Tricep Pushdown",
+              "sets": [
+                { "setNumber": 1, "weight": 20, "reps": 12 },
+                { "setNumber": 2, "weight": 25, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Pallof Press",
+              "sets": [
+                { "setNumber": 1, "weight": 15, "reps": 10 },
+                { "setNumber": 2, "weight": 15, "reps": 10 }
+              ],
+              "notes": "Core feels worked without back strain"
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 3,
+          "startedAt": { "daysAgo": 31, "hour": 9, "minute": 0 },
+          "completedAt": { "daysAgo": 31, "hour": 10, "minute": 15 },
+          "status": "completed",
+          "notes": "Pull day. Week 1 complete! Feeling good about this program.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Lat Pulldown",
+              "sets": [
+                { "setNumber": 1, "weight": 60, "reps": 12 },
+                { "setNumber": 2, "weight": 70, "reps": 12 },
+                { "setNumber": 3, "weight": 70, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Row",
+              "sets": [
+                { "setNumber": 1, "weight": 50, "reps": 12 },
+                { "setNumber": 2, "weight": 60, "reps": 12 },
+                { "setNumber": 3, "weight": 60, "reps": 12 }
+              ],
+              "notes": "Posture cue: chest up, squeeze back"
+            },
+            {
+              "exerciseName": "Dumbbell Row",
+              "sets": [
+                { "setNumber": 1, "weight": 15, "reps": 10 },
+                { "setNumber": 2, "weight": 20, "reps": 10 },
+                { "setNumber": 3, "weight": 20, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Bicep Curls",
+              "sets": [
+                { "setNumber": 1, "weight": 20, "reps": 12 },
+                { "setNumber": 2, "weight": 25, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Plank",
+              "sets": [
+                { "setNumber": 1, "reps": 1 },
+                { "setNumber": 2, "reps": 1 }
+              ],
+              "notes": "Held 25 seconds each - will build up"
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 28, "hour": 9, "minute": 0 },
+          "completedAt": { "daysAgo": 28, "hour": 10, "minute": 5 },
+          "status": "completed",
+          "notes": "Week 2 day 1. Answered check-in - going_great! Small weight increases today.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Leg Press",
+              "sets": [
+                { "setNumber": 1, "weight": 90, "reps": 12 },
+                { "setNumber": 2, "weight": 110, "reps": 12 },
+                { "setNumber": 3, "weight": 110, "reps": 12 }
+              ],
+              "notes": "+20 lbs from last week - knees still happy"
+            },
+            {
+              "exerciseName": "Leg Curl",
+              "sets": [
+                { "setNumber": 1, "weight": 40, "reps": 12 },
+                { "setNumber": 2, "weight": 50, "reps": 12 },
+                { "setNumber": 3, "weight": 50, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Leg Extension",
+              "sets": [
+                { "setNumber": 1, "weight": 40, "reps": 12 },
+                { "setNumber": 2, "weight": 50, "reps": 12 },
+                { "setNumber": 3, "weight": 50, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Seated Calf Raise",
+              "sets": [
+                { "setNumber": 1, "weight": 35, "reps": 15 },
+                { "setNumber": 2, "weight": 35, "reps": 15 }
+              ]
+            },
+            {
+              "exerciseName": "Dead Bug",
+              "sets": [
+                { "setNumber": 1, "reps": 12 },
+                { "setNumber": 2, "reps": 12 }
+              ],
+              "notes": "Added 2 reps per set"
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 26, "hour": 9, "minute": 0 },
+          "completedAt": { "daysAgo": 26, "hour": 10, "minute": 10 },
+          "status": "completed",
+          "notes": "Upper push. Small increases across the board. Feeling stronger!",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Leverage Chest Press",
+              "sets": [
+                { "setNumber": 1, "weight": 50, "reps": 12 },
+                { "setNumber": 2, "weight": 60, "reps": 12 },
+                { "setNumber": 3, "weight": 60, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Shoulder Press",
+              "sets": [
+                { "setNumber": 1, "weight": 20, "reps": 12 },
+                { "setNumber": 2, "weight": 25, "reps": 12 },
+                { "setNumber": 3, "weight": 25, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Face Pull",
+              "sets": [
+                { "setNumber": 1, "weight": 25, "reps": 15 },
+                { "setNumber": 2, "weight": 30, "reps": 15 },
+                { "setNumber": 3, "weight": 30, "reps": 15 }
+              ],
+              "notes": "My favorite exercise"
+            },
+            {
+              "exerciseName": "Cable Rope Tricep Pushdown",
+              "sets": [
+                { "setNumber": 1, "weight": 25, "reps": 12 },
+                { "setNumber": 2, "weight": 30, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Pallof Press",
+              "sets": [
+                { "setNumber": 1, "weight": 20, "reps": 10 },
+                { "setNumber": 2, "weight": 20, "reps": 10 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 3,
+          "startedAt": { "daysAgo": 24, "hour": 9, "minute": 0 },
+          "completedAt": { "daysAgo": 24, "hour": 10, "minute": 10 },
+          "status": "completed",
+          "notes": "Week 2 complete. Back feels stronger already. Plank improving!",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Lat Pulldown",
+              "sets": [
+                { "setNumber": 1, "weight": 70, "reps": 12 },
+                { "setNumber": 2, "weight": 80, "reps": 12 },
+                { "setNumber": 3, "weight": 80, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Row",
+              "sets": [
+                { "setNumber": 1, "weight": 60, "reps": 12 },
+                { "setNumber": 2, "weight": 70, "reps": 12 },
+                { "setNumber": 3, "weight": 70, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Dumbbell Row",
+              "sets": [
+                { "setNumber": 1, "weight": 20, "reps": 10 },
+                { "setNumber": 2, "weight": 25, "reps": 10 },
+                { "setNumber": 3, "weight": 25, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Bicep Curls",
+              "sets": [
+                { "setNumber": 1, "weight": 25, "reps": 12 },
+                { "setNumber": 2, "weight": 30, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Plank",
+              "sets": [
+                { "setNumber": 1, "reps": 1 },
+                { "setNumber": 2, "reps": 1 }
+              ],
+              "notes": "30 seconds both sets! Progress!"
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 21, "hour": 9, "minute": 0 },
+          "completedAt": { "daysAgo": 21, "hour": 10, "minute": 5 },
+          "status": "completed",
+          "notes": "Week 3. Consistent routine now - same time every MWF. Body adapting well.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Leg Press",
+              "sets": [
+                { "setNumber": 1, "weight": 110, "reps": 12 },
+                { "setNumber": 2, "weight": 130, "reps": 12 },
+                { "setNumber": 3, "weight": 130, "reps": 12 }
+              ],
+              "notes": "Knees feeling better with consistent training"
+            },
+            {
+              "exerciseName": "Leg Curl",
+              "sets": [
+                { "setNumber": 1, "weight": 50, "reps": 12 },
+                { "setNumber": 2, "weight": 55, "reps": 12 },
+                { "setNumber": 3, "weight": 55, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Leg Extension",
+              "sets": [
+                { "setNumber": 1, "weight": 50, "reps": 12 },
+                { "setNumber": 2, "weight": 55, "reps": 12 },
+                { "setNumber": 3, "weight": 55, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Seated Calf Raise",
+              "sets": [
+                { "setNumber": 1, "weight": 40, "reps": 15 },
+                { "setNumber": 2, "weight": 40, "reps": 15 }
+              ]
+            },
+            {
+              "exerciseName": "Dead Bug",
+              "sets": [
+                { "setNumber": 1, "reps": 12 },
+                { "setNumber": 2, "reps": 12 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 19, "hour": 9, "minute": 0 },
+          "completedAt": { "daysAgo": 19, "hour": 10, "minute": 10 },
+          "status": "completed",
+          "notes": "Upper push. Wife noticed my posture is better - thanks face pulls!",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Leverage Chest Press",
+              "sets": [
+                { "setNumber": 1, "weight": 60, "reps": 12 },
+                { "setNumber": 2, "weight": 70, "reps": 12 },
+                { "setNumber": 3, "weight": 70, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Shoulder Press",
+              "sets": [
+                { "setNumber": 1, "weight": 25, "reps": 12 },
+                { "setNumber": 2, "weight": 30, "reps": 12 },
+                { "setNumber": 3, "weight": 30, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Face Pull",
+              "sets": [
+                { "setNumber": 1, "weight": 30, "reps": 15 },
+                { "setNumber": 2, "weight": 35, "reps": 15 },
+                { "setNumber": 3, "weight": 35, "reps": 15 }
+              ],
+              "notes": "The secret weapon for good posture"
+            },
+            {
+              "exerciseName": "Cable Rope Tricep Pushdown",
+              "sets": [
+                { "setNumber": 1, "weight": 30, "reps": 12 },
+                { "setNumber": 2, "weight": 35, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Pallof Press",
+              "sets": [
+                { "setNumber": 1, "weight": 22.5, "reps": 10 },
+                { "setNumber": 2, "weight": 22.5, "reps": 10 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 3,
+          "startedAt": { "daysAgo": 17, "hour": 9, "minute": 0 },
+          "completedAt": { "daysAgo": 17, "hour": 10, "minute": 10 },
+          "status": "completed",
+          "notes": "Week 3 done. 9 workouts logged. Making this a habit!",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Lat Pulldown",
+              "sets": [
+                { "setNumber": 1, "weight": 80, "reps": 12 },
+                { "setNumber": 2, "weight": 90, "reps": 12 },
+                { "setNumber": 3, "weight": 90, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Row",
+              "sets": [
+                { "setNumber": 1, "weight": 70, "reps": 12 },
+                { "setNumber": 2, "weight": 80, "reps": 12 },
+                { "setNumber": 3, "weight": 80, "reps": 12 }
+              ],
+              "notes": "Back engagement is much better now"
+            },
+            {
+              "exerciseName": "Dumbbell Row",
+              "sets": [
+                { "setNumber": 1, "weight": 25, "reps": 10 },
+                { "setNumber": 2, "weight": 30, "reps": 10 },
+                { "setNumber": 3, "weight": 30, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Bicep Curls",
+              "sets": [
+                { "setNumber": 1, "weight": 30, "reps": 12 },
+                { "setNumber": 2, "weight": 35, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Plank",
+              "sets": [
+                { "setNumber": 1, "reps": 1 },
+                { "setNumber": 2, "reps": 1 }
+              ],
+              "notes": "35 seconds! Core getting stronger"
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 14, "hour": 9, "minute": 0 },
+          "completedAt": { "daysAgo": 14, "hour": 10, "minute": 5 },
+          "status": "completed",
+          "notes": "Week 4. Past the hump now. Energy levels up throughout the day.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Leg Press",
+              "sets": [
+                { "setNumber": 1, "weight": 130, "reps": 12 },
+                { "setNumber": 2, "weight": 150, "reps": 12 },
+                { "setNumber": 3, "weight": 150, "reps": 12 }
+              ],
+              "notes": "150 lbs! Up from 90 at week 1"
+            },
+            {
+              "exerciseName": "Leg Curl",
+              "sets": [
+                { "setNumber": 1, "weight": 55, "reps": 12 },
+                { "setNumber": 2, "weight": 60, "reps": 12 },
+                { "setNumber": 3, "weight": 60, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Leg Extension",
+              "sets": [
+                { "setNumber": 1, "weight": 55, "reps": 12 },
+                { "setNumber": 2, "weight": 60, "reps": 12 },
+                { "setNumber": 3, "weight": 60, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Seated Calf Raise",
+              "sets": [
+                { "setNumber": 1, "weight": 45, "reps": 15 },
+                { "setNumber": 2, "weight": 45, "reps": 15 }
+              ]
+            },
+            {
+              "exerciseName": "Dead Bug",
+              "sets": [
+                { "setNumber": 1, "reps": 15 },
+                { "setNumber": 2, "reps": 15 }
+              ],
+              "notes": "Added reps - core much stronger"
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 12, "hour": 9, "minute": 0 },
+          "completedAt": { "daysAgo": 12, "hour": 10, "minute": 10 },
+          "status": "completed",
+          "notes": "Upper push. Shoulders feeling mobile and strong.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Leverage Chest Press",
+              "sets": [
+                { "setNumber": 1, "weight": 70, "reps": 12 },
+                { "setNumber": 2, "weight": 80, "reps": 12 },
+                { "setNumber": 3, "weight": 80, "reps": 12 }
+              ],
+              "notes": "Chest press almost doubled from start"
+            },
+            {
+              "exerciseName": "Cable Shoulder Press",
+              "sets": [
+                { "setNumber": 1, "weight": 30, "reps": 12 },
+                { "setNumber": 2, "weight": 35, "reps": 12 },
+                { "setNumber": 3, "weight": 35, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Face Pull",
+              "sets": [
+                { "setNumber": 1, "weight": 35, "reps": 15 },
+                { "setNumber": 2, "weight": 40, "reps": 15 },
+                { "setNumber": 3, "weight": 40, "reps": 15 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Rope Tricep Pushdown",
+              "sets": [
+                { "setNumber": 1, "weight": 35, "reps": 12 },
+                { "setNumber": 2, "weight": 40, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Pallof Press",
+              "sets": [
+                { "setNumber": 1, "weight": 25, "reps": 10 },
+                { "setNumber": 2, "weight": 25, "reps": 10 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 3,
+          "startedAt": { "daysAgo": 10, "hour": 9, "minute": 0 },
+          "completedAt": { "daysAgo": 10, "hour": 10, "minute": 10 },
+          "status": "completed",
+          "notes": "Week 4 done. 12 workouts in. Back is noticeably stronger.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Lat Pulldown",
+              "sets": [
+                { "setNumber": 1, "weight": 90, "reps": 12 },
+                { "setNumber": 2, "weight": 100, "reps": 12 },
+                { "setNumber": 3, "weight": 100, "reps": 12 }
+              ],
+              "notes": "100 lbs! Started at 60"
+            },
+            {
+              "exerciseName": "Cable Row",
+              "sets": [
+                { "setNumber": 1, "weight": 80, "reps": 12 },
+                { "setNumber": 2, "weight": 90, "reps": 12 },
+                { "setNumber": 3, "weight": 90, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Dumbbell Row",
+              "sets": [
+                { "setNumber": 1, "weight": 30, "reps": 10 },
+                { "setNumber": 2, "weight": 35, "reps": 10 },
+                { "setNumber": 3, "weight": 35, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Bicep Curls",
+              "sets": [
+                { "setNumber": 1, "weight": 35, "reps": 12 },
+                { "setNumber": 2, "weight": 40, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Plank",
+              "sets": [
+                { "setNumber": 1, "reps": 1 },
+                { "setNumber": 2, "reps": 1 }
+              ],
+              "notes": "40 seconds! Getting close to a minute"
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 7, "hour": 9, "minute": 0 },
+          "completedAt": { "daysAgo": 7, "hour": 10, "minute": 5 },
+          "status": "completed",
+          "notes": "Week 5 - halfway through program! Feeling younger than I have in years.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Leg Press",
+              "sets": [
+                { "setNumber": 1, "weight": 150, "reps": 12 },
+                { "setNumber": 2, "weight": 160, "reps": 12 },
+                { "setNumber": 3, "weight": 160, "reps": 12 }
+              ],
+              "notes": "Arthritis symptoms way down with regular training"
+            },
+            {
+              "exerciseName": "Leg Curl",
+              "sets": [
+                { "setNumber": 1, "weight": 60, "reps": 12 },
+                { "setNumber": 2, "weight": 65, "reps": 12 },
+                { "setNumber": 3, "weight": 65, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Leg Extension",
+              "sets": [
+                { "setNumber": 1, "weight": 60, "reps": 12 },
+                { "setNumber": 2, "weight": 65, "reps": 12 },
+                { "setNumber": 3, "weight": 65, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Seated Calf Raise",
+              "sets": [
+                { "setNumber": 1, "weight": 50, "reps": 15 },
+                { "setNumber": 2, "weight": 50, "reps": 15 }
+              ]
+            },
+            {
+              "exerciseName": "Dead Bug",
+              "sets": [
+                { "setNumber": 1, "reps": 15 },
+                { "setNumber": 2, "reps": 15 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 5, "hour": 9, "minute": 0 },
+          "completedAt": { "daysAgo": 5, "hour": 10, "minute": 10 },
+          "status": "completed",
+          "notes": "Upper push. Grandkids noticed I can lift them easier now!",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Leverage Chest Press",
+              "sets": [
+                { "setNumber": 1, "weight": 80, "reps": 12 },
+                { "setNumber": 2, "weight": 90, "reps": 12 },
+                { "setNumber": 3, "weight": 90, "reps": 12 }
+              ],
+              "notes": "90 lbs! From 40 at start - more than doubled"
+            },
+            {
+              "exerciseName": "Cable Shoulder Press",
+              "sets": [
+                { "setNumber": 1, "weight": 35, "reps": 12 },
+                { "setNumber": 2, "weight": 40, "reps": 12 },
+                { "setNumber": 3, "weight": 40, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Face Pull",
+              "sets": [
+                { "setNumber": 1, "weight": 40, "reps": 15 },
+                { "setNumber": 2, "weight": 45, "reps": 15 },
+                { "setNumber": 3, "weight": 45, "reps": 15 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Rope Tricep Pushdown",
+              "sets": [
+                { "setNumber": 1, "weight": 40, "reps": 12 },
+                { "setNumber": 2, "weight": 45, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Pallof Press",
+              "sets": [
+                { "setNumber": 1, "weight": 27.5, "reps": 10 },
+                { "setNumber": 2, "weight": 27.5, "reps": 10 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 3,
+          "startedAt": { "daysAgo": 3, "hour": 9, "minute": 0 },
+          "completedAt": { "daysAgo": 3, "hour": 10, "minute": 10 },
+          "status": "completed",
+          "notes": "Week 5 done. 15 workouts! Told my doctor - he was thrilled with my progress.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Lat Pulldown",
+              "sets": [
+                { "setNumber": 1, "weight": 100, "reps": 12 },
+                { "setNumber": 2, "weight": 110, "reps": 12 },
+                { "setNumber": 3, "weight": 110, "reps": 10 }
+              ],
+              "notes": "110! Almost double starting weight"
+            },
+            {
+              "exerciseName": "Cable Row",
+              "sets": [
+                { "setNumber": 1, "weight": 90, "reps": 12 },
+                { "setNumber": 2, "weight": 100, "reps": 12 },
+                { "setNumber": 3, "weight": 100, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Dumbbell Row",
+              "sets": [
+                { "setNumber": 1, "weight": 35, "reps": 10 },
+                { "setNumber": 2, "weight": 40, "reps": 10 },
+                { "setNumber": 3, "weight": 40, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Bicep Curls",
+              "sets": [
+                { "setNumber": 1, "weight": 40, "reps": 12 },
+                { "setNumber": 2, "weight": 45, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Plank",
+              "sets": [
+                { "setNumber": 1, "reps": 1 },
+                { "setNumber": 2, "reps": 1 }
+              ],
+              "notes": "45 seconds! So close to a minute!"
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 0, "hour": 9, "minute": 0 },
+          "completedAt": { "daysAgo": 0, "hour": 10, "minute": 5 },
+          "status": "completed",
+          "notes": "Week 6 day 1. 16 workouts, 16-day streak! Consistency is key.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Leg Press",
+              "sets": [
+                { "setNumber": 1, "weight": 160, "reps": 12 },
+                { "setNumber": 2, "weight": 170, "reps": 12 },
+                { "setNumber": 3, "weight": 170, "reps": 12 }
+              ],
+              "notes": "170 lbs! Nearly doubled from 90 at start"
+            },
+            {
+              "exerciseName": "Leg Curl",
+              "sets": [
+                { "setNumber": 1, "weight": 65, "reps": 12 },
+                { "setNumber": 2, "weight": 70, "reps": 12 },
+                { "setNumber": 3, "weight": 70, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Leg Extension",
+              "sets": [
+                { "setNumber": 1, "weight": 65, "reps": 12 },
+                { "setNumber": 2, "weight": 70, "reps": 12 },
+                { "setNumber": 3, "weight": 70, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Seated Calf Raise",
+              "sets": [
+                { "setNumber": 1, "weight": 55, "reps": 15 },
+                { "setNumber": 2, "weight": 55, "reps": 15 }
+              ]
+            },
+            {
+              "exerciseName": "Dead Bug",
+              "sets": [
+                { "setNumber": 1, "reps": 15 },
+                { "setNumber": 2, "reps": 15 }
+              ],
+              "notes": "Core feels rock solid"
+            }
+          ]
+        }
+      ],
+      "checkIns": [
+        {
+          "type": "initial",
+          "date": { "daysAgo": 36 },
+          "notes": "Starting a new chapter. Doctor recommended strength training for my arthritis and overall health. Want to stay independent and active. Tracking everything like the engineer I am.",
+          "stats": {
+            "weight": 172,
+            "sleepHours": 7,
+            "sleepQuality": 3,
+            "energyLevel": 3,
+            "stressLevel": 2,
+            "soreness": 2,
+            "recovery": 3
+          }
+        },
+        {
+          "type": "progress",
+          "date": { "daysAgo": 14 },
+          "notes": "4 weeks in! All weights up significantly. Knee arthritis feeling better than before I started. Energy is up, sleep is great. Wife says I'm in better mood. Going to keep this up!",
+          "stats": {
+            "weight": 170,
+            "sleepHours": 7.5,
+            "sleepQuality": 4,
+            "energyLevel": 4,
+            "stressLevel": 2,
+            "soreness": 2,
+            "recovery": 4
+          }
+        }
+      ]
+    }
+  ]
+}

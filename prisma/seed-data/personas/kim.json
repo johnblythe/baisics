@@ -1,0 +1,516 @@
+{
+  "id": "kim",
+  "user": {
+    "email": "kim@test.baisics.app",
+    "name": "Kim Nguyen",
+    "isPremium": false,
+    "streakCurrent": 4,
+    "streakLongest": 6,
+    "streakLastActivityAt": { "daysAgo": 0 }
+  },
+  "intake": {
+    "sex": "female",
+    "trainingGoal": "Rebuild strength safely while working around shoulder injury",
+    "daysAvailable": 3,
+    "experienceLevel": "intermediate",
+    "age": 42,
+    "weight": 148,
+    "height": 65,
+    "trainingPreferences": ["gym", "machines", "injury-safe"],
+    "additionalInfo": "Had rotator cuff issue last year, cleared by PT for modified training. Must avoid overhead pressing and wide-grip movements. Can do neutral grip pressing below shoulder level. Focus on gradual return to full strength."
+  },
+  "programs": [
+    {
+      "name": "Modified Full Body - Shoulder Safe",
+      "description": "A 3-day full body program modified to avoid overhead movements and wide-grip exercises. Focuses on shoulder-safe pressing alternatives and thorough warmups.",
+      "active": true,
+      "category": "strength",
+      "difficulty": "intermediate",
+      "durationWeeks": 10,
+      "daysPerWeek": 3,
+      "equipment": ["machines", "dumbbells", "cable", "barbell"],
+      "goals": ["Rebuild strength", "Injury recovery", "Maintain mobility"],
+      "tags": ["modified", "injury-recovery", "shoulder-safe", "full-body"],
+      "week2CheckInShown": true,
+      "week2CheckInShownAtDaysAgo": 7,
+      "week2CheckInOption": "too_hard",
+      "workoutPlan": {
+        "daysPerWeek": 3,
+        "dailyCalories": 1900,
+        "proteinGrams": 130,
+        "carbGrams": 180,
+        "fatGrams": 70,
+        "phase": 1,
+        "phaseName": "Gradual Return",
+        "phaseDurationWeeks": 10,
+        "phaseExplanation": "Conservative loading with focus on pain-free movement patterns. Avoid overhead pressing, substitute with landmine and floor press variations.",
+        "splitType": "Full Body Modified",
+        "workouts": [
+          {
+            "name": "Day 1 - Lower + Push (Modified)",
+            "focus": "Lower body emphasis with shoulder-safe pressing",
+            "dayNumber": 1,
+            "warmup": "10 min bike, band pull aparts, shoulder circles, wall slides",
+            "cooldown": "Shoulder stretches, foam roll lats",
+            "exercises": [
+              {
+                "name": "Leg Press",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 90,
+                "notes": "Main lower body compound",
+                "sortOrder": 0
+              },
+              {
+                "name": "Floor Press",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 90,
+                "notes": "Shoulder-safe chest pressing - limited ROM protects shoulder",
+                "sortOrder": 1
+              },
+              {
+                "name": "Cable Row",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 60,
+                "notes": "Neutral grip, keep elbows close",
+                "sortOrder": 2
+              },
+              {
+                "name": "Landmine Linear Jammer",
+                "sets": 2,
+                "reps": 8,
+                "restPeriod": 60,
+                "notes": "Landmine press alternative to OHP - shoulder safe angle",
+                "sortOrder": 3
+              },
+              {
+                "name": "Face Pull",
+                "sets": 3,
+                "reps": 15,
+                "restPeriod": 45,
+                "notes": "Rehab work - external rotation emphasis",
+                "sortOrder": 4
+              }
+            ]
+          },
+          {
+            "name": "Day 2 - Hinge + Pull",
+            "focus": "Posterior chain and back",
+            "dayNumber": 2,
+            "warmup": "10 min bike, band pull aparts, cat-cow stretches",
+            "cooldown": "Lat stretches, shoulder mobility",
+            "exercises": [
+              {
+                "name": "Romanian Deadlift",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 90,
+                "notes": "Main hip hinge pattern",
+                "sortOrder": 0
+              },
+              {
+                "name": "Lat Pulldown",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 60,
+                "notes": "Narrow neutral grip only - avoid wide grip",
+                "sortOrder": 1
+              },
+              {
+                "name": "Dumbbell Bench Press with Neutral Grip",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 90,
+                "notes": "Neutral grip reduces shoulder stress",
+                "sortOrder": 2
+              },
+              {
+                "name": "Leg Curl",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 60,
+                "notes": "Hamstring isolation",
+                "sortOrder": 3
+              },
+              {
+                "name": "Face Pull",
+                "sets": 3,
+                "reps": 15,
+                "restPeriod": 45,
+                "notes": "Rehab work - every session",
+                "sortOrder": 4
+              }
+            ]
+          },
+          {
+            "name": "Day 3 - Squat + Upper",
+            "focus": "Squat pattern and upper balance",
+            "dayNumber": 3,
+            "warmup": "10 min bike, band pull aparts, goblet squat holds",
+            "cooldown": "Full body stretch",
+            "exercises": [
+              {
+                "name": "Goblet Squat",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 90,
+                "notes": "Front-loaded squat variation",
+                "sortOrder": 0
+              },
+              {
+                "name": "Cable Chest Press",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 60,
+                "notes": "Neutral grip cable press - shoulder friendly",
+                "sortOrder": 1
+              },
+              {
+                "name": "Dumbbell Row",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 60,
+                "notes": "One arm at a time, controlled",
+                "sortOrder": 2
+              },
+              {
+                "name": "Hip Thrust",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 60,
+                "notes": "Glute emphasis",
+                "sortOrder": 3
+              },
+              {
+                "name": "Face Pull",
+                "sets": 3,
+                "reps": 15,
+                "restPeriod": 45,
+                "notes": "Rehab work - PT recommended every session",
+                "sortOrder": 4
+              }
+            ]
+          }
+        ]
+      },
+      "workoutLogs": [
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 14, "hour": 17, "minute": 30 },
+          "completedAt": { "daysAgo": 14, "hour": 18, "minute": 35 },
+          "status": "completed",
+          "notes": "First week back. Taking it slow. Shoulder felt ok with floor press.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Leg Press",
+              "sets": [
+                { "setNumber": 1, "weight": 90, "reps": 12 },
+                { "setNumber": 2, "weight": 110, "reps": 12 },
+                { "setNumber": 3, "weight": 110, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Floor Press",
+              "sets": [
+                { "setNumber": 1, "weight": 15, "reps": 10 },
+                { "setNumber": 2, "weight": 20, "reps": 10 },
+                { "setNumber": 3, "weight": 20, "reps": 8 }
+              ],
+              "notes": "Much better than bench - no shoulder pinch"
+            },
+            {
+              "exerciseName": "Cable Row",
+              "sets": [
+                { "setNumber": 1, "weight": 50, "reps": 12 },
+                { "setNumber": 2, "weight": 60, "reps": 12 },
+                { "setNumber": 3, "weight": 60, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Landmine Linear Jammer",
+              "sets": [
+                { "setNumber": 1, "weight": 25, "reps": 8 },
+                { "setNumber": 2, "weight": 25, "reps": 8 }
+              ],
+              "notes": "Did landmine press instead of OHP - zero pain!"
+            },
+            {
+              "exerciseName": "Face Pull",
+              "sets": [
+                { "setNumber": 1, "weight": 20, "reps": 15 },
+                { "setNumber": 2, "weight": 20, "reps": 15 },
+                { "setNumber": 3, "weight": 20, "reps": 15 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 12, "hour": 17, "minute": 30 },
+          "completedAt": { "daysAgo": 12, "hour": 18, "minute": 40 },
+          "status": "completed",
+          "notes": "Shoulder felt a bit tight during lat pulldown. Kept it narrow grip.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Romanian Deadlift",
+              "sets": [
+                { "setNumber": 1, "weight": 65, "reps": 10 },
+                { "setNumber": 2, "weight": 75, "reps": 10 },
+                { "setNumber": 3, "weight": 75, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Lat Pulldown",
+              "sets": [
+                { "setNumber": 1, "weight": 60, "reps": 10, "notes": "Narrow grip only" },
+                { "setNumber": 2, "weight": 70, "reps": 10 },
+                { "setNumber": 3, "weight": 70, "reps": 8 }
+              ],
+              "notes": "Had to stop set 3 early - slight twinge"
+            },
+            {
+              "exerciseName": "Dumbbell Bench Press with Neutral Grip",
+              "sets": [
+                { "setNumber": 1, "weight": 20, "reps": 10 },
+                { "setNumber": 2, "weight": 25, "reps": 10 },
+                { "setNumber": 3, "weight": 25, "reps": 8 }
+              ],
+              "notes": "Neutral grip feels so much better than regular"
+            },
+            {
+              "exerciseName": "Leg Curl",
+              "sets": [
+                { "setNumber": 1, "weight": 40, "reps": 12 },
+                { "setNumber": 2, "weight": 50, "reps": 12 },
+                { "setNumber": 3, "weight": 50, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Face Pull",
+              "sets": [
+                { "setNumber": 1, "weight": 20, "reps": 15 },
+                { "setNumber": 2, "weight": 25, "reps": 15 },
+                { "setNumber": 3, "weight": 25, "reps": 12 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 3,
+          "startedAt": { "daysAgo": 10, "hour": 17, "minute": 45 },
+          "completedAt": { "daysAgo": 10, "hour": 18, "minute": 50 },
+          "status": "completed",
+          "notes": "Week 1 done. Feeling cautiously optimistic. Shoulder holding up.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Goblet Squat",
+              "sets": [
+                { "setNumber": 1, "weight": 30, "reps": 12 },
+                { "setNumber": 2, "weight": 35, "reps": 12 },
+                { "setNumber": 3, "weight": 35, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Chest Press",
+              "sets": [
+                { "setNumber": 1, "weight": 30, "reps": 12 },
+                { "setNumber": 2, "weight": 35, "reps": 12 },
+                { "setNumber": 3, "weight": 35, "reps": 10 }
+              ],
+              "notes": "Cable press feels safer than dumbbell bench"
+            },
+            {
+              "exerciseName": "Dumbbell Row",
+              "sets": [
+                { "setNumber": 1, "weight": 25, "reps": 10 },
+                { "setNumber": 2, "weight": 30, "reps": 10 },
+                { "setNumber": 3, "weight": 30, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Hip Thrust",
+              "sets": [
+                { "setNumber": 1, "weight": 95, "reps": 12 },
+                { "setNumber": 2, "weight": 115, "reps": 12 },
+                { "setNumber": 3, "weight": 115, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Face Pull",
+              "sets": [
+                { "setNumber": 1, "weight": 25, "reps": 15 },
+                { "setNumber": 2, "weight": 25, "reps": 15 },
+                { "setNumber": 3, "weight": 25, "reps": 15 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 7, "hour": 17, "minute": 30 },
+          "completedAt": { "daysAgo": 7, "hour": 18, "minute": 30 },
+          "status": "completed",
+          "notes": "Week 2 - shoulder flared up. Answered check-in as 'too hard'. Skipped landmine press today.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Leg Press",
+              "sets": [
+                { "setNumber": 1, "weight": 110, "reps": 12 },
+                { "setNumber": 2, "weight": 130, "reps": 10 },
+                { "setNumber": 3, "weight": 130, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Floor Press",
+              "sets": [
+                { "setNumber": 1, "weight": 20, "reps": 10 },
+                { "setNumber": 2, "weight": 20, "reps": 8 }
+              ],
+              "notes": "Dropped to 2 sets - shoulder acting up"
+            },
+            {
+              "exerciseName": "Cable Row",
+              "sets": [
+                { "setNumber": 1, "weight": 60, "reps": 12 },
+                { "setNumber": 2, "weight": 65, "reps": 10 },
+                { "setNumber": 3, "weight": 65, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Landmine Linear Jammer",
+              "skipped": true,
+              "notes": "Skipped - shoulder too irritated today"
+            },
+            {
+              "exerciseName": "Face Pull",
+              "sets": [
+                { "setNumber": 1, "weight": 15, "reps": 15 },
+                { "setNumber": 2, "weight": 15, "reps": 15 },
+                { "setNumber": 3, "weight": 15, "reps": 15 }
+              ],
+              "notes": "Dropped weight for rehab focus"
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 5, "hour": 17, "minute": 30 },
+          "completedAt": { "daysAgo": 5, "hour": 18, "minute": 25 },
+          "status": "completed",
+          "notes": "Better today. Iced shoulder yesterday. Keeping pressing light.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Romanian Deadlift",
+              "sets": [
+                { "setNumber": 1, "weight": 75, "reps": 10 },
+                { "setNumber": 2, "weight": 85, "reps": 10 },
+                { "setNumber": 3, "weight": 85, "reps": 10 }
+              ],
+              "notes": "Lower body feels great, progressing well"
+            },
+            {
+              "exerciseName": "Lat Pulldown",
+              "sets": [
+                { "setNumber": 1, "weight": 60, "reps": 10 },
+                { "setNumber": 2, "weight": 60, "reps": 10 },
+                { "setNumber": 3, "weight": 60, "reps": 10 }
+              ],
+              "notes": "Kept weight same, focused on form. Narrow grip."
+            },
+            {
+              "exerciseName": "Dumbbell Bench Press with Neutral Grip",
+              "skipped": true,
+              "notes": "Skipped pressing today - giving shoulder a break"
+            },
+            {
+              "exerciseName": "Leg Curl",
+              "sets": [
+                { "setNumber": 1, "weight": 50, "reps": 12 },
+                { "setNumber": 2, "weight": 55, "reps": 12 },
+                { "setNumber": 3, "weight": 55, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Face Pull",
+              "sets": [
+                { "setNumber": 1, "weight": 20, "reps": 15 },
+                { "setNumber": 2, "weight": 20, "reps": 15 },
+                { "setNumber": 3, "weight": 20, "reps": 15 }
+              ],
+              "notes": "Extra set of 15 for rehab"
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 3,
+          "startedAt": { "daysAgo": 0, "hour": 17, "minute": 30 },
+          "completedAt": { "daysAgo": 0, "hour": 18, "minute": 35 },
+          "status": "completed",
+          "notes": "Week 2 done. Shoulder feeling better. Slow and steady wins the race.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Goblet Squat",
+              "sets": [
+                { "setNumber": 1, "weight": 35, "reps": 12 },
+                { "setNumber": 2, "weight": 40, "reps": 12 },
+                { "setNumber": 3, "weight": 40, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Chest Press",
+              "sets": [
+                { "setNumber": 1, "weight": 30, "reps": 12 },
+                { "setNumber": 2, "weight": 35, "reps": 12 },
+                { "setNumber": 3, "weight": 35, "reps": 12 }
+              ],
+              "notes": "Tested pressing again - cable press is definitely the safest"
+            },
+            {
+              "exerciseName": "Dumbbell Row",
+              "sets": [
+                { "setNumber": 1, "weight": 30, "reps": 10 },
+                { "setNumber": 2, "weight": 35, "reps": 10 },
+                { "setNumber": 3, "weight": 35, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Hip Thrust",
+              "sets": [
+                { "setNumber": 1, "weight": 115, "reps": 12 },
+                { "setNumber": 2, "weight": 135, "reps": 10 },
+                { "setNumber": 3, "weight": 135, "reps": 10 }
+              ],
+              "notes": "Lower body is crushing it even if upper is limited"
+            },
+            {
+              "exerciseName": "Face Pull",
+              "sets": [
+                { "setNumber": 1, "weight": 25, "reps": 15 },
+                { "setNumber": 2, "weight": 25, "reps": 15 },
+                { "setNumber": 3, "weight": 25, "reps": 15 }
+              ]
+            }
+          ]
+        }
+      ],
+      "checkIns": [
+        {
+          "type": "initial",
+          "date": { "daysAgo": 15 },
+          "notes": "Starting modified program after PT clearance. Goal is to rebuild without re-injury. Feeling nervous but hopeful.",
+          "stats": {
+            "weight": 148,
+            "sleepHours": 7,
+            "sleepQuality": 3,
+            "energyLevel": 3,
+            "stressLevel": 4,
+            "soreness": 2,
+            "recovery": 4
+          }
+        }
+      ]
+    }
+  ]
+}

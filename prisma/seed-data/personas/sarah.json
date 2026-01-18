@@ -1,0 +1,377 @@
+{
+  "id": "sarah",
+  "user": {
+    "email": "sarah@test.baisics.app",
+    "name": "Sarah Mitchell",
+    "isPremium": false,
+    "streakCurrent": 0,
+    "streakLongest": 3,
+    "streakLastActivityAt": { "daysAgo": 3 }
+  },
+  "intake": {
+    "sex": "female",
+    "trainingGoal": "Get back in shape after having kids",
+    "daysAvailable": 3,
+    "experienceLevel": "intermediate",
+    "age": 34,
+    "weight": 145,
+    "height": 64,
+    "trainingPreferences": ["home", "dumbbells", "bodyweight"],
+    "additionalInfo": "Stay-at-home mom with two young kids. Returning to fitness after a 2-year break. Have basic home gym setup with adjustable dumbbells and a bench. Can only workout during nap time, so need efficient workouts."
+  },
+  "programs": [
+    {
+      "name": "Home Full Body Restart",
+      "description": "A 3-day full body program designed for returning to fitness with basic home gym equipment.",
+      "active": true,
+      "category": "strength",
+      "difficulty": "beginner",
+      "durationWeeks": 8,
+      "daysPerWeek": 3,
+      "equipment": ["dumbbell", "bodyweight", "bench"],
+      "goals": ["Get back in shape", "Build strength", "Increase energy"],
+      "tags": ["home", "full-body", "3-day", "mom-friendly"],
+      "workoutPlan": {
+        "daysPerWeek": 3,
+        "dailyCalories": 1800,
+        "proteinGrams": 120,
+        "carbGrams": 180,
+        "fatGrams": 60,
+        "phase": 1,
+        "phaseName": "Rebuild Foundation",
+        "phaseDurationWeeks": 8,
+        "phaseExplanation": "Ease back into training with manageable volume and familiar movements.",
+        "splitType": "Full Body",
+        "workouts": [
+          {
+            "name": "Day 1 - Full Body A",
+            "focus": "Lower Body Emphasis",
+            "dayNumber": 1,
+            "warmup": "3 minutes marching in place, arm circles, leg swings",
+            "cooldown": "Light stretching",
+            "exercises": [
+              {
+                "name": "Goblet Squat",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 60,
+                "notes": "Focus on depth, keep core engaged",
+                "sortOrder": 0
+              },
+              {
+                "name": "Dumbbell Romanian Deadlift",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 60,
+                "notes": "Feel the stretch in hamstrings",
+                "sortOrder": 1
+              },
+              {
+                "name": "Dumbbell Bench Press",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 60,
+                "notes": "Control the movement",
+                "sortOrder": 2
+              },
+              {
+                "name": "Dumbbell Row",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 60,
+                "notes": "One arm at a time, squeeze at top",
+                "sortOrder": 3
+              },
+              {
+                "name": "Plank",
+                "sets": 3,
+                "reps": 20,
+                "restPeriod": 45,
+                "notes": "Hold for 20 seconds each",
+                "sortOrder": 4
+              }
+            ]
+          },
+          {
+            "name": "Day 2 - Full Body B",
+            "focus": "Upper Body Emphasis",
+            "dayNumber": 2,
+            "warmup": "3 minutes marching in place, arm circles",
+            "cooldown": "Light stretching",
+            "exercises": [
+              {
+                "name": "Dumbbell Lunges",
+                "sets": 3,
+                "reps": 8,
+                "restPeriod": 60,
+                "notes": "8 each leg, keep torso upright",
+                "sortOrder": 0
+              },
+              {
+                "name": "Dumbbell Shoulder Press",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 60,
+                "notes": "Press overhead, control descent",
+                "sortOrder": 1
+              },
+              {
+                "name": "Dumbbell Bent-Over Row",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 60,
+                "notes": "Keep back flat, pull to hip",
+                "sortOrder": 2
+              },
+              {
+                "name": "Dumbbell Flyes",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 60,
+                "notes": "Slight bend in elbows",
+                "sortOrder": 3
+              },
+              {
+                "name": "Dumbbell Bicep Curl",
+                "sets": 2,
+                "reps": 12,
+                "restPeriod": 45,
+                "notes": "Full range of motion",
+                "sortOrder": 4
+              }
+            ]
+          },
+          {
+            "name": "Day 3 - Full Body C",
+            "focus": "Total Body",
+            "dayNumber": 3,
+            "warmup": "3 minutes marching in place, dynamic stretches",
+            "cooldown": "Light stretching",
+            "exercises": [
+              {
+                "name": "Dumbbell Squat",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 60,
+                "notes": "Hold dumbbells at sides",
+                "sortOrder": 0
+              },
+              {
+                "name": "Dumbbell Step-Up",
+                "sets": 3,
+                "reps": 8,
+                "restPeriod": 60,
+                "notes": "8 each leg, use sturdy surface",
+                "sortOrder": 1
+              },
+              {
+                "name": "Push-Up",
+                "sets": 3,
+                "reps": 8,
+                "restPeriod": 60,
+                "notes": "Modify on knees if needed",
+                "sortOrder": 2
+              },
+              {
+                "name": "Dumbbell Rows",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 60,
+                "notes": "Both arms together",
+                "sortOrder": 3
+              },
+              {
+                "name": "Dumbbell Lateral Raise",
+                "sets": 2,
+                "reps": 12,
+                "restPeriod": 45,
+                "notes": "Light weight, control the movement",
+                "sortOrder": 4
+              }
+            ]
+          }
+        ]
+      },
+      "workoutLogs": [
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 14, "hour": 13, "minute": 30 },
+          "completedAt": { "daysAgo": 14, "hour": 14, "minute": 5 },
+          "status": "completed",
+          "notes": "First workout back! Felt good but tired.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Goblet Squat",
+              "sets": [
+                { "setNumber": 1, "weight": 15, "reps": 12 },
+                { "setNumber": 2, "weight": 15, "reps": 12 },
+                { "setNumber": 3, "weight": 15, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Dumbbell Romanian Deadlift",
+              "sets": [
+                { "setNumber": 1, "weight": 15, "reps": 10 },
+                { "setNumber": 2, "weight": 15, "reps": 10 },
+                { "setNumber": 3, "weight": 15, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Dumbbell Bench Press",
+              "sets": [
+                { "setNumber": 1, "weight": 10, "reps": 10 },
+                { "setNumber": 2, "weight": 10, "reps": 10 },
+                { "setNumber": 3, "weight": 10, "reps": 8 }
+              ]
+            },
+            {
+              "exerciseName": "Dumbbell Row",
+              "sets": [
+                { "setNumber": 1, "weight": 15, "reps": 10 },
+                { "setNumber": 2, "weight": 15, "reps": 10 },
+                { "setNumber": 3, "weight": 15, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Plank",
+              "sets": [
+                { "setNumber": 1, "reps": 20 },
+                { "setNumber": 2, "reps": 20 },
+                { "setNumber": 3, "reps": 15 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 11, "hour": 14, "minute": 0 },
+          "completedAt": { "daysAgo": 11, "hour": 14, "minute": 30 },
+          "status": "completed",
+          "notes": "Kids napped late, rushed workout",
+          "quickLog": true,
+          "exerciseLogs": [
+            { "exerciseName": "Dumbbell Lunges", "sets": [{ "setNumber": 1, "weight": 10, "reps": 8 }] },
+            { "exerciseName": "Dumbbell Shoulder Press", "sets": [{ "setNumber": 1, "weight": 8, "reps": 10 }] },
+            { "exerciseName": "Dumbbell Bent-Over Row", "sets": [{ "setNumber": 1, "weight": 12, "reps": 10 }] },
+            { "exerciseName": "Dumbbell Flyes", "skipped": true, "notes": "ran out of time" },
+            { "exerciseName": "Dumbbell Bicep Curl", "skipped": true, "notes": "ran out of time" }
+          ]
+        },
+        {
+          "workoutDayNumber": 3,
+          "startedAt": { "daysAgo": 8, "hour": 13, "minute": 15 },
+          "completedAt": { "daysAgo": 8, "hour": 13, "minute": 55 },
+          "status": "completed",
+          "notes": "Good session, felt stronger",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Dumbbell Squat",
+              "sets": [
+                { "setNumber": 1, "weight": 15, "reps": 12 },
+                { "setNumber": 2, "weight": 15, "reps": 12 },
+                { "setNumber": 3, "weight": 15, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Dumbbell Step-Up",
+              "sets": [
+                { "setNumber": 1, "weight": 10, "reps": 8 },
+                { "setNumber": 2, "weight": 10, "reps": 8 },
+                { "setNumber": 3, "weight": 10, "reps": 8 }
+              ]
+            },
+            {
+              "exerciseName": "Push-Up",
+              "sets": [
+                { "setNumber": 1, "reps": 8 },
+                { "setNumber": 2, "reps": 6 },
+                { "setNumber": 3, "reps": 5 }
+              ],
+              "notes": "Modified on knees"
+            },
+            {
+              "exerciseName": "Dumbbell Rows",
+              "sets": [
+                { "setNumber": 1, "weight": 12, "reps": 10 },
+                { "setNumber": 2, "weight": 12, "reps": 10 },
+                { "setNumber": 3, "weight": 12, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Dumbbell Lateral Raise",
+              "sets": [
+                { "setNumber": 1, "weight": 5, "reps": 12 },
+                { "setNumber": 2, "weight": 5, "reps": 12 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 3, "hour": 13, "minute": 45 },
+          "completedAt": { "daysAgo": 3, "hour": 14, "minute": 20 },
+          "status": "completed",
+          "notes": "Starting week 2, feeling more confident",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Goblet Squat",
+              "sets": [
+                { "setNumber": 1, "weight": 20, "reps": 12 },
+                { "setNumber": 2, "weight": 20, "reps": 12 },
+                { "setNumber": 3, "weight": 20, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Dumbbell Romanian Deadlift",
+              "sets": [
+                { "setNumber": 1, "weight": 20, "reps": 10 },
+                { "setNumber": 2, "weight": 20, "reps": 10 },
+                { "setNumber": 3, "weight": 20, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Dumbbell Bench Press",
+              "sets": [
+                { "setNumber": 1, "weight": 12, "reps": 10 },
+                { "setNumber": 2, "weight": 12, "reps": 10 },
+                { "setNumber": 3, "weight": 12, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Dumbbell Row",
+              "sets": [
+                { "setNumber": 1, "weight": 17, "reps": 10 },
+                { "setNumber": 2, "weight": 17, "reps": 10 },
+                { "setNumber": 3, "weight": 17, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Plank",
+              "sets": [
+                { "setNumber": 1, "reps": 25 },
+                { "setNumber": 2, "reps": 25 },
+                { "setNumber": 3, "reps": 20 }
+              ]
+            }
+          ]
+        }
+      ],
+      "checkIns": [
+        {
+          "type": "initial",
+          "date": { "daysAgo": 14 },
+          "notes": "Starting my fitness journey again after having the kids. Goal is to feel stronger and have more energy.",
+          "stats": {
+            "weight": 145,
+            "sleepHours": 6,
+            "sleepQuality": 3,
+            "energyLevel": 4,
+            "stressLevel": 6,
+            "soreness": 2,
+            "recovery": 5
+          }
+        }
+      ]
+    }
+  ]
+}

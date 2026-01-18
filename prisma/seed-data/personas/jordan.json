@@ -1,0 +1,350 @@
+{
+  "id": "jordan",
+  "user": {
+    "email": "jordan@test.baisics.app",
+    "name": "Jordan Chen",
+    "isPremium": false,
+    "streakCurrent": 7,
+    "streakLongest": 7,
+    "streakLastActivityAt": { "daysAgo": 0 }
+  },
+  "intake": {
+    "sex": "non-binary",
+    "trainingGoal": "Build strength and fitness from home without gym access",
+    "daysAvailable": 4,
+    "experienceLevel": "beginner",
+    "age": 28,
+    "weight": 155,
+    "height": 68,
+    "trainingPreferences": ["home", "bands", "bodyweight", "dumbbells"],
+    "additionalInfo": "Work from home developer. No gym membership, prefer to workout in living room. Have resistance bands, light dumbbells (5-25 lbs), and a pull-up bar. Looking for efficient workouts that don't need much space."
+  },
+  "programs": [
+    {
+      "name": "Home Upper/Lower Split",
+      "description": "A 4-day upper/lower split designed for home workouts using bands, bodyweight, and light dumbbells.",
+      "active": true,
+      "category": "strength",
+      "difficulty": "beginner",
+      "durationWeeks": 6,
+      "daysPerWeek": 4,
+      "equipment": ["bands", "bodyweight", "dumbbell"],
+      "goals": ["Build strength", "Improve fitness", "Workout from home"],
+      "tags": ["home", "upper-lower", "4-day", "minimal-equipment"],
+      "week2CheckInShown": false,
+      "workoutPlan": {
+        "daysPerWeek": 4,
+        "dailyCalories": 2200,
+        "proteinGrams": 140,
+        "carbGrams": 220,
+        "fatGrams": 75,
+        "phase": 1,
+        "phaseName": "Foundation",
+        "phaseDurationWeeks": 6,
+        "phaseExplanation": "Build base strength and movement patterns with home equipment.",
+        "splitType": "Upper/Lower",
+        "workouts": [
+          {
+            "name": "Day 1 - Upper A",
+            "focus": "Push Emphasis",
+            "dayNumber": 1,
+            "warmup": "Arm circles, band pull aparts, shoulder rotations",
+            "cooldown": "Light stretching",
+            "exercises": [
+              {
+                "name": "Push-Up",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 60,
+                "notes": "Full range of motion, modify on knees if needed",
+                "sortOrder": 0
+              },
+              {
+                "name": "Dumbbell Shoulder Press",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 60,
+                "notes": "Press overhead, control the descent",
+                "sortOrder": 1
+              },
+              {
+                "name": "Dumbbell Row",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 60,
+                "notes": "One arm at a time, squeeze at top",
+                "sortOrder": 2
+              },
+              {
+                "name": "Band Pull Apart",
+                "sets": 3,
+                "reps": 15,
+                "restPeriod": 45,
+                "notes": "Keep arms straight, squeeze shoulder blades",
+                "sortOrder": 3
+              },
+              {
+                "name": "Dumbbell Bicep Curl",
+                "sets": 2,
+                "reps": 12,
+                "restPeriod": 45,
+                "notes": "Controlled curls, no swinging",
+                "sortOrder": 4
+              }
+            ]
+          },
+          {
+            "name": "Day 2 - Lower A",
+            "focus": "Quad Emphasis",
+            "dayNumber": 2,
+            "warmup": "Bodyweight squats, leg swings, hip circles",
+            "cooldown": "Quad and hamstring stretches",
+            "exercises": [
+              {
+                "name": "Bodyweight Squat",
+                "sets": 3,
+                "reps": 15,
+                "restPeriod": 60,
+                "notes": "Full depth, chest up",
+                "sortOrder": 0
+              },
+              {
+                "name": "Dumbbell Lunges",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 60,
+                "notes": "10 each leg, controlled movement",
+                "sortOrder": 1
+              },
+              {
+                "name": "Glute Bridge",
+                "sets": 3,
+                "reps": 15,
+                "restPeriod": 45,
+                "notes": "Squeeze glutes at top, hold briefly",
+                "sortOrder": 2
+              },
+              {
+                "name": "Band Hip Adductions",
+                "sets": 2,
+                "reps": 12,
+                "restPeriod": 45,
+                "notes": "Controlled movement each direction",
+                "sortOrder": 3
+              },
+              {
+                "name": "Plank",
+                "sets": 3,
+                "reps": 30,
+                "restPeriod": 45,
+                "notes": "Hold for 30 seconds",
+                "sortOrder": 4
+              }
+            ]
+          },
+          {
+            "name": "Day 3 - Upper B",
+            "focus": "Pull Emphasis",
+            "dayNumber": 3,
+            "warmup": "Arm circles, band pull aparts",
+            "cooldown": "Light stretching",
+            "exercises": [
+              {
+                "name": "Dumbbell Bent-Over Row",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 60,
+                "notes": "Both arms, keep back flat",
+                "sortOrder": 0
+              },
+              {
+                "name": "Incline Push-Up",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 60,
+                "notes": "Hands on elevated surface",
+                "sortOrder": 1
+              },
+              {
+                "name": "Lateral Raise - With Bands",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 45,
+                "notes": "Control the band on the way down",
+                "sortOrder": 2
+              },
+              {
+                "name": "Back Flyes - With Bands",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 45,
+                "notes": "Squeeze shoulder blades together",
+                "sortOrder": 3
+              },
+              {
+                "name": "Dumbbell One-Arm Triceps Extension",
+                "sets": 2,
+                "reps": 10,
+                "restPeriod": 45,
+                "notes": "Each arm, keep elbow stable",
+                "sortOrder": 4
+              }
+            ]
+          },
+          {
+            "name": "Day 4 - Lower B",
+            "focus": "Hinge Emphasis",
+            "dayNumber": 4,
+            "warmup": "Hip circles, good mornings, leg swings",
+            "cooldown": "Hip flexor and hamstring stretches",
+            "exercises": [
+              {
+                "name": "Dumbbell Romanian Deadlift",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 60,
+                "notes": "Feel the hamstring stretch",
+                "sortOrder": 0
+              },
+              {
+                "name": "Bulgarian Split Squat",
+                "sets": 3,
+                "reps": 8,
+                "restPeriod": 60,
+                "notes": "8 each leg, rear foot elevated",
+                "sortOrder": 1
+              },
+              {
+                "name": "Band Good Morning",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 45,
+                "notes": "Hinge at hips, feel hamstrings",
+                "sortOrder": 2
+              },
+              {
+                "name": "Hip Thrust",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 45,
+                "notes": "Back on couch or bench, drive hips up",
+                "sortOrder": 3
+              },
+              {
+                "name": "Mountain Climbers",
+                "sets": 3,
+                "reps": 20,
+                "restPeriod": 45,
+                "notes": "20 total (10 each side), controlled pace",
+                "sortOrder": 4
+              }
+            ]
+          }
+        ]
+      },
+      "workoutLogs": [
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 10, "hour": 9, "minute": 0 },
+          "completedAt": { "daysAgo": 10, "hour": 9, "minute": 35 },
+          "status": "completed",
+          "notes": "First workout! Felt good.",
+          "quickLog": true,
+          "exerciseLogs": [
+            { "exerciseName": "Push-Up", "sets": [{ "setNumber": 1, "reps": 10 }] },
+            { "exerciseName": "Dumbbell Shoulder Press", "sets": [{ "setNumber": 1, "weight": 15, "reps": 10 }] },
+            { "exerciseName": "Dumbbell Row", "sets": [{ "setNumber": 1, "weight": 20, "reps": 10 }] },
+            { "exerciseName": "Band Pull Apart", "sets": [{ "setNumber": 1, "reps": 15 }] },
+            { "exerciseName": "Dumbbell Bicep Curl", "sets": [{ "setNumber": 1, "weight": 12, "reps": 12 }] }
+          ]
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 9, "hour": 9, "minute": 30 },
+          "completedAt": { "daysAgo": 9, "hour": 10, "minute": 5 },
+          "status": "completed",
+          "quickLog": true,
+          "exerciseLogs": [
+            { "exerciseName": "Bodyweight Squat", "sets": [{ "setNumber": 1, "reps": 15 }] },
+            { "exerciseName": "Dumbbell Lunges", "sets": [{ "setNumber": 1, "weight": 10, "reps": 10 }] },
+            { "exerciseName": "Glute Bridge", "sets": [{ "setNumber": 1, "reps": 15 }] },
+            { "exerciseName": "Band Hip Adductions", "sets": [{ "setNumber": 1, "reps": 12 }] },
+            { "exerciseName": "Plank", "sets": [{ "setNumber": 1, "reps": 30 }] }
+          ]
+        },
+        {
+          "workoutDayNumber": 3,
+          "startedAt": { "daysAgo": 7, "hour": 10, "minute": 0 },
+          "completedAt": { "daysAgo": 7, "hour": 10, "minute": 30 },
+          "status": "completed",
+          "quickLog": true,
+          "exerciseLogs": [
+            { "exerciseName": "Dumbbell Bent-Over Row", "sets": [{ "setNumber": 1, "weight": 15, "reps": 10 }] },
+            { "exerciseName": "Incline Push-Up", "sets": [{ "setNumber": 1, "reps": 12 }] },
+            { "exerciseName": "Lateral Raise - With Bands", "sets": [{ "setNumber": 1, "reps": 12 }] },
+            { "exerciseName": "Back Flyes - With Bands", "sets": [{ "setNumber": 1, "reps": 12 }] },
+            { "exerciseName": "Dumbbell One-Arm Triceps Extension", "sets": [{ "setNumber": 1, "weight": 10, "reps": 10 }] }
+          ]
+        },
+        {
+          "workoutDayNumber": 4,
+          "startedAt": { "daysAgo": 6, "hour": 9, "minute": 15 },
+          "completedAt": { "daysAgo": 6, "hour": 9, "minute": 50 },
+          "status": "completed",
+          "quickLog": true,
+          "exerciseLogs": [
+            { "exerciseName": "Dumbbell Romanian Deadlift", "sets": [{ "setNumber": 1, "weight": 20, "reps": 10 }] },
+            { "exerciseName": "Bulgarian Split Squat", "sets": [{ "setNumber": 1, "reps": 8 }] },
+            { "exerciseName": "Band Good Morning", "sets": [{ "setNumber": 1, "reps": 12 }] },
+            { "exerciseName": "Hip Thrust", "sets": [{ "setNumber": 1, "reps": 12 }] },
+            { "exerciseName": "Mountain Climbers", "sets": [{ "setNumber": 1, "reps": 20 }] }
+          ]
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 4, "hour": 9, "minute": 0 },
+          "completedAt": { "daysAgo": 4, "hour": 9, "minute": 40 },
+          "status": "completed",
+          "notes": "Week 2 starting strong",
+          "quickLog": true,
+          "exerciseLogs": [
+            { "exerciseName": "Push-Up", "sets": [{ "setNumber": 1, "reps": 12 }] },
+            { "exerciseName": "Dumbbell Shoulder Press", "sets": [{ "setNumber": 1, "weight": 15, "reps": 10 }] },
+            { "exerciseName": "Dumbbell Row", "sets": [{ "setNumber": 1, "weight": 20, "reps": 10 }] },
+            { "exerciseName": "Band Pull Apart", "sets": [{ "setNumber": 1, "reps": 15 }] },
+            { "exerciseName": "Dumbbell Bicep Curl", "sets": [{ "setNumber": 1, "weight": 12, "reps": 12 }] }
+          ]
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 3, "hour": 9, "minute": 30 },
+          "completedAt": { "daysAgo": 3, "hour": 10, "minute": 10 },
+          "status": "completed",
+          "quickLog": true,
+          "exerciseLogs": [
+            { "exerciseName": "Bodyweight Squat", "sets": [{ "setNumber": 1, "reps": 15 }] },
+            { "exerciseName": "Dumbbell Lunges", "sets": [{ "setNumber": 1, "weight": 12, "reps": 10 }] },
+            { "exerciseName": "Glute Bridge", "sets": [{ "setNumber": 1, "reps": 15 }] },
+            { "exerciseName": "Band Hip Adductions", "sets": [{ "setNumber": 1, "reps": 12 }] },
+            { "exerciseName": "Plank", "sets": [{ "setNumber": 1, "reps": 30 }] }
+          ]
+        },
+        {
+          "workoutDayNumber": 3,
+          "startedAt": { "daysAgo": 0, "hour": 10, "minute": 0 },
+          "completedAt": { "daysAgo": 0, "hour": 10, "minute": 35 },
+          "status": "completed",
+          "notes": "7 day streak!",
+          "quickLog": true,
+          "exerciseLogs": [
+            { "exerciseName": "Dumbbell Bent-Over Row", "sets": [{ "setNumber": 1, "weight": 17, "reps": 10 }] },
+            { "exerciseName": "Incline Push-Up", "sets": [{ "setNumber": 1, "reps": 12 }] },
+            { "exerciseName": "Lateral Raise - With Bands", "sets": [{ "setNumber": 1, "reps": 12 }] },
+            { "exerciseName": "Back Flyes - With Bands", "sets": [{ "setNumber": 1, "reps": 12 }] },
+            { "exerciseName": "Dumbbell One-Arm Triceps Extension", "sets": [{ "setNumber": 1, "weight": 10, "reps": 10 }] }
+          ]
+        }
+      ]
+    }
+  ]
+}
