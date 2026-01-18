@@ -1074,6 +1074,885 @@
               ]
             }
           ]
+        },
+        {
+          "workoutDayNumber": 4,
+          "startedAt": { "daysAgo": 78, "hour": 6, "minute": 0 },
+          "completedAt": { "daysAgo": 78, "hour": 6, "minute": 45 },
+          "status": "completed",
+          "notes": "Week 4 Deload OHP. Last deload workout. Body feels recovered. Ready for cycle 2.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Overhead Press",
+              "sets": [
+                { "setNumber": 1, "weight": 65, "reps": 5 },
+                { "setNumber": 2, "weight": 80, "reps": 5 },
+                { "setNumber": 3, "weight": 95, "reps": 5 }
+              ],
+              "notes": "Deload. Light weight, fast reps. Shoulders feeling fresh."
+            },
+            {
+              "exerciseName": "Overhead Press",
+              "sets": [
+                { "setNumber": 1, "weight": 65, "reps": 5 },
+                { "setNumber": 2, "weight": 65, "reps": 5 },
+                { "setNumber": 3, "weight": 65, "reps": 5 },
+                { "setNumber": 4, "weight": 65, "reps": 5 },
+                { "setNumber": 5, "weight": 65, "reps": 5 }
+              ],
+              "notes": "Easy FSL. Technique work."
+            },
+            {
+              "exerciseName": "Chin-Up",
+              "sets": [
+                { "setNumber": 1, "reps": 10 },
+                { "setNumber": 2, "reps": 10 },
+                { "setNumber": 3, "reps": 10 },
+                { "setNumber": 4, "reps": 10 }
+              ],
+              "notes": "Bodyweight only. Feeling light."
+            },
+            {
+              "exerciseName": "Close-Grip Bench Press",
+              "sets": [
+                { "setNumber": 1, "weight": 115, "reps": 10 },
+                { "setNumber": 2, "weight": 125, "reps": 10 },
+                { "setNumber": 3, "weight": 125, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Barbell Curl",
+              "sets": [
+                { "setNumber": 1, "weight": 55, "reps": 12 },
+                { "setNumber": 2, "weight": 65, "reps": 12 },
+                { "setNumber": 3, "weight": 65, "reps": 12 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 77, "hour": 6, "minute": 0 },
+          "completedAt": { "daysAgo": 77, "hour": 7, "minute": 30 },
+          "status": "completed",
+          "notes": "Week 5 Squat Day. CYCLE 2 BEGINS! Added 10 lbs to squat TM. Let's see what this body can do.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Barbell Squat",
+              "sets": [
+                { "setNumber": 1, "weight": 210, "reps": 5 },
+                { "setNumber": 2, "weight": 245, "reps": 5 },
+                { "setNumber": 3, "weight": 275, "reps": 9 }
+              ],
+              "notes": "5/5/5+ week. 275x9! Cycle 2 feeling good. Deload worked - legs are explosive."
+            },
+            {
+              "exerciseName": "Barbell Squat",
+              "sets": [
+                { "setNumber": 1, "weight": 210, "reps": 5 },
+                { "setNumber": 2, "weight": 210, "reps": 5 },
+                { "setNumber": 3, "weight": 210, "reps": 5 },
+                { "setNumber": 4, "weight": 210, "reps": 5 },
+                { "setNumber": 5, "weight": 210, "reps": 5 }
+              ],
+              "notes": "FSL 5x5. Speed was there."
+            },
+            {
+              "exerciseName": "Romanian Deadlift",
+              "sets": [
+                { "setNumber": 1, "weight": 225, "reps": 10 },
+                { "setNumber": 2, "weight": 245, "reps": 10 },
+                { "setNumber": 3, "weight": 245, "reps": 10 }
+              ],
+              "notes": "Posterior chain warmed up and ready."
+            },
+            {
+              "exerciseName": "Leg Press",
+              "sets": [
+                { "setNumber": 1, "weight": 450, "reps": 12 },
+                { "setNumber": 2, "weight": 500, "reps": 12 },
+                { "setNumber": 3, "weight": 500, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Hanging Leg Raise",
+              "sets": [
+                { "setNumber": 1, "reps": 18 },
+                { "setNumber": 2, "reps": 18 },
+                { "setNumber": 3, "reps": 15 }
+              ],
+              "notes": "Core is getting stronger. Added reps."
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 75, "hour": 6, "minute": 0 },
+          "completedAt": { "daysAgo": 75, "hour": 7, "minute": 30 },
+          "status": "completed",
+          "notes": "Week 5 Bench Day. New TM feels right. Added 5 lbs, still hitting good AMRAP numbers.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Bench Press",
+              "sets": [
+                { "setNumber": 1, "weight": 165, "reps": 5 },
+                { "setNumber": 2, "weight": 190, "reps": 5 },
+                { "setNumber": 3, "weight": 215, "reps": 8 }
+              ],
+              "notes": "5/5/5+ week. 215x8! Bar speed was smooth. Chest is responding to the volume."
+            },
+            {
+              "exerciseName": "Bench Press",
+              "sets": [
+                { "setNumber": 1, "weight": 165, "reps": 5 },
+                { "setNumber": 2, "weight": 165, "reps": 5 },
+                { "setNumber": 3, "weight": 165, "reps": 5 },
+                { "setNumber": 4, "weight": 165, "reps": 5 },
+                { "setNumber": 5, "weight": 165, "reps": 5 }
+              ],
+              "notes": "FSL. Smooth reps."
+            },
+            {
+              "exerciseName": "Dumbbell Row",
+              "sets": [
+                { "setNumber": 1, "weight": 95, "reps": 10 },
+                { "setNumber": 2, "weight": 105, "reps": 10 },
+                { "setNumber": 3, "weight": 110, "reps": 10 },
+                { "setNumber": 4, "weight": 110, "reps": 10 }
+              ],
+              "notes": "Upper back thickness coming in."
+            },
+            {
+              "exerciseName": "Dips",
+              "sets": [
+                { "setNumber": 1, "weight": 45, "reps": 12 },
+                { "setNumber": 2, "weight": 45, "reps": 12 },
+                { "setNumber": 3, "weight": 45, "reps": 10 }
+              ],
+              "notes": "Added a full plate. Getting strong at weighted dips."
+            },
+            {
+              "exerciseName": "Face Pull",
+              "sets": [
+                { "setNumber": 1, "weight": 60, "reps": 20 },
+                { "setNumber": 2, "weight": 65, "reps": 20 },
+                { "setNumber": 3, "weight": 65, "reps": 20 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 3,
+          "startedAt": { "daysAgo": 73, "hour": 6, "minute": 0 },
+          "completedAt": { "daysAgo": 73, "hour": 7, "minute": 45 },
+          "status": "completed",
+          "notes": "Week 5 Deadlift Day. New TM. Pulls feeling powerful. The deload did its job.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Deadlift",
+              "sets": [
+                { "setNumber": 1, "weight": 245, "reps": 5 },
+                { "setNumber": 2, "weight": 280, "reps": 5 },
+                { "setNumber": 3, "weight": 320, "reps": 10 }
+              ],
+              "notes": "5/5/5+ week. 320x10! DOUBLE DIGITS ON AMRAP. Speed off floor was ridiculous."
+            },
+            {
+              "exerciseName": "Deadlift",
+              "sets": [
+                { "setNumber": 1, "weight": 245, "reps": 5 },
+                { "setNumber": 2, "weight": 245, "reps": 5 },
+                { "setNumber": 3, "weight": 245, "reps": 5 },
+                { "setNumber": 4, "weight": 245, "reps": 5 },
+                { "setNumber": 5, "weight": 245, "reps": 5 }
+              ],
+              "notes": "FSL. Focused on hip hinge."
+            },
+            {
+              "exerciseName": "Front Squat",
+              "sets": [
+                { "setNumber": 1, "weight": 165, "reps": 8 },
+                { "setNumber": 2, "weight": 185, "reps": 8 },
+                { "setNumber": 3, "weight": 205, "reps": 8 }
+              ],
+              "notes": "PR! 205x8 on front squat. Mobility is there."
+            },
+            {
+              "exerciseName": "Good Morning",
+              "sets": [
+                { "setNumber": 1, "weight": 125, "reps": 10 },
+                { "setNumber": 2, "weight": 145, "reps": 10 },
+                { "setNumber": 3, "weight": 145, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Barbell Shrug",
+              "sets": [
+                { "setNumber": 1, "weight": 295, "reps": 15 },
+                { "setNumber": 2, "weight": 345, "reps": 15 },
+                { "setNumber": 3, "weight": 345, "reps": 15 }
+              ],
+              "notes": "Heavy shrugs. Trap development is visible now."
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 4,
+          "startedAt": { "daysAgo": 71, "hour": 6, "minute": 0 },
+          "completedAt": { "daysAgo": 71, "hour": 7, "minute": 15 },
+          "status": "completed",
+          "notes": "Week 5 OHP Day. New TM. Still the grindiest lift but making progress.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Overhead Press",
+              "sets": [
+                { "setNumber": 1, "weight": 105, "reps": 5 },
+                { "setNumber": 2, "weight": 120, "reps": 5 },
+                { "setNumber": 3, "weight": 135, "reps": 7 }
+              ],
+              "notes": "5/5/5+ week. 135x7! Best AMRAP on OHP yet. The extra bench work is helping."
+            },
+            {
+              "exerciseName": "Overhead Press",
+              "sets": [
+                { "setNumber": 1, "weight": 105, "reps": 5 },
+                { "setNumber": 2, "weight": 105, "reps": 5 },
+                { "setNumber": 3, "weight": 105, "reps": 5 },
+                { "setNumber": 4, "weight": 105, "reps": 5 },
+                { "setNumber": 5, "weight": 105, "reps": 5 }
+              ],
+              "notes": "FSL. Strict form."
+            },
+            {
+              "exerciseName": "Chin-Up",
+              "sets": [
+                { "setNumber": 1, "weight": 25, "reps": 8 },
+                { "setNumber": 2, "weight": 25, "reps": 8 },
+                { "setNumber": 3, "weight": 25, "reps": 7 },
+                { "setNumber": 4, "weight": 25, "reps": 6 }
+              ],
+              "notes": "Added weight again. Lats are growing."
+            },
+            {
+              "exerciseName": "Close-Grip Bench Press",
+              "sets": [
+                { "setNumber": 1, "weight": 175, "reps": 10 },
+                { "setNumber": 2, "weight": 185, "reps": 10 },
+                { "setNumber": 3, "weight": 185, "reps": 9 }
+              ]
+            },
+            {
+              "exerciseName": "Barbell Curl",
+              "sets": [
+                { "setNumber": 1, "weight": 85, "reps": 12 },
+                { "setNumber": 2, "weight": 95, "reps": 12 },
+                { "setNumber": 3, "weight": 95, "reps": 11 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 70, "hour": 6, "minute": 0 },
+          "completedAt": { "daysAgo": 70, "hour": 7, "minute": 30 },
+          "status": "completed",
+          "notes": "Week 6 Squat Day. 3s week. Heavier weights this week. Feeling dialed in.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Barbell Squat",
+              "sets": [
+                { "setNumber": 1, "weight": 230, "reps": 3 },
+                { "setNumber": 2, "weight": 260, "reps": 3 },
+                { "setNumber": 3, "weight": 295, "reps": 8 }
+              ],
+              "notes": "3/3/3+ week. 295x8! Almost three plates on the AMRAP. Legs are STRONG."
+            },
+            {
+              "exerciseName": "Barbell Squat",
+              "sets": [
+                { "setNumber": 1, "weight": 230, "reps": 5 },
+                { "setNumber": 2, "weight": 230, "reps": 5 },
+                { "setNumber": 3, "weight": 230, "reps": 5 },
+                { "setNumber": 4, "weight": 230, "reps": 5 },
+                { "setNumber": 5, "weight": 230, "reps": 5 }
+              ],
+              "notes": "FSL. Controlled descent, explosive up."
+            },
+            {
+              "exerciseName": "Romanian Deadlift",
+              "sets": [
+                { "setNumber": 1, "weight": 245, "reps": 10 },
+                { "setNumber": 2, "weight": 265, "reps": 10 },
+                { "setNumber": 3, "weight": 265, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Leg Press",
+              "sets": [
+                { "setNumber": 1, "weight": 500, "reps": 12 },
+                { "setNumber": 2, "weight": 540, "reps": 12 },
+                { "setNumber": 3, "weight": 540, "reps": 10 }
+              ],
+              "notes": "Heavy volume. Quads burning."
+            },
+            {
+              "exerciseName": "Hanging Leg Raise",
+              "sets": [
+                { "setNumber": 1, "reps": 20 },
+                { "setNumber": 2, "reps": 18 },
+                { "setNumber": 3, "reps": 15 }
+              ],
+              "notes": "Core work paying off. Hit 20 on first set!"
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 68, "hour": 6, "minute": 0 },
+          "completedAt": { "daysAgo": 68, "hour": 7, "minute": 30 },
+          "status": "completed",
+          "notes": "Week 6 Bench Day. 3s week. Getting close to those 2+ plate sets feeling automatic.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Bench Press",
+              "sets": [
+                { "setNumber": 1, "weight": 175, "reps": 3 },
+                { "setNumber": 2, "weight": 200, "reps": 3 },
+                { "setNumber": 3, "weight": 225, "reps": 7 }
+              ],
+              "notes": "3/3/3+ week. 225x7! Two plates for 7 reps. This is where I wanted to be 6 weeks in."
+            },
+            {
+              "exerciseName": "Bench Press",
+              "sets": [
+                { "setNumber": 1, "weight": 175, "reps": 5 },
+                { "setNumber": 2, "weight": 175, "reps": 5 },
+                { "setNumber": 3, "weight": 175, "reps": 5 },
+                { "setNumber": 4, "weight": 175, "reps": 5 },
+                { "setNumber": 5, "weight": 175, "reps": 5 }
+              ],
+              "notes": "FSL. Chest pump is real."
+            },
+            {
+              "exerciseName": "Dumbbell Row",
+              "sets": [
+                { "setNumber": 1, "weight": 105, "reps": 10 },
+                { "setNumber": 2, "weight": 115, "reps": 10 },
+                { "setNumber": 3, "weight": 115, "reps": 10 },
+                { "setNumber": 4, "weight": 115, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Dips",
+              "sets": [
+                { "setNumber": 1, "weight": 55, "reps": 12 },
+                { "setNumber": 2, "weight": 55, "reps": 10 },
+                { "setNumber": 3, "weight": 55, "reps": 10 }
+              ],
+              "notes": "55 lb plate. Triceps are catching up to chest."
+            },
+            {
+              "exerciseName": "Face Pull",
+              "sets": [
+                { "setNumber": 1, "weight": 65, "reps": 20 },
+                { "setNumber": 2, "weight": 70, "reps": 20 },
+                { "setNumber": 3, "weight": 70, "reps": 20 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 3,
+          "startedAt": { "daysAgo": 66, "hour": 6, "minute": 0 },
+          "completedAt": { "daysAgo": 66, "hour": 7, "minute": 45 },
+          "status": "completed",
+          "notes": "Week 6 Deadlift Day. 3s week. Pulls are feeling automatic. Hip hinge is dialed.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Deadlift",
+              "sets": [
+                { "setNumber": 1, "weight": 265, "reps": 3 },
+                { "setNumber": 2, "weight": 300, "reps": 3 },
+                { "setNumber": 3, "weight": 340, "reps": 9 }
+              ],
+              "notes": "3/3/3+ week. 340x9! Almost double digits. 4 plates is coming. I can feel it."
+            },
+            {
+              "exerciseName": "Deadlift",
+              "sets": [
+                { "setNumber": 1, "weight": 265, "reps": 5 },
+                { "setNumber": 2, "weight": 265, "reps": 5 },
+                { "setNumber": 3, "weight": 265, "reps": 5 },
+                { "setNumber": 4, "weight": 265, "reps": 5 },
+                { "setNumber": 5, "weight": 265, "reps": 5 }
+              ],
+              "notes": "FSL. Grip holding strong."
+            },
+            {
+              "exerciseName": "Front Squat",
+              "sets": [
+                { "setNumber": 1, "weight": 185, "reps": 8 },
+                { "setNumber": 2, "weight": 205, "reps": 8 },
+                { "setNumber": 3, "weight": 215, "reps": 7 }
+              ],
+              "notes": "Front squat improving. Thoracic extension is better."
+            },
+            {
+              "exerciseName": "Good Morning",
+              "sets": [
+                { "setNumber": 1, "weight": 145, "reps": 10 },
+                { "setNumber": 2, "weight": 165, "reps": 10 },
+                { "setNumber": 3, "weight": 165, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Barbell Shrug",
+              "sets": [
+                { "setNumber": 1, "weight": 335, "reps": 15 },
+                { "setNumber": 2, "weight": 385, "reps": 12 },
+                { "setNumber": 3, "weight": 385, "reps": 12 }
+              ],
+              "notes": "Three and a half plates for shrugs. Upper back is THICK."
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 4,
+          "startedAt": { "daysAgo": 64, "hour": 6, "minute": 0 },
+          "completedAt": { "daysAgo": 64, "hour": 7, "minute": 15 },
+          "status": "completed",
+          "notes": "Week 6 OHP Day. 3s week. Overhead is slowly catching up to the other lifts.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Overhead Press",
+              "sets": [
+                { "setNumber": 1, "weight": 115, "reps": 3 },
+                { "setNumber": 2, "weight": 130, "reps": 3 },
+                { "setNumber": 3, "weight": 145, "reps": 6 }
+              ],
+              "notes": "3/3/3+ week. 145x6! Matching my cycle 1 heavy weight for more reps. Progress."
+            },
+            {
+              "exerciseName": "Overhead Press",
+              "sets": [
+                { "setNumber": 1, "weight": 115, "reps": 5 },
+                { "setNumber": 2, "weight": 115, "reps": 5 },
+                { "setNumber": 3, "weight": 115, "reps": 5 },
+                { "setNumber": 4, "weight": 115, "reps": 5 },
+                { "setNumber": 5, "weight": 115, "reps": 5 }
+              ],
+              "notes": "FSL. Strict as always."
+            },
+            {
+              "exerciseName": "Chin-Up",
+              "sets": [
+                { "setNumber": 1, "weight": 35, "reps": 8 },
+                { "setNumber": 2, "weight": 35, "reps": 7 },
+                { "setNumber": 3, "weight": 35, "reps": 7 },
+                { "setNumber": 4, "weight": 35, "reps": 6 }
+              ],
+              "notes": "35 lbs added. Pull-up strength is back."
+            },
+            {
+              "exerciseName": "Close-Grip Bench Press",
+              "sets": [
+                { "setNumber": 1, "weight": 185, "reps": 10 },
+                { "setNumber": 2, "weight": 195, "reps": 10 },
+                { "setNumber": 3, "weight": 195, "reps": 8 }
+              ]
+            },
+            {
+              "exerciseName": "Barbell Curl",
+              "sets": [
+                { "setNumber": 1, "weight": 95, "reps": 12 },
+                { "setNumber": 2, "weight": 105, "reps": 10 },
+                { "setNumber": 3, "weight": 105, "reps": 9 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 63, "hour": 6, "minute": 0 },
+          "completedAt": { "daysAgo": 63, "hour": 7, "minute": 45 },
+          "status": "completed",
+          "notes": "Week 7 Squat Day. 5/3/1 week - HEAVY WEEK. Time to see what this cycle built.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Barbell Squat",
+              "sets": [
+                { "setNumber": 1, "weight": 245, "reps": 5 },
+                { "setNumber": 2, "weight": 275, "reps": 3 },
+                { "setNumber": 3, "weight": 310, "reps": 6 }
+              ],
+              "notes": "5/3/1+ week. 310x6! PR! Over 3 plates for 6 reps. Getting close to that 405 goal."
+            },
+            {
+              "exerciseName": "Barbell Squat",
+              "sets": [
+                { "setNumber": 1, "weight": 245, "reps": 5 },
+                { "setNumber": 2, "weight": 245, "reps": 5 },
+                { "setNumber": 3, "weight": 245, "reps": 5 },
+                { "setNumber": 4, "weight": 245, "reps": 5 },
+                { "setNumber": 5, "weight": 245, "reps": 5 }
+              ],
+              "notes": "FSL. Legs were heavy but pushed through."
+            },
+            {
+              "exerciseName": "Romanian Deadlift",
+              "sets": [
+                { "setNumber": 1, "weight": 255, "reps": 10 },
+                { "setNumber": 2, "weight": 275, "reps": 10 },
+                { "setNumber": 3, "weight": 275, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Leg Press",
+              "sets": [
+                { "setNumber": 1, "weight": 540, "reps": 12 },
+                { "setNumber": 2, "weight": 590, "reps": 10 },
+                { "setNumber": 3, "weight": 590, "reps": 8 }
+              ],
+              "notes": "Heavy leg press. Quads on fire."
+            },
+            {
+              "exerciseName": "Hanging Leg Raise",
+              "sets": [
+                { "setNumber": 1, "reps": 20 },
+                { "setNumber": 2, "reps": 20 },
+                { "setNumber": 3, "reps": 18 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 61, "hour": 6, "minute": 0 },
+          "completedAt": { "daysAgo": 61, "hour": 7, "minute": 30 },
+          "status": "completed",
+          "notes": "Week 7 Bench Day. 5/3/1 week. Going for a PR. 240+ is the target.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Bench Press",
+              "sets": [
+                { "setNumber": 1, "weight": 185, "reps": 5 },
+                { "setNumber": 2, "weight": 215, "reps": 3 },
+                { "setNumber": 3, "weight": 240, "reps": 5 }
+              ],
+              "notes": "5/3/1+ week. 240x5! PR! Felt like a grind but got it. Bar path stayed true."
+            },
+            {
+              "exerciseName": "Bench Press",
+              "sets": [
+                { "setNumber": 1, "weight": 185, "reps": 5 },
+                { "setNumber": 2, "weight": 185, "reps": 5 },
+                { "setNumber": 3, "weight": 185, "reps": 5 },
+                { "setNumber": 4, "weight": 185, "reps": 5 },
+                { "setNumber": 5, "weight": 185, "reps": 5 }
+              ],
+              "notes": "FSL. Arms were shot but finished strong."
+            },
+            {
+              "exerciseName": "Dumbbell Row",
+              "sets": [
+                { "setNumber": 1, "weight": 110, "reps": 10 },
+                { "setNumber": 2, "weight": 120, "reps": 10 },
+                { "setNumber": 3, "weight": 120, "reps": 10 },
+                { "setNumber": 4, "weight": 120, "reps": 9 }
+              ],
+              "notes": "120 lb dumbbells. Back is STRONG."
+            },
+            {
+              "exerciseName": "Dips",
+              "sets": [
+                { "setNumber": 1, "weight": 65, "reps": 10 },
+                { "setNumber": 2, "weight": 65, "reps": 10 },
+                { "setNumber": 3, "weight": 65, "reps": 8 }
+              ],
+              "notes": "65 lb plate. Weighted dip PR."
+            },
+            {
+              "exerciseName": "Face Pull",
+              "sets": [
+                { "setNumber": 1, "weight": 70, "reps": 20 },
+                { "setNumber": 2, "weight": 75, "reps": 20 },
+                { "setNumber": 3, "weight": 75, "reps": 18 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 3,
+          "startedAt": { "daysAgo": 59, "hour": 6, "minute": 0 },
+          "completedAt": { "daysAgo": 59, "hour": 7, "minute": 45 },
+          "status": "completed",
+          "notes": "Week 7 Deadlift Day. 5/3/1 week. THE BIG PULL. Chasing that 4-plate milestone.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Deadlift",
+              "sets": [
+                { "setNumber": 1, "weight": 280, "reps": 5 },
+                { "setNumber": 2, "weight": 320, "reps": 3 },
+                { "setNumber": 3, "weight": 355, "reps": 7 }
+              ],
+              "notes": "5/3/1+ week. 355x7! PR! Speed off floor was crazy. 4 plates is THERE. Next cycle."
+            },
+            {
+              "exerciseName": "Deadlift",
+              "sets": [
+                { "setNumber": 1, "weight": 280, "reps": 5 },
+                { "setNumber": 2, "weight": 280, "reps": 5 },
+                { "setNumber": 3, "weight": 280, "reps": 5 },
+                { "setNumber": 4, "weight": 280, "reps": 5 },
+                { "setNumber": 5, "weight": 280, "reps": 5 }
+              ],
+              "notes": "FSL. Back held up. Grip was solid."
+            },
+            {
+              "exerciseName": "Front Squat",
+              "sets": [
+                { "setNumber": 1, "weight": 195, "reps": 8 },
+                { "setNumber": 2, "weight": 215, "reps": 8 },
+                { "setNumber": 3, "weight": 225, "reps": 6 }
+              ],
+              "notes": "225 front squat! Two plates on front. Feeling athletic."
+            },
+            {
+              "exerciseName": "Good Morning",
+              "sets": [
+                { "setNumber": 1, "weight": 155, "reps": 10 },
+                { "setNumber": 2, "weight": 175, "reps": 10 },
+                { "setNumber": 3, "weight": 175, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Barbell Shrug",
+              "sets": [
+                { "setNumber": 1, "weight": 365, "reps": 15 },
+                { "setNumber": 2, "weight": 405, "reps": 12 },
+                { "setNumber": 3, "weight": 405, "reps": 10 }
+              ],
+              "notes": "4 PLATES FOR SHRUGS! Upper back is a wall."
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 4,
+          "startedAt": { "daysAgo": 57, "hour": 6, "minute": 0 },
+          "completedAt": { "daysAgo": 57, "hour": 7, "minute": 15 },
+          "status": "completed",
+          "notes": "Week 7 OHP Day. 5/3/1 week. Heaviest pressing. OHP still humbles me but progress is there.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Overhead Press",
+              "sets": [
+                { "setNumber": 1, "weight": 120, "reps": 5 },
+                { "setNumber": 2, "weight": 135, "reps": 3 },
+                { "setNumber": 3, "weight": 150, "reps": 4 }
+              ],
+              "notes": "5/3/1+ week. 150x4! PR! Grinder but got it. First time pressing 150 for reps."
+            },
+            {
+              "exerciseName": "Overhead Press",
+              "sets": [
+                { "setNumber": 1, "weight": 120, "reps": 5 },
+                { "setNumber": 2, "weight": 120, "reps": 5 },
+                { "setNumber": 3, "weight": 120, "reps": 5 },
+                { "setNumber": 4, "weight": 120, "reps": 5 },
+                { "setNumber": 5, "weight": 120, "reps": 5 }
+              ],
+              "notes": "FSL. Kept strict despite fatigue."
+            },
+            {
+              "exerciseName": "Chin-Up",
+              "sets": [
+                { "setNumber": 1, "weight": 45, "reps": 7 },
+                { "setNumber": 2, "weight": 45, "reps": 7 },
+                { "setNumber": 3, "weight": 45, "reps": 6 },
+                { "setNumber": 4, "weight": 45, "reps": 5 }
+              ],
+              "notes": "45 lb plate! Weighted chin-up PR."
+            },
+            {
+              "exerciseName": "Close-Grip Bench Press",
+              "sets": [
+                { "setNumber": 1, "weight": 195, "reps": 10 },
+                { "setNumber": 2, "weight": 205, "reps": 8 },
+                { "setNumber": 3, "weight": 205, "reps": 7 }
+              ],
+              "notes": "Over 200 on close grip. Tricep lockout is solid."
+            },
+            {
+              "exerciseName": "Barbell Curl",
+              "sets": [
+                { "setNumber": 1, "weight": 95, "reps": 12 },
+                { "setNumber": 2, "weight": 105, "reps": 10 },
+                { "setNumber": 3, "weight": 105, "reps": 10 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 56, "hour": 6, "minute": 0 },
+          "completedAt": { "daysAgo": 56, "hour": 7, "minute": 0 },
+          "status": "completed",
+          "notes": "Week 8 Deload Squat. Recovery week. Two cycles complete. Body needs this.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Barbell Squat",
+              "sets": [
+                { "setNumber": 1, "weight": 130, "reps": 5 },
+                { "setNumber": 2, "weight": 165, "reps": 5 },
+                { "setNumber": 3, "weight": 195, "reps": 5 }
+              ],
+              "notes": "Deload. Light squats, focus on speed and depth. Legs appreciating the break."
+            },
+            {
+              "exerciseName": "Barbell Squat",
+              "sets": [
+                { "setNumber": 1, "weight": 130, "reps": 5 },
+                { "setNumber": 2, "weight": 130, "reps": 5 },
+                { "setNumber": 3, "weight": 130, "reps": 5 },
+                { "setNumber": 4, "weight": 130, "reps": 5 },
+                { "setNumber": 5, "weight": 130, "reps": 5 }
+              ],
+              "notes": "Light FSL. Perfect reps."
+            },
+            {
+              "exerciseName": "Romanian Deadlift",
+              "sets": [
+                { "setNumber": 1, "weight": 165, "reps": 10 },
+                { "setNumber": 2, "weight": 185, "reps": 10 },
+                { "setNumber": 3, "weight": 185, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Leg Press",
+              "sets": [
+                { "setNumber": 1, "weight": 360, "reps": 12 },
+                { "setNumber": 2, "weight": 410, "reps": 12 },
+                { "setNumber": 3, "weight": 410, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Hanging Leg Raise",
+              "sets": [
+                { "setNumber": 1, "reps": 20 },
+                { "setNumber": 2, "reps": 20 },
+                { "setNumber": 3, "reps": 20 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 54, "hour": 6, "minute": 0 },
+          "completedAt": { "daysAgo": 54, "hour": 6, "minute": 45 },
+          "status": "completed",
+          "notes": "Week 8 Deload Bench. Light pressing. Arms getting fresh for next cycle.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Bench Press",
+              "sets": [
+                { "setNumber": 1, "weight": 100, "reps": 5 },
+                { "setNumber": 2, "weight": 125, "reps": 5 },
+                { "setNumber": 3, "weight": 150, "reps": 5 }
+              ],
+              "notes": "Deload. Focus on bar path and setup. Easy reps."
+            },
+            {
+              "exerciseName": "Bench Press",
+              "sets": [
+                { "setNumber": 1, "weight": 100, "reps": 5 },
+                { "setNumber": 2, "weight": 100, "reps": 5 },
+                { "setNumber": 3, "weight": 100, "reps": 5 },
+                { "setNumber": 4, "weight": 100, "reps": 5 },
+                { "setNumber": 5, "weight": 100, "reps": 5 }
+              ],
+              "notes": "Light FSL. Speed work."
+            },
+            {
+              "exerciseName": "Dumbbell Row",
+              "sets": [
+                { "setNumber": 1, "weight": 75, "reps": 10 },
+                { "setNumber": 2, "weight": 85, "reps": 10 },
+                { "setNumber": 3, "weight": 85, "reps": 10 },
+                { "setNumber": 4, "weight": 85, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Dips",
+              "sets": [
+                { "setNumber": 1, "reps": 15 },
+                { "setNumber": 2, "reps": 15 },
+                { "setNumber": 3, "reps": 15 }
+              ],
+              "notes": "Bodyweight only. Recovery mode."
+            },
+            {
+              "exerciseName": "Face Pull",
+              "sets": [
+                { "setNumber": 1, "weight": 55, "reps": 20 },
+                { "setNumber": 2, "weight": 60, "reps": 20 },
+                { "setNumber": 3, "weight": 60, "reps": 20 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 3,
+          "startedAt": { "daysAgo": 52, "hour": 6, "minute": 0 },
+          "completedAt": { "daysAgo": 52, "hour": 6, "minute": 45 },
+          "status": "completed",
+          "notes": "Week 8 Deload Deadlift. Light pulls. Back appreciating the break before cycle 3.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Deadlift",
+              "sets": [
+                { "setNumber": 1, "weight": 150, "reps": 5 },
+                { "setNumber": 2, "weight": 190, "reps": 5 },
+                { "setNumber": 3, "weight": 225, "reps": 5 }
+              ],
+              "notes": "Deload. Speed pulls, perfect hip hinge. Technique work."
+            },
+            {
+              "exerciseName": "Deadlift",
+              "sets": [
+                { "setNumber": 1, "weight": 150, "reps": 5 },
+                { "setNumber": 2, "weight": 150, "reps": 5 },
+                { "setNumber": 3, "weight": 150, "reps": 5 },
+                { "setNumber": 4, "weight": 150, "reps": 5 },
+                { "setNumber": 5, "weight": 150, "reps": 5 }
+              ],
+              "notes": "Light FSL. Focusing on starting position."
+            },
+            {
+              "exerciseName": "Front Squat",
+              "sets": [
+                { "setNumber": 1, "weight": 135, "reps": 8 },
+                { "setNumber": 2, "weight": 155, "reps": 8 },
+                { "setNumber": 3, "weight": 155, "reps": 8 }
+              ],
+              "notes": "Mobility work. Feeling limber."
+            },
+            {
+              "exerciseName": "Good Morning",
+              "sets": [
+                { "setNumber": 1, "weight": 95, "reps": 10 },
+                { "setNumber": 2, "weight": 115, "reps": 10 },
+                { "setNumber": 3, "weight": 115, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Barbell Shrug",
+              "sets": [
+                { "setNumber": 1, "weight": 225, "reps": 15 },
+                { "setNumber": 2, "weight": 275, "reps": 15 },
+                { "setNumber": 3, "weight": 275, "reps": 15 }
+              ]
+            }
+          ]
         }
       ],
       "checkIns": []
