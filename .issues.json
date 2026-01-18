@@ -3,7 +3,7 @@
     {
       "number": 292,
       "title": "Cleanup: Minor issues from /hi route refactor PR review",
-      "labels": ["cleanup", "tech-debt"],
+      "labels": [],
       "status": "open",
       "priority": "low"
     },
@@ -65,5 +65,5 @@
       "priority": "med"
     }
   ],
-  "lastSyncedAt": "2026-01-18T22:45:00Z"
+  "lastSyncedAt": "2026-01-18T23:15:00Z"
 }

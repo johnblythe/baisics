@@ -1,159 +1,92 @@
 # Ralph Progress Log
-Started: Sun Jan 18 15:32:16 EST 2026
+Started: Sun Jan 18 17:57:58 EST 2026
 ---
 
-## 2026-01-18 - US-001: Rename /import to /create
-- Moved src/app/import/ directory to src/app/create/
-- Updated layout.tsx metadata title from 'Import Your Workout Program | BAIsics' to 'Create Your Program | baisics'
-- Updated OpenGraph title to match
-- Renamed layout function from ImportLayout to CreateLayout
-- Updated callback URL in page.tsx from '/import?complete=true' to '/create?complete=true'
-- **Learnings for future iterations:**
-  - Next.js App Router uses directory names as routes - renaming directory automatically changes route
-  - API routes at /api/programs/import remain unchanged (different concern)
-  - sessionStorage callback URLs need updating when routes change
+## Codebase Patterns
+
+### USDA API Integration
+- Service layer: `src/lib/usda/` with types.ts and client.ts
+- Nutrient IDs: ENERGY=1008, PROTEIN=1003, CARBS=1005, FAT=1004
+- API uses POST for search, GET for details
+- `simplifyFood()` extracts macros from nutrient array
+
+### Component Patterns
+- Design colors constant: `COLORS = { white, gray50, gray100, gray400, gray600, navy, navyLight, coral, coralDark, coralLight }`
+- Reference: `src/components/nutrition/IngredientSwapModal.tsx` for modal patterns
+- Use `useCallback` for handlers passed as deps to other hooks
+- ARIA combobox: `role="combobox"` goes on input, not container
+
 ---
 
-## 2026-01-18 - US-002: Update /tools/import-program redirect
-- Changed redirect from '/import' to '/create' in src/app/tools/import-program/page.tsx
-- Updated metadata title to 'Create Your Workout Program | baisics' (lowercase 'baisics' per style guide)
-- Updated metadata description to mention creating programs, not just importing
-- Updated OpenGraph title and description to match
-- Files changed: src/app/tools/import-program/page.tsx
+## 2026-01-18 17:59 - US-001: Create USDA FoodData Central API service
+- Created `src/lib/usda/types.ts` with USDAFood, USDASearchResult, FoodNutrient, SimplifiedFood types
+- Created `src/lib/usda/client.ts` with searchFoods() and getFoodDetails() functions
+- Added USDA_API_KEY to .env.example with signup link
+- Exported simplifyFood() helper to extract calories, protein, carbs, fat
 - **Learnings for future iterations:**
-  - This route exists as a legacy URL for SEO/bookmarks - redirects to new /create route
-  - Keep metadata updated even on redirect pages for search engine discovery
-  - Style guide specifies lowercase 'baisics' in titles
+  - This project has no `npm run typecheck` script - use `npm run build` which includes type checking
+  - USDA API uses POST for search endpoint (not GET with query params)
+  - API key is in .issues.json notes field for issue #122
 ---
 
-## 2026-01-18 - US-003: Add text input mode to /create
-- Added inputMode state ('text' | 'file') defaulting to 'text'
-- Added textInput state to hold pasted text content
-- Created toggle UI with two tabs: "Paste Text" and "Upload File"
-- Text mode shows a textarea with example placeholder showing workout format
-- File mode shows existing dropzone UI
-- Added processText() function to send text to API
-- Added handleTextSubmit() to process text input
-- Updated handleStartOver() to clear text input
-- Bulk mode toggle only shows when in file mode (coaches only)
-- Updated page description to mention both text and file options
-- Files changed: src/app/create/page.tsx
+## 2026-01-18 18:05 - US-002: Create food search API endpoint
+- Created `src/app/api/foods/search/route.ts`
+- GET endpoint with `?q=query&limit=10` params
+- Returns 400 for missing/short queries (<2 chars)
+- Returns empty `{ foods: [] }` if no USDA results
+- Returns 502 for USDA API errors
+- Uses `searchFoods()` and `simplifyFood()` from USDA client
 - **Learnings for future iterations:**
-  - Type icon imported from lucide-react for text input toggle
-  - API needs US-004 update to actually accept the text field - frontend is ready
-  - Bulk import (coaches) only makes sense for file mode, so hidden in text mode
+  - API routes follow pattern: import NextResponse, parse searchParams from URL, return JSON
+  - Similar search endpoints exist: `/api/exercise-library/search` for reference
+  - No auth required for this public food search endpoint
 ---
 
-## 2026-01-18 - US-004: Update /api/programs/import to accept text input
-- Modified POST handler to accept optional `text` field in request body
-- Added branch for text input mode - skips file validation entirely
-- Text input sent directly to AI with workoutFilePrompt
-- Added validation for empty text input
-- Returns error if neither text nor file is provided
-- Same response format as file uploads (parsed JSON from AI)
-- Files changed: src/app/api/programs/import/route.ts
+## 2026-01-18 18:15 - US-003: Create FoodSearchAutocomplete component
+- Created `src/components/nutrition/FoodSearchAutocomplete.tsx`
+- Input with 300ms debounce, search icon, loading spinner
+- Dropdown shows food name, brand badge, macros per 100g
+- Full keyboard nav: ArrowUp/Down, Enter to select, Escape to close
+- Proper ARIA combobox pattern (role="combobox" on input)
+- Empty state: "No foods found for [query]"
+- Uses SimplifiedFood type from USDA types
 - **Learnings for future iterations:**
-  - API has `@ts-nocheck` at top - TypeScript errors are suppressed
-  - `sendMessage` utility handles AI calls, accepts message array and role
-  - workoutFilePrompt is reused for all input types (text, DOCX, PDF, images)
-  - Text input path is simpler - no base64, no file validation, no file saving
+  - ARIA combobox: `role="combobox"` goes on input, not container
+  - Must define `useCallback` handlers BEFORE hooks that use them in deps
+  - Click outside detection: `mousedown` event + contains() check
+  - Use `scrollIntoView({ block: 'nearest' })` for keyboard nav scroll
 ---
 
-## 2026-01-18 - US-005: Add 'Start Blank' card to /templates
-- Added full-width featured card before templates grid
-- Card uses coral gradient background (coral to coralDark) for visual distinction
-- Displays "Start Blank" title and "Build your own program from scratch" subtitle
-- Links to /create?blank=true
-- Includes hover effect with shadow and animated arrow
-- Responsive: stacked on mobile, horizontal layout on md+
-- Files changed: src/app/templates/page.tsx
+## 2026-01-18 18:25 - US-004: Create ServingSizeSelector component
+- Created `src/components/nutrition/ServingSizeSelector.tsx`
+- Props: `food` (SimplifiedFood), `onConfirm` callback, optional `onCancel`, `className`
+- Number input for grams (default 100), validated to >= 0
+- Quick buttons: 50g, 100g, 150g, 200g with coral highlight for selected
+- Live calculation via `useMemo` showing calories, protein, carbs, fat
+- `CalculatedMacros` type exported for consumers: { grams, calories, protein, carbs, fat, food }
+- Macros rounded: calories to whole number, others to 1 decimal
+- Confirm button calls `onConfirm(calculatedMacros)`
 - **Learnings for future iterations:**
-  - COLORS constant already defined in templates/page.tsx - reuse it
-  - Template cards use navy gradient; coral gradient provides contrast
-  - Use CSS gradient via style prop: `background: linear-gradient(...)`
-  - Card placed before grid div, not inside it (full width vs grid columns)
+  - Use `useMemo` for derived calculations that depend on state
+  - Nutrition display pattern: coral background (coralLight), coral text for numbers, gray600 for labels
+  - Export both component and associated types for consumer convenience
 ---
 
-## 2026-01-18 - US-006: Add DIY cards to /hi quick-start options
-- Added DIY_CARDS array with two navigation cards
-- Card 1: "I'll build my own" → /templates (browse templates or start from scratch)
-- Card 2: "I have a program" → /create (import existing workout plan)
-- Added Link import from next/link for navigation cards
-- Created second row with "Or go your own way:" label
-- Styled as 2-column grid with navy hover borders
-- Cards display both label and description for clarity
-- Files changed: src/app/hi/components/ConversationalInterface.tsx
+## 2026-01-18 18:45 - US-005: Add recent foods cache per user
+- Created `src/app/api/foods/recent/route.ts` (placeholder for future server-side storage)
+- Created `src/lib/foods/recentFoods.ts` with localStorage helpers:
+  - `getRecentFoods(userId)` - returns last 10 unique foods
+  - `addRecentFood(userId, food)` - adds food to front, dedupes by fdcId
+  - `clearRecentFoods(userId)` - clears user's recent foods
+- Updated `FoodSearchAutocomplete.tsx`:
+  - Added `userId` prop (defaults to 'anonymous')
+  - Shows recent foods dropdown when input empty/focused
+  - "Recent" header label above recent foods list
+  - Selecting food adds it to recent cache
+  - Keyboard nav works for both search results and recents
 - **Learnings for future iterations:**
-  - QUICK_PROMPTS use onClick with handleSubmit - they trigger chat messages
-  - DIY_CARDS use Link - they navigate to other pages, not chat triggers
-  - Two distinct UI patterns: chat prompts (buttons) vs navigation cards (links)
-  - Descriptions help users understand where each option leads
----
-
-## 2026-01-18 - US-007: Add escape hatch link during /hi chat
-- Added escape hatch link inside chat messages container (bottom-right corner)
-- Link text: "Prefer to build your own? →" with arrow for navigation affordance
-- Links to /templates
-- Only shows when messages.length > 1 && !isTyping (after chat started)
-- Styled with Space Mono font, gray text (94A3B8), small font (text-xs)
-- Fades in with motion delay for subtle appearance
-- Files changed: src/app/hi/components/ConversationalInterface.tsx
-- **Learnings for future iterations:**
-  - Chat container already has `relative` positioning, so absolute positioning works
-  - messages.length > 1 ensures first AI greeting doesn't trigger the link
-  - Link component from next/link already imported (from US-006)
-  - Space Mono font used for subtle UI elements per style guide
----
-
-## 2026-01-18 - US-008: Remove unused query params from /hi
-- Confirmed params NOT used in ConversationalIntakeContainer.tsx: template, prefill, source, invite
-- Confirmed params USED: userId, programId, persona
-- Removed unused `useRouter` import and `router` variable (dead code)
-- Added JSDoc comment documenting supported query params
-- Note: template and invite ARE passed from other routes but never read - future work needed
-- Files changed: src/app/hi/components/ConversationalIntakeContainer.tsx
-- **Learnings for future iterations:**
-  - Other routes (templates/[slug], coach/invite/[token], join/[slug]) pass template/invite params to /hi
-  - These params are silently ignored - potential feature gap or dead code in calling routes
-  - Always check for unused imports when cleaning up - `useRouter` was imported but never used
-  - JSDoc comments help document API contracts for components that accept query params
----
-
-## 2026-01-18 - US-001: Fix undefined createNewProgram function
-- Removed dead code entirely rather than importing non-existent function
-- Removed `isSaving` state (line 90)
-- Removed `handleSaveProgram` function (lines 424-448) that referenced undefined `createNewProgram`
-- Removed dead `if (program)` branch in `renderFormSection` (hidden form with Save button)
-- The streaming generation hook already saves programs automatically (line 116-127)
-- Files changed: src/app/hi/components/ConversationalInterface.tsx (-62 lines)
-- **Learnings for future iterations:**
-  - The form with className="hidden" was dead code - never visible to users
-  - Program saving happens via `useStreamingGeneration` hook, not manual save button
-  - When a function references undefined dependencies, check if the entire code path is dead before fixing imports
-  - @ts-ignore comments often indicate dead or broken code paths
----
-
-## 2026-01-18 - US-002: Add error handling to handleInitialIntake
-- Wrapped entire function body in try-catch
-- Added `else` branch for `result.success === false` case
-- Failure case: log error, set isTyping to false, show user-friendly message from result or fallback
-- Catch block: log error, set isTyping to false, show generic error message
-- Files changed: src/app/hi/components/ConversationalInterface.tsx
-- **Learnings for future iterations:**
-  - processUserMessage returns {success: boolean, message?: string, ...}
-  - Always set isTyping to false in ALL code paths (success, failure, exception)
-  - Use result?.message fallback pattern when API might return message on failure
-  - Infinite typing indicator is a bad UX - always ensure state cleanup
----
-
-## 2026-01-18 - US-003: Add try-catch to handleProgramModification
-- Wrapped processModificationRequest call in try-catch block
-- Added catch block that logs error, sets isTyping false, shows user-friendly error message
-- Used finally block to always set isGeneratingProgram to false (moved from inside if/else branches)
-- Removed redundant setIsGeneratingProgram(false) from inside try block branches (now handled by finally)
-- Files changed: src/app/hi/components/ConversationalInterface.tsx
-- **Learnings for future iterations:**
-  - finally block is ideal for state cleanup that must happen in ALL code paths
-  - Error messages should be user-friendly, not expose technical details
-  - Pattern: try { await api() } catch { showError() } finally { resetLoadingState() }
+  - localStorage key pattern: `baisics_recent_foods_${userId}`
+  - When dropdown has header element, offset scrollIntoView index by 1
+  - `showingRecent` state flag differentiates between recent vs search mode
+  - Can migrate to DB later by updating API route and keeping same component interface
 ---
