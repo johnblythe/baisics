@@ -89,3 +89,18 @@ Started: Sun Jan 18 15:32:16 EST 2026
   - Two distinct UI patterns: chat prompts (buttons) vs navigation cards (links)
   - Descriptions help users understand where each option leads
 ---
+
+## 2026-01-18 - US-007: Add escape hatch link during /hi chat
+- Added escape hatch link inside chat messages container (bottom-right corner)
+- Link text: "Prefer to build your own? →" with arrow for navigation affordance
+- Links to /templates
+- Only shows when messages.length > 1 && !isTyping (after chat started)
+- Styled with Space Mono font, gray text (94A3B8), small font (text-xs)
+- Fades in with motion delay for subtle appearance
+- Files changed: src/app/hi/components/ConversationalInterface.tsx
+- **Learnings for future iterations:**
+  - Chat container already has `relative` positioning, so absolute positioning works
+  - messages.length > 1 ensures first AI greeting doesn't trigger the link
+  - Link component from next/link already imported (from US-006)
+  - Space Mono font used for subtle UI elements per style guide
+---
