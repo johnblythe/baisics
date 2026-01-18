@@ -1,185 +1,69 @@
 {
   "issues": [
     {
-      "id": "288",
-      "number": 288,
-      "title": "SEO: Update page titles to be unique and descriptive",
-      "labels": [],
+      "number": 292,
+      "title": "Cleanup: Minor issues from /hi route refactor PR review",
+      "labels": ["cleanup", "tech-debt"],
       "status": "open",
-      "priority": "med",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2026-01-18T15:17:30Z",
-      "updatedAt": "2026-01-18T15:17:30Z"
+      "priority": "low"
     },
     {
-      "id": "285",
       "number": 285,
       "title": "UX: Consider indicator when exercise history fails to load",
       "labels": [],
       "status": "open",
-      "priority": "low",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2026-01-18T00:19:18Z",
-      "updatedAt": "2026-01-18T00:19:18Z"
+      "priority": "low"
     },
     {
-      "id": "284",
-      "number": 284,
-      "title": "Code cleanup: Fix inconsistent 'silent fail' comment",
-      "labels": [],
-      "status": "open",
-      "priority": "low",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2026-01-18T00:19:17Z",
-      "updatedAt": "2026-01-18T00:19:17Z"
-    },
-    {
-      "id": "283",
-      "number": 283,
-      "title": "Error handling: Include server response in workout completion error",
-      "labels": [],
-      "status": "open",
-      "priority": "low",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2026-01-18T00:19:16Z",
-      "updatedAt": "2026-01-18T00:19:16Z"
-    },
-    {
-      "id": "282",
-      "number": 282,
-      "title": "Error handling: Differentiate 'no body' vs 'malformed JSON' in workout complete API",
-      "labels": [],
-      "status": "open",
-      "priority": "low",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2026-01-18T00:19:01Z",
-      "updatedAt": "2026-01-18T00:19:01Z"
-    },
-    {
-      "id": "281",
-      "number": 281,
-      "title": "Error handling: Wrap getDebugState() in try-catch",
-      "labels": [],
-      "status": "open",
-      "priority": "low",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2026-01-18T00:19:01Z",
-      "updatedAt": "2026-01-18T00:19:01Z"
-    },
-    {
-      "id": "280",
-      "number": 280,
-      "title": "Error handling: Wrap localStorage.setItem in try-catch for first workout",
-      "labels": [],
-      "status": "open",
-      "priority": "low",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2026-01-18T00:19:00Z",
-      "updatedAt": "2026-01-18T00:19:00Z"
-    },
-    {
-      "id": "277",
       "number": 277,
       "title": "Generate feature screenshots with Playwright",
       "labels": ["enhancement"],
       "status": "open",
-      "priority": "low",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2026-01-17T22:11:44Z",
-      "updatedAt": "2026-01-17T22:11:44Z"
+      "priority": "low"
     },
     {
-      "id": "274",
       "number": 274,
       "title": "Feature catalog with Playwright screenshots",
       "labels": ["enhancement"],
       "status": "open",
-      "priority": "low",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2026-01-17T00:00:00Z",
-      "updatedAt": "2026-01-17T00:00:00Z"
+      "priority": "low"
     },
     {
-      "id": "227",
       "number": 227,
       "title": "UI: Template Detail Page - Visual Polish",
       "labels": ["enhancement"],
       "status": "open",
-      "priority": "med",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2026-01-14T00:00:00Z",
-      "updatedAt": "2026-01-14T00:00:00Z"
+      "priority": "med"
     },
     {
-      "id": "192",
       "number": 192,
       "title": "Tech Debt: Low Priority Cleanup Items",
       "labels": [],
       "status": "open",
-      "priority": "low",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2026-01-02T00:00:00Z",
-      "updatedAt": "2026-01-02T00:00:00Z"
+      "priority": "low"
     },
     {
-      "id": "189",
-      "number": 189,
-      "title": "Evaluate /hi route - remove or consolidate with main program display",
-      "labels": ["question"],
-      "status": "open",
-      "priority": "med",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2026-01-01T00:00:00Z",
-      "updatedAt": "2026-01-01T00:00:00Z"
-    },
-    {
-      "id": "174",
       "number": 174,
       "title": "Rotate exposed credentials from git history",
       "labels": [],
       "status": "open",
-      "priority": "high",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2025-12-27T00:00:00Z",
-      "updatedAt": "2025-12-27T00:00:00Z"
+      "priority": "high"
     },
     {
-      "id": "122",
       "number": 122,
       "title": "Integrate USDA FoodData Central API for food search",
       "labels": ["enhancement"],
       "status": "open",
       "priority": "med",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2025-12-12T01:40:50Z",
-      "updatedAt": "2025-12-12T01:40:50Z"
+      "notes": "USDA API key available: vRBwhBBkegsIpLI9EtANZhMycPcIazx3uJiAnScv"
     },
     {
-      "id": "105",
       "number": 105,
       "title": "UI: Program Header & CTA - First Impression Polish",
       "labels": ["enhancement"],
       "status": "open",
-      "priority": "med",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2025-12-06T15:49:06Z",
-      "updatedAt": "2025-12-06T15:49:06Z"
+      "priority": "med"
     }
   ],
-  "lastSyncedAt": "2026-01-18T19:35:00Z"
+  "lastSyncedAt": "2026-01-18T22:45:00Z"
 }

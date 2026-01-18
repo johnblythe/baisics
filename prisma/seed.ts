@@ -516,11 +516,61 @@ async function seedPersonas() {
   console.log(`Personas: ${personas.length} personas seeded`);
 }
 
+/**
+ * Seed special users (admin, coach) for development
+ */
+async function seedSpecialUsers() {
+  console.log('Seeding special users...');
+
+  // Admin user
+  await prisma.user.upsert({
+    where: { email: 'johnblythe@gmail.com' },
+    update: {
+      name: 'John Blythe',
+      isPremium: true,
+    },
+    create: {
+      email: 'johnblythe@gmail.com',
+      name: 'John Blythe',
+      isPremium: true,
+    },
+  });
+  console.log('  ✓ Admin user (johnblythe@gmail.com)');
+
+  // Coach user
+  await prisma.user.upsert({
+    where: { email: 'johnblythe+coach@gmail.com' },
+    update: {
+      name: 'Coach John',
+      isPremium: true,
+      isCoach: true,
+      coachType: 'pro',
+      coachTier: 'YOKED',
+      inviteSlug: 'coach-john',
+      brandName: 'Coach John Fitness',
+      coachOnboardedAt: new Date(),
+    },
+    create: {
+      email: 'johnblythe+coach@gmail.com',
+      name: 'Coach John',
+      isPremium: true,
+      isCoach: true,
+      coachType: 'pro',
+      coachTier: 'YOKED',
+      inviteSlug: 'coach-john',
+      brandName: 'Coach John Fitness',
+      coachOnboardedAt: new Date(),
+    },
+  });
+  console.log('  ✓ Coach user (johnblythe+coach@gmail.com)');
+}
+
 async function main() {
   console.log('Starting database seed...\n');
 
   await seedExercises();
   await seedPersonas();
+  await seedSpecialUsers();
 
   console.log('\nSeed complete!');
 }
