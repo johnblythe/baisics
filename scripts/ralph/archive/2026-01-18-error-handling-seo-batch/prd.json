@@ -14,7 +14,7 @@
         "npm run typecheck passes"
       ],
       "priority": 1,
-      "passes": true,
+      "passes": false,
       "notes": "Just rename the directory and update metadata. API routes stay at /api/programs/import."
     },
     {
@@ -27,7 +27,7 @@
         "npm run typecheck passes"
       ],
       "priority": 2,
-      "passes": true,
+      "passes": false,
       "notes": "Simple one-line change plus metadata update."
     },
     {

@@ -6,7 +6,7 @@ import { useSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import MainLayout from '@/app/components/layouts/MainLayout';
-import { Upload, FileText, ArrowRight, X, GripVertical, Plus, Mail, Check, Trash2, Edit2, ChevronDown, ChevronUp, Loader2, Files } from 'lucide-react';
+import { Upload, FileText, ArrowRight, X, GripVertical, Plus, Mail, Check, Trash2, Edit2, ChevronDown, ChevronUp, Loader2, Files, Type } from 'lucide-react';
 import { toast } from 'sonner';
 
 // Types for parsed program
@@ -64,6 +64,10 @@ export default function ImportPage() {
   const [expandedWorkout, setExpandedWorkout] = useState<number | null>(0);
   const [editingExercise, setEditingExercise] = useState<{ wIdx: number; eIdx: number } | null>(null);
 
+  // Input mode toggle
+  const [inputMode, setInputMode] = useState<'text' | 'file'>('text');
+  const [textInput, setTextInput] = useState('');
+
   // Bulk import state (for coaches)
   const [isCoach, setIsCoach] = useState(false);
   const [bulkMode, setBulkMode] = useState(false);
@@ -88,6 +92,31 @@ export default function ImportPage() {
         });
     }
   }, [session]);
+
+  // Process text input and return parsed data
+  const processText = async (text: string): Promise<{ parsed?: ParsedProgram; error?: string }> => {
+    try {
+      const response = await fetch('/api/programs/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text,
+          autoSave: false,
+          allowGuest: true
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        return { error: data.reason || 'Failed to parse text' };
+      }
+
+      return { parsed: data.parsed };
+    } catch (err) {
+      return { error: err instanceof Error ? err.message : 'Failed to process text' };
+    }
+  };
 
   // Process a single file and return parsed data
   const processFile = async (file: File): Promise<{ parsed?: ParsedProgram; error?: string }> => {
@@ -195,6 +224,26 @@ export default function ImportPage() {
     multiple: bulkMode
   });
 
+  // Handle text submission
+  const handleTextSubmit = async () => {
+    if (!textInput.trim()) return;
+
+    setError(null);
+    setPageState('processing');
+
+    const { parsed, error: parseError } = await processText(textInput.trim());
+
+    if (parseError) {
+      setError(parseError);
+      setPageState('upload');
+      return;
+    }
+
+    setParsedProgram(parsed!);
+    setProgramName(parsed?.program?.name || 'My Program');
+    setPageState('preview');
+  };
+
   const handleSave = async () => {
     // If not authenticated, show auth form
     if (!session) {
@@ -275,6 +324,7 @@ export default function ImportPage() {
     setProgramName('');
     setError(null);
     setBulkItems([]);
+    setTextInput('');
     setPageState('upload');
   };
 
@@ -436,42 +486,102 @@ export default function ImportPage() {
               Turn Any Workout Into a Trackable Program
             </h1>
             <p className="text-lg text-[#475569] mb-8 max-w-2xl mx-auto">
-              Upload your PDF or Word document and we&apos;ll extract the exercises, sets, and reps automatically.
+              Paste your program text or upload a file and we&apos;ll extract the exercises automatically.
             </p>
 
-            <div
-              {...getRootProps()}
-              className={`
-                max-w-xl mx-auto border-2 border-dashed rounded-2xl p-12 cursor-pointer
-                transition-all duration-200
-                ${isDragActive
-                  ? 'border-[#FF6B6B] bg-[#FFE5E5]'
-                  : 'border-[#E2E8F0] bg-white hover:border-[#FF6B6B] hover:bg-[#FFF5F5]'
-                }
-              `}
-            >
-              <input {...getInputProps()} />
-              <div className="flex flex-col items-center gap-4">
-                <div className={`
-                  w-16 h-16 rounded-full flex items-center justify-center
-                  ${isDragActive ? 'bg-[#FF6B6B]' : 'bg-[#F1F5F9]'}
-                `}>
-                  <Upload className={`w-8 h-8 ${isDragActive ? 'text-white' : 'text-[#64748B]'}`} />
-                </div>
-                <div>
-                  <p className="text-lg font-medium text-[#0F172A]">
-                    {isDragActive ? 'Drop your file here' : 'Drop your PDF or Word doc here'}
-                  </p>
-                  <p className="text-sm text-[#64748B] mt-1">
-                    or click to browse
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 text-xs text-[#94A3B8]">
-                  <FileText className="w-4 h-4" />
-                  <span>Supports PDF, DOCX</span>
-                </div>
+            {/* Input Mode Toggle */}
+            <div className="max-w-xl mx-auto mb-6">
+              <div className="inline-flex bg-[#F1F5F9] rounded-xl p-1">
+                <button
+                  onClick={() => setInputMode('text')}
+                  className={`
+                    flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all
+                    ${inputMode === 'text'
+                      ? 'bg-white text-[#0F172A] shadow-sm'
+                      : 'text-[#64748B] hover:text-[#0F172A]'
+                    }
+                  `}
+                >
+                  <Type className="w-4 h-4" />
+                  Paste Text
+                </button>
+                <button
+                  onClick={() => setInputMode('file')}
+                  className={`
+                    flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all
+                    ${inputMode === 'file'
+                      ? 'bg-white text-[#0F172A] shadow-sm'
+                      : 'text-[#64748B] hover:text-[#0F172A]'
+                    }
+                  `}
+                >
+                  <Upload className="w-4 h-4" />
+                  Upload File
+                </button>
               </div>
             </div>
+
+            {/* Text Input Mode */}
+            {inputMode === 'text' && (
+              <div className="max-w-xl mx-auto">
+                <textarea
+                  value={textInput}
+                  onChange={(e) => setTextInput(e.target.value)}
+                  placeholder={`Paste your program here...
+
+Example:
+Week 1:
+Monday - Squat 3x5, Bench 3x5, Rows 3x8
+Wednesday - Deadlift 1x5, OHP 3x5, Pullups 3x8`}
+                  className="w-full h-64 px-4 py-3 border-2 border-[#E2E8F0] rounded-2xl bg-white text-[#0F172A] placeholder-[#94A3B8] resize-none focus:ring-2 focus:ring-[#FF6B6B]/20 focus:border-[#FF6B6B] transition-colors"
+                />
+                <button
+                  onClick={handleTextSubmit}
+                  disabled={!textInput.trim()}
+                  className="mt-4 flex items-center gap-2 mx-auto px-6 py-3 bg-[#FF6B6B] text-white font-semibold rounded-xl hover:bg-[#EF5350] transition-colors shadow-lg shadow-[#FF6B6B]/25 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Parse Program
+                  <ArrowRight className="w-5 h-5" />
+                </button>
+              </div>
+            )}
+
+            {/* File Upload Mode */}
+            {inputMode === 'file' && (
+              <div
+                {...getRootProps()}
+                className={`
+                  max-w-xl mx-auto border-2 border-dashed rounded-2xl p-12 cursor-pointer
+                  transition-all duration-200
+                  ${isDragActive
+                    ? 'border-[#FF6B6B] bg-[#FFE5E5]'
+                    : 'border-[#E2E8F0] bg-white hover:border-[#FF6B6B] hover:bg-[#FFF5F5]'
+                  }
+                `}
+              >
+                <input {...getInputProps()} />
+                <div className="flex flex-col items-center gap-4">
+                  <div className={`
+                    w-16 h-16 rounded-full flex items-center justify-center
+                    ${isDragActive ? 'bg-[#FF6B6B]' : 'bg-[#F1F5F9]'}
+                  `}>
+                    <Upload className={`w-8 h-8 ${isDragActive ? 'text-white' : 'text-[#64748B]'}`} />
+                  </div>
+                  <div>
+                    <p className="text-lg font-medium text-[#0F172A]">
+                      {isDragActive ? 'Drop your file here' : 'Drop your PDF or Word doc here'}
+                    </p>
+                    <p className="text-sm text-[#64748B] mt-1">
+                      or click to browse
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-[#94A3B8]">
+                    <FileText className="w-4 h-4" />
+                    <span>Supports PDF, DOCX</span>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {error && (
               <div className="max-w-xl mx-auto mt-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm">
@@ -509,8 +619,8 @@ export default function ImportPage() {
               </div>
             </div>
 
-            {/* Bulk Mode Toggle (Coaches Only) */}
-            {isCoach && (
+            {/* Bulk Mode Toggle (Coaches Only) - only in file mode */}
+            {isCoach && inputMode === 'file' && (
               <div className="mt-8 max-w-xl mx-auto">
                 <button
                   onClick={() => setBulkMode(!bulkMode)}

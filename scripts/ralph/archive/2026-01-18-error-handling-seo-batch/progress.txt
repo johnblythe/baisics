@@ -1,0 +1,83 @@
+# Ralph Progress Log
+Started: Sun Jan 18 14:46:04 EST 2026
+---
+
+## Codebase Patterns
+- **Next.js Metadata for Client Components**: For pages with 'use client', metadata cannot be exported from page.tsx. Create a layout.tsx file in the same directory that exports metadata.
+- **Next.js Metadata for Server Components**: Server components can directly export `metadata` const from page.tsx.
+
+---
+
+## 2026-01-18 - US-001: Add unique page titles for SEO (#288)
+- Added metadata exports to 10 routes for unique, descriptive page titles
+- Files created:
+  - src/app/coach/dashboard/layout.tsx
+  - src/app/coaches/signup/layout.tsx
+  - src/app/coach/settings/layout.tsx
+  - src/app/settings/layout.tsx
+  - src/app/meal-prep/layout.tsx
+  - src/app/nutrition/layout.tsx
+  - src/app/templates/layout.tsx
+  - src/app/library/layout.tsx
+- Files modified:
+  - src/app/dashboard/page.tsx (server component - added metadata directly)
+  - src/app/hi/page.tsx (server component - added metadata directly)
+- **Learnings for future iterations:**
+  - Client components ('use client') cannot export metadata - need separate layout.tsx
+  - Server components can export metadata directly in page.tsx
+  - Metadata pattern: `export const metadata: Metadata = { title: 'Page Title | baisics' };`
+---
+
+## 2026-01-18 - US-002: Wrap localStorage.setItem in try-catch (#280)
+- Wrapped localStorage.setItem in try-catch for first workout celebration data
+- Files modified:
+  - src/app/workout/[id]/page.tsx (lines 346-355)
+- **Learnings for future iterations:**
+  - localStorage can fail due to: quota exceeded, private browsing, storage disabled
+  - Use console.warn (not console.error) for non-critical storage failures
+  - Always allow the main functionality to continue even if storage fails (graceful degradation)
+---
+
+## 2026-01-18 - US-003: Wrap getDebugState in try-catch (#281)
+- Wrapped getDebugState() in try-catch to prevent debug features from breaking production
+- Files modified:
+  - src/app/api/workout-logs/[id]/complete/route.ts (lines 121-127)
+- **Learnings for future iterations:**
+  - Debug utilities should NEVER break production code - always wrap in try-catch
+  - Use console.error for debug failures (vs console.warn for non-critical user-facing failures)
+  - Default to null/empty state when debug fails, allowing normal code path to proceed
+  - Pattern: `let debugState: string | null = null; try { debugState = await getDebugState(); } catch (e) { console.error(...); }`
+---
+
+## 2026-01-18 - US-004: Differentiate no body vs malformed JSON (#282)
+- Improved JSON body parsing to distinguish between no body (expected) and malformed JSON (client bug)
+- Files modified:
+  - src/app/api/workout-logs/[id]/complete/route.ts (lines 25-52)
+- **Learnings for future iterations:**
+  - Check content-length header before attempting JSON parse to detect if body was sent
+  - Pattern: `const hasBody = contentLength && parseInt(contentLength, 10) > 0`
+  - Empty body → proceed with default behavior (graceful)
+  - Non-empty body with parse failure → return 400 and log error (client bug)
+  - Always log context (workoutLogId, contentLength, error message) for debugging
+---
+
+## 2026-01-18 - US-005: Include server response in workout completion error (#283)
+- Improved error messages to include server response text when workout completion fails
+- Files modified:
+  - src/app/workout/[id]/page.tsx (lines 337-340)
+- **Learnings for future iterations:**
+  - When checking `response.ok`, get `response.text()` before throwing to include server's error message
+  - Pattern: `if (!response.ok) { const errorText = await response.text(); throw new Error(\`...: ${response.status} - ${errorText}\`); }`
+  - This helps debug production issues by exposing actual server errors to the client error handler
+---
+
+## 2026-01-18 - US-006: Fix inconsistent silent fail comment (#284)
+- Fixed comment that said "Silent fail" but code actually logged with console.error
+- Changed comment to "Log error but continue - analytics shouldn't block user flow" to match behavior
+- Files modified:
+  - src/app/dashboard/[programId]/page.tsx (line 631)
+- **Learnings for future iterations:**
+  - Comments should accurately describe what code does - "silent fail" means no logging
+  - Recommended approach for non-critical analytics: log error but continue (not truly silent)
+  - Pattern: `// Log error but continue - [reason why this is non-blocking]`
+---

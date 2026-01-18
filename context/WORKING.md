@@ -1,66 +1,92 @@
-# Session Context - 2026-01-18T10:45:00-05:00
+# Session Context - 2026-01-18T14:50:00-05:00
 
 ## Current Session Overview
-- **Main Task/Feature**: Coach signup flow - dedicated `/coaches/signup` with segmentation
-- **Session Duration**: ~3 hours
-- **Current Status**: Complete and tested. All core functionality working.
+- **Main Task/Feature**: Issue cleanup, Ralph batches, /hi route refactoring
+- **Session Duration**: ~2 hours
+- **Current Status**: Ralph finishing error handling batch (5/6), about to start /hi improvements
 
 ## Recent Activity (Last 30-60 minutes)
-- **What We Just Did**: Added debounced slug availability check to settings page
-- **Active Problems**: None - all tested and working
-- **Current Files**: `/src/app/coach/settings/page.tsx`, `/src/app/api/coach/check-slug/route.ts`
-- **Test Status**: All working - signup, dashboard landing, settings, slug uniqueness
+- **What We Just Did**:
+  - Completed Ralph batch: 7 SEO competitor comparison blog posts (PR #290 merged)
+  - Started Ralph batch: 6 error handling + SEO title fixes (5/6 complete)
+  - Deep explored /hi route dependencies - mapped 20+ inbound links, 4 unused query params
+  - Got USDA API key for #122 (key: vRBwhBBkegsIpLI9EtANZhMycPcIazx3uJiAnScv)
+- **Active Problems**: /hi route is over-entangled, needs detangling
+- **Current Files**: Ralph working on src/app/dashboard/[programId]/page.tsx (comment fix)
+- **Test Status**: All Ralph stories passing typecheck
 
 ## Key Technical Decisions Made
-- **Architecture Choices**: Create user with `isCoach: true` BEFORE magic link (not after via callback)
-- **Implementation Approaches**: Removed cookie-based coach promotion - was unreliable with NextAuth timing
-- **Technology Selections**: Debounced slug check (500ms) with visual feedback
-- **Performance/Security Considerations**: Slug uniqueness checked server-side, not just client
+- **Architecture Choices**:
+  - Keep /hi route (15+ active usage points) but detangle it
+  - 4 query params (?template, ?prefill, ?source, ?invite) are passed but never used - need fixing
+- **Implementation Approaches**:
+  - Ralph for automatable issues (specific file:line + clear fix)
+  - Manual for design decisions and external dependencies
+- **Technology Selections**: USDA FoodData Central API for food search (free tier)
+- **Performance/Security Considerations**: None new
 
 ## Code Context
-- **Modified Files**:
-  - `/src/app/api/coaches/signup/route.ts` - simplified to create/update user directly
-  - `/src/lib/auth.ts` - removed cookie-based coach promotion logic
-  - `/src/app/coach/settings/page.tsx` - fixed sizing, added slug availability check
-  - `/src/app/api/coach/check-slug/route.ts` - NEW: endpoint for live slug availability
-  - `/docs/plans/2026-01-17-coach-signup-flow.md` - design doc
-- **New Patterns**: Pre-create user before auth flow when extra data needed
+- **Modified Files This Session**:
+  - 7 new blog posts: src/content/blog/baisics-vs-{fitbod,strong,jefit,hevy,myfitnesspal,caliber,swolemate}/
+  - 8 new layout files for SEO titles (coach/dashboard, coaches/signup, etc.)
+  - Error handling in workout/[id]/page.tsx, workout-logs/[id]/complete/route.ts
+  - .issues.json updated (15 open issues now)
+- **New Patterns**: Client components need layout.tsx for metadata; server components export directly
 - **Dependencies**: None added
 - **Configuration Changes**: None
 
 ## Current Implementation State
 - **Completed**:
-  - Coach signup form at `/coaches/signup`
-  - Magic link flow creates coach account
-  - `/coaches` landing CTAs point to signup
-  - "Talk to Sales" popup (john@baisics.app)
-  - Settings page sizing fixes
-  - Debounced slug availability check
-- **In Progress**: None
+  - PR #290: 7 competitor comparison blog posts (closes #218)
+  - Issues closed: #218, #233, #270, #272 (plus 8 others earlier)
+  - Branch cleanup: 23 local + 87 remote refs pruned
+- **In Progress**:
+  - Ralph batch: error handling + SEO (5/6 done, #284 comment fix in progress)
+  - Will close: #288, #280, #281, #282, #283, #284
 - **Blocked**: None
-- **Next Steps**: Design exploration items logged below
+- **Next Steps**:
+  1. Wait for Ralph to finish (1 story left)
+  2. Commit + PR the error handling batch
+  3. Refactor /hi route - use unused params, extract program display
 
 ## Important Context for Handoff
-- **Environment Setup**: Standard - `npm run dev` on port 3001
-- **Running/Testing**: Test signup at `/coaches/signup` with new email
-- **Known Issues**: None currently
-- **External Dependencies**: None
+- **Environment Setup**: Standard - npm run dev on port 3001
+- **Running/Testing**: npx tsc --noEmit for typecheck
+- **Known Issues**:
+  - /hi has 4 unused query params: ?template, ?prefill, ?source, ?invite
+  - Program modification disabled in /hi/actions.ts line 92
+- **External Dependencies**:
+  - USDA API key ready: vRBwhBBkegsIpLI9EtANZhMycPcIazx3uJiAnScv
+  - Store in USDA_API_KEY env var when implementing #122
 
 ## Conversation Thread
-- **Original Goal**: Set up coach onboarding stories before inviting coaches
-- **Evolution**: Built full signup flow, fixed auth bugs, added polish (slug check)
-- **Lessons Learned**: NextAuth callbacks fire before user creation for new users - don't rely on them for setting user data
-- **Alternatives Considered**: Cookie-based approach (rejected - timing issues)
+- **Original Goal**: Clean up issues, run automatable work through Ralph
+- **Evolution**: Expanded to /hi route analysis and USDA API prep
+- **Lessons Learned**:
+  - PRs must use "Closes #XXX" to auto-close issues
+  - Client components can't export metadata - need separate layout.tsx
+- **Alternatives Considered**:
+  - Remove /hi route - rejected (15+ active links)
+  - Keep /hi as-is - rejected (too entangled, unused params)
 
-## Logged for Future Design Exploration
-1. Coach onboarding wizard - ugly/clunky, needs design pass
-2. `/import` route for programs - generic UX, first coach experience should be a banger
-3. Coach invite → `/hi` flow - may need separate client onboarding path
-4. Page titles SEO - GH issue #288 created
+## /hi Route Detangle Plan
+The /hi route accepts but ignores these params:
+1. `?template` - from /templates/[slug], should prefill intake
+2. `?prefill` - from dashboard tool claims, should prefill intake
+3. `?source` - analytics tracking, should be logged
+4. `?invite` - coach invite token, should trigger coach flow
 
-## Git Status
-- Branch: `ralph/persona-seed-data` (inherited, work done here)
-- Uncommitted changes from this session
+Inbound links (20+):
+- Landing pages, templates, tools, coach invites, dashboard, share pages, blog CTAs, library
+
+Outbound (2 paths):
+- Authenticated → /dashboard/{programId}
+- Anonymous → /program/review?userId=X&programId=Y
+
+## Open Issues Summary (15)
+- High: #174 (rotate credentials)
+- Med: #227, #189, #122, #105
+- Low: #285, #277, #274, #192
 
 ---
 *Last updated: 2026-01-18*
