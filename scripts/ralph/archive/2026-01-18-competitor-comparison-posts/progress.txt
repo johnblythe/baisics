@@ -1,0 +1,109 @@
+# Ralph Progress Log
+Started: Sun Jan 18 13:53:50 EST 2026
+---
+
+## Codebase Patterns
+
+### Blog Post Structure
+- Blog posts live in `src/content/blog/[slug]/index.tsx`
+- Templates in `src/content/blog/_templates/`
+- Use `BlogPost`, `BlogSection`, `BlogQuote`, `BlogList`, `BlogTable` components from `@/app/blog/components/BlogPost`
+- Frontmatter type: `BlogPostFrontmatter` from `@/types/blog`
+- Set `published: true` for posts to appear
+- CTA buttons use coral gradient: `background: 'linear-gradient(to right, #FF6B6B, #FF8E8E)'`
+
+### Competitor Comparison Posts
+- Follow existing pattern from `baisics-vs-trainerize/index.tsx`
+- Key sections: Quick Comparison table, What is [Competitor], What is Baisics, Pricing, Features, Which Should You Choose, Try Baisics Free, FAQ
+- Keep tone factual and fair - acknowledge competitor strengths
+- SEO keywords: "baisics vs [competitor]", "[competitor] alternative", "[competitor] review 2026"
+
+---
+
+## 2026-01-18 - US-001: Write Baisics vs Fitbod comparison post
+- Created `src/content/blog/baisics-vs-fitbod/index.tsx`
+- Followed template structure from `baisics-vs-trainerize` post
+- Key differentiators: Fitbod = polished mobile + Apple Watch, Baisics = free tier + nutrition
+- Pricing comparison: Fitbod $12.99/mo vs Baisics $5/mo
+- **Learnings for future iterations:**
+  - Use existing comparison posts as reference for tone and structure
+  - The `not-prose` class on CTA button container prevents prose styling conflicts
+  - Build takes ~2 minutes, factor into iteration time
+  - No need to create directory manually - Write tool handles it
+---
+
+## 2026-01-18 - US-002: Write Baisics vs Strong comparison post
+- Created `src/content/blog/baisics-vs-strong/index.tsx`
+- Key differentiators: Strong = manual logging + offline + simplicity, Baisics = AI programs + nutrition
+- Pricing: Strong $4.99/mo (or $99.99 lifetime), Baisics $5/mo
+- Strong has free tier limited to 3 routines vs Baisics free tier with full AI generation
+- Emphasized that apps serve different needs: Strong = tracker, Baisics = planner
+- **Learnings for future iterations:**
+  - Strong is logging-only, no program generation - important distinction
+  - Lifetime purchase option is a key Strong selling point worth mentioning
+  - Can suggest using both together (Baisics for programming, Strong for logging)
+---
+
+## 2026-01-18 - US-003: Write Baisics vs JEFIT comparison post
+- Created `src/content/blog/baisics-vs-jefit/index.tsx`
+- Key differentiators: JEFIT = massive exercise library (1400+) + social/community, Baisics = AI programs + nutrition
+- Pricing: JEFIT $12.99/mo (or $69.99/yr, $139.99 lifetime), Baisics $5/mo
+- Emphasized different use cases: JEFIT = DIY toolkit for routine builders, Baisics = AI coach
+- **Learnings for future iterations:**
+  - JEFIT is 14+ years old (founded 2010) - long track record worth mentioning
+  - "Toolkit vs coach" framing works well for DIY vs AI comparison
+  - Social features (leaderboards, challenges, sharing) are big for some users - Baisics lacks these
+---
+
+## 2026-01-18 - US-004: Write Baisics vs Hevy comparison post
+- Created `src/content/blog/baisics-vs-hevy/index.tsx`
+- Key differentiators: Hevy = social sharing + workout logging + polished UI, Baisics = AI programs + nutrition
+- Pricing: Hevy $9.99/mo (or $49.99/yr ~$4.17/mo), Baisics $5/mo
+- Hevy's free tier is very generous (unlimited logging + social) vs Baisics free tier (4 AI programs/mo)
+- Emphasized "social tracker vs AI coach" distinction
+- **Learnings for future iterations:**
+  - Hevy has no nutrition features at all - purely workout focused
+  - "Social" is a real value for gym communities where friends all use same app
+  - Hevy annual price is actually cheaper than Baisics monthly - honest to acknowledge
+  - Can mention using both apps together but note it's extra work
+---
+
+## 2026-01-18 - US-005: Write Baisics vs MyFitnessPal comparison post
+- Created `src/content/blog/baisics-vs-myfitnesspal/index.tsx`
+- Key differentiators: MFP = nutrition/calorie tracking first (14M+ food database), Baisics = workout programming first
+- Pricing: MFP $19.99/mo or $79.99/yr (~$6.67/mo), Baisics $5/mo
+- MFP has barcode scanner and massive food database - unmatched for precise tracking
+- Baisics has AI meal plans instead of manual logging - different approach entirely
+- **Learnings for future iterations:**
+  - MFP is nearly 20 years old (founded 2005) - established player
+  - MFP integrates with 50+ devices/apps - Baisics has no external integrations yet
+  - "Tracking vs following a plan" is the key framing for MFP comparison
+  - MFP workout features are minimal - just exercise logging for calorie burn, no programs
+---
+
+## 2026-01-18 - US-006: Write Baisics vs Caliber comparison post
+- Created `src/content/blog/baisics-vs-caliber/index.tsx`
+- Key differentiators: Caliber = human coaching + strength tracking, Baisics = AI programs + nutrition
+- Pricing: Caliber free (tracking) + $12-19/mo Plus + $200/mo coaching, Baisics $5/mo
+- Caliber won Men's Journal "Best Free Workout App" 2026 - free tier is genuinely generous
+- Emphasized "AI coach vs human coach" distinction and huge price gap ($5 vs $200)
+- **Learnings for future iterations:**
+  - Caliber's free tier includes 500+ exercises, full tracking, group sharing - very generous
+  - The $200/mo coaching tier is premium but includes video form reviews, weekly analysis
+  - "Top 1% of applicants" for coaches is a real value prop for serious lifters
+  - Worth noting that AI can't do form reviews - human coaching has some irreplaceable value
+---
+
+## 2026-01-18 - US-007: Write Baisics vs SwoleMate comparison post
+- Created `src/content/blog/baisics-vs-swolemate/index.tsx`
+- Key differentiators: SwoleMate = iOS-only free tracker (300+ exercises), Baisics = AI programs + nutrition + cross-platform
+- Pricing: SwoleMate completely free ($0.99 optional tip), Baisics $5/mo
+- SwoleMate is a simple logger, not a program generator - fundamentally different tool
+- Emphasized "tracker vs coach" distinction - SwoleMate for DIY, Baisics for guided programs
+- Suggested using both together: Baisics generates programs, SwoleMate logs them (iOS users)
+- **Learnings for future iterations:**
+  - SwoleMate is indie app by Anthony Samaha - genuinely free, not freemium bait
+  - iOS-only is significant limitation vs web-based Baisics
+  - For very simple trackers, combining tools can be a win-win recommendation
+  - There's a separate "Swolemate: Workout & Hangout" app (social) - different product
+---

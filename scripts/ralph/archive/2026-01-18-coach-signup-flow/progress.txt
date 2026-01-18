@@ -1,0 +1,85 @@
+# Ralph Progress Log
+Started: Sat Jan 17 21:26:52 EST 2026
+---
+
+## Codebase Patterns
+- No `npm run typecheck` script exists; use `npm run build` which includes TS checking via Next.js
+- Prisma migrations: `npx prisma migrate dev` fails in non-interactive mode; manually create migration file in `prisma/migrations/<timestamp>_<name>/migration.sql` then run `npx prisma migrate deploy`
+- Coach fields already exist on User model: isCoach, coachTier, coachOnboardedAt, brandName, brandColor, brandLogo, inviteSlug
+
+---
+
+## 2026-01-18 02:28 - US-001: Add coachType field to User schema
+- Added `coachType String? @map("coach_type")` to User model in prisma/schema.prisma
+- Created migration: `prisma/migrations/20260118000000_add_coach_type/migration.sql`
+- Ran `npx prisma migrate deploy` and `npx prisma generate`
+- **Learnings for future iterations:**
+  - `npm run typecheck` doesn't exist; build verifies types
+  - Prisma migrate dev requires interactive mode; create migration manually
+  - Coach mode fields already established in User model (isCoach, coachTier, etc.)
+---
+
+## 2026-01-18 03:15 - US-002: Create coach signup page
+- Created `/src/app/coaches/signup/page.tsx`
+- Form fields: name, email, coachType dropdown
+- Dropdown options: Personal trainer, Online coach, Gym owner, Strength coach, Nutritionist / RD, Other
+- When 'Other' selected, shows free text input for custom role
+- Uses `signIn('email', {...})` to trigger magic link
+- After submit, shows "Check your email" confirmation screen
+- Includes "Resend link" button on confirmation screen
+- Styled with v2a design system (CSS variables for colors, Outfit font via Google Fonts)
+- Stores pending coach signup data in localStorage for US-003 to consume
+- **Learnings for future iterations:**
+  - v2a style: use CSS variables in `<style jsx global>` block with font import
+  - Existing signin page at `/auth/signin` uses MainLayout; coach signup is standalone
+  - `signIn('email', { redirect: false })` returns promise, then show confirmation UI
+  - Coach types stored as snake_case values internally (personal_trainer, online_coach, etc.)
+---
+
+## 2026-01-18 04:15 - US-004: Update /coaches landing page CTAs
+- Changed `handleGetStarted` in `/src/app/coaches/page.tsx` to navigate to `/coaches/signup` instead of `/hi?ref=coaches`
+- Fixed build error in `/src/app/api/coaches/signup/route.ts`: removed export of `PENDING_COACH_SIGNUP_COOKIE` (Next.js doesn't allow non-handler exports from route files)
+- All CTAs (Try Free, Start Free Trial) now point to the new coach signup flow
+- **Learnings for future iterations:**
+  - Next.js route files can only export HTTP method handlers (GET, POST, etc.); constants must be local or imported from non-route files
+  - The cookie constant `PENDING_COACH_SIGNUP_COOKIE` is already defined in `src/lib/auth.ts`; route file uses a local copy to avoid circular imports
+---
+
+## 2026-01-18 05:30 - US-005: Add 'Talk to Sales' popup modal
+- Modified `/src/app/coaches/page.tsx`:
+  - Added `useState` import and `showSalesModal` state
+  - Changed `handleContactSales` to open modal instead of mailto link
+  - Added modal component with v2a styling
+- Modal features:
+  - Centered overlay with backdrop blur
+  - Smiley face icon (v2a style with coral-light bg)
+  - Text: "lol we don't have a sales department, but you can email me if you want"
+  - Coral button with mailto:john@baisics.app
+  - Close button below email link
+  - Click outside modal to close
+- **Learnings for future iterations:**
+  - `onClick={(e) => e.stopPropagation()}` prevents clicks inside modal from closing it
+  - Reuse existing `animate-in` CSS class already defined in the page
+  - z-[100] ensures modal appears above fixed navbar (z-50)
+---
+
+## 2026-01-18 06:30 - US-006: End-to-end test coach signup flow
+- Created integration test file: `tests/integration/coach-signup-flow.test.ts`
+- Tests cover:
+  - Coach signup API stores pending data correctly
+  - User created with isCoach: true, coachType, coachTier: FREE
+  - coachOnboardedAt: null triggers onboarding wizard display
+  - Form validation for required fields (name, email, coachType)
+  - Email normalization (lowercase, trim)
+  - All coach type variations (personal_trainer, online_coach, etc.)
+  - Custom "Other" type with free text
+  - Existing user upgrade to coach flow
+  - Dashboard access and onboarding visibility logic
+- All 28 tests pass
+- **Learnings for future iterations:**
+  - Project uses Vitest for testing (`npm run test`)
+  - Tests in `tests/integration/` directory
+  - Can run specific test file with `npm run test -- tests/integration/file.test.ts`
+  - Coach onboarding logic: show wizard when `isCoach && !coachOnboardedAt`
+  - CoachOnboardingWizard component exists at `@/components/CoachOnboardingWizard`
+---

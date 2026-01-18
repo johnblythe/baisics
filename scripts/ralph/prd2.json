@@ -1,0 +1,100 @@
+{
+  "project": "Coach Signup Flow",
+  "branchName": "ralph/coach-signup-flow",
+  "description": "Dedicated signup flow for coaches at /coaches/signup with segmentation data collection",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Add coachType field to User schema",
+      "description": "As a developer, I need to store coach segmentation data.",
+      "acceptanceCriteria": [
+        "Add coachType String? field to User model in prisma/schema.prisma",
+        "Run npx prisma migrate dev --name add_coach_type",
+        "npm run typecheck passes"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "Create coach signup page",
+      "description": "As a prospective coach, I need a signup form to create my coach account.",
+      "acceptanceCriteria": [
+        "Create /src/app/coaches/signup/page.tsx",
+        "Form fields: name (single input), email, coachType dropdown",
+        "Dropdown options: Personal trainer, Online coach, Gym owner, Strength coach, Nutritionist / RD, Other",
+        "When 'Other' selected, show free text input",
+        "Submit triggers magic link email",
+        "Show 'Check your email' confirmation after submit",
+        "Include 'Resend link' button",
+        "Style matches v2a design system (navy, coral, Outfit font)",
+        "npm run typecheck passes"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "Handle coach signup in auth flow",
+      "description": "As a system, I need to create coach users when they click the magic link.",
+      "acceptanceCriteria": [
+        "Store pending coach signup data (name, coachType) before sending magic link",
+        "On magic link click, create user with isCoach: true, coachType from stored data",
+        "Set coachTier: FREE, coachOnboardedAt: null",
+        "Redirect to /coach/dashboard after account creation",
+        "npm run typecheck passes"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-004",
+      "title": "Update /coaches landing page CTAs",
+      "description": "As a visitor, I need clear CTAs to start the coach signup flow.",
+      "acceptanceCriteria": [
+        "Update 'Get Started' / primary CTA to link to /coaches/signup",
+        "Keep any secondary CTAs pointing to /coaches/signup",
+        "npm run typecheck passes"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-005",
+      "title": "Add 'Talk to Sales' popup modal",
+      "description": "As a visitor, I should see a fun popup when clicking Talk to Sales.",
+      "acceptanceCriteria": [
+        "Add 'Talk to Sales' button to /coaches page if not already present",
+        "On click, show modal with text: 'lol we don't have a sales department, but you can email me if you want'",
+        "Show mailto link: john@baisics.app",
+        "Include Close button",
+        "Modal styled to match v2a design",
+        "npm run typecheck passes"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-006",
+      "title": "End-to-end test coach signup flow",
+      "description": "As a developer, I need to verify the complete flow works.",
+      "acceptanceCriteria": [
+        "Navigate to /coaches, click Get Started",
+        "Fill out form with name, email, coach type",
+        "Receive magic link email (or verify in dev mode)",
+        "Click link, account created with isCoach: true",
+        "Redirected to /coach/dashboard",
+        "Onboarding wizard appears (coachOnboardedAt is null)",
+        "coachType stored correctly in database"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
