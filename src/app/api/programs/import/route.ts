@@ -150,7 +150,19 @@ export async function POST(request: Request) {
       if (isDocx) {
         // Convert base64 to buffer and extract text with mammoth
         const buffer = Buffer.from(base64Data, 'base64');
-        const { value: extractedText } = await mammoth.extractRawText({ buffer });
+
+        let extractedText: string;
+        try {
+          const result = await mammoth.extractRawText({ buffer });
+          extractedText = result.value;
+        } catch (mammothError) {
+          console.error('Mammoth extraction error:', mammothError);
+          return NextResponse.json({
+            error: true,
+            reason: 'Document extraction failed',
+            details: ['Unable to read your Word document. It may be corrupted or password-protected.']
+          });
+        }
 
         messages = [{
           role: 'user',
