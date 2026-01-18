@@ -71,7 +71,7 @@ export default function CoachesPage() {
   const { data: session } = useSession();
 
   const handleGetStarted = () => {
-    router.push('/hi?ref=coaches');
+    router.push('/coaches/signup');
   };
 
   const handleContactSales = () => {
