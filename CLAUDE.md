@@ -128,3 +128,40 @@ export async function GET(req: Request) {
 - `/api/milestones` - `milestone_*` states
 - `/api/programs/[programId]/completion` - `program_complete` state
 - `/api/workout-logs/[id]/complete` - `first_workout_complete` state
+
+## Test Personas
+
+**Location**: `prisma/seed-data/personas/` | **Reference**: `docs/personas.md`
+
+11 pre-built test users for local development. Run `npx prisma db seed` to populate.
+
+### Quick Lookup
+| Email | Type | Journey | Workouts |
+|-------|------|---------|----------|
+| alex@test.baisics.app | Complete beginner | fresh | 0 |
+| sarah@test.baisics.app | Stay-at-home mom | early/sporadic | 4 |
+| jordan@test.baisics.app | Home workout | week2 | 7 |
+| chris@test.baisics.app | Time-crunched pro | early/skipper | 5 |
+| kim@test.baisics.app | Injury recovery | week2 | 6 |
+| taylor@test.baisics.app | Lapsed user | lapsed (14 days) | 12 |
+| robert@test.baisics.app | Senior mobility | cruising | 16 |
+| marcus@test.baisics.app | Gym bro PPL | cruising | 18 |
+| priya@test.baisics.app | Weight loss | cruising/streak | 20 |
+| derek@test.baisics.app | Former athlete | veteran | 45 |
+| maya@test.baisics.app | Runner + strength | returning | 65 (2 programs) |
+
+### Finding Personas by Need
+- **Test streak UI**: priya, marcus (streak_builder, meticulous)
+- **Test recovery screens**: taylor (lapsed), sarah (sporadic)
+- **Test first-time UX**: alex (fresh)
+- **Test program completion**: derek (veteran), maya (returning)
+- **Test free tier**: sarah, jordan, alex, robert, kim, taylor
+- **Test paid features**: marcus, derek, priya, chris, maya
+- **Test minimal data**: jordan, chris (minimal, skipper)
+- **Test detailed data**: marcus, derek, robert (meticulous)
+
+### Pairing with Debug States
+Personas provide real data; debug states override behavior:
+- Login as `taylor@test.baisics.app` + `?debug_state=missed_7_days` → test recovery flow
+- Login as `alex@test.baisics.app` + `?debug_state=first_workout` → test onboarding
+- Login as `derek@test.baisics.app` + `?debug_state=milestone_50` → test milestone celebration
