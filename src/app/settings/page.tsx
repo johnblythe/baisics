@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import MainLayout from '@/app/components/layouts/MainLayout';
-import { Settings, User, Crown, Dumbbell, Shield, Bell, Mail } from 'lucide-react';
+import { Settings, User, Crown, Dumbbell, Shield, Bell, Mail, Camera, Sparkles } from 'lucide-react';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -23,6 +23,9 @@ interface NotificationPrefs {
   weeklySummaryDay: 'sunday' | 'monday';
 }
 
+// Tripod Mode - the gym influencer troll feature
+const TRIPOD_MODE_KEY = 'baisics_tripod_mode';
+
 export default function SettingsPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -31,6 +34,8 @@ export default function SettingsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isSavingNotifications, setIsSavingNotifications] = useState(false);
+  const [tripodMode, setTripodMode] = useState(false);
+  const [showTripodMessage, setShowTripodMessage] = useState(false);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -43,6 +48,27 @@ export default function SettingsPage() {
       fetchNotificationPrefs();
     }
   }, [status, router]);
+
+  // Load Tripod Mode from localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem(TRIPOD_MODE_KEY);
+    if (stored === 'true') {
+      setTripodMode(true);
+    }
+  }, []);
+
+  const toggleTripodMode = () => {
+    const newValue = !tripodMode;
+    setTripodMode(newValue);
+    localStorage.setItem(TRIPOD_MODE_KEY, String(newValue));
+
+    // Show the troll message when turning ON
+    if (newValue) {
+      setShowTripodMessage(true);
+      // Auto-hide after 4 seconds
+      setTimeout(() => setShowTripodMessage(false), 4000);
+    }
+  };
 
   const fetchUserData = async () => {
     try {
@@ -188,7 +214,7 @@ export default function SettingsPage() {
                   } ${isSavingNotifications ? 'opacity-50' : ''}`}
                 >
                   <span
-                    className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                    className={`absolute left-0 top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${
                       notificationPrefs?.emailReminders ? 'translate-x-7' : 'translate-x-1'
                     }`}
                   />
@@ -212,7 +238,7 @@ export default function SettingsPage() {
                   } ${isSavingNotifications ? 'opacity-50' : ''}`}
                 >
                   <span
-                    className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                    className={`absolute left-0 top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${
                       notificationPrefs?.weeklySummaryEnabled ? 'translate-x-7' : 'translate-x-1'
                     }`}
                   />
@@ -253,6 +279,54 @@ export default function SettingsPage() {
                 </div>
               )}
             </div>
+          </div>
+
+          {/* Tripod Mode - Fun Stuff */}
+          <div className="bg-white rounded-xl border border-[#E2E8F0] p-6 mb-6 relative overflow-hidden">
+            <h2 className="text-lg font-semibold text-[#0F172A] mb-4 flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-[#FF6B6B]" />
+              Fun Stuff
+            </h2>
+
+            <div className="space-y-4">
+              {/* Tripod Mode Toggle */}
+              <div className="flex items-center justify-between py-3 px-4 bg-[#F8FAFC] rounded-lg">
+                <div className="flex items-center gap-3">
+                  <Camera className="w-5 h-5 text-[#64748B]" />
+                  <div>
+                    <p className="font-medium text-[#0F172A]">Tripod Mode</p>
+                    <p className="text-xs text-[#64748B]">Enable snarky gym influencer commentary</p>
+                  </div>
+                </div>
+                <button
+                  onClick={toggleTripodMode}
+                  className={`relative w-12 h-6 rounded-full transition-colors ${
+                    tripodMode ? 'bg-[#FF6B6B]' : 'bg-[#E2E8F0]'
+                  }`}
+                >
+                  <span
+                    className={`absolute left-0 top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${
+                      tripodMode ? 'translate-x-7' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              </div>
+            </div>
+
+            {/* Tripod Mode Activation Message */}
+            {showTripodMessage && (
+              <div className="absolute inset-0 bg-[#0F172A]/95 flex items-center justify-center p-6 animate-in fade-in duration-300">
+                <div className="text-center">
+                  <Camera className="w-12 h-12 text-[#FF6B6B] mx-auto mb-4" />
+                  <p className="text-white font-bold text-lg mb-2">
+                    lol fuck you poser.
+                  </p>
+                  <p className="text-white/80">
+                    Put your camera up, get your work ethic out.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Current Roles */}
@@ -307,7 +381,7 @@ export default function SettingsPage() {
                     } ${isSaving ? 'opacity-50' : ''}`}
                   >
                     <span
-                      className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                      className={`absolute left-0 top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${
                         userData?.isPremium ? 'translate-x-7' : 'translate-x-1'
                       }`}
                     />
@@ -331,7 +405,7 @@ export default function SettingsPage() {
                     } ${isSaving ? 'opacity-50' : ''}`}
                   >
                     <span
-                      className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                      className={`absolute left-0 top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${
                         userData?.isCoach ? 'translate-x-7' : 'translate-x-1'
                       }`}
                     />

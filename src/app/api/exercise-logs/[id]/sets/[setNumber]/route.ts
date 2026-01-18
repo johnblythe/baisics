@@ -57,7 +57,7 @@ export async function PUT(
       ? await prisma.setLog.update({
           where: { id: existingSetLog.id },
           data: {
-            weight: weight || null,
+            weight: weight ?? null,
             reps,
             notes: notes || null,
           },
@@ -66,7 +66,7 @@ export async function PUT(
           data: {
             exerciseLogId: id,
             setNumber: parseInt(setNumber),
-            weight: weight || null,
+            weight: weight ?? null,
             reps,
             notes: notes || null,
           },

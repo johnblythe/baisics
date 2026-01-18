@@ -2,6 +2,11 @@
 
 import { useState, useEffect } from 'react';
 
+interface ExerciseHistory {
+  pr: { weight: number; reps: number } | null;
+  lastSession: { weight: number; reps: number } | null;
+}
+
 interface BigSetInputCardProps {
   setNumber: number;
   targetReps: string;
@@ -9,6 +14,7 @@ interface BigSetInputCardProps {
   reps: number | string;
   notes?: string;
   isEditing?: boolean;
+  history?: ExerciseHistory;
   onComplete: (weight: number, reps: number, notes?: string) => void;
 }
 
@@ -19,17 +25,18 @@ export function BigSetInputCard({
   reps,
   notes = '',
   isEditing = false,
+  history,
   onComplete,
 }: BigSetInputCardProps) {
   // Local state for immediate UI response - NO auto-saving until complete
-  const [localWeight, setLocalWeight] = useState<string>(weight ? String(weight) : '');
+  const [localWeight, setLocalWeight] = useState<string>(weight != null ? String(weight) : '');
   const [localReps, setLocalReps] = useState<string>(reps ? String(reps) : '');
   const [localNotes, setLocalNotes] = useState<string>(notes || '');
   const [showNotes, setShowNotes] = useState<boolean>(!!notes);
 
   // Sync local state when props change (e.g., switching sets)
   useEffect(() => {
-    setLocalWeight(weight ? String(weight) : '');
+    setLocalWeight(weight != null ? String(weight) : '');
     setLocalReps(reps ? String(reps) : '');
     setLocalNotes(notes || '');
     setShowNotes(!!notes || isEditing); // Show notes field when editing
@@ -44,7 +51,7 @@ export function BigSetInputCard({
 
   return (
     <div className="bg-gradient-to-br from-[#FF6B6B] to-[#EF5350] rounded-2xl p-5 text-white shadow-xl shadow-[#FF6B6B]/30">
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex items-center justify-between mb-4">
         <div>
           <p className="text-white/70 text-xs font-medium uppercase">Logging Set</p>
           <p className="text-3xl font-bold">{setNumber}</p>
@@ -54,6 +61,30 @@ export function BigSetInputCard({
           <p className="text-xl font-bold">{targetReps} reps</p>
         </div>
       </div>
+
+      {/* Previous session and PR reference */}
+      {history && (history.lastSession || history.pr) && (
+        <div className="flex gap-3 mb-4 text-xs">
+          {history.lastSession && (
+            <div className="flex-1 bg-white/10 rounded-lg px-3 py-2">
+              <p className="text-white/60 uppercase font-medium mb-0.5">Last</p>
+              <p className="text-white font-bold">
+                {history.lastSession.weight} lbs x {history.lastSession.reps}
+              </p>
+            </div>
+          )}
+          {history.pr && (
+            <div className="flex-1 bg-[#0F172A] rounded-lg px-3 py-2">
+              <p className="text-white/70 uppercase font-medium mb-0.5 flex items-center gap-1">
+                <span>🏆</span> PR
+              </p>
+              <p className="text-white font-bold">
+                {history.pr.weight} lbs x {history.pr.reps}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="flex gap-3 mb-5">
         <div className="flex-1">

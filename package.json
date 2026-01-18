@@ -14,7 +14,10 @@
     "vercel-build": "prisma generate && prisma migrate deploy && next build && npm run sitemap",
     "sitemap": "ts-node src/scripts/generate-sitemap.ts",
     "format": "prettier --write .",
-    "import:exercises": "npx tsx src/scripts/import-exercises.ts"
+    "import:exercises": "npx tsx src/scripts/import-exercises.ts",
+    "screenshots": "npx playwright test --project='Desktop Chrome' tests/screenshots/",
+    "screenshots:mobile": "npx playwright test --project='Mobile Safari' tests/screenshots/",
+    "screenshots:all": "npx playwright test tests/screenshots/"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.1",
@@ -60,6 +63,7 @@
     "seed": "npx tsx prisma/seed.ts"
   },
   "devDependencies": {
+    "@playwright/test": "^1.57.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

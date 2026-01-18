@@ -127,3 +127,4 @@ export async function GET(req: Request) {
 - `/api/programs/[programId]/week2-checkin` - `week_2_checkin` state
 - `/api/milestones` - `milestone_*` states
 - `/api/programs/[programId]/completion` - `program_complete` state
+- `/api/workout-logs/[id]/complete` - `first_workout_complete` state
