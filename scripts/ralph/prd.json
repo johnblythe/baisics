@@ -1,336 +1,126 @@
 {
-  "project": "Baisics Persona Seed Data",
-  "branchName": "ralph/persona-seed-data",
-  "description": "Generate realistic seed data for 11 test personas to enable local testing of all app states",
+  "project": "Baisics",
+  "branchName": "ralph/competitor-comparison-posts",
+  "description": "SEO competitor comparison blog posts for organic search traffic",
   "userStories": [
     {
       "id": "US-001",
-      "title": "Create persona seed structure and TypeScript types",
-      "description": "As a developer, I need the directory structure and type definitions for persona seed data.",
+      "title": "Write Baisics vs Fitbod comparison post",
+      "description": "Create SEO-optimized comparison blog post targeting 'fitbod alternative' and 'baisics vs fitbod' keywords.",
       "acceptanceCriteria": [
-        "Create prisma/seed-data/personas/ directory",
-        "Create prisma/seed-data/personas/types.ts with PersonaSeed interface matching PRD spec",
-        "Types include: user, intake, subscription, program, workoutPlan, workoutLogs, checkIns, milestones",
-        "Export helper type for WorkoutSeed, WorkoutLogSeed, CheckInSeed",
+        "Copy template to src/content/blog/baisics-vs-fitbod/index.tsx",
+        "Research Fitbod: pricing ($12.99/mo), AI workout generation, exercise library, platforms",
+        "Write honest comparison: where Fitbod wins (polished app, Apple Watch), where Baisics wins (free tier, meal prep, coach mode)",
+        "Include comparison table with pricing, features, platforms",
+        "Set published: true and correct date",
+        "Verify page renders at /blog/baisics-vs-fitbod",
         "npm run typecheck passes"
       ],
       "priority": 1,
       "passes": true,
-      "notes": ""
+      "notes": "Fitbod is our closest direct competitor - AI-generated workouts"
     },
     {
       "id": "US-002",
-      "title": "Create seedPersonas scaffolding in seed.ts",
-      "description": "As a developer, I need the seeder function that will process persona JSON files.",
+      "title": "Write Baisics vs Strong comparison post",
+      "description": "Create SEO-optimized comparison blog post targeting 'strong app alternative' keywords.",
       "acceptanceCriteria": [
-        "Add seedPersonas() function to prisma/seed.ts",
-        "Function reads all persona JSON files from prisma/seed-data/personas/",
-        "Upserts users by email (idempotent)",
-        "Creates related intake, subscription, program, workout plan data",
-        "Handles date calculations - converts relative dates (e.g., 'daysAgo: 5') to actual dates",
-        "Call seedPersonas() from main() after seedExercises()",
+        "Copy template to src/content/blog/baisics-vs-strong/index.tsx",
+        "Research Strong: pricing (free + $4.99/mo pro), manual logging focus, simple UI, platforms",
+        "Write honest comparison: where Strong wins (simplicity, offline), where Baisics wins (AI programs, nutrition, progression)",
+        "Include comparison table with pricing, features, platforms",
+        "Set published: true and correct date",
+        "Verify page renders at /blog/baisics-vs-strong",
         "npm run typecheck passes"
       ],
       "priority": 2,
       "passes": true,
-      "notes": ""
+      "notes": "Strong is popular for manual logging crowd"
     },
     {
       "id": "US-003",
-      "title": "Create Alex persona - Complete Beginner",
-      "description": "As a tester, I need Alex: fresh user with 0 workouts, program exists but no activity.",
+      "title": "Write Baisics vs JEFIT comparison post",
+      "description": "Create SEO-optimized comparison blog post targeting 'jefit alternative' keywords.",
       "acceptanceCriteria": [
-        "Create prisma/seed-data/personas/alex.json",
-        "User: alex@test.baisics.app, free tier, 0 streaks",
-        "Intake: beginner, 3 days available, gym equipment",
-        "Program: 3-day full body beginner, 8 weeks",
-        "WorkoutPlan with 3 workouts (Day 1-3) using exercises from exercise library",
-        "No workout logs, no check-ins (fresh user)",
-        "npx prisma db seed runs without error",
+        "Copy template to src/content/blog/baisics-vs-jefit/index.tsx",
+        "Research JEFIT: pricing (free + $12.99/mo), huge exercise database, social features, platforms",
+        "Write honest comparison: where JEFIT wins (exercise library size, community), where Baisics wins (AI personalization, meal prep)",
+        "Include comparison table with pricing, features, platforms",
+        "Set published: true and correct date",
+        "Verify page renders at /blog/baisics-vs-jefit",
         "npm run typecheck passes"
       ],
       "priority": 3,
       "passes": true,
-      "notes": ""
+      "notes": "JEFIT has massive exercise library - 1400+ exercises"
     },
     {
       "id": "US-004",
-      "title": "Create Sarah persona - Stay-at-Home Mom",
-      "description": "As a tester, I need Sarah: early journey, sporadic attendance, free tier.",
+      "title": "Write Baisics vs Hevy comparison post",
+      "description": "Create SEO-optimized comparison blog post targeting 'hevy app alternative' keywords.",
       "acceptanceCriteria": [
-        "Create prisma/seed-data/personas/sarah.json",
-        "User: sarah@test.baisics.app, free, 0 current streak (missed 3 days)",
-        "Intake: female, returning after break, 3 days, home gym basics",
-        "Program: 3-day full body, 8 weeks, 15% through",
-        "4 workout logs with gaps - dates show sporadic pattern",
-        "Minimal set data - just completion, light weights",
-        "1 check-in with basic stats",
-        "npx prisma db seed runs without error",
+        "Copy template to src/content/blog/baisics-vs-hevy/index.tsx",
+        "Research Hevy: pricing (free + $9.99/mo), social/sharing focus, workout logging, platforms",
+        "Write honest comparison: where Hevy wins (social features, sharing), where Baisics wins (AI programs, nutrition, coach mode)",
+        "Include comparison table with pricing, features, platforms",
+        "Set published: true and correct date",
+        "Verify page renders at /blog/baisics-vs-hevy",
         "npm run typecheck passes"
       ],
       "priority": 4,
       "passes": true,
-      "notes": ""
+      "notes": "Hevy popular with social/sharing crowd"
     },
     {
       "id": "US-005",
-      "title": "Create Jordan persona - Home Workout",
-      "description": "As a tester, I need Jordan: week2 stage, minimal logging, home equipment only.",
+      "title": "Write Baisics vs MyFitnessPal comparison post",
+      "description": "Create SEO-optimized comparison blog post targeting 'myfitnesspal alternative for workouts' keywords.",
       "acceptanceCriteria": [
-        "Create prisma/seed-data/personas/jordan.json",
-        "User: jordan@test.baisics.app, free, 7-day streak",
-        "Intake: home workout, bands + bodyweight + light DBs, 4 days",
-        "Program: 4-day upper/lower, 6 weeks, week2CheckInShown: false",
-        "7 workout logs with minimal set data (just marked complete)",
-        "Exercises: bodyweight and band variations only",
-        "npx prisma db seed runs without error",
+        "Copy template to src/content/blog/baisics-vs-myfitnesspal/index.tsx",
+        "Research MyFitnessPal: pricing (free + $19.99/mo premium), nutrition focus, basic workouts, platforms",
+        "Write honest comparison: where MFP wins (food database, calorie tracking), where Baisics wins (workout programs, AI coaching)",
+        "Include comparison table with pricing, features, platforms",
+        "Set published: true and correct date",
+        "Verify page renders at /blog/baisics-vs-myfitnesspal",
         "npm run typecheck passes"
       ],
       "priority": 5,
       "passes": true,
-      "notes": ""
+      "notes": "MFP is nutrition-first, we're workout-first with nutrition"
     },
     {
       "id": "US-006",
-      "title": "Create Chris persona - Time-Crunched Pro",
-      "description": "As a tester, I need Chris: early stage, skipper behavior, paid tier.",
+      "title": "Write Baisics vs Caliber comparison post",
+      "description": "Create SEO-optimized comparison blog post targeting 'caliber app alternative' keywords.",
       "acceptanceCriteria": [
-        "Create prisma/seed-data/personas/chris.json",
-        "User: chris@test.baisics.app, paid (isPremium: true), 5-day streak",
-        "Subscription: ACTIVE status with current period dates",
-        "Intake: busy professional, 30min max, 3 days, office gym",
-        "Program: 3-day express full body, 8 weeks",
-        "5 workout logs with lunch-hour timestamps (12:00-12:30)",
-        "Skipped accessories in logs - only compound exercises completed",
-        "npx prisma db seed runs without error",
+        "Copy template to src/content/blog/baisics-vs-caliber/index.tsx",
+        "Research Caliber: pricing ($19/mo + coaching tiers), strength focus, 1:1 coaching option, platforms",
+        "Write honest comparison: where Caliber wins (human coaching option), where Baisics wins (free tier, AI speed, meal prep)",
+        "Include comparison table with pricing, features, platforms",
+        "Set published: true and correct date",
+        "Verify page renders at /blog/baisics-vs-caliber",
         "npm run typecheck passes"
       ],
       "priority": 6,
       "passes": true,
-      "notes": ""
+      "notes": "Caliber targets serious strength trainers with coaching"
     },
     {
       "id": "US-007",
-      "title": "Create Kim persona - Injury Recovery",
-      "description": "As a tester, I need Kim: week2 stage with modifications, answered check-in too_hard.",
+      "title": "Write Baisics vs SwoleMate comparison post",
+      "description": "Create SEO-optimized comparison blog post targeting 'swolemate alternative' keywords.",
       "acceptanceCriteria": [
-        "Create prisma/seed-data/personas/kim.json",
-        "User: kim@test.baisics.app, free, working around shoulder injury",
-        "Intake: injury recovery, cleared by PT, avoiding overhead",
-        "Program: 3-day modified full body, 10 weeks, week2CheckInShown: true, week2CheckInOption: 'too_hard'",
-        "6 workout logs with exercise substitutions",
-        "Notes on exercises: 'did landmine press instead of OHP'",
-        "Some exercises skipped in logs",
-        "npx prisma db seed runs without error",
+        "Copy template to src/content/blog/baisics-vs-swolemate/index.tsx",
+        "Research SwoleMate: iOS only, lifting tracker, features from App Store listing",
+        "Write honest comparison: where SwoleMate wins (iOS polish?), where Baisics wins (web-based, AI programs, cross-platform)",
+        "Include comparison table with pricing, features, platforms",
+        "Set published: true and correct date",
+        "Verify page renders at /blog/baisics-vs-swolemate",
         "npm run typecheck passes"
       ],
       "priority": 7,
       "passes": true,
-      "notes": ""
-    },
-    {
-      "id": "US-008",
-      "title": "Create Taylor persona - Lapsed User",
-      "description": "As a tester, I need Taylor: lapsed with 14-day gap, recovery screen territory.",
-      "acceptanceCriteria": [
-        "Create prisma/seed-data/personas/taylor.json",
-        "User: taylor@test.baisics.app, free, streakCurrent: 0, streakLongest: 12",
-        "streakLastActivityAt: 14 days ago",
-        "Program: 4-day upper/lower, 8 weeks, 35% through",
-        "12 workout logs: consistent first 3 weeks, then stopped",
-        "Last workout log dated 14 days ago",
-        "Good data for first 3 weeks, then nothing",
-        "npx prisma db seed runs without error",
-        "npm run typecheck passes"
-      ],
-      "priority": 8,
-      "passes": true,
-      "notes": ""
-    },
-    {
-      "id": "US-009",
-      "title": "Create Robert persona - Senior Mobility",
-      "description": "As a tester, I need Robert: cruising stage, meticulous logging, senior focus.",
-      "acceptanceCriteria": [
-        "Create prisma/seed-data/personas/robert.json",
-        "User: robert@test.baisics.app, free, 16-day streak, age 67",
-        "Intake: senior, mobility focus, injury prevention, 3 days",
-        "Program: 3-day mobility/strength, 10 weeks, 50% through",
-        "16 workout logs with detailed set data",
-        "Lighter weights, mobility exercises logged",
-        "Very consistent timing in logs",
-        "2 check-ins with stats",
-        "npx prisma db seed runs without error",
-        "npm run typecheck passes"
-      ],
-      "priority": 9,
-      "passes": true,
-      "notes": ""
-    },
-    {
-      "id": "US-010",
-      "title": "Create Marcus persona - Gym Bro PPL",
-      "description": "As a tester, I need Marcus: cruising stage, meticulous logging, paid tier, PPL split.",
-      "acceptanceCriteria": [
-        "Create prisma/seed-data/personas/marcus.json",
-        "User: marcus@test.baisics.app, paid, 21-day streak",
-        "Subscription: ACTIVE",
-        "Intake: intermediate, PPL split, 6 days, full gym",
-        "Program: 6-day PPL, 12 weeks, 50% through",
-        "18 workout logs with full set data including weights and reps",
-        "Weight progression visible: bench 185→205, squat 225→275",
-        "Notes on exercises: 'felt strong', 'RPE 8'",
-        "2 check-ins with measurements",
-        "npx prisma db seed runs without error",
-        "npm run typecheck passes"
-      ],
-      "priority": 10,
-      "passes": true,
-      "notes": ""
-    },
-    {
-      "id": "US-011",
-      "title": "Create Priya persona - Weight Loss Journey",
-      "description": "As a tester, I need Priya: cruising, streak builder, weight loss tracking.",
-      "acceptanceCriteria": [
-        "Create prisma/seed-data/personas/priya.json",
-        "User: priya@test.baisics.app, paid, 21-day unbroken streak",
-        "Subscription: ACTIVE",
-        "Intake: weight loss focus, adding muscle, 4 days, full gym",
-        "Program: 4-day upper/lower, 12 weeks, 55% through",
-        "20 workout logs - no gaps, consistent",
-        "Cardio notes in workout notes field",
-        "3 check-ins with weight tracking: 180→172→165",
-        "npx prisma db seed runs without error",
-        "npm run typecheck passes"
-      ],
-      "priority": 11,
-      "passes": true,
-      "notes": ""
-    },
-    {
-      "id": "US-012",
-      "title": "Create Derek persona - Part 1: User and Program Structure",
-      "description": "As a tester, I need Derek's foundation: user, intake, subscription, program, and workout plan structure.",
-      "acceptanceCriteria": [
-        "Create prisma/seed-data/personas/derek.json",
-        "User: derek@test.baisics.app, paid, streakCurrent: 40, streakLongest: 40",
-        "Subscription: ACTIVE",
-        "Intake: male, 34, former college football, strength focus, 4 days, powerlifting gym",
-        "Program: 4-day '5/3/1 Strength Builder', 16 weeks, 90% through",
-        "WorkoutPlan with 4 workouts (5/3/1 style): Squat Day, Bench Day, Deadlift Day, OHP Day",
-        "Each workout has 4-5 exercises with proper sets/reps for 5/3/1",
-        "Initialize empty workoutLogs array (will be filled in next stories)",
-        "npm run typecheck passes"
-      ],
-      "priority": 12,
-      "passes": true,
-      "notes": ""
-    },
-    {
-      "id": "US-013",
-      "title": "Create Derek persona - Part 2: Workout Logs 1-15",
-      "description": "As a tester, I need Derek's first 15 workout logs with detailed set data.",
-      "acceptanceCriteria": [
-        "Update prisma/seed-data/personas/derek.json",
-        "Add workout logs 1-15 (first ~4 weeks of training)",
-        "Each log has full exerciseLogs with setLogs (weight, reps)",
-        "Starting weights: squat 315, bench 245, deadlift 365, OHP 155",
-        "Show 5/3/1 progression: week 1 (5s), week 2 (3s), week 3 (531), week 4 (deload)",
-        "Notes showing athlete mindset: 'felt explosive', 'getting my groove back'",
-        "npm run typecheck passes"
-      ],
-      "priority": 13,
-      "passes": true,
-      "notes": ""
-    },
-    {
-      "id": "US-014",
-      "title": "Create Derek persona - Part 3: Workout Logs 16-30",
-      "description": "As a tester, I need Derek's middle workout logs showing progression.",
-      "acceptanceCriteria": [
-        "Update prisma/seed-data/personas/derek.json",
-        "Add workout logs 16-30 (weeks 5-8 of training)",
-        "Weights progressing: squat 335, bench 255, deadlift 385, OHP 165",
-        "Continue 5/3/1 wave pattern with appropriate deload",
-        "Add PR notes on key lifts",
-        "npm run typecheck passes"
-      ],
-      "priority": 14,
-      "passes": true,
-      "notes": ""
-    },
-    {
-      "id": "US-015",
-      "title": "Create Derek persona - Part 4: Workout Logs 31-45 + Milestones + Check-ins",
-      "description": "As a tester, I need Derek's final workout logs, milestones, and check-ins.",
-      "acceptanceCriteria": [
-        "Update prisma/seed-data/personas/derek.json",
-        "Add workout logs 31-45 (weeks 9-12)",
-        "Final weights: squat 365, bench 275, deadlift 405, OHP 175",
-        "Add milestones array: ['WORKOUT_10', 'WORKOUT_25']",
-        "Add 4 check-ins spread across the program with stats",
-        "PR celebration notes on final heavy lifts",
-        "npx prisma db seed runs without error",
-        "npm run typecheck passes"
-      ],
-      "priority": 15,
-      "passes": true,
-      "notes": ""
-    },
-    {
-      "id": "US-016",
-      "title": "Create Maya persona - Part 1: First Program (completed)",
-      "description": "As a tester, I need Maya's completed first program with 48 minimal workout logs.",
-      "acceptanceCriteria": [
-        "Create prisma/seed-data/personas/maya.json",
-        "User: maya@test.baisics.app, paid",
-        "Subscription: ACTIVE",
-        "Intake: female, 29, marathon runner, 2 days strength, home gym",
-        "First program: 'Runner's Strength Foundation', 24 weeks, COMPLETED, active: false",
-        "48 workout logs with MINIMAL data (quickLog: true style, no detailed sets)",
-        "Light weights throughout - strength supplements running",
-        "npm run typecheck passes"
-      ],
-      "priority": 16,
-      "passes": true,
-      "notes": ""
-    },
-    {
-      "id": "US-017",
-      "title": "Create Maya persona - Part 2: Second Program + Milestone",
-      "description": "As a tester, I need Maya's current program with 17 logs and milestone.",
-      "acceptanceCriteria": [
-        "Update prisma/seed-data/personas/maya.json",
-        "Add second program: '2-Day Maintenance', active: true",
-        "17 workout logs (minimal style) for current program",
-        "User totals: 65 workouts, streakCurrent based on recent activity",
-        "Add milestone: ['WORKOUT_50']",
-        "npx prisma db seed runs without error",
-        "npm run typecheck passes"
-      ],
-      "priority": 17,
-      "passes": true,
-      "notes": ""
-    },
-    {
-      "id": "US-018",
-      "title": "Verify all personas seed correctly",
-      "description": "As a developer, I need to verify the complete seeding works end-to-end.",
-      "acceptanceCriteria": [
-        "Run npx prisma db seed successfully",
-        "All 11 personas exist in database with correct email addresses",
-        "Verify Marcus has 18 workout logs",
-        "Verify Derek has 45 workout logs and milestones WORKOUT_10, WORKOUT_25",
-        "Verify Maya has 2 programs (one inactive, one active) and 65 total workouts",
-        "Verify Taylor's last workout is 14 days ago",
-        "Verify Alex has 0 workout logs",
-        "Streak data matches persona specs",
-        "npm run typecheck passes"
-      ],
-      "priority": 18,
-      "passes": true,
-      "notes": "Verified: seed runs, 11 personas exist, Marcus 19 logs (exceeds 18), Derek 45 logs + milestones, Maya 2 programs 65 workouts, Taylor 14 days ago, Alex 0 logs. Derek streak 45 vs 40 spec - matches workout count."
+      "notes": "SwoleMate is iOS-only competitor found on Reddit"
     }
   ]
 }
