@@ -335,7 +335,8 @@ export default function WorkoutPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to complete workout');
+        const errorText = await response.text();
+        throw new Error(`Failed to complete workout: ${response.status} - ${errorText}`);
       }
 
       const data = await response.json();
