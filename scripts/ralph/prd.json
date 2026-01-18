@@ -21,7 +21,7 @@
         "npm run typecheck passes"
       ],
       "priority": 1,
-      "passes": false,
+      "passes": true,
       "notes": "Use Next.js metadata API: export const metadata = { title: '...' }"
     },
     {
@@ -34,7 +34,7 @@
         "npm run typecheck passes"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Graceful degradation - celebration should still show even if storage fails"
     },
     {
@@ -47,7 +47,7 @@
         "npm run typecheck passes"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Debug should fail silently, never break production"
     },
     {
@@ -62,7 +62,7 @@
         "npm run typecheck passes"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "Helps debug client-side issues by logging malformed requests"
     },
     {
@@ -76,7 +76,7 @@
         "npm run typecheck passes"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "Better error messages help debug production issues"
     },
     {
