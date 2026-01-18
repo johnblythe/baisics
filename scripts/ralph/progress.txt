@@ -73,3 +73,19 @@ Started: Sun Jan 18 15:32:16 EST 2026
   - Use CSS gradient via style prop: `background: linear-gradient(...)`
   - Card placed before grid div, not inside it (full width vs grid columns)
 ---
+
+## 2026-01-18 - US-006: Add DIY cards to /hi quick-start options
+- Added DIY_CARDS array with two navigation cards
+- Card 1: "I'll build my own" → /templates (browse templates or start from scratch)
+- Card 2: "I have a program" → /create (import existing workout plan)
+- Added Link import from next/link for navigation cards
+- Created second row with "Or go your own way:" label
+- Styled as 2-column grid with navy hover borders
+- Cards display both label and description for clarity
+- Files changed: src/app/hi/components/ConversationalInterface.tsx
+- **Learnings for future iterations:**
+  - QUICK_PROMPTS use onClick with handleSubmit - they trigger chat messages
+  - DIY_CARDS use Link - they navigate to other pages, not chat triggers
+  - Two distinct UI patterns: chat prompts (buttons) vs navigation cards (links)
+  - Descriptions help users understand where each option leads
+---

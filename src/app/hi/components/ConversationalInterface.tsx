@@ -732,6 +732,24 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
                 </motion.div>
               )}
               <div ref={messagesEndRef} />
+
+              {/* Escape hatch link - shows after chat has started */}
+              {messages.length > 1 && !isTyping && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                  className="absolute bottom-3 right-3"
+                >
+                  <Link
+                    href="/templates"
+                    className="text-xs text-[#94A3B8] hover:text-[#64748B] transition-colors"
+                    style={{ fontFamily: "'Space Mono', monospace" }}
+                  >
+                    Prefer to build your own? →
+                  </Link>
+                </motion.div>
+              )}
             </div>
 
             {/* Quick Start Prompts - shows when conversation just started */}
