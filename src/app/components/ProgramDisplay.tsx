@@ -214,6 +214,7 @@ function PhaseCard({
     <motion.div
       layout
       className="relative"
+      data-phase-card
     >
       {/* Locked overlay */}
       {isLocked && (
@@ -452,12 +453,6 @@ export const ProgramDisplay = forwardRef<ProgramDisplayRef, ProgramDisplayProps>
 
   return (
     <div className="space-y-6" style={{ fontFamily: "'Outfit', sans-serif" }}>
-      {/* Disclaimer */}
-      <DisclaimerBanner
-        variant="inline"
-        showAcknowledgeButton={false}
-      />
-
       {/* Program Header - Hero Style */}
       <div ref={headerRef} className="relative overflow-hidden rounded-2xl shadow-xl">
         {/* Gradient background */}
@@ -522,29 +517,79 @@ export const ProgramDisplay = forwardRef<ProgramDisplayRef, ProgramDisplayProps>
             </div>
           </div>
 
-          {/* Actions row */}
-          <div className="flex flex-wrap items-center gap-3">
-            {userEmail ? (
-              <button
-                onClick={() => generateWorkoutPDF(program.id)}
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white/10 text-white font-semibold hover:bg-white/20 border border-white/20 backdrop-blur-sm transition-all"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
-                Download PDF
-              </button>
-            ) : (
-              <button
-                onClick={onRequestUpsell}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-white text-[#FF6B6B] font-bold rounded-xl hover:scale-[1.03] hover:-translate-y-0.5 hover:shadow-2xl active:scale-[0.98] transition-all shadow-xl"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                </svg>
-                Save & Share
-              </button>
-            )}
+          {/* Primary CTA - Start Training */}
+          <div className="space-y-4">
+            <button
+              onClick={() => {
+                // Scroll to first phase or open it
+                document.querySelector('[data-phase-card]')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+              className="group inline-flex items-center gap-3 px-8 py-4 bg-[#FF6B6B] text-white font-bold text-lg rounded-2xl hover:scale-[1.03] hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-[#FF6B6B]/30 active:scale-[0.98] transition-all shadow-xl shadow-[#FF6B6B]/25"
+            >
+              <svg className="w-6 h-6 group-hover:animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Start Training
+            </button>
+
+            {/* Secondary actions row */}
+            <div className="flex flex-wrap items-center gap-2">
+              {userEmail ? (
+                <>
+                  <button
+                    onClick={() => generateWorkoutPDF(program.id)}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-transparent text-white/80 text-sm font-medium hover:bg-white/10 border border-white/20 hover:border-white/40 transition-all"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    PDF
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (navigator.share) {
+                        navigator.share({
+                          title: program.name || 'My Workout Program',
+                          url: window.location.href,
+                        });
+                      } else {
+                        navigator.clipboard.writeText(window.location.href);
+                      }
+                    }}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-transparent text-white/80 text-sm font-medium hover:bg-white/10 border border-white/20 hover:border-white/40 transition-all"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                    </svg>
+                    Share
+                  </button>
+                  <button
+                    onClick={() => {
+                      const subject = encodeURIComponent(program.name || 'My Workout Program');
+                      const body = encodeURIComponent(`Check out my workout program: ${window.location.href}`);
+                      window.location.href = `mailto:?subject=${subject}&body=${body}`;
+                    }}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-transparent text-white/80 text-sm font-medium hover:bg-white/10 border border-white/20 hover:border-white/40 transition-all"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    Email
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={onRequestUpsell}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-transparent text-white/80 text-sm font-medium hover:bg-white/10 border border-white/20 hover:border-white/40 transition-all"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                  </svg>
+                  Save & Share
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -640,6 +685,12 @@ export const ProgramDisplay = forwardRef<ProgramDisplayRef, ProgramDisplayProps>
           </div>
         </div>
       )}
+
+      {/* Disclaimer - moved to bottom, already collapsible */}
+      <DisclaimerBanner
+        variant="inline"
+        showAcknowledgeButton={false}
+      />
 
       {/* Upsell Modal */}
       <UpsellModal
