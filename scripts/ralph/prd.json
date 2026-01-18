@@ -1,126 +1,106 @@
 {
   "project": "Baisics",
-  "branchName": "ralph/competitor-comparison-posts",
-  "description": "SEO competitor comparison blog posts for organic search traffic",
+  "branchName": "ralph/hi-route-refactor",
+  "description": "Fix issues found in PR #291 review - error handling, dead code, missing imports",
   "userStories": [
     {
       "id": "US-001",
-      "title": "Write Baisics vs Fitbod comparison post",
-      "description": "Create SEO-optimized comparison blog post targeting 'fitbod alternative' and 'baisics vs fitbod' keywords.",
+      "title": "Fix undefined createNewProgram function",
+      "description": "Remove or fix the handleSaveProgram function that references undefined createNewProgram.",
       "acceptanceCriteria": [
-        "Copy template to src/content/blog/baisics-vs-fitbod/index.tsx",
-        "Research Fitbod: pricing ($12.99/mo), AI workout generation, exercise library, platforms",
-        "Write honest comparison: where Fitbod wins (polished app, Apple Watch), where Baisics wins (free tier, meal prep, coach mode)",
-        "Include comparison table with pricing, features, platforms",
-        "Set published: true and correct date",
-        "Verify page renders at /blog/baisics-vs-fitbod",
+        "In src/app/hi/components/ConversationalInterface.tsx, find handleSaveProgram around line 425",
+        "Either import createNewProgram from '@/lib/actions/program' OR remove the dead code entirely if unused",
+        "Remove the @ts-ignore comment",
         "npm run typecheck passes"
       ],
       "priority": 1,
       "passes": true,
-      "notes": "Fitbod is our closest direct competitor - AI-generated workouts"
+      "notes": "CRITICAL: This will throw ReferenceError at runtime if triggered."
     },
     {
       "id": "US-002",
-      "title": "Write Baisics vs Strong comparison post",
-      "description": "Create SEO-optimized comparison blog post targeting 'strong app alternative' keywords.",
+      "title": "Add error handling to handleInitialIntake",
+      "description": "Add proper error handling for the failure case in handleInitialIntake.",
       "acceptanceCriteria": [
-        "Copy template to src/content/blog/baisics-vs-strong/index.tsx",
-        "Research Strong: pricing (free + $4.99/mo pro), manual logging focus, simple UI, platforms",
-        "Write honest comparison: where Strong wins (simplicity, offline), where Baisics wins (AI programs, nutrition, progression)",
-        "Include comparison table with pricing, features, platforms",
-        "Set published: true and correct date",
-        "Verify page renders at /blog/baisics-vs-strong",
+        "In ConversationalInterface.tsx, find handleInitialIntake function",
+        "Add try-catch wrapper around the processUserMessage call",
+        "Handle success: false case - show user-friendly message",
+        "Set isTyping to false on error",
         "npm run typecheck passes"
       ],
       "priority": 2,
       "passes": true,
-      "notes": "Strong is popular for manual logging crowd"
+      "notes": "Currently ignores failures completely, leaving users with infinite typing indicator."
     },
     {
       "id": "US-003",
-      "title": "Write Baisics vs JEFIT comparison post",
-      "description": "Create SEO-optimized comparison blog post targeting 'jefit alternative' keywords.",
+      "title": "Add try-catch to handleProgramModification",
+      "description": "Wrap handleProgramModification in try-catch to handle network errors.",
       "acceptanceCriteria": [
-        "Copy template to src/content/blog/baisics-vs-jefit/index.tsx",
-        "Research JEFIT: pricing (free + $12.99/mo), huge exercise database, social features, platforms",
-        "Write honest comparison: where JEFIT wins (exercise library size, community), where Baisics wins (AI personalization, meal prep)",
-        "Include comparison table with pricing, features, platforms",
-        "Set published: true and correct date",
-        "Verify page renders at /blog/baisics-vs-jefit",
+        "In ConversationalInterface.tsx, find handleProgramModification function",
+        "Wrap the processModificationRequest call in try-catch",
+        "On error, log it, set isGeneratingProgram false, show user message",
+        "Use finally block to ensure state cleanup",
         "npm run typecheck passes"
       ],
       "priority": 3,
       "passes": true,
-      "notes": "JEFIT has massive exercise library - 1400+ exercises"
+      "notes": "Network errors can crash the component without this."
     },
     {
       "id": "US-004",
-      "title": "Write Baisics vs Hevy comparison post",
-      "description": "Create SEO-optimized comparison blog post targeting 'hevy app alternative' keywords.",
+      "title": "Handle blank=true query param in /create",
+      "description": "Make the ?blank=true query param functional in /create page.",
       "acceptanceCriteria": [
-        "Copy template to src/content/blog/baisics-vs-hevy/index.tsx",
-        "Research Hevy: pricing (free + $9.99/mo), social/sharing focus, workout logging, platforms",
-        "Write honest comparison: where Hevy wins (social features, sharing), where Baisics wins (AI programs, nutrition, coach mode)",
-        "Include comparison table with pricing, features, platforms",
-        "Set published: true and correct date",
-        "Verify page renders at /blog/baisics-vs-hevy",
+        "In src/app/create/page.tsx, read the 'blank' query param",
+        "If blank=true, default to text input mode with empty textarea ready for input",
+        "Optionally show a heading like 'Build Your Program' instead of 'Import'",
         "npm run typecheck passes"
       ],
       "priority": 4,
-      "passes": true,
-      "notes": "Hevy popular with social/sharing crowd"
+      "passes": false,
+      "notes": "Currently /templates links to /create?blank=true but param is ignored."
     },
     {
       "id": "US-005",
-      "title": "Write Baisics vs MyFitnessPal comparison post",
-      "description": "Create SEO-optimized comparison blog post targeting 'myfitnesspal alternative for workouts' keywords.",
+      "title": "Add text input size limit to API",
+      "description": "Add a size limit for text input in the import API to match file upload limits.",
       "acceptanceCriteria": [
-        "Copy template to src/content/blog/baisics-vs-myfitnesspal/index.tsx",
-        "Research MyFitnessPal: pricing (free + $19.99/mo premium), nutrition focus, basic workouts, platforms",
-        "Write honest comparison: where MFP wins (food database, calorie tracking), where Baisics wins (workout programs, AI coaching)",
-        "Include comparison table with pricing, features, platforms",
-        "Set published: true and correct date",
-        "Verify page renders at /blog/baisics-vs-myfitnesspal",
+        "In src/app/api/programs/import/route.ts, add check for text field length",
+        "Limit to reasonable size (e.g., 50000 characters / ~50KB)",
+        "Return clear error if exceeded: 'Text input too long. Maximum 50,000 characters.'",
         "npm run typecheck passes"
       ],
       "priority": 5,
-      "passes": true,
-      "notes": "MFP is nutrition-first, we're workout-first with nutrition"
+      "passes": false,
+      "notes": "File uploads have 10MB limit but text has none currently."
     },
     {
       "id": "US-006",
-      "title": "Write Baisics vs Caliber comparison post",
-      "description": "Create SEO-optimized comparison blog post targeting 'caliber app alternative' keywords.",
+      "title": "Add try-catch around mammoth extraction",
+      "description": "Wrap mammoth.extractRawText in try-catch for better DOCX error handling.",
       "acceptanceCriteria": [
-        "Copy template to src/content/blog/baisics-vs-caliber/index.tsx",
-        "Research Caliber: pricing ($19/mo + coaching tiers), strength focus, 1:1 coaching option, platforms",
-        "Write honest comparison: where Caliber wins (human coaching option), where Baisics wins (free tier, AI speed, meal prep)",
-        "Include comparison table with pricing, features, platforms",
-        "Set published: true and correct date",
-        "Verify page renders at /blog/baisics-vs-caliber",
+        "In src/app/api/programs/import/route.ts, find the mammoth.extractRawText call",
+        "Wrap it in try-catch",
+        "On error, return user-friendly message: 'Unable to read your Word document. It may be corrupted or password-protected.'",
         "npm run typecheck passes"
       ],
       "priority": 6,
-      "passes": true,
-      "notes": "Caliber targets serious strength trainers with coaching"
+      "passes": false,
+      "notes": "Corrupted DOCX files currently show generic 'Server error'."
     },
     {
       "id": "US-007",
-      "title": "Write Baisics vs SwoleMate comparison post",
-      "description": "Create SEO-optimized comparison blog post targeting 'swolemate alternative' keywords.",
+      "title": "Clean up unused imports and state in /create",
+      "description": "Remove unused GripVertical import and savedProgramId state.",
       "acceptanceCriteria": [
-        "Copy template to src/content/blog/baisics-vs-swolemate/index.tsx",
-        "Research SwoleMate: iOS only, lifting tracker, features from App Store listing",
-        "Write honest comparison: where SwoleMate wins (iOS polish?), where Baisics wins (web-based, AI programs, cross-platform)",
-        "Include comparison table with pricing, features, platforms",
-        "Set published: true and correct date",
-        "Verify page renders at /blog/baisics-vs-swolemate",
+        "In src/app/create/page.tsx, remove GripVertical from lucide-react import if unused",
+        "Remove savedProgramId state if it's set but never read",
         "npm run typecheck passes"
       ],
       "priority": 7,
-      "passes": true,
-      "notes": "SwoleMate is iOS-only competitor found on Reddit"
+      "passes": false,
+      "notes": "Minor cleanup for code quality."
     }
   ]
 }

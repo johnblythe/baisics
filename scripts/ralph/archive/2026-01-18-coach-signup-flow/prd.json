@@ -1,0 +1,126 @@
+{
+  "project": "Baisics",
+  "branchName": "ralph/competitor-comparison-posts",
+  "description": "SEO competitor comparison blog posts for organic search traffic",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Write Baisics vs Fitbod comparison post",
+      "description": "Create SEO-optimized comparison blog post targeting 'fitbod alternative' and 'baisics vs fitbod' keywords.",
+      "acceptanceCriteria": [
+        "Copy template to src/content/blog/baisics-vs-fitbod/index.tsx",
+        "Research Fitbod: pricing ($12.99/mo), AI workout generation, exercise library, platforms",
+        "Write honest comparison: where Fitbod wins (polished app, Apple Watch), where Baisics wins (free tier, meal prep, coach mode)",
+        "Include comparison table with pricing, features, platforms",
+        "Set published: true and correct date",
+        "Verify page renders at /blog/baisics-vs-fitbod",
+        "npm run typecheck passes"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Fitbod is our closest direct competitor - AI-generated workouts"
+    },
+    {
+      "id": "US-002",
+      "title": "Write Baisics vs Strong comparison post",
+      "description": "Create SEO-optimized comparison blog post targeting 'strong app alternative' keywords.",
+      "acceptanceCriteria": [
+        "Copy template to src/content/blog/baisics-vs-strong/index.tsx",
+        "Research Strong: pricing (free + $4.99/mo pro), manual logging focus, simple UI, platforms",
+        "Write honest comparison: where Strong wins (simplicity, offline), where Baisics wins (AI programs, nutrition, progression)",
+        "Include comparison table with pricing, features, platforms",
+        "Set published: true and correct date",
+        "Verify page renders at /blog/baisics-vs-strong",
+        "npm run typecheck passes"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Strong is popular for manual logging crowd"
+    },
+    {
+      "id": "US-003",
+      "title": "Write Baisics vs JEFIT comparison post",
+      "description": "Create SEO-optimized comparison blog post targeting 'jefit alternative' keywords.",
+      "acceptanceCriteria": [
+        "Copy template to src/content/blog/baisics-vs-jefit/index.tsx",
+        "Research JEFIT: pricing (free + $12.99/mo), huge exercise database, social features, platforms",
+        "Write honest comparison: where JEFIT wins (exercise library size, community), where Baisics wins (AI personalization, meal prep)",
+        "Include comparison table with pricing, features, platforms",
+        "Set published: true and correct date",
+        "Verify page renders at /blog/baisics-vs-jefit",
+        "npm run typecheck passes"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "JEFIT has massive exercise library - 1400+ exercises"
+    },
+    {
+      "id": "US-004",
+      "title": "Write Baisics vs Hevy comparison post",
+      "description": "Create SEO-optimized comparison blog post targeting 'hevy app alternative' keywords.",
+      "acceptanceCriteria": [
+        "Copy template to src/content/blog/baisics-vs-hevy/index.tsx",
+        "Research Hevy: pricing (free + $9.99/mo), social/sharing focus, workout logging, platforms",
+        "Write honest comparison: where Hevy wins (social features, sharing), where Baisics wins (AI programs, nutrition, coach mode)",
+        "Include comparison table with pricing, features, platforms",
+        "Set published: true and correct date",
+        "Verify page renders at /blog/baisics-vs-hevy",
+        "npm run typecheck passes"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Hevy popular with social/sharing crowd"
+    },
+    {
+      "id": "US-005",
+      "title": "Write Baisics vs MyFitnessPal comparison post",
+      "description": "Create SEO-optimized comparison blog post targeting 'myfitnesspal alternative for workouts' keywords.",
+      "acceptanceCriteria": [
+        "Copy template to src/content/blog/baisics-vs-myfitnesspal/index.tsx",
+        "Research MyFitnessPal: pricing (free + $19.99/mo premium), nutrition focus, basic workouts, platforms",
+        "Write honest comparison: where MFP wins (food database, calorie tracking), where Baisics wins (workout programs, AI coaching)",
+        "Include comparison table with pricing, features, platforms",
+        "Set published: true and correct date",
+        "Verify page renders at /blog/baisics-vs-myfitnesspal",
+        "npm run typecheck passes"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "MFP is nutrition-first, we're workout-first with nutrition"
+    },
+    {
+      "id": "US-006",
+      "title": "Write Baisics vs Caliber comparison post",
+      "description": "Create SEO-optimized comparison blog post targeting 'caliber app alternative' keywords.",
+      "acceptanceCriteria": [
+        "Copy template to src/content/blog/baisics-vs-caliber/index.tsx",
+        "Research Caliber: pricing ($19/mo + coaching tiers), strength focus, 1:1 coaching option, platforms",
+        "Write honest comparison: where Caliber wins (human coaching option), where Baisics wins (free tier, AI speed, meal prep)",
+        "Include comparison table with pricing, features, platforms",
+        "Set published: true and correct date",
+        "Verify page renders at /blog/baisics-vs-caliber",
+        "npm run typecheck passes"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "Caliber targets serious strength trainers with coaching"
+    },
+    {
+      "id": "US-007",
+      "title": "Write Baisics vs SwoleMate comparison post",
+      "description": "Create SEO-optimized comparison blog post targeting 'swolemate alternative' keywords.",
+      "acceptanceCriteria": [
+        "Copy template to src/content/blog/baisics-vs-swolemate/index.tsx",
+        "Research SwoleMate: iOS only, lifting tracker, features from App Store listing",
+        "Write honest comparison: where SwoleMate wins (iOS polish?), where Baisics wins (web-based, AI programs, cross-platform)",
+        "Include comparison table with pricing, features, platforms",
+        "Set published: true and correct date",
+        "Verify page renders at /blog/baisics-vs-swolemate",
+        "npm run typecheck passes"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "SwoleMate is iOS-only competitor found on Reddit"
+    }
+  ]
+}

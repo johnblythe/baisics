@@ -1,6 +1,11 @@
+import type { Metadata } from 'next';
 import ConversationalIntakeContainer from "./components/ConversationalIntakeContainer";
 import MainLayout from "@/app/components/layouts/MainLayout";
 import { Suspense } from "react";
+
+export const metadata: Metadata = {
+  title: 'Get Started | baisics',
+};
 
 export default function HiPage() {
   return (

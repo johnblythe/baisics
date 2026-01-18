@@ -1,7 +1,19 @@
 "use client";
 
+/**
+ * ConversationalIntakeContainer
+ *
+ * Supported query params:
+ * - userId: string - Override the authenticated user ID
+ * - programId: string - Load an existing program for editing
+ * - persona: string - Pre-fill intake data with a persona (e.g., 'comeback', 'intermediate', 'parent')
+ *
+ * Note: Some routes pass additional params (template, invite) that are NOT currently implemented.
+ * These params are silently ignored. Future work may add support for them.
+ */
+
 import { useState, useEffect, forwardRef, useImperativeHandle, useRef } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { getUser, getUserProgram, getSessionIntake } from "@/lib/actions/user";
 import { User } from "@prisma/client";
@@ -125,7 +137,6 @@ function intakeToExtractedData(intake: any): any {
 }
 
 function ConversationalIntakeContent({ chatRef, userId: propUserId, preventNavigation }: ConversationalIntakeContentProps) {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const { data: session, status: sessionStatus } = useSession();
   const [userId, setUserId] = useState<string>("");

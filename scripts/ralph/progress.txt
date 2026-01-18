@@ -1,109 +1,159 @@
 # Ralph Progress Log
-Started: Sun Jan 18 13:53:50 EST 2026
+Started: Sun Jan 18 15:32:16 EST 2026
 ---
 
-## Codebase Patterns
-
-### Blog Post Structure
-- Blog posts live in `src/content/blog/[slug]/index.tsx`
-- Templates in `src/content/blog/_templates/`
-- Use `BlogPost`, `BlogSection`, `BlogQuote`, `BlogList`, `BlogTable` components from `@/app/blog/components/BlogPost`
-- Frontmatter type: `BlogPostFrontmatter` from `@/types/blog`
-- Set `published: true` for posts to appear
-- CTA buttons use coral gradient: `background: 'linear-gradient(to right, #FF6B6B, #FF8E8E)'`
-
-### Competitor Comparison Posts
-- Follow existing pattern from `baisics-vs-trainerize/index.tsx`
-- Key sections: Quick Comparison table, What is [Competitor], What is Baisics, Pricing, Features, Which Should You Choose, Try Baisics Free, FAQ
-- Keep tone factual and fair - acknowledge competitor strengths
-- SEO keywords: "baisics vs [competitor]", "[competitor] alternative", "[competitor] review 2026"
-
----
-
-## 2026-01-18 - US-001: Write Baisics vs Fitbod comparison post
-- Created `src/content/blog/baisics-vs-fitbod/index.tsx`
-- Followed template structure from `baisics-vs-trainerize` post
-- Key differentiators: Fitbod = polished mobile + Apple Watch, Baisics = free tier + nutrition
-- Pricing comparison: Fitbod $12.99/mo vs Baisics $5/mo
+## 2026-01-18 - US-001: Rename /import to /create
+- Moved src/app/import/ directory to src/app/create/
+- Updated layout.tsx metadata title from 'Import Your Workout Program | BAIsics' to 'Create Your Program | baisics'
+- Updated OpenGraph title to match
+- Renamed layout function from ImportLayout to CreateLayout
+- Updated callback URL in page.tsx from '/import?complete=true' to '/create?complete=true'
 - **Learnings for future iterations:**
-  - Use existing comparison posts as reference for tone and structure
-  - The `not-prose` class on CTA button container prevents prose styling conflicts
-  - Build takes ~2 minutes, factor into iteration time
-  - No need to create directory manually - Write tool handles it
+  - Next.js App Router uses directory names as routes - renaming directory automatically changes route
+  - API routes at /api/programs/import remain unchanged (different concern)
+  - sessionStorage callback URLs need updating when routes change
 ---
 
-## 2026-01-18 - US-002: Write Baisics vs Strong comparison post
-- Created `src/content/blog/baisics-vs-strong/index.tsx`
-- Key differentiators: Strong = manual logging + offline + simplicity, Baisics = AI programs + nutrition
-- Pricing: Strong $4.99/mo (or $99.99 lifetime), Baisics $5/mo
-- Strong has free tier limited to 3 routines vs Baisics free tier with full AI generation
-- Emphasized that apps serve different needs: Strong = tracker, Baisics = planner
+## 2026-01-18 - US-002: Update /tools/import-program redirect
+- Changed redirect from '/import' to '/create' in src/app/tools/import-program/page.tsx
+- Updated metadata title to 'Create Your Workout Program | baisics' (lowercase 'baisics' per style guide)
+- Updated metadata description to mention creating programs, not just importing
+- Updated OpenGraph title and description to match
+- Files changed: src/app/tools/import-program/page.tsx
 - **Learnings for future iterations:**
-  - Strong is logging-only, no program generation - important distinction
-  - Lifetime purchase option is a key Strong selling point worth mentioning
-  - Can suggest using both together (Baisics for programming, Strong for logging)
+  - This route exists as a legacy URL for SEO/bookmarks - redirects to new /create route
+  - Keep metadata updated even on redirect pages for search engine discovery
+  - Style guide specifies lowercase 'baisics' in titles
 ---
 
-## 2026-01-18 - US-003: Write Baisics vs JEFIT comparison post
-- Created `src/content/blog/baisics-vs-jefit/index.tsx`
-- Key differentiators: JEFIT = massive exercise library (1400+) + social/community, Baisics = AI programs + nutrition
-- Pricing: JEFIT $12.99/mo (or $69.99/yr, $139.99 lifetime), Baisics $5/mo
-- Emphasized different use cases: JEFIT = DIY toolkit for routine builders, Baisics = AI coach
+## 2026-01-18 - US-003: Add text input mode to /create
+- Added inputMode state ('text' | 'file') defaulting to 'text'
+- Added textInput state to hold pasted text content
+- Created toggle UI with two tabs: "Paste Text" and "Upload File"
+- Text mode shows a textarea with example placeholder showing workout format
+- File mode shows existing dropzone UI
+- Added processText() function to send text to API
+- Added handleTextSubmit() to process text input
+- Updated handleStartOver() to clear text input
+- Bulk mode toggle only shows when in file mode (coaches only)
+- Updated page description to mention both text and file options
+- Files changed: src/app/create/page.tsx
 - **Learnings for future iterations:**
-  - JEFIT is 14+ years old (founded 2010) - long track record worth mentioning
-  - "Toolkit vs coach" framing works well for DIY vs AI comparison
-  - Social features (leaderboards, challenges, sharing) are big for some users - Baisics lacks these
+  - Type icon imported from lucide-react for text input toggle
+  - API needs US-004 update to actually accept the text field - frontend is ready
+  - Bulk import (coaches) only makes sense for file mode, so hidden in text mode
 ---
 
-## 2026-01-18 - US-004: Write Baisics vs Hevy comparison post
-- Created `src/content/blog/baisics-vs-hevy/index.tsx`
-- Key differentiators: Hevy = social sharing + workout logging + polished UI, Baisics = AI programs + nutrition
-- Pricing: Hevy $9.99/mo (or $49.99/yr ~$4.17/mo), Baisics $5/mo
-- Hevy's free tier is very generous (unlimited logging + social) vs Baisics free tier (4 AI programs/mo)
-- Emphasized "social tracker vs AI coach" distinction
+## 2026-01-18 - US-004: Update /api/programs/import to accept text input
+- Modified POST handler to accept optional `text` field in request body
+- Added branch for text input mode - skips file validation entirely
+- Text input sent directly to AI with workoutFilePrompt
+- Added validation for empty text input
+- Returns error if neither text nor file is provided
+- Same response format as file uploads (parsed JSON from AI)
+- Files changed: src/app/api/programs/import/route.ts
 - **Learnings for future iterations:**
-  - Hevy has no nutrition features at all - purely workout focused
-  - "Social" is a real value for gym communities where friends all use same app
-  - Hevy annual price is actually cheaper than Baisics monthly - honest to acknowledge
-  - Can mention using both apps together but note it's extra work
+  - API has `@ts-nocheck` at top - TypeScript errors are suppressed
+  - `sendMessage` utility handles AI calls, accepts message array and role
+  - workoutFilePrompt is reused for all input types (text, DOCX, PDF, images)
+  - Text input path is simpler - no base64, no file validation, no file saving
 ---
 
-## 2026-01-18 - US-005: Write Baisics vs MyFitnessPal comparison post
-- Created `src/content/blog/baisics-vs-myfitnesspal/index.tsx`
-- Key differentiators: MFP = nutrition/calorie tracking first (14M+ food database), Baisics = workout programming first
-- Pricing: MFP $19.99/mo or $79.99/yr (~$6.67/mo), Baisics $5/mo
-- MFP has barcode scanner and massive food database - unmatched for precise tracking
-- Baisics has AI meal plans instead of manual logging - different approach entirely
+## 2026-01-18 - US-005: Add 'Start Blank' card to /templates
+- Added full-width featured card before templates grid
+- Card uses coral gradient background (coral to coralDark) for visual distinction
+- Displays "Start Blank" title and "Build your own program from scratch" subtitle
+- Links to /create?blank=true
+- Includes hover effect with shadow and animated arrow
+- Responsive: stacked on mobile, horizontal layout on md+
+- Files changed: src/app/templates/page.tsx
 - **Learnings for future iterations:**
-  - MFP is nearly 20 years old (founded 2005) - established player
-  - MFP integrates with 50+ devices/apps - Baisics has no external integrations yet
-  - "Tracking vs following a plan" is the key framing for MFP comparison
-  - MFP workout features are minimal - just exercise logging for calorie burn, no programs
+  - COLORS constant already defined in templates/page.tsx - reuse it
+  - Template cards use navy gradient; coral gradient provides contrast
+  - Use CSS gradient via style prop: `background: linear-gradient(...)`
+  - Card placed before grid div, not inside it (full width vs grid columns)
 ---
 
-## 2026-01-18 - US-006: Write Baisics vs Caliber comparison post
-- Created `src/content/blog/baisics-vs-caliber/index.tsx`
-- Key differentiators: Caliber = human coaching + strength tracking, Baisics = AI programs + nutrition
-- Pricing: Caliber free (tracking) + $12-19/mo Plus + $200/mo coaching, Baisics $5/mo
-- Caliber won Men's Journal "Best Free Workout App" 2026 - free tier is genuinely generous
-- Emphasized "AI coach vs human coach" distinction and huge price gap ($5 vs $200)
+## 2026-01-18 - US-006: Add DIY cards to /hi quick-start options
+- Added DIY_CARDS array with two navigation cards
+- Card 1: "I'll build my own" → /templates (browse templates or start from scratch)
+- Card 2: "I have a program" → /create (import existing workout plan)
+- Added Link import from next/link for navigation cards
+- Created second row with "Or go your own way:" label
+- Styled as 2-column grid with navy hover borders
+- Cards display both label and description for clarity
+- Files changed: src/app/hi/components/ConversationalInterface.tsx
 - **Learnings for future iterations:**
-  - Caliber's free tier includes 500+ exercises, full tracking, group sharing - very generous
-  - The $200/mo coaching tier is premium but includes video form reviews, weekly analysis
-  - "Top 1% of applicants" for coaches is a real value prop for serious lifters
-  - Worth noting that AI can't do form reviews - human coaching has some irreplaceable value
+  - QUICK_PROMPTS use onClick with handleSubmit - they trigger chat messages
+  - DIY_CARDS use Link - they navigate to other pages, not chat triggers
+  - Two distinct UI patterns: chat prompts (buttons) vs navigation cards (links)
+  - Descriptions help users understand where each option leads
 ---
 
-## 2026-01-18 - US-007: Write Baisics vs SwoleMate comparison post
-- Created `src/content/blog/baisics-vs-swolemate/index.tsx`
-- Key differentiators: SwoleMate = iOS-only free tracker (300+ exercises), Baisics = AI programs + nutrition + cross-platform
-- Pricing: SwoleMate completely free ($0.99 optional tip), Baisics $5/mo
-- SwoleMate is a simple logger, not a program generator - fundamentally different tool
-- Emphasized "tracker vs coach" distinction - SwoleMate for DIY, Baisics for guided programs
-- Suggested using both together: Baisics generates programs, SwoleMate logs them (iOS users)
+## 2026-01-18 - US-007: Add escape hatch link during /hi chat
+- Added escape hatch link inside chat messages container (bottom-right corner)
+- Link text: "Prefer to build your own? →" with arrow for navigation affordance
+- Links to /templates
+- Only shows when messages.length > 1 && !isTyping (after chat started)
+- Styled with Space Mono font, gray text (94A3B8), small font (text-xs)
+- Fades in with motion delay for subtle appearance
+- Files changed: src/app/hi/components/ConversationalInterface.tsx
 - **Learnings for future iterations:**
-  - SwoleMate is indie app by Anthony Samaha - genuinely free, not freemium bait
-  - iOS-only is significant limitation vs web-based Baisics
-  - For very simple trackers, combining tools can be a win-win recommendation
-  - There's a separate "Swolemate: Workout & Hangout" app (social) - different product
+  - Chat container already has `relative` positioning, so absolute positioning works
+  - messages.length > 1 ensures first AI greeting doesn't trigger the link
+  - Link component from next/link already imported (from US-006)
+  - Space Mono font used for subtle UI elements per style guide
+---
+
+## 2026-01-18 - US-008: Remove unused query params from /hi
+- Confirmed params NOT used in ConversationalIntakeContainer.tsx: template, prefill, source, invite
+- Confirmed params USED: userId, programId, persona
+- Removed unused `useRouter` import and `router` variable (dead code)
+- Added JSDoc comment documenting supported query params
+- Note: template and invite ARE passed from other routes but never read - future work needed
+- Files changed: src/app/hi/components/ConversationalIntakeContainer.tsx
+- **Learnings for future iterations:**
+  - Other routes (templates/[slug], coach/invite/[token], join/[slug]) pass template/invite params to /hi
+  - These params are silently ignored - potential feature gap or dead code in calling routes
+  - Always check for unused imports when cleaning up - `useRouter` was imported but never used
+  - JSDoc comments help document API contracts for components that accept query params
+---
+
+## 2026-01-18 - US-001: Fix undefined createNewProgram function
+- Removed dead code entirely rather than importing non-existent function
+- Removed `isSaving` state (line 90)
+- Removed `handleSaveProgram` function (lines 424-448) that referenced undefined `createNewProgram`
+- Removed dead `if (program)` branch in `renderFormSection` (hidden form with Save button)
+- The streaming generation hook already saves programs automatically (line 116-127)
+- Files changed: src/app/hi/components/ConversationalInterface.tsx (-62 lines)
+- **Learnings for future iterations:**
+  - The form with className="hidden" was dead code - never visible to users
+  - Program saving happens via `useStreamingGeneration` hook, not manual save button
+  - When a function references undefined dependencies, check if the entire code path is dead before fixing imports
+  - @ts-ignore comments often indicate dead or broken code paths
+---
+
+## 2026-01-18 - US-002: Add error handling to handleInitialIntake
+- Wrapped entire function body in try-catch
+- Added `else` branch for `result.success === false` case
+- Failure case: log error, set isTyping to false, show user-friendly message from result or fallback
+- Catch block: log error, set isTyping to false, show generic error message
+- Files changed: src/app/hi/components/ConversationalInterface.tsx
+- **Learnings for future iterations:**
+  - processUserMessage returns {success: boolean, message?: string, ...}
+  - Always set isTyping to false in ALL code paths (success, failure, exception)
+  - Use result?.message fallback pattern when API might return message on failure
+  - Infinite typing indicator is a bad UX - always ensure state cleanup
+---
+
+## 2026-01-18 - US-003: Add try-catch to handleProgramModification
+- Wrapped processModificationRequest call in try-catch block
+- Added catch block that logs error, sets isTyping false, shows user-friendly error message
+- Used finally block to always set isGeneratingProgram to false (moved from inside if/else branches)
+- Removed redundant setIsGeneratingProgram(false) from inside try block branches (now handled by finally)
+- Files changed: src/app/hi/components/ConversationalInterface.tsx
+- **Learnings for future iterations:**
+  - finally block is ideal for state cleanup that must happen in ALL code paths
+  - Error messages should be user-friendly, not expose technical details
+  - Pattern: try { await api() } catch { showError() } finally { resetLoadingState() }
 ---

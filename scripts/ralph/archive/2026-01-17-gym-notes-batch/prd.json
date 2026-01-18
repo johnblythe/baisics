@@ -1,0 +1,177 @@
+{
+  "project": "baisics",
+  "branchName": "ralph/psych-ux-mvp",
+  "description": "MVP implementation of psychological UX patterns for workout adherence - milestone badges, rest days, progress rings, recovery flows",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Lifetime Milestone Badges System",
+      "description": "As a user, I want to earn permanent badges for workout milestones so my progress is never lost even if I take breaks.",
+      "acceptanceCriteria": [
+        "Add milestone thresholds: 1, 10, 25, 50, 100, 250, 365, 500, 1000 workouts",
+        "Create MilestoneBadge component with earned/locked states",
+        "Badge unlock triggers on workout completion when threshold crossed",
+        "Full-screen celebration modal on badge unlock with animation",
+        "Profile/achievements page showing all badges with progress to next",
+        "Badge quotes for each tier (see 236-design-concepts.md)",
+        "Share card generation for earned badges",
+        "Badges persist forever - never lost on breaks",
+        "Mobile-first responsive design"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": "Foundation feature. Extends existing AchievementType. Reference 236-design-concepts.md Concept 5 for wireframes."
+    },
+    {
+      "id": "US-002",
+      "title": "Rest Day Affirmation Screen",
+      "description": "As a user, I want rest days to feel like progress (not absence) so I don't feel guilty for not working out.",
+      "acceptanceCriteria": [
+        "Detect rest days from program schedule (non-workout days)",
+        "Dashboard variant for rest days - different visual treatment",
+        "Praise/progress section: show lifetime stats, weekly progress, encouraging message",
+        "Educational coaching content: why rest works, muscle growth science (rotating)",
+        "Optional activity logging: nutrition, stretching, foam rolling, extra workout",
+        "Activity log is zero-pressure (optional, clearly labeled)",
+        "'Go HAM' option - let users do another workout if they want",
+        "Weekly progress indicator shows [R] for rest days (protected, not missed)",
+        "Rest days NEVER break any streak or consistency metric",
+        "Mobile-first calmer visual design (less saturated colors)"
+      ],
+      "priority": 2,
+      "passes": true,
+      "notes": "User feedback: B=praise, C=log options, D=coaching. Reference 236-design-concepts.md Concept 4."
+    },
+    {
+      "id": "US-003",
+      "title": "Quick Log - I Did It Button",
+      "description": "As a busy user, I want to quickly confirm I completed a workout without full logging so I maintain consistency even when rushed.",
+      "acceptanceCriteria": [
+        "One-tap 'I Did It' button on dashboard for scheduled workout days",
+        "Counts toward weekly progress and lifetime totals",
+        "Option to backfill details later (within 48 hours)",
+        "Works for: gym without phone, travel workouts, busy days",
+        "Visual confirmation on tap (checkmark animation)",
+        "Appears alongside 'Start Full Workout' - not a replacement",
+        "Clear messaging: 'Log that you worked out'",
+        "Updates completion ring immediately"
+      ],
+      "priority": 3,
+      "passes": true,
+      "notes": "High impact, low effort. Reduces friction for maintaining consistency."
+    },
+    {
+      "id": "US-004",
+      "title": "First Workout Celebration",
+      "description": "As a new user, I want my first workout to feel special so I'm motivated to come back for workout #2.",
+      "acceptanceCriteria": [
+        "Detect first workout completion per user",
+        "Full-screen celebration with tasteful confetti (2-3 sec max)",
+        "Day One badge unlocked with special quote",
+        "Show workout stats: sets completed, total volume lifted",
+        "Share card generation for social",
+        "Differentiated from subsequent workout completions (subsequent = shorter celebration)",
+        "Auto-advance after 5s if no interaction",
+        "Schedule 24h follow-up: 'Ready for workout #2?' (excitement, not guilt)",
+        "Uses milestone badge system for Day One badge"
+      ],
+      "priority": 4,
+      "passes": true,
+      "notes": "Peak-end rule. Critical moment - 4/5 dropout risk. Reference 236-design-concepts.md Concept 2."
+    },
+    {
+      "id": "US-005",
+      "title": "Completion Ring + Weekly Progress",
+      "description": "As a user, I want a visual ring showing my weekly workout progress so I can see how close I am to completing my week.",
+      "acceptanceCriteria": [
+        "SVG ring component with animated fill on completion",
+        "Shows 'X of Y workouts this week' in center",
+        "Day indicators below ring: [check] completed, [arrow] today, [R] rest, [empty] scheduled",
+        "Weekly framing (not daily) - protects rest days",
+        "Ring colors: navy stroke, coral fill (brand colors)",
+        "Desktop: split view with ring left, workout card right",
+        "Mobile: ring takes ~40% viewport above fold",
+        "Copy variants by progress (see 236-design-concepts.md)",
+        "Accessible: screen reader announces progress",
+        "Smooth animation on workout completion"
+      ],
+      "priority": 5,
+      "passes": true,
+      "notes": "Apple-proven pattern. Zeigarnik effect. Reference 236-design-concepts.md Concept 1."
+    },
+    {
+      "id": "US-006",
+      "title": "Missed Workout Recovery Flow",
+      "description": "As a user who missed workouts, I want a supportive recovery path so I can get back on track without shame.",
+      "acceptanceCriteria": [
+        "Detect absence: 1 day missed vs 3+ days absent",
+        "Recovery screen shown on return (before home, once per absence)",
+        "1-day miss: 'Welcome back' + progress safe messaging",
+        "3+ days: 'No judgment' + lifetime progress emphasis",
+        "Show: total workouts, week/program progress, volume lifted",
+        "Options: Today's Workout (full), Quick Session (3 exercises, 20 min), Not Today (defer)",
+        "Quick Comeback Workout generator: 3 compound movements, 50% sets, 70% weights",
+        "Program adjustment offer for 3+ day absence ('Make it easier' option)",
+        "'Not today' schedules reminder for tomorrow (not guilt-based)",
+        "Never shows on rest days",
+        "Track analytics: recovery shown -> option selected -> workout completed"
+      ],
+      "priority": 6,
+      "passes": true,
+      "notes": "Addresses #1 dropout cause (shame spiral). Reference 236-design-concepts.md Concept 3."
+    },
+    {
+      "id": "US-007",
+      "title": "Week 2 Check-in Intervention",
+      "description": "As a user in week 2, I want a proactive check-in so I can adjust my program before I quit.",
+      "acceptanceCriteria": [
+        "Detect Week 2 of program (around workout 5-8 depending on schedule)",
+        "Check-in modal/screen: 'How's it going?'",
+        "Options: Going great, Too hard, Too easy, Life got in the way",
+        "Show original goals as reminder",
+        "Program difficulty adjustment flow if 'Too hard' selected",
+        "Reduce volume/frequency options",
+        "Encouraging message regardless of selection",
+        "Only shows once per program",
+        "Track: check-in shown -> option selected -> week 3 retention"
+      ],
+      "priority": 7,
+      "passes": true,
+      "notes": "50%+ users quit by Week 2. Critical intervention point."
+    },
+    {
+      "id": "US-008",
+      "title": "Weekly Summary Notification",
+      "description": "As a user, I want a weekly summary push notification so I can see my progress at a glance.",
+      "acceptanceCriteria": [
+        "Weekly notification (Sunday evening or Monday morning - configurable)",
+        "Content: workouts completed this week, total volume, streak/consistency status",
+        "Positive framing regardless of performance",
+        "Deep link to dashboard/progress view",
+        "Respects notification preferences (can disable)",
+        "Does not stack with other notifications same day"
+      ],
+      "priority": 8,
+      "passes": true,
+      "notes": "User requested weekly pushes as default. Low pressure, informational."
+    },
+    {
+      "id": "US-009",
+      "title": "Program Completion Notification",
+      "description": "As a user who finishes a program, I want to be notified and celebrated so the milestone feels meaningful.",
+      "acceptanceCriteria": [
+        "Detect program completion (all scheduled workouts done)",
+        "Push notification: 'You completed [Program Name]!'",
+        "Deep link to completion summary screen",
+        "Summary shows: total workouts, volume progress, time invested",
+        "Before/after stats comparison (Week 1 vs final week)",
+        "Program completion badge earned",
+        "Share card for social",
+        "Prompt for next program selection"
+      ],
+      "priority": 9,
+      "passes": true,
+      "notes": "Important milestone celebration. Transitions user to next program."
+    }
+  ]
+}

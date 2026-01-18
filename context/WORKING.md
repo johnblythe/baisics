@@ -1,102 +1,92 @@
-# Session Context - 2026-01-17T10:45:00-05:00
+# Session Context - 2026-01-18T14:50:00-05:00
 
 ## Current Session Overview
-- **Main Task/Feature**: Command Center dashboard redesign - unified layout with rest day variation
-- **Session Duration**: ~1 hour
-- **Current Status**: Layout complete, visual refinements done, ready for review
+- **Main Task/Feature**: Issue cleanup, Ralph batches, /hi route refactoring
+- **Session Duration**: ~2 hours
+- **Current Status**: Ralph finishing error handling batch (5/6), about to start /hi improvements
 
 ## Recent Activity (Last 30-60 minutes)
 - **What We Just Did**:
-  1. Fixed workout log de-duplication (same workout + same day)
-  2. Removed separate RestDayDashboard, integrated rest day as variation in Command Center
-  3. Moved helper links bar between top and bottom rows
-  4. Fixed quick links hover to use real coral with white text
-  5. Redesigned bottom row: Activity grid (4 weeks) + Streak stats + Recent activity (3-column)
-- **Active Problems**: User reviewing latest layout changes
-- **Current Files**: `src/app/dashboard/[programId]/page.tsx`
-- **Test Status**: TypeScript compiles, visual review pending
+  - Completed Ralph batch: 7 SEO competitor comparison blog posts (PR #290 merged)
+  - Started Ralph batch: 6 error handling + SEO title fixes (5/6 complete)
+  - Deep explored /hi route dependencies - mapped 20+ inbound links, 4 unused query params
+  - Got USDA API key for #122 (key: vRBwhBBkegsIpLI9EtANZhMycPcIazx3uJiAnScv)
+- **Active Problems**: /hi route is over-entangled, needs detangling
+- **Current Files**: Ralph working on src/app/dashboard/[programId]/page.tsx (comment fix)
+- **Test Status**: All Ralph stories passing typecheck
 
 ## Key Technical Decisions Made
 - **Architecture Choices**:
-  - Single Command Center layout for both workout and rest days (no separate RestDayDashboard)
-  - Rest day shown as variation in "Today's Workout" card (emerald tint, recovery tip, train anyway option)
+  - Keep /hi route (15+ active usage points) but detangle it
+  - 4 query params (?template, ?prefill, ?source, ?invite) are passed but never used - need fixing
 - **Implementation Approaches**:
-  - De-duplication at API level (quick-log, workout-logs routes) AND display level (rest-day, recent-activity routes)
-  - Group hover pattern for quick links (`group` + `group-hover:text-white`)
-- **Technology Selections**: Standard Next.js/Tailwind, existing components
-- **Performance/Security Considerations**: N/A
+  - Ralph for automatable issues (specific file:line + clear fix)
+  - Manual for design decisions and external dependencies
+- **Technology Selections**: USDA FoodData Central API for food search (free tier)
+- **Performance/Security Considerations**: None new
 
 ## Code Context
 - **Modified Files This Session**:
-  - `src/app/dashboard/[programId]/page.tsx` - Major layout restructure
-  - `src/app/api/workout-logs/quick-log/route.ts` - De-duplication check
-  - `src/app/api/workout-logs/route.ts` - Resume existing or prevent duplicates
-  - `src/app/api/programs/[programId]/rest-day/route.ts` - Unique workout+day counting
-  - `src/app/api/programs/[programId]/recent-activity/route.ts` - De-duplication filter
-  - `src/components/week2-checkin/Week2CheckInModal.tsx` - z-index fix (z-[100])
-  - `src/components/NutritionLogModal.tsx` - z-index fix + quick check-in
-  - Various other modals - z-index fixes
-- **New Patterns**:
-  - Rest day variation: `${restDayData?.isRestDay ? 'border-emerald-200 bg-gradient-to-b from-emerald-50/50' : 'border-[#E2E8F0]'}`
-  - Quick links hover: `hover:bg-[#FF6B6B]` with `group-hover:text-white` on children
+  - 7 new blog posts: src/content/blog/baisics-vs-{fitbod,strong,jefit,hevy,myfitnesspal,caliber,swolemate}/
+  - 8 new layout files for SEO titles (coach/dashboard, coaches/signup, etc.)
+  - Error handling in workout/[id]/page.tsx, workout-logs/[id]/complete/route.ts
+  - .issues.json updated (15 open issues now)
+- **New Patterns**: Client components need layout.tsx for metadata; server components export directly
 - **Dependencies**: None added
 - **Configuration Changes**: None
 
 ## Current Implementation State
 - **Completed**:
-  - Command Center 3-column top row (Today's Workout | Weekly Progress | Quick Log)
-  - Rest day variation in Today's Workout card (emerald, recovery tip, train anyway)
-  - Helper links row between top and bottom
-  - Bottom row: Activity grid (4 weeks, 7-col layout) | Streak stats | Recent activity
-  - Workout log de-duplication (API + display level)
-  - Modal z-index fixes (z-[100])
-- **In Progress**: User visual review
+  - PR #290: 7 competitor comparison blog posts (closes #218)
+  - Issues closed: #218, #233, #270, #272 (plus 8 others earlier)
+  - Branch cleanup: 23 local + 87 remote refs pruned
+- **In Progress**:
+  - Ralph batch: error handling + SEO (5/6 done, #284 comment fix in progress)
+  - Will close: #288, #280, #281, #282, #283, #284
 - **Blocked**: None
 - **Next Steps**:
-  1. Get user feedback on new layout
-  2. May need activity grid size tweaks
-  3. Eventually commit changes
+  1. Wait for Ralph to finish (1 story left)
+  2. Commit + PR the error handling batch
+  3. Refactor /hi route - use unused params, extract program display
 
 ## Important Context for Handoff
-- **Environment Setup**: Standard - `npm run dev` on port 3001
-- **Running/Testing**: Visit `http://localhost:3001/dashboard`
+- **Environment Setup**: Standard - npm run dev on port 3001
+- **Running/Testing**: npx tsc --noEmit for typecheck
 - **Known Issues**:
-  - Demo pages at `/demo` still exist (can be deleted)
-  - Existing duplicate workout logs in DB will display correctly due to de-dup logic
-- **External Dependencies**: None
+  - /hi has 4 unused query params: ?template, ?prefill, ?source, ?invite
+  - Program modification disabled in /hi/actions.ts line 92
+- **External Dependencies**:
+  - USDA API key ready: vRBwhBBkegsIpLI9EtANZhMycPcIazx3uJiAnScv
+  - Store in USDA_API_KEY env var when implementing #122
 
 ## Conversation Thread
-- **Original Goal**: Test psychological UX features, pivoted to dashboard redesign
-- **Evolution**:
-  1. User chose Command Center (Concept A) from 3 demo layouts
-  2. Implemented Command Center, got feedback on issues
-  3. Fixed dedup bugs, z-index issues
-  4. Removed separate RestDayDashboard, made it a variation
-  5. Refined layout: links bar position, quick links hover, activity grid size
+- **Original Goal**: Clean up issues, run automatable work through Ralph
+- **Evolution**: Expanded to /hi route analysis and USDA API prep
 - **Lessons Learned**:
-  - Activity grid: tiny was bad, huge was bad - moderate 4-week grid in 7-col layout works
-  - Rest day shouldn't be entirely different UI - same layout with subtle variation
-  - Quick links hover needs to "own it" with real coral, not weak pink
+  - PRs must use "Closes #XXX" to auto-close issues
+  - Client components can't export metadata - need separate layout.tsx
 - **Alternatives Considered**:
-  - Separate RestDayDashboard component (rejected - too different)
-  - 12-week activity grid (rejected - too cramped or too big)
+  - Remove /hi route - rejected (15+ active links)
+  - Keep /hi as-is - rejected (too entangled, unused params)
 
-## Layout Reference
-```
-┌─────────────────────────────────────────────────────────────────┐
-│ HEADER: Program Name (selector) | Week Days (S M T W T F S)    │
-├───────────────────┬──────────────────────┬─────────────────────┤
-│ TODAY'S WORKOUT   │ WEEKLY PROGRESS      │ QUICK LOG           │
-│ (or Rest Day)     │ Ring + % bar + stats │ 4 action buttons    │
-│ [Start Workout]   │                      │ (coral hover)       │
-├───────────────────┴──────────────────────┴─────────────────────┤
-│ HELPER LINKS: PDF | Share | New | Upload | Help                │
-├──────────────────┬────────────────┬────────────────────────────┤
-│ ACTIVITY (4 wks) │ STREAK/STATS   │ RECENT ACTIVITY            │
-│ 7-col grid       │ Big number 🔥  │ Last 5 workouts            │
-│ S M T W T F S    │ workouts/best  │                            │
-└──────────────────┴────────────────┴────────────────────────────┘
-```
+## /hi Route Detangle Plan
+The /hi route accepts but ignores these params:
+1. `?template` - from /templates/[slug], should prefill intake
+2. `?prefill` - from dashboard tool claims, should prefill intake
+3. `?source` - analytics tracking, should be logged
+4. `?invite` - coach invite token, should trigger coach flow
+
+Inbound links (20+):
+- Landing pages, templates, tools, coach invites, dashboard, share pages, blog CTAs, library
+
+Outbound (2 paths):
+- Authenticated → /dashboard/{programId}
+- Anonymous → /program/review?userId=X&programId=Y
+
+## Open Issues Summary (15)
+- High: #174 (rotate credentials)
+- Med: #227, #189, #122, #105
+- Low: #285, #277, #274, #192
 
 ---
-*Last updated: 2026-01-17*
+*Last updated: 2026-01-18*

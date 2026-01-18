@@ -628,7 +628,7 @@ function DashboardContent() {
           }),
         });
       } catch (error) {
-        // Silent fail for analytics
+        // Log error but continue - analytics shouldn't block user flow
         console.error('Failed to track recovery option:', error);
       }
     }

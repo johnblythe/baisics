@@ -12,6 +12,7 @@ import { SAMPLE_PROFILES } from "@/utils/sampleUserPersonas";
 import { User } from "@prisma/client";
 import { getRandomWelcomeMessage } from "../utils/welcomeMessages";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { createAnonUser, getUser } from "@/lib/actions/user";
 import { v4 as uuidv4 } from "uuid";
 import exampleProgram from '../utils/example.json';
@@ -27,6 +28,12 @@ const QUICK_PROMPTS = [
   { label: '🔥 Lose Weight', message: "I want to lose weight and get in better shape. Looking for something I can stick with." },
   { label: '⚡ Get Stronger', message: "I want to focus on building strength. Interested in compound lifts and progressive overload." },
   { label: '🎯 General Fitness', message: "I just want to get healthier and more fit overall. Not sure where to start." },
+];
+
+// DIY navigation cards - these link to other pages, not chat triggers
+const DIY_CARDS = [
+  { label: '🛠️ I\'ll build my own', href: '/templates', description: 'Browse templates or start from scratch' },
+  { label: '📋 I have a program', href: '/create', description: 'Import your existing workout plan' },
 ];
 
 // Add type for example program phase
@@ -80,7 +87,6 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
   const [isUpsellOpen, setIsUpsellOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [currentProfileIndex, setCurrentProfileIndex] = useState(Math.floor(Math.random() * Object.keys(SAMPLE_PROFILES).length));
-  const [isSaving, setIsSaving] = useState(false);
   const [showDataReview, setShowDataReview] = useState(false);
   const [localUserId, setLocalUserId] = useState(userId);
   const [localUser, setLocalUser] = useState(user);
@@ -203,69 +209,95 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
   // -- not ready for the big leagues just yet
   const handleProgramModification = async (userMessage: Message, program: Program) => {
     setIsGeneratingProgram(true);
-    const result = await processModificationRequest(
-      [...messages, userMessage],
-      localUserId,
-      program,
-      inputValue
-    );
-    if (result?.success) {
-      if (result.needsClarification) {
-        // AI needs more information
-        setIsGeneratingProgram(false);
-        setTimeout(() => {
-          setMessages(prev => [...prev, { 
-            role: "assistant", 
-            content: result.message 
-          }]);
-          setIsTyping(false);
-        }, Math.random() * 1000 + 500);
+    try {
+      const result = await processModificationRequest(
+        [...messages, userMessage],
+        localUserId,
+        program,
+        inputValue
+      );
+      if (result?.success) {
+        if (result.needsClarification) {
+          // AI needs more information
+          setTimeout(() => {
+            setMessages(prev => [...prev, {
+              role: "assistant",
+              content: result.message
+            }]);
+            setIsTyping(false);
+          }, Math.random() * 1000 + 500);
+        } else {
+          // AI has modified the program
+          setTimeout(() => {
+            setMessages(prev => [...prev, {
+              role: "assistant",
+              content: `I've made the requested changes: ${result.message}`
+            }]);
+            setProgram(result.program ? result.program.program as Program : null);
+            setIsTyping(false);
+          }, Math.random() * 1000 + 500);
+        }
       } else {
-        // AI has modified the program
-        setTimeout(() => {
-          setMessages(prev => [...prev, { 
-            role: "assistant", 
-            content: `I've made the requested changes: ${result.message}` 
-          }]);
-          setProgram(result.program ? result.program.program as Program : null);
-          setIsGeneratingProgram(false);
-          setIsTyping(false);
-        }, Math.random() * 1000 + 500);
+        setMessages(prev => [...prev, {
+          role: "assistant",
+          content: result?.message || "Sorry, I couldn't process that request. Please try again."
+        }]);
+        setIsTyping(false);
       }
-    } else {
-      setIsGeneratingProgram(false);
-      setIsTyping(false);
+    } catch (error) {
+      console.error('Error in handleProgramModification:', error);
       setMessages(prev => [...prev, {
         role: "assistant",
-        content: result?.message || "Sorry, I couldn't process that request. Please try again."
+        content: "Sorry, something went wrong while processing your request. Please try again."
       }]);
+      setIsTyping(false);
+    } finally {
+      setIsGeneratingProgram(false);
     }
   };
 
   // Work on getting the right data from the user to generate a program
   const handleInitialIntake = async (userMessage: Message, _: string) => {
-    // Pass existing extractedData so returning users don't get asked redundant questions (#107)
-    const result = await processUserMessage([...messages, userMessage], localUserId, extractedData as any);
-        
-    if (result.success) {
-      if (result.extractedData) {
-        setExtractedData(result.extractedData);
-      }
-      
-      if (result.readyForProgram && result.extractedData) {
-        setIsTyping(false);
-        setMessages(prev => [...prev, { 
-          role: "assistant", 
-          content: "Great! I have enough information. Let's review everything before creating your program." 
-        }]);
-        setShowDataReview(true);
-        return;
-      } else {
-        setTimeout(() => {
-          setMessages(prev => [...prev, { role: "assistant", content: result.message }]);
+    try {
+      // Pass existing extractedData so returning users don't get asked redundant questions (#107)
+      const result = await processUserMessage([...messages, userMessage], localUserId, extractedData as any);
+
+      if (result.success) {
+        if (result.extractedData) {
+          setExtractedData(result.extractedData);
+        }
+
+        if (result.readyForProgram && result.extractedData) {
           setIsTyping(false);
-        }, Math.random() * 1000 + 500);
+          setMessages(prev => [...prev, {
+            role: "assistant",
+            content: "Great! I have enough information. Let's review everything before creating your program."
+          }]);
+          setShowDataReview(true);
+          return;
+        } else {
+          setTimeout(() => {
+            setMessages(prev => [...prev, { role: "assistant", content: result.message }]);
+            setIsTyping(false);
+          }, Math.random() * 1000 + 500);
+        }
+      } else {
+        // Handle failure case from processUserMessage
+        console.error('processUserMessage returned failure:', result);
+        setIsTyping(false);
+        setMessages(prev => [...prev, {
+          role: "assistant",
+          content: result?.message || "I had trouble processing that. Could you try rephrasing?"
+        }]);
       }
+    } catch (error) {
+      // Handle network errors or unexpected exceptions
+      console.error('Error in handleInitialIntake:', error);
+      setIsTyping(false);
+      setMessages(prev => [...prev, {
+        role: "assistant",
+        content: "Something went wrong on my end. Please try again."
+      }]);
     }
   };
 
@@ -415,32 +447,6 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
     }
   };
 
-  const handleSaveProgram = async () => {
-    if (!program) return;
-    
-    setIsSaving(true);
-    try {
-      // @ts-ignore
-      const savedProgram = await createNewProgram(program, localUserId);
-      if (savedProgram) {
-        // @ts-ignore
-        setProgram(savedProgram);
-        setMessages(prev => [...prev, {
-          role: "assistant",
-          content: "Your program has been saved! You can now access it anytime from your dashboard."
-        }]);
-      }
-    } catch (error) {
-      console.error("Failed to save program:", error);
-      setMessages(prev => [...prev, {
-        role: "assistant",
-        content: "I'm sorry, I encountered an error while saving your program. Please try again."
-      }]);
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
   const demoUser = async () => {
     if (!localUserId) {
       const newUserId = uuidv4();
@@ -559,42 +565,8 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
     }
   };
 
-  // Update the form section based on whether we have a program
+  // Form section for initial conversation (hidden during generation)
   const renderFormSection = () => {
-    if (program) {
-      return (
-        <form onSubmit={handleSubmit} className="hidden p-6 border-t border-[#F1F5F9] bg-white rounded-b-xl">
-          <div className="flex flex-col space-y-4">
-            <textarea
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Have any feedback about your program? Let me know if you'd like any adjustments..."
-              rows={3}
-              className="w-full p-4 border-2 border-[#F1F5F9] rounded-xl bg-[#F8FAFC] text-[#0F172A] placeholder-[#94A3B8] focus:ring-2 focus:ring-[#FF6B6B]/20 focus:border-[#FF6B6B] resize-none transition-all duration-300"
-              style={{ fontFamily: "'Outfit', sans-serif" }}
-            />
-            <div className="flex space-x-3">
-              <button
-                type="button"
-                onClick={handleSaveProgram}
-                className="flex-1 px-6 py-3 bg-[#0F172A] text-white text-base font-semibold rounded-xl hover:bg-[#1E293B] transition-all duration-300"
-              >
-                {isSaving ? "Saving..." : "Save Program"}
-              </button>
-              <button
-                type="submit"
-                className="flex-1 px-6 py-3 bg-[#FF6B6B] hover:bg-[#EF5350] text-white text-base font-semibold rounded-xl shadow-lg shadow-[#FF6B6B]/25 transition-all duration-300"
-              >
-                Request Changes
-              </button>
-            </div>
-          </div>
-        </form>
-      );
-    }
-
-    // Original form for initial conversation
     return (
       <form
         onSubmit={handleSubmit}
@@ -725,6 +697,24 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
                 </motion.div>
               )}
               <div ref={messagesEndRef} />
+
+              {/* Escape hatch link - shows after chat has started */}
+              {messages.length > 1 && !isTyping && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                  className="absolute bottom-3 right-3"
+                >
+                  <Link
+                    href="/templates"
+                    className="text-xs text-[#94A3B8] hover:text-[#64748B] transition-colors"
+                    style={{ fontFamily: "'Space Mono', monospace" }}
+                  >
+                    Prefer to build your own? →
+                  </Link>
+                </motion.div>
+              )}
             </div>
 
             {/* Quick Start Prompts - shows when conversation just started */}
@@ -752,6 +742,21 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
                     >
                       {prompt.label}
                     </button>
+                  ))}
+                </div>
+
+                {/* DIY Options - second row for users who want to build their own */}
+                <p className="text-sm text-[#94A3B8] mt-6 mb-4 text-center">Or go your own way:</p>
+                <div className="grid grid-cols-2 gap-3">
+                  {DIY_CARDS.map((card, idx) => (
+                    <Link
+                      key={idx}
+                      href={card.href}
+                      className="px-5 py-4 bg-white hover:bg-[#F8FAFC] border-2 border-[#E2E8F0] hover:border-[#0F172A] rounded-xl text-center transition-all duration-200 group"
+                    >
+                      <span className="block text-sm font-medium text-[#0F172A]">{card.label}</span>
+                      <span className="block text-xs text-[#94A3B8] mt-1 group-hover:text-[#64748B]">{card.description}</span>
+                    </Link>
                   ))}
                 </div>
               </motion.div>

@@ -1,0 +1,127 @@
+{
+  "project": "Baisics",
+  "branchName": "ralph/hi-route-refactor",
+  "description": "Refactor /hi route - add DIY options, rename /import to /create, add text input mode",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Rename /import to /create",
+      "description": "Rename the /import route to /create to better reflect its purpose as a program creation tool.",
+      "acceptanceCriteria": [
+        "Move src/app/import/ directory to src/app/create/",
+        "Update layout.tsx metadata title to 'Create Your Program | baisics'",
+        "Update page.tsx internal references if any",
+        "npm run typecheck passes"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Just rename the directory and update metadata. API routes stay at /api/programs/import."
+    },
+    {
+      "id": "US-002",
+      "title": "Update /tools/import-program redirect",
+      "description": "Update the redirect in /tools/import-program to point to /create instead of /import.",
+      "acceptanceCriteria": [
+        "In src/app/tools/import-program/page.tsx, change redirect('/import') to redirect('/create')",
+        "Update metadata description to reference /create",
+        "npm run typecheck passes"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Simple one-line change plus metadata update."
+    },
+    {
+      "id": "US-003",
+      "title": "Add text input mode to /create",
+      "description": "Add a toggle between 'Paste Text' and 'Upload File' modes to /create page.",
+      "acceptanceCriteria": [
+        "Add state: inputMode with values 'text' | 'file', default to 'text'",
+        "Add toggle UI with two tabs/buttons above the input area",
+        "Text mode shows a textarea with placeholder: 'Paste your program here...\n\nExample:\nWeek 1:\nMonday - Squat 3x5, Bench 3x5, Rows 3x8\nWednesday - Deadlift 1x5, OHP 3x5, Pullups 3x8'",
+        "File mode shows existing dropzone UI",
+        "Text mode submit sends text to /api/programs/import with a 'text' field instead of 'file'",
+        "npm run typecheck passes"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "The API may need minor update to accept text field. Check /api/programs/import/route.ts."
+    },
+    {
+      "id": "US-004",
+      "title": "Update /api/programs/import to accept text input",
+      "description": "Modify the import API to accept raw text in addition to file uploads.",
+      "acceptanceCriteria": [
+        "In /api/programs/import/route.ts, check for 'text' field in request body",
+        "If text field present, parse it directly instead of extracting from file",
+        "Use same AI parsing logic for text as for file content",
+        "Return same response format",
+        "npm run typecheck passes"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Text parsing should be simpler than file parsing - just send to AI directly."
+    },
+    {
+      "id": "US-005",
+      "title": "Add 'Start Blank' card to /templates",
+      "description": "Add a prominent 'Start Blank' card at the top of the templates grid.",
+      "acceptanceCriteria": [
+        "Add a featured card before the template grid in src/app/templates/page.tsx",
+        "Card has title 'Start Blank', subtitle 'Build your own program from scratch'",
+        "Card uses coral accent color to stand out",
+        "Card links to /create?blank=true",
+        "Card is full-width or spans 2 columns on desktop",
+        "npm run typecheck passes"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Make it visually distinct from template cards. Use existing COLORS constants."
+    },
+    {
+      "id": "US-006",
+      "title": "Add DIY cards to /hi quick-start options",
+      "description": "Add two new quick-start cards to /hi for users who want to build their own or bring their own program.",
+      "acceptanceCriteria": [
+        "Find the quick-start cards section in ConversationalInterface.tsx",
+        "Add card: 'I'll build my own' that links to /templates",
+        "Add card: 'I have a program' that links to /create",
+        "Style consistently with existing goal cards",
+        "Cards appear in a second row below existing goal cards",
+        "npm run typecheck passes"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "These are navigation cards, not chat triggers. They should use Link/router.push."
+    },
+    {
+      "id": "US-007",
+      "title": "Add escape hatch link during /hi chat",
+      "description": "Add a subtle 'prefer to DIY?' link that appears during the AI chat conversation.",
+      "acceptanceCriteria": [
+        "Add a small link in the chat interface (bottom or corner)",
+        "Text: 'Prefer to build your own?' or similar",
+        "Links to /templates",
+        "Only shows after chat has started (not on initial card selection)",
+        "Styled subtly - gray text, small font",
+        "npm run typecheck passes"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": "Should not distract from main flow, just provide an out for frustrated users."
+    },
+    {
+      "id": "US-008",
+      "title": "Remove unused query params from /hi",
+      "description": "Clean up the unused query parameters that are passed to /hi but never read.",
+      "acceptanceCriteria": [
+        "In ConversationalIntakeContainer.tsx, confirm these params are not used: template, prefill, source, invite",
+        "Remove any dead code that references these params",
+        "Keep working params: userId, programId, persona",
+        "npm run typecheck passes"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": "These params were identified as passed but never read. Just confirm and clean up."
+    }
+  ]
+}

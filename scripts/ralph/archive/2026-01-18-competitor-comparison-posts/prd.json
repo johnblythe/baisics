@@ -1,0 +1,97 @@
+{
+  "project": "Baisics",
+  "branchName": "ralph/error-handling-seo-batch",
+  "description": "Error handling improvements and SEO page titles batch",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Add unique page titles for SEO (#288)",
+      "description": "Update page metadata so each route has a unique, descriptive title instead of generic 'baisics | Your Personal AI Fitness Coach'",
+      "acceptanceCriteria": [
+        "Add metadata export to /coach/dashboard with title 'Coach Dashboard | baisics'",
+        "Add metadata export to /coaches/signup with title 'Start Coaching | baisics'",
+        "Add metadata export to /dashboard with title 'Your Dashboard | baisics'",
+        "Add metadata export to /hi with title 'Get Started | baisics'",
+        "Add metadata export to /coach/settings with title 'Coach Settings | baisics'",
+        "Add metadata export to /settings with title 'Settings | baisics'",
+        "Add metadata export to /meal-prep with title 'Meal Prep | baisics'",
+        "Add metadata export to /nutrition with title 'Nutrition | baisics'",
+        "Add metadata export to /templates with title 'Program Templates | baisics'",
+        "Add metadata export to /library with title 'Exercise Library | baisics'",
+        "npm run typecheck passes"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": "Use Next.js metadata API: export const metadata = { title: '...' }"
+    },
+    {
+      "id": "US-002",
+      "title": "Wrap localStorage.setItem in try-catch (#280)",
+      "description": "Prevent crash if localStorage fails (quota exceeded, private browsing) during first workout celebration.",
+      "acceptanceCriteria": [
+        "In src/app/workout/[id]/page.tsx around line 343-353, wrap localStorage.setItem in try-catch",
+        "On catch, log warning and continue (don't block celebration)",
+        "npm run typecheck passes"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": "Graceful degradation - celebration should still show even if storage fails"
+    },
+    {
+      "id": "US-003",
+      "title": "Wrap getDebugState in try-catch (#281)",
+      "description": "Debug features should never break production. Wrap getDebugState() call in try-catch.",
+      "acceptanceCriteria": [
+        "In src/app/api/workout-logs/[id]/complete/route.ts around line 122, wrap getDebugState() in try-catch",
+        "On catch, log error and default to non-debug behavior (null or empty state)",
+        "npm run typecheck passes"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": "Debug should fail silently, never break production"
+    },
+    {
+      "id": "US-004",
+      "title": "Differentiate no body vs malformed JSON (#282)",
+      "description": "Improve error handling to distinguish between missing body (expected) and malformed JSON (client bug).",
+      "acceptanceCriteria": [
+        "In src/app/api/workout-logs/[id]/complete/route.ts around line 27-40",
+        "Check content-length header before attempting JSON parse",
+        "If content-length > 0 but JSON parse fails, log error and return 400 Bad Request",
+        "If no body or content-length 0, proceed with empty body (current behavior)",
+        "npm run typecheck passes"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": "Helps debug client-side issues by logging malformed requests"
+    },
+    {
+      "id": "US-005",
+      "title": "Include server response in workout completion error (#283)",
+      "description": "Add server response text to error messages for better debugging.",
+      "acceptanceCriteria": [
+        "In src/app/workout/[id]/page.tsx around line 331-377",
+        "When response is not ok, get response text: const errorText = await response.text()",
+        "Include in error: throw new Error(`Failed to complete workout: ${response.status} - ${errorText}`)",
+        "npm run typecheck passes"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": "Better error messages help debug production issues"
+    },
+    {
+      "id": "US-006",
+      "title": "Fix inconsistent silent fail comment (#284)",
+      "description": "Comment says 'silent fail' but code uses console.error. Fix the inconsistency.",
+      "acceptanceCriteria": [
+        "In src/app/dashboard/[programId]/page.tsx around line 574-588",
+        "Either remove console.error to make it truly silent, OR update comment to say 'Log error but continue'",
+        "Choose the option that makes more sense for analytics failures (recommend: keep logging, fix comment)",
+        "npm run typecheck passes"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": "Code and comments should match"
+    }
+  ]
+}
