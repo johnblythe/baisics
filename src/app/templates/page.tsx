@@ -182,6 +182,37 @@ export default function TemplatesPage() {
             </div>
           </div>
 
+          {/* Start Blank Card */}
+          <Link
+            href="/create?blank=true"
+            className="group mb-6 block rounded-2xl overflow-hidden transition-all hover:shadow-xl"
+            style={{
+              background: `linear-gradient(135deg, ${COLORS.coral} 0%, ${COLORS.coralDark} 100%)`,
+            }}
+          >
+            <div className="p-8 md:flex md:items-center md:justify-between">
+              <div className="mb-4 md:mb-0">
+                <h2 className="text-2xl font-bold text-white mb-2">
+                  Start Blank
+                </h2>
+                <p className="text-white/80 text-lg">
+                  Build your own program from scratch
+                </p>
+              </div>
+              <div className="flex items-center gap-2 text-white font-semibold group-hover:gap-3 transition-all">
+                <span>Get Started</span>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 7l5 5m0 0l-5 5m5-5H6"
+                  />
+                </svg>
+              </div>
+            </div>
+          </Link>
+
           {/* Templates Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredTemplates.map((template) => (
