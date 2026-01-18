@@ -221,7 +221,7 @@ export default function ImportPage() {
 
       await signIn('email', {
         email: email.toLowerCase().trim(),
-        callbackUrl: '/import?complete=true'
+        callbackUrl: '/create?complete=true'
       });
     } catch (err) {
       setError('Failed to send magic link. Please try again.');
