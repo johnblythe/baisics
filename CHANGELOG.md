@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Live slug availability check on coach settings page with 500ms debounce
 - `/api/coach/check-slug` endpoint for slug uniqueness validation
+- 7 SEO competitor comparison blog posts (#218)
+  - Baisics vs Fitbod, Strong, JEFIT, Hevy, MyFitnessPal, Caliber, SwoleMate
+  - Honest comparisons with pricing tables and feature breakdowns
 
 ### Changed
 - Coach settings page sizing improvements (max-w-3xl, better flex layouts)

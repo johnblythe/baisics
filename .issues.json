@@ -1,173 +1,124 @@
 {
   "issues": [
     {
-      "id": "246",
-      "number": 246,
-      "title": "Feature: Add notes input to set logging (tap to expand)",
-      "labels": [
-        "enhancement"
-      ],
-      "status": "open",
-      "priority": "med",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2026-01-15T17:30:00Z",
-      "updatedAt": "2026-01-15T17:30:00Z"
-    },
-    {
-      "id": "244",
-      "number": 244,
-      "title": "Kcal screenshot issues",
-      "labels": [
-        "bug"
-      ],
-      "status": "closed",
-      "priority": "med",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2026-01-14T00:00:00Z",
-      "updatedAt": "2026-01-15T00:00:00Z"
-    },
-    {
-      "id": "241",
-      "number": 241,
-      "title": "MyFitnessPal screenshot upload doesn't trigger calorie calculation",
-      "labels": [
-        "bug"
-      ],
-      "status": "closed",
-      "priority": "med",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2026-01-14T00:00:00Z",
-      "updatedAt": "2026-01-14T00:00:00Z"
-    },
-    {
-      "id": "239",
-      "number": 239,
-      "title": "Navigate movements",
-      "labels": [],
-      "status": "closed",
-      "priority": "med",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2026-01-14T00:00:00Z",
-      "updatedAt": "2026-01-15T00:00:00Z"
-    },
-    {
-      "id": "238",
-      "number": 238,
-      "title": "No notes in mobile",
-      "labels": [
-        "bug",
-        "enhancement"
-      ],
-      "status": "closed",
-      "priority": "med",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2026-01-14T00:00:00Z",
-      "updatedAt": "2026-01-15T00:00:00Z"
-    },
-    {
-      "id": "236",
-      "number": 236,
-      "title": "Psychological UX hacks for program adherence",
+      "id": "288",
+      "number": 288,
+      "title": "SEO: Update page titles to be unique and descriptive",
       "labels": [],
       "status": "open",
       "priority": "med",
       "needsSync": false,
       "localOnly": false,
-      "createdAt": "2026-01-14T00:00:00Z",
-      "updatedAt": "2026-01-14T00:00:00Z"
+      "createdAt": "2026-01-18T15:17:30Z",
+      "updatedAt": "2026-01-18T15:17:30Z"
     },
     {
-      "id": "234",
-      "number": 234,
-      "title": "Bug: SetLog API missing reps validation causes Prisma error",
-      "labels": [],
-      "status": "closed",
-      "priority": "med",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2026-01-15T00:00:00Z",
-      "updatedAt": "2026-01-15T00:00:00Z"
-    },
-    {
-      "id": "233",
-      "number": 233,
-      "title": "Rest Day Experience: Schema + UI",
+      "id": "285",
+      "number": 285,
+      "title": "UX: Consider indicator when exercise history fails to load",
       "labels": [],
       "status": "open",
-      "priority": "med",
+      "priority": "low",
       "needsSync": false,
       "localOnly": false,
-      "createdAt": "2026-01-14T00:00:00Z",
-      "updatedAt": "2026-01-14T00:00:00Z"
+      "createdAt": "2026-01-18T00:19:18Z",
+      "updatedAt": "2026-01-18T00:19:18Z"
     },
     {
-      "id": "232",
-      "number": 232,
-      "title": "Feature: Backdate Workout Logging",
+      "id": "284",
+      "number": 284,
+      "title": "Code cleanup: Fix inconsistent 'silent fail' comment",
       "labels": [],
-      "status": "closed",
-      "priority": "med",
+      "status": "open",
+      "priority": "low",
       "needsSync": false,
       "localOnly": false,
-      "createdAt": "2026-01-15T00:00:00Z",
-      "updatedAt": "2026-01-15T00:00:00Z"
+      "createdAt": "2026-01-18T00:19:17Z",
+      "updatedAt": "2026-01-18T00:19:17Z"
     },
     {
-      "id": "230",
-      "number": 230,
-      "title": "design: program generation page too narrow, diverges from design system",
+      "id": "283",
+      "number": 283,
+      "title": "Error handling: Include server response in workout completion error",
       "labels": [],
-      "status": "closed",
-      "priority": "med",
+      "status": "open",
+      "priority": "low",
       "needsSync": false,
       "localOnly": false,
-      "createdAt": "2026-01-14T00:00:00Z",
-      "updatedAt": "2026-01-15T00:00:00Z"
+      "createdAt": "2026-01-18T00:19:16Z",
+      "updatedAt": "2026-01-18T00:19:16Z"
+    },
+    {
+      "id": "282",
+      "number": 282,
+      "title": "Error handling: Differentiate 'no body' vs 'malformed JSON' in workout complete API",
+      "labels": [],
+      "status": "open",
+      "priority": "low",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2026-01-18T00:19:01Z",
+      "updatedAt": "2026-01-18T00:19:01Z"
+    },
+    {
+      "id": "281",
+      "number": 281,
+      "title": "Error handling: Wrap getDebugState() in try-catch",
+      "labels": [],
+      "status": "open",
+      "priority": "low",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2026-01-18T00:19:01Z",
+      "updatedAt": "2026-01-18T00:19:01Z"
+    },
+    {
+      "id": "280",
+      "number": 280,
+      "title": "Error handling: Wrap localStorage.setItem in try-catch for first workout",
+      "labels": [],
+      "status": "open",
+      "priority": "low",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2026-01-18T00:19:00Z",
+      "updatedAt": "2026-01-18T00:19:00Z"
+    },
+    {
+      "id": "277",
+      "number": 277,
+      "title": "Generate feature screenshots with Playwright",
+      "labels": ["enhancement"],
+      "status": "open",
+      "priority": "low",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2026-01-17T22:11:44Z",
+      "updatedAt": "2026-01-17T22:11:44Z"
+    },
+    {
+      "id": "274",
+      "number": 274,
+      "title": "Feature catalog with Playwright screenshots",
+      "labels": ["enhancement"],
+      "status": "open",
+      "priority": "low",
+      "needsSync": false,
+      "localOnly": false,
+      "createdAt": "2026-01-17T00:00:00Z",
+      "updatedAt": "2026-01-17T00:00:00Z"
     },
     {
       "id": "227",
       "number": 227,
       "title": "UI: Template Detail Page - Visual Polish",
-      "labels": [
-        "enhancement"
-      ],
+      "labels": ["enhancement"],
       "status": "open",
       "priority": "med",
       "needsSync": false,
       "localOnly": false,
       "createdAt": "2026-01-14T00:00:00Z",
       "updatedAt": "2026-01-14T00:00:00Z"
-    },
-    {
-      "id": "221",
-      "number": 221,
-      "title": "Feature: Progress Photo Comparison View",
-      "labels": [
-        "enhancement"
-      ],
-      "status": "closed",
-      "priority": "med",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2026-01-14T00:00:00Z",
-      "updatedAt": "2026-01-15T00:00:00Z"
-    },
-    {
-      "id": "219",
-      "number": 219,
-      "title": "Email System: v2a Design Refresh + Engagement Email Plan",
-      "labels": [],
-      "status": "closed",
-      "priority": "med",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2026-01-14T00:00:00Z",
-      "updatedAt": "2026-01-15T00:00:00Z"
     },
     {
       "id": "218",
@@ -182,42 +133,6 @@
       "updatedAt": "2026-01-14T00:00:00Z"
     },
     {
-      "id": "195",
-      "number": 195,
-      "title": "feat: Progress photos with comparison view",
-      "labels": [],
-      "status": "closed",
-      "priority": "med",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2026-01-02T00:00:00Z",
-      "updatedAt": "2026-01-03T00:00:00Z"
-    },
-    {
-      "id": "194",
-      "number": 194,
-      "title": "feat: Streak tracking with forgiveness mode",
-      "labels": [],
-      "status": "closed",
-      "priority": "med",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2026-01-02T00:00:00Z",
-      "updatedAt": "2026-01-03T00:00:00Z"
-    },
-    {
-      "id": "193",
-      "number": 193,
-      "title": "feat: Email reminders for workouts and check-ins",
-      "labels": [],
-      "status": "closed",
-      "priority": "med",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2026-01-02T00:00:00Z",
-      "updatedAt": "2026-01-03T00:00:00Z"
-    },
-    {
       "id": "192",
       "number": 192,
       "title": "Tech Debt: Low Priority Cleanup Items",
@@ -230,72 +145,16 @@
       "updatedAt": "2026-01-02T00:00:00Z"
     },
     {
-      "id": "190",
-      "number": 190,
-      "title": "feat: Manual program builder v2 enhancements",
-      "labels": [
-        "enhancement"
-      ],
-      "status": "closed",
-      "priority": "med",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2026-01-01T00:00:00Z",
-      "updatedAt": "2026-01-03T00:00:00Z"
-    },
-    {
       "id": "189",
       "number": 189,
       "title": "Evaluate /hi route - remove or consolidate with main program display",
-      "labels": [
-        "question"
-      ],
+      "labels": ["question"],
       "status": "open",
       "priority": "med",
       "needsSync": false,
       "localOnly": false,
       "createdAt": "2026-01-01T00:00:00Z",
       "updatedAt": "2026-01-01T00:00:00Z"
-    },
-    {
-      "id": "188",
-      "number": 188,
-      "title": "Email templates need design refresh to match v2a style",
-      "labels": [
-        "enhancement"
-      ],
-      "status": "closed",
-      "priority": "med",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2026-01-01T00:00:00Z",
-      "updatedAt": "2026-01-02T00:00:00Z"
-    },
-    {
-      "id": "184",
-      "number": 184,
-      "title": "feat: Manual program creation (non-AI)",
-      "labels": [],
-      "status": "closed",
-      "priority": "med",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2025-12-29T22:20:00Z",
-      "updatedAt": "2026-01-02T00:00:00Z"
-    },
-    {
-      "id": "178",
-      "number": 178,
-      "title": "Enhance workout chat with exercise-specific coaching knowledge",
-      "labels": [
-        "enhancement"
-      ],
-      "status": "closed",
-      "priority": "med",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2025-12-28T00:00:00Z",
-      "updatedAt": "2026-01-02T00:00:00Z"
     },
     {
       "id": "174",
@@ -310,151 +169,10 @@
       "updatedAt": "2025-12-27T00:00:00Z"
     },
     {
-      "id": "168",
-      "number": 168,
-      "title": "Clean up legacy verbose generation after lean rollout",
-      "labels": [],
-      "status": "closed",
-      "priority": "low",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2025-12-25T00:00:00Z",
-      "updatedAt": "2026-01-14T00:00:00Z"
-    },
-    {
-      "id": "166",
-      "number": 166,
-      "title": "Make the /hi experience more engaging",
-      "labels": [
-        "enhancement"
-      ],
-      "status": "closed",
-      "priority": "med",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2025-12-23T00:16:00Z",
-      "updatedAt": "2026-01-02T00:00:00Z"
-    },
-    {
-      "id": "159",
-      "number": 159,
-      "title": "Production Readiness: Launch Checklist",
-      "labels": [
-        "enhancement"
-      ],
-      "status": "closed",
-      "priority": "high",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2025-12-22T00:00:00Z",
-      "updatedAt": "2025-12-29T22:30:00Z"
-    },
-    {
-      "id": "158",
-      "number": 158,
-      "title": "Coach Tier: B2B2C Model for Fitness Coaches",
-      "labels": [
-        "enhancement"
-      ],
-      "status": "closed",
-      "priority": "med",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2025-12-20T00:00:00Z",
-      "updatedAt": "2026-01-14T00:00:00Z"
-    },
-    {
-      "id": "157",
-      "number": 157,
-      "title": "Redesign program creation email",
-      "labels": [
-        "enhancement",
-        "design"
-      ],
-      "status": "closed",
-      "priority": "med",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2025-12-20T00:00:00Z",
-      "updatedAt": "2026-01-02T00:00:00Z"
-    },
-    {
-      "id": "154",
-      "number": 154,
-      "title": "Keep user state in URI path for back/forward functionality and share ability",
-      "labels": [
-        "enhancement"
-      ],
-      "status": "closed",
-      "priority": "med",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2025-12-20T00:00:00Z",
-      "updatedAt": "2025-12-30T19:45:00Z"
-    },
-    {
-      "id": "133",
-      "number": 133,
-      "title": "Mid-workout AI trainer chat",
-      "labels": [
-        "enhancement"
-      ],
-      "status": "closed",
-      "priority": "high",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2025-12-15T12:30:00Z",
-      "updatedAt": "2025-12-29T22:30:00Z"
-    },
-    {
-      "id": "132",
-      "number": 132,
-      "title": "AI-generated exercise instructions during program generation",
-      "labels": [
-        "enhancement"
-      ],
-      "status": "closed",
-      "priority": "high",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2025-12-15T12:30:00Z",
-      "updatedAt": "2025-12-29T22:30:00Z"
-    },
-    {
-      "id": "125",
-      "number": 125,
-      "title": "Meal card modification - tap ingredient to swap",
-      "labels": [
-        "enhancement"
-      ],
-      "status": "closed",
-      "priority": "med",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2025-12-12T14:30:44Z",
-      "updatedAt": "2026-01-15T00:00:00Z"
-    },
-    {
-      "id": "124",
-      "number": 124,
-      "title": "Meal Prep Helper - AI-generated meal suggestions from macro targets",
-      "labels": [
-        "enhancement"
-      ],
-      "status": "closed",
-      "priority": "med",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2026-01-15T00:00:00Z",
-      "updatedAt": "2026-01-15T00:00:00Z"
-    },
-    {
       "id": "122",
       "number": 122,
       "title": "Integrate USDA FoodData Central API for food search",
-      "labels": [
-        "enhancement"
-      ],
+      "labels": ["enhancement"],
       "status": "open",
       "priority": "med",
       "needsSync": false,
@@ -466,30 +184,14 @@
       "id": "105",
       "number": 105,
       "title": "UI: Program Header & CTA - First Impression Polish",
-      "labels": [
-        "enhancement"
-      ],
+      "labels": ["enhancement"],
       "status": "open",
       "priority": "med",
       "needsSync": false,
       "localOnly": false,
       "createdAt": "2025-12-06T15:49:06Z",
       "updatedAt": "2025-12-06T15:49:06Z"
-    },
-    {
-      "id": "103",
-      "number": 103,
-      "title": "UI: Exercise Cards - Interactive & Engaging Design",
-      "labels": [
-        "enhancement"
-      ],
-      "status": "closed",
-      "priority": "med",
-      "needsSync": false,
-      "localOnly": false,
-      "createdAt": "2025-12-06T15:48:41Z",
-      "updatedAt": "2026-01-14T00:00:00Z"
     }
   ],
-  "lastSyncedAt": "2026-01-15T17:30:00Z"
+  "lastSyncedAt": "2026-01-18T17:30:00Z"
 }
