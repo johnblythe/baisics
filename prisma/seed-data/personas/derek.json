@@ -1,0 +1,257 @@
+{
+  "id": "derek",
+  "user": {
+    "email": "derek@test.baisics.app",
+    "name": "Derek Martinez",
+    "isPremium": true,
+    "streakCurrent": 40,
+    "streakLongest": 40,
+    "streakLastActivityAt": { "daysAgo": 0 }
+  },
+  "subscription": {
+    "status": "ACTIVE",
+    "currentPeriodStartDaysAgo": 120,
+    "currentPeriodEndDaysAhead": 0,
+    "cancelAtPeriodEnd": false
+  },
+  "intake": {
+    "sex": "male",
+    "trainingGoal": "Build raw strength, increase powerlifting total, maintain athleticism",
+    "daysAvailable": 4,
+    "experienceLevel": "advanced",
+    "age": 34,
+    "weight": 225,
+    "height": 74,
+    "trainingPreferences": ["barbell", "dumbbells", "cable", "machines"],
+    "additionalInfo": "Former D1 college football linebacker. Played 4 years, graduated 2014. Got away from serious lifting for a few years - desk job, life happened. Ready to get back to being strong. Joined a powerlifting-focused gym with competition equipment. Running 5/3/1 because it's proven and I know how to grind. Goal: hit my old college numbers - 405 squat, 315 bench, 495 deadlift, 205 OHP. Currently rebuilding that base."
+  },
+  "programs": [
+    {
+      "name": "5/3/1 Strength Builder",
+      "description": "Jim Wendler's 5/3/1 program for building raw strength. 4-day split with each day focused on one main lift (Squat, Bench, Deadlift, OHP). Progressive overload through calculated percentages with First Set Last (FSL) for additional volume.",
+      "active": true,
+      "category": "strength",
+      "difficulty": "advanced",
+      "durationWeeks": 16,
+      "daysPerWeek": 4,
+      "equipment": ["barbell", "dumbbells", "cable", "machines"],
+      "goals": ["Build raw strength", "Increase powerlifting total", "Progressive overload", "Athletic performance"],
+      "tags": ["531", "powerlifting", "strength", "4-day", "advanced", "wendler"],
+      "week2CheckInShown": true,
+      "week2CheckInShownAtDaysAgo": 98,
+      "week2CheckInOption": "going_great",
+      "workoutPlan": {
+        "daysPerWeek": 4,
+        "dailyCalories": 3500,
+        "proteinGrams": 225,
+        "carbGrams": 400,
+        "fatGrams": 100,
+        "phase": 3,
+        "phaseName": "Strength Building",
+        "phaseDurationWeeks": 16,
+        "phaseExplanation": "Classic 5/3/1 programming with 3-week waves: Week 1 (5s), Week 2 (3s), Week 3 (5/3/1). Deload every 4th week. Each day focuses on one main lift with assistance work.",
+        "splitType": "5/3/1 Main Lifts",
+        "workouts": [
+          {
+            "name": "Squat Day",
+            "focus": "Squats - quads, glutes, posterior chain",
+            "dayNumber": 1,
+            "warmup": "10 min bike, leg swings, bodyweight squats, empty bar squats, progressive warmup sets",
+            "cooldown": "Hip flexor stretch, quad stretch, foam roll legs",
+            "exercises": [
+              {
+                "name": "Barbell Squat",
+                "sets": 3,
+                "reps": 5,
+                "restPeriod": 240,
+                "notes": "5/3/1 main work - Week 1: 5/5/5+, Week 2: 3/3/3+, Week 3: 5/3/1+. AMRAP on last set.",
+                "sortOrder": 0
+              },
+              {
+                "name": "Barbell Squat",
+                "sets": 5,
+                "reps": 5,
+                "restPeriod": 120,
+                "notes": "FSL (First Set Last) - 5x5 at first working set weight",
+                "sortOrder": 1
+              },
+              {
+                "name": "Romanian Deadlift",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 90,
+                "notes": "Posterior chain assistance - moderate weight, feel the stretch",
+                "sortOrder": 2
+              },
+              {
+                "name": "Leg Press",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 90,
+                "notes": "Quad volume - full ROM",
+                "sortOrder": 3
+              },
+              {
+                "name": "Hanging Leg Raise",
+                "sets": 3,
+                "reps": 15,
+                "restPeriod": 60,
+                "notes": "Core work - control the movement",
+                "sortOrder": 4
+              }
+            ]
+          },
+          {
+            "name": "Bench Day",
+            "focus": "Bench press - chest, shoulders, triceps",
+            "dayNumber": 2,
+            "warmup": "5 min cardio, arm circles, band pull aparts, empty bar bench, progressive warmup sets",
+            "cooldown": "Chest stretch, shoulder stretch, tricep stretch",
+            "exercises": [
+              {
+                "name": "Bench Press",
+                "sets": 3,
+                "reps": 5,
+                "restPeriod": 240,
+                "notes": "5/3/1 main work - Week 1: 5/5/5+, Week 2: 3/3/3+, Week 3: 5/3/1+. AMRAP on last set.",
+                "sortOrder": 0
+              },
+              {
+                "name": "Bench Press",
+                "sets": 5,
+                "reps": 5,
+                "restPeriod": 120,
+                "notes": "FSL (First Set Last) - 5x5 at first working set weight",
+                "sortOrder": 1
+              },
+              {
+                "name": "Dumbbell Row",
+                "sets": 4,
+                "reps": 10,
+                "restPeriod": 90,
+                "notes": "Back assistance - balance push with pull",
+                "sortOrder": 2
+              },
+              {
+                "name": "Dips",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 90,
+                "notes": "Tricep/chest assistance - add weight when bodyweight feels easy",
+                "sortOrder": 3
+              },
+              {
+                "name": "Face Pull",
+                "sets": 3,
+                "reps": 20,
+                "restPeriod": 60,
+                "notes": "Rear delt and shoulder health - light weight, high reps",
+                "sortOrder": 4
+              }
+            ]
+          },
+          {
+            "name": "Deadlift Day",
+            "focus": "Deadlift - posterior chain, back, grip",
+            "dayNumber": 3,
+            "warmup": "10 min bike, hip hinges, RDL with empty bar, progressive warmup sets",
+            "cooldown": "Hamstring stretch, back stretch, hip flexor stretch",
+            "exercises": [
+              {
+                "name": "Deadlift",
+                "sets": 3,
+                "reps": 5,
+                "restPeriod": 300,
+                "notes": "5/3/1 main work - Week 1: 5/5/5+, Week 2: 3/3/3+, Week 3: 5/3/1+. AMRAP on last set.",
+                "sortOrder": 0
+              },
+              {
+                "name": "Deadlift",
+                "sets": 5,
+                "reps": 5,
+                "restPeriod": 150,
+                "notes": "FSL (First Set Last) - 5x5 at first working set weight",
+                "sortOrder": 1
+              },
+              {
+                "name": "Front Squat",
+                "sets": 3,
+                "reps": 8,
+                "restPeriod": 120,
+                "notes": "Quad assistance and core stability - keep torso upright",
+                "sortOrder": 2
+              },
+              {
+                "name": "Good Morning",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 90,
+                "notes": "Posterior chain - light weight, focus on hamstring stretch",
+                "sortOrder": 3
+              },
+              {
+                "name": "Barbell Shrug",
+                "sets": 3,
+                "reps": 15,
+                "restPeriod": 60,
+                "notes": "Trap work - squeeze at top, controlled",
+                "sortOrder": 4
+              }
+            ]
+          },
+          {
+            "name": "OHP Day",
+            "focus": "Overhead press - shoulders, triceps, upper chest",
+            "dayNumber": 4,
+            "warmup": "5 min cardio, shoulder dislocates, band pull aparts, empty bar press, progressive warmup sets",
+            "cooldown": "Shoulder stretch, lat stretch, tricep stretch",
+            "exercises": [
+              {
+                "name": "Overhead Press",
+                "sets": 3,
+                "reps": 5,
+                "restPeriod": 180,
+                "notes": "5/3/1 main work - Week 1: 5/5/5+, Week 2: 3/3/3+, Week 3: 5/3/1+. AMRAP on last set.",
+                "sortOrder": 0
+              },
+              {
+                "name": "Overhead Press",
+                "sets": 5,
+                "reps": 5,
+                "restPeriod": 120,
+                "notes": "FSL (First Set Last) - 5x5 at first working set weight",
+                "sortOrder": 1
+              },
+              {
+                "name": "Chin-Up",
+                "sets": 4,
+                "reps": 8,
+                "restPeriod": 90,
+                "notes": "Back assistance - add weight when bodyweight feels easy",
+                "sortOrder": 2
+              },
+              {
+                "name": "Close-Grip Bench Press",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 90,
+                "notes": "Tricep assistance for pressing strength",
+                "sortOrder": 3
+              },
+              {
+                "name": "Barbell Curl",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 60,
+                "notes": "Arm work - strict form, no swinging",
+                "sortOrder": 4
+              }
+            ]
+          }
+        ]
+      },
+      "workoutLogs": [],
+      "checkIns": []
+    }
+  ]
+}
