@@ -58,7 +58,7 @@
         "npm run typecheck passes"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "Text parsing should be simpler than file parsing - just send to AI directly."
     },
     {
@@ -74,7 +74,7 @@
         "npm run typecheck passes"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "Make it visually distinct from template cards. Use existing COLORS constants."
     },
     {

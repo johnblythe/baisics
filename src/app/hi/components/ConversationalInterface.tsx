@@ -12,6 +12,7 @@ import { SAMPLE_PROFILES } from "@/utils/sampleUserPersonas";
 import { User } from "@prisma/client";
 import { getRandomWelcomeMessage } from "../utils/welcomeMessages";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { createAnonUser, getUser } from "@/lib/actions/user";
 import { v4 as uuidv4 } from "uuid";
 import exampleProgram from '../utils/example.json';
@@ -27,6 +28,12 @@ const QUICK_PROMPTS = [
   { label: '🔥 Lose Weight', message: "I want to lose weight and get in better shape. Looking for something I can stick with." },
   { label: '⚡ Get Stronger', message: "I want to focus on building strength. Interested in compound lifts and progressive overload." },
   { label: '🎯 General Fitness', message: "I just want to get healthier and more fit overall. Not sure where to start." },
+];
+
+// DIY navigation cards - these link to other pages, not chat triggers
+const DIY_CARDS = [
+  { label: '🛠️ I\'ll build my own', href: '/templates', description: 'Browse templates or start from scratch' },
+  { label: '📋 I have a program', href: '/create', description: 'Import your existing workout plan' },
 ];
 
 // Add type for example program phase
@@ -752,6 +759,21 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
                     >
                       {prompt.label}
                     </button>
+                  ))}
+                </div>
+
+                {/* DIY Options - second row for users who want to build their own */}
+                <p className="text-sm text-[#94A3B8] mt-6 mb-4 text-center">Or go your own way:</p>
+                <div className="grid grid-cols-2 gap-3">
+                  {DIY_CARDS.map((card, idx) => (
+                    <Link
+                      key={idx}
+                      href={card.href}
+                      className="px-5 py-4 bg-white hover:bg-[#F8FAFC] border-2 border-[#E2E8F0] hover:border-[#0F172A] rounded-xl text-center transition-all duration-200 group"
+                    >
+                      <span className="block text-sm font-medium text-[#0F172A]">{card.label}</span>
+                      <span className="block text-xs text-[#94A3B8] mt-1 group-hover:text-[#64748B]">{card.description}</span>
+                    </Link>
                   ))}
                 </div>
               </motion.div>

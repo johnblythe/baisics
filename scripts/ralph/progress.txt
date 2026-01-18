@@ -43,3 +43,33 @@ Started: Sun Jan 18 15:32:16 EST 2026
   - API needs US-004 update to actually accept the text field - frontend is ready
   - Bulk import (coaches) only makes sense for file mode, so hidden in text mode
 ---
+
+## 2026-01-18 - US-004: Update /api/programs/import to accept text input
+- Modified POST handler to accept optional `text` field in request body
+- Added branch for text input mode - skips file validation entirely
+- Text input sent directly to AI with workoutFilePrompt
+- Added validation for empty text input
+- Returns error if neither text nor file is provided
+- Same response format as file uploads (parsed JSON from AI)
+- Files changed: src/app/api/programs/import/route.ts
+- **Learnings for future iterations:**
+  - API has `@ts-nocheck` at top - TypeScript errors are suppressed
+  - `sendMessage` utility handles AI calls, accepts message array and role
+  - workoutFilePrompt is reused for all input types (text, DOCX, PDF, images)
+  - Text input path is simpler - no base64, no file validation, no file saving
+---
+
+## 2026-01-18 - US-005: Add 'Start Blank' card to /templates
+- Added full-width featured card before templates grid
+- Card uses coral gradient background (coral to coralDark) for visual distinction
+- Displays "Start Blank" title and "Build your own program from scratch" subtitle
+- Links to /create?blank=true
+- Includes hover effect with shadow and animated arrow
+- Responsive: stacked on mobile, horizontal layout on md+
+- Files changed: src/app/templates/page.tsx
+- **Learnings for future iterations:**
+  - COLORS constant already defined in templates/page.tsx - reuse it
+  - Template cards use navy gradient; coral gradient provides contrast
+  - Use CSS gradient via style prop: `background: linear-gradient(...)`
+  - Card placed before grid div, not inside it (full width vs grid columns)
+---
