@@ -209,42 +209,50 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
   // -- not ready for the big leagues just yet
   const handleProgramModification = async (userMessage: Message, program: Program) => {
     setIsGeneratingProgram(true);
-    const result = await processModificationRequest(
-      [...messages, userMessage],
-      localUserId,
-      program,
-      inputValue
-    );
-    if (result?.success) {
-      if (result.needsClarification) {
-        // AI needs more information
-        setIsGeneratingProgram(false);
-        setTimeout(() => {
-          setMessages(prev => [...prev, { 
-            role: "assistant", 
-            content: result.message 
-          }]);
-          setIsTyping(false);
-        }, Math.random() * 1000 + 500);
+    try {
+      const result = await processModificationRequest(
+        [...messages, userMessage],
+        localUserId,
+        program,
+        inputValue
+      );
+      if (result?.success) {
+        if (result.needsClarification) {
+          // AI needs more information
+          setTimeout(() => {
+            setMessages(prev => [...prev, {
+              role: "assistant",
+              content: result.message
+            }]);
+            setIsTyping(false);
+          }, Math.random() * 1000 + 500);
+        } else {
+          // AI has modified the program
+          setTimeout(() => {
+            setMessages(prev => [...prev, {
+              role: "assistant",
+              content: `I've made the requested changes: ${result.message}`
+            }]);
+            setProgram(result.program ? result.program.program as Program : null);
+            setIsTyping(false);
+          }, Math.random() * 1000 + 500);
+        }
       } else {
-        // AI has modified the program
-        setTimeout(() => {
-          setMessages(prev => [...prev, { 
-            role: "assistant", 
-            content: `I've made the requested changes: ${result.message}` 
-          }]);
-          setProgram(result.program ? result.program.program as Program : null);
-          setIsGeneratingProgram(false);
-          setIsTyping(false);
-        }, Math.random() * 1000 + 500);
+        setMessages(prev => [...prev, {
+          role: "assistant",
+          content: result?.message || "Sorry, I couldn't process that request. Please try again."
+        }]);
+        setIsTyping(false);
       }
-    } else {
-      setIsGeneratingProgram(false);
-      setIsTyping(false);
+    } catch (error) {
+      console.error('Error in handleProgramModification:', error);
       setMessages(prev => [...prev, {
         role: "assistant",
-        content: result?.message || "Sorry, I couldn't process that request. Please try again."
+        content: "Sorry, something went wrong while processing your request. Please try again."
       }]);
+      setIsTyping(false);
+    } finally {
+      setIsGeneratingProgram(false);
     }
   };
 
