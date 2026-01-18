@@ -343,11 +343,16 @@ export default function WorkoutPage() {
       // Check if this is the user's first workout
       if (data.isFirstWorkout) {
         // Store celebration data for dashboard to display
-        localStorage.setItem('baisics_first_workout_celebration', JSON.stringify({
-          setsCompleted: data.workoutStats?.setsCompleted || 0,
-          totalVolume: data.workoutStats?.totalVolume || 0,
-          workoutName: workoutName,
-        }));
+        try {
+          localStorage.setItem('baisics_first_workout_celebration', JSON.stringify({
+            setsCompleted: data.workoutStats?.setsCompleted || 0,
+            totalVolume: data.workoutStats?.totalVolume || 0,
+            workoutName: workoutName,
+          }));
+        } catch (storageError) {
+          // localStorage may fail (quota exceeded, private browsing) - log and continue
+          console.warn('Failed to store celebration data:', storageError);
+        }
         // Redirect to dashboard - it will show the celebration
         router.push('/dashboard');
         return;
