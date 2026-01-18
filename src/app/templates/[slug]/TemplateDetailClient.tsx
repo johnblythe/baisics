@@ -271,70 +271,84 @@ export default function TemplateDetailClient({ template }: TemplateDetailClientP
 
             {/* Sidebar */}
             <div className="space-y-6">
-              {/* Generate CTA */}
+              {/* Generate CTA - Enhanced with coral background and prominent button */}
               <div
-                className="rounded-xl p-6 sticky top-24 border"
+                className="rounded-2xl p-8 sticky top-24 shadow-xl relative overflow-hidden"
                 style={{
-                  borderColor: COLORS.coralLight,
-                  backgroundColor: COLORS.coralLight,
+                  background: `linear-gradient(135deg, ${COLORS.coral} 0%, ${COLORS.coralDark} 100%)`,
                 }}
               >
-                <h3 className="font-semibold mb-4" style={{ color: COLORS.navy }}>
-                  Start This Program
-                </h3>
-
-                <div className="mb-4">
-                  <label className="block text-sm mb-2" style={{ color: COLORS.gray600 }}>
-                    Days per week (optional)
-                  </label>
-                  <div className="flex gap-2">
-                    {[3, 4, 5, 6].map((days) => (
-                      <button
-                        key={days}
-                        onClick={() =>
-                          setCustomDays(
-                            days === template.daysPerWeek
-                              ? null
-                              : days === customDays
-                              ? null
-                              : days
-                          )
-                        }
-                        className="flex-1 px-3 py-2 rounded-lg text-sm transition-colors"
-                        style={{
-                          backgroundColor:
-                            (customDays === days) ||
-                            (customDays === null && days === template.daysPerWeek)
-                              ? COLORS.navy
-                              : 'white',
-                          color:
-                            (customDays === days) ||
-                            (customDays === null && days === template.daysPerWeek)
-                              ? 'white'
-                              : COLORS.gray600,
-                        }}
-                      >
-                        {days}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <button
-                  onClick={handleGenerate}
-                  disabled={generating}
-                  className="w-full px-4 py-4 text-white rounded-xl font-bold transition-all disabled:opacity-50 shadow-lg hover:shadow-xl hover:scale-[1.02]"
+                {/* Subtle pattern overlay */}
+                <div
+                  className="absolute inset-0 opacity-10"
                   style={{
-                    background: 'linear-gradient(to right, #FF6B6B, #FF8E8E)',
-                    boxShadow: '0 10px 15px -3px rgba(255, 107, 107, 0.25), 0 4px 6px -4px rgba(255, 107, 107, 0.25)',
+                    backgroundImage: `radial-gradient(circle at 2px 2px, white 1px, transparent 0)`,
+                    backgroundSize: '20px 20px',
                   }}
-                >
-                  {generating ? 'Preparing...' : 'Generate My Program →'}
-                </button>
+                />
 
-                <p className="text-xs text-center mt-4" style={{ color: COLORS.gray600 }}>
-                  Our AI will customize this template based on your profile
-                </p>
+                <div className="relative z-10">
+                  <h3 className="text-xl font-bold mb-2 text-white">
+                    Ready to Transform?
+                  </h3>
+                  <p className="text-white/80 text-sm mb-6">
+                    Our AI will customize this template based on your profile
+                  </p>
+
+                  <div className="mb-6">
+                    <label className="block text-sm mb-3 font-medium text-white/90">
+                      Days per week
+                    </label>
+                    <div className="flex gap-2">
+                      {[3, 4, 5, 6].map((days) => (
+                        <button
+                          key={days}
+                          onClick={() =>
+                            setCustomDays(
+                              days === template.daysPerWeek
+                                ? null
+                                : days === customDays
+                                ? null
+                                : days
+                            )
+                          }
+                          className="flex-1 px-3 py-2.5 rounded-lg text-sm font-semibold transition-all"
+                          style={{
+                            backgroundColor:
+                              (customDays === days) ||
+                              (customDays === null && days === template.daysPerWeek)
+                                ? 'white'
+                                : 'rgba(255, 255, 255, 0.2)',
+                            color:
+                              (customDays === days) ||
+                              (customDays === null && days === template.daysPerWeek)
+                                ? COLORS.coral
+                                : 'white',
+                          }}
+                        >
+                          {days}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleGenerate}
+                    disabled={generating}
+                    className="w-full px-6 py-5 rounded-xl font-bold text-lg transition-all disabled:opacity-50 shadow-lg hover:shadow-2xl hover:scale-[1.03] hover:-translate-y-0.5 active:scale-[0.98]"
+                    style={{
+                      background: 'white',
+                      color: COLORS.coral,
+                      boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+                    }}
+                  >
+                    {generating ? 'Preparing...' : 'Generate My Program →'}
+                  </button>
+
+                  <p className="text-xs text-center mt-4 text-white/60">
+                    Free • No credit card required
+                  </p>
+                </div>
               </div>
 
               {/* Equipment */}
