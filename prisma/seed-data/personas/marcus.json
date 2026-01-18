@@ -6,7 +6,9 @@
     "isPremium": true,
     "streakCurrent": 21,
     "streakLongest": 21,
-    "streakLastActivityAt": { "daysAgo": 0 }
+    "streakLastActivityAt": {
+      "daysAgo": 0
+    }
   },
   "subscription": {
     "status": "ACTIVE",
@@ -22,7 +24,12 @@
     "age": 26,
     "weight": 185,
     "height": 72,
-    "trainingPreferences": ["barbell", "dumbbells", "cable", "machines"],
+    "trainingPreferences": [
+      "barbell",
+      "dumbbells",
+      "cable",
+      "machines"
+    ],
     "additionalInfo": "Been lifting for 3 years. Did bro split before, switching to PPL for more frequency. Want to hit 225 bench, 315 squat, 405 deadlift. Track everything meticulously - RPE, tempo, rest times. Fitness is my lifestyle."
   },
   "programs": [
@@ -34,9 +41,25 @@
       "difficulty": "intermediate",
       "durationWeeks": 12,
       "daysPerWeek": 6,
-      "equipment": ["barbell", "dumbbells", "cable", "machines"],
-      "goals": ["Build muscle mass", "Increase strength", "Aesthetic physique", "Progressive overload"],
-      "tags": ["ppl", "hypertrophy", "6-day", "intermediate", "muscle-building"],
+      "equipment": [
+        "barbell",
+        "dumbbells",
+        "cable",
+        "machines"
+      ],
+      "goals": [
+        "Build muscle mass",
+        "Increase strength",
+        "Aesthetic physique",
+        "Progressive overload"
+      ],
+      "tags": [
+        "ppl",
+        "hypertrophy",
+        "6-day",
+        "intermediate",
+        "muscle-building"
+      ],
       "week2CheckInShown": true,
       "week2CheckInShownAtDaysAgo": 14,
       "week2CheckInOption": "going_great",
@@ -399,245 +422,590 @@
       "workoutLogs": [
         {
           "workoutDayNumber": 1,
-          "startedAt": { "daysAgo": 21, "hour": 17, "minute": 30 },
-          "completedAt": { "daysAgo": 21, "hour": 19, "minute": 0 },
+          "startedAt": {
+            "daysAgo": 21,
+            "hour": 17,
+            "minute": 30
+          },
+          "completedAt": {
+            "daysAgo": 21,
+            "hour": 19,
+            "minute": 0
+          },
           "status": "completed",
           "notes": "Week 1 Day 1. Starting fresh with PPL. Bench felt good, testing my working weights.",
           "exerciseLogs": [
             {
               "exerciseName": "Bench Press",
               "sets": [
-                { "setNumber": 1, "weight": 135, "reps": 6 },
-                { "setNumber": 2, "weight": 165, "reps": 6 },
-                { "setNumber": 3, "weight": 185, "reps": 6 },
-                { "setNumber": 4, "weight": 185, "reps": 5 }
+                {
+                  "setNumber": 1,
+                  "weight": 135,
+                  "reps": 6
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 165,
+                  "reps": 6
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 185,
+                  "reps": 6
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 185,
+                  "reps": 5
+                }
               ],
               "notes": "RPE 8 on working sets. Form felt solid."
             },
             {
               "exerciseName": "Incline Dumbbell Press",
               "sets": [
-                { "setNumber": 1, "weight": 55, "reps": 10 },
-                { "setNumber": 2, "weight": 60, "reps": 10 },
-                { "setNumber": 3, "weight": 60, "reps": 8 }
+                {
+                  "setNumber": 1,
+                  "weight": 55,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 60,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 60,
+                  "reps": 8
+                }
               ],
               "notes": "Good upper chest pump"
             },
             {
               "exerciseName": "Cable Crossover",
               "sets": [
-                { "setNumber": 1, "weight": 25, "reps": 12 },
-                { "setNumber": 2, "weight": 30, "reps": 12 },
-                { "setNumber": 3, "weight": 30, "reps": 12 }
+                {
+                  "setNumber": 1,
+                  "weight": 25,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 30,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 30,
+                  "reps": 12
+                }
               ]
             },
             {
               "exerciseName": "Dumbbell Shoulder Press",
               "sets": [
-                { "setNumber": 1, "weight": 45, "reps": 10 },
-                { "setNumber": 2, "weight": 50, "reps": 10 },
-                { "setNumber": 3, "weight": 50, "reps": 8 }
+                {
+                  "setNumber": 1,
+                  "weight": 45,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 50,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 50,
+                  "reps": 8
+                }
               ]
             },
             {
               "exerciseName": "Cable Lateral Raise",
               "sets": [
-                { "setNumber": 1, "weight": 15, "reps": 15 },
-                { "setNumber": 2, "weight": 17.5, "reps": 15 },
-                { "setNumber": 3, "weight": 17.5, "reps": 14 }
+                {
+                  "setNumber": 1,
+                  "weight": 15,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 17.5,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 17.5,
+                  "reps": 14
+                }
               ],
               "notes": "Delts are burning"
             },
             {
               "exerciseName": "Cable Rope Tricep Pushdown",
               "sets": [
-                { "setNumber": 1, "weight": 40, "reps": 12 },
-                { "setNumber": 2, "weight": 45, "reps": 12 },
-                { "setNumber": 3, "weight": 45, "reps": 12 }
+                {
+                  "setNumber": 1,
+                  "weight": 40,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 45,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 45,
+                  "reps": 12
+                }
               ]
             }
           ]
         },
         {
           "workoutDayNumber": 2,
-          "startedAt": { "daysAgo": 20, "hour": 17, "minute": 30 },
-          "completedAt": { "daysAgo": 20, "hour": 19, "minute": 0 },
+          "startedAt": {
+            "daysAgo": 20,
+            "hour": 17,
+            "minute": 30
+          },
+          "completedAt": {
+            "daysAgo": 20,
+            "hour": 19,
+            "minute": 0
+          },
           "status": "completed",
           "notes": "Pull A. Back felt strong. Good mind-muscle connection on rows.",
           "exerciseLogs": [
             {
               "exerciseName": "Lat Pulldown",
               "sets": [
-                { "setNumber": 1, "weight": 120, "reps": 8 },
-                { "setNumber": 2, "weight": 140, "reps": 8 },
-                { "setNumber": 3, "weight": 150, "reps": 8 },
-                { "setNumber": 4, "weight": 150, "reps": 7 }
+                {
+                  "setNumber": 1,
+                  "weight": 120,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 140,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 150,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 150,
+                  "reps": 7
+                }
               ],
               "notes": "Lats engaged well, good stretch at top"
             },
             {
               "exerciseName": "Barbell Row",
               "sets": [
-                { "setNumber": 1, "weight": 135, "reps": 8 },
-                { "setNumber": 2, "weight": 155, "reps": 8 },
-                { "setNumber": 3, "weight": 165, "reps": 8 },
-                { "setNumber": 4, "weight": 165, "reps": 7 }
+                {
+                  "setNumber": 1,
+                  "weight": 135,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 155,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 165,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 165,
+                  "reps": 7
+                }
               ],
               "notes": "Kept torso at 45 degrees, no heaving"
             },
             {
               "exerciseName": "Cable Row",
               "sets": [
-                { "setNumber": 1, "weight": 120, "reps": 10 },
-                { "setNumber": 2, "weight": 130, "reps": 10 },
-                { "setNumber": 3, "weight": 130, "reps": 10 }
+                {
+                  "setNumber": 1,
+                  "weight": 120,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 130,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 130,
+                  "reps": 10
+                }
               ]
             },
             {
               "exerciseName": "Face Pull",
               "sets": [
-                { "setNumber": 1, "weight": 40, "reps": 15 },
-                { "setNumber": 2, "weight": 45, "reps": 15 },
-                { "setNumber": 3, "weight": 45, "reps": 15 }
+                {
+                  "setNumber": 1,
+                  "weight": 40,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 45,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 45,
+                  "reps": 15
+                }
               ],
               "notes": "Rear delts pumped"
             },
             {
               "exerciseName": "Barbell Curl",
               "sets": [
-                { "setNumber": 1, "weight": 65, "reps": 10 },
-                { "setNumber": 2, "weight": 75, "reps": 10 },
-                { "setNumber": 3, "weight": 75, "reps": 9 }
+                {
+                  "setNumber": 1,
+                  "weight": 65,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 75,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 75,
+                  "reps": 9
+                }
               ]
             },
             {
               "exerciseName": "Hammer Curls",
               "sets": [
-                { "setNumber": 1, "weight": 30, "reps": 12 },
-                { "setNumber": 2, "weight": 35, "reps": 12 },
-                { "setNumber": 3, "weight": 35, "reps": 11 }
+                {
+                  "setNumber": 1,
+                  "weight": 30,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 35,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 35,
+                  "reps": 11
+                }
               ]
             }
           ]
         },
         {
           "workoutDayNumber": 3,
-          "startedAt": { "daysAgo": 19, "hour": 17, "minute": 30 },
-          "completedAt": { "daysAgo": 19, "hour": 19, "minute": 15 },
+          "startedAt": {
+            "daysAgo": 19,
+            "hour": 17,
+            "minute": 30
+          },
+          "completedAt": {
+            "daysAgo": 19,
+            "hour": 19,
+            "minute": 15
+          },
           "status": "completed",
           "notes": "Leg day. Squats felt heavy but hit depth on all reps. Quads destroyed.",
           "exerciseLogs": [
             {
               "exerciseName": "Barbell Squat",
               "sets": [
-                { "setNumber": 1, "weight": 135, "reps": 6 },
-                { "setNumber": 2, "weight": 185, "reps": 6 },
-                { "setNumber": 3, "weight": 225, "reps": 6 },
-                { "setNumber": 4, "weight": 225, "reps": 5 }
+                {
+                  "setNumber": 1,
+                  "weight": 135,
+                  "reps": 6
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 185,
+                  "reps": 6
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 225,
+                  "reps": 6
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 225,
+                  "reps": 5
+                }
               ],
               "notes": "RPE 8. Good depth, knees tracking well."
             },
             {
               "exerciseName": "Leg Press",
               "sets": [
-                { "setNumber": 1, "weight": 270, "reps": 12 },
-                { "setNumber": 2, "weight": 320, "reps": 12 },
-                { "setNumber": 3, "weight": 320, "reps": 10 }
+                {
+                  "setNumber": 1,
+                  "weight": 270,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 320,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 320,
+                  "reps": 10
+                }
               ]
             },
             {
               "exerciseName": "Leg Extension",
               "sets": [
-                { "setNumber": 1, "weight": 90, "reps": 15 },
-                { "setNumber": 2, "weight": 100, "reps": 15 },
-                { "setNumber": 3, "weight": 100, "reps": 14 }
+                {
+                  "setNumber": 1,
+                  "weight": 90,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 100,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 100,
+                  "reps": 14
+                }
               ],
               "notes": "Quad pump is insane"
             },
             {
               "exerciseName": "Romanian Deadlift",
               "sets": [
-                { "setNumber": 1, "weight": 135, "reps": 10 },
-                { "setNumber": 2, "weight": 155, "reps": 10 },
-                { "setNumber": 3, "weight": 155, "reps": 10 }
+                {
+                  "setNumber": 1,
+                  "weight": 135,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 155,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 155,
+                  "reps": 10
+                }
               ]
             },
             {
               "exerciseName": "Leg Curl",
               "sets": [
-                { "setNumber": 1, "weight": 80, "reps": 12 },
-                { "setNumber": 2, "weight": 90, "reps": 12 },
-                { "setNumber": 3, "weight": 90, "reps": 11 }
+                {
+                  "setNumber": 1,
+                  "weight": 80,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 90,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 90,
+                  "reps": 11
+                }
               ]
             },
             {
               "exerciseName": "Standing Calf Raise",
               "sets": [
-                { "setNumber": 1, "weight": 150, "reps": 15 },
-                { "setNumber": 2, "weight": 170, "reps": 15 },
-                { "setNumber": 3, "weight": 170, "reps": 15 },
-                { "setNumber": 4, "weight": 170, "reps": 14 }
+                {
+                  "setNumber": 1,
+                  "weight": 150,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 170,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 170,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 170,
+                  "reps": 14
+                }
               ]
             }
           ]
         },
         {
           "workoutDayNumber": 4,
-          "startedAt": { "daysAgo": 18, "hour": 17, "minute": 30 },
-          "completedAt": { "daysAgo": 18, "hour": 19, "minute": 0 },
+          "startedAt": {
+            "daysAgo": 18,
+            "hour": 17,
+            "minute": 30
+          },
+          "completedAt": {
+            "daysAgo": 18,
+            "hour": 19,
+            "minute": 0
+          },
           "status": "completed",
           "notes": "Push B. OHP felt strong today. Shoulders are growing.",
           "exerciseLogs": [
             {
               "exerciseName": "Overhead Press",
               "sets": [
-                { "setNumber": 1, "weight": 65, "reps": 6 },
-                { "setNumber": 2, "weight": 95, "reps": 6 },
-                { "setNumber": 3, "weight": 115, "reps": 6 },
-                { "setNumber": 4, "weight": 115, "reps": 5 }
+                {
+                  "setNumber": 1,
+                  "weight": 65,
+                  "reps": 6
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 95,
+                  "reps": 6
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 115,
+                  "reps": 6
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 115,
+                  "reps": 5
+                }
               ],
               "notes": "Strict form, no leg drive. RPE 8."
             },
             {
               "exerciseName": "Incline Bench Press",
               "sets": [
-                { "setNumber": 1, "weight": 115, "reps": 8 },
-                { "setNumber": 2, "weight": 135, "reps": 8 },
-                { "setNumber": 3, "weight": 145, "reps": 7 }
+                {
+                  "setNumber": 1,
+                  "weight": 115,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 135,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 145,
+                  "reps": 7
+                }
               ]
             },
             {
               "exerciseName": "Dumbbell Flyes",
               "sets": [
-                { "setNumber": 1, "weight": 30, "reps": 12 },
-                { "setNumber": 2, "weight": 35, "reps": 12 },
-                { "setNumber": 3, "weight": 35, "reps": 11 }
+                {
+                  "setNumber": 1,
+                  "weight": 30,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 35,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 35,
+                  "reps": 11
+                }
               ],
               "notes": "Deep stretch, chest is fried"
             },
             {
               "exerciseName": "Cable Lateral Raise",
               "sets": [
-                { "setNumber": 1, "weight": 15, "reps": 15 },
-                { "setNumber": 2, "weight": 17.5, "reps": 15 },
-                { "setNumber": 3, "weight": 17.5, "reps": 15 },
-                { "setNumber": 4, "weight": 17.5, "reps": 14 }
+                {
+                  "setNumber": 1,
+                  "weight": 15,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 17.5,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 17.5,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 17.5,
+                  "reps": 14
+                }
               ]
             },
             {
               "exerciseName": "Cable Rope Overhead Triceps Extension",
               "sets": [
-                { "setNumber": 1, "weight": 40, "reps": 12 },
-                { "setNumber": 2, "weight": 50, "reps": 12 },
-                { "setNumber": 3, "weight": 50, "reps": 11 }
+                {
+                  "setNumber": 1,
+                  "weight": 40,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 50,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 50,
+                  "reps": 11
+                }
               ]
             },
             {
               "exerciseName": "Dips",
               "sets": [
-                { "setNumber": 1, "reps": 12 },
-                { "setNumber": 2, "reps": 11 },
-                { "setNumber": 3, "reps": 10 }
+                {
+                  "setNumber": 1,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "reps": 11
+                },
+                {
+                  "setNumber": 3,
+                  "reps": 10
+                }
               ],
               "notes": "Bodyweight, forward lean for chest"
             }
@@ -645,59 +1013,143 @@
         },
         {
           "workoutDayNumber": 5,
-          "startedAt": { "daysAgo": 17, "hour": 17, "minute": 30 },
-          "completedAt": { "daysAgo": 17, "hour": 19, "minute": 15 },
+          "startedAt": {
+            "daysAgo": 17,
+            "hour": 17,
+            "minute": 30
+          },
+          "completedAt": {
+            "daysAgo": 17,
+            "hour": 19,
+            "minute": 15
+          },
           "status": "completed",
           "notes": "Pull B. Deadlift day - love it. Hit 315 for 5!",
           "exerciseLogs": [
             {
               "exerciseName": "Deadlift",
               "sets": [
-                { "setNumber": 1, "weight": 135, "reps": 5 },
-                { "setNumber": 2, "weight": 225, "reps": 5 },
-                { "setNumber": 3, "weight": 275, "reps": 5 },
-                { "setNumber": 4, "weight": 315, "reps": 5 }
+                {
+                  "setNumber": 1,
+                  "weight": 135,
+                  "reps": 5
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 225,
+                  "reps": 5
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 275,
+                  "reps": 5
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 315,
+                  "reps": 5
+                }
               ],
               "notes": "315x5! RPE 8.5. Grip held. Felt strong."
             },
             {
               "exerciseName": "Dumbbell Row",
               "sets": [
-                { "setNumber": 1, "weight": 60, "reps": 10 },
-                { "setNumber": 2, "weight": 70, "reps": 10 },
-                { "setNumber": 3, "weight": 75, "reps": 10 }
+                {
+                  "setNumber": 1,
+                  "weight": 60,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 70,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 75,
+                  "reps": 10
+                }
               ]
             },
             {
               "exerciseName": "Lat Pulldown",
               "sets": [
-                { "setNumber": 1, "weight": 120, "reps": 12 },
-                { "setNumber": 2, "weight": 130, "reps": 12 },
-                { "setNumber": 3, "weight": 130, "reps": 11 }
+                {
+                  "setNumber": 1,
+                  "weight": 120,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 130,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 130,
+                  "reps": 11
+                }
               ]
             },
             {
               "exerciseName": "Face Pull",
               "sets": [
-                { "setNumber": 1, "weight": 45, "reps": 15 },
-                { "setNumber": 2, "weight": 50, "reps": 15 },
-                { "setNumber": 3, "weight": 50, "reps": 15 }
+                {
+                  "setNumber": 1,
+                  "weight": 45,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 50,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 50,
+                  "reps": 15
+                }
               ]
             },
             {
               "exerciseName": "Preacher Curl",
               "sets": [
-                { "setNumber": 1, "weight": 50, "reps": 10 },
-                { "setNumber": 2, "weight": 60, "reps": 10 },
-                { "setNumber": 3, "weight": 60, "reps": 9 }
+                {
+                  "setNumber": 1,
+                  "weight": 50,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 60,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 60,
+                  "reps": 9
+                }
               ]
             },
             {
               "exerciseName": "Cable Hammer Curls - Rope Attachment",
               "sets": [
-                { "setNumber": 1, "weight": 35, "reps": 12 },
-                { "setNumber": 2, "weight": 40, "reps": 12 },
-                { "setNumber": 3, "weight": 40, "reps": 12 }
+                {
+                  "setNumber": 1,
+                  "weight": 35,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 40,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 40,
+                  "reps": 12
+                }
               ],
               "notes": "Forearms pumped"
             }
@@ -705,302 +1157,739 @@
         },
         {
           "workoutDayNumber": 6,
-          "startedAt": { "daysAgo": 16, "hour": 10, "minute": 0 },
-          "completedAt": { "daysAgo": 16, "hour": 11, "minute": 30 },
+          "startedAt": {
+            "daysAgo": 16,
+            "hour": 10,
+            "minute": 0
+          },
+          "completedAt": {
+            "daysAgo": 16,
+            "hour": 11,
+            "minute": 30
+          },
           "status": "completed",
           "notes": "Legs B. Saturday morning session. Hamstring focus - great pump.",
           "exerciseLogs": [
             {
               "exerciseName": "Romanian Deadlift",
               "sets": [
-                { "setNumber": 1, "weight": 135, "reps": 8 },
-                { "setNumber": 2, "weight": 185, "reps": 8 },
-                { "setNumber": 3, "weight": 205, "reps": 8 },
-                { "setNumber": 4, "weight": 205, "reps": 8 }
+                {
+                  "setNumber": 1,
+                  "weight": 135,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 185,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 205,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 205,
+                  "reps": 8
+                }
               ],
               "notes": "Deep stretch, controlled eccentric"
             },
             {
               "exerciseName": "Leg Curl",
               "sets": [
-                { "setNumber": 1, "weight": 80, "reps": 10 },
-                { "setNumber": 2, "weight": 95, "reps": 10 },
-                { "setNumber": 3, "weight": 100, "reps": 10 },
-                { "setNumber": 4, "weight": 100, "reps": 9 }
+                {
+                  "setNumber": 1,
+                  "weight": 80,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 95,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 100,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 100,
+                  "reps": 9
+                }
               ]
             },
             {
               "exerciseName": "Hip Thrust",
               "sets": [
-                { "setNumber": 1, "weight": 135, "reps": 12 },
-                { "setNumber": 2, "weight": 185, "reps": 12 },
-                { "setNumber": 3, "weight": 185, "reps": 12 }
+                {
+                  "setNumber": 1,
+                  "weight": 135,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 185,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 185,
+                  "reps": 12
+                }
               ],
               "notes": "Glute activation on point"
             },
             {
               "exerciseName": "Hack Squat",
               "sets": [
-                { "setNumber": 1, "weight": 180, "reps": 12 },
-                { "setNumber": 2, "weight": 230, "reps": 12 },
-                { "setNumber": 3, "weight": 230, "reps": 10 }
+                {
+                  "setNumber": 1,
+                  "weight": 180,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 230,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 230,
+                  "reps": 10
+                }
               ]
             },
             {
               "exerciseName": "Leg Extension",
               "sets": [
-                { "setNumber": 1, "weight": 100, "reps": 15 },
-                { "setNumber": 2, "weight": 110, "reps": 12 },
-                { "setNumber": 3, "weight": 80, "reps": 20 }
+                {
+                  "setNumber": 1,
+                  "weight": 100,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 110,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 80,
+                  "reps": 20
+                }
               ],
               "notes": "Drop set on last set - quads on fire"
             },
             {
               "exerciseName": "Seated Calf Raise",
               "sets": [
-                { "setNumber": 1, "weight": 70, "reps": 15 },
-                { "setNumber": 2, "weight": 90, "reps": 15 },
-                { "setNumber": 3, "weight": 90, "reps": 15 },
-                { "setNumber": 4, "weight": 90, "reps": 14 }
+                {
+                  "setNumber": 1,
+                  "weight": 70,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 90,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 90,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 90,
+                  "reps": 14
+                }
               ]
             }
           ]
         },
         {
           "workoutDayNumber": 1,
-          "startedAt": { "daysAgo": 14, "hour": 17, "minute": 30 },
-          "completedAt": { "daysAgo": 14, "hour": 19, "minute": 0 },
+          "startedAt": {
+            "daysAgo": 14,
+            "hour": 17,
+            "minute": 30
+          },
+          "completedAt": {
+            "daysAgo": 14,
+            "hour": 19,
+            "minute": 0
+          },
           "status": "completed",
           "notes": "Week 2 Push A. Answered check-in - going great! Bench progression feels good.",
           "exerciseLogs": [
             {
               "exerciseName": "Bench Press",
               "sets": [
-                { "setNumber": 1, "weight": 135, "reps": 6 },
-                { "setNumber": 2, "weight": 175, "reps": 6 },
-                { "setNumber": 3, "weight": 195, "reps": 6 },
-                { "setNumber": 4, "weight": 195, "reps": 5 }
+                {
+                  "setNumber": 1,
+                  "weight": 135,
+                  "reps": 6
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 175,
+                  "reps": 6
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 195,
+                  "reps": 6
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 195,
+                  "reps": 5
+                }
               ],
               "notes": "195x6! +10 lbs from last week. RPE 8."
             },
             {
               "exerciseName": "Incline Dumbbell Press",
               "sets": [
-                { "setNumber": 1, "weight": 60, "reps": 10 },
-                { "setNumber": 2, "weight": 65, "reps": 10 },
-                { "setNumber": 3, "weight": 65, "reps": 9 }
+                {
+                  "setNumber": 1,
+                  "weight": 60,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 65,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 65,
+                  "reps": 9
+                }
               ]
             },
             {
               "exerciseName": "Cable Crossover",
               "sets": [
-                { "setNumber": 1, "weight": 30, "reps": 12 },
-                { "setNumber": 2, "weight": 32.5, "reps": 12 },
-                { "setNumber": 3, "weight": 32.5, "reps": 12 }
+                {
+                  "setNumber": 1,
+                  "weight": 30,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 32.5,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 32.5,
+                  "reps": 12
+                }
               ]
             },
             {
               "exerciseName": "Dumbbell Shoulder Press",
               "sets": [
-                { "setNumber": 1, "weight": 50, "reps": 10 },
-                { "setNumber": 2, "weight": 55, "reps": 10 },
-                { "setNumber": 3, "weight": 55, "reps": 9 }
+                {
+                  "setNumber": 1,
+                  "weight": 50,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 55,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 55,
+                  "reps": 9
+                }
               ]
             },
             {
               "exerciseName": "Cable Lateral Raise",
               "sets": [
-                { "setNumber": 1, "weight": 17.5, "reps": 15 },
-                { "setNumber": 2, "weight": 20, "reps": 15 },
-                { "setNumber": 3, "weight": 20, "reps": 14 }
+                {
+                  "setNumber": 1,
+                  "weight": 17.5,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 20,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 20,
+                  "reps": 14
+                }
               ]
             },
             {
               "exerciseName": "Cable Rope Tricep Pushdown",
               "sets": [
-                { "setNumber": 1, "weight": 45, "reps": 12 },
-                { "setNumber": 2, "weight": 50, "reps": 12 },
-                { "setNumber": 3, "weight": 50, "reps": 12 }
+                {
+                  "setNumber": 1,
+                  "weight": 45,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 50,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 50,
+                  "reps": 12
+                }
               ]
             }
           ]
         },
         {
           "workoutDayNumber": 2,
-          "startedAt": { "daysAgo": 13, "hour": 17, "minute": 30 },
-          "completedAt": { "daysAgo": 13, "hour": 19, "minute": 0 },
+          "startedAt": {
+            "daysAgo": 13,
+            "hour": 17,
+            "minute": 30
+          },
+          "completedAt": {
+            "daysAgo": 13,
+            "hour": 19,
+            "minute": 0
+          },
           "status": "completed",
           "notes": "Pull A. Back feeling wider. Rows are getting stronger.",
           "exerciseLogs": [
             {
               "exerciseName": "Lat Pulldown",
               "sets": [
-                { "setNumber": 1, "weight": 130, "reps": 8 },
-                { "setNumber": 2, "weight": 150, "reps": 8 },
-                { "setNumber": 3, "weight": 160, "reps": 8 },
-                { "setNumber": 4, "weight": 160, "reps": 7 }
+                {
+                  "setNumber": 1,
+                  "weight": 130,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 150,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 160,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 160,
+                  "reps": 7
+                }
               ]
             },
             {
               "exerciseName": "Barbell Row",
               "sets": [
-                { "setNumber": 1, "weight": 145, "reps": 8 },
-                { "setNumber": 2, "weight": 165, "reps": 8 },
-                { "setNumber": 3, "weight": 175, "reps": 8 },
-                { "setNumber": 4, "weight": 175, "reps": 7 }
+                {
+                  "setNumber": 1,
+                  "weight": 145,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 165,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 175,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 175,
+                  "reps": 7
+                }
               ],
               "notes": "+10 lbs from last week"
             },
             {
               "exerciseName": "Cable Row",
               "sets": [
-                { "setNumber": 1, "weight": 130, "reps": 10 },
-                { "setNumber": 2, "weight": 140, "reps": 10 },
-                { "setNumber": 3, "weight": 140, "reps": 10 }
+                {
+                  "setNumber": 1,
+                  "weight": 130,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 140,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 140,
+                  "reps": 10
+                }
               ]
             },
             {
               "exerciseName": "Face Pull",
               "sets": [
-                { "setNumber": 1, "weight": 45, "reps": 15 },
-                { "setNumber": 2, "weight": 50, "reps": 15 },
-                { "setNumber": 3, "weight": 50, "reps": 15 }
+                {
+                  "setNumber": 1,
+                  "weight": 45,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 50,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 50,
+                  "reps": 15
+                }
               ]
             },
             {
               "exerciseName": "Barbell Curl",
               "sets": [
-                { "setNumber": 1, "weight": 70, "reps": 10 },
-                { "setNumber": 2, "weight": 80, "reps": 10 },
-                { "setNumber": 3, "weight": 80, "reps": 9 }
+                {
+                  "setNumber": 1,
+                  "weight": 70,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 80,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 80,
+                  "reps": 9
+                }
               ]
             },
             {
               "exerciseName": "Hammer Curls",
               "sets": [
-                { "setNumber": 1, "weight": 35, "reps": 12 },
-                { "setNumber": 2, "weight": 37.5, "reps": 12 },
-                { "setNumber": 3, "weight": 37.5, "reps": 11 }
+                {
+                  "setNumber": 1,
+                  "weight": 35,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 37.5,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 37.5,
+                  "reps": 11
+                }
               ]
             }
           ]
         },
         {
           "workoutDayNumber": 3,
-          "startedAt": { "daysAgo": 12, "hour": 17, "minute": 30 },
-          "completedAt": { "daysAgo": 12, "hour": 19, "minute": 15 },
+          "startedAt": {
+            "daysAgo": 12,
+            "hour": 17,
+            "minute": 30
+          },
+          "completedAt": {
+            "daysAgo": 12,
+            "hour": 19,
+            "minute": 15
+          },
           "status": "completed",
           "notes": "Legs A. Squats moving well. Hit 245 for 6!",
           "exerciseLogs": [
             {
               "exerciseName": "Barbell Squat",
               "sets": [
-                { "setNumber": 1, "weight": 135, "reps": 6 },
-                { "setNumber": 2, "weight": 195, "reps": 6 },
-                { "setNumber": 3, "weight": 245, "reps": 6 },
-                { "setNumber": 4, "weight": 245, "reps": 5 }
+                {
+                  "setNumber": 1,
+                  "weight": 135,
+                  "reps": 6
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 195,
+                  "reps": 6
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 245,
+                  "reps": 6
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 245,
+                  "reps": 5
+                }
               ],
               "notes": "245x6! +20 lbs. Feeling strong. RPE 8.5"
             },
             {
               "exerciseName": "Leg Press",
               "sets": [
-                { "setNumber": 1, "weight": 300, "reps": 12 },
-                { "setNumber": 2, "weight": 350, "reps": 12 },
-                { "setNumber": 3, "weight": 350, "reps": 11 }
+                {
+                  "setNumber": 1,
+                  "weight": 300,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 350,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 350,
+                  "reps": 11
+                }
               ]
             },
             {
               "exerciseName": "Leg Extension",
               "sets": [
-                { "setNumber": 1, "weight": 100, "reps": 15 },
-                { "setNumber": 2, "weight": 110, "reps": 15 },
-                { "setNumber": 3, "weight": 110, "reps": 14 }
+                {
+                  "setNumber": 1,
+                  "weight": 100,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 110,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 110,
+                  "reps": 14
+                }
               ]
             },
             {
               "exerciseName": "Romanian Deadlift",
               "sets": [
-                { "setNumber": 1, "weight": 145, "reps": 10 },
-                { "setNumber": 2, "weight": 165, "reps": 10 },
-                { "setNumber": 3, "weight": 165, "reps": 10 }
+                {
+                  "setNumber": 1,
+                  "weight": 145,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 165,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 165,
+                  "reps": 10
+                }
               ]
             },
             {
               "exerciseName": "Leg Curl",
               "sets": [
-                { "setNumber": 1, "weight": 85, "reps": 12 },
-                { "setNumber": 2, "weight": 95, "reps": 12 },
-                { "setNumber": 3, "weight": 95, "reps": 11 }
+                {
+                  "setNumber": 1,
+                  "weight": 85,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 95,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 95,
+                  "reps": 11
+                }
               ]
             },
             {
               "exerciseName": "Standing Calf Raise",
               "sets": [
-                { "setNumber": 1, "weight": 160, "reps": 15 },
-                { "setNumber": 2, "weight": 180, "reps": 15 },
-                { "setNumber": 3, "weight": 180, "reps": 15 },
-                { "setNumber": 4, "weight": 180, "reps": 14 }
+                {
+                  "setNumber": 1,
+                  "weight": 160,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 180,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 180,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 180,
+                  "reps": 14
+                }
               ]
             }
           ]
         },
         {
           "workoutDayNumber": 4,
-          "startedAt": { "daysAgo": 11, "hour": 17, "minute": 30 },
-          "completedAt": { "daysAgo": 11, "hour": 19, "minute": 0 },
+          "startedAt": {
+            "daysAgo": 11,
+            "hour": 17,
+            "minute": 30
+          },
+          "completedAt": {
+            "daysAgo": 11,
+            "hour": 19,
+            "minute": 0
+          },
           "status": "completed",
           "notes": "Push B. OHP still climbing. Shoulders responding well to frequency.",
           "exerciseLogs": [
             {
               "exerciseName": "Overhead Press",
               "sets": [
-                { "setNumber": 1, "weight": 65, "reps": 6 },
-                { "setNumber": 2, "weight": 100, "reps": 6 },
-                { "setNumber": 3, "weight": 120, "reps": 6 },
-                { "setNumber": 4, "weight": 120, "reps": 5 }
+                {
+                  "setNumber": 1,
+                  "weight": 65,
+                  "reps": 6
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 100,
+                  "reps": 6
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 120,
+                  "reps": 6
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 120,
+                  "reps": 5
+                }
               ],
               "notes": "120x6! Strict. RPE 8.5"
             },
             {
               "exerciseName": "Incline Bench Press",
               "sets": [
-                { "setNumber": 1, "weight": 125, "reps": 8 },
-                { "setNumber": 2, "weight": 145, "reps": 8 },
-                { "setNumber": 3, "weight": 155, "reps": 7 }
+                {
+                  "setNumber": 1,
+                  "weight": 125,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 145,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 155,
+                  "reps": 7
+                }
               ]
             },
             {
               "exerciseName": "Dumbbell Flyes",
               "sets": [
-                { "setNumber": 1, "weight": 32.5, "reps": 12 },
-                { "setNumber": 2, "weight": 37.5, "reps": 12 },
-                { "setNumber": 3, "weight": 37.5, "reps": 11 }
+                {
+                  "setNumber": 1,
+                  "weight": 32.5,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 37.5,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 37.5,
+                  "reps": 11
+                }
               ]
             },
             {
               "exerciseName": "Cable Lateral Raise",
               "sets": [
-                { "setNumber": 1, "weight": 17.5, "reps": 15 },
-                { "setNumber": 2, "weight": 20, "reps": 15 },
-                { "setNumber": 3, "weight": 20, "reps": 15 },
-                { "setNumber": 4, "weight": 20, "reps": 14 }
+                {
+                  "setNumber": 1,
+                  "weight": 17.5,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 20,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 20,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 20,
+                  "reps": 14
+                }
               ]
             },
             {
               "exerciseName": "Cable Rope Overhead Triceps Extension",
               "sets": [
-                { "setNumber": 1, "weight": 45, "reps": 12 },
-                { "setNumber": 2, "weight": 55, "reps": 12 },
-                { "setNumber": 3, "weight": 55, "reps": 11 }
+                {
+                  "setNumber": 1,
+                  "weight": 45,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 55,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 55,
+                  "reps": 11
+                }
               ]
             },
             {
               "exerciseName": "Dips",
               "sets": [
-                { "setNumber": 1, "reps": 13 },
-                { "setNumber": 2, "reps": 12 },
-                { "setNumber": 3, "reps": 11 }
+                {
+                  "setNumber": 1,
+                  "reps": 13
+                },
+                {
+                  "setNumber": 2,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "reps": 11
+                }
               ],
               "notes": "+1-2 reps per set from last week"
             }
@@ -1008,364 +1897,885 @@
         },
         {
           "workoutDayNumber": 5,
-          "startedAt": { "daysAgo": 10, "hour": 17, "minute": 30 },
-          "completedAt": { "daysAgo": 10, "hour": 19, "minute": 15 },
+          "startedAt": {
+            "daysAgo": 10,
+            "hour": 17,
+            "minute": 30
+          },
+          "completedAt": {
+            "daysAgo": 10,
+            "hour": 19,
+            "minute": 15
+          },
           "status": "completed",
           "notes": "Pull B. Deadlift PR - 335x5! Chasing that 405.",
           "exerciseLogs": [
             {
               "exerciseName": "Deadlift",
               "sets": [
-                { "setNumber": 1, "weight": 135, "reps": 5 },
-                { "setNumber": 2, "weight": 225, "reps": 5 },
-                { "setNumber": 3, "weight": 295, "reps": 5 },
-                { "setNumber": 4, "weight": 335, "reps": 5 }
+                {
+                  "setNumber": 1,
+                  "weight": 135,
+                  "reps": 5
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 225,
+                  "reps": 5
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 295,
+                  "reps": 5
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 335,
+                  "reps": 5
+                }
               ],
               "notes": "335x5! PR! +20 lbs from last week. RPE 9 but grip held!"
             },
             {
               "exerciseName": "Dumbbell Row",
               "sets": [
-                { "setNumber": 1, "weight": 65, "reps": 10 },
-                { "setNumber": 2, "weight": 75, "reps": 10 },
-                { "setNumber": 3, "weight": 80, "reps": 10 }
+                {
+                  "setNumber": 1,
+                  "weight": 65,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 75,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 80,
+                  "reps": 10
+                }
               ],
               "notes": "80s felt heavy but manageable"
             },
             {
               "exerciseName": "Lat Pulldown",
               "sets": [
-                { "setNumber": 1, "weight": 130, "reps": 12 },
-                { "setNumber": 2, "weight": 140, "reps": 12 },
-                { "setNumber": 3, "weight": 140, "reps": 11 }
+                {
+                  "setNumber": 1,
+                  "weight": 130,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 140,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 140,
+                  "reps": 11
+                }
               ]
             },
             {
               "exerciseName": "Face Pull",
               "sets": [
-                { "setNumber": 1, "weight": 50, "reps": 15 },
-                { "setNumber": 2, "weight": 55, "reps": 15 },
-                { "setNumber": 3, "weight": 55, "reps": 15 }
+                {
+                  "setNumber": 1,
+                  "weight": 50,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 55,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 55,
+                  "reps": 15
+                }
               ]
             },
             {
               "exerciseName": "Preacher Curl",
               "sets": [
-                { "setNumber": 1, "weight": 55, "reps": 10 },
-                { "setNumber": 2, "weight": 65, "reps": 10 },
-                { "setNumber": 3, "weight": 65, "reps": 9 }
+                {
+                  "setNumber": 1,
+                  "weight": 55,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 65,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 65,
+                  "reps": 9
+                }
               ]
             },
             {
               "exerciseName": "Cable Hammer Curls - Rope Attachment",
               "sets": [
-                { "setNumber": 1, "weight": 40, "reps": 12 },
-                { "setNumber": 2, "weight": 45, "reps": 12 },
-                { "setNumber": 3, "weight": 45, "reps": 12 }
+                {
+                  "setNumber": 1,
+                  "weight": 40,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 45,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 45,
+                  "reps": 12
+                }
               ]
             }
           ]
         },
         {
           "workoutDayNumber": 6,
-          "startedAt": { "daysAgo": 9, "hour": 10, "minute": 0 },
-          "completedAt": { "daysAgo": 9, "hour": 11, "minute": 30 },
+          "startedAt": {
+            "daysAgo": 9,
+            "hour": 10,
+            "minute": 0
+          },
+          "completedAt": {
+            "daysAgo": 9,
+            "hour": 11,
+            "minute": 30
+          },
           "status": "completed",
           "notes": "Week 2 Legs B. Hamstrings and glutes feeling the volume.",
           "exerciseLogs": [
             {
               "exerciseName": "Romanian Deadlift",
               "sets": [
-                { "setNumber": 1, "weight": 145, "reps": 8 },
-                { "setNumber": 2, "weight": 195, "reps": 8 },
-                { "setNumber": 3, "weight": 215, "reps": 8 },
-                { "setNumber": 4, "weight": 215, "reps": 8 }
+                {
+                  "setNumber": 1,
+                  "weight": 145,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 195,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 215,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 215,
+                  "reps": 8
+                }
               ],
               "notes": "+10 lbs from last week, hamstrings stretched"
             },
             {
               "exerciseName": "Leg Curl",
               "sets": [
-                { "setNumber": 1, "weight": 90, "reps": 10 },
-                { "setNumber": 2, "weight": 100, "reps": 10 },
-                { "setNumber": 3, "weight": 105, "reps": 10 },
-                { "setNumber": 4, "weight": 105, "reps": 9 }
+                {
+                  "setNumber": 1,
+                  "weight": 90,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 100,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 105,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 105,
+                  "reps": 9
+                }
               ]
             },
             {
               "exerciseName": "Hip Thrust",
               "sets": [
-                { "setNumber": 1, "weight": 155, "reps": 12 },
-                { "setNumber": 2, "weight": 205, "reps": 12 },
-                { "setNumber": 3, "weight": 205, "reps": 12 }
+                {
+                  "setNumber": 1,
+                  "weight": 155,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 205,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 205,
+                  "reps": 12
+                }
               ],
               "notes": "+20 lbs, glute strength up"
             },
             {
               "exerciseName": "Hack Squat",
               "sets": [
-                { "setNumber": 1, "weight": 200, "reps": 12 },
-                { "setNumber": 2, "weight": 250, "reps": 12 },
-                { "setNumber": 3, "weight": 250, "reps": 11 }
+                {
+                  "setNumber": 1,
+                  "weight": 200,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 250,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 250,
+                  "reps": 11
+                }
               ]
             },
             {
               "exerciseName": "Leg Extension",
               "sets": [
-                { "setNumber": 1, "weight": 110, "reps": 15 },
-                { "setNumber": 2, "weight": 120, "reps": 12 },
-                { "setNumber": 3, "weight": 90, "reps": 18 }
+                {
+                  "setNumber": 1,
+                  "weight": 110,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 120,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 90,
+                  "reps": 18
+                }
               ],
               "notes": "Drop set finisher"
             },
             {
               "exerciseName": "Seated Calf Raise",
               "sets": [
-                { "setNumber": 1, "weight": 80, "reps": 15 },
-                { "setNumber": 2, "weight": 100, "reps": 15 },
-                { "setNumber": 3, "weight": 100, "reps": 15 },
-                { "setNumber": 4, "weight": 100, "reps": 14 }
+                {
+                  "setNumber": 1,
+                  "weight": 80,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 100,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 100,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 100,
+                  "reps": 14
+                }
               ]
             }
           ]
         },
         {
           "workoutDayNumber": 1,
-          "startedAt": { "daysAgo": 7, "hour": 17, "minute": 30 },
-          "completedAt": { "daysAgo": 7, "hour": 19, "minute": 0 },
+          "startedAt": {
+            "daysAgo": 7,
+            "hour": 17,
+            "minute": 30
+          },
+          "completedAt": {
+            "daysAgo": 7,
+            "hour": 19,
+            "minute": 0
+          },
           "status": "completed",
           "notes": "Week 3 Push A. Bench is flying! 205 incoming.",
           "exerciseLogs": [
             {
               "exerciseName": "Bench Press",
               "sets": [
-                { "setNumber": 1, "weight": 145, "reps": 6 },
-                { "setNumber": 2, "weight": 185, "reps": 6 },
-                { "setNumber": 3, "weight": 205, "reps": 6 },
-                { "setNumber": 4, "weight": 205, "reps": 5 }
+                {
+                  "setNumber": 1,
+                  "weight": 145,
+                  "reps": 6
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 185,
+                  "reps": 6
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 205,
+                  "reps": 6
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 205,
+                  "reps": 5
+                }
               ],
               "notes": "205x6! From 185 three weeks ago. Chase 225!"
             },
             {
               "exerciseName": "Incline Dumbbell Press",
               "sets": [
-                { "setNumber": 1, "weight": 65, "reps": 10 },
-                { "setNumber": 2, "weight": 70, "reps": 10 },
-                { "setNumber": 3, "weight": 70, "reps": 9 }
+                {
+                  "setNumber": 1,
+                  "weight": 65,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 70,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 70,
+                  "reps": 9
+                }
               ]
             },
             {
               "exerciseName": "Cable Crossover",
               "sets": [
-                { "setNumber": 1, "weight": 32.5, "reps": 12 },
-                { "setNumber": 2, "weight": 35, "reps": 12 },
-                { "setNumber": 3, "weight": 35, "reps": 12 }
+                {
+                  "setNumber": 1,
+                  "weight": 32.5,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 35,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 35,
+                  "reps": 12
+                }
               ]
             },
             {
               "exerciseName": "Dumbbell Shoulder Press",
               "sets": [
-                { "setNumber": 1, "weight": 55, "reps": 10 },
-                { "setNumber": 2, "weight": 60, "reps": 10 },
-                { "setNumber": 3, "weight": 60, "reps": 9 }
+                {
+                  "setNumber": 1,
+                  "weight": 55,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 60,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 60,
+                  "reps": 9
+                }
               ]
             },
             {
               "exerciseName": "Cable Lateral Raise",
               "sets": [
-                { "setNumber": 1, "weight": 20, "reps": 15 },
-                { "setNumber": 2, "weight": 22.5, "reps": 15 },
-                { "setNumber": 3, "weight": 22.5, "reps": 14 }
+                {
+                  "setNumber": 1,
+                  "weight": 20,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 22.5,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 22.5,
+                  "reps": 14
+                }
               ]
             },
             {
               "exerciseName": "Cable Rope Tricep Pushdown",
               "sets": [
-                { "setNumber": 1, "weight": 50, "reps": 12 },
-                { "setNumber": 2, "weight": 55, "reps": 12 },
-                { "setNumber": 3, "weight": 55, "reps": 12 }
+                {
+                  "setNumber": 1,
+                  "weight": 50,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 55,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 55,
+                  "reps": 12
+                }
               ]
             }
           ]
         },
         {
           "workoutDayNumber": 2,
-          "startedAt": { "daysAgo": 6, "hour": 17, "minute": 30 },
-          "completedAt": { "daysAgo": 6, "hour": 19, "minute": 0 },
+          "startedAt": {
+            "daysAgo": 6,
+            "hour": 17,
+            "minute": 30
+          },
+          "completedAt": {
+            "daysAgo": 6,
+            "hour": 19,
+            "minute": 0
+          },
           "status": "completed",
           "notes": "Pull A. Back width noticeable in mirror. PPL frequency is working.",
           "exerciseLogs": [
             {
               "exerciseName": "Lat Pulldown",
               "sets": [
-                { "setNumber": 1, "weight": 140, "reps": 8 },
-                { "setNumber": 2, "weight": 160, "reps": 8 },
-                { "setNumber": 3, "weight": 170, "reps": 8 },
-                { "setNumber": 4, "weight": 170, "reps": 7 }
+                {
+                  "setNumber": 1,
+                  "weight": 140,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 160,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 170,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 170,
+                  "reps": 7
+                }
               ],
               "notes": "170x8! Back is growing"
             },
             {
               "exerciseName": "Barbell Row",
               "sets": [
-                { "setNumber": 1, "weight": 155, "reps": 8 },
-                { "setNumber": 2, "weight": 175, "reps": 8 },
-                { "setNumber": 3, "weight": 185, "reps": 8 },
-                { "setNumber": 4, "weight": 185, "reps": 7 }
+                {
+                  "setNumber": 1,
+                  "weight": 155,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 175,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 185,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 185,
+                  "reps": 7
+                }
               ],
               "notes": "185x8! Strong"
             },
             {
               "exerciseName": "Cable Row",
               "sets": [
-                { "setNumber": 1, "weight": 140, "reps": 10 },
-                { "setNumber": 2, "weight": 150, "reps": 10 },
-                { "setNumber": 3, "weight": 150, "reps": 10 }
+                {
+                  "setNumber": 1,
+                  "weight": 140,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 150,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 150,
+                  "reps": 10
+                }
               ]
             },
             {
               "exerciseName": "Face Pull",
               "sets": [
-                { "setNumber": 1, "weight": 50, "reps": 15 },
-                { "setNumber": 2, "weight": 55, "reps": 15 },
-                { "setNumber": 3, "weight": 55, "reps": 15 }
+                {
+                  "setNumber": 1,
+                  "weight": 50,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 55,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 55,
+                  "reps": 15
+                }
               ]
             },
             {
               "exerciseName": "Barbell Curl",
               "sets": [
-                { "setNumber": 1, "weight": 75, "reps": 10 },
-                { "setNumber": 2, "weight": 85, "reps": 10 },
-                { "setNumber": 3, "weight": 85, "reps": 9 }
+                {
+                  "setNumber": 1,
+                  "weight": 75,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 85,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 85,
+                  "reps": 9
+                }
               ]
             },
             {
               "exerciseName": "Hammer Curls",
               "sets": [
-                { "setNumber": 1, "weight": 37.5, "reps": 12 },
-                { "setNumber": 2, "weight": 40, "reps": 12 },
-                { "setNumber": 3, "weight": 40, "reps": 11 }
+                {
+                  "setNumber": 1,
+                  "weight": 37.5,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 40,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 40,
+                  "reps": 11
+                }
               ]
             }
           ]
         },
         {
           "workoutDayNumber": 3,
-          "startedAt": { "daysAgo": 5, "hour": 17, "minute": 30 },
-          "completedAt": { "daysAgo": 5, "hour": 19, "minute": 15 },
+          "startedAt": {
+            "daysAgo": 5,
+            "hour": 17,
+            "minute": 30
+          },
+          "completedAt": {
+            "daysAgo": 5,
+            "hour": 19,
+            "minute": 15
+          },
           "status": "completed",
           "notes": "Legs A. Squats hit 265! Approaching that 3 plate mark.",
           "exerciseLogs": [
             {
               "exerciseName": "Barbell Squat",
               "sets": [
-                { "setNumber": 1, "weight": 145, "reps": 6 },
-                { "setNumber": 2, "weight": 205, "reps": 6 },
-                { "setNumber": 3, "weight": 265, "reps": 6 },
-                { "setNumber": 4, "weight": 265, "reps": 5 }
+                {
+                  "setNumber": 1,
+                  "weight": 145,
+                  "reps": 6
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 205,
+                  "reps": 6
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 265,
+                  "reps": 6
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 265,
+                  "reps": 5
+                }
               ],
               "notes": "265x6! From 225 three weeks ago. RPE 9"
             },
             {
               "exerciseName": "Leg Press",
               "sets": [
-                { "setNumber": 1, "weight": 320, "reps": 12 },
-                { "setNumber": 2, "weight": 380, "reps": 12 },
-                { "setNumber": 3, "weight": 380, "reps": 11 }
+                {
+                  "setNumber": 1,
+                  "weight": 320,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 380,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 380,
+                  "reps": 11
+                }
               ]
             },
             {
               "exerciseName": "Leg Extension",
               "sets": [
-                { "setNumber": 1, "weight": 110, "reps": 15 },
-                { "setNumber": 2, "weight": 120, "reps": 15 },
-                { "setNumber": 3, "weight": 120, "reps": 13 }
+                {
+                  "setNumber": 1,
+                  "weight": 110,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 120,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 120,
+                  "reps": 13
+                }
               ]
             },
             {
               "exerciseName": "Romanian Deadlift",
               "sets": [
-                { "setNumber": 1, "weight": 155, "reps": 10 },
-                { "setNumber": 2, "weight": 175, "reps": 10 },
-                { "setNumber": 3, "weight": 175, "reps": 10 }
+                {
+                  "setNumber": 1,
+                  "weight": 155,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 175,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 175,
+                  "reps": 10
+                }
               ]
             },
             {
               "exerciseName": "Leg Curl",
               "sets": [
-                { "setNumber": 1, "weight": 90, "reps": 12 },
-                { "setNumber": 2, "weight": 100, "reps": 12 },
-                { "setNumber": 3, "weight": 100, "reps": 11 }
+                {
+                  "setNumber": 1,
+                  "weight": 90,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 100,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 100,
+                  "reps": 11
+                }
               ]
             },
             {
               "exerciseName": "Standing Calf Raise",
               "sets": [
-                { "setNumber": 1, "weight": 170, "reps": 15 },
-                { "setNumber": 2, "weight": 190, "reps": 15 },
-                { "setNumber": 3, "weight": 190, "reps": 15 },
-                { "setNumber": 4, "weight": 190, "reps": 14 }
+                {
+                  "setNumber": 1,
+                  "weight": 170,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 190,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 190,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 190,
+                  "reps": 14
+                }
               ]
             }
           ]
         },
         {
           "workoutDayNumber": 4,
-          "startedAt": { "daysAgo": 4, "hour": 17, "minute": 30 },
-          "completedAt": { "daysAgo": 4, "hour": 19, "minute": 0 },
+          "startedAt": {
+            "daysAgo": 4,
+            "hour": 17,
+            "minute": 30
+          },
+          "completedAt": {
+            "daysAgo": 4,
+            "hour": 19,
+            "minute": 0
+          },
           "status": "completed",
           "notes": "Push B. OHP hit 125. Shoulders are capped.",
           "exerciseLogs": [
             {
               "exerciseName": "Overhead Press",
               "sets": [
-                { "setNumber": 1, "weight": 65, "reps": 6 },
-                { "setNumber": 2, "weight": 105, "reps": 6 },
-                { "setNumber": 3, "weight": 125, "reps": 6 },
-                { "setNumber": 4, "weight": 125, "reps": 5 }
+                {
+                  "setNumber": 1,
+                  "weight": 65,
+                  "reps": 6
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 105,
+                  "reps": 6
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 125,
+                  "reps": 6
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 125,
+                  "reps": 5
+                }
               ],
               "notes": "125x6! From 115 three weeks ago. RPE 8.5"
             },
             {
               "exerciseName": "Incline Bench Press",
               "sets": [
-                { "setNumber": 1, "weight": 135, "reps": 8 },
-                { "setNumber": 2, "weight": 155, "reps": 8 },
-                { "setNumber": 3, "weight": 165, "reps": 7 }
+                {
+                  "setNumber": 1,
+                  "weight": 135,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 155,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 165,
+                  "reps": 7
+                }
               ],
               "notes": "+10 lbs from week 2"
             },
             {
               "exerciseName": "Dumbbell Flyes",
               "sets": [
-                { "setNumber": 1, "weight": 35, "reps": 12 },
-                { "setNumber": 2, "weight": 40, "reps": 12 },
-                { "setNumber": 3, "weight": 40, "reps": 11 }
+                {
+                  "setNumber": 1,
+                  "weight": 35,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 40,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 40,
+                  "reps": 11
+                }
               ]
             },
             {
               "exerciseName": "Cable Lateral Raise",
               "sets": [
-                { "setNumber": 1, "weight": 20, "reps": 15 },
-                { "setNumber": 2, "weight": 22.5, "reps": 15 },
-                { "setNumber": 3, "weight": 22.5, "reps": 15 },
-                { "setNumber": 4, "weight": 22.5, "reps": 14 }
+                {
+                  "setNumber": 1,
+                  "weight": 20,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 22.5,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 22.5,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 22.5,
+                  "reps": 14
+                }
               ]
             },
             {
               "exerciseName": "Cable Rope Overhead Triceps Extension",
               "sets": [
-                { "setNumber": 1, "weight": 50, "reps": 12 },
-                { "setNumber": 2, "weight": 60, "reps": 12 },
-                { "setNumber": 3, "weight": 60, "reps": 11 }
+                {
+                  "setNumber": 1,
+                  "weight": 50,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 60,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 60,
+                  "reps": 11
+                }
               ]
             },
             {
               "exerciseName": "Dips",
               "sets": [
-                { "setNumber": 1, "reps": 14 },
-                { "setNumber": 2, "reps": 13 },
-                { "setNumber": 3, "reps": 12 }
+                {
+                  "setNumber": 1,
+                  "reps": 14
+                },
+                {
+                  "setNumber": 2,
+                  "reps": 13
+                },
+                {
+                  "setNumber": 3,
+                  "reps": 12
+                }
               ],
               "notes": "Adding 5lb plate next week"
             }
@@ -1373,184 +2783,299 @@
         },
         {
           "workoutDayNumber": 5,
-          "startedAt": { "daysAgo": 3, "hour": 17, "minute": 30 },
-          "completedAt": { "daysAgo": 3, "hour": 19, "minute": 15 },
+          "startedAt": {
+            "daysAgo": 3,
+            "hour": 17,
+            "minute": 30
+          },
+          "completedAt": {
+            "daysAgo": 3,
+            "hour": 19,
+            "minute": 15
+          },
           "status": "completed",
           "notes": "Pull B. Deadlift hit 355x5! Getting close to 405!",
           "exerciseLogs": [
             {
               "exerciseName": "Deadlift",
               "sets": [
-                { "setNumber": 1, "weight": 135, "reps": 5 },
-                { "setNumber": 2, "weight": 225, "reps": 5 },
-                { "setNumber": 3, "weight": 315, "reps": 5 },
-                { "setNumber": 4, "weight": 355, "reps": 5 }
+                {
+                  "setNumber": 1,
+                  "weight": 135,
+                  "reps": 5
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 225,
+                  "reps": 5
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 315,
+                  "reps": 5
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 355,
+                  "reps": 5
+                }
               ],
               "notes": "355x5! RPE 9. 50 lbs to go for 405. Mixed grip held."
             },
             {
               "exerciseName": "Dumbbell Row",
               "sets": [
-                { "setNumber": 1, "weight": 70, "reps": 10 },
-                { "setNumber": 2, "weight": 80, "reps": 10 },
-                { "setNumber": 3, "weight": 85, "reps": 10 }
+                {
+                  "setNumber": 1,
+                  "weight": 70,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 80,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 85,
+                  "reps": 10
+                }
               ],
               "notes": "85s now! Lat engagement is crazy"
             },
             {
               "exerciseName": "Lat Pulldown",
               "sets": [
-                { "setNumber": 1, "weight": 140, "reps": 12 },
-                { "setNumber": 2, "weight": 150, "reps": 12 },
-                { "setNumber": 3, "weight": 150, "reps": 11 }
+                {
+                  "setNumber": 1,
+                  "weight": 140,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 150,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 150,
+                  "reps": 11
+                }
               ]
             },
             {
               "exerciseName": "Face Pull",
               "sets": [
-                { "setNumber": 1, "weight": 55, "reps": 15 },
-                { "setNumber": 2, "weight": 60, "reps": 15 },
-                { "setNumber": 3, "weight": 60, "reps": 15 }
+                {
+                  "setNumber": 1,
+                  "weight": 55,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 60,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 60,
+                  "reps": 15
+                }
               ]
             },
             {
               "exerciseName": "Preacher Curl",
               "sets": [
-                { "setNumber": 1, "weight": 60, "reps": 10 },
-                { "setNumber": 2, "weight": 70, "reps": 10 },
-                { "setNumber": 3, "weight": 70, "reps": 9 }
+                {
+                  "setNumber": 1,
+                  "weight": 60,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 70,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 70,
+                  "reps": 9
+                }
               ]
             },
             {
               "exerciseName": "Cable Hammer Curls - Rope Attachment",
               "sets": [
-                { "setNumber": 1, "weight": 45, "reps": 12 },
-                { "setNumber": 2, "weight": 50, "reps": 12 },
-                { "setNumber": 3, "weight": 50, "reps": 12 }
+                {
+                  "setNumber": 1,
+                  "weight": 45,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 50,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 50,
+                  "reps": 12
+                }
               ]
             }
           ]
         },
         {
           "workoutDayNumber": 6,
-          "startedAt": { "daysAgo": 2, "hour": 10, "minute": 0 },
-          "completedAt": { "daysAgo": 2, "hour": 11, "minute": 30 },
+          "startedAt": {
+            "daysAgo": 2,
+            "hour": 10,
+            "minute": 0
+          },
+          "completedAt": {
+            "daysAgo": 2,
+            "hour": 11,
+            "minute": 30
+          },
           "status": "completed",
           "notes": "Week 3 Legs B. Posterior chain is growing. Girls mirin.",
           "exerciseLogs": [
             {
               "exerciseName": "Romanian Deadlift",
               "sets": [
-                { "setNumber": 1, "weight": 155, "reps": 8 },
-                { "setNumber": 2, "weight": 205, "reps": 8 },
-                { "setNumber": 3, "weight": 225, "reps": 8 },
-                { "setNumber": 4, "weight": 225, "reps": 8 }
+                {
+                  "setNumber": 1,
+                  "weight": 155,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 205,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 225,
+                  "reps": 8
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 225,
+                  "reps": 8
+                }
               ],
               "notes": "225x8! Hamstrings feeling thicc"
             },
             {
               "exerciseName": "Leg Curl",
               "sets": [
-                { "setNumber": 1, "weight": 95, "reps": 10 },
-                { "setNumber": 2, "weight": 105, "reps": 10 },
-                { "setNumber": 3, "weight": 110, "reps": 10 },
-                { "setNumber": 4, "weight": 110, "reps": 9 }
+                {
+                  "setNumber": 1,
+                  "weight": 95,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 105,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 110,
+                  "reps": 10
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 110,
+                  "reps": 9
+                }
               ]
             },
             {
               "exerciseName": "Hip Thrust",
               "sets": [
-                { "setNumber": 1, "weight": 185, "reps": 12 },
-                { "setNumber": 2, "weight": 225, "reps": 12 },
-                { "setNumber": 3, "weight": 225, "reps": 12 }
+                {
+                  "setNumber": 1,
+                  "weight": 185,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 225,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 225,
+                  "reps": 12
+                }
               ],
               "notes": "225 hip thrust! Glutes are strong"
             },
             {
               "exerciseName": "Hack Squat",
               "sets": [
-                { "setNumber": 1, "weight": 230, "reps": 12 },
-                { "setNumber": 2, "weight": 280, "reps": 12 },
-                { "setNumber": 3, "weight": 280, "reps": 10 }
+                {
+                  "setNumber": 1,
+                  "weight": 230,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 280,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 280,
+                  "reps": 10
+                }
               ]
             },
             {
               "exerciseName": "Leg Extension",
               "sets": [
-                { "setNumber": 1, "weight": 120, "reps": 15 },
-                { "setNumber": 2, "weight": 130, "reps": 12 },
-                { "setNumber": 3, "weight": 100, "reps": 16 }
+                {
+                  "setNumber": 1,
+                  "weight": 120,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 130,
+                  "reps": 12
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 100,
+                  "reps": 16
+                }
               ],
               "notes": "Brutal drop set finisher"
             },
             {
               "exerciseName": "Seated Calf Raise",
               "sets": [
-                { "setNumber": 1, "weight": 90, "reps": 15 },
-                { "setNumber": 2, "weight": 110, "reps": 15 },
-                { "setNumber": 3, "weight": 110, "reps": 15 },
-                { "setNumber": 4, "weight": 110, "reps": 14 }
-              ]
-            }
-          ]
-        },
-        {
-          "workoutDayNumber": 1,
-          "startedAt": { "daysAgo": 0, "hour": 17, "minute": 30 },
-          "completedAt": { "daysAgo": 0, "hour": 19, "minute": 0 },
-          "status": "completed",
-          "notes": "Week 4 Push A. 21-day streak! Bench hit 205 for 6 clean. Feeling unstoppable.",
-          "exerciseLogs": [
-            {
-              "exerciseName": "Bench Press",
-              "sets": [
-                { "setNumber": 1, "weight": 145, "reps": 6 },
-                { "setNumber": 2, "weight": 185, "reps": 6 },
-                { "setNumber": 3, "weight": 205, "reps": 6 },
-                { "setNumber": 4, "weight": 205, "reps": 6 }
-              ],
-              "notes": "205x6x2! Both work sets clean! 225 is close. RPE 8"
-            },
-            {
-              "exerciseName": "Incline Dumbbell Press",
-              "sets": [
-                { "setNumber": 1, "weight": 70, "reps": 10 },
-                { "setNumber": 2, "weight": 75, "reps": 10 },
-                { "setNumber": 3, "weight": 75, "reps": 9 }
-              ],
-              "notes": "75s! Upper chest filling in"
-            },
-            {
-              "exerciseName": "Cable Crossover",
-              "sets": [
-                { "setNumber": 1, "weight": 35, "reps": 12 },
-                { "setNumber": 2, "weight": 37.5, "reps": 12 },
-                { "setNumber": 3, "weight": 37.5, "reps": 12 }
-              ]
-            },
-            {
-              "exerciseName": "Dumbbell Shoulder Press",
-              "sets": [
-                { "setNumber": 1, "weight": 60, "reps": 10 },
-                { "setNumber": 2, "weight": 65, "reps": 10 },
-                { "setNumber": 3, "weight": 65, "reps": 9 }
-              ]
-            },
-            {
-              "exerciseName": "Cable Lateral Raise",
-              "sets": [
-                { "setNumber": 1, "weight": 22.5, "reps": 15 },
-                { "setNumber": 2, "weight": 25, "reps": 15 },
-                { "setNumber": 3, "weight": 25, "reps": 14 }
-              ],
-              "notes": "Side delts popping"
-            },
-            {
-              "exerciseName": "Cable Rope Tricep Pushdown",
-              "sets": [
-                { "setNumber": 1, "weight": 55, "reps": 12 },
-                { "setNumber": 2, "weight": 60, "reps": 12 },
-                { "setNumber": 3, "weight": 60, "reps": 12 }
+                {
+                  "setNumber": 1,
+                  "weight": 90,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 2,
+                  "weight": 110,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 3,
+                  "weight": 110,
+                  "reps": 15
+                },
+                {
+                  "setNumber": 4,
+                  "weight": 110,
+                  "reps": 14
+                }
               ]
             }
           ]
@@ -1559,7 +3084,9 @@
       "checkIns": [
         {
           "type": "initial",
-          "date": { "daysAgo": 22 },
+          "date": {
+            "daysAgo": 22
+          },
           "notes": "Starting my PPL program. Been lifting for 3 years but switching from bro split for more frequency. Goals: 225 bench, 315 squat, 405 deadlift. Currently at 185/225/315. Let's get these gains!",
           "stats": {
             "weight": 185,
@@ -1573,7 +3100,9 @@
         },
         {
           "type": "progress",
-          "date": { "daysAgo": 14 },
+          "date": {
+            "daysAgo": 14
+          },
           "notes": "Week 2 complete! PPL is hitting different. Already seeing strength gains - bench 195x6 (was 185), squat 245x6 (was 225), deadlift 335x5 (was 315). Body comp improving. Eating in slight surplus, sleep is on point. 21-day streak loading!",
           "stats": {
             "weight": 187,

@@ -231,7 +231,7 @@
                 "sortOrder": 2
               },
               {
-                "name": "Cable Pull Through",
+                "name": "Cable Pull-Through",
                 "sets": 3,
                 "reps": 15,
                 "restPeriod": 60,
@@ -430,7 +430,7 @@
               ]
             },
             {
-              "exerciseName": "Cable Pull Through",
+              "exerciseName": "Cable Pull-Through",
               "sets": [
                 { "setNumber": 1, "weight": 30, "reps": 15 },
                 { "setNumber": 2, "weight": 35, "reps": 15 },
@@ -627,7 +627,7 @@
               ]
             },
             {
-              "exerciseName": "Cable Pull Through",
+              "exerciseName": "Cable Pull-Through",
               "sets": [
                 { "setNumber": 1, "weight": 40, "reps": 15 },
                 { "setNumber": 2, "weight": 45, "reps": 15 },
@@ -825,7 +825,7 @@
               ]
             },
             {
-              "exerciseName": "Cable Pull Through",
+              "exerciseName": "Cable Pull-Through",
               "sets": [
                 { "setNumber": 1, "weight": 45, "reps": 15 },
                 { "setNumber": 2, "weight": 50, "reps": 15 },
@@ -1022,7 +1022,7 @@
               ]
             },
             {
-              "exerciseName": "Cable Pull Through",
+              "exerciseName": "Cable Pull-Through",
               "sets": [
                 { "setNumber": 1, "weight": 50, "reps": 15 },
                 { "setNumber": 2, "weight": 55, "reps": 15 },
@@ -1220,7 +1220,7 @@
               ]
             },
             {
-              "exerciseName": "Cable Pull Through",
+              "exerciseName": "Cable Pull-Through",
               "sets": [
                 { "setNumber": 1, "weight": 55, "reps": 15 },
                 { "setNumber": 2, "weight": 60, "reps": 15 },
