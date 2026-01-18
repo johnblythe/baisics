@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -69,13 +70,18 @@ const TESTIMONIALS = [
 export default function CoachesPage() {
   const router = useRouter();
   const { data: session } = useSession();
+  const [showSalesModal, setShowSalesModal] = useState(false);
 
   const handleGetStarted = () => {
     router.push('/coaches/signup');
   };
 
   const handleContactSales = () => {
-    window.location.href = 'mailto:john@baisics.app?subject=Coach Partnership Inquiry';
+    setShowSalesModal(true);
+  };
+
+  const closeSalesModal = () => {
+    setShowSalesModal(false);
   };
 
   return (
@@ -372,6 +378,47 @@ export default function CoachesPage() {
             </div>
           </div>
         </footer>
+
+        {/* Sales Modal */}
+        {showSalesModal && (
+          <div
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm"
+            onClick={closeSalesModal}
+          >
+            <div
+              className="bg-white rounded-2xl p-8 max-w-md mx-4 shadow-2xl transform animate-in"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="text-center">
+                <div className="w-16 h-16 bg-[var(--color-coral-light)] rounded-full flex items-center justify-center mx-auto mb-6">
+                  <svg className="w-8 h-8 text-[var(--color-coral)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-bold text-[var(--color-navy)] mb-4">
+                  Talk to Sales
+                </h3>
+                <p className="text-[var(--color-gray-600)] mb-6 text-lg">
+                  lol we don&apos;t have a sales department, but you can email me if you want
+                </p>
+                <a
+                  href="mailto:john@baisics.app"
+                  className="inline-block px-8 py-3 text-lg font-semibold text-white bg-[var(--color-coral)] rounded-xl hover:bg-[var(--color-coral-dark)] transition-all mb-4"
+                >
+                  john@baisics.app
+                </a>
+                <div className="mt-4">
+                  <button
+                    onClick={closeSalesModal}
+                    className="px-6 py-2 text-sm font-medium text-[var(--color-gray-500)] hover:text-[var(--color-navy)] transition-colors"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
