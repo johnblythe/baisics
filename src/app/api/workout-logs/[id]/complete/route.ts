@@ -24,20 +24,32 @@ export async function POST(
 
     // Parse optional completedAt from request body
     let customCompletedAt: Date | undefined;
-    try {
-      const body = await request.json();
-      if (body.completedAt) {
-        customCompletedAt = new Date(body.completedAt);
-        const now = new Date();
-        // Set to end of today to allow completing for today
-        const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
-        if (customCompletedAt > endOfToday) {
-          return NextResponse.json({ error: 'Cannot complete workouts for future dates' }, { status: 400 });
+    const contentLength = request.headers.get('content-length');
+    const hasBody = contentLength && parseInt(contentLength, 10) > 0;
+
+    if (hasBody) {
+      try {
+        const body = await request.json();
+        if (body.completedAt) {
+          customCompletedAt = new Date(body.completedAt);
+          const now = new Date();
+          // Set to end of today to allow completing for today
+          const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+          if (customCompletedAt > endOfToday) {
+            return NextResponse.json({ error: 'Cannot complete workouts for future dates' }, { status: 400 });
+          }
         }
+      } catch (parseError) {
+        // Client sent body but it's malformed JSON - this is a client bug
+        console.error('Malformed JSON in workout complete request:', {
+          workoutLogId: id,
+          contentLength,
+          error: parseError instanceof Error ? parseError.message : String(parseError)
+        });
+        return NextResponse.json({ error: 'Malformed JSON in request body' }, { status: 400 });
       }
-    } catch {
-      // No body or invalid JSON - use default (now)
     }
+    // No body - proceed with default completedAt (now)
 
     // Get the workout log to verify ownership
     const workoutLog = await prisma.workoutLog.findUnique({
