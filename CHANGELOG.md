@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Fix coach signup auth flow - create/upgrade user BEFORE magic link instead of relying on signIn callback (callback fires before user creation for new users)
+
+### Added
+- Live slug availability check on coach settings page with 500ms debounce
+- `/api/coach/check-slug` endpoint for slug uniqueness validation
+
+### Changed
+- Coach settings page sizing improvements (max-w-3xl, better flex layouts)
+
 ### Changed
 - Refactor program generation to use sequential per-phase API calls (#164)
   - New `/api/programs/generate/phase` endpoint generates one phase at a time

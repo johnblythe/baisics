@@ -117,6 +117,10 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
+    signIn: async () => {
+      // Coach signup is handled in /api/coaches/signup before magic link is sent
+      return true;
+    },
     session: async ({ session, token }) => {
       if (session?.user && token?.sub) {
         session.user.id = token.sub;

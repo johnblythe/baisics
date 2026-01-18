@@ -38,16 +38,30 @@ export default function CoachSignupPage() {
     setError('');
 
     try {
-      // Store pending signup data in localStorage for the auth callback to use
       const finalCoachType = coachType === 'other' ? otherCoachType.trim() : coachType;
-      localStorage.setItem('pendingCoachSignup', JSON.stringify({
-        name: name.trim(),
-        coachType: finalCoachType,
-        email: email.toLowerCase().trim(),
-      }));
+      const normalizedEmail = email.toLowerCase().trim();
 
+      // Step 1: Store pending coach signup data on the server (sets a cookie)
+      const response = await fetch('/api/coaches/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: normalizedEmail,
+          coachType: finalCoachType,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        setError(data.error || 'Failed to initialize signup. Please try again.');
+        setIsLoading(false);
+        return;
+      }
+
+      // Step 2: Trigger NextAuth magic link email
       await signIn('email', {
-        email: email.toLowerCase().trim(),
+        email: normalizedEmail,
         callbackUrl: '/coach/dashboard',
         redirect: false,
       });
