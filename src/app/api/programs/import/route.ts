@@ -76,7 +76,7 @@ function validateFileType(base64String: string): { valid: boolean; mimeType: str
 
 export async function POST(request: Request) {
   try {
-    const { file, fileName, autoSave = false, allowGuest = false } = await request.json();
+    const { file, fileName, text, autoSave = false, allowGuest = false } = await request.json();
 
     // Get authenticated user
     const session = await auth();
@@ -90,65 +90,94 @@ export async function POST(request: Request) {
       }, { status: 401 });
     }
 
-    // Validate file type and size
-    const validation = validateFileType(file);
-
-    if (!validation.valid) {
-      return NextResponse.json({
-        error: true,
-        reason: 'File validation failed',
-        details: [validation.error || 'Unknown validation error']
-      });
-    }
-
-    // Extract just the base64 data without the data URL prefix
-    const base64Data = file.split(',')[1];
-
-    // Save the raw file (only if authenticated)
-    if (session?.user?.id) {
-      await ensureUploadsDir();
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const rawFilePath = path.join(UPLOADS_DIR, `${timestamp}_${fileName}`);
-      await fs.writeFile(rawFilePath, base64Data, 'base64');
-    }
-
-    // Handle DOCX files - extract text first with mammoth
-    const isDocx = validation.mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
     let messages;
 
-    if (isDocx) {
-      // Convert base64 to buffer and extract text with mammoth
-      const buffer = Buffer.from(base64Data, 'base64');
-      const { value: extractedText } = await mammoth.extractRawText({ buffer });
+    // Handle text input mode - no file validation needed
+    if (text && typeof text === 'string') {
+      if (text.trim().length === 0) {
+        return NextResponse.json({
+          error: true,
+          reason: 'Text validation failed',
+          details: ['Text input cannot be empty']
+        });
+      }
 
       messages = [{
         role: 'user',
         content: [
           {
             type: 'text',
-            text: workoutFilePrompt + `\n\nAnalyze this workout program text extracted from a Word document (${fileName}):\n\n${extractedText}`
+            text: workoutFilePrompt + `\n\nAnalyze this workout program text:\n\n${text}`
           },
         ],
       }];
-    } else {
-      // PDF and images - use document/vision
-      messages = [{
-        role: 'user',
-        content: [
-          {
-            type: 'document',
-            source: {
-              type: 'base64',
-              media_type: validation.mimeType || 'application/pdf',
-              data: base64Data,
+    } else if (file) {
+      // Handle file upload mode - existing logic
+      // Validate file type and size
+      const validation = validateFileType(file);
+
+      if (!validation.valid) {
+        return NextResponse.json({
+          error: true,
+          reason: 'File validation failed',
+          details: [validation.error || 'Unknown validation error']
+        });
+      }
+
+      // Extract just the base64 data without the data URL prefix
+      const base64Data = file.split(',')[1];
+
+      // Save the raw file (only if authenticated)
+      if (session?.user?.id) {
+        await ensureUploadsDir();
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const rawFilePath = path.join(UPLOADS_DIR, `${timestamp}_${fileName}`);
+        await fs.writeFile(rawFilePath, base64Data, 'base64');
+      }
+
+      // Handle DOCX files - extract text first with mammoth
+      const isDocx = validation.mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+
+      if (isDocx) {
+        // Convert base64 to buffer and extract text with mammoth
+        const buffer = Buffer.from(base64Data, 'base64');
+        const { value: extractedText } = await mammoth.extractRawText({ buffer });
+
+        messages = [{
+          role: 'user',
+          content: [
+            {
+              type: 'text',
+              text: workoutFilePrompt + `\n\nAnalyze this workout program text extracted from a Word document (${fileName}):\n\n${extractedText}`
             },
-          },
-          {
-            type: 'text',
-            text: workoutFilePrompt + `\n\nAnalyze the workout file above (${fileName}).`
-          },
-        ],
-      }];
+          ],
+        }];
+      } else {
+        // PDF and images - use document/vision
+        messages = [{
+          role: 'user',
+          content: [
+            {
+              type: 'document',
+              source: {
+                type: 'base64',
+                media_type: validation.mimeType || 'application/pdf',
+                data: base64Data,
+              },
+            },
+            {
+              type: 'text',
+              text: workoutFilePrompt + `\n\nAnalyze the workout file above (${fileName}).`
+            },
+          ],
+        }];
+      }
+    } else {
+      return NextResponse.json({
+        error: true,
+        reason: 'Invalid request',
+        details: ['Either text or file must be provided']
+      });
     }
 
     const response = await sendMessage(messages, 'system');

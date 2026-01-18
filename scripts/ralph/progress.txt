@@ -25,3 +25,21 @@ Started: Sun Jan 18 15:32:16 EST 2026
   - Keep metadata updated even on redirect pages for search engine discovery
   - Style guide specifies lowercase 'baisics' in titles
 ---
+
+## 2026-01-18 - US-003: Add text input mode to /create
+- Added inputMode state ('text' | 'file') defaulting to 'text'
+- Added textInput state to hold pasted text content
+- Created toggle UI with two tabs: "Paste Text" and "Upload File"
+- Text mode shows a textarea with example placeholder showing workout format
+- File mode shows existing dropzone UI
+- Added processText() function to send text to API
+- Added handleTextSubmit() to process text input
+- Updated handleStartOver() to clear text input
+- Bulk mode toggle only shows when in file mode (coaches only)
+- Updated page description to mention both text and file options
+- Files changed: src/app/create/page.tsx
+- **Learnings for future iterations:**
+  - Type icon imported from lucide-react for text input toggle
+  - API needs US-004 update to actually accept the text field - frontend is ready
+  - Bulk import (coaches) only makes sense for file mode, so hidden in text mode
+---
