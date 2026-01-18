@@ -6,7 +6,7 @@ import { useSession, signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import MainLayout from '@/app/components/layouts/MainLayout';
-import { Upload, FileText, ArrowRight, X, GripVertical, Plus, Mail, Check, Trash2, Edit2, ChevronDown, ChevronUp, Loader2, Files, Type } from 'lucide-react';
+import { Upload, FileText, ArrowRight, X, Plus, Mail, Check, Trash2, Edit2, ChevronDown, ChevronUp, Loader2, Files, Type } from 'lucide-react';
 import { toast } from 'sonner';
 
 // Types for parsed program
@@ -62,7 +62,6 @@ function ImportPageContent() {
   const [programName, setProgramName] = useState('');
   const [email, setEmail] = useState('');
   const [isAuthLoading, setIsAuthLoading] = useState(false);
-  const [savedProgramId, setSavedProgramId] = useState<string | null>(null);
   const [expandedWorkout, setExpandedWorkout] = useState<number | null>(0);
   const [editingExercise, setEditingExercise] = useState<{ wIdx: number; eIdx: number } | null>(null);
 
@@ -302,7 +301,6 @@ function ImportPageContent() {
         throw new Error(data.reason || 'Failed to save program');
       }
 
-      setSavedProgramId(data.program.id);
       setPageState('success');
 
       // Show success toast and redirect based on user type
