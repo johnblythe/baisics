@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { SimplifiedFood } from '@/lib/usda/types';
+import { getRecentFoods, addRecentFood } from '@/lib/foods/recentFoods';
 
 // Colors matching v2a design system
 const COLORS = {
@@ -21,32 +22,44 @@ export interface FoodSearchAutocompleteProps {
   onSelect: (food: SimplifiedFood) => void;
   placeholder?: string;
   className?: string;
+  /** User ID for scoping recent foods. Falls back to 'anonymous' if not provided */
+  userId?: string;
 }
 
 export function FoodSearchAutocomplete({
   onSelect,
   placeholder = 'Search foods...',
   className = '',
+  userId = 'anonymous',
 }: FoodSearchAutocompleteProps) {
   const [query, setQuery] = useState('');
   const [foods, setFoods] = useState<SimplifiedFood[]>([]);
+  const [recentFoods, setRecentFoods] = useState<SimplifiedFood[]>([]);
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [error, setError] = useState<string | null>(null);
+  const [showingRecent, setShowingRecent] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Load recent foods on mount and when userId changes
+  useEffect(() => {
+    setRecentFoods(getRecentFoods(userId));
+  }, [userId]);
+
   // Debounced search
   useEffect(() => {
     if (query.length < 2) {
       setFoods([]);
-      setIsOpen(false);
+      setShowingRecent(false);
+      // Don't close dropdown here - let onFocus handle showing recents
       return;
     }
 
+    setShowingRecent(false);
     const timer = setTimeout(async () => {
       setLoading(true);
       setError(null);
@@ -86,13 +99,19 @@ export function FoodSearchAutocomplete({
   // Handle food selection
   const handleSelect = useCallback(
     (food: SimplifiedFood) => {
+      // Add to recent foods cache
+      addRecentFood(userId, food);
+      // Update local recent foods state
+      setRecentFoods(getRecentFoods(userId));
+
       onSelect(food);
       setQuery('');
       setFoods([]);
       setIsOpen(false);
       setHighlightedIndex(-1);
+      setShowingRecent(false);
     },
-    [onSelect]
+    [onSelect, userId]
   );
 
   // Keyboard navigation
@@ -100,11 +119,13 @@ export function FoodSearchAutocomplete({
     (e: React.KeyboardEvent) => {
       if (!isOpen) return;
 
+      const list = showingRecent ? recentFoods : foods;
+
       switch (e.key) {
         case 'ArrowDown':
           e.preventDefault();
           setHighlightedIndex((prev) =>
-            prev < foods.length - 1 ? prev + 1 : prev
+            prev < list.length - 1 ? prev + 1 : prev
           );
           break;
         case 'ArrowUp':
@@ -113,29 +134,32 @@ export function FoodSearchAutocomplete({
           break;
         case 'Enter':
           e.preventDefault();
-          if (highlightedIndex >= 0 && highlightedIndex < foods.length) {
-            handleSelect(foods[highlightedIndex]);
+          if (highlightedIndex >= 0 && highlightedIndex < list.length) {
+            handleSelect(list[highlightedIndex]);
           }
           break;
         case 'Escape':
           e.preventDefault();
           setIsOpen(false);
+          setShowingRecent(false);
           inputRef.current?.blur();
           break;
       }
     },
-    [isOpen, foods, highlightedIndex, handleSelect]
+    [isOpen, foods, recentFoods, showingRecent, highlightedIndex, handleSelect]
   );
 
   // Scroll highlighted item into view
   useEffect(() => {
     if (highlightedIndex >= 0 && listRef.current) {
-      const item = listRef.current.children[highlightedIndex] as HTMLElement;
+      // Offset by 1 when showing recent foods due to header element
+      const offset = showingRecent && recentFoods.length > 0 ? 1 : 0;
+      const item = listRef.current.children[highlightedIndex + offset] as HTMLElement;
       if (item) {
         item.scrollIntoView({ block: 'nearest' });
       }
     }
-  }, [highlightedIndex]);
+  }, [highlightedIndex, showingRecent, recentFoods.length]);
 
   const formatMacros = (food: SimplifiedFood) => {
     return `${food.calories} cal | ${food.protein}g P | ${food.carbs}g C | ${food.fat}g F`;
@@ -151,7 +175,16 @@ export function FoodSearchAutocomplete({
           role="combobox"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => query.length >= 2 && foods.length > 0 && setIsOpen(true)}
+          onFocus={() => {
+            if (query.length >= 2 && foods.length > 0) {
+              setIsOpen(true);
+            } else if (query.length < 2 && recentFoods.length > 0) {
+              // Show recent foods when input is empty/short
+              setShowingRecent(true);
+              setIsOpen(true);
+              setHighlightedIndex(-1);
+            }
+          }}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           className="w-full px-4 py-3 pl-10 rounded-xl border-2 text-sm transition-colors outline-none"
@@ -205,10 +238,70 @@ export function FoodSearchAutocomplete({
             borderColor: COLORS.gray100,
           }}
         >
+          {/* Recent foods header */}
+          {showingRecent && recentFoods.length > 0 && (
+            <li
+              className="px-4 py-2 text-xs font-semibold uppercase tracking-wide border-b"
+              style={{
+                backgroundColor: COLORS.gray50,
+                color: COLORS.gray600,
+                borderColor: COLORS.gray100,
+              }}
+            >
+              Recent
+            </li>
+          )}
           {error ? (
             <li className="px-4 py-3 text-sm" style={{ color: COLORS.coral }}>
               {error}
             </li>
+          ) : showingRecent ? (
+            recentFoods.length === 0 ? (
+              <li className="px-4 py-3 text-sm" style={{ color: COLORS.gray400 }}>
+                No recent foods
+              </li>
+            ) : (
+              recentFoods.map((food, index) => (
+                <li
+                  key={food.fdcId}
+                  role="option"
+                  aria-selected={highlightedIndex === index}
+                  className="px-4 py-3 cursor-pointer transition-colors border-b last:border-b-0"
+                  style={{
+                    backgroundColor:
+                      highlightedIndex === index ? COLORS.coralLight : COLORS.white,
+                    borderColor: COLORS.gray100,
+                  }}
+                  onClick={() => handleSelect(food)}
+                  onMouseEnter={() => setHighlightedIndex(index)}
+                >
+                  <div className="flex flex-col gap-0.5">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="font-medium text-sm"
+                        style={{ color: COLORS.navy }}
+                      >
+                        {food.name}
+                      </span>
+                      {food.brand && (
+                        <span
+                          className="text-xs px-2 py-0.5 rounded-full"
+                          style={{
+                            backgroundColor: COLORS.gray100,
+                            color: COLORS.gray600,
+                          }}
+                        >
+                          {food.brand}
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-xs" style={{ color: COLORS.gray400 }}>
+                      per 100g: {formatMacros(food)}
+                    </span>
+                  </div>
+                </li>
+              ))
+            )
           ) : foods.length === 0 ? (
             <li className="px-4 py-3 text-sm" style={{ color: COLORS.gray400 }}>
               No foods found for &quot;{query}&quot;
