@@ -1,0 +1,893 @@
+{
+  "id": "taylor",
+  "user": {
+    "email": "taylor@test.baisics.app",
+    "name": "Taylor Brooks",
+    "isPremium": false,
+    "streakCurrent": 0,
+    "streakLongest": 12,
+    "streakLastActivityAt": { "daysAgo": 14 }
+  },
+  "intake": {
+    "sex": "male",
+    "trainingGoal": "Build strength and consistency, get back in shape after sedentary desk job",
+    "daysAvailable": 4,
+    "experienceLevel": "intermediate",
+    "age": 32,
+    "weight": 185,
+    "height": 71,
+    "trainingPreferences": ["gym", "barbells", "dumbbells", "machines"],
+    "additionalInfo": "Former college recreational lifter. Stopped 2 years ago when work got busy. Just got motivated again after health scare with cholesterol. Has full gym access."
+  },
+  "programs": [
+    {
+      "name": "Upper/Lower Strength Builder",
+      "description": "A 4-day upper/lower split focused on compound movements with progressive overload. Balanced push/pull with moderate volume.",
+      "active": true,
+      "category": "strength",
+      "difficulty": "intermediate",
+      "durationWeeks": 8,
+      "daysPerWeek": 4,
+      "equipment": ["barbell", "dumbbells", "cable", "machines"],
+      "goals": ["Build strength", "Improve work capacity", "Establish routine"],
+      "tags": ["upper-lower", "strength", "intermediate", "4-day"],
+      "week2CheckInShown": true,
+      "week2CheckInShownAtDaysAgo": 28,
+      "week2CheckInOption": "going_great",
+      "workoutPlan": {
+        "daysPerWeek": 4,
+        "dailyCalories": 2400,
+        "proteinGrams": 170,
+        "carbGrams": 280,
+        "fatGrams": 80,
+        "phase": 1,
+        "phaseName": "Foundation",
+        "phaseDurationWeeks": 8,
+        "phaseExplanation": "Building a base with moderate intensity, focusing on consistent form and progressive overload on key lifts.",
+        "splitType": "Upper/Lower",
+        "workouts": [
+          {
+            "name": "Upper A - Push Focus",
+            "focus": "Chest, shoulders, triceps with back support",
+            "dayNumber": 1,
+            "warmup": "5 min cardio, arm circles, band pull aparts",
+            "cooldown": "Chest and shoulder stretches",
+            "exercises": [
+              {
+                "name": "Bench Press",
+                "sets": 4,
+                "reps": 8,
+                "restPeriod": 120,
+                "notes": "Main pressing movement",
+                "sortOrder": 0
+              },
+              {
+                "name": "Barbell Rows",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 90,
+                "notes": "Balance out pressing volume",
+                "sortOrder": 1
+              },
+              {
+                "name": "Dumbbell Shoulder Press",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 90,
+                "notes": "Seated or standing",
+                "sortOrder": 2
+              },
+              {
+                "name": "Cable Lateral Raises",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 60,
+                "notes": "Lateral delt isolation",
+                "sortOrder": 3
+              },
+              {
+                "name": "Cable Rope Tricep Pushdown",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 60,
+                "notes": "Tricep finisher",
+                "sortOrder": 4
+              }
+            ]
+          },
+          {
+            "name": "Lower A - Squat Focus",
+            "focus": "Quads, glutes, hamstrings",
+            "dayNumber": 2,
+            "warmup": "5 min bike, leg swings, goblet squat warmup",
+            "cooldown": "Quad and hip stretches",
+            "exercises": [
+              {
+                "name": "Barbell Squat",
+                "sets": 4,
+                "reps": 8,
+                "restPeriod": 180,
+                "notes": "Main squat movement - depth to parallel",
+                "sortOrder": 0
+              },
+              {
+                "name": "Romanian Deadlift",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 90,
+                "notes": "Hamstring and glute emphasis",
+                "sortOrder": 1
+              },
+              {
+                "name": "Leg Press",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 90,
+                "notes": "Quad volume",
+                "sortOrder": 2
+              },
+              {
+                "name": "Leg Curl",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 60,
+                "notes": "Hamstring isolation",
+                "sortOrder": 3
+              },
+              {
+                "name": "Calf Press On The Leg Press Machine",
+                "sets": 3,
+                "reps": 15,
+                "restPeriod": 45,
+                "notes": "Calf work",
+                "sortOrder": 4
+              }
+            ]
+          },
+          {
+            "name": "Upper B - Pull Focus",
+            "focus": "Back, biceps with chest support",
+            "dayNumber": 3,
+            "warmup": "5 min cardio, band pull aparts, shoulder circles",
+            "cooldown": "Lat and bicep stretches",
+            "exercises": [
+              {
+                "name": "Lat Pulldown",
+                "sets": 4,
+                "reps": 10,
+                "restPeriod": 90,
+                "notes": "Main vertical pull",
+                "sortOrder": 0
+              },
+              {
+                "name": "Cable Row",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 90,
+                "notes": "Horizontal pull",
+                "sortOrder": 1
+              },
+              {
+                "name": "Incline Dumbbell Press",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 90,
+                "notes": "Upper chest support work",
+                "sortOrder": 2
+              },
+              {
+                "name": "Face Pull",
+                "sets": 3,
+                "reps": 15,
+                "restPeriod": 60,
+                "notes": "Rear delt and rotator cuff",
+                "sortOrder": 3
+              },
+              {
+                "name": "Cable Bicep Curls",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 60,
+                "notes": "Bicep finisher",
+                "sortOrder": 4
+              }
+            ]
+          },
+          {
+            "name": "Lower B - Hinge Focus",
+            "focus": "Posterior chain emphasis",
+            "dayNumber": 4,
+            "warmup": "5 min bike, hip circles, glute activation",
+            "cooldown": "Hip and hamstring stretches",
+            "exercises": [
+              {
+                "name": "Barbell Deadlift",
+                "sets": 4,
+                "reps": 6,
+                "restPeriod": 180,
+                "notes": "Main hinge movement",
+                "sortOrder": 0
+              },
+              {
+                "name": "Bulgarian Split Squat",
+                "sets": 3,
+                "reps": 10,
+                "restPeriod": 90,
+                "notes": "Single leg quad work",
+                "sortOrder": 1
+              },
+              {
+                "name": "Hip Thrust",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 90,
+                "notes": "Glute focus",
+                "sortOrder": 2
+              },
+              {
+                "name": "Leg Curl",
+                "sets": 3,
+                "reps": 12,
+                "restPeriod": 60,
+                "notes": "Hamstring isolation",
+                "sortOrder": 3
+              },
+              {
+                "name": "Cable Crunch",
+                "sets": 3,
+                "reps": 15,
+                "restPeriod": 45,
+                "notes": "Core work",
+                "sortOrder": 4
+              }
+            ]
+          }
+        ]
+      },
+      "workoutLogs": [
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 35, "hour": 18, "minute": 30 },
+          "completedAt": { "daysAgo": 35, "hour": 19, "minute": 45 },
+          "status": "completed",
+          "notes": "First workout in 2 years. Felt rusty but good to be back. Kept weights conservative.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Bench Press",
+              "sets": [
+                { "setNumber": 1, "weight": 95, "reps": 8 },
+                { "setNumber": 2, "weight": 115, "reps": 8 },
+                { "setNumber": 3, "weight": 115, "reps": 8 },
+                { "setNumber": 4, "weight": 115, "reps": 6 }
+              ],
+              "notes": "Felt weak but form was ok"
+            },
+            {
+              "exerciseName": "Barbell Rows",
+              "sets": [
+                { "setNumber": 1, "weight": 85, "reps": 10 },
+                { "setNumber": 2, "weight": 95, "reps": 10 },
+                { "setNumber": 3, "weight": 95, "reps": 8 }
+              ]
+            },
+            {
+              "exerciseName": "Dumbbell Shoulder Press",
+              "sets": [
+                { "setNumber": 1, "weight": 25, "reps": 10 },
+                { "setNumber": 2, "weight": 30, "reps": 10 },
+                { "setNumber": 3, "weight": 30, "reps": 8 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Lateral Raises",
+              "sets": [
+                { "setNumber": 1, "weight": 10, "reps": 12 },
+                { "setNumber": 2, "weight": 12.5, "reps": 12 },
+                { "setNumber": 3, "weight": 12.5, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Rope Tricep Pushdown",
+              "sets": [
+                { "setNumber": 1, "weight": 30, "reps": 12 },
+                { "setNumber": 2, "weight": 35, "reps": 12 },
+                { "setNumber": 3, "weight": 35, "reps": 10 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 33, "hour": 18, "minute": 30 },
+          "completedAt": { "daysAgo": 33, "hour": 19, "minute": 50 },
+          "status": "completed",
+          "notes": "Legs are sore from just existing. Squats felt awkward but getting mobility back.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Barbell Squat",
+              "sets": [
+                { "setNumber": 1, "weight": 95, "reps": 8 },
+                { "setNumber": 2, "weight": 115, "reps": 8 },
+                { "setNumber": 3, "weight": 135, "reps": 8 },
+                { "setNumber": 4, "weight": 135, "reps": 6 }
+              ],
+              "notes": "Depth needs work - stopping just above parallel"
+            },
+            {
+              "exerciseName": "Romanian Deadlift",
+              "sets": [
+                { "setNumber": 1, "weight": 95, "reps": 10 },
+                { "setNumber": 2, "weight": 115, "reps": 10 },
+                { "setNumber": 3, "weight": 115, "reps": 10 }
+              ],
+              "notes": "Hamstrings are tight"
+            },
+            {
+              "exerciseName": "Leg Press",
+              "sets": [
+                { "setNumber": 1, "weight": 180, "reps": 12 },
+                { "setNumber": 2, "weight": 230, "reps": 12 },
+                { "setNumber": 3, "weight": 230, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Leg Curl",
+              "sets": [
+                { "setNumber": 1, "weight": 50, "reps": 12 },
+                { "setNumber": 2, "weight": 60, "reps": 12 },
+                { "setNumber": 3, "weight": 60, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Calf Press On The Leg Press Machine",
+              "sets": [
+                { "setNumber": 1, "weight": 180, "reps": 15 },
+                { "setNumber": 2, "weight": 180, "reps": 15 },
+                { "setNumber": 3, "weight": 180, "reps": 15 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 3,
+          "startedAt": { "daysAgo": 31, "hour": 18, "minute": 30 },
+          "completedAt": { "daysAgo": 31, "hour": 19, "minute": 40 },
+          "status": "completed",
+          "notes": "Upper back day. Everything still sore from Monday. But feeling good mentally.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Lat Pulldown",
+              "sets": [
+                { "setNumber": 1, "weight": 100, "reps": 10 },
+                { "setNumber": 2, "weight": 120, "reps": 10 },
+                { "setNumber": 3, "weight": 130, "reps": 8 },
+                { "setNumber": 4, "weight": 130, "reps": 8 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Row",
+              "sets": [
+                { "setNumber": 1, "weight": 90, "reps": 10 },
+                { "setNumber": 2, "weight": 110, "reps": 10 },
+                { "setNumber": 3, "weight": 110, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Incline Dumbbell Press",
+              "sets": [
+                { "setNumber": 1, "weight": 35, "reps": 10 },
+                { "setNumber": 2, "weight": 40, "reps": 10 },
+                { "setNumber": 3, "weight": 40, "reps": 8 }
+              ]
+            },
+            {
+              "exerciseName": "Face Pull",
+              "sets": [
+                { "setNumber": 1, "weight": 30, "reps": 15 },
+                { "setNumber": 2, "weight": 35, "reps": 15 },
+                { "setNumber": 3, "weight": 35, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Bicep Curls",
+              "sets": [
+                { "setNumber": 1, "weight": 30, "reps": 12 },
+                { "setNumber": 2, "weight": 35, "reps": 12 },
+                { "setNumber": 3, "weight": 35, "reps": 10 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 4,
+          "startedAt": { "daysAgo": 29, "hour": 18, "minute": 30 },
+          "completedAt": { "daysAgo": 29, "hour": 19, "minute": 55 },
+          "status": "completed",
+          "notes": "Week 1 done! Deadlifts felt good. Remembered why I used to love this.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Barbell Deadlift",
+              "sets": [
+                { "setNumber": 1, "weight": 135, "reps": 6 },
+                { "setNumber": 2, "weight": 185, "reps": 6 },
+                { "setNumber": 3, "weight": 205, "reps": 6 },
+                { "setNumber": 4, "weight": 205, "reps": 5 }
+              ],
+              "notes": "Form felt solid, didn't push too hard"
+            },
+            {
+              "exerciseName": "Bulgarian Split Squat",
+              "sets": [
+                { "setNumber": 1, "weight": 20, "reps": 10 },
+                { "setNumber": 2, "weight": 25, "reps": 10 },
+                { "setNumber": 3, "weight": 25, "reps": 10 }
+              ],
+              "notes": "Balance is rough, working on it"
+            },
+            {
+              "exerciseName": "Hip Thrust",
+              "sets": [
+                { "setNumber": 1, "weight": 135, "reps": 12 },
+                { "setNumber": 2, "weight": 155, "reps": 12 },
+                { "setNumber": 3, "weight": 155, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Leg Curl",
+              "sets": [
+                { "setNumber": 1, "weight": 60, "reps": 12 },
+                { "setNumber": 2, "weight": 70, "reps": 12 },
+                { "setNumber": 3, "weight": 70, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Crunch",
+              "sets": [
+                { "setNumber": 1, "weight": 50, "reps": 15 },
+                { "setNumber": 2, "weight": 60, "reps": 15 },
+                { "setNumber": 3, "weight": 60, "reps": 12 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 28, "hour": 18, "minute": 30 },
+          "completedAt": { "daysAgo": 28, "hour": 19, "minute": 45 },
+          "status": "completed",
+          "notes": "Week 2 starting strong. Bench already feels better. Got the week 2 check-in - answered going_great!",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Bench Press",
+              "sets": [
+                { "setNumber": 1, "weight": 115, "reps": 8 },
+                { "setNumber": 2, "weight": 125, "reps": 8 },
+                { "setNumber": 3, "weight": 135, "reps": 6 },
+                { "setNumber": 4, "weight": 135, "reps": 5 }
+              ],
+              "notes": "Added 10lbs from last week!"
+            },
+            {
+              "exerciseName": "Barbell Rows",
+              "sets": [
+                { "setNumber": 1, "weight": 95, "reps": 10 },
+                { "setNumber": 2, "weight": 105, "reps": 10 },
+                { "setNumber": 3, "weight": 105, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Dumbbell Shoulder Press",
+              "sets": [
+                { "setNumber": 1, "weight": 30, "reps": 10 },
+                { "setNumber": 2, "weight": 35, "reps": 10 },
+                { "setNumber": 3, "weight": 35, "reps": 8 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Lateral Raises",
+              "sets": [
+                { "setNumber": 1, "weight": 12.5, "reps": 12 },
+                { "setNumber": 2, "weight": 15, "reps": 12 },
+                { "setNumber": 3, "weight": 15, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Rope Tricep Pushdown",
+              "sets": [
+                { "setNumber": 1, "weight": 35, "reps": 12 },
+                { "setNumber": 2, "weight": 40, "reps": 12 },
+                { "setNumber": 3, "weight": 40, "reps": 10 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 26, "hour": 18, "minute": 30 },
+          "completedAt": { "daysAgo": 26, "hour": 19, "minute": 50 },
+          "status": "completed",
+          "notes": "Squats improving. Hit proper depth today. Feeling stronger.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Barbell Squat",
+              "sets": [
+                { "setNumber": 1, "weight": 115, "reps": 8 },
+                { "setNumber": 2, "weight": 135, "reps": 8 },
+                { "setNumber": 3, "weight": 155, "reps": 6 },
+                { "setNumber": 4, "weight": 155, "reps": 6 }
+              ],
+              "notes": "Got to parallel on all reps!"
+            },
+            {
+              "exerciseName": "Romanian Deadlift",
+              "sets": [
+                { "setNumber": 1, "weight": 115, "reps": 10 },
+                { "setNumber": 2, "weight": 135, "reps": 10 },
+                { "setNumber": 3, "weight": 135, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Leg Press",
+              "sets": [
+                { "setNumber": 1, "weight": 230, "reps": 12 },
+                { "setNumber": 2, "weight": 270, "reps": 12 },
+                { "setNumber": 3, "weight": 270, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Leg Curl",
+              "sets": [
+                { "setNumber": 1, "weight": 60, "reps": 12 },
+                { "setNumber": 2, "weight": 70, "reps": 12 },
+                { "setNumber": 3, "weight": 70, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Calf Press On The Leg Press Machine",
+              "sets": [
+                { "setNumber": 1, "weight": 200, "reps": 15 },
+                { "setNumber": 2, "weight": 200, "reps": 15 },
+                { "setNumber": 3, "weight": 200, "reps": 15 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 3,
+          "startedAt": { "daysAgo": 24, "hour": 18, "minute": 30 },
+          "completedAt": { "daysAgo": 24, "hour": 19, "minute": 40 },
+          "status": "completed",
+          "notes": "Back day. Pull strength coming back fast.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Lat Pulldown",
+              "sets": [
+                { "setNumber": 1, "weight": 120, "reps": 10 },
+                { "setNumber": 2, "weight": 140, "reps": 10 },
+                { "setNumber": 3, "weight": 150, "reps": 8 },
+                { "setNumber": 4, "weight": 150, "reps": 8 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Row",
+              "sets": [
+                { "setNumber": 1, "weight": 110, "reps": 10 },
+                { "setNumber": 2, "weight": 130, "reps": 10 },
+                { "setNumber": 3, "weight": 130, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Incline Dumbbell Press",
+              "sets": [
+                { "setNumber": 1, "weight": 40, "reps": 10 },
+                { "setNumber": 2, "weight": 45, "reps": 10 },
+                { "setNumber": 3, "weight": 45, "reps": 8 }
+              ]
+            },
+            {
+              "exerciseName": "Face Pull",
+              "sets": [
+                { "setNumber": 1, "weight": 35, "reps": 15 },
+                { "setNumber": 2, "weight": 40, "reps": 15 },
+                { "setNumber": 3, "weight": 40, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Bicep Curls",
+              "sets": [
+                { "setNumber": 1, "weight": 35, "reps": 12 },
+                { "setNumber": 2, "weight": 40, "reps": 12 },
+                { "setNumber": 3, "weight": 40, "reps": 10 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 4,
+          "startedAt": { "daysAgo": 22, "hour": 18, "minute": 30 },
+          "completedAt": { "daysAgo": 22, "hour": 19, "minute": 55 },
+          "status": "completed",
+          "notes": "Week 2 done! Hit 225 deadlift! Former PR was 315 so I know I can get back there.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Barbell Deadlift",
+              "sets": [
+                { "setNumber": 1, "weight": 155, "reps": 6 },
+                { "setNumber": 2, "weight": 195, "reps": 6 },
+                { "setNumber": 3, "weight": 225, "reps": 5 },
+                { "setNumber": 4, "weight": 225, "reps": 4 }
+              ],
+              "notes": "225 felt good! Building back!"
+            },
+            {
+              "exerciseName": "Bulgarian Split Squat",
+              "sets": [
+                { "setNumber": 1, "weight": 25, "reps": 10 },
+                { "setNumber": 2, "weight": 30, "reps": 10 },
+                { "setNumber": 3, "weight": 30, "reps": 10 }
+              ],
+              "notes": "Balance improving"
+            },
+            {
+              "exerciseName": "Hip Thrust",
+              "sets": [
+                { "setNumber": 1, "weight": 155, "reps": 12 },
+                { "setNumber": 2, "weight": 185, "reps": 12 },
+                { "setNumber": 3, "weight": 185, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Leg Curl",
+              "sets": [
+                { "setNumber": 1, "weight": 70, "reps": 12 },
+                { "setNumber": 2, "weight": 80, "reps": 12 },
+                { "setNumber": 3, "weight": 80, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Crunch",
+              "sets": [
+                { "setNumber": 1, "weight": 60, "reps": 15 },
+                { "setNumber": 2, "weight": 70, "reps": 15 },
+                { "setNumber": 3, "weight": 70, "reps": 12 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 1,
+          "startedAt": { "daysAgo": 21, "hour": 18, "minute": 30 },
+          "completedAt": { "daysAgo": 21, "hour": 19, "minute": 45 },
+          "status": "completed",
+          "notes": "Week 3 starting. Bench feeling confident. Weights going up every week.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Bench Press",
+              "sets": [
+                { "setNumber": 1, "weight": 125, "reps": 8 },
+                { "setNumber": 2, "weight": 135, "reps": 8 },
+                { "setNumber": 3, "weight": 145, "reps": 6 },
+                { "setNumber": 4, "weight": 145, "reps": 5 }
+              ],
+              "notes": "145 for reps! Getting close to old working weight"
+            },
+            {
+              "exerciseName": "Barbell Rows",
+              "sets": [
+                { "setNumber": 1, "weight": 105, "reps": 10 },
+                { "setNumber": 2, "weight": 115, "reps": 10 },
+                { "setNumber": 3, "weight": 115, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Dumbbell Shoulder Press",
+              "sets": [
+                { "setNumber": 1, "weight": 35, "reps": 10 },
+                { "setNumber": 2, "weight": 40, "reps": 10 },
+                { "setNumber": 3, "weight": 40, "reps": 8 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Lateral Raises",
+              "sets": [
+                { "setNumber": 1, "weight": 15, "reps": 12 },
+                { "setNumber": 2, "weight": 17.5, "reps": 12 },
+                { "setNumber": 3, "weight": 17.5, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Rope Tricep Pushdown",
+              "sets": [
+                { "setNumber": 1, "weight": 40, "reps": 12 },
+                { "setNumber": 2, "weight": 45, "reps": 12 },
+                { "setNumber": 3, "weight": 45, "reps": 10 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 2,
+          "startedAt": { "daysAgo": 19, "hour": 18, "minute": 30 },
+          "completedAt": { "daysAgo": 19, "hour": 19, "minute": 50 },
+          "status": "completed",
+          "notes": "Leg day. Squats feeling solid. Work stress ramping up but making time.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Barbell Squat",
+              "sets": [
+                { "setNumber": 1, "weight": 135, "reps": 8 },
+                { "setNumber": 2, "weight": 155, "reps": 8 },
+                { "setNumber": 3, "weight": 175, "reps": 6 },
+                { "setNumber": 4, "weight": 175, "reps": 5 }
+              ],
+              "notes": "175 felt heavy but moved it"
+            },
+            {
+              "exerciseName": "Romanian Deadlift",
+              "sets": [
+                { "setNumber": 1, "weight": 135, "reps": 10 },
+                { "setNumber": 2, "weight": 155, "reps": 10 },
+                { "setNumber": 3, "weight": 155, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Leg Press",
+              "sets": [
+                { "setNumber": 1, "weight": 270, "reps": 12 },
+                { "setNumber": 2, "weight": 320, "reps": 12 },
+                { "setNumber": 3, "weight": 320, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Leg Curl",
+              "sets": [
+                { "setNumber": 1, "weight": 70, "reps": 12 },
+                { "setNumber": 2, "weight": 80, "reps": 12 },
+                { "setNumber": 3, "weight": 80, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Calf Press On The Leg Press Machine",
+              "sets": [
+                { "setNumber": 1, "weight": 220, "reps": 15 },
+                { "setNumber": 2, "weight": 220, "reps": 15 },
+                { "setNumber": 3, "weight": 220, "reps": 15 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 3,
+          "startedAt": { "daysAgo": 17, "hour": 18, "minute": 30 },
+          "completedAt": { "daysAgo": 17, "hour": 19, "minute": 40 },
+          "status": "completed",
+          "notes": "Back day. 11 workouts in! This is the longest I've stuck with it in years. Feeling good.",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Lat Pulldown",
+              "sets": [
+                { "setNumber": 1, "weight": 140, "reps": 10 },
+                { "setNumber": 2, "weight": 160, "reps": 10 },
+                { "setNumber": 3, "weight": 170, "reps": 8 },
+                { "setNumber": 4, "weight": 170, "reps": 7 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Row",
+              "sets": [
+                { "setNumber": 1, "weight": 130, "reps": 10 },
+                { "setNumber": 2, "weight": 150, "reps": 10 },
+                { "setNumber": 3, "weight": 150, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Incline Dumbbell Press",
+              "sets": [
+                { "setNumber": 1, "weight": 45, "reps": 10 },
+                { "setNumber": 2, "weight": 50, "reps": 10 },
+                { "setNumber": 3, "weight": 50, "reps": 8 }
+              ]
+            },
+            {
+              "exerciseName": "Face Pull",
+              "sets": [
+                { "setNumber": 1, "weight": 40, "reps": 15 },
+                { "setNumber": 2, "weight": 45, "reps": 15 },
+                { "setNumber": 3, "weight": 45, "reps": 12 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Bicep Curls",
+              "sets": [
+                { "setNumber": 1, "weight": 40, "reps": 12 },
+                { "setNumber": 2, "weight": 45, "reps": 12 },
+                { "setNumber": 3, "weight": 45, "reps": 10 }
+              ]
+            }
+          ]
+        },
+        {
+          "workoutDayNumber": 4,
+          "startedAt": { "daysAgo": 14, "hour": 18, "minute": 30 },
+          "completedAt": { "daysAgo": 14, "hour": 19, "minute": 55 },
+          "status": "completed",
+          "notes": "12th workout! Deadlift hit 245. Then work blew up. Got a huge deadline next week. This might be my last workout for a bit...",
+          "exerciseLogs": [
+            {
+              "exerciseName": "Barbell Deadlift",
+              "sets": [
+                { "setNumber": 1, "weight": 175, "reps": 6 },
+                { "setNumber": 2, "weight": 215, "reps": 6 },
+                { "setNumber": 3, "weight": 245, "reps": 4 },
+                { "setNumber": 4, "weight": 245, "reps": 3 }
+              ],
+              "notes": "New high! 245x4. Wanted to hit 5 but grip gave out."
+            },
+            {
+              "exerciseName": "Bulgarian Split Squat",
+              "sets": [
+                { "setNumber": 1, "weight": 30, "reps": 10 },
+                { "setNumber": 2, "weight": 35, "reps": 10 },
+                { "setNumber": 3, "weight": 35, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Hip Thrust",
+              "sets": [
+                { "setNumber": 1, "weight": 185, "reps": 12 },
+                { "setNumber": 2, "weight": 205, "reps": 10 },
+                { "setNumber": 3, "weight": 205, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Leg Curl",
+              "sets": [
+                { "setNumber": 1, "weight": 80, "reps": 12 },
+                { "setNumber": 2, "weight": 90, "reps": 12 },
+                { "setNumber": 3, "weight": 90, "reps": 10 }
+              ]
+            },
+            {
+              "exerciseName": "Cable Crunch",
+              "sets": [
+                { "setNumber": 1, "weight": 70, "reps": 15 },
+                { "setNumber": 2, "weight": 80, "reps": 15 },
+                { "setNumber": 3, "weight": 80, "reps": 12 }
+              ]
+            }
+          ]
+        }
+      ],
+      "checkIns": [
+        {
+          "type": "initial",
+          "date": { "daysAgo": 36 },
+          "notes": "Starting this program after doctor said my cholesterol was too high. Time to get back in shape. Used to lift in college but it's been 2 years. Excited and nervous.",
+          "stats": {
+            "weight": 185,
+            "sleepHours": 6,
+            "sleepQuality": 3,
+            "energyLevel": 3,
+            "stressLevel": 4,
+            "soreness": 1,
+            "recovery": 3
+          }
+        },
+        {
+          "type": "weekly",
+          "date": { "daysAgo": 28 },
+          "notes": "Week 2 check-in. Everything is going great! Strength coming back faster than expected. Feeling motivated.",
+          "stats": {
+            "weight": 184,
+            "sleepHours": 7,
+            "sleepQuality": 4,
+            "energyLevel": 4,
+            "stressLevel": 3,
+            "soreness": 3,
+            "recovery": 4
+          }
+        }
+      ]
+    }
+  ]
+}
