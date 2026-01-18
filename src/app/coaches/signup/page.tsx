@@ -60,11 +60,18 @@ export default function CoachSignupPage() {
       }
 
       // Step 2: Trigger NextAuth magic link email
-      await signIn('email', {
+      const result = await signIn('email', {
         email: normalizedEmail,
         callbackUrl: '/coach/dashboard',
         redirect: false,
       });
+
+      if (result?.error) {
+        console.error('Magic link email failed:', result.error);
+        setError('Failed to send verification email. Please try again.');
+        setIsLoading(false);
+        return;
+      }
 
       setIsSubmitted(true);
     } catch (err) {
@@ -80,11 +87,16 @@ export default function CoachSignupPage() {
     setError('');
 
     try {
-      await signIn('email', {
+      const result = await signIn('email', {
         email: email.toLowerCase().trim(),
         callbackUrl: '/coach/dashboard',
         redirect: false,
       });
+
+      if (result?.error) {
+        console.error('Resend email failed:', result.error);
+        setError('Failed to resend email. Please try again.');
+      }
     } catch (err) {
       console.error('Resend error:', err);
       setError('Failed to resend. Please try again.');

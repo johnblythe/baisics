@@ -38,11 +38,11 @@ export async function POST(req: NextRequest) {
     }
 
     if (existingUser) {
-      // Existing user, upgrade to coach
+      // Existing user, upgrade to coach (preserve existing name if set)
       await prisma.user.update({
         where: { email: normalizedEmail },
         data: {
-          name: name.trim(),
+          name: existingUser.name || name.trim(),
           isCoach: true,
           coachType: coachType.trim(),
           coachTier: CoachTier.FREE,

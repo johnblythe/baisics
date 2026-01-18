@@ -43,7 +43,10 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ available: true, normalized: normalizedSlug });
   } catch (error) {
-    console.error('Check slug error:', error);
-    return NextResponse.json({ error: 'Check failed' }, { status: 500 });
+    console.error('Check slug error:', { error });
+    return NextResponse.json(
+      { error: 'Could not check slug availability. Please try again.' },
+      { status: 500 }
+    );
   }
 }

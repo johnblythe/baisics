@@ -61,8 +61,9 @@ export default function CoachSettingsPage() {
       setBrandName(data.brandName || '');
       setBrandColor(data.brandColor || '#FF6B6B');
       setInviteSlug(data.inviteSlug || '');
-    } catch {
-      setError('Failed to load settings');
+    } catch (error) {
+      console.error('Failed to load coach settings:', error);
+      setError('Failed to load settings. Please refresh the page.');
     } finally {
       setLoading(false);
     }
@@ -103,8 +104,10 @@ export default function CoachSettingsPage() {
         setSlugAvailable(false);
         setSlugError(data.reason || 'Not available');
       }
-    } catch {
+    } catch (error) {
+      console.error('Slug availability check failed:', error);
       setSlugAvailable(null);
+      setSlugError('Could not verify. Please try again.');
     } finally {
       setCheckingSlug(false);
     }
@@ -180,10 +183,19 @@ export default function CoachSettingsPage() {
 
   async function regenerateInviteToken() {
     try {
-      await fetch('/api/coach/public-invite', { method: 'DELETE' });
+      const res = await fetch('/api/coach/public-invite', { method: 'DELETE' });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || `Server error: ${res.status}`);
+      }
       await fetchSettings();
-    } catch {
-      setError('Failed to regenerate invite');
+    } catch (error) {
+      console.error('Failed to regenerate invite token:', error);
+      setError(
+        error instanceof Error
+          ? `Failed to regenerate invite: ${error.message}`
+          : 'Failed to regenerate invite. Please try again.'
+      );
     }
   }
 
