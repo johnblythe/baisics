@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import MainLayout from '@/app/components/layouts/MainLayout';
-import { ArrowLeft, Palette, Link2, Copy, Check, Loader2, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Palette, Link2, Copy, Check, Loader2, RefreshCw, AlertCircle } from 'lucide-react';
 
 interface Settings {
   name: string | null;
@@ -38,9 +38,18 @@ export default function CoachSettingsPage() {
   const [brandColor, setBrandColor] = useState('#FF6B6B');
   const [inviteSlug, setInviteSlug] = useState('');
   const [slugError, setSlugError] = useState<string | null>(null);
+  const [slugAvailable, setSlugAvailable] = useState<boolean | null>(null);
+  const [checkingSlug, setCheckingSlug] = useState(false);
+  const slugCheckTimeout = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     fetchSettings();
+    // Cleanup timeout on unmount
+    return () => {
+      if (slugCheckTimeout.current) {
+        clearTimeout(slugCheckTimeout.current);
+      }
+    };
   }, []);
 
   async function fetchSettings() {
@@ -52,8 +61,9 @@ export default function CoachSettingsPage() {
       setBrandName(data.brandName || '');
       setBrandColor(data.brandColor || '#FF6B6B');
       setInviteSlug(data.inviteSlug || '');
-    } catch {
-      setError('Failed to load settings');
+    } catch (error) {
+      console.error('Failed to load coach settings:', error);
+      setError('Failed to load settings. Please refresh the page.');
     } finally {
       setLoading(false);
     }
@@ -73,6 +83,56 @@ export default function CoachSettingsPage() {
     if (normalized.length < 3) return 'Must be at least 3 characters';
     if (normalized.length > 30) return 'Must be 30 characters or less';
     return null;
+  }
+
+  const checkSlugAvailability = useCallback(async (slug: string) => {
+    const normalized = normalizeSlug(slug);
+    if (normalized.length < 3) {
+      setSlugAvailable(null);
+      return;
+    }
+
+    setCheckingSlug(true);
+    try {
+      const res = await fetch(`/api/coach/check-slug?slug=${encodeURIComponent(slug)}`);
+      const data = await res.json();
+
+      if (data.available) {
+        setSlugAvailable(true);
+        setSlugError(null);
+      } else {
+        setSlugAvailable(false);
+        setSlugError(data.reason || 'Not available');
+      }
+    } catch (error) {
+      console.error('Slug availability check failed:', error);
+      setSlugAvailable(null);
+      setSlugError('Could not verify. Please try again.');
+    } finally {
+      setCheckingSlug(false);
+    }
+  }, []);
+
+  function handleSlugChange(value: string) {
+    setInviteSlug(value);
+    setSlugError(null);
+    setSlugAvailable(null);
+
+    // Clear existing timeout
+    if (slugCheckTimeout.current) {
+      clearTimeout(slugCheckTimeout.current);
+    }
+
+    // Don't check empty or too short slugs
+    const normalized = normalizeSlug(value);
+    if (!value || normalized.length < 3) {
+      return;
+    }
+
+    // Debounce: check after 500ms of no typing
+    slugCheckTimeout.current = setTimeout(() => {
+      checkSlugAvailability(value);
+    }, 500);
   }
 
   async function handleSave() {
@@ -123,10 +183,19 @@ export default function CoachSettingsPage() {
 
   async function regenerateInviteToken() {
     try {
-      await fetch('/api/coach/public-invite', { method: 'DELETE' });
+      const res = await fetch('/api/coach/public-invite', { method: 'DELETE' });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || `Server error: ${res.status}`);
+      }
       await fetchSettings();
-    } catch {
-      setError('Failed to regenerate invite');
+    } catch (error) {
+      console.error('Failed to regenerate invite token:', error);
+      setError(
+        error instanceof Error
+          ? `Failed to regenerate invite: ${error.message}`
+          : 'Failed to regenerate invite. Please try again.'
+      );
     }
   }
 
@@ -155,7 +224,7 @@ export default function CoachSettingsPage() {
       `}</style>
 
       <div className="coach-settings min-h-screen bg-[#F8FAFC]">
-        <div className="max-w-2xl mx-auto px-4 py-8">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Header */}
           <div className="flex items-center gap-4 mb-8">
             <Link
@@ -209,10 +278,10 @@ export default function CoachSettingsPage() {
             {/* Brand Name */}
             <div className="bg-white rounded-xl border border-[#E2E8F0] p-6">
               <div className="flex items-start gap-4">
-                <div className="p-3 bg-[#FFE5E5] rounded-lg">
+                <div className="p-3 bg-[#FFE5E5] rounded-lg flex-shrink-0">
                   <Palette className="w-5 h-5 text-[#FF6B6B]" />
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <h2 className="text-lg font-semibold text-[#0F172A] mb-1">Brand Name</h2>
                   <p className="text-sm text-[#64748B] mb-4">
                     What clients see as your coaching brand
@@ -231,10 +300,10 @@ export default function CoachSettingsPage() {
             {/* Brand Color */}
             <div className="bg-white rounded-xl border border-[#E2E8F0] p-6">
               <div className="flex items-start gap-4">
-                <div className="p-3 rounded-lg" style={{ backgroundColor: `${brandColor}20` }}>
+                <div className="p-3 rounded-lg flex-shrink-0" style={{ backgroundColor: `${brandColor}20` }}>
                   <Palette className="w-5 h-5" style={{ color: brandColor }} />
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <h2 className="text-lg font-semibold text-[#0F172A] mb-1">Brand Color</h2>
                   <p className="text-sm text-[#64748B] mb-4">
                     Accent color for your client experience
@@ -294,37 +363,53 @@ export default function CoachSettingsPage() {
             {/* Invite Link */}
             <div className="bg-white rounded-xl border border-[#E2E8F0] p-6">
               <div className="flex items-start gap-4">
-                <div className="p-3 bg-[#FFE5E5] rounded-lg">
+                <div className="p-3 bg-[#FFE5E5] rounded-lg flex-shrink-0">
                   <Link2 className="w-5 h-5 text-[#FF6B6B]" />
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <h2 className="text-lg font-semibold text-[#0F172A] mb-1">Custom Invite Link</h2>
                   <p className="text-sm text-[#64748B] mb-4">
                     Personalized URL like baisics.app/join/yourname
                   </p>
 
                   <div className="mb-4">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-[#64748B]">baisics.app/join/</span>
+                    <label className="block text-sm text-[#64748B] mb-2">baisics.app/join/</label>
+                    <div className="relative">
                       <input
                         type="text"
                         value={inviteSlug}
-                        onChange={(e) => {
-                          setInviteSlug(e.target.value);
-                          setSlugError(null);
-                        }}
+                        onChange={(e) => handleSlugChange(e.target.value)}
                         placeholder="yourname"
-                        className={`flex-1 px-3 py-2 border rounded-lg text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]/20 ${
+                        className={`w-full px-3 py-2 pr-10 border rounded-lg text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]/20 ${
                           slugError
                             ? 'border-red-300 focus:border-red-500'
+                            : slugAvailable === true
+                            ? 'border-green-300 focus:border-green-500'
                             : 'border-[#E2E8F0] focus:border-[#FF6B6B]'
                         }`}
                       />
+                      {/* Status indicator */}
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                        {checkingSlug && (
+                          <Loader2 className="w-4 h-4 animate-spin text-[#64748B]" />
+                        )}
+                        {!checkingSlug && slugAvailable === true && (
+                          <Check className="w-4 h-4 text-green-500" />
+                        )}
+                        {!checkingSlug && slugAvailable === false && (
+                          <AlertCircle className="w-4 h-4 text-red-500" />
+                        )}
+                      </div>
                     </div>
                     {slugError && (
                       <p className="mt-1 text-xs text-red-500">{slugError}</p>
                     )}
-                    {inviteSlug && !slugError && (
+                    {inviteSlug && !slugError && slugAvailable === true && (
+                      <p className="mt-1 text-xs text-green-600">
+                        Available! Will be: baisics.app/join/{normalizeSlug(inviteSlug)}
+                      </p>
+                    )}
+                    {inviteSlug && !slugError && slugAvailable === null && !checkingSlug && normalizeSlug(inviteSlug).length >= 3 && (
                       <p className="mt-1 text-xs text-[#64748B]">
                         Will be: baisics.app/join/{normalizeSlug(inviteSlug)}
                       </p>
@@ -333,30 +418,34 @@ export default function CoachSettingsPage() {
 
                   {/* Current Invite URL */}
                   {settings?.inviteUrl && (
-                    <div className="flex items-center gap-2 p-3 bg-[#F8FAFC] rounded-lg">
-                      <span className="flex-1 text-sm font-mono text-[#475569] truncate">
-                        {settings.inviteUrl}
-                      </span>
-                      <button
-                        onClick={copyInviteUrl}
-                        className="p-2 hover:bg-white rounded transition-colors"
-                        title="Copy link"
-                      >
-                        {copied ? (
-                          <Check className="w-4 h-4 text-green-500" />
-                        ) : (
-                          <Copy className="w-4 h-4 text-[#64748B]" />
-                        )}
-                      </button>
-                      {!settings.inviteSlug && (
-                        <button
-                          onClick={regenerateInviteToken}
-                          className="p-2 hover:bg-white rounded transition-colors"
-                          title="Regenerate link"
-                        >
-                          <RefreshCw className="w-4 h-4 text-[#64748B]" />
-                        </button>
-                      )}
+                    <div className="p-3 bg-[#F8FAFC] rounded-lg overflow-hidden">
+                      <div className="flex items-center gap-2">
+                        <span className="flex-1 text-sm font-mono text-[#475569] truncate">
+                          {settings.inviteUrl}
+                        </span>
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                          <button
+                            onClick={copyInviteUrl}
+                            className="p-2 hover:bg-white rounded transition-colors"
+                            title="Copy link"
+                          >
+                            {copied ? (
+                              <Check className="w-4 h-4 text-green-500" />
+                            ) : (
+                              <Copy className="w-4 h-4 text-[#64748B]" />
+                            )}
+                          </button>
+                          {!settings.inviteSlug && (
+                            <button
+                              onClick={regenerateInviteToken}
+                              className="p-2 hover:bg-white rounded transition-colors"
+                              title="Regenerate link"
+                            >
+                              <RefreshCw className="w-4 h-4 text-[#64748B]" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -365,7 +454,7 @@ export default function CoachSettingsPage() {
           </div>
 
           {/* Save Button */}
-          <div className="mt-8 flex items-center justify-between">
+          <div className="mt-8 pt-6 border-t border-[#E2E8F0] flex items-center justify-between">
             <Link
               href="/coach/dashboard"
               className="text-sm text-[#64748B] hover:text-[#FF6B6B] transition-colors"
@@ -374,8 +463,8 @@ export default function CoachSettingsPage() {
             </Link>
             <button
               onClick={handleSave}
-              disabled={saving}
-              className="px-6 py-2 bg-[#FF6B6B] text-white font-medium rounded-lg hover:bg-[#EF5350] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              disabled={saving || checkingSlug || (!!inviteSlug && slugAvailable === false)}
+              className="px-6 py-3 bg-[#FF6B6B] text-white font-medium rounded-lg hover:bg-[#EF5350] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {saving && <Loader2 className="w-4 h-4 animate-spin" />}
               {saving ? 'Saving...' : 'Save Changes'}
