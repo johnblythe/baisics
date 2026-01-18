@@ -17,6 +17,7 @@ const ALLOWED_FILE_TYPES = [
 ];
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_TEXT_LENGTH = 50000; // 50,000 characters (~50KB)
 // Use /tmp on Vercel (serverless has read-only filesystem except /tmp)
 const UPLOADS_DIR = process.env.VERCEL ? '/tmp/uploads/programs' : path.join(process.cwd(), 'uploads', 'programs');
 
@@ -99,6 +100,14 @@ export async function POST(request: Request) {
           error: true,
           reason: 'Text validation failed',
           details: ['Text input cannot be empty']
+        });
+      }
+
+      if (text.length > MAX_TEXT_LENGTH) {
+        return NextResponse.json({
+          error: true,
+          reason: 'Text validation failed',
+          details: ['Text input too long. Maximum 50,000 characters.']
         });
       }
 
