@@ -102,6 +102,7 @@ model User {
   isCoach          Boolean       @default(false) @map("is_coach")
   coachTier        CoachTier     @default(FREE) @map("coach_tier")
   coachOnboardedAt DateTime?     @map("coach_onboarded_at") // null = show onboarding wizard
+  coachType        String?       @map("coach_type") // Personal trainer, Online coach, Gym owner, etc.
   coachClients     CoachClient[] @relation("CoachRelation") // Users this coach manages
   coachOf          CoachClient[] @relation("ClientRelation") // Coaches managing this user
 
