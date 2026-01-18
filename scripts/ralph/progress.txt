@@ -132,3 +132,28 @@ Started: Sun Jan 18 15:32:16 EST 2026
   - When a function references undefined dependencies, check if the entire code path is dead before fixing imports
   - @ts-ignore comments often indicate dead or broken code paths
 ---
+
+## 2026-01-18 - US-002: Add error handling to handleInitialIntake
+- Wrapped entire function body in try-catch
+- Added `else` branch for `result.success === false` case
+- Failure case: log error, set isTyping to false, show user-friendly message from result or fallback
+- Catch block: log error, set isTyping to false, show generic error message
+- Files changed: src/app/hi/components/ConversationalInterface.tsx
+- **Learnings for future iterations:**
+  - processUserMessage returns {success: boolean, message?: string, ...}
+  - Always set isTyping to false in ALL code paths (success, failure, exception)
+  - Use result?.message fallback pattern when API might return message on failure
+  - Infinite typing indicator is a bad UX - always ensure state cleanup
+---
+
+## 2026-01-18 - US-003: Add try-catch to handleProgramModification
+- Wrapped processModificationRequest call in try-catch block
+- Added catch block that logs error, sets isTyping false, shows user-friendly error message
+- Used finally block to always set isGeneratingProgram to false (moved from inside if/else branches)
+- Removed redundant setIsGeneratingProgram(false) from inside try block branches (now handled by finally)
+- Files changed: src/app/hi/components/ConversationalInterface.tsx
+- **Learnings for future iterations:**
+  - finally block is ideal for state cleanup that must happen in ALL code paths
+  - Error messages should be user-friendly, not expose technical details
+  - Pattern: try { await api() } catch { showError() } finally { resetLoadingState() }
+---

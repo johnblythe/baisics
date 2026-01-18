@@ -29,7 +29,7 @@
         "npm run typecheck passes"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": "Currently ignores failures completely, leaving users with infinite typing indicator."
     },
     {
@@ -44,7 +44,7 @@
         "npm run typecheck passes"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": "Network errors can crash the component without this."
     },
     {

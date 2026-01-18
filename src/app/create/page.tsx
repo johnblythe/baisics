@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, Suspense } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useSession, signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import MainLayout from '@/app/components/layouts/MainLayout';
 import { Upload, FileText, ArrowRight, X, GripVertical, Plus, Mail, Check, Trash2, Edit2, ChevronDown, ChevronUp, Loader2, Files, Type } from 'lucide-react';
@@ -50,9 +50,11 @@ interface BulkImportItem {
   programName: string;
 }
 
-export default function ImportPage() {
+function ImportPageContent() {
   const { data: session } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isBlankMode = searchParams.get('blank') === 'true';
 
   const [pageState, setPageState] = useState<PageState>('upload');
   const [error, setError] = useState<string | null>(null);
@@ -483,10 +485,12 @@ export default function ImportPage() {
         {pageState === 'upload' && (
           <div className="text-center">
             <h1 className="text-3xl sm:text-4xl font-bold text-[#0F172A] mb-4">
-              Turn Any Workout Into a Trackable Program
+              {isBlankMode ? 'Build Your Program' : 'Turn Any Workout Into a Trackable Program'}
             </h1>
             <p className="text-lg text-[#475569] mb-8 max-w-2xl mx-auto">
-              Paste your program text or upload a file and we&apos;ll extract the exercises automatically.
+              {isBlankMode
+                ? 'Describe your workout routine and we\'ll structure it into a trackable program.'
+                : 'Paste your program text or upload a file and we\'ll extract the exercises automatically.'}
             </p>
 
             {/* Input Mode Toggle */}
@@ -1128,5 +1132,19 @@ Wednesday - Deadlift 1x5, OHP 3x5, Pullups 3x8`}
         </div>
       </div>
     </MainLayout>
+  );
+}
+
+export default function ImportPage() {
+  return (
+    <Suspense fallback={
+      <MainLayout>
+        <div className="bg-[#F8FAFC] min-h-screen flex items-center justify-center">
+          <div className="w-8 h-8 border-3 border-[#FF6B6B] border-t-transparent rounded-full animate-spin" />
+        </div>
+      </MainLayout>
+    }>
+      <ImportPageContent />
+    </Suspense>
   );
 }
