@@ -249,7 +249,36 @@ async function seedPersonas() {
         where: { programId: { in: existingProgramIds } },
       });
 
-      // 2. Delete WorkoutLogs (and their ExerciseLogs/SetLogs will cascade)
+      // 2. Delete WorkoutLogs chain: SetLogs -> ExerciseLogs -> WorkoutLogs
+      // Get workout log IDs for cascade
+      const workoutLogsToDelete = await prisma.workoutLog.findMany({
+        where: { programId: { in: existingProgramIds } },
+        select: { id: true },
+      });
+      const workoutLogIds = workoutLogsToDelete.map(wl => wl.id);
+
+      if (workoutLogIds.length > 0) {
+        // Get exercise log IDs for cascade
+        const exerciseLogsToDelete = await prisma.exerciseLog.findMany({
+          where: { workoutLogId: { in: workoutLogIds } },
+          select: { id: true },
+        });
+        const exerciseLogIds = exerciseLogsToDelete.map(el => el.id);
+
+        if (exerciseLogIds.length > 0) {
+          // Delete SetLogs first
+          await prisma.setLog.deleteMany({
+            where: { exerciseLogId: { in: exerciseLogIds } },
+          });
+        }
+
+        // Delete ExerciseLogs
+        await prisma.exerciseLog.deleteMany({
+          where: { workoutLogId: { in: workoutLogIds } },
+        });
+      }
+
+      // Now delete WorkoutLogs
       await prisma.workoutLog.deleteMany({
         where: { programId: { in: existingProgramIds } },
       });
