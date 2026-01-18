@@ -88,49 +88,86 @@ export default function TemplateDetailClient({ template }: TemplateDetailClientP
 
           {/* Header */}
           <div
-            className="rounded-2xl p-8 text-white mb-8"
-            style={{ background: `linear-gradient(to bottom right, ${COLORS.navy}, ${COLORS.navyLight})` }}
+            className="rounded-2xl p-8 lg:p-10 text-white mb-10 relative overflow-hidden"
+            style={{
+              background: `linear-gradient(135deg, ${COLORS.navy} 0%, ${COLORS.navyLight} 50%, ${COLORS.navy} 100%)`,
+            }}
           >
-            <div className="flex items-start justify-between mb-6">
-              <div>
-                <div className="flex items-center gap-3 mb-4">
-                  <span
-                    className={`text-xs px-3 py-1 rounded-full ${DIFFICULTY_COLORS[template.difficulty]}`}
-                  >
-                    {template.difficulty}
-                  </span>
-                  <span
-                    className="text-xs px-3 py-1 rounded-full"
-                    style={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
-                  >
-                    {template.structure.splitType}
-                  </span>
-                </div>
-                <h1 className="text-3xl font-bold mb-3">{template.name}</h1>
-                <p className="text-white/80 text-lg">{template.description}</p>
-                {template.author && (
-                  <p className="text-white/60 text-sm mt-2">by {template.author}</p>
-                )}
-              </div>
-            </div>
+            {/* Subtle pattern overlay */}
+            <div
+              className="absolute inset-0 opacity-5"
+              style={{
+                backgroundImage: `radial-gradient(circle at 2px 2px, white 1px, transparent 0)`,
+                backgroundSize: '24px 24px',
+              }}
+            />
 
-            {/* Quick Stats */}
-            <div className="grid grid-cols-4 gap-4">
-              <div className="bg-white/10 rounded-xl p-4 text-center">
-                <div className="text-4xl font-bold" style={{ color: COLORS.coral }}>{template.daysPerWeek}</div>
-                <div className="text-xs text-white/60">Days/Week</div>
+            <div className="relative z-10">
+              <div className="flex items-start justify-between mb-8">
+                <div>
+                  <div className="flex items-center gap-3 mb-4">
+                    <span
+                      className={`text-xs font-medium px-3 py-1.5 rounded-full ${DIFFICULTY_COLORS[template.difficulty]}`}
+                    >
+                      {template.difficulty}
+                    </span>
+                    <span
+                      className="text-xs font-medium px-3 py-1.5 rounded-full"
+                      style={{ backgroundColor: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(4px)' }}
+                    >
+                      {template.structure.splitType}
+                    </span>
+                  </div>
+                  <h1 className="text-3xl lg:text-4xl font-extrabold mb-4 tracking-tight">{template.name}</h1>
+                  <p className="text-white/80 text-lg max-w-xl">{template.description}</p>
+                  {template.author && (
+                    <p className="text-white/50 text-sm mt-3">by {template.author}</p>
+                  )}
+                </div>
               </div>
-              <div className="bg-white/10 rounded-xl p-4 text-center">
-                <div className="text-4xl font-bold" style={{ color: COLORS.coral }}>{template.durationWeeks}</div>
-                <div className="text-xs text-white/60">Weeks</div>
-              </div>
-              <div className="bg-white/10 rounded-xl p-4 text-center">
-                <div className="text-4xl font-bold" style={{ color: COLORS.coral }}>{template.structure.phases}</div>
-                <div className="text-xs text-white/60">Phases</div>
-              </div>
-              <div className="bg-white/10 rounded-xl p-4 text-center">
-                <div className="text-4xl font-bold" style={{ color: COLORS.coral }}>{template.popularityScore}%</div>
-                <div className="text-xs text-white/60">Popular</div>
+
+              {/* Quick Stats - Enhanced with coral accents */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div
+                  className="rounded-xl p-5 text-center transition-transform hover:scale-[1.02]"
+                  style={{
+                    backgroundColor: 'rgba(255, 107, 107, 0.15)',
+                    border: `1px solid rgba(255, 107, 107, 0.3)`,
+                  }}
+                >
+                  <div className="text-4xl lg:text-5xl font-extrabold mb-1" style={{ color: COLORS.coral }}>{template.daysPerWeek}</div>
+                  <div className="text-xs font-medium uppercase tracking-wider text-white/70">Days/Week</div>
+                </div>
+                <div
+                  className="rounded-xl p-5 text-center transition-transform hover:scale-[1.02]"
+                  style={{
+                    backgroundColor: 'rgba(255, 107, 107, 0.15)',
+                    border: `1px solid rgba(255, 107, 107, 0.3)`,
+                  }}
+                >
+                  <div className="text-4xl lg:text-5xl font-extrabold mb-1" style={{ color: COLORS.coral }}>{template.durationWeeks}</div>
+                  <div className="text-xs font-medium uppercase tracking-wider text-white/70">Weeks</div>
+                </div>
+                <div
+                  className="rounded-xl p-5 text-center transition-transform hover:scale-[1.02]"
+                  style={{
+                    backgroundColor: 'rgba(255, 107, 107, 0.15)',
+                    border: `1px solid rgba(255, 107, 107, 0.3)`,
+                  }}
+                >
+                  <div className="text-4xl lg:text-5xl font-extrabold mb-1" style={{ color: COLORS.coral }}>{template.structure.phases}</div>
+                  <div className="text-xs font-medium uppercase tracking-wider text-white/70">Phases</div>
+                </div>
+                <div
+                  className="rounded-xl p-5 text-center transition-transform hover:scale-[1.02]"
+                  style={{
+                    backgroundColor: 'rgba(255, 107, 107, 0.15)',
+                    border: `1px solid rgba(255, 107, 107, 0.3)`,
+                  }}
+                >
+                  <div className="text-4xl lg:text-5xl font-extrabold mb-1" style={{ color: COLORS.coral }}>{template.popularityScore}%</div>
+                  <div className="text-xs font-medium uppercase tracking-wider text-white/70">Popular</div>
+                </div>
               </div>
             </div>
           </div>
