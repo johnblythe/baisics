@@ -119,7 +119,12 @@ export async function POST(
 
     // Determine if this is the user's first workout (WORKOUT_1 milestone just unlocked)
     // Debug override: force first workout celebration
-    const debugState = await getDebugState();
+    let debugState: string | null = null;
+    try {
+      debugState = await getDebugState();
+    } catch (debugError) {
+      console.error('Failed to get debug state (continuing without debug overrides):', debugError);
+    }
     const isFirstWorkout = debugState === 'first_workout_complete'
       || (milestoneData.unlocked && milestoneData.milestone === 'WORKOUT_1');
 
