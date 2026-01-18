@@ -87,7 +87,6 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
   const [isUpsellOpen, setIsUpsellOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [currentProfileIndex, setCurrentProfileIndex] = useState(Math.floor(Math.random() * Object.keys(SAMPLE_PROFILES).length));
-  const [isSaving, setIsSaving] = useState(false);
   const [showDataReview, setShowDataReview] = useState(false);
   const [localUserId, setLocalUserId] = useState(userId);
   const [localUser, setLocalUser] = useState(user);
@@ -422,32 +421,6 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
     }
   };
 
-  const handleSaveProgram = async () => {
-    if (!program) return;
-    
-    setIsSaving(true);
-    try {
-      // @ts-ignore
-      const savedProgram = await createNewProgram(program, localUserId);
-      if (savedProgram) {
-        // @ts-ignore
-        setProgram(savedProgram);
-        setMessages(prev => [...prev, {
-          role: "assistant",
-          content: "Your program has been saved! You can now access it anytime from your dashboard."
-        }]);
-      }
-    } catch (error) {
-      console.error("Failed to save program:", error);
-      setMessages(prev => [...prev, {
-        role: "assistant",
-        content: "I'm sorry, I encountered an error while saving your program. Please try again."
-      }]);
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
   const demoUser = async () => {
     if (!localUserId) {
       const newUserId = uuidv4();
@@ -566,42 +539,8 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
     }
   };
 
-  // Update the form section based on whether we have a program
+  // Form section for initial conversation (hidden during generation)
   const renderFormSection = () => {
-    if (program) {
-      return (
-        <form onSubmit={handleSubmit} className="hidden p-6 border-t border-[#F1F5F9] bg-white rounded-b-xl">
-          <div className="flex flex-col space-y-4">
-            <textarea
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Have any feedback about your program? Let me know if you'd like any adjustments..."
-              rows={3}
-              className="w-full p-4 border-2 border-[#F1F5F9] rounded-xl bg-[#F8FAFC] text-[#0F172A] placeholder-[#94A3B8] focus:ring-2 focus:ring-[#FF6B6B]/20 focus:border-[#FF6B6B] resize-none transition-all duration-300"
-              style={{ fontFamily: "'Outfit', sans-serif" }}
-            />
-            <div className="flex space-x-3">
-              <button
-                type="button"
-                onClick={handleSaveProgram}
-                className="flex-1 px-6 py-3 bg-[#0F172A] text-white text-base font-semibold rounded-xl hover:bg-[#1E293B] transition-all duration-300"
-              >
-                {isSaving ? "Saving..." : "Save Program"}
-              </button>
-              <button
-                type="submit"
-                className="flex-1 px-6 py-3 bg-[#FF6B6B] hover:bg-[#EF5350] text-white text-base font-semibold rounded-xl shadow-lg shadow-[#FF6B6B]/25 transition-all duration-300"
-              >
-                Request Changes
-              </button>
-            </div>
-          </div>
-        </form>
-      );
-    }
-
-    // Original form for initial conversation
     return (
       <form
         onSubmit={handleSubmit}
