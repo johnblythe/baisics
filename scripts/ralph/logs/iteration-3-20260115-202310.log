@@ -1,8 +1,0 @@
-Completed **US-003**. There are still 5 stories with `passes: false` (US-004 through US-008). 
-
-**Summary of this iteration:**
-- Implemented US-003: Option B - Achievement celebration card
-- Created `RestDayOptionB.tsx` with warm orange gradient design, progress ring showing weekly workout completion, streak display, and sparkle animations
-- Updated page.tsx to render Option B when selected
-- Lint and build both pass
-- Committed changes

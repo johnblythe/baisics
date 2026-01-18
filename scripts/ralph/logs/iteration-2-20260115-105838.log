@@ -1,9 +1,0 @@
-**US-002 Complete!**
-
-Summary:
-- Updated `BigSetInputCardProps` interface to include optional `notes` parameter in `onComplete` callback
-- Modified `handleComplete` function to pass `localNotes` value when set is completed
-- TypeScript check, lint, and build all pass
-- Committed as: `feat: US-002 - Pass notes through onComplete callback`
-
-Remaining stories with `passes: false`: US-003 through US-010 (8 stories remaining).

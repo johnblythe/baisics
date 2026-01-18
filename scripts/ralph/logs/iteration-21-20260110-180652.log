@@ -1,8 +1,0 @@
-US-021 is complete. Let me check if there are more stories with `passes: false`:
-
-Looking at the PRD, the remaining stories with `passes: false` are:
-- **US-022** (priority 22): Create competitor comparison blog template
-- **US-023** (priority 23): Write baisics vs Trainerize comparison post
-- **US-024** (priority 24): Final verification and build check
-
-There are still stories with `passes: false`, so my response ends here. Another iteration will pick up US-022.

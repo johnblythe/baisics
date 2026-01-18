@@ -1,9 +1,0 @@
-There are still 2 stories with `passes: false`: US-007 and US-008. 
-
-**US-006 completed:**
-- Created `RestDayOptionE.tsx` with gamified rest day card
-- Features: Recovery Mission badge with +50 XP, progress bar based on hours elapsed (0-24), streak display showing rest protects streak, mini badges (Rest Champion, Recovery Master, Streak Shield), next workout preview with XP reward
-- Updated page.tsx to import and render Option E
-- Lint and build pass
-- Committed: `feat: US-006 - Option E: Gamified rest card`
-- PRD and progress.txt updated

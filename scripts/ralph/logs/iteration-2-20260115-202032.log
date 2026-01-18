@@ -1,8 +1,0 @@
-There are still 6 stories with `passes: false`. US-002 is complete.
-
-**Summary for US-002:**
-- Created `RestDayOptionA.tsx` - a minimal, zen-style rest day card
-- Design features: subtle gradient background, moon icon, calm messaging
-- Shows: "Rest Day" title, encouraging rest message, next workout preview
-- Lint and build pass ✓
-- Committed: `feat: US-002 - Option A: Minimal zen rest card`
