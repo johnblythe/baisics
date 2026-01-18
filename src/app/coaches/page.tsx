@@ -55,12 +55,12 @@ const COMPARISON = [
 
 const TESTIMONIALS = [
   {
-    quote: "I used to cap at 15 clients because program writing took so long. Now I handle 40+ without burning out.",
+    quote: "What used to take me hours each week now takes minutes. I went from 15 clients to 40+ without burning out.",
     name: 'Marcus T.',
     title: 'Online Coach, 3 years',
   },
   {
-    quote: "The AI handles the boring stuff. I get to focus on what I'm actually good at—coaching and motivation.",
+    quote: "The AI handles the boring stuff—the formatting, the spreadsheets, the copy-paste. I focus on actual coaching.",
     name: 'Sarah K.',
     title: 'Personal Trainer',
   },
@@ -75,7 +75,7 @@ export default function CoachesPage() {
   };
 
   const handleContactSales = () => {
-    window.location.href = 'mailto:coaches@baisics.app?subject=Coach Partnership Inquiry';
+    window.location.href = 'mailto:john@baisics.app?subject=Coach Partnership Inquiry';
   };
 
   return (
@@ -219,20 +219,25 @@ export default function CoachesPage() {
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-8">
               Sound familiar?
             </h2>
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="p-6 bg-[var(--color-navy-light)] rounded-xl border border-[var(--color-gray-600)]">
-                <p className="text-lg text-[var(--color-gray-400)]">
-                  &ldquo;I spend more time on spreadsheets than actually coaching.&rdquo;
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="p-5 bg-[var(--color-navy-light)] rounded-xl border border-[var(--color-gray-600)]">
+                <p className="text-base text-[var(--color-gray-400)]">
+                  &ldquo;My Sundays are a crime scene of tabs and templates.&rdquo;
                 </p>
               </div>
-              <div className="p-6 bg-[var(--color-navy-light)] rounded-xl border border-[var(--color-gray-600)]">
-                <p className="text-lg text-[var(--color-gray-400)]">
-                  &ldquo;Every new client means hours of program writing.&rdquo;
+              <div className="p-5 bg-[var(--color-navy-light)] rounded-xl border border-[var(--color-gray-600)]">
+                <p className="text-base text-[var(--color-gray-400)]">
+                  &ldquo;Every new client means 2-4 hours of program writing.&rdquo;
                 </p>
               </div>
-              <div className="p-6 bg-[var(--color-navy-light)] rounded-xl border border-[var(--color-gray-600)]">
-                <p className="text-lg text-[var(--color-gray-400)]">
-                  &ldquo;I cap my clients because I can&apos;t scale the personal touch.&rdquo;
+              <div className="p-5 bg-[var(--color-navy-light)] rounded-xl border border-[var(--color-gray-600)]">
+                <p className="text-base text-[var(--color-gray-400)]">
+                  &ldquo;I cap at 15 clients because I literally can&apos;t do more.&rdquo;
+                </p>
+              </div>
+              <div className="p-5 bg-[var(--color-navy-light)] rounded-xl border border-[var(--color-gray-600)]">
+                <p className="text-base text-[var(--color-gray-400)]">
+                  &ldquo;One client texts, another uses an app, a third forgets entirely.&rdquo;
                 </p>
               </div>
             </div>

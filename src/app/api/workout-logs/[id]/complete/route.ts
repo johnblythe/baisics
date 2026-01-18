@@ -5,6 +5,7 @@ import { updateStreak } from '@/lib/streaks';
 import { checkAndAwardMilestone } from '@/lib/milestone-service';
 import { sendEmail } from '@/lib/email';
 import { createProgramCompletionEmail } from '@/lib/email/templates/program-completion';
+import { getDebugState } from '@/lib/debug/api';
 
 export async function POST(
   request: Request,
@@ -117,7 +118,10 @@ export async function POST(
     }
 
     // Determine if this is the user's first workout (WORKOUT_1 milestone just unlocked)
-    const isFirstWorkout = milestoneData.unlocked && milestoneData.milestone === 'WORKOUT_1';
+    // Debug override: force first workout celebration
+    const debugState = await getDebugState();
+    const isFirstWorkout = debugState === 'first_workout_complete'
+      || (milestoneData.unlocked && milestoneData.milestone === 'WORKOUT_1');
 
     // Check for program completion (non-blocking)
     let programCompletion: {

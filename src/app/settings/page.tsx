@@ -214,7 +214,7 @@ export default function SettingsPage() {
                   } ${isSavingNotifications ? 'opacity-50' : ''}`}
                 >
                   <span
-                    className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                    className={`absolute left-0 top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${
                       notificationPrefs?.emailReminders ? 'translate-x-7' : 'translate-x-1'
                     }`}
                   />
@@ -238,7 +238,7 @@ export default function SettingsPage() {
                   } ${isSavingNotifications ? 'opacity-50' : ''}`}
                 >
                   <span
-                    className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                    className={`absolute left-0 top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${
                       notificationPrefs?.weeklySummaryEnabled ? 'translate-x-7' : 'translate-x-1'
                     }`}
                   />
@@ -305,7 +305,7 @@ export default function SettingsPage() {
                   }`}
                 >
                   <span
-                    className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                    className={`absolute left-0 top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${
                       tripodMode ? 'translate-x-7' : 'translate-x-1'
                     }`}
                   />
@@ -381,7 +381,7 @@ export default function SettingsPage() {
                     } ${isSaving ? 'opacity-50' : ''}`}
                   >
                     <span
-                      className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                      className={`absolute left-0 top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${
                         userData?.isPremium ? 'translate-x-7' : 'translate-x-1'
                       }`}
                     />
@@ -405,7 +405,7 @@ export default function SettingsPage() {
                     } ${isSaving ? 'opacity-50' : ''}`}
                   >
                     <span
-                      className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                      className={`absolute left-0 top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${
                         userData?.isCoach ? 'translate-x-7' : 'translate-x-1'
                       }`}
                     />

@@ -29,14 +29,14 @@ export function BigSetInputCard({
   onComplete,
 }: BigSetInputCardProps) {
   // Local state for immediate UI response - NO auto-saving until complete
-  const [localWeight, setLocalWeight] = useState<string>(weight ? String(weight) : '');
+  const [localWeight, setLocalWeight] = useState<string>(weight != null ? String(weight) : '');
   const [localReps, setLocalReps] = useState<string>(reps ? String(reps) : '');
   const [localNotes, setLocalNotes] = useState<string>(notes || '');
   const [showNotes, setShowNotes] = useState<boolean>(!!notes);
 
   // Sync local state when props change (e.g., switching sets)
   useEffect(() => {
-    setLocalWeight(weight ? String(weight) : '');
+    setLocalWeight(weight != null ? String(weight) : '');
     setLocalReps(reps ? String(reps) : '');
     setLocalNotes(notes || '');
     setShowNotes(!!notes || isEditing); // Show notes field when editing
@@ -74,9 +74,11 @@ export function BigSetInputCard({
             </div>
           )}
           {history.pr && (
-            <div className="flex-1 bg-yellow-500/20 rounded-lg px-3 py-2 border border-yellow-400/30">
-              <p className="text-yellow-200/80 uppercase font-medium mb-0.5">PR</p>
-              <p className="text-yellow-100 font-bold">
+            <div className="flex-1 bg-[#0F172A] rounded-lg px-3 py-2">
+              <p className="text-white/70 uppercase font-medium mb-0.5 flex items-center gap-1">
+                <span>🏆</span> PR
+              </p>
+              <p className="text-white font-bold">
                 {history.pr.weight} lbs x {history.pr.reps}
               </p>
             </div>

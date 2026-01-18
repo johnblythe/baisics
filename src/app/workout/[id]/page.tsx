@@ -15,7 +15,6 @@ import { WorkoutProgressBar } from '@/components/workout/WorkoutProgressBar';
 import RestPeriodIndicator from '@/app/components/RestPeriodIndicator';
 import { WorkoutShareCard, WorkoutShareData } from '@/components/share/WorkoutShareCard';
 import { CalendarPicker } from '@/components/ui/CalendarPicker';
-import { FirstWorkoutCelebration } from '@/components/first-workout';
 import { ProgramCompletionCelebration } from '@/components/program-completion';
 import type { ProgramCompletionData } from '@/app/api/programs/[programId]/completion/route';
 
@@ -109,9 +108,6 @@ export default function WorkoutPage() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareData, setShareData] = useState<WorkoutShareData | null>(null);
   const [workoutName, setWorkoutName] = useState('');
-  // First workout celebration state
-  const [showFirstWorkoutCelebration, setShowFirstWorkoutCelebration] = useState(false);
-  const [firstWorkoutStats, setFirstWorkoutStats] = useState<{ setsCompleted: number; totalVolume: number } | null>(null);
   // Program completion celebration state
   const [showProgramCompletion, setShowProgramCompletion] = useState(false);
   const [programCompletionData, setProgramCompletionData] = useState<ProgramCompletionData | null>(null);
@@ -346,12 +342,15 @@ export default function WorkoutPage() {
 
       // Check if this is the user's first workout
       if (data.isFirstWorkout) {
-        // Show special first workout celebration
-        setFirstWorkoutStats({
+        // Store celebration data for dashboard to display
+        localStorage.setItem('baisics_first_workout_celebration', JSON.stringify({
           setsCompleted: data.workoutStats?.setsCompleted || 0,
           totalVolume: data.workoutStats?.totalVolume || 0,
-        });
-        setShowFirstWorkoutCelebration(true);
+          workoutName: workoutName,
+        }));
+        // Redirect to dashboard - it will show the celebration
+        router.push('/dashboard');
+        return;
       } else if (data.programCompletion?.isComplete) {
         // Show program completion celebration
         setProgramCompletionData(data.programCompletion);
@@ -422,21 +421,6 @@ export default function WorkoutPage() {
           </div>
         </div>
       </MainLayout>
-    );
-  }
-
-  // Show first workout celebration (special experience for first completion)
-  if (showFirstWorkoutCelebration && firstWorkoutStats) {
-    return (
-      <FirstWorkoutCelebration
-        setsCompleted={firstWorkoutStats.setsCompleted}
-        totalVolume={firstWorkoutStats.totalVolume}
-        workoutName={workoutName}
-        onClose={() => {
-          setShowFirstWorkoutCelebration(false);
-          router.push('/dashboard');
-        }}
-      />
     );
   }
 
@@ -573,26 +557,28 @@ export default function WorkoutPage() {
                 Exercise {currentExerciseIndex + 1} of {exercises.length}
               </span>
               {currentExercise && (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2">
                   <button
                     onClick={() => setSwapModalOpen(true)}
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white text-[#475569] border border-[#E2E8F0] hover:border-[#FF6B6B]/50 hover:text-[#FF6B6B] transition-colors"
+                    className="flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg bg-white text-[#475569] border border-[#E2E8F0] hover:border-[#FF6B6B]/50 hover:text-[#FF6B6B] transition-colors"
+                    title="Swap exercise"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                     </svg>
-                    <span className="text-sm font-medium">Swap</span>
+                    <span className="text-sm font-medium hidden sm:inline">Swap</span>
                   </button>
                   <button
                     onClick={() => setChatOpen(!chatOpen)}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-colors ${
+                    className={`flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg border transition-colors ${
                       chatOpen
                         ? 'bg-[#FF6B6B] text-white border-[#FF6B6B]'
                         : 'bg-white text-[#475569] border-[#E2E8F0] hover:border-[#FF6B6B]/50 hover:text-[#FF6B6B]'
                     }`}
+                    title="Ask trainer"
                   >
                     <MessageCircle className="w-4 h-4" />
-                    <span className="text-sm font-medium">Ask</span>
+                    <span className="text-sm font-medium hidden sm:inline">Ask</span>
                     {currentMessages.length > 0 && !chatOpen && (
                       <span className="w-4 h-4 bg-[#FF6B6B] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
                         {currentMessages.length}
@@ -603,10 +589,11 @@ export default function WorkoutPage() {
                     href={`https://www.youtube.com/results?search_query=${currentExercise.name} how to`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#FF6B6B] text-white hover:bg-[#EF5350] transition-colors"
+                    className="flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg bg-[#FF6B6B] text-white hover:bg-[#EF5350] transition-colors"
+                    title="Watch form video"
                   >
                     <PlayCircle className="w-4 h-4" />
-                    <span className="text-sm font-medium">Form</span>
+                    <span className="text-sm font-medium hidden sm:inline">Form</span>
                   </a>
                 </div>
               )}

@@ -29,6 +29,7 @@ import { RecoveryScreen } from '@/components/recovery';
 import type { RecoveryData } from '@/app/api/programs/[programId]/recovery/route';
 import { Week2CheckInModal } from '@/components/week2-checkin';
 import type { Week2CheckInData } from '@/app/api/programs/[programId]/week2-checkin/route';
+import { FirstWorkoutCelebration } from '@/components/first-workout';
 
 // Types for our API responses
 interface ProgramOverview {
@@ -315,10 +316,53 @@ function DashboardContent() {
   const [showRecoveryScreen, setShowRecoveryScreen] = useState(false);
   const [week2CheckInData, setWeek2CheckInData] = useState<Week2CheckInData | null>(null);
   const [showWeek2CheckIn, setShowWeek2CheckIn] = useState(false);
+  // First workout celebration (redirected from workout completion)
+  const [showFirstWorkoutCelebration, setShowFirstWorkoutCelebration] = useState(false);
+  const [firstWorkoutStats, setFirstWorkoutStats] = useState<{
+    setsCompleted: number;
+    totalVolume: number;
+    workoutName: string;
+  } | null>(null);
 
   useEffect(() => {
     const disclaimerAcknowledged = localStorage.getItem('disclaimer-acknowledged');
     setShowDisclaimer(!disclaimerAcknowledged);
+  }, []);
+
+  // Check for first workout celebration data from workout completion redirect
+  // Also check for debug state to allow testing without completing a workout
+  useEffect(() => {
+    const celebrationData = localStorage.getItem('baisics_first_workout_celebration');
+    if (celebrationData) {
+      try {
+        const data = JSON.parse(celebrationData);
+        // Validate required fields
+        if (typeof data.setsCompleted !== 'number' || typeof data.totalVolume !== 'number') {
+          throw new Error('Invalid celebration data structure');
+        }
+        setFirstWorkoutStats(data);
+        setShowFirstWorkoutCelebration(true);
+      } catch (e) {
+        console.error('Failed to parse first workout celebration data:', e);
+        localStorage.removeItem('baisics_first_workout_celebration');
+        // Still show celebration with fallback - user deserves recognition
+        setFirstWorkoutStats({ setsCompleted: 0, totalVolume: 0, workoutName: 'Your First Workout' });
+        setShowFirstWorkoutCelebration(true);
+      }
+    } else if (process.env.NODE_ENV === 'development') {
+      // Check for debug state - allows testing celebration without completing workout
+      const debugCookie = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('baisics_debug_state='));
+      if (debugCookie?.split('=')[1] === 'first_workout_complete') {
+        setFirstWorkoutStats({
+          setsCompleted: 12,
+          totalVolume: 8500,
+          workoutName: 'Debug Test Workout',
+        });
+        setShowFirstWorkoutCelebration(true);
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -367,60 +411,98 @@ function DashboardContent() {
 
   useEffect(() => {
     async function fetchData() {
-      try {
-        const programId = window.location.pathname.split('/').pop();
-        const programAccess = await fetch(`/api/programs/${programId}`);
-        if (!programId) return;
+      const programId = window.location.pathname.split('/').pop();
+      if (!programId) return;
 
-        const [overview, stats, weightDataResponse, progressPhotos, activityResponse, currentWorkout, activities, restDay, recovery, week2CheckIn] = await Promise.all([
-          fetch(`/api/programs/${programId}/overview`).then(r => r.json()) as Promise<ProgramOverview>,
-          fetch(`/api/programs/${programId}/stats`).then(r => r.json()) as Promise<ProgramStats>,
-          fetch(`/api/programs/${programId}/weight-tracking`).then(r => r.json()) as Promise<WeightData>,
-          fetch(`/api/programs/${programId}/progress-photos`).then(r => r.json()) as Promise<ProgressPhoto[]>,
-          fetch(`/api/programs/${programId}/recent-activity`).then(r => r.json()) as Promise<{ workouts: RecentActivity[]; streak: number }>,
-          fetch(`/api/programs/${programId}/current-workout`).then(r => r.json()) as Promise<CurrentWorkout>,
-          fetch(`/api/programs/${programId}/activity`).then(r => r.json()) as Promise<Activity[]>,
-          fetch(`/api/programs/${programId}/rest-day`).then(r => r.json()) as Promise<RestDayData>,
-          fetch(`/api/programs/${programId}/recovery`).then(r => r.json()) as Promise<RecoveryData>,
-          fetch(`/api/programs/${programId}/week2-checkin`).then(r => r.json()) as Promise<Week2CheckInData>
-        ]);
+      // Use Promise.allSettled so one failing endpoint doesn't break the whole dashboard
+      const results = await Promise.allSettled([
+        fetch(`/api/programs/${programId}/overview`).then(r => r.json()) as Promise<ProgramOverview>,
+        fetch(`/api/programs/${programId}/stats`).then(r => r.json()) as Promise<ProgramStats>,
+        fetch(`/api/programs/${programId}/weight-tracking`).then(r => r.json()) as Promise<WeightData>,
+        fetch(`/api/programs/${programId}/progress-photos`).then(r => r.json()) as Promise<ProgressPhoto[]>,
+        fetch(`/api/programs/${programId}/recent-activity`).then(r => r.json()) as Promise<{ workouts: RecentActivity[]; streak: number }>,
+        fetch(`/api/programs/${programId}/current-workout`).then(r => r.json()) as Promise<CurrentWorkout>,
+        fetch(`/api/programs/${programId}/activity`).then(r => r.json()) as Promise<Activity[]>,
+        fetch(`/api/programs/${programId}/rest-day`).then(r => r.json()) as Promise<RestDayData>,
+        fetch(`/api/programs/${programId}/recovery`).then(r => r.json()) as Promise<RecoveryData>,
+        fetch(`/api/programs/${programId}/week2-checkin`).then(r => r.json()) as Promise<Week2CheckInData>
+      ]);
 
-        setProgram(overview);
-        setProgramStats(stats);
-        setWeightData(weightDataResponse);
-        setProgressPhotos(progressPhotos || []);
-        setRecentActivity(activityResponse.workouts || []);
-        setWorkoutStreak(activityResponse.streak || 0);
-        setCurrentWorkout(currentWorkout);
-        setActivities(activities);
-        setRestDayData(restDay);
-        setRecoveryData(recovery);
-        setWeek2CheckInData(week2CheckIn);
+      const [overviewResult, statsResult, weightResult, photosResult, activityResult, workoutResult, activitiesResult, restDayResult, recoveryResult, week2Result] = results;
 
-        // Show recovery screen if needed and not already dismissed this session
-        if (recovery?.needsRecovery) {
-          const recoveryDismissedKey = `recovery-dismissed-${programId}`;
-          const lastDismissed = sessionStorage.getItem(recoveryDismissedKey);
-          if (!lastDismissed) {
-            setShowRecoveryScreen(true);
-          }
-        }
-
-        // Show Week 2 check-in if needed and not showing recovery screen
-        // Recovery takes priority over check-in
-        if (week2CheckIn?.shouldShow && !recovery?.needsRecovery) {
-          const week2DismissedKey = `week2-checkin-dismissed-${programId}`;
-          const lastDismissed = sessionStorage.getItem(week2DismissedKey);
-          if (!lastDismissed) {
-            setShowWeek2CheckIn(true);
-          }
-        }
-
-      } catch (error) {
-        console.error('Failed to fetch program:', error);
-      } finally {
+      // Overview is critical - if it fails, we can't show the dashboard
+      if (overviewResult.status === 'rejected') {
+        console.error('Critical: Failed to load program overview', overviewResult.reason);
         setIsLoading(false);
+        return;
       }
+      setProgram(overviewResult.value);
+
+      // Non-critical data - use defaults if failed
+      if (statsResult.status === 'fulfilled') {
+        setProgramStats(statsResult.value);
+      } else {
+        console.warn('Failed to load stats:', statsResult.reason);
+      }
+
+      if (weightResult.status === 'fulfilled') {
+        setWeightData(weightResult.value);
+      } else {
+        console.warn('Failed to load weight data:', weightResult.reason);
+      }
+
+      if (photosResult.status === 'fulfilled') {
+        setProgressPhotos(photosResult.value || []);
+      } else {
+        console.warn('Failed to load progress photos:', photosResult.reason);
+      }
+
+      if (activityResult.status === 'fulfilled') {
+        setRecentActivity(activityResult.value.workouts || []);
+        setWorkoutStreak(activityResult.value.streak || 0);
+      } else {
+        console.warn('Failed to load recent activity:', activityResult.reason);
+      }
+
+      if (workoutResult.status === 'fulfilled') {
+        setCurrentWorkout(workoutResult.value);
+      } else {
+        console.warn('Failed to load current workout:', workoutResult.reason);
+      }
+
+      if (activitiesResult.status === 'fulfilled') {
+        setActivities(activitiesResult.value);
+      } else {
+        console.warn('Failed to load activities:', activitiesResult.reason);
+      }
+
+      const restDay = restDayResult.status === 'fulfilled' ? restDayResult.value : null;
+      const recovery = recoveryResult.status === 'fulfilled' ? recoveryResult.value : null;
+      const week2CheckIn = week2Result.status === 'fulfilled' ? week2Result.value : null;
+
+      setRestDayData(restDay);
+      setRecoveryData(recovery);
+      setWeek2CheckInData(week2CheckIn);
+
+      // Show recovery screen if needed and not already dismissed this session
+      if (recovery?.needsRecovery) {
+        const recoveryDismissedKey = `recovery-dismissed-${programId}`;
+        const lastDismissed = sessionStorage.getItem(recoveryDismissedKey);
+        if (!lastDismissed) {
+          setShowRecoveryScreen(true);
+        }
+      }
+
+      // Show Week 2 check-in if needed and not showing recovery screen
+      if (week2CheckIn?.shouldShow && !recovery?.needsRecovery) {
+        const week2DismissedKey = `week2-checkin-dismissed-${programId}`;
+        const lastDismissed = sessionStorage.getItem(week2DismissedKey);
+        if (!lastDismissed) {
+          setShowWeek2CheckIn(true);
+        }
+      }
+
+      setIsLoading(false);
     }
 
     fetchData();
@@ -567,6 +649,13 @@ function DashboardContent() {
     // No need to set session storage here since the API already marked it as shown
   }, []);
 
+  // Handle first workout celebration close
+  const handleFirstWorkoutCelebrationClose = useCallback(() => {
+    localStorage.removeItem('baisics_first_workout_celebration');
+    setShowFirstWorkoutCelebration(false);
+    setFirstWorkoutStats(null);
+  }, []);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -662,6 +751,16 @@ function DashboardContent() {
           programId={program.id}
           onComplete={handleWeek2CheckInComplete}
           onDismiss={handleWeek2CheckInDismiss}
+        />
+      )}
+
+      {/* First Workout Celebration - shown after completing first workout */}
+      {showFirstWorkoutCelebration && firstWorkoutStats && (
+        <FirstWorkoutCelebration
+          setsCompleted={firstWorkoutStats.setsCompleted}
+          totalVolume={firstWorkoutStats.totalVolume}
+          workoutName={firstWorkoutStats.workoutName}
+          onClose={handleFirstWorkoutCelebrationClose}
         />
       )}
 
@@ -844,14 +943,18 @@ function DashboardContent() {
                     <button
                       onClick={async () => {
                         try {
-                          await fetch('/api/workout-logs/quick-log', {
+                          const response = await fetch('/api/workout-logs/quick-log', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ workoutId: selectedWorkoutId }),
                           });
+                          if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}`);
+                          }
                           router.refresh();
                         } catch (err) {
                           console.error('Quick log failed:', err);
+                          alert('Failed to mark workout complete. Please try again.');
                         }
                       }}
                       className="text-[#FF6B6B] hover:underline"
@@ -1101,13 +1204,13 @@ function DashboardContent() {
           {/* ─────────────────────────────────────────────────────────────────
               RIGHT: Recent Activity
           ───────────────────────────────────────────────────────────────── */}
-          <div className="col-span-12 lg:col-span-6 bg-white rounded-2xl border border-[#E2E8F0] p-4">
+          <div className="col-span-12 lg:col-span-6 bg-white rounded-2xl border border-[#E2E8F0] p-4 self-start">
             <div className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2" style={{ fontFamily: "'Space Mono', monospace" }}>
               Recent Activity
             </div>
 
             {recentActivity.length > 0 ? (
-              <div className="space-y-1.5 max-h-[140px] overflow-y-auto">
+              <div className="space-y-1.5">
                 {recentActivity.slice(0, 5).map((activity) => (
                   <div
                     key={activity.id}

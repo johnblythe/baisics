@@ -84,7 +84,7 @@ export function FirstWorkoutCelebration({
     ? `${window.location.origin}/achievements?milestone=WORKOUT_1`
     : '';
 
-  const shareText = `I just completed my first workout on BAISICS! \n\n${animatedSets} sets \u2022 ${formatVolume(animatedVolume)} volume\n\n"The first rep is the hardest one to take."`;
+  const shareText = `I just completed my first workout on BAISICS! \n\n${animatedSets} sets \u2022 ${formatVolume(animatedVolume)} volume\n\nEveryone starts somewhere. I just started.`;
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -115,7 +115,7 @@ export function FirstWorkoutCelebration({
 
   const handleTwitterShare = () => {
     const text = encodeURIComponent(
-      `I just completed my first workout on @baisicsapp! \n\n${animatedSets} sets \u2022 ${formatVolume(animatedVolume)} volume\n\n"The first rep is the hardest one to take."\n\n${shareUrl}`
+      `I just completed my first workout on @baisicsapp! \n\n${animatedSets} sets \u2022 ${formatVolume(animatedVolume)} volume\n\nEveryone starts somewhere. I just started.\n\n${shareUrl}`
     );
     window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
   };
@@ -156,7 +156,7 @@ export function FirstWorkoutCelebration({
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.8, opacity: 0 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto"
+          className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-sm sm:max-w-md overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Close button */}
@@ -168,41 +168,14 @@ export function FirstWorkoutCelebration({
           </button>
 
           {/* Header with celebration announcement */}
-          <div className="bg-gradient-to-br from-amber-400 to-amber-600 p-8 text-center text-white relative overflow-hidden">
-            {/* Star burst decoration */}
-            <motion.div
-              initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ delay: 0.2, type: 'spring', damping: 15 }}
-              className="relative inline-block"
-            >
-              <div className="absolute inset-0">
-                {[...Array(8)].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, scale: 0 }}
-                    animate={{ opacity: 0.5, scale: 1 }}
-                    transition={{ delay: 0.3 + i * 0.05 }}
-                    className="absolute w-1 h-8 bg-white/30 rounded-full"
-                    style={{
-                      transform: `rotate(${i * 45}deg)`,
-                      transformOrigin: 'center 40px',
-                      left: '50%',
-                      marginLeft: '-2px',
-                      top: '-30px',
-                    }}
-                  />
-                ))}
-              </div>
-            </motion.div>
-
+          <div className="bg-gradient-to-br from-[#FF6B6B] to-[#EF5350] p-6 sm:p-8 text-center text-white relative overflow-hidden">
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              transition={{ delay: 0.4, type: 'spring', damping: 15 }}
-              className="mb-4"
+              transition={{ delay: 0.3, type: 'spring', damping: 15 }}
+              className="mb-3"
             >
-              <Star className="w-16 h-16 mx-auto" strokeWidth={1.5} />
+              <Star className="w-12 h-12 sm:w-16 sm:h-16 mx-auto" fill="white" strokeWidth={0} />
             </motion.div>
 
             <motion.div
@@ -210,18 +183,18 @@ export function FirstWorkoutCelebration({
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.5 }}
             >
-              <h2 className="text-sm font-semibold uppercase tracking-wider mb-2 opacity-80">
+              <h2 className="text-xs sm:text-sm font-semibold uppercase tracking-wider mb-1 opacity-80">
                 First Workout Complete!
               </h2>
-              <h3 className="text-3xl font-bold mb-2">You Did It!</h3>
-              <p className="text-white/90">
+              <h3 className="text-2xl sm:text-3xl font-bold mb-1">You Did It!</h3>
+              <p className="text-white/90 text-sm sm:text-base">
                 You&apos;re officially a <span className="font-bold">baisics athlete</span>.
               </p>
             </motion.div>
           </div>
 
           {/* Content */}
-          <div className="p-6 space-y-6">
+          <div className="p-4 sm:p-6 space-y-4 sm:space-y-5">
             {/* Badge Earned Section */}
             <motion.div
               initial={{ y: 20, opacity: 0 }}
@@ -229,18 +202,18 @@ export function FirstWorkoutCelebration({
               transition={{ delay: 0.7 }}
               className="text-center"
             >
-              <h4 className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-4">
+              <h4 className="text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-400 mb-3">
                 Badge Earned
               </h4>
-              <div className="flex flex-col items-center gap-3">
+              <div className="flex flex-col items-center gap-2">
                 <MilestoneBadge
                   type="WORKOUT_1"
                   earned={true}
                   size="lg"
                   showLabel={true}
                 />
-                <p className="text-sm text-gray-600 dark:text-gray-400 italic max-w-xs">
-                  &ldquo;The first rep is the hardest one to take.&rdquo;
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 italic max-w-xs">
+                  You just took the hardest step: the first one.
                 </p>
               </div>
             </motion.div>
@@ -250,26 +223,22 @@ export function FirstWorkoutCelebration({
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.9 }}
-              className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4"
+              className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 sm:p-4"
             >
-              <h4 className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-3">
+              <h4 className="text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-400 mb-2">
                 What you accomplished:
               </h4>
-              <div className="space-y-2">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-[#FF6B6B]/10 flex items-center justify-center">
-                    <Check className="w-4 h-4 text-[#FF6B6B]" />
-                  </div>
-                  <span className="text-gray-900 dark:text-white font-medium">
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-[#FF6B6B] flex-shrink-0" />
+                  <span className="text-sm text-gray-900 dark:text-white font-medium">
                     {animatedSets} sets completed
                   </span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-[#FF6B6B]/10 flex items-center justify-center">
-                    <Check className="w-4 h-4 text-[#FF6B6B]" />
-                  </div>
+                <div className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-[#FF6B6B] flex-shrink-0" />
                   <div>
-                    <span className="text-gray-900 dark:text-white font-medium">
+                    <span className="text-sm text-gray-900 dark:text-white font-medium">
                       ~{formatVolume(animatedVolume)} total volume
                     </span>
                     {tripodMode && snarkyComment && (
@@ -279,11 +248,9 @@ export function FirstWorkoutCelebration({
                     )}
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-[#FF6B6B]/10 flex items-center justify-center">
-                    <Check className="w-4 h-4 text-[#FF6B6B]" />
-                  </div>
-                  <span className="text-gray-900 dark:text-white font-medium">
+                <div className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-[#FF6B6B] flex-shrink-0" />
+                  <span className="text-sm text-gray-900 dark:text-white font-medium">
                     First step of your journey
                   </span>
                 </div>
@@ -295,20 +262,20 @@ export function FirstWorkoutCelebration({
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 1.1 }}
-              className="space-y-3"
+              className="space-y-2"
             >
               <button
                 onClick={handleShare}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#FF6B6B] hover:bg-[#EF5350] text-white rounded-xl font-medium transition-colors"
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 bg-[#FF6B6B] hover:bg-[#EF5350] text-white rounded-xl font-medium transition-colors text-sm sm:text-base"
               >
-                <Share2 className="w-5 h-5" />
+                <Share2 className="w-4 h-4 sm:w-5 sm:h-5" />
                 Share Achievement
               </button>
 
               <div className="flex gap-2">
                 <button
                   onClick={handleTwitterShare}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-xl transition-colors"
+                  className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-[#0F172A] hover:bg-[#1E293B] text-white rounded-xl transition-colors text-sm font-medium"
                 >
                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
@@ -317,10 +284,10 @@ export function FirstWorkoutCelebration({
                 </button>
                 <button
                   onClick={handleCopy}
-                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-xl transition-colors ${
+                  className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl transition-colors text-sm font-medium ${
                     copied
                       ? 'bg-emerald-500 text-white'
-                      : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
+                      : 'bg-[#0F172A] hover:bg-[#1E293B] text-white'
                   }`}
                 >
                   {copied ? (
@@ -341,7 +308,7 @@ export function FirstWorkoutCelebration({
 
               <button
                 onClick={handleContinue}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors text-sm"
               >
                 <span>Continue to Home</span>
                 <ArrowRight className="w-4 h-4" />
