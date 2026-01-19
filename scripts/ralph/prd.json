@@ -47,8 +47,8 @@
         "npm run typecheck passes"
       ],
       "priority": 3,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created PERSONAS object with all 11 personas and getPersona helper"
     },
     {
       "id": "US-004",
@@ -62,8 +62,8 @@
         "npm run typecheck passes"
       ],
       "priority": 4,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added seedPersonas() and resetAndSeedPersonas() helper functions with 30s timeout"
     },
     {
       "id": "US-005",
@@ -81,8 +81,8 @@
         "npx playwright test tests/e2e/auth/signup.spec.ts passes"
       ],
       "priority": 5,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "App redirects new users to /dashboard empty state (not /hi), which shows onboarding CTAs. Test verifies this actual behavior."
     },
     {
       "id": "US-006",
@@ -98,8 +98,8 @@
         "npx playwright test tests/e2e/auth/signin.spec.ts passes"
       ],
       "priority": 6,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Test verifies marcus redirects to /dashboard/{programId} and PPL Hypertrophy Program name is visible"
     },
     {
       "id": "US-007",
@@ -116,8 +116,8 @@
         "npx playwright test tests/e2e/auth/signout.spec.ts passes"
       ],
       "priority": 7,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Test requires page reload after login to sync Header session state. Logout button in Headless UI Menu.Item targeted via getByText."
     },
     {
       "id": "US-008",
@@ -132,8 +132,8 @@
         "npx playwright test tests/e2e/auth/protected-routes.spec.ts passes"
       ],
       "priority": 8,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Simple tests verifying /dashboard, /settings, and /check-in redirect unauthenticated users to /auth/signin"
     },
     {
       "id": "US-009",
@@ -150,8 +150,8 @@
         "npx playwright test tests/e2e/onboarding/empty-state.spec.ts passes"
       ],
       "priority": 9,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Used fresh signup (unique email) instead of alex since alex has seeded program. Verifies all three CTAs: Create with AI → /hi, Browse Templates → /templates, Import your own → /create"
     },
     {
       "id": "US-010",
@@ -169,8 +169,8 @@
         "npx playwright test tests/e2e/dashboard/main-dashboard.spec.ts passes"
       ],
       "priority": 10,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Tests verify program name, workout selector (Day X), workout count stats, Weekly Progress section, Quick Log section, and Recent Activity section. Uses serial mode to avoid seed race conditions."
     },
     {
       "id": "US-011",
@@ -188,8 +188,8 @@
         "npx playwright test tests/e2e/workout/start-workout.spec.ts passes"
       ],
       "priority": 11,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Workout page auto-starts when navigated to (no separate Start Workout button on workout page). Tests verify: navigation from dashboard via 'Start Workout' link, exercise display with 'Exercise X of Y' indicator, workout progress with 'Workout in Progress' and 'X of Y sets complete', and navigation buttons (Previous/Next/Complete Workout)."
     },
     {
       "id": "US-012",
@@ -207,8 +207,8 @@
         "npx playwright test tests/e2e/workout/log-exercise.spec.ts passes"
       ],
       "priority": 12,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Tests verify: (1) logging weight/reps for a set shows completion with weight×reps display in SetProgressGrid, (2) logging multiple sets in sequence updates progress count. BigSetInputCard has weight/reps inputs; 'Complete Set N' button saves the set. Completed sets show in green with checkmark badge."
     },
     {
       "id": "US-013",
@@ -226,8 +226,8 @@
         "npx playwright test tests/e2e/workout/complete-workout.spec.ts passes"
       ],
       "priority": 13,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Test completes a workout and verifies: (1) completion response (share modal, celebration, or dashboard redirect), (2) workout appears in Recent Activity section with today's date. Handles dashboard 'rest day' state by using alternative start workout links (Train anyway button or Quick Log section)."
     },
     {
       "id": "US-014",
