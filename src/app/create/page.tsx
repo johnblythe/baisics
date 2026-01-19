@@ -4,7 +4,6 @@ import { useState, useCallback, useEffect, Suspense } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useSession, signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
 import MainLayout from '@/app/components/layouts/MainLayout';
 import { Upload, FileText, ArrowRight, X, Plus, Mail, Check, Trash2, Edit2, ChevronDown, ChevronUp, Loader2, Files, Type } from 'lucide-react';
 import { toast } from 'sonner';
