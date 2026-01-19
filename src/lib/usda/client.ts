@@ -45,6 +45,24 @@ export function simplifyFood(food: USDAFood): SimplifiedFood {
 }
 
 /**
+ * Parse error details from USDA API response body
+ */
+async function parseErrorBody(response: Response): Promise<string> {
+  try {
+    const body = await response.json();
+    if (body.error) {
+      return typeof body.error === 'string' ? body.error : JSON.stringify(body.error);
+    }
+    if (body.message) {
+      return body.message;
+    }
+    return JSON.stringify(body);
+  } catch {
+    return response.statusText;
+  }
+}
+
+/**
  * Search for foods in USDA FoodData Central
  * @param query - Search term
  * @param pageSize - Number of results (default 25, max 200)
@@ -56,21 +74,28 @@ export async function searchFoods(
 ): Promise<USDASearchResult> {
   const apiKey = getApiKey();
 
-  const response = await fetch(`${USDA_BASE_URL}/foods/search`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Api-Key': apiKey,
-    },
-    body: JSON.stringify({
-      query,
-      pageSize: Math.min(pageSize, 200),
-      dataType: ['Branded', 'Foundation', 'SR Legacy'],
-    }),
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${USDA_BASE_URL}/foods/search`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Api-Key': apiKey,
+      },
+      body: JSON.stringify({
+        query,
+        pageSize: Math.min(pageSize, 200),
+        dataType: ['Branded', 'Foundation', 'SR Legacy'],
+      }),
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`USDA API network error: ${message}`);
+  }
 
   if (!response.ok) {
-    throw new Error(`USDA API error: ${response.status} ${response.statusText}`);
+    const errorDetail = await parseErrorBody(response);
+    throw new Error(`USDA API error ${response.status}: ${errorDetail}`);
   }
 
   return response.json();
@@ -84,16 +109,23 @@ export async function searchFoods(
 export async function getFoodDetails(fdcId: number): Promise<USDAFood> {
   const apiKey = getApiKey();
 
-  const response = await fetch(`${USDA_BASE_URL}/food/${fdcId}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Api-Key': apiKey,
-    },
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${USDA_BASE_URL}/food/${fdcId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Api-Key': apiKey,
+      },
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`USDA API network error: ${message}`);
+  }
 
   if (!response.ok) {
-    throw new Error(`USDA API error: ${response.status} ${response.statusText}`);
+    const errorDetail = await parseErrorBody(response);
+    throw new Error(`USDA API error ${response.status}: ${errorDetail}`);
   }
 
   return response.json();
