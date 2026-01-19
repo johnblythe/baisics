@@ -4,6 +4,21 @@ const STORAGE_KEY_PREFIX = 'baisics_recent_foods_';
 const MAX_RECENT_FOODS = 10;
 
 /**
+ * Type guard to validate a SimplifiedFood object shape
+ * @param obj - Object to validate
+ * @returns true if obj is a valid SimplifiedFood
+ */
+function isValidSimplifiedFood(obj: unknown): obj is SimplifiedFood {
+  if (typeof obj !== 'object' || obj === null) return false;
+  const food = obj as Record<string, unknown>;
+  return (
+    typeof food.fdcId === 'number' &&
+    typeof food.name === 'string' &&
+    typeof food.calories === 'number'
+  );
+}
+
+/**
  * Get the storage key for a user's recent foods
  * @param userId - User ID (or session ID for anonymous users)
  */
@@ -24,8 +39,32 @@ export function getRecentFoods(userId: string): SimplifiedFood[] {
     const stored = localStorage.getItem(key);
     if (!stored) return [];
 
-    const foods = JSON.parse(stored) as SimplifiedFood[];
-    return Array.isArray(foods) ? foods.slice(0, MAX_RECENT_FOODS) : [];
+    const parsed = JSON.parse(stored);
+    if (!Array.isArray(parsed)) return [];
+
+    // Validate each entry's shape
+    const validFoods = parsed.filter(isValidSimplifiedFood);
+    const invalidCount = parsed.length - validFoods.length;
+
+    if (invalidCount > 0) {
+      console.warn('[recentFoods] getRecentFoods filtered invalid entries:', {
+        userId,
+        invalidCount,
+        totalParsed: parsed.length,
+      });
+
+      // Clear corrupted localStorage if all entries are invalid
+      if (validFoods.length === 0) {
+        console.warn('[recentFoods] All entries invalid, clearing localStorage:', { userId });
+        localStorage.removeItem(key);
+        return [];
+      }
+
+      // Update localStorage with only valid entries
+      localStorage.setItem(key, JSON.stringify(validFoods));
+    }
+
+    return validFoods.slice(0, MAX_RECENT_FOODS);
   } catch (error) {
     console.warn('[recentFoods] getRecentFoods failed:', { userId, error: error instanceof Error ? error.message : String(error) });
     return [];

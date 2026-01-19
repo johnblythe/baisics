@@ -237,3 +237,27 @@ Started: Sun Jan 18 17:57:58 EST 2026
   - Parse response body for error details before throwing - APIs often include helpful info
   - Use separate helper function for error body parsing to keep main functions clean
 ---
+
+## 2026-01-18 - US-014: Add authentication to food search API
+- Added `getServerSession` and `authOptions` imports to `src/app/api/foods/search/route.ts`
+- Added session check at start of GET handler
+- Returns 401 Unauthorized JSON response if no session (uses `!session?.user?.id` check)
+- Existing search functionality preserved for authenticated users
+- **Learnings for future iterations:**
+  - Auth pattern: import `getServerSession` from `next-auth` and `authOptions` from `@/lib/auth`
+  - Session check: `if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })`
+  - Reference: `src/app/api/milestones/route.ts` for canonical auth pattern
+---
+
+## 2026-01-18 - US-015: Validate localStorage data shape when parsing
+- Added `isValidSimplifiedFood()` type guard function in `src/lib/foods/recentFoods.ts`
+- Type guard checks: fdcId is number, name is string, calories is number
+- Updated `getRecentFoods()` to filter parsed array through type guard
+- Logs warning with invalidCount/totalParsed when invalid entries filtered
+- Clears localStorage when all entries are invalid
+- Auto-repairs localStorage by saving only valid entries when some are invalid
+- **Learnings for future iterations:**
+  - Type guard pattern: `(obj: unknown): obj is Type` return type
+  - Cast to `Record<string, unknown>` for safe property access
+  - Auto-repair corrupted data by saving validated subset back to storage
+---

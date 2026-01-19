@@ -62,7 +62,7 @@
         "npm run build passes"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": "Security fix - public endpoint allows quota exhaustion attacks."
     },
     {
@@ -78,7 +78,7 @@
         "npm run build passes"
       ],
       "priority": 5,
-      "passes": false,
+      "passes": true,
       "notes": "Important fix - corrupted data causes silent failures downstream."
     },
     {
