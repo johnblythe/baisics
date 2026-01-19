@@ -1,181 +1,147 @@
 {
   "project": "baisics",
   "branchName": "ralph/usda-food-search-ui-polish",
-  "description": "USDA food search integration (#122) plus UI polish for template detail (#227) and program header (#105)",
+  "description": "PR review fixes: error handling, security, validation improvements",
   "userStories": [
     {
-      "id": "US-001",
-      "title": "Create USDA FoodData Central API service",
-      "description": "As a developer, I need a typed service layer to interact with USDA FoodData Central API for food search.",
+      "id": "US-011",
+      "title": "Move USDA API key from URL to header",
+      "description": "As a developer, I want the API key passed via header instead of URL query string to prevent logging exposure.",
       "acceptanceCriteria": [
-        "Create src/lib/usda/client.ts with searchFoods() and getFoodDetails() functions",
-        "Create src/lib/usda/types.ts with USDAFood, USDASearchResult, FoodNutrient types",
-        "Add USDA_API_KEY to .env.example with comment",
-        "searchFoods accepts query string and optional pageSize, returns typed results",
-        "getFoodDetails accepts fdcId, returns full food with nutrients",
-        "Extract calories, protein, carbs, fat from nutrient array",
-        "npm run typecheck passes"
+        "Change src/lib/usda/client.ts searchFoods() to use X-Api-Key header instead of ?api_key= query param",
+        "Change src/lib/usda/client.ts getFoodDetails() to use X-Api-Key header",
+        "Remove api_key from URL in both functions",
+        "Verify USDA API accepts X-Api-Key header (it does per their docs)",
+        "npm run build passes"
       ],
       "priority": 1,
       "passes": true,
-      "notes": "API docs: https://fdc.nal.usda.gov/api-guide.html. Key in .issues.json notes."
+      "notes": "Security fix - API keys in URLs can leak via logs, referrer headers, browser history."
     },
     {
-      "id": "US-002",
-      "title": "Create food search API endpoint",
-      "description": "As a frontend developer, I need an API route to search foods without exposing the USDA API key.",
+      "id": "US-012",
+      "title": "Add logging to localStorage catch blocks",
+      "description": "As a developer, I want localStorage errors logged so I can debug issues in production.",
       "acceptanceCriteria": [
-        "Create src/app/api/foods/search/route.ts",
-        "GET endpoint accepts ?q=query&limit=10 params",
-        "Returns simplified food results: fdcId, name, brand, calories, protein, carbs, fat per 100g",
-        "Returns 400 if query missing or too short (<2 chars)",
-        "Returns empty array if no results",
-        "Handles USDA API errors gracefully with 502 status",
-        "npm run typecheck passes"
+        "In src/lib/foods/recentFoods.ts getRecentFoods(), add console.warn with error details to catch block",
+        "In src/lib/foods/recentFoods.ts addRecentFood(), add console.warn with error details to catch block",
+        "In src/lib/foods/recentFoods.ts clearRecentFoods(), add console.warn with error details to catch block",
+        "Log format: console.warn('[recentFoods] Operation failed:', { userId, error: error.message })",
+        "Keep returning graceful fallbacks (empty array, void) after logging",
+        "npm run build passes"
       ],
       "priority": 2,
       "passes": true,
-      "notes": ""
+      "notes": "Critical fix - empty catch blocks hide quota exceeded, security errors, corruption."
     },
     {
-      "id": "US-003",
-      "title": "Create FoodSearchAutocomplete component",
-      "description": "As a user, I want to search for foods by name with autocomplete suggestions showing macros.",
+      "id": "US-013",
+      "title": "Add network error handling to USDA client",
+      "description": "As a developer, I want fetch errors caught and wrapped with context so callers get useful error messages.",
       "acceptanceCriteria": [
-        "Create src/components/nutrition/FoodSearchAutocomplete.tsx",
-        "Input field with 300ms debounce on typing",
-        "Dropdown shows matching foods with name, brand (if any), and macros per 100g",
-        "Loading spinner while fetching",
-        "Empty state message when no results",
-        "onSelect callback fires with selected food data",
-        "Keyboard navigation (arrow keys, enter to select, escape to close)",
-        "npm run typecheck passes",
-        "Verify component renders correctly in browser"
+        "Wrap fetch() call in searchFoods() with try-catch",
+        "Wrap fetch() call in getFoodDetails() with try-catch",
+        "On network error, throw new Error with message: 'USDA API network error: [original message]'",
+        "On non-ok response, try to parse response body for error details before throwing",
+        "Include response status and parsed error message in thrown error",
+        "npm run build passes"
       ],
       "priority": 3,
       "passes": true,
-      "notes": "Style with existing design system colors (navy, coral, white)."
+      "notes": "Critical fix - network errors, DNS failures, timeouts currently propagate without context."
     },
     {
-      "id": "US-004",
-      "title": "Create ServingSizeSelector component",
-      "description": "As a user, I want to select a serving size and see calculated macros before adding food.",
+      "id": "US-014",
+      "title": "Add authentication to food search API",
+      "description": "As a developer, I want the /api/foods/search endpoint protected so anonymous users can't exhaust our USDA quota.",
       "acceptanceCriteria": [
-        "Create src/components/nutrition/ServingSizeSelector.tsx",
-        "Props: food (with per-100g macros), onConfirm callback",
-        "Number input for grams (default 100)",
-        "Quick buttons: 50g, 100g, 150g, 200g",
-        "Live calculation showing calories, protein, carbs, fat for selected amount",
-        "Confirm button calls onConfirm with calculated macros",
-        "npm run typecheck passes",
-        "Verify component renders correctly in browser"
+        "Import getServerSession and authOptions in src/app/api/foods/search/route.ts",
+        "Check session at start of GET handler",
+        "Return 401 Unauthorized JSON response if no session",
+        "Existing functionality works for authenticated users",
+        "npm run build passes"
       ],
       "priority": 4,
-      "passes": true,
-      "notes": ""
+      "passes": false,
+      "notes": "Security fix - public endpoint allows quota exhaustion attacks."
     },
     {
-      "id": "US-005",
-      "title": "Add recent foods cache per user",
-      "description": "As a user, I want to quickly re-add foods I've logged before without searching again.",
+      "id": "US-015",
+      "title": "Validate localStorage data shape when parsing",
+      "description": "As a developer, I want parsed localStorage data validated so corrupted data doesn't cause UI crashes.",
       "acceptanceCriteria": [
-        "Create src/app/api/foods/recent/route.ts GET endpoint",
-        "Returns last 10 unique foods logged by current user",
-        "Store recent foods in localStorage keyed by oderId",
-        "FoodSearchAutocomplete shows recent foods when input is empty/focused",
-        "Recent foods section has 'Recent' label header",
-        "Clicking recent food selects it same as search result",
-        "npm run typecheck passes"
+        "Add isValidSimplifiedFood() type guard function in src/lib/foods/recentFoods.ts",
+        "Type guard checks: fdcId is number, name is string, calories is number",
+        "In getRecentFoods(), filter parsed array through type guard",
+        "Log warning if any entries were filtered out as invalid",
+        "Clear corrupted localStorage if all entries invalid",
+        "npm run build passes"
       ],
       "priority": 5,
-      "passes": true,
-      "notes": "Use localStorage for MVP, can migrate to DB later."
+      "passes": false,
+      "notes": "Important fix - corrupted data causes silent failures downstream."
     },
     {
-      "id": "US-006",
-      "title": "Integrate food search into meal prep page",
-      "description": "As a user, I want to search and add foods from the meal prep page to track my daily nutrition.",
+      "id": "US-016",
+      "title": "Add retry button to search error state",
+      "description": "As a user, I want a retry button when food search fails so I can try again without retyping.",
       "acceptanceCriteria": [
-        "Add FoodSearchAutocomplete to src/app/meal-prep/page.tsx",
-        "After selecting food and serving, add macros to daily NutritionLog",
-        "Show success toast after adding",
-        "Update daily totals display immediately",
-        "Save selected food to recent foods cache",
-        "npm run typecheck passes",
+        "In src/components/nutrition/FoodSearchAutocomplete.tsx error display section",
+        "Add 'Try again' button below error message",
+        "Button clears error state and re-triggers search with current query",
+        "Button styled with coral color, underline, small text (text-xs)",
+        "npm run build passes",
         "Verify component renders correctly in browser"
       ],
       "priority": 6,
       "passes": false,
-      "notes": ""
+      "notes": "UX fix - users with transient network errors have no recovery path."
     },
     {
-      "id": "US-007",
-      "title": "Polish template detail page header and stats",
-      "description": "As a user viewing a template, I want a more visually impactful header with prominent stats.",
+      "id": "US-017",
+      "title": "Add bounds validation for limit parameter",
+      "description": "As a developer, I want the limit parameter validated to prevent abuse.",
       "acceptanceCriteria": [
-        "Add coral accent color to stats boxes (border or background tint)",
-        "Make stat numbers larger and bolder (text-3xl or text-4xl)",
-        "Add subtle gradient or pattern to navy header section",
-        "Improve visual separation between header and content sections",
-        "Stats should use coral for numbers, navy for labels",
-        "npm run typecheck passes",
-        "Verify component renders correctly in browser"
+        "In src/app/api/foods/search/route.ts, validate limit is between 1 and 50",
+        "Use Math.min(Math.max(parsed, 1), 50) pattern",
+        "Handle NaN case (default to 10)",
+        "npm run build passes"
       ],
       "priority": 7,
       "passes": false,
-      "notes": "File: src/app/templates/[slug]/page.tsx. Keep structure, just enhance visuals."
+      "notes": "Security fix - unbounded limit could cause issues."
     },
     {
-      "id": "US-008",
-      "title": "Enhance template detail CTA section",
-      "description": "As a user, I want a more prominent call-to-action that encourages me to start the program.",
+      "id": "US-018",
+      "title": "Improve API route error messages",
+      "description": "As a user, I want specific error messages so I know what went wrong and if I should retry.",
       "acceptanceCriteria": [
-        "CTA section has coral background with white text",
-        "Generate My Program button is larger and more prominent",
-        "Add subtle hover animation to CTA button",
-        "Better spacing around CTA section",
-        "CTA section stands out from surrounding white cards",
-        "npm run typecheck passes",
-        "Verify component renders correctly in browser"
+        "In src/app/api/foods/search/route.ts catch block, categorize errors",
+        "If error mentions 'API_KEY', return 503 with 'Food search temporarily unavailable'",
+        "If error mentions 'network', return 503 with 'Unable to reach food database'",
+        "If error mentions '429' or 'rate', return 429 with 'Too many requests, please wait'",
+        "Include original error in development mode only (process.env.NODE_ENV check)",
+        "npm run build passes"
       ],
       "priority": 8,
       "passes": false,
-      "notes": "File: src/app/templates/[slug]/page.tsx"
+      "notes": "UX fix - generic errors don't help users understand the problem."
     },
     {
-      "id": "US-009",
-      "title": "Create hero-style program header with stats badges",
-      "description": "As a user viewing my program, I want an exciting hero header that showcases program details.",
+      "id": "US-019",
+      "title": "Add error handling to meal-prep page fetch",
+      "description": "As a user, I want to see an error message if the page fails to load instead of infinite spinner.",
       "acceptanceCriteria": [
-        "Program header has gradient background (navy to navy-light)",
-        "Program title is large and bold (text-3xl or text-4xl)",
-        "Add stats badges: duration, days/week, difficulty level",
-        "Badges use coral background with white text, pill-shaped",
-        "Header takes more vertical space for impact",
-        "Responsive: badges stack on mobile",
-        "npm run typecheck passes",
-        "Verify component renders correctly in browser"
+        "Add error state to src/app/meal-prep/page.tsx (useState for error message)",
+        "Wrap fetchData useEffect contents in try-catch",
+        "On catch, set error state with user-friendly message",
+        "Display error state in UI with retry option",
+        "Ensure loading state is cleared in finally block",
+        "npm run build passes"
       ],
       "priority": 9,
       "passes": false,
-      "notes": "Files: src/app/program/review/page.tsx, src/app/components/ProgramDisplay.tsx"
-    },
-    {
-      "id": "US-010",
-      "title": "Improve program CTA and secondary actions",
-      "description": "As a user, I want a clear primary action and easy access to secondary actions.",
-      "acceptanceCriteria": [
-        "Start Training / Begin Program button is large, coral, prominent",
-        "Secondary actions (PDF, Share, Email) are smaller, outlined style",
-        "Secondary actions grouped in a row below primary CTA",
-        "Disclaimer is collapsible or moved to bottom/modal",
-        "Clear visual hierarchy: primary action dominates",
-        "npm run typecheck passes",
-        "Verify component renders correctly in browser"
-      ],
-      "priority": 10,
-      "passes": false,
-      "notes": "Files: src/app/program/review/page.tsx, src/app/components/ProgramDisplay.tsx"
+      "notes": "UX fix - fetch failures leave users in infinite loading state."
     }
   ]
 }

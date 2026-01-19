@@ -90,3 +90,150 @@ Started: Sun Jan 18 17:57:58 EST 2026
   - `showingRecent` state flag differentiates between recent vs search mode
   - Can migrate to DB later by updating API route and keeping same component interface
 ---
+
+## 2026-01-18 19:15 - US-006: Integrate food search into meal prep page
+- Updated `src/app/meal-prep/page.tsx` with food tracking integration:
+  - Added imports for FoodSearchAutocomplete, ServingSizeSelector, SimplifiedFood, addRecentFood
+  - Added state: `selectedFood`, `loggedFoods`, `userId`, `toast`
+  - Added `LoggedFoodEntry` interface for tracking logged foods
+  - Added handlers: `handleFoodSelect`, `handleServingConfirm`, `handleServingCancel`, `showToast`
+  - Added `dailyTotals` reduce calculation for summed macros
+- Added Food Tracking UI section:
+  - Split layout: search/selector on left, daily totals on right
+  - Daily totals show color-coded macro cards with progress vs targets
+  - Logged foods list with name, grams, calories
+  - Empty state when no foods logged
+  - Toast notification for success feedback
+- **Learnings for future iterations:**
+  - Toast pattern: state with `{ message, visible }`, setTimeout to auto-hide after 3s
+  - Use `useCallback` for handlers to prevent unnecessary re-renders
+  - Fetch user ID from `/api/user` response for scoping localStorage
+  - Split view layout: `lg:flex-row` with `lg:max-w-md` for constrained side
+  - Color-coded macro cards: red=calories, green=protein, yellow=carbs, blue=fat
+---
+
+## 2026-01-18 20:30 - US-007: Polish template detail page header and stats
+- Enhanced header section in `src/app/templates/[slug]/TemplateDetailClient.tsx`
+- Added subtle dot pattern overlay to navy gradient header (5% opacity)
+- Changed gradient to 135deg angle with navy-navyLight-navy for more depth
+- Made header responsive with lg:p-10 padding and lg:text-4xl title size
+- Stats boxes now have coral tint background (15% opacity) + coral border (30% opacity)
+- Stat numbers increased to text-4xl lg:text-5xl with font-extrabold
+- Labels updated to uppercase tracking-wider for better hierarchy
+- Added subtle hover scale animation (1.02) on stat boxes
+- Stats grid now 2-col on mobile, 4-col on sm+ for responsiveness
+- Increased bottom margin to mb-10 for better separation from content
+- **Learnings for future iterations:**
+  - Use `relative overflow-hidden` on parent + `absolute inset-0` for pattern overlays
+  - Subtle patterns: radial-gradient with small circle at low opacity (5%)
+  - Coral accent pattern: rgba(255, 107, 107, 0.15) bg + rgba(255, 107, 107, 0.3) border
+  - `backdrop-filter: blur(4px)` adds polish to semi-transparent badges
+  - `tracking-tight` for large headings, `tracking-wider` for small labels
+---
+
+## 2026-01-18 21:00 - US-008: Enhance template detail CTA section
+- Enhanced CTA section in `src/app/templates/[slug]/TemplateDetailClient.tsx`
+- Changed background from coralLight to coral gradient (coral → coralDark at 135deg)
+- Added dot pattern overlay at 10% opacity for visual texture
+- Rewrote heading to "Ready to Transform?" with white text
+- Day selector buttons now use white/transparent styling that inverts when selected
+- Main button is now white with coral text, larger (px-6 py-5, text-lg)
+- Added multi-state hover animation: scale-[1.03], -translate-y-0.5, shadow-2xl
+- Added active state: scale-[0.98] for tactile feedback
+- Section now uses rounded-2xl p-8 shadow-xl for more presence
+- Updated supporting text to "Free • No credit card required"
+- **Learnings for future iterations:**
+  - CTA contrast pattern: coral background + white button (inverse of typical)
+  - Multi-state hover: combine scale, translate, and shadow for depth
+  - Active state scale-down (0.98) provides tactile click feedback
+  - Supporting text below CTA: white/60 opacity for subtle reassurance
+---
+
+## 2026-01-18 22:00 - US-009: Create hero-style program header with stats badges
+- Enhanced `src/app/components/ProgramDisplay.tsx` Program Header section
+- Added navy gradient background (135deg: navy → navyLight → navy)
+- Added subtle dot pattern overlay (5% opacity white dots)
+- Title now text-3xl/4xl/5xl responsive with font-extrabold, tracking-tight
+- Description uses white/70 for subtle contrast
+- Added 4 stats badges (pill-shaped, coral bg, white text):
+  - Duration: weeks total
+  - Days/week: from first workout plan
+  - Phases: total phases count
+  - Difficulty: "All Levels" (default)
+- Badges use coral shadow for depth (shadow-[#FF6B6B]/30)
+- All badges have SVG icons for visual interest
+- Actions row: logged-in users see frosted glass PDF button (white/10 bg + border-white/20)
+- Non-logged users see prominent white button with coral text and hover animations
+- Responsive: badges wrap on mobile via flex-wrap
+- **Learnings for future iterations:**
+  - Hero pattern: absolute gradient bg + relative z-10 content
+  - Badge shadow pattern: shadow-lg shadow-[color]/30 for depth
+  - Frosted glass effect: bg-white/10 + border-white/20 + backdrop-blur-sm
+  - Responsive text: text-3xl sm:text-4xl lg:text-5xl for impactful headers
+  - tracking-tight on large headings improves readability
+---
+
+## 2026-01-18 23:00 - US-010: Improve program CTA and secondary actions
+- Enhanced `src/app/components/ProgramDisplay.tsx` actions section
+- Added large, prominent "Start Training" primary CTA button:
+  - Coral background (#FF6B6B) with white text
+  - Larger sizing: px-8 py-4 text-lg rounded-2xl
+  - Play icon with group-hover:animate-pulse animation
+  - Multi-state hover: scale-[1.03], -translate-y-0.5, shadow-2xl
+  - Active state: scale-[0.98] for tactile feedback
+  - Scroll behavior: clicks scroll to first phase card smoothly
+- Added secondary actions row below primary CTA:
+  - PDF, Share, Email buttons for logged-in users
+  - Outlined style: transparent bg, white/80 text, border-white/20
+  - Smaller sizing: px-4 py-2.5 text-sm
+  - Hover: bg-white/10 + border-white/40
+  - Share uses navigator.share API with clipboard fallback
+  - Email opens mailto: with pre-filled subject/body
+  - Non-logged users see single "Save & Share" button (triggers upsell)
+- Moved DisclaimerBanner from top to bottom of component:
+  - Already collapsible (inline variant) - no changes needed
+  - Now appears after Quick Jump Links, before UpsellModal
+  - Clears visual hierarchy: CTA dominates top of page
+- Added `data-phase-card` attribute to PhaseCard for scroll targeting
+- **Learnings for future iterations:**
+  - Primary CTA pattern: coral bg, large padding, prominent shadow with color tint
+  - Secondary actions: outlined/ghost style, grouped in row, smaller than primary
+  - navigator.share API: check support, fallback to clipboard.writeText
+  - mailto: links work well for email sharing, encode subject/body with encodeURIComponent
+  - scroll-into-view: use `{ behavior: 'smooth', block: 'start' }` for smooth UX
+  - Data attributes like `data-phase-card` enable flexible scroll targeting
+---
+
+## 2026-01-18 - US-011: Move USDA API key from URL to header
+- Changed `searchFoods()` in `src/lib/usda/client.ts` to use `X-Api-Key` header instead of `?api_key=` query param
+- Changed `getFoodDetails()` to use `X-Api-Key` header
+- Removed api_key from URL in both functions
+- **Learnings for future iterations:**
+  - USDA FoodData Central API accepts `X-Api-Key` header (documented at fdc.nal.usda.gov/api-guide.html)
+  - Security best practice: API keys in headers instead of URLs to prevent exposure in logs, referrer headers, browser history
+---
+
+## 2026-01-18 - US-012: Add logging to localStorage catch blocks
+- Added `console.warn` logging to all three catch blocks in `src/lib/foods/recentFoods.ts`
+- `getRecentFoods()`: logs with userId and error message
+- `addRecentFood()`: logs with userId and error message
+- `clearRecentFoods()`: logs with userId and error message
+- Format: `console.warn('[recentFoods] <operation> failed:', { userId, error: ... })`
+- Graceful fallbacks preserved (empty array returns, void returns)
+- **Learnings for future iterations:**
+  - Use `error instanceof Error ? error.message : String(error)` pattern for safe error message extraction
+  - Catch blocks need `(error)` parameter to access the error object
+  - Log format includes context (operation name, userId) for easier debugging
+---
+
+## 2026-01-18 - US-013: Add network error handling to USDA client
+- Wrapped `fetch()` calls in both `searchFoods()` and `getFoodDetails()` with try-catch
+- Added `parseErrorBody()` helper to extract error details from USDA API response body
+- Network errors throw: `USDA API network error: [original message]`
+- Non-ok responses throw: `USDA API error [status]: [parsed error detail]`
+- Error body parsing checks for `.error`, `.message`, or stringifies body, falls back to statusText
+- **Learnings for future iterations:**
+  - Declare `let response: Response` before try block to use it after catch
+  - Parse response body for error details before throwing - APIs often include helpful info
+  - Use separate helper function for error body parsing to keep main functions clean
+---
