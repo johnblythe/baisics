@@ -253,7 +253,23 @@ export function FoodSearchAutocomplete({
           )}
           {error ? (
             <li className="px-4 py-3 text-sm" style={{ color: COLORS.coral }}>
-              {error}
+              <div>{error}</div>
+              <button
+                type="button"
+                onClick={() => {
+                  setError(null);
+                  // Re-trigger search by updating query with same value
+                  // This works because the useEffect depends on query
+                  const currentQuery = query;
+                  setQuery('');
+                  // Use setTimeout to ensure state update completes before re-setting
+                  setTimeout(() => setQuery(currentQuery), 0);
+                }}
+                className="mt-2 text-xs underline hover:no-underline focus:outline-none focus:ring-2 focus:ring-offset-1 rounded"
+                style={{ color: COLORS.coral }}
+              >
+                Try again
+              </button>
             </li>
           ) : showingRecent ? (
             recentFoods.length === 0 ? (
