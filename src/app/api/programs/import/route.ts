@@ -256,7 +256,7 @@ export async function POST(request: Request) {
         error: true,
         reason: 'No content in response',
         details: ['Claude returned an empty response']
-      });
+      }, { status: 502 });
     }
 
     try {

@@ -90,3 +90,22 @@ Started: Mon Jan 19 11:05:42 EST 2026
   - Non-null assertions `session!.user!.id` are appropriate when flow guarantees value exists
   - Use `Parameters<typeof fn>[0]['prop']` to extract parameter types from functions
 ---
+
+## 2026-01-19 13:15 - US-008: Add user feedback when demo program fails to load
+- Added setMessages call in loadDemoProgram catch block
+- Error message: "Sorry, I couldn't load the demo program. Please try again."
+- Follows same pattern as success message (assistant role, content string)
+- Files changed: src/app/hi/components/ConversationalInterface.tsx
+- **Learnings for future iterations:**
+  - Error handling pattern: console.error + setIsGeneratingProgram(false) + user-facing setMessages
+  - Success case at ~line 557-560 shows the message pattern to match
+  - Simple 3-line addition - these cleanup stories are quick wins
+---
+
+## 2026-01-19 - US-001: Add status 500 to Claude API error response
+- Added `{ status: 500 }` to Claude API error catch block (line 246)
+- Files changed: src/app/api/programs/import/route.ts
+- **Learnings for future iterations:**
+  - Line numbers in PRD may be approximate - verify by reading the file
+  - Simple status code additions: find the NextResponse.json(), add second param
+---

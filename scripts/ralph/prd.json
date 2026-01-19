@@ -1,16 +1,15 @@
 {
   "project": "baisics",
   "branchName": "ralph/dashboard-routing-cleanup",
-  "description": "Fix coach dashboard routing (#294) and cleanup items from PR review (#292)",
+  "description": "Fix missing HTTP status codes in import route (PR review fixes)",
   "userStories": [
     {
       "id": "US-001",
-      "title": "Route coaches to coach dashboard by default",
-      "description": "As a coach, when I hit /dashboard I should be redirected to /coach/dashboard instead of /hi or user dashboard.",
+      "title": "Add status 500 to Claude API error response",
+      "description": "As an API consumer, Claude API errors should return 500 not 200.",
       "acceptanceCriteria": [
-        "In src/app/dashboard/page.tsx, fetch user's isCoach status from database",
-        "If user.isCoach is true, redirect to /coach/dashboard",
-        "This check happens before the program check",
+        "In src/app/api/programs/import/route.ts around lines 242-246",
+        "Add { status: 500 } to the NextResponse.json() for Claude API error catch block",
         "npm run typecheck passes"
       ],
       "priority": 1,
@@ -19,97 +18,41 @@
     },
     {
       "id": "US-002",
-      "title": "Empty state for users without programs",
-      "description": "As a user without programs, I should see an empty state dashboard with CTAs instead of being redirected to /hi.",
+      "title": "Add status 502 to empty response error",
+      "description": "As an API consumer, empty Claude response should return 502 Bad Gateway.",
       "acceptanceCriteria": [
-        "If user has no programs (and is not coach), render empty state instead of redirect('/hi')",
-        "Empty state includes heading 'No active program'",
-        "Three CTAs: 'Create with AI' linking to /hi, 'Browse Templates' linking to /templates, 'Import your own' linking to /create",
-        "Style matches v2a design system (coral buttons, navy text)",
+        "In src/app/api/programs/import/route.ts around lines 254-259",
+        "Add { status: 502 } to the NextResponse.json() for empty response check",
         "npm run typecheck passes"
       ],
       "priority": 2,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
       "id": "US-003",
-      "title": "Add personal dashboard link for coaches",
-      "description": "As a coach who also lifts, I need a way to access my personal workout dashboard as a secondary option.",
+      "title": "Add status 422 to mammoth extraction error",
+      "description": "As an API consumer, document extraction failures should return 422 Unprocessable Entity.",
       "acceptanceCriteria": [
-        "In /coach/dashboard, add a secondary nav link or button to access personal dashboard",
-        "Link text: 'My Workouts' or 'Personal Dashboard'",
-        "Links to /dashboard?personal=true or similar mechanism to bypass coach redirect",
-        "Update /dashboard/page.tsx to check for personal=true param and skip coach redirect",
+        "In src/app/api/programs/import/route.ts around lines 175-181",
+        "Add { status: 422 } to the NextResponse.json() for mammoth error catch block",
         "npm run typecheck passes"
       ],
       "priority": 3,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
       "id": "US-004",
-      "title": "Remove unused Link import in /create page",
-      "description": "As a developer, unused imports should be removed for cleaner code.",
+      "title": "Add status 500 to database/parse error",
+      "description": "As an API consumer, database errors should return 500 not 200.",
       "acceptanceCriteria": [
-        "Remove unused Link import from next/link in src/app/create/page.tsx line 7",
+        "In src/app/api/programs/import/route.ts around lines 361-368",
+        "Add { status: 500 } to the NextResponse.json() for database error catch block",
+        "Also add { status: 500 } to the outer catch block around lines 370-377 if not already present",
         "npm run typecheck passes"
       ],
       "priority": 4,
-      "passes": true,
-      "notes": ""
-    },
-    {
-      "id": "US-005",
-      "title": "Add HTTP 400 status codes on validation errors",
-      "description": "As an API consumer, validation errors should return 400 Bad Request not 200 OK.",
-      "acceptanceCriteria": [
-        "In src/app/api/programs/import/route.ts around lines 99-112",
-        "Add { status: 400 } to all validation error NextResponse.json() calls",
-        "npm run typecheck passes"
-      ],
-      "priority": 5,
-      "passes": true,
-      "notes": ""
-    },
-    {
-      "id": "US-006",
-      "title": "Fix useEffect missing saveProgram dependency",
-      "description": "As a developer, useEffect dependencies should be complete to avoid stale closure bugs.",
-      "acceptanceCriteria": [
-        "In src/app/create/page.tsx around lines 456-476",
-        "Either wrap saveProgram in useCallback and add to deps, or add saveProgram to dependency array",
-        "Prefer useCallback approach to avoid infinite loops",
-        "npm run typecheck passes"
-      ],
-      "priority": 6,
-      "passes": true,
-      "notes": ""
-    },
-    {
-      "id": "US-007",
-      "title": "Remove @ts-nocheck from import route",
-      "description": "As a developer, TypeScript checking should be enabled for type safety.",
-      "acceptanceCriteria": [
-        "Remove // @ts-nocheck from line 1 of src/app/api/programs/import/route.ts",
-        "Fix any resulting type errors properly",
-        "npm run typecheck passes"
-      ],
-      "priority": 7,
-      "passes": true,
-      "notes": ""
-    },
-    {
-      "id": "US-008",
-      "title": "Add user feedback when demo program fails to load",
-      "description": "As a user, if the demo program fails to load I should see an error message.",
-      "acceptanceCriteria": [
-        "In src/app/hi/components/ConversationalInterface.tsx around lines 562-565",
-        "In the loadDemoProgram catch block, add a user-facing error message",
-        "Use setMessages to add an assistant message like 'Sorry, I couldn't load the demo program. Please try again.'",
-        "npm run typecheck passes"
-      ],
-      "priority": 8,
       "passes": false,
       "notes": ""
     }
