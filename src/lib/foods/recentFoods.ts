@@ -26,7 +26,8 @@ export function getRecentFoods(userId: string): SimplifiedFood[] {
 
     const foods = JSON.parse(stored) as SimplifiedFood[];
     return Array.isArray(foods) ? foods.slice(0, MAX_RECENT_FOODS) : [];
-  } catch {
+  } catch (error) {
+    console.warn('[recentFoods] getRecentFoods failed:', { userId, error: error instanceof Error ? error.message : String(error) });
     return [];
   }
 }
@@ -50,8 +51,8 @@ export function addRecentFood(userId: string, food: SimplifiedFood): void {
     const updated = [food, ...filtered].slice(0, MAX_RECENT_FOODS);
 
     localStorage.setItem(key, JSON.stringify(updated));
-  } catch {
-    // Silently fail if localStorage is unavailable
+  } catch (error) {
+    console.warn('[recentFoods] addRecentFood failed:', { userId, error: error instanceof Error ? error.message : String(error) });
   }
 }
 
@@ -65,7 +66,7 @@ export function clearRecentFoods(userId: string): void {
   try {
     const key = getStorageKey(userId);
     localStorage.removeItem(key);
-  } catch {
-    // Silently fail if localStorage is unavailable
+  } catch (error) {
+    console.warn('[recentFoods] clearRecentFoods failed:', { userId, error: error instanceof Error ? error.message : String(error) });
   }
 }
