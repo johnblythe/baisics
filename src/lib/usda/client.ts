@@ -56,10 +56,11 @@ export async function searchFoods(
 ): Promise<USDASearchResult> {
   const apiKey = getApiKey();
 
-  const response = await fetch(`${USDA_BASE_URL}/foods/search?api_key=${apiKey}`, {
+  const response = await fetch(`${USDA_BASE_URL}/foods/search`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'X-Api-Key': apiKey,
     },
     body: JSON.stringify({
       query,
@@ -83,15 +84,13 @@ export async function searchFoods(
 export async function getFoodDetails(fdcId: number): Promise<USDAFood> {
   const apiKey = getApiKey();
 
-  const response = await fetch(
-    `${USDA_BASE_URL}/food/${fdcId}?api_key=${apiKey}`,
-    {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }
-  );
+  const response = await fetch(`${USDA_BASE_URL}/food/${fdcId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Api-Key': apiKey,
+    },
+  });
 
   if (!response.ok) {
     throw new Error(`USDA API error: ${response.status} ${response.statusText}`);
