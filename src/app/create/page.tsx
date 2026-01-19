@@ -278,7 +278,7 @@ function ImportPageContent() {
     }
   };
 
-  const saveProgram = async () => {
+  const saveProgram = useCallback(async () => {
     if (!parsedProgram) return;
 
     setPageState('saving');
@@ -316,7 +316,7 @@ function ImportPageContent() {
       setError(err instanceof Error ? err.message : 'Failed to save program');
       setPageState('preview');
     }
-  };
+  }, [parsedProgram, programName, isCoach, router]);
 
   const handleStartOver = () => {
     setParsedProgram(null);
@@ -472,7 +472,7 @@ function ImportPageContent() {
         }
       }
     }
-  }, [session]); // Re-run when session becomes available
+  }, [session, saveProgram]); // Re-run when session becomes available or saveProgram updates
 
   return (
     <MainLayout>
