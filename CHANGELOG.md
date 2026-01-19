@@ -7,7 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `/hi` route refactor with DIY options (#189)
+  - "I'll build my own" card → `/templates`
+  - "I have a program" card → `/create`
+  - Escape hatch link during AI chat ("Prefer to build your own?")
+- Rename `/import` → `/create` with text paste input mode
+  - Toggle between "Paste Text" and "Upload File"
+  - Text input size limit (50K characters)
+  - `?blank=true` param support for starting fresh
+- "Start Blank" card on `/templates` page for DIY users
+- Unique page titles for SEO on dashboard, workout, settings pages (#288)
+
 ### Fixed
+- Error handling in `/hi` chat flow
+  - `handleInitialIntake` now handles failures with user feedback
+  - `handleProgramModification` wrapped in try-catch with finally
+  - Remove undefined `createNewProgram` reference
+- DOCX import error handling - corrupted files now show helpful message
+- Wrap localStorage and getDebugState calls in try-catch (#280, #281)
+- Differentiate empty body vs malformed JSON in API errors (#282)
+- Include server response in workout completion errors (#283)
 - Fix coach signup auth flow - create/upgrade user BEFORE magic link instead of relying on signIn callback (callback fires before user creation for new users)
 - Preserve existing user name when upgrading to coach (don't overwrite)
 - Check signIn result in coach signup to surface email delivery failures

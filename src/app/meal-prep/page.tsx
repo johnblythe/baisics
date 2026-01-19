@@ -1,9 +1,13 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import MainLayout from '@/app/components/layouts/MainLayout';
 import { MealPlanDisplay } from './components/MealPlanDisplay';
 import { GroceryList } from './components/GroceryList';
+import { FoodSearchAutocomplete } from '@/components/nutrition/FoodSearchAutocomplete';
+import { ServingSizeSelector, CalculatedMacros } from '@/components/nutrition/ServingSizeSelector';
+import { SimplifiedFood } from '@/lib/usda/types';
+import { addRecentFood } from '@/lib/foods/recentFoods';
 
 interface Macros {
   protein: number;
@@ -63,6 +67,18 @@ const FREE_PREFERENCES = ['high-protein', 'quick-meals'];
 const PAID_PREFERENCES = ['vegetarian', 'dairy-free', 'gluten-free', 'budget-friendly', 'low-carb'];
 const ALL_PREFERENCES = [...FREE_PREFERENCES, ...PAID_PREFERENCES];
 
+/** A food entry logged by the user */
+interface LoggedFoodEntry {
+  id: string;
+  food: SimplifiedFood;
+  grams: number;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  loggedAt: string;
+}
+
 export default function MealPrepPage() {
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
@@ -71,6 +87,7 @@ export default function MealPrepPage() {
   // User data
   const [macros, setMacros] = useState<Macros | null>(null);
   const [isPro, setIsPro] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   // Form state
   const [mealsPerDay, setMealsPerDay] = useState(3);
@@ -81,46 +98,58 @@ export default function MealPrepPage() {
   const [mealPlan, setMealPlan] = useState<MealPlan | null>(null);
   const [savedPlans, setSavedPlans] = useState<MealPlan[]>([]);
 
+  // Food tracking state
+  const [selectedFood, setSelectedFood] = useState<SimplifiedFood | null>(null);
+  const [loggedFoods, setLoggedFoods] = useState<LoggedFoodEntry[]>([]);
+  const [userId, setUserId] = useState<string>('anonymous');
+  const [toast, setToast] = useState<{ message: string; visible: boolean }>({ message: '', visible: false });
+
   // Load user's macros from their program
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch current program for macros
-        const programRes = await fetch('/api/programs/current');
-        if (programRes.ok) {
-          const program = await programRes.json();
-          const workoutPlan = program.workoutPlans?.[0];
-          if (workoutPlan) {
-            setMacros({
-              protein: workoutPlan.proteinGrams || 150,
-              carbs: workoutPlan.carbGrams || 200,
-              fat: workoutPlan.fatGrams || 60,
-              calories: workoutPlan.dailyCalories || 2000,
-            });
-          }
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    setFetchError(null);
+    try {
+      // Fetch current program for macros
+      const programRes = await fetch('/api/programs/current');
+      if (programRes.ok) {
+        const program = await programRes.json();
+        const workoutPlan = program.workoutPlans?.[0];
+        if (workoutPlan) {
+          setMacros({
+            protein: workoutPlan.proteinGrams || 150,
+            carbs: workoutPlan.carbGrams || 200,
+            fat: workoutPlan.fatGrams || 60,
+            calories: workoutPlan.dailyCalories || 2000,
+          });
         }
-
-        // Check subscription status
-        const userRes = await fetch('/api/user');
-        if (userRes.ok) {
-          const userData = await userRes.json();
-          setIsPro(userData.isPremium || userData.subscription?.status === 'ACTIVE');
-        }
-
-        // Load saved plans from localStorage
-        const saved = localStorage.getItem('mealPlans');
-        if (saved) {
-          setSavedPlans(JSON.parse(saved));
-        }
-      } catch (err) {
-        console.error('Failed to fetch user data:', err);
-      } finally {
-        setLoading(false);
       }
-    };
 
-    fetchData();
+      // Check subscription status and get user ID
+      const userRes = await fetch('/api/user');
+      if (userRes.ok) {
+        const userData = await userRes.json();
+        setIsPro(userData.isPremium || userData.subscription?.status === 'ACTIVE');
+        if (userData.id) {
+          setUserId(userData.id);
+        }
+      }
+
+      // Load saved plans from localStorage
+      const saved = localStorage.getItem('mealPlans');
+      if (saved) {
+        setSavedPlans(JSON.parse(saved));
+      }
+    } catch (err) {
+      console.error('Failed to fetch user data:', err);
+      setFetchError(err instanceof Error ? err.message : 'Failed to load page data. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const togglePreference = (pref: string) => {
     const isPaidPref = PAID_PREFERENCES.includes(pref);
@@ -132,6 +161,59 @@ export default function MealPrepPage() {
         : [...prev, pref]
     );
   };
+
+  // Show toast notification
+  const showToast = useCallback((message: string) => {
+    setToast({ message, visible: true });
+    setTimeout(() => setToast({ message: '', visible: false }), 3000);
+  }, []);
+
+  // Handle food selection from autocomplete
+  const handleFoodSelect = useCallback((food: SimplifiedFood) => {
+    setSelectedFood(food);
+  }, []);
+
+  // Handle serving confirmation
+  const handleServingConfirm = useCallback((calculatedMacros: CalculatedMacros) => {
+    const entry: LoggedFoodEntry = {
+      id: `${Date.now()}-${calculatedMacros.food.fdcId}`,
+      food: calculatedMacros.food,
+      grams: calculatedMacros.grams,
+      calories: calculatedMacros.calories,
+      protein: calculatedMacros.protein,
+      carbs: calculatedMacros.carbs,
+      fat: calculatedMacros.fat,
+      loggedAt: new Date().toISOString(),
+    };
+
+    // Add to logged foods
+    setLoggedFoods(prev => [entry, ...prev]);
+
+    // Save to recent foods cache
+    addRecentFood(userId, calculatedMacros.food);
+
+    // Show success toast
+    showToast(`Added ${calculatedMacros.grams}g ${calculatedMacros.food.name}`);
+
+    // Clear selection
+    setSelectedFood(null);
+  }, [userId, showToast]);
+
+  // Cancel serving selection
+  const handleServingCancel = useCallback(() => {
+    setSelectedFood(null);
+  }, []);
+
+  // Calculate daily totals from logged foods
+  const dailyTotals = loggedFoods.reduce(
+    (acc, entry) => ({
+      calories: acc.calories + entry.calories,
+      protein: acc.protein + entry.protein,
+      carbs: acc.carbs + entry.carbs,
+      fat: acc.fat + entry.fat,
+    }),
+    { calories: 0, protein: 0, carbs: 0, fat: 0 }
+  );
 
   const generateMealPlan = async () => {
     if (!macros) return;
@@ -199,6 +281,30 @@ export default function MealPrepPage() {
       <MainLayout>
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="w-6 h-6 border-2 border-[#F1F5F9] border-t-[#FF6B6B] rounded-full animate-spin" />
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <MainLayout>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center max-w-md px-4">
+            <div className="w-16 h-16 mx-auto mb-4 bg-[#FEF2F2] rounded-2xl flex items-center justify-center">
+              <svg className="w-8 h-8 text-[#DC2626]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-[#0F172A] mb-2">Unable to load page</h3>
+            <p className="text-sm text-[#64748B] mb-4">{fetchError}</p>
+            <button
+              onClick={fetchData}
+              className="px-4 py-2 bg-[#FF6B6B] text-white text-sm font-medium rounded-lg hover:bg-[#EF5350] transition-colors"
+            >
+              Try again
+            </button>
+          </div>
         </div>
       </MainLayout>
     );
@@ -317,6 +423,89 @@ export default function MealPrepPage() {
           )}
         </div>
 
+        {/* Food Tracking Section */}
+        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-4 mb-6">
+          <div className="flex flex-col lg:flex-row gap-6">
+            {/* Left: Search and Serving Selector */}
+            <div className="flex-1 lg:max-w-md">
+              <h3 className="text-sm font-medium text-[#94A3B8] uppercase tracking-wider mb-3" style={{ fontFamily: "'Space Mono', monospace" }}>
+                Log Food
+              </h3>
+              {!selectedFood ? (
+                <FoodSearchAutocomplete
+                  onSelect={handleFoodSelect}
+                  placeholder="Search USDA foods..."
+                  userId={userId}
+                />
+              ) : (
+                <ServingSizeSelector
+                  food={selectedFood}
+                  onConfirm={handleServingConfirm}
+                  onCancel={handleServingCancel}
+                />
+              )}
+            </div>
+
+            {/* Right: Daily Totals */}
+            <div className="flex-1">
+              <h3 className="text-sm font-medium text-[#94A3B8] uppercase tracking-wider mb-3" style={{ fontFamily: "'Space Mono', monospace" }}>
+                Today&apos;s Intake
+              </h3>
+              <div className="grid grid-cols-4 gap-3 mb-4">
+                <div className="bg-[#FEF2F2] rounded-lg p-3 text-center">
+                  <div className="text-xl font-bold text-[#DC2626]">{dailyTotals.calories}</div>
+                  <div className="text-xs text-[#94A3B8]">cal</div>
+                  {macros && (
+                    <div className="text-[10px] text-[#94A3B8] mt-1">/ {macros.calories}</div>
+                  )}
+                </div>
+                <div className="bg-[#F0FDF4] rounded-lg p-3 text-center">
+                  <div className="text-xl font-bold text-[#16A34A]">{Math.round(dailyTotals.protein)}</div>
+                  <div className="text-xs text-[#94A3B8]">protein</div>
+                  {macros && (
+                    <div className="text-[10px] text-[#94A3B8] mt-1">/ {macros.protein}g</div>
+                  )}
+                </div>
+                <div className="bg-[#FEF9C3] rounded-lg p-3 text-center">
+                  <div className="text-xl font-bold text-[#CA8A04]">{Math.round(dailyTotals.carbs)}</div>
+                  <div className="text-xs text-[#94A3B8]">carbs</div>
+                  {macros && (
+                    <div className="text-[10px] text-[#94A3B8] mt-1">/ {macros.carbs}g</div>
+                  )}
+                </div>
+                <div className="bg-[#F0F9FF] rounded-lg p-3 text-center">
+                  <div className="text-xl font-bold text-[#0284C7]">{Math.round(dailyTotals.fat)}</div>
+                  <div className="text-xs text-[#94A3B8]">fat</div>
+                  {macros && (
+                    <div className="text-[10px] text-[#94A3B8] mt-1">/ {macros.fat}g</div>
+                  )}
+                </div>
+              </div>
+
+              {/* Logged foods list */}
+              {loggedFoods.length > 0 && (
+                <div className="max-h-48 overflow-y-auto space-y-2">
+                  {loggedFoods.map((entry) => (
+                    <div key={entry.id} className="flex items-center justify-between p-2 bg-[#F8FAFC] rounded-lg text-sm">
+                      <div>
+                        <span className="font-medium text-[#0F172A]">{entry.food.name}</span>
+                        <span className="text-[#94A3B8] ml-2">{entry.grams}g</span>
+                      </div>
+                      <span className="text-[#94A3B8]">{entry.calories} cal</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {loggedFoods.length === 0 && (
+                <p className="text-sm text-[#94A3B8] text-center py-4">
+                  No foods logged yet. Search and add foods above.
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+
         {/* Split View: Meal Plan + Grocery List */}
         {mealPlan && (
           <div className="flex flex-col lg:flex-row gap-6">
@@ -431,6 +620,18 @@ export default function MealPrepPage() {
           </div>
         )}
       </div>
+
+      {/* Toast notification */}
+      {toast.visible && (
+        <div className="fixed bottom-4 right-4 z-50 animate-in slide-in-from-bottom-4 fade-in">
+          <div className="bg-[#0F172A] text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-3">
+            <svg className="w-5 h-5 text-[#16A34A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <span className="text-sm">{toast.message}</span>
+          </div>
+        </div>
+      )}
     </MainLayout>
   );
 }
