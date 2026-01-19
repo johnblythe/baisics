@@ -100,7 +100,7 @@ export async function POST(request: Request) {
           error: true,
           reason: 'Text validation failed',
           details: ['Text input cannot be empty']
-        });
+        }, { status: 400 });
       }
 
       if (text.length > MAX_TEXT_LENGTH) {
@@ -108,7 +108,7 @@ export async function POST(request: Request) {
           error: true,
           reason: 'Text validation failed',
           details: ['Text input too long. Maximum 50,000 characters.']
-        });
+        }, { status: 400 });
       }
 
       messages = [{
@@ -130,7 +130,7 @@ export async function POST(request: Request) {
           error: true,
           reason: 'File validation failed',
           details: [validation.error || 'Unknown validation error']
-        });
+        }, { status: 400 });
       }
 
       // Extract just the base64 data without the data URL prefix
@@ -198,7 +198,7 @@ export async function POST(request: Request) {
         error: true,
         reason: 'Invalid request',
         details: ['Either text or file must be provided']
-      });
+      }, { status: 400 });
     }
 
     const response = await sendMessage(messages, 'system');
