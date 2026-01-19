@@ -243,7 +243,7 @@ export async function POST(request: Request) {
         error: true,
         reason: 'Failed to process with Claude',
         details: [apiError instanceof Error ? apiError.message : 'Unknown API error']
-      });
+      }, { status: 500 });
     }
 
     // Parse Claude's response
