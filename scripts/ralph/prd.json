@@ -94,7 +94,7 @@
         "Verify component renders correctly in browser"
       ],
       "priority": 6,
-      "passes": false,
+      "passes": true,
       "notes": "UX fix - users with transient network errors have no recovery path."
     },
     {
@@ -108,7 +108,7 @@
         "npm run build passes"
       ],
       "priority": 7,
-      "passes": false,
+      "passes": true,
       "notes": "Security fix - unbounded limit could cause issues."
     },
     {

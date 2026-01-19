@@ -261,3 +261,26 @@ Started: Sun Jan 18 17:57:58 EST 2026
   - Cast to `Record<string, unknown>` for safe property access
   - Auto-repair corrupted data by saving validated subset back to storage
 ---
+
+## 2026-01-18 - US-016: Add retry button to search error state
+- Added "Try again" button below error message in `FoodSearchAutocomplete.tsx`
+- Button clears error state and re-triggers search with current query
+- Re-trigger pattern: clear query to empty string, then setTimeout to set back to current value (triggers useEffect)
+- Styled with coral color, underline, text-xs per design system
+- Added hover:no-underline for visual feedback
+- Added focus:outline-none focus:ring-2 for keyboard accessibility
+- **Learnings for future iterations:**
+  - To re-trigger a debounced search useEffect, set state to empty then setTimeout(0) back to original value
+  - Retry buttons should have accessible focus styles (ring-2, ring-offset)
+  - Keep retry actions minimal - clear error + re-trigger is enough
+---
+
+## 2026-01-18 - US-017: Add bounds validation for limit parameter
+- Modified `src/app/api/foods/search/route.ts` limit parameter handling
+- Changed `limit` variable to `parsedLimit` for raw parsed value
+- Added NaN check with default to 10
+- Added clamping with `Math.min(Math.max(parsedLimit, 1), 50)` to bound between 1-50
+- **Learnings for future iterations:**
+  - Validation pattern: `isNaN(parsed) ? default : Math.min(Math.max(parsed, min), max)`
+  - Always validate user input at API boundaries even if client should send valid values
+---

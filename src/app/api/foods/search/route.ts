@@ -43,8 +43,47 @@ export async function GET(request: Request) {
     return NextResponse.json({ foods });
   } catch (error) {
     console.error('USDA API error:', error);
+
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const isDev = process.env.NODE_ENV === 'development';
+
+    // Categorize errors and return user-friendly messages
+    if (errorMessage.toLowerCase().includes('api_key') || errorMessage.toLowerCase().includes('api key')) {
+      return NextResponse.json(
+        {
+          error: 'Food search temporarily unavailable',
+          ...(isDev && { details: errorMessage })
+        },
+        { status: 503 }
+      );
+    }
+
+    if (errorMessage.toLowerCase().includes('network')) {
+      return NextResponse.json(
+        {
+          error: 'Unable to reach food database',
+          ...(isDev && { details: errorMessage })
+        },
+        { status: 503 }
+      );
+    }
+
+    if (errorMessage.includes('429') || errorMessage.toLowerCase().includes('rate')) {
+      return NextResponse.json(
+        {
+          error: 'Too many requests, please wait',
+          ...(isDev && { details: errorMessage })
+        },
+        { status: 429 }
+      );
+    }
+
+    // Default error for unrecognized errors
     return NextResponse.json(
-      { error: 'Failed to search USDA database' },
+      {
+        error: 'Failed to search USDA database',
+        ...(isDev && { details: errorMessage })
+      },
       { status: 502 }
     );
   }
