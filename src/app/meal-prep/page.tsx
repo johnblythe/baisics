@@ -87,6 +87,7 @@ export default function MealPrepPage() {
   // User data
   const [macros, setMacros] = useState<Macros | null>(null);
   const [isPro, setIsPro] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   // Form state
   const [mealsPerDay, setMealsPerDay] = useState(3);
@@ -104,48 +105,51 @@ export default function MealPrepPage() {
   const [toast, setToast] = useState<{ message: string; visible: boolean }>({ message: '', visible: false });
 
   // Load user's macros from their program
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch current program for macros
-        const programRes = await fetch('/api/programs/current');
-        if (programRes.ok) {
-          const program = await programRes.json();
-          const workoutPlan = program.workoutPlans?.[0];
-          if (workoutPlan) {
-            setMacros({
-              protein: workoutPlan.proteinGrams || 150,
-              carbs: workoutPlan.carbGrams || 200,
-              fat: workoutPlan.fatGrams || 60,
-              calories: workoutPlan.dailyCalories || 2000,
-            });
-          }
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    setFetchError(null);
+    try {
+      // Fetch current program for macros
+      const programRes = await fetch('/api/programs/current');
+      if (programRes.ok) {
+        const program = await programRes.json();
+        const workoutPlan = program.workoutPlans?.[0];
+        if (workoutPlan) {
+          setMacros({
+            protein: workoutPlan.proteinGrams || 150,
+            carbs: workoutPlan.carbGrams || 200,
+            fat: workoutPlan.fatGrams || 60,
+            calories: workoutPlan.dailyCalories || 2000,
+          });
         }
-
-        // Check subscription status and get user ID
-        const userRes = await fetch('/api/user');
-        if (userRes.ok) {
-          const userData = await userRes.json();
-          setIsPro(userData.isPremium || userData.subscription?.status === 'ACTIVE');
-          if (userData.id) {
-            setUserId(userData.id);
-          }
-        }
-
-        // Load saved plans from localStorage
-        const saved = localStorage.getItem('mealPlans');
-        if (saved) {
-          setSavedPlans(JSON.parse(saved));
-        }
-      } catch (err) {
-        console.error('Failed to fetch user data:', err);
-      } finally {
-        setLoading(false);
       }
-    };
 
-    fetchData();
+      // Check subscription status and get user ID
+      const userRes = await fetch('/api/user');
+      if (userRes.ok) {
+        const userData = await userRes.json();
+        setIsPro(userData.isPremium || userData.subscription?.status === 'ACTIVE');
+        if (userData.id) {
+          setUserId(userData.id);
+        }
+      }
+
+      // Load saved plans from localStorage
+      const saved = localStorage.getItem('mealPlans');
+      if (saved) {
+        setSavedPlans(JSON.parse(saved));
+      }
+    } catch (err) {
+      console.error('Failed to fetch user data:', err);
+      setFetchError(err instanceof Error ? err.message : 'Failed to load page data. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const togglePreference = (pref: string) => {
     const isPaidPref = PAID_PREFERENCES.includes(pref);
@@ -277,6 +281,30 @@ export default function MealPrepPage() {
       <MainLayout>
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="w-6 h-6 border-2 border-[#F1F5F9] border-t-[#FF6B6B] rounded-full animate-spin" />
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <MainLayout>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center max-w-md px-4">
+            <div className="w-16 h-16 mx-auto mb-4 bg-[#FEF2F2] rounded-2xl flex items-center justify-center">
+              <svg className="w-8 h-8 text-[#DC2626]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-[#0F172A] mb-2">Unable to load page</h3>
+            <p className="text-sm text-[#64748B] mb-4">{fetchError}</p>
+            <button
+              onClick={fetchData}
+              className="px-4 py-2 bg-[#FF6B6B] text-white text-sm font-medium rounded-lg hover:bg-[#EF5350] transition-colors"
+            >
+              Try again
+            </button>
+          </div>
         </div>
       </MainLayout>
     );

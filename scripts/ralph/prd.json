@@ -124,7 +124,7 @@
         "npm run build passes"
       ],
       "priority": 8,
-      "passes": false,
+      "passes": true,
       "notes": "UX fix - generic errors don't help users understand the problem."
     },
     {

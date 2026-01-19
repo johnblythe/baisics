@@ -284,3 +284,18 @@ Started: Sun Jan 18 17:57:58 EST 2026
   - Validation pattern: `isNaN(parsed) ? default : Math.min(Math.max(parsed, min), max)`
   - Always validate user input at API boundaries even if client should send valid values
 ---
+
+## 2026-01-18 - US-018: Improve API route error messages
+- Enhanced catch block in `src/app/api/foods/search/route.ts` to categorize errors
+- API_KEY errors return 503 with "Food search temporarily unavailable"
+- Network errors return 503 with "Unable to reach food database"
+- Rate limit errors (429/rate) return 429 with "Too many requests, please wait"
+- Added development mode detection via `process.env.NODE_ENV === 'development'`
+- In dev mode, original error details included in response as `details` field
+- Used spread operator pattern: `...(isDev && { details: errorMessage })` for conditional property
+- **Learnings for future iterations:**
+  - Use `.toLowerCase()` for case-insensitive error matching (api_key vs API_KEY)
+  - Spread with conditional: `...(condition && { prop: value })` cleanly adds optional properties
+  - HTTP 503 = Service Unavailable (appropriate for upstream issues)
+  - HTTP 429 = Too Many Requests (appropriate for rate limiting)
+---
