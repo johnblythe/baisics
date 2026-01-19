@@ -17,7 +17,9 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url);
   const query = searchParams.get('q')?.trim() || '';
-  const limit = parseInt(searchParams.get('limit') || '10', 10);
+  const parsedLimit = parseInt(searchParams.get('limit') || '10', 10);
+  // Validate limit: handle NaN, clamp between 1 and 50
+  const limit = isNaN(parsedLimit) ? 10 : Math.min(Math.max(parsedLimit, 1), 50);
 
   // Validate query
   if (!query || query.length < 2) {
