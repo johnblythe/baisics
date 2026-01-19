@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import MainLayout from '@/app/components/layouts/MainLayout';
-import { Settings, TrendingUp } from 'lucide-react';
+import { Settings, TrendingUp, Dumbbell } from 'lucide-react';
 import { ProgramAssignModal } from '@/components/ProgramAssignModal';
 import { CoachOnboardingWizard } from '@/components/CoachOnboardingWizard';
 
@@ -268,6 +268,13 @@ export default function CoachDashboard() {
               </p>
             </div>
             <div className="flex items-center gap-3">
+              <Link
+                href="/dashboard?personal=true"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-[#E2E8F0] text-[#475569] rounded-lg hover:bg-[#F1F5F9] transition-colors"
+              >
+                <Dumbbell className="w-4 h-4" />
+                My Workouts
+              </Link>
               <Link
                 href="/coach/analytics"
                 className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-[#E2E8F0] text-[#475569] rounded-lg hover:bg-[#F1F5F9] transition-colors"

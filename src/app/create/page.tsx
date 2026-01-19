@@ -4,7 +4,6 @@ import { useState, useCallback, useEffect, Suspense } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useSession, signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
 import MainLayout from '@/app/components/layouts/MainLayout';
 import { Upload, FileText, ArrowRight, X, Plus, Mail, Check, Trash2, Edit2, ChevronDown, ChevronUp, Loader2, Files, Type } from 'lucide-react';
 import { toast } from 'sonner';
@@ -279,7 +278,7 @@ function ImportPageContent() {
     }
   };
 
-  const saveProgram = async () => {
+  const saveProgram = useCallback(async () => {
     if (!parsedProgram) return;
 
     setPageState('saving');
@@ -317,7 +316,7 @@ function ImportPageContent() {
       setError(err instanceof Error ? err.message : 'Failed to save program');
       setPageState('preview');
     }
-  };
+  }, [parsedProgram, programName, isCoach, router]);
 
   const handleStartOver = () => {
     setParsedProgram(null);
@@ -473,7 +472,7 @@ function ImportPageContent() {
         }
       }
     }
-  }, [session]); // Re-run when session becomes available
+  }, [session, saveProgram]); // Re-run when session becomes available or saveProgram updates
 
   return (
     <MainLayout>

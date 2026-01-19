@@ -1,6 +1,27 @@
 {
   "issues": [
     {
+      "number": 296,
+      "title": "Email stupidity",
+      "labels": ["bug", "content", "design"],
+      "status": "open",
+      "priority": "med"
+    },
+    {
+      "number": 295,
+      "title": "Recovery modal: wrong stats, bad trigger logic, remove quote marks",
+      "labels": [],
+      "status": "open",
+      "priority": "med"
+    },
+    {
+      "number": 294,
+      "title": "Coach dashboard routing & empty state UX",
+      "labels": [],
+      "status": "open",
+      "priority": "med"
+    },
+    {
       "number": 292,
       "title": "Cleanup: Minor issues from /hi route refactor PR review",
       "labels": [],
@@ -18,22 +39,15 @@
       "number": 277,
       "title": "Generate feature screenshots with Playwright",
       "labels": ["enhancement"],
-      "status": "open",
+      "status": "closed",
       "priority": "low"
     },
     {
       "number": 274,
       "title": "Feature catalog with Playwright screenshots",
       "labels": ["enhancement"],
-      "status": "open",
+      "status": "closed",
       "priority": "low"
-    },
-    {
-      "number": 227,
-      "title": "UI: Template Detail Page - Visual Polish",
-      "labels": ["enhancement"],
-      "status": "open",
-      "priority": "med"
     },
     {
       "number": 192,
@@ -48,22 +62,7 @@
       "labels": [],
       "status": "open",
       "priority": "high"
-    },
-    {
-      "number": 122,
-      "title": "Integrate USDA FoodData Central API for food search",
-      "labels": ["enhancement"],
-      "status": "open",
-      "priority": "med",
-      "notes": "USDA API key available: vRBwhBBkegsIpLI9EtANZhMycPcIazx3uJiAnScv"
-    },
-    {
-      "number": 105,
-      "title": "UI: Program Header & CTA - First Impression Polish",
-      "labels": ["enhancement"],
-      "status": "open",
-      "priority": "med"
     }
   ],
-  "lastSyncedAt": "2026-01-18T23:15:00Z"
+  "lastSyncedAt": "2026-01-19T15:40:00Z"
 }

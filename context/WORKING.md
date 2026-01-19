@@ -1,92 +1,78 @@
-# Session Context - 2026-01-18T14:50:00-05:00
+# Session Context - 2026-01-19T09:30:00Z
 
 ## Current Session Overview
-- **Main Task/Feature**: Issue cleanup, Ralph batches, /hi route refactoring
-- **Session Duration**: ~2 hours
-- **Current Status**: Ralph finishing error handling batch (5/6), about to start /hi improvements
+- **Main Task/Feature**: Automated screenshot capture for Features page marketing content
+- **Session Duration**: ~1.5 hours
+- **Current Status**: Complete - Features page fully updated with 10 real screenshots at 2x retina resolution
 
 ## Recent Activity (Last 30-60 minutes)
 - **What We Just Did**:
-  - Completed Ralph batch: 7 SEO competitor comparison blog posts (PR #290 merged)
-  - Started Ralph batch: 6 error handling + SEO title fixes (5/6 complete)
-  - Deep explored /hi route dependencies - mapped 20+ inbound links, 4 unused query params
-  - Got USDA API key for #122 (key: vRBwhBBkegsIpLI9EtANZhMycPcIazx3uJiAnScv)
-- **Active Problems**: /hi route is over-entangled, needs detangling
-- **Current Files**: Ralph working on src/app/dashboard/[programId]/page.tsx (comment fix)
-- **Test Status**: All Ralph stories passing typecheck
+  - Created comprehensive Playwright test suite for 21 screenshots (public + authenticated pages)
+  - Captured screenshots for AI conversation, templates, workout+chat, nutrition, meal prep, check-in, exercise library
+  - Updated Features page with all new screenshots organized into Hero (3) and More Features (7) sections
+  - Added "Built Different" philosophy section (no anxiety streaks, long game thinking, your way)
+- **Active Problems**: None - all tests passing
+- **Current Files**: `tests/screenshots/features.spec.ts`, `src/app/features/page.tsx`, `public/features/*.png`
+- **Test Status**: All 21 Playwright tests passing
 
 ## Key Technical Decisions Made
 - **Architecture Choices**:
-  - Keep /hi route (15+ active usage points) but detangle it
-  - 4 query params (?template, ?prefill, ?source, ?invite) are passed but never used - need fixing
+  - Magic link dev flow for test authentication (clicks "Click here to sign in" on verify-request page)
+  - 2x deviceScaleFactor in Playwright for retina screenshots
+  - Separate test user (marcus@test.baisics.app) with real program data
 - **Implementation Approaches**:
-  - Ralph for automatable issues (specific file:line + clear fix)
-  - Manual for design decisions and external dependencies
-- **Technology Selections**: USDA FoodData Central API for food search (free tier)
-- **Performance/Security Considerations**: None new
+  - Modal dismissal via force click on "Got it"/"Close" buttons
+  - Wait for loaders to disappear before capturing workout screenshots
+  - Hero features use 4:3 aspect ratio, More Features use 16:9 video aspect
 
 ## Code Context
-- **Modified Files This Session**:
-  - 7 new blog posts: src/content/blog/baisics-vs-{fitbod,strong,jefit,hevy,myfitnesspal,caliber,swolemate}/
-  - 8 new layout files for SEO titles (coach/dashboard, coaches/signup, etc.)
-  - Error handling in workout/[id]/page.tsx, workout-logs/[id]/complete/route.ts
-  - .issues.json updated (15 open issues now)
-- **New Patterns**: Client components need layout.tsx for metadata; server components export directly
-- **Dependencies**: None added
-- **Configuration Changes**: None
+- **Modified Files**:
+  - `tests/screenshots/features.spec.ts` - full rewrite with 21 tests
+  - `src/app/features/page.tsx` - complete features page update
+  - `playwright.config.ts` - added 2x deviceScaleFactor
+  - `public/features/*.png` - 10 feature screenshots
+- **New Patterns**:
+  - `loginAsTestUser()` helper for authenticated tests
+  - `dismissModals()` helper for cleaning up celebration/welcome modals
+- **Dependencies**: Playwright already installed
+- **Configuration Changes**: Playwright 2x scale for high-res screenshots
 
 ## Current Implementation State
 - **Completed**:
-  - PR #290: 7 competitor comparison blog posts (closes #218)
-  - Issues closed: #218, #233, #270, #272 (plus 8 others earlier)
-  - Branch cleanup: 23 local + 87 remote refs pruned
-- **In Progress**:
-  - Ralph batch: error handling + SEO (5/6 done, #284 comment fix in progress)
-  - Will close: #288, #280, #281, #282, #283, #284
+  - Screenshot test suite (21 tests)
+  - Features page with real screenshots
+  - Hero features: AI Program Builder, Workout Logging, Progress Dashboard
+  - More features: Import, Templates, AI Chat, Nutrition, Meal Prep, Check-ins, Exercise Library
+  - Philosophy section with brand messaging
+- **In Progress**: None
 - **Blocked**: None
 - **Next Steps**:
-  1. Wait for Ralph to finish (1 story left)
-  2. Commit + PR the error handling batch
-  3. Refactor /hi route - use unused params, extract program display
+  - User may want to refine specific screenshots (e.g., more conversation in AI builder, more data in dashboard)
+  - Could add mobile screenshots to features page
+  - Could capture more screens (settings, achievements, etc.)
 
 ## Important Context for Handoff
-- **Environment Setup**: Standard - npm run dev on port 3001
-- **Running/Testing**: npx tsc --noEmit for typecheck
+- **Environment Setup**: Dev server must be running on port 3001
+- **Running/Testing**: `npm run screenshots` to capture all, or `npx playwright test --project='Desktop Chrome' tests/screenshots/features.spec.ts -g "pattern"`
 - **Known Issues**:
-  - /hi has 4 unused query params: ?template, ?prefill, ?source, ?invite
-  - Program modification disabled in /hi/actions.ts line 92
-- **External Dependencies**:
-  - USDA API key ready: vRBwhBBkegsIpLI9EtANZhMycPcIazx3uJiAnScv
-  - Store in USDA_API_KEY env var when implementing #122
+  - AI conversation screenshot may show initial state, not mid-conversation
+  - Dashboard screenshot depends on Marcus's program data state
+- **External Dependencies**: Test personas must be seeded (`npx prisma db seed`)
 
 ## Conversation Thread
-- **Original Goal**: Clean up issues, run automatable work through Ralph
-- **Evolution**: Expanded to /hi route analysis and USDA API prep
+- **Original Goal**: Run `npm run screenshots` for feature pages
+- **Evolution**:
+  - Started with just running existing tests → fixed auth (wrong cookie name)
+  - Added magic link dev flow for auth → captured authenticated pages
+  - User requested more features, better screenshots → full page rewrite
+  - Added nutrition, meal prep, check-ins, templates, chat, philosophy section
 - **Lessons Learned**:
-  - PRs must use "Closes #XXX" to auto-close issues
-  - Client components can't export metadata - need separate layout.tsx
+  - Session cookie is `baisics.session-token` not `next-auth.session-token`
+  - Magic link stored in `baisics.__dev_magic_link` cookie in dev mode
+  - Modals need `force: true` click due to backdrop overlay
 - **Alternatives Considered**:
-  - Remove /hi route - rejected (15+ active links)
-  - Keep /hi as-is - rejected (too entangled, unused params)
-
-## /hi Route Detangle Plan
-The /hi route accepts but ignores these params:
-1. `?template` - from /templates/[slug], should prefill intake
-2. `?prefill` - from dashboard tool claims, should prefill intake
-3. `?source` - analytics tracking, should be logged
-4. `?invite` - coach invite token, should trigger coach flow
-
-Inbound links (20+):
-- Landing pages, templates, tools, coach invites, dashboard, share pages, blog CTAs, library
-
-Outbound (2 paths):
-- Authenticated → /dashboard/{programId}
-- Anonymous → /program/review?userId=X&programId=Y
-
-## Open Issues Summary (15)
-- High: #174 (rotate credentials)
-- Med: #227, #189, #122, #105
-- Low: #285, #277, #274, #192
+  - TEST_SESSION_COOKIE env var (rejected - requires manual cookie copy)
+  - Direct credentials auth (exists but magic link flow more reliable)
 
 ---
-*Last updated: 2026-01-18*
+*Last updated: 2026-01-19*
