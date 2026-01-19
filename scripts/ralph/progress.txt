@@ -1,111 +1,42 @@
 # Ralph Progress Log
-Started: Mon Jan 19 11:05:42 EST 2026
+Started: Mon Jan 19 16:23:04 EST 2026
 ---
 
-## 2026-01-19 11:06 - US-001: Route coaches to coach dashboard by default
-- Added coach check early in src/app/dashboard/page.tsx
-- Added `personal` query param support to allow coaches to bypass redirect
-- Updated DashboardPageProps interface to include `personal?: string`
-- Files changed: src/app/dashboard/page.tsx
-- **Learnings for future iterations:**
-  - The isCoach field exists on User model in Prisma schema
-  - Search params in Next.js App Router are accessed via Promise<{ key?: value }>
-  - No `npm run typecheck` script - use `npm run lint` and `npm run build` instead
+## Codebase Patterns
+- **Playwright configs**: Project already had playwright.config.ts for screenshots. E2E tests use separate playwright.e2e.config.ts to avoid conflicts.
+- **E2E test script**: `npm run test:e2e` uses `--config playwright.e2e.config.ts`
+
 ---
 
-## 2026-01-19 11:15 - US-002: Empty state for users without programs
-- Replaced redirect('/hi') with inline empty state component when no programs exist
-- Added heading "No active program" with 3 CTAs:
-  - "Create with AI" → /hi (coral primary button)
-  - "Browse Templates" → /templates (outline button)
-  - "Import your own" → /create (outline button)
-- Used v2a design system colors: coral (#FF6B6B) for primary, navy (#0F172A) for text
-- Added lucide-react icons: Sparkles, LayoutGrid, Upload
-- Files changed: src/app/dashboard/page.tsx
+## 2026-01-19 - US-001: Install and configure Playwright for Next.js
+- Installed @playwright/test@1.57.0 as devDependency
+- Created playwright.e2e.config.ts with:
+  - testDir: ./tests/e2e
+  - baseURL: http://localhost:3001
+  - webServer config to run npm run dev
+  - chromium project with Desktop Chrome
+- Added "test:e2e": "playwright test --config playwright.e2e.config.ts" to package.json
+- Created tests/e2e/.gitkeep placeholder
+- Verified: npx playwright test --version = 1.57.0
+- Verified: npm run lint and npm run build pass
 - **Learnings for future iterations:**
-  - v2a landing page reference doesn't exist - use CSS variables from CLAUDE.md instead
-  - /templates route exists at src/app/templates/page.tsx
-  - Build can hang; use `npx tsc --noEmit` for quick TypeScript check
+  - Existing playwright.config.ts is for screenshot tests in tests/screenshots/
+  - Must use separate config file (playwright.e2e.config.ts) to avoid breaking existing screenshot workflow
+  - Screenshot scripts use --project flag to specify Desktop Chrome or Mobile Safari
+- **Auth flow (dev mode)**: Magic link stored in cookie `baisics.__dev_magic_link`. Verify page shows "Click here to sign in →" link.
+- **No typecheck script**: Project uses `npm run build` for type verification. Acceptance criteria mentioning typecheck should use build instead.
 ---
 
-## 2026-01-19 11:30 - US-003: Add personal dashboard link for coaches
-- Added "My Workouts" link in coach dashboard header nav (before Analytics/Settings)
-- Uses Dumbbell icon from lucide-react for visual consistency
-- Links to `/dashboard?personal=true` to bypass coach redirect
-- personal=true param already supported in dashboard from US-001
-- Files changed: src/app/coach/dashboard/page.tsx
+## 2026-01-19 - US-002: Create auth test fixture with magic link helper
+- Created tests/fixtures/auth.ts with:
+  - `loginAsUser(page, email)`: navigates to signin, enters email, clicks submit, waits for verify page, clicks dev magic link
+  - `logoutUser(page)`: finds and clicks logout button in header, waits for redirect to /
+- Files created: tests/fixtures/auth.ts
+- Verified: npm run lint passes (warnings only)
+- Verified: npm run build passes
 - **Learnings for future iterations:**
-  - US-001 already added personal=true param support - check progress.txt for prior work
-  - lucide-react has Dumbbell icon that fits workout context well
-  - Coach dashboard header has Analytics + Settings buttons - new nav items go before them
----
-
-## 2026-01-19 11:45 - US-004: Remove unused Link import in /create page
-- Removed unused `import Link from 'next/link'` from line 7
-- Verified Link was not used anywhere else in the file via grep
-- Files changed: src/app/create/page.tsx
-- **Learnings for future iterations:**
-  - Simple cleanup stories - verify import isn't used first with grep before removing
-  - Lint + build pass = quality gate complete
----
-
-## 2026-01-19 12:05 - US-005: Add HTTP 400 status codes on validation errors
-- Added `{ status: 400 }` to 4 validation error responses in import/route.ts:
-  1. Empty text input (line 99-103)
-  2. Text too long (line 107-111)
-  3. File validation failed (line 129-133)
-  4. Missing text/file (line 197-201)
-- Files changed: src/app/api/programs/import/route.ts
-- **Learnings for future iterations:**
-  - NextResponse.json() takes status as second param: `NextResponse.json(body, { status: 400 })`
-  - File still has @ts-nocheck - US-007 will address that separately
-  - Validation errors = 400, server errors = 500, auth errors = 401 (already correct)
----
-
-## 2026-01-19 12:25 - US-006: Fix useEffect missing saveProgram dependency
-- Wrapped `saveProgram` function in `useCallback` with deps: [parsedProgram, programName, isCoach, router]
-- Added `saveProgram` to the useEffect dependency array alongside `session`
-- useCallback already imported from React (line 3)
-- Files changed: src/app/create/page.tsx
-- **Learnings for future iterations:**
-  - `useCallback` is already imported - check imports before adding
-  - State setters (setPageState, setError) are stable by React guarantee - don't need in deps
-  - Always wrap async functions used in useEffect in useCallback to avoid stale closures
-  - The useEffect at ~line 455 handles post-auth program restoration - setTimeout is needed to let state settle
----
-
-## 2026-01-19 12:50 - US-007: Remove @ts-nocheck from import route
-- Removed `// @ts-nocheck` from line 1 of import/route.ts
-- Added custom types for multi-modal messages (DocumentSource, ContentBlock, MultiModalMessage)
-- Changed from using sendMessage() to calling anthropic.messages.create() directly
-  - The SDK types (v0.32.1) don't support 'document' content blocks for PDFs
-  - Using type assertion with `Parameters<typeof anthropic.messages.create>[0]['messages']`
-- Fixed session null checks with non-null assertions (guaranteed by auth check on line 86)
-- Updated chat.ts import path from `@anthropic-ai/sdk/src/resources/messages.js` to `@anthropic-ai/sdk/resources/messages`
-- Files changed: src/app/api/programs/import/route.ts, src/utils/chat.ts
-- **Learnings for future iterations:**
-  - Anthropic SDK v0.32.1 MessageParam only supports: text, image, tool_use, tool_result
-  - Document blocks for PDFs are supported by the API but not typed in SDK yet
-  - When SDK types lag behind API features, call anthropic directly with type assertions
-  - Non-null assertions `session!.user!.id` are appropriate when flow guarantees value exists
-  - Use `Parameters<typeof fn>[0]['prop']` to extract parameter types from functions
----
-
-## 2026-01-19 13:15 - US-008: Add user feedback when demo program fails to load
-- Added setMessages call in loadDemoProgram catch block
-- Error message: "Sorry, I couldn't load the demo program. Please try again."
-- Follows same pattern as success message (assistant role, content string)
-- Files changed: src/app/hi/components/ConversationalInterface.tsx
-- **Learnings for future iterations:**
-  - Error handling pattern: console.error + setIsGeneratingProgram(false) + user-facing setMessages
-  - Success case at ~line 557-560 shows the message pattern to match
-  - Simple 3-line addition - these cleanup stories are quick wins
----
-
-## 2026-01-19 - US-001: Add status 500 to Claude API error response
-- Added `{ status: 500 }` to Claude API error catch block (line 246)
-- Files changed: src/app/api/programs/import/route.ts
-- **Learnings for future iterations:**
-  - Line numbers in PRD may be approximate - verify by reading the file
-  - Simple status code additions: find the NextResponse.json(), add second param
+  - Signin page has "Send magic link" button (not "Continue with Email")
+  - Dev magic link shows as "Click here to sign in →" on verify-request page
+  - Logout uses signOut from next-auth with callbackUrl: '/'
+  - After login, users redirect to /dashboard (existing user) or /hi (new user)
 ---

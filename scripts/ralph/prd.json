@@ -1,41 +1,49 @@
 {
   "project": "baisics",
-  "branchName": "ralph/dashboard-routing-cleanup",
-  "description": "Fix missing HTTP status codes in import route (PR review fixes)",
+  "branchName": "ralph/e2e-testing-critical-flows",
+  "description": "Playwright E2E tests for critical user flows - Infrastructure + P0",
   "userStories": [
     {
       "id": "US-001",
-      "title": "Add status 500 to Claude API error response",
-      "description": "As an API consumer, Claude API errors should return 500 not 200.",
+      "title": "Install and configure Playwright for Next.js",
+      "description": "As a developer, I need Playwright set up so I can write E2E tests.",
       "acceptanceCriteria": [
-        "In src/app/api/programs/import/route.ts around lines 242-246",
-        "Add { status: 500 } to the NextResponse.json() for Claude API error catch block",
+        "npm install @playwright/test",
+        "Create playwright.config.ts with baseURL http://localhost:3001",
+        "Configure webServer to run 'npm run dev' on port 3001",
+        "Add test script to package.json: 'test:e2e': 'playwright test'",
+        "Create tests/e2e/.gitkeep placeholder",
+        "npx playwright test --version runs successfully",
         "npm run typecheck passes"
       ],
       "priority": 1,
       "passes": true,
-      "notes": ""
+      "notes": "Created separate playwright.e2e.config.ts to preserve existing screenshots config"
     },
     {
       "id": "US-002",
-      "title": "Add status 502 to empty response error",
-      "description": "As an API consumer, empty Claude response should return 502 Bad Gateway.",
+      "title": "Create auth test fixture with magic link helper",
+      "description": "As a test author, I need a reusable auth fixture that handles magic link signin.",
       "acceptanceCriteria": [
-        "In src/app/api/programs/import/route.ts around lines 254-259",
-        "Add { status: 502 } to the NextResponse.json() for empty response check",
+        "Create tests/fixtures/auth.ts",
+        "Export loginAsUser(page, email) function that: navigates to /auth/signin, enters email, clicks submit, waits for verify page, clicks the 'Click here to sign in' dev link",
+        "Export logoutUser(page) function",
+        "Function handles cookie-based dev magic link (baisics.__dev_magic_link)",
         "npm run typecheck passes"
       ],
       "priority": 2,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "No typecheck script exists; build passes which verifies TypeScript"
     },
     {
       "id": "US-003",
-      "title": "Add status 422 to mammoth extraction error",
-      "description": "As an API consumer, document extraction failures should return 422 Unprocessable Entity.",
+      "title": "Create persona fixture for test data",
+      "description": "As a test author, I need easy access to test persona emails and expected states.",
       "acceptanceCriteria": [
-        "In src/app/api/programs/import/route.ts around lines 175-181",
-        "Add { status: 422 } to the NextResponse.json() for mammoth error catch block",
+        "Create tests/fixtures/personas.ts",
+        "Export PERSONAS object with all 11 test users (alex, sarah, jordan, chris, kim, taylor, robert, marcus, priya, derek, maya)",
+        "Each persona has: email, tier (free/paid), journey, workoutCount, hasProgramBoolean",
+        "Export getPersona(name) helper function",
         "npm run typecheck passes"
       ],
       "priority": 3,
@@ -44,15 +52,197 @@
     },
     {
       "id": "US-004",
-      "title": "Add status 500 to database/parse error",
-      "description": "As an API consumer, database errors should return 500 not 200.",
+      "title": "Create database seed helper for E2E tests",
+      "description": "As a test author, I need to reseed personas before test files run.",
       "acceptanceCriteria": [
-        "In src/app/api/programs/import/route.ts around lines 361-368",
-        "Add { status: 500 } to the NextResponse.json() for database error catch block",
-        "Also add { status: 500 } to the outer catch block around lines 370-377 if not already present",
+        "Create tests/fixtures/seed.ts",
+        "Export seedPersonas() function that runs: npx prisma db seed",
+        "Function returns Promise that resolves when seed completes",
+        "Add timeout handling (max 30s)",
         "npm run typecheck passes"
       ],
       "priority": 4,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-005",
+      "title": "Auth test: Magic link signup (new user)",
+      "description": "As a user, signing up with new email should redirect to /hi onboarding.",
+      "acceptanceCriteria": [
+        "Create tests/e2e/auth/signup.spec.ts",
+        "Test navigates to /auth/signin",
+        "Enters unique email test-{timestamp}@test.baisics.app",
+        "Clicks Continue with Email button",
+        "Waits for /auth/verify-request page",
+        "Clicks dev magic link ('Click here to sign in')",
+        "Verifies redirect to /hi (new user has no programs)",
+        "npm run typecheck passes",
+        "npx playwright test tests/e2e/auth/signup.spec.ts passes"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-006",
+      "title": "Auth test: Magic link signin (returning user)",
+      "description": "As a returning user, signing in should redirect to dashboard.",
+      "acceptanceCriteria": [
+        "Create tests/e2e/auth/signin.spec.ts",
+        "Use beforeAll to seed personas",
+        "Test uses loginAsUser fixture with marcus@test.baisics.app",
+        "Verifies redirect to /dashboard (marcus has programs)",
+        "Verifies dashboard shows program name",
+        "npm run typecheck passes",
+        "npx playwright test tests/e2e/auth/signin.spec.ts passes"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-007",
+      "title": "Auth test: Signout clears session",
+      "description": "As a user, signing out should redirect to landing and block dashboard access.",
+      "acceptanceCriteria": [
+        "Create tests/e2e/auth/signout.spec.ts",
+        "Login as marcus, verify on dashboard",
+        "Find and click signout button/link",
+        "Verify redirect to landing page (/)",
+        "Navigate to /dashboard",
+        "Verify redirect to /auth/signin",
+        "npm run typecheck passes",
+        "npx playwright test tests/e2e/auth/signout.spec.ts passes"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-008",
+      "title": "Auth test: Protected routes redirect unauthenticated users",
+      "description": "As an unauthenticated user, protected routes should redirect to signin.",
+      "acceptanceCriteria": [
+        "Create tests/e2e/auth/protected-routes.spec.ts",
+        "Test (no login): navigate to /dashboard, verify redirect to /auth/signin",
+        "Test (no login): navigate to /settings, verify redirect to /auth/signin",
+        "Test (no login): navigate to /check-in, verify redirect to /auth/signin",
+        "npm run typecheck passes",
+        "npx playwright test tests/e2e/auth/protected-routes.spec.ts passes"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-009",
+      "title": "Onboarding test: Empty state dashboard shows CTAs",
+      "description": "As a new user with no programs, dashboard should show onboarding options.",
+      "acceptanceCriteria": [
+        "Create tests/e2e/onboarding/empty-state.spec.ts",
+        "Login as alex@test.baisics.app (fresh user, 0 workouts)",
+        "Navigate to /dashboard",
+        "Verify 'Create with AI' CTA visible and links to /hi",
+        "Verify 'Browse Templates' CTA visible and links to /templates",
+        "Verify 'Import your own' CTA visible and links to /create",
+        "npm run typecheck passes",
+        "npx playwright test tests/e2e/onboarding/empty-state.spec.ts passes"
+      ],
+      "priority": 9,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-010",
+      "title": "Dashboard test: Main dashboard loads with all components",
+      "description": "As a user with a program, dashboard should display all key sections.",
+      "acceptanceCriteria": [
+        "Create tests/e2e/dashboard/main-dashboard.spec.ts",
+        "Login as marcus@test.baisics.app (has program, paid)",
+        "Navigate to /dashboard",
+        "Verify program name is visible",
+        "Verify workout selector/list is visible",
+        "Verify stats section shows workout count",
+        "Page loads without console errors",
+        "npm run typecheck passes",
+        "npx playwright test tests/e2e/dashboard/main-dashboard.spec.ts passes"
+      ],
+      "priority": 10,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-011",
+      "title": "Workout test: Start workout loads exercises",
+      "description": "As a user, starting a workout should show exercise list with history.",
+      "acceptanceCriteria": [
+        "Create tests/e2e/workout/start-workout.spec.ts",
+        "Login as marcus@test.baisics.app",
+        "Navigate to dashboard, click first workout",
+        "Verify workout page loads (/workout/[id])",
+        "Verify at least one exercise is visible",
+        "Verify 'Start Workout' button is visible",
+        "Click Start Workout, verify workout mode activates",
+        "npm run typecheck passes",
+        "npx playwright test tests/e2e/workout/start-workout.spec.ts passes"
+      ],
+      "priority": 11,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-012",
+      "title": "Workout test: Log exercise set",
+      "description": "As a user, I should be able to log weight and reps for a set.",
+      "acceptanceCriteria": [
+        "Create tests/e2e/workout/log-exercise.spec.ts",
+        "Login as marcus, navigate to workout, start workout",
+        "Click on Set 1 to open input",
+        "Enter weight value (e.g., 185)",
+        "Enter reps value (e.g., 8)",
+        "Submit/complete the set",
+        "Verify set is marked as completed in UI",
+        "npm run typecheck passes",
+        "npx playwright test tests/e2e/workout/log-exercise.spec.ts passes"
+      ],
+      "priority": 12,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-013",
+      "title": "Workout test: Complete workout updates status",
+      "description": "As a user, completing a workout should show completion and update dashboard.",
+      "acceptanceCriteria": [
+        "Create tests/e2e/workout/complete-workout.spec.ts",
+        "Login as marcus, navigate to workout, start workout",
+        "Log at least one set for first exercise",
+        "Find and click Finish/Complete Workout button",
+        "Verify completion response (stats shown or redirect)",
+        "Navigate to dashboard",
+        "Verify workout appears as completed (visual indicator)",
+        "npm run typecheck passes",
+        "npx playwright test tests/e2e/workout/complete-workout.spec.ts passes"
+      ],
+      "priority": 13,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-014",
+      "title": "Payment test: Free tier shows upgrade prompt on 2nd program",
+      "description": "As a free user, trying to create a second program should show upgrade prompt.",
+      "acceptanceCriteria": [
+        "Create tests/e2e/payment/free-tier-limits.spec.ts",
+        "Login as sarah@test.baisics.app (free tier, has 1 program)",
+        "Navigate to /create or attempt to create new program",
+        "Verify upgrade prompt/modal appears",
+        "Verify 'Upgrade' button is visible",
+        "npm run typecheck passes",
+        "npx playwright test tests/e2e/payment/free-tier-limits.spec.ts passes"
+      ],
+      "priority": 14,
       "passes": false,
       "notes": ""
     }
