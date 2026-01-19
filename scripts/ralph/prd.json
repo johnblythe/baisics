@@ -1,147 +1,117 @@
 {
   "project": "baisics",
-  "branchName": "ralph/usda-food-search-ui-polish",
-  "description": "PR review fixes: error handling, security, validation improvements",
+  "branchName": "ralph/dashboard-routing-cleanup",
+  "description": "Fix coach dashboard routing (#294) and cleanup items from PR review (#292)",
   "userStories": [
     {
-      "id": "US-011",
-      "title": "Move USDA API key from URL to header",
-      "description": "As a developer, I want the API key passed via header instead of URL query string to prevent logging exposure.",
+      "id": "US-001",
+      "title": "Route coaches to coach dashboard by default",
+      "description": "As a coach, when I hit /dashboard I should be redirected to /coach/dashboard instead of /hi or user dashboard.",
       "acceptanceCriteria": [
-        "Change src/lib/usda/client.ts searchFoods() to use X-Api-Key header instead of ?api_key= query param",
-        "Change src/lib/usda/client.ts getFoodDetails() to use X-Api-Key header",
-        "Remove api_key from URL in both functions",
-        "Verify USDA API accepts X-Api-Key header (it does per their docs)",
-        "npm run build passes"
+        "In src/app/dashboard/page.tsx, fetch user's isCoach status from database",
+        "If user.isCoach is true, redirect to /coach/dashboard",
+        "This check happens before the program check",
+        "npm run typecheck passes"
       ],
       "priority": 1,
-      "passes": true,
-      "notes": "Security fix - API keys in URLs can leak via logs, referrer headers, browser history."
+      "passes": false,
+      "notes": ""
     },
     {
-      "id": "US-012",
-      "title": "Add logging to localStorage catch blocks",
-      "description": "As a developer, I want localStorage errors logged so I can debug issues in production.",
+      "id": "US-002",
+      "title": "Empty state for users without programs",
+      "description": "As a user without programs, I should see an empty state dashboard with CTAs instead of being redirected to /hi.",
       "acceptanceCriteria": [
-        "In src/lib/foods/recentFoods.ts getRecentFoods(), add console.warn with error details to catch block",
-        "In src/lib/foods/recentFoods.ts addRecentFood(), add console.warn with error details to catch block",
-        "In src/lib/foods/recentFoods.ts clearRecentFoods(), add console.warn with error details to catch block",
-        "Log format: console.warn('[recentFoods] Operation failed:', { userId, error: error.message })",
-        "Keep returning graceful fallbacks (empty array, void) after logging",
-        "npm run build passes"
+        "If user has no programs (and is not coach), render empty state instead of redirect('/hi')",
+        "Empty state includes heading 'No active program'",
+        "Three CTAs: 'Create with AI' linking to /hi, 'Browse Templates' linking to /templates, 'Import your own' linking to /create",
+        "Style matches v2a design system (coral buttons, navy text)",
+        "npm run typecheck passes"
       ],
       "priority": 2,
-      "passes": true,
-      "notes": "Critical fix - empty catch blocks hide quota exceeded, security errors, corruption."
+      "passes": false,
+      "notes": ""
     },
     {
-      "id": "US-013",
-      "title": "Add network error handling to USDA client",
-      "description": "As a developer, I want fetch errors caught and wrapped with context so callers get useful error messages.",
+      "id": "US-003",
+      "title": "Add personal dashboard link for coaches",
+      "description": "As a coach who also lifts, I need a way to access my personal workout dashboard as a secondary option.",
       "acceptanceCriteria": [
-        "Wrap fetch() call in searchFoods() with try-catch",
-        "Wrap fetch() call in getFoodDetails() with try-catch",
-        "On network error, throw new Error with message: 'USDA API network error: [original message]'",
-        "On non-ok response, try to parse response body for error details before throwing",
-        "Include response status and parsed error message in thrown error",
-        "npm run build passes"
+        "In /coach/dashboard, add a secondary nav link or button to access personal dashboard",
+        "Link text: 'My Workouts' or 'Personal Dashboard'",
+        "Links to /dashboard?personal=true or similar mechanism to bypass coach redirect",
+        "Update /dashboard/page.tsx to check for personal=true param and skip coach redirect",
+        "npm run typecheck passes"
       ],
       "priority": 3,
-      "passes": true,
-      "notes": "Critical fix - network errors, DNS failures, timeouts currently propagate without context."
+      "passes": false,
+      "notes": ""
     },
     {
-      "id": "US-014",
-      "title": "Add authentication to food search API",
-      "description": "As a developer, I want the /api/foods/search endpoint protected so anonymous users can't exhaust our USDA quota.",
+      "id": "US-004",
+      "title": "Remove unused Link import in /create page",
+      "description": "As a developer, unused imports should be removed for cleaner code.",
       "acceptanceCriteria": [
-        "Import getServerSession and authOptions in src/app/api/foods/search/route.ts",
-        "Check session at start of GET handler",
-        "Return 401 Unauthorized JSON response if no session",
-        "Existing functionality works for authenticated users",
-        "npm run build passes"
+        "Remove unused Link import from next/link in src/app/create/page.tsx line 7",
+        "npm run typecheck passes"
       ],
       "priority": 4,
-      "passes": true,
-      "notes": "Security fix - public endpoint allows quota exhaustion attacks."
+      "passes": false,
+      "notes": ""
     },
     {
-      "id": "US-015",
-      "title": "Validate localStorage data shape when parsing",
-      "description": "As a developer, I want parsed localStorage data validated so corrupted data doesn't cause UI crashes.",
+      "id": "US-005",
+      "title": "Add HTTP 400 status codes on validation errors",
+      "description": "As an API consumer, validation errors should return 400 Bad Request not 200 OK.",
       "acceptanceCriteria": [
-        "Add isValidSimplifiedFood() type guard function in src/lib/foods/recentFoods.ts",
-        "Type guard checks: fdcId is number, name is string, calories is number",
-        "In getRecentFoods(), filter parsed array through type guard",
-        "Log warning if any entries were filtered out as invalid",
-        "Clear corrupted localStorage if all entries invalid",
-        "npm run build passes"
+        "In src/app/api/programs/import/route.ts around lines 99-112",
+        "Add { status: 400 } to all validation error NextResponse.json() calls",
+        "npm run typecheck passes"
       ],
       "priority": 5,
-      "passes": true,
-      "notes": "Important fix - corrupted data causes silent failures downstream."
+      "passes": false,
+      "notes": ""
     },
     {
-      "id": "US-016",
-      "title": "Add retry button to search error state",
-      "description": "As a user, I want a retry button when food search fails so I can try again without retyping.",
+      "id": "US-006",
+      "title": "Fix useEffect missing saveProgram dependency",
+      "description": "As a developer, useEffect dependencies should be complete to avoid stale closure bugs.",
       "acceptanceCriteria": [
-        "In src/components/nutrition/FoodSearchAutocomplete.tsx error display section",
-        "Add 'Try again' button below error message",
-        "Button clears error state and re-triggers search with current query",
-        "Button styled with coral color, underline, small text (text-xs)",
-        "npm run build passes",
-        "Verify component renders correctly in browser"
+        "In src/app/create/page.tsx around lines 456-476",
+        "Either wrap saveProgram in useCallback and add to deps, or add saveProgram to dependency array",
+        "Prefer useCallback approach to avoid infinite loops",
+        "npm run typecheck passes"
       ],
       "priority": 6,
-      "passes": true,
-      "notes": "UX fix - users with transient network errors have no recovery path."
+      "passes": false,
+      "notes": ""
     },
     {
-      "id": "US-017",
-      "title": "Add bounds validation for limit parameter",
-      "description": "As a developer, I want the limit parameter validated to prevent abuse.",
+      "id": "US-007",
+      "title": "Remove @ts-nocheck from import route",
+      "description": "As a developer, TypeScript checking should be enabled for type safety.",
       "acceptanceCriteria": [
-        "In src/app/api/foods/search/route.ts, validate limit is between 1 and 50",
-        "Use Math.min(Math.max(parsed, 1), 50) pattern",
-        "Handle NaN case (default to 10)",
-        "npm run build passes"
+        "Remove // @ts-nocheck from line 1 of src/app/api/programs/import/route.ts",
+        "Fix any resulting type errors properly",
+        "npm run typecheck passes"
       ],
       "priority": 7,
-      "passes": true,
-      "notes": "Security fix - unbounded limit could cause issues."
+      "passes": false,
+      "notes": ""
     },
     {
-      "id": "US-018",
-      "title": "Improve API route error messages",
-      "description": "As a user, I want specific error messages so I know what went wrong and if I should retry.",
+      "id": "US-008",
+      "title": "Add user feedback when demo program fails to load",
+      "description": "As a user, if the demo program fails to load I should see an error message.",
       "acceptanceCriteria": [
-        "In src/app/api/foods/search/route.ts catch block, categorize errors",
-        "If error mentions 'API_KEY', return 503 with 'Food search temporarily unavailable'",
-        "If error mentions 'network', return 503 with 'Unable to reach food database'",
-        "If error mentions '429' or 'rate', return 429 with 'Too many requests, please wait'",
-        "Include original error in development mode only (process.env.NODE_ENV check)",
-        "npm run build passes"
+        "In src/app/hi/components/ConversationalInterface.tsx around lines 562-565",
+        "In the loadDemoProgram catch block, add a user-facing error message",
+        "Use setMessages to add an assistant message like 'Sorry, I couldn't load the demo program. Please try again.'",
+        "npm run typecheck passes"
       ],
       "priority": 8,
-      "passes": true,
-      "notes": "UX fix - generic errors don't help users understand the problem."
-    },
-    {
-      "id": "US-019",
-      "title": "Add error handling to meal-prep page fetch",
-      "description": "As a user, I want to see an error message if the page fails to load instead of infinite spinner.",
-      "acceptanceCriteria": [
-        "Add error state to src/app/meal-prep/page.tsx (useState for error message)",
-        "Wrap fetchData useEffect contents in try-catch",
-        "On catch, set error state with user-friendly message",
-        "Display error state in UI with retry option",
-        "Ensure loading state is cleared in finally block",
-        "npm run build passes"
-      ],
-      "priority": 9,
       "passes": false,
-      "notes": "UX fix - fetch failures leave users in infinite loading state."
+      "notes": ""
     }
   ]
 }

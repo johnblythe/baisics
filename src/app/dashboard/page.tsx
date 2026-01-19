@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 interface DashboardPageProps {
-  searchParams: Promise<{ claim?: string }>;
+  searchParams: Promise<{ claim?: string; personal?: string }>;
 }
 
 export default async function DashboardPage({ searchParams }: DashboardPageProps) {
@@ -22,7 +22,20 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
   const params = await searchParams;
   const claimToken = params.claim;
+  const personalDashboard = params.personal === 'true';
   let claimData: { source?: string; toolData?: Record<string, unknown> } | null = null;
+
+  // Check if user is a coach and redirect to coach dashboard (unless personal=true)
+  if (!personalDashboard) {
+    const coachCheck = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { isCoach: true },
+    });
+
+    if (coachCheck?.isCoach) {
+      redirect('/coach/dashboard');
+    }
+  }
 
   // Process pending claim if token provided
   if (claimToken) {
