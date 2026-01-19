@@ -1,6 +1,5 @@
-import { prisma } from '@/lib/prisma';
 import { anthropic } from '@/lib/anthropic'
-import { MessageParam } from '@anthropic-ai/sdk/src/resources/messages.js';
+import { MessageParam } from '@anthropic-ai/sdk/resources/messages';
 import { sanitizeChatMessage, logSuspiciousInput } from '@/utils/security/promptSanitizer';
 
 export async function sendMessage(
