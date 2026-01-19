@@ -562,6 +562,10 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
     } catch (error) {
       console.error("Failed to load demo program:", error);
       setIsGeneratingProgram(false);
+      setMessages(prev => [...prev, {
+        role: "assistant",
+        content: "Sorry, I couldn't load the demo program. Please try again."
+      }]);
     }
   };
 
