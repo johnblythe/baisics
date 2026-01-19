@@ -1,106 +1,147 @@
 {
-  "project": "Baisics",
-  "branchName": "ralph/hi-route-refactor",
-  "description": "Fix issues found in PR #291 review - error handling, dead code, missing imports",
+  "project": "baisics",
+  "branchName": "ralph/usda-food-search-ui-polish",
+  "description": "PR review fixes: error handling, security, validation improvements",
   "userStories": [
     {
-      "id": "US-001",
-      "title": "Fix undefined createNewProgram function",
-      "description": "Remove or fix the handleSaveProgram function that references undefined createNewProgram.",
+      "id": "US-011",
+      "title": "Move USDA API key from URL to header",
+      "description": "As a developer, I want the API key passed via header instead of URL query string to prevent logging exposure.",
       "acceptanceCriteria": [
-        "In src/app/hi/components/ConversationalInterface.tsx, find handleSaveProgram around line 425",
-        "Either import createNewProgram from '@/lib/actions/program' OR remove the dead code entirely if unused",
-        "Remove the @ts-ignore comment",
-        "npm run typecheck passes"
+        "Change src/lib/usda/client.ts searchFoods() to use X-Api-Key header instead of ?api_key= query param",
+        "Change src/lib/usda/client.ts getFoodDetails() to use X-Api-Key header",
+        "Remove api_key from URL in both functions",
+        "Verify USDA API accepts X-Api-Key header (it does per their docs)",
+        "npm run build passes"
       ],
       "priority": 1,
       "passes": true,
-      "notes": "CRITICAL: This will throw ReferenceError at runtime if triggered."
+      "notes": "Security fix - API keys in URLs can leak via logs, referrer headers, browser history."
     },
     {
-      "id": "US-002",
-      "title": "Add error handling to handleInitialIntake",
-      "description": "Add proper error handling for the failure case in handleInitialIntake.",
+      "id": "US-012",
+      "title": "Add logging to localStorage catch blocks",
+      "description": "As a developer, I want localStorage errors logged so I can debug issues in production.",
       "acceptanceCriteria": [
-        "In ConversationalInterface.tsx, find handleInitialIntake function",
-        "Add try-catch wrapper around the processUserMessage call",
-        "Handle success: false case - show user-friendly message",
-        "Set isTyping to false on error",
-        "npm run typecheck passes"
+        "In src/lib/foods/recentFoods.ts getRecentFoods(), add console.warn with error details to catch block",
+        "In src/lib/foods/recentFoods.ts addRecentFood(), add console.warn with error details to catch block",
+        "In src/lib/foods/recentFoods.ts clearRecentFoods(), add console.warn with error details to catch block",
+        "Log format: console.warn('[recentFoods] Operation failed:', { userId, error: error.message })",
+        "Keep returning graceful fallbacks (empty array, void) after logging",
+        "npm run build passes"
       ],
       "priority": 2,
       "passes": true,
-      "notes": "Currently ignores failures completely, leaving users with infinite typing indicator."
+      "notes": "Critical fix - empty catch blocks hide quota exceeded, security errors, corruption."
     },
     {
-      "id": "US-003",
-      "title": "Add try-catch to handleProgramModification",
-      "description": "Wrap handleProgramModification in try-catch to handle network errors.",
+      "id": "US-013",
+      "title": "Add network error handling to USDA client",
+      "description": "As a developer, I want fetch errors caught and wrapped with context so callers get useful error messages.",
       "acceptanceCriteria": [
-        "In ConversationalInterface.tsx, find handleProgramModification function",
-        "Wrap the processModificationRequest call in try-catch",
-        "On error, log it, set isGeneratingProgram false, show user message",
-        "Use finally block to ensure state cleanup",
-        "npm run typecheck passes"
+        "Wrap fetch() call in searchFoods() with try-catch",
+        "Wrap fetch() call in getFoodDetails() with try-catch",
+        "On network error, throw new Error with message: 'USDA API network error: [original message]'",
+        "On non-ok response, try to parse response body for error details before throwing",
+        "Include response status and parsed error message in thrown error",
+        "npm run build passes"
       ],
       "priority": 3,
       "passes": true,
-      "notes": "Network errors can crash the component without this."
+      "notes": "Critical fix - network errors, DNS failures, timeouts currently propagate without context."
     },
     {
-      "id": "US-004",
-      "title": "Handle blank=true query param in /create",
-      "description": "Make the ?blank=true query param functional in /create page.",
+      "id": "US-014",
+      "title": "Add authentication to food search API",
+      "description": "As a developer, I want the /api/foods/search endpoint protected so anonymous users can't exhaust our USDA quota.",
       "acceptanceCriteria": [
-        "In src/app/create/page.tsx, read the 'blank' query param",
-        "If blank=true, default to text input mode with empty textarea ready for input",
-        "Optionally show a heading like 'Build Your Program' instead of 'Import'",
-        "npm run typecheck passes"
+        "Import getServerSession and authOptions in src/app/api/foods/search/route.ts",
+        "Check session at start of GET handler",
+        "Return 401 Unauthorized JSON response if no session",
+        "Existing functionality works for authenticated users",
+        "npm run build passes"
       ],
       "priority": 4,
-      "passes": false,
-      "notes": "Currently /templates links to /create?blank=true but param is ignored."
+      "passes": true,
+      "notes": "Security fix - public endpoint allows quota exhaustion attacks."
     },
     {
-      "id": "US-005",
-      "title": "Add text input size limit to API",
-      "description": "Add a size limit for text input in the import API to match file upload limits.",
+      "id": "US-015",
+      "title": "Validate localStorage data shape when parsing",
+      "description": "As a developer, I want parsed localStorage data validated so corrupted data doesn't cause UI crashes.",
       "acceptanceCriteria": [
-        "In src/app/api/programs/import/route.ts, add check for text field length",
-        "Limit to reasonable size (e.g., 50000 characters / ~50KB)",
-        "Return clear error if exceeded: 'Text input too long. Maximum 50,000 characters.'",
-        "npm run typecheck passes"
+        "Add isValidSimplifiedFood() type guard function in src/lib/foods/recentFoods.ts",
+        "Type guard checks: fdcId is number, name is string, calories is number",
+        "In getRecentFoods(), filter parsed array through type guard",
+        "Log warning if any entries were filtered out as invalid",
+        "Clear corrupted localStorage if all entries invalid",
+        "npm run build passes"
       ],
       "priority": 5,
-      "passes": false,
-      "notes": "File uploads have 10MB limit but text has none currently."
+      "passes": true,
+      "notes": "Important fix - corrupted data causes silent failures downstream."
     },
     {
-      "id": "US-006",
-      "title": "Add try-catch around mammoth extraction",
-      "description": "Wrap mammoth.extractRawText in try-catch for better DOCX error handling.",
+      "id": "US-016",
+      "title": "Add retry button to search error state",
+      "description": "As a user, I want a retry button when food search fails so I can try again without retyping.",
       "acceptanceCriteria": [
-        "In src/app/api/programs/import/route.ts, find the mammoth.extractRawText call",
-        "Wrap it in try-catch",
-        "On error, return user-friendly message: 'Unable to read your Word document. It may be corrupted or password-protected.'",
-        "npm run typecheck passes"
+        "In src/components/nutrition/FoodSearchAutocomplete.tsx error display section",
+        "Add 'Try again' button below error message",
+        "Button clears error state and re-triggers search with current query",
+        "Button styled with coral color, underline, small text (text-xs)",
+        "npm run build passes",
+        "Verify component renders correctly in browser"
       ],
       "priority": 6,
-      "passes": false,
-      "notes": "Corrupted DOCX files currently show generic 'Server error'."
+      "passes": true,
+      "notes": "UX fix - users with transient network errors have no recovery path."
     },
     {
-      "id": "US-007",
-      "title": "Clean up unused imports and state in /create",
-      "description": "Remove unused GripVertical import and savedProgramId state.",
+      "id": "US-017",
+      "title": "Add bounds validation for limit parameter",
+      "description": "As a developer, I want the limit parameter validated to prevent abuse.",
       "acceptanceCriteria": [
-        "In src/app/create/page.tsx, remove GripVertical from lucide-react import if unused",
-        "Remove savedProgramId state if it's set but never read",
-        "npm run typecheck passes"
+        "In src/app/api/foods/search/route.ts, validate limit is between 1 and 50",
+        "Use Math.min(Math.max(parsed, 1), 50) pattern",
+        "Handle NaN case (default to 10)",
+        "npm run build passes"
       ],
       "priority": 7,
+      "passes": true,
+      "notes": "Security fix - unbounded limit could cause issues."
+    },
+    {
+      "id": "US-018",
+      "title": "Improve API route error messages",
+      "description": "As a user, I want specific error messages so I know what went wrong and if I should retry.",
+      "acceptanceCriteria": [
+        "In src/app/api/foods/search/route.ts catch block, categorize errors",
+        "If error mentions 'API_KEY', return 503 with 'Food search temporarily unavailable'",
+        "If error mentions 'network', return 503 with 'Unable to reach food database'",
+        "If error mentions '429' or 'rate', return 429 with 'Too many requests, please wait'",
+        "Include original error in development mode only (process.env.NODE_ENV check)",
+        "npm run build passes"
+      ],
+      "priority": 8,
+      "passes": true,
+      "notes": "UX fix - generic errors don't help users understand the problem."
+    },
+    {
+      "id": "US-019",
+      "title": "Add error handling to meal-prep page fetch",
+      "description": "As a user, I want to see an error message if the page fails to load instead of infinite spinner.",
+      "acceptanceCriteria": [
+        "Add error state to src/app/meal-prep/page.tsx (useState for error message)",
+        "Wrap fetchData useEffect contents in try-catch",
+        "On catch, set error state with user-friendly message",
+        "Display error state in UI with retry option",
+        "Ensure loading state is cleared in finally block",
+        "npm run build passes"
+      ],
+      "priority": 9,
       "passes": false,
-      "notes": "Minor cleanup for code quality."
+      "notes": "UX fix - fetch failures leave users in infinite loading state."
     }
   ]
 }
