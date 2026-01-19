@@ -7,66 +7,81 @@ import Image from 'next/image';
 
 // Feature catalog page following v2a style guide
 
-const FEATURES = [
+const HERO_FEATURES = [
   {
-    id: 'program-builder',
+    id: 'ai-program-builder',
     title: 'AI Program Builder',
-    description: 'Answer a few questions about your goals, experience, and available equipment. Get a fully personalized workout program in minutes.',
-    screenshot: '/features/program-builder.png',
+    description: 'Chat naturally about your goals, experience, and schedule. Our AI builds you a personalized workout program in minutes, not hours.',
+    screenshot: '/features/ai-program-builder.png',
     category: 'Core',
   },
   {
     id: 'workout-logging',
     title: 'Workout Logging',
     description: 'Track every set, rep, and weight during your workout. See your PRs and last session data right where you need it.',
-    screenshot: '/features/workout-logging.png',
+    screenshot: '/features/workout-logging-mobile.png',
     category: 'Core',
   },
   {
-    id: 'exercise-library',
-    title: 'Exercise Library',
-    description: '500+ exercises with video demos, muscle group targeting, and alternative suggestions based on your equipment.',
-    screenshot: '/features/exercise-library.png',
+    id: 'progress-dashboard',
+    title: 'Progress Dashboard',
+    description: "Your command center for training. See today's workout, track your streak, and monitor your progress all in one place.",
+    screenshot: '/features/progress-dashboard.png',
+    category: 'Core',
+  },
+];
+
+const MORE_FEATURES = [
+  {
+    id: 'import-program',
+    title: 'Import or Create Your Own',
+    description: 'Already have a program? Paste it, upload a file, or even just talk through it. We\'ll turn any workout into a trackable program.',
+    screenshot: '/features/import-program.png',
     category: 'Core',
   },
   {
-    id: 'nutrition-macros',
-    title: 'Nutrition & Macros',
-    description: 'Personalized calorie and macro targets based on your goals. TDEE calculations that actually work.',
-    screenshot: '/features/nutrition-macros.png',
-    category: 'Nutrition',
-  },
-  {
-    id: 'progress-tracking',
-    title: 'Progress Tracking',
-    description: 'Visual charts showing strength gains, volume trends, and workout consistency over time.',
-    screenshot: '/features/progress-tracking.png',
-    category: 'Analytics',
+    id: 'templates-library',
+    title: 'Templates Library',
+    description: 'Browse proven programs from PPL to 5/3/1 to full-body splits. Find one that fits your schedule and goals, customize it your way.',
+    screenshot: '/features/templates-library.png',
+    category: 'Core',
   },
   {
     id: 'ai-trainer-chat',
     title: 'AI Trainer Chat',
-    description: 'Get real-time answers about form, exercise swaps, and programming questions during your workout.',
+    description: 'Get real-time answers about form, exercise swaps, and programming questions. Like having a trainer in your pocket.',
     screenshot: '/features/ai-trainer-chat.png',
     category: 'AI',
   },
   {
-    id: 'weekly-checkins',
-    title: 'Weekly Check-ins',
-    description: 'Regular progress check-ins that adapt your program based on how you\'re feeling and performing.',
-    screenshot: '/features/weekly-checkins.png',
-    category: 'Tracking',
+    id: 'nutrition-tracking',
+    title: 'Nutrition & Macros',
+    description: 'Personalized calorie and macro targets based on your goals. Track what you eat and see how it aligns with your targets.',
+    screenshot: '/features/nutrition-tracking.png',
+    category: 'Nutrition',
   },
   {
-    id: 'pdf-export',
-    title: 'PDF Export',
-    description: 'Export your workout program to PDF for offline access or to share with your gym buddy.',
-    screenshot: '/features/pdf-export.png',
-    category: 'Export',
+    id: 'meal-prep',
+    title: 'Meal Planning',
+    description: 'Generate meal plans that hit your macros. Get grocery lists, prep instructions, and recipes tailored to your preferences.',
+    screenshot: '/features/meal-prep.png',
+    category: 'Nutrition',
+  },
+  {
+    id: 'check-in',
+    title: 'Check-ins & Progress Photos',
+    description: 'Track measurements, take progress photos, and see your transformation over time. We celebrate progress, not perfection.',
+    screenshot: '/features/check-in.png',
+    category: 'Progress',
+  },
+  {
+    id: 'exercise-library',
+    title: 'Exercise Library',
+    description: '500+ exercises with video demos, muscle group targeting, and smart suggestions based on your equipment.',
+    screenshot: '/features/exercise-library.png',
+    category: 'Core',
   },
 ];
-
-const CATEGORIES = ['All', 'Core', 'AI', 'Nutrition', 'Analytics', 'Tracking', 'Export'];
 
 export default function FeaturesPage() {
   const router = useRouter();
@@ -138,6 +153,7 @@ export default function FeaturesPage() {
 
               <nav className="hidden md:flex items-center gap-8">
                 <Link href="/" className="text-sm font-medium text-[var(--color-gray-500)] hover:text-[var(--color-navy)] transition-colors">Home</Link>
+                <Link href="/templates" className="text-sm font-medium text-[var(--color-gray-500)] hover:text-[var(--color-navy)] transition-colors">Templates</Link>
                 <Link href="/coaches" className="text-sm font-medium text-[var(--color-gray-500)] hover:text-[var(--color-navy)] transition-colors">Coaches</Link>
                 <Link href="/pricing" className="text-sm font-medium text-[var(--color-gray-500)] hover:text-[var(--color-navy)] transition-colors">Pricing</Link>
               </nav>
@@ -191,32 +207,72 @@ export default function FeaturesPage() {
           </div>
         </section>
 
-        {/* Feature Grid */}
-        <section className="py-16 px-6">
+        {/* Hero Features */}
+        <section className="py-16 px-6 bg-[var(--color-gray-50)]">
           <div className="max-w-6xl mx-auto">
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {FEATURES.map((feature, i) => (
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-[var(--color-navy)] mb-4">Core Features</h2>
+              <p className="text-[var(--color-gray-500)] max-w-2xl mx-auto">The essentials that make baisics different</p>
+            </div>
+
+            <div className="grid lg:grid-cols-3 gap-8">
+              {HERO_FEATURES.map((feature) => (
                 <div
                   key={feature.id}
-                  className="group bg-white rounded-2xl border border-[var(--color-gray-200)] overflow-hidden shadow-sm hover:shadow-lg transition-all hover:-translate-y-1"
+                  className="group bg-white rounded-3xl border border-[var(--color-gray-200)] overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
                 >
-                  {/* Screenshot placeholder */}
-                  <div className="aspect-video bg-gradient-to-br from-[var(--color-gray-100)] to-[var(--color-gray-200)] relative overflow-hidden">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="text-center p-6">
-                        <div className="w-16 h-16 mx-auto mb-3 rounded-xl bg-[var(--color-coral-light)] flex items-center justify-center">
-                          <svg className="w-8 h-8 text-[var(--color-coral)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                          </svg>
-                        </div>
-                        <span className="text-sm font-medium text-[var(--color-gray-400)]">Screenshot coming soon</span>
-                      </div>
-                    </div>
-                    {/* Gradient overlay on hover */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-navy)]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="aspect-[4/3] bg-gradient-to-br from-[var(--color-gray-100)] to-[var(--color-gray-200)] relative overflow-hidden">
+                    <Image
+                      src={feature.screenshot}
+                      alt={`${feature.title} screenshot`}
+                      fill
+                      className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      priority
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
 
-                  {/* Content */}
+                  <div className="p-8">
+                    <div className="flex items-center gap-2 mb-4">
+                      <span className="px-3 py-1.5 text-xs font-bold text-[var(--color-coral)] bg-[var(--color-coral-light)] rounded-full uppercase tracking-wide">
+                        {feature.category}
+                      </span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-[var(--color-navy)] mb-3">{feature.title}</h3>
+                    <p className="text-[var(--color-gray-500)] leading-relaxed text-lg">{feature.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* More Features */}
+        <section className="py-16 px-6">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-[var(--color-navy)] mb-4">More Features</h2>
+              <p className="text-[var(--color-gray-500)] max-w-2xl mx-auto">Everything else you need to succeed</p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8">
+              {MORE_FEATURES.map((feature) => (
+                <div
+                  key={feature.id}
+                  className="group bg-white rounded-2xl border border-[var(--color-gray-200)] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                >
+                  <div className="aspect-video bg-gradient-to-br from-[var(--color-gray-100)] to-[var(--color-gray-200)] relative overflow-hidden">
+                    <Image
+                      src={feature.screenshot}
+                      alt={`${feature.title} screenshot`}
+                      fill
+                      className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-navy)]/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
+
                   <div className="p-6">
                     <div className="flex items-center gap-2 mb-3">
                       <span className="px-2 py-1 text-xs font-semibold text-[var(--color-coral)] bg-[var(--color-coral-light)] rounded-full">
@@ -228,6 +284,44 @@ export default function FeaturesPage() {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Philosophy Section */}
+        <section className="py-16 px-6 bg-[var(--color-gray-50)]">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl font-bold text-[var(--color-navy)] mb-6">
+              Built Different
+            </h2>
+            <div className="grid md:grid-cols-3 gap-8 mt-10">
+              <div className="p-6">
+                <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-[var(--color-coral-light)] flex items-center justify-center">
+                  <svg className="w-7 h-7 text-[var(--color-coral)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-bold text-[var(--color-navy)] mb-2">No Anxiety Streaks</h3>
+                <p className="text-[var(--color-gray-500)]">We celebrate progress, not perfection. Miss a day? Life happens. Your streak doesn&apos;t break, it pauses.</p>
+              </div>
+              <div className="p-6">
+                <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-[var(--color-coral-light)] flex items-center justify-center">
+                  <svg className="w-7 h-7 text-[var(--color-coral)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-bold text-[var(--color-navy)] mb-2">Long Game Thinking</h3>
+                <p className="text-[var(--color-gray-500)]">Fitness is a lifetime journey. We build tools that help you stay consistent for years, not weeks.</p>
+              </div>
+              <div className="p-6">
+                <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-[var(--color-coral-light)] flex items-center justify-center">
+                  <svg className="w-7 h-7 text-[var(--color-coral)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-bold text-[var(--color-navy)] mb-2">Your Way</h3>
+                <p className="text-[var(--color-gray-500)]">Build from scratch, import your program, or use a template. However you train, we adapt to you.</p>
+              </div>
             </div>
           </div>
         </section>
@@ -249,10 +343,10 @@ export default function FeaturesPage() {
                 Get Started Free
               </button>
               <Link
-                href="/coaches"
+                href="/templates"
                 className="px-12 py-5 text-lg font-semibold text-white border-2 border-white rounded-xl hover:bg-white hover:text-[var(--color-navy)] transition-all"
               >
-                For Coaches
+                Browse Templates
               </Link>
             </div>
           </div>
@@ -271,9 +365,9 @@ export default function FeaturesPage() {
 
               <nav className="flex gap-8">
                 <Link href="/" className="text-sm text-[var(--color-gray-500)] hover:text-[var(--color-navy)] transition-colors">Home</Link>
+                <Link href="/templates" className="text-sm text-[var(--color-gray-500)] hover:text-[var(--color-navy)] transition-colors">Templates</Link>
                 <Link href="/coaches" className="text-sm text-[var(--color-gray-500)] hover:text-[var(--color-navy)] transition-colors">Coaches</Link>
                 <Link href="/privacy" className="text-sm text-[var(--color-gray-500)] hover:text-[var(--color-navy)] transition-colors">Privacy</Link>
-                <Link href="/terms" className="text-sm text-[var(--color-gray-500)] hover:text-[var(--color-navy)] transition-colors">Terms</Link>
               </nav>
 
               <p className="text-sm text-[var(--color-gray-400)]">&copy; {new Date().getFullYear()} baisics. All rights reserved.</p>
