@@ -69,3 +69,6 @@ supabase/config.toml
 scripts/ralph/
 test-results/
 playwright-report/
+scripts/ralph/prd.json
+scripts/ralph/progress.txt
+scripts/ralph/.last-branch
