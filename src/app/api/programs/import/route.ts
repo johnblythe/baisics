@@ -364,7 +364,7 @@ export async function POST(request: Request) {
         error: true,
         reason: 'Failed to save to database',
         details: [error instanceof Error ? error.message : 'Unknown error']
-      });
+      }, { status: 500 });
     }
 
   } catch (error) {
@@ -373,6 +373,6 @@ export async function POST(request: Request) {
       error: true,
       reason: 'Server error',
       details: [error instanceof Error ? error.message : 'Unknown error']
-    });
+    }, { status: 500 });
   }
 } 
