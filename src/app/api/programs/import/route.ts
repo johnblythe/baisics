@@ -178,7 +178,7 @@ export async function POST(request: Request) {
             error: true,
             reason: 'Document extraction failed',
             details: ['Unable to read your Word document. It may be corrupted or password-protected.']
-          });
+          }, { status: 422 });
         }
 
         messages = [{
