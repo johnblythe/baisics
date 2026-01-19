@@ -67,3 +67,5 @@ supabase/config.toml
 
 # Ralph autonomous agent
 scripts/ralph/
+test-results/
+playwright-report/

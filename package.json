@@ -17,7 +17,8 @@
     "import:exercises": "npx tsx src/scripts/import-exercises.ts",
     "screenshots": "npx playwright test --project='Desktop Chrome' tests/screenshots/",
     "screenshots:mobile": "npx playwright test --project='Mobile Safari' tests/screenshots/",
-    "screenshots:all": "npx playwright test tests/screenshots/"
+    "screenshots:all": "npx playwright test tests/screenshots/",
+    "test:e2e": "playwright test --config playwright.e2e.config.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.1",
