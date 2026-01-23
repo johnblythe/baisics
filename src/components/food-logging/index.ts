@@ -10,3 +10,9 @@ export type { QuickPillsProps, QuickFoodItem } from './QuickPills';
 
 export { WeeklyStrip } from './WeeklyStrip';
 export type { WeeklyStripProps, WeeklyDayData } from './WeeklyStrip';
+
+export { FoodLogItem } from './FoodLogItem';
+export type { FoodLogItemProps, FoodLogItemData } from './FoodLogItem';
+
+export { MealSection } from './MealSection';
+export type { MealSectionProps, MealType } from './MealSection';
