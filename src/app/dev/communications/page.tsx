@@ -24,6 +24,7 @@ const MOCK_RECOVERY_5DAYS: RecoveryData = {
   daysSinceLastWorkout: 7,
   recoveryTier: {
     type: 'recovery',
+    daysMissed: 7,
     headline: "Ready when you are",
     subheadline: "Your progress is still here.",
     encouragement: "Pick up where you left off, or ease back in with a lighter session.",
@@ -34,11 +35,16 @@ const MOCK_RECOVERY_5DAYS: RecoveryData = {
     currentStreak: 0,
     longestStreak: 3,
   },
+  weeklyProgress: {
+    completed: 3,
+    target: 4,
+  },
   programProgress: {
-    completedWorkouts: 6,
-    totalWorkouts: 24,
+    name: 'Strength Builder Pro',
+    week: 3,
     percentComplete: 25,
   },
+  needsRecovery: true,
   nextWorkout: {
     id: 'workout-456',
     name: 'Full Body',
@@ -47,29 +53,36 @@ const MOCK_RECOVERY_5DAYS: RecoveryData = {
   },
   quickComebackWorkout: {
     id: 'quick-123',
+    name: 'Quick Comeback',
+    description: 'Get back in the groove with a light full-body session',
     exercises: [
-      { name: 'Goblet Squat', sets: 3 },
-      { name: 'Push-ups', sets: 3 },
-      { name: 'Dumbbell Row', sets: 3 },
+      { name: 'Goblet Squat', sets: 3, reps: 10, originalSets: 4 },
+      { name: 'Push-ups', sets: 3, reps: 12, originalSets: 4 },
+      { name: 'Dumbbell Row', sets: 3, reps: 10, originalSets: 4 },
     ],
     estimatedMinutes: 20,
   },
 };
 
 const MOCK_WEEK2_DATA: Week2CheckInData = {
-  programStats: {
-    weekNumber: 2,
-    daysInProgram: 14,
-  },
+  shouldShow: true,
+  alreadyShown: false,
   completedWorkouts: 7,
+  programName: 'Strength Builder Pro',
   originalGoals: {
     trainingGoal: 'muscle_gain',
     daysAvailable: 4,
+    experienceLevel: 'beginner',
   },
-  programId: 'program-123',
+  programStats: {
+    daysPerWeek: 4,
+    totalWorkoutsInProgram: 32,
+    weekNumber: 2,
+  },
 };
 
 const MOCK_PROGRAM_COMPLETION: ProgramCompletionData = {
+  isComplete: true,
   programId: 'program-123',
   programName: 'Strength Builder Pro',
   totalWorkouts: 24,
@@ -79,6 +92,8 @@ const MOCK_PROGRAM_COMPLETION: ProgramCompletionData = {
   firstWeekVolume: 42000,
   finalWeekVolume: 68000,
   volumeGrowth: 62,
+  startDate: '2025-11-01',
+  completionDate: '2025-12-27',
 };
 
 const MOCK_REST_DAY: RestDayData = {
