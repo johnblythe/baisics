@@ -6,6 +6,8 @@ import { cookies } from "next/headers";
 import { prisma } from "./prisma";
 import { sendEmail, emailConfig } from "./email";
 import { magicLinkTemplate } from "./email/templates/magic-link";
+import { adminSignupNotificationTemplate } from "./email/templates/admin";
+import { trackEvent } from "./analytics";
 
 // Helper to get session (v4 pattern that mimics v5's auth())
 export async function auth() {
@@ -85,6 +87,13 @@ export const authOptions: NextAuthOptions = {
           subject: "Sign in to Baisics",
           html: emailHtml,
         });
+
+        // Track magic link requested
+        trackEvent({
+          category: "auth",
+          event: "magic_link_requested",
+          metadata: { email: identifier },
+        }).catch(() => {});
       },
     }),
     CredentialsProvider({
@@ -116,6 +125,30 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+  events: {
+    createUser: async ({ user }) => {
+      // Track signup completed
+      trackEvent({
+        category: "auth",
+        event: "signup_completed",
+        userId: user.id,
+        metadata: { email: user.email },
+      }).catch(() => {});
+
+      // Send admin notification when a new user signs up via magic link
+      if (user.email && process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
+        sendEmail({
+          to: process.env.NEXT_PUBLIC_ADMIN_EMAIL,
+          subject: `New Magic Link Signup: ${user.email}`,
+          html: adminSignupNotificationTemplate({
+            userEmail: user.email,
+            isPremium: false,
+            userId: user.id,
+          }),
+        }).catch((err) => console.error("Admin signup notification failed:", err));
+      }
+    },
+  },
   callbacks: {
     signIn: async () => {
       // Coach signup is handled in /api/coaches/signup before magic link is sent

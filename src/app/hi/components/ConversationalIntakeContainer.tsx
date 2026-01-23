@@ -20,6 +20,7 @@ import { User } from "@prisma/client";
 import { ConversationalInterface } from "./ConversationalInterface";
 import Link from "next/link";
 import { Program, IntakeFormData } from "@/types";
+import { trackEventClient } from "@/lib/analytics";
 
 // Define the ref type
 export interface ConversationalIntakeRef {
@@ -187,6 +188,14 @@ function ConversationalIntakeContent({ chatRef, userId: propUserId, preventNavig
           }
         }
       }
+
+      // Track onboarding started
+      trackEventClient({
+        category: "onboarding",
+        event: "onboarding_started",
+        metadata: { hasExistingProgram: !!searchParams.get("programId") },
+      });
+
       setIsLoading(false);
     };
 

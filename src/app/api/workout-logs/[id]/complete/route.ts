@@ -6,6 +6,7 @@ import { checkAndAwardMilestone } from '@/lib/milestone-service';
 import { sendEmail } from '@/lib/email';
 import { createProgramCompletionEmail } from '@/lib/email/templates/program-completion';
 import { getDebugState } from '@/lib/debug/api';
+import { trackEvent } from '@/lib/analytics';
 
 export async function POST(
   request: Request,
@@ -305,6 +306,19 @@ export async function POST(
         error: programError instanceof Error ? programError.message : String(programError)
       });
     }
+
+    // Track workout completed
+    trackEvent({
+      category: "workout",
+      event: isFirstWorkout ? "first_workout_completed" : "workout_completed",
+      userId,
+      metadata: {
+        workoutLogId: id,
+        programId: workoutLog.programId,
+        setsCompleted: workoutStats.setsCompleted,
+        totalVolume: workoutStats.totalVolume,
+      },
+    }).catch(() => {});
 
     return NextResponse.json({
       ...updatedWorkoutLog,
