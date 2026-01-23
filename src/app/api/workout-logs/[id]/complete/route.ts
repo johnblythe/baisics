@@ -177,6 +177,12 @@ export async function POST(
       if (program) {
         // Get all unique workouts in the program
         const allWorkouts = program.workoutPlans.flatMap(wp => wp.workouts);
+        const workoutPlan = program.workoutPlans[0];
+        const daysPerWeek = workoutPlan?.daysPerWeek || 3;
+        const durationWeeks = workoutPlan?.durationWeeks || 8;
+
+        // Calculate expected total workouts for program completion
+        const expectedTotalWorkouts = daysPerWeek * durationWeeks;
 
         // Get all completed workouts for this program
         const completedWorkoutLogs = await prisma.workoutLog.findMany({
@@ -195,9 +201,9 @@ export async function POST(
           orderBy: { completedAt: 'asc' },
         });
 
-        // Check if every unique workout has been completed at least once
-        const completedWorkoutIds = new Set(completedWorkoutLogs.map(wl => wl.workoutId));
-        const isProgramComplete = allWorkouts.every(w => completedWorkoutIds.has(w.id));
+        // Program is complete when user has done the expected number of workouts
+        // (e.g., 3 days/week x 8 weeks = 24 workouts)
+        const isProgramComplete = completedWorkoutLogs.length >= expectedTotalWorkouts;
 
         if (isProgramComplete) {
           // Calculate completion stats

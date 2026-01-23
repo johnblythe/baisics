@@ -23,7 +23,8 @@ export function RecoveryScreen({
 
   if (!tier) return null;
 
-  const isNoJudgment = tier.type === 'no_judgment';
+  // Recovery screen only shows for 5+ day absences now
+  // Use consistent supportive styling (not the cheerful coral)
 
   return (
     <AnimatePresence>
@@ -39,42 +40,28 @@ export function RecoveryScreen({
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className={`
-            w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden
-            ${isNoJudgment ? 'border-l-4 border-l-[#94A3B8]' : 'border-l-4 border-l-[#FF6B6B]'}
-          `}
+          className="w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden border-l-4 border-l-[#94A3B8]"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div
-            className={`
-            px-6 py-8 text-center
-            ${isNoJudgment ? 'bg-gradient-to-br from-slate-50 to-slate-100' : 'bg-gradient-to-br from-[#FFE5E5] to-white'}
-          `}
-          >
+          <div className="px-6 py-8 text-center bg-gradient-to-br from-slate-50 to-slate-100">
             {/* Icon */}
             <div className="mb-4">
-              {isNoJudgment ? (
-                <div className="w-16 h-16 mx-auto rounded-full bg-slate-200 flex items-center justify-center">
-                  <svg
-                    className="w-8 h-8 text-slate-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                    />
-                  </svg>
-                </div>
-              ) : (
-                <div className="w-16 h-16 mx-auto rounded-full bg-[#FFE5E5] flex items-center justify-center">
-                  <span className="text-3xl">👋</span>
-                </div>
-              )}
+              <div className="w-16 h-16 mx-auto rounded-full bg-slate-200 flex items-center justify-center">
+                <svg
+                  className="w-8 h-8 text-slate-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                  />
+                </svg>
+              </div>
             </div>
 
             {/* Headline */}
@@ -114,7 +101,7 @@ export function RecoveryScreen({
 
           {/* Encouragement */}
           <div className="px-6 py-4">
-            <p className="text-[#475569] text-center italic">&ldquo;{tier.encouragement}&rdquo;</p>
+            <p className="text-[#475569] text-center">{tier.encouragement}</p>
           </div>
 
           {/* Action Options */}
@@ -188,25 +175,23 @@ export function RecoveryScreen({
             </button>
           </div>
 
-          {/* Program Adjustment Offer - Only for 3+ days */}
-          {isNoJudgment && (
-            <div className="px-6 pb-6 pt-2 border-t border-[#E2E8F0]">
-              <Link
-                href={`/dashboard/${programId}/adjust`}
-                className="text-sm text-[#64748B] hover:text-[#FF6B6B] flex items-center justify-center gap-2 transition-colors"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
-                  />
-                </svg>
-                Life changed? Adjust your program to make it easier
-              </Link>
-            </div>
-          )}
+          {/* Program Adjustment Offer */}
+          <div className="px-6 pb-6 pt-2 border-t border-[#E2E8F0]">
+            <Link
+              href={`/dashboard/${programId}/adjust`}
+              className="text-sm text-[#64748B] hover:text-[#FF6B6B] flex items-center justify-center gap-2 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+                />
+              </svg>
+              Life changed? Adjust your program
+            </Link>
+          </div>
         </motion.div>
       </motion.div>
     </AnimatePresence>

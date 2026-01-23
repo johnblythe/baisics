@@ -151,7 +151,7 @@ export function MilestoneCelebrationModal({
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.8, opacity: 0 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+          className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto"
         >
           {/* Close button */}
           <button
@@ -162,7 +162,7 @@ export function MilestoneCelebrationModal({
           </button>
 
           {/* Header with milestone announcement */}
-          <div className={`bg-gradient-to-br ${config.gradient} p-8 text-center text-white`}>
+          <div className={`bg-gradient-to-br ${config.gradient} p-6 sm:p-8 text-center text-white`}>
             {/* Star burst decoration */}
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
@@ -174,13 +174,13 @@ export function MilestoneCelebrationModal({
                 {[...Array(8)].map((_, i) => (
                   <div
                     key={i}
-                    className="absolute w-1 h-8 bg-white/30 rounded-full"
+                    className="absolute w-1 h-6 sm:h-8 bg-white/30 rounded-full"
                     style={{
                       transform: `rotate(${i * 45}deg)`,
-                      transformOrigin: 'center 40px',
+                      transformOrigin: 'center 32px',
                       left: '50%',
                       marginLeft: '-2px',
-                      top: '-30px',
+                      top: '-24px',
                     }}
                   />
                 ))}
@@ -191,9 +191,9 @@ export function MilestoneCelebrationModal({
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.4, type: 'spring', damping: 15 }}
-              className="text-6xl mb-4"
+              className="text-5xl sm:text-6xl mb-3 sm:mb-4"
             >
-              <Icon className="w-16 h-16 mx-auto" strokeWidth={1.5} />
+              <Icon className="w-12 h-12 sm:w-16 sm:h-16 mx-auto" strokeWidth={1.5} />
             </motion.div>
 
             <motion.div
@@ -201,26 +201,25 @@ export function MilestoneCelebrationModal({
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.5 }}
             >
-              <h2 className="text-sm font-semibold uppercase tracking-wider mb-2 opacity-80">
+              <h2 className="text-xs sm:text-sm font-semibold uppercase tracking-wider mb-1 sm:mb-2 opacity-80">
                 Milestone Unlocked
               </h2>
-              <h3 className="text-3xl font-bold mb-2">{config.name}</h3>
-              <p className="text-white/80 italic">&ldquo;{config.quote}&rdquo;</p>
+              <h3 className="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2">{config.name}</h3>
             </motion.div>
           </div>
 
           {/* Stats & Journey */}
-          <div className="p-6 space-y-6">
+          <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
             {/* Journey So Far */}
             <motion.div
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.7 }}
             >
-              <h4 className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-3">
+              <h4 className="text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-400 mb-2 sm:mb-3">
                 Your Journey So Far
               </h4>
-              <div className="grid grid-cols-5 gap-2">
+              <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
                 {MILESTONES.slice(0, 5).map((milestone) => (
                   <MilestoneBadge
                     key={milestone.type}
@@ -232,7 +231,7 @@ export function MilestoneCelebrationModal({
                 ))}
               </div>
               {MILESTONES.length > 5 && (
-                <div className="grid grid-cols-4 gap-2 mt-2 justify-center">
+                <div className="grid grid-cols-4 gap-1.5 sm:gap-2 mt-1.5 sm:mt-2 justify-center">
                   {MILESTONES.slice(5).map((milestone) => (
                     <MilestoneBadge
                       key={milestone.type}
@@ -252,9 +251,9 @@ export function MilestoneCelebrationModal({
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.8 }}
-                className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4"
+                className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 sm:p-4"
               >
-                <div className="flex justify-between text-sm mb-2">
+                <div className="flex justify-between text-xs sm:text-sm mb-2">
                   <span className="text-gray-600 dark:text-gray-400">Next milestone</span>
                   <span className="font-semibold text-gray-900 dark:text-white">
                     {nextMilestone.name}
@@ -266,7 +265,7 @@ export function MilestoneCelebrationModal({
                     style={{ width: `${(totalWorkouts / nextMilestone.threshold) * 100}%` }}
                   />
                 </div>
-                <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center">
+                <div className="mt-1.5 sm:mt-2 text-xs text-gray-500 dark:text-gray-400 text-center">
                   {nextMilestone.threshold - totalWorkouts} workouts to go
                 </div>
               </motion.div>
@@ -277,29 +276,29 @@ export function MilestoneCelebrationModal({
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.9 }}
-              className="space-y-3"
+              className="space-y-2 sm:space-y-3"
             >
               <button
                 onClick={handleShare}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#FF6B6B] hover:bg-[#EF5350] text-white rounded-xl font-medium transition-colors"
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 bg-[#FF6B6B] hover:bg-[#EF5350] text-white rounded-xl font-medium transition-colors text-sm sm:text-base"
               >
-                <Share2 className="w-5 h-5" />
+                <Share2 className="w-4 h-4 sm:w-5 sm:h-5" />
                 Share Achievement
               </button>
 
               <div className="flex gap-2">
                 <button
                   onClick={handleTwitterShare}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-xl transition-colors"
+                  className="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-3 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-xl transition-colors text-sm"
                 >
                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                   </svg>
-                  Post on X
+                  <span className="hidden xs:inline">Post on</span> X
                 </button>
                 <button
                   onClick={handleCopy}
-                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-xl transition-colors ${
+                  className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-3 py-2 rounded-xl transition-colors text-sm ${
                     copied
                       ? 'bg-emerald-500 text-white'
                       : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
@@ -315,7 +314,7 @@ export function MilestoneCelebrationModal({
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                       </svg>
-                      Copy Link
+                      Copy
                     </>
                   )}
                 </button>
@@ -323,7 +322,7 @@ export function MilestoneCelebrationModal({
 
               <button
                 onClick={onClose}
-                className="w-full px-4 py-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+                className="w-full px-4 py-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors text-sm"
               >
                 Continue
               </button>

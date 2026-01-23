@@ -5,6 +5,19 @@ module.exports = {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  // Safelist dynamic classes used in milestones (can't be detected at build time)
+  safelist: [
+    // Milestone gradients (from milestones.ts)
+    'from-amber-400', 'to-amber-600',
+    'from-orange-400', 'to-orange-600',
+    'from-yellow-400', 'to-yellow-600',
+    'from-emerald-400', 'to-emerald-600',
+    'from-blue-400', 'to-blue-600',
+    'from-violet-400', 'to-violet-600',
+    'from-indigo-400', 'to-indigo-600',
+    'from-rose-400', 'to-rose-600',
+    'from-[#FF6B6B]', 'to-[#0F172A]',
+  ],
   darkMode: 'media',
   theme: {
     extend: {
