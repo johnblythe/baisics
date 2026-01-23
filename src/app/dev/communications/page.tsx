@@ -11,6 +11,10 @@ import { Week2CheckInModal } from '@/components/week2-checkin/Week2CheckInModal'
 import { RestDayDashboard } from '@/components/rest-day/RestDayDashboard';
 import { StreakCelebration } from '@/components/streak/StreakCelebration';
 import { PostWorkoutSummary } from '@/components/post-workout/PostWorkoutSummary';
+import { AlmostDoneNudge } from '@/components/almost-done/AlmostDoneNudge';
+import { PRCallout } from '@/components/pr-callout/PRCallout';
+import { MidProgramCheckIn } from '@/components/mid-program-checkin/MidProgramCheckIn';
+import { WeeklyDigestPreview } from '@/components/weekly-digest/WeeklyDigestPreview';
 import type { RecoveryData } from '@/app/api/programs/[programId]/recovery/route';
 import type { Week2CheckInData } from '@/app/api/programs/[programId]/week2-checkin/route';
 import type { ProgramCompletionData } from '@/app/api/programs/[programId]/completion/route';
@@ -166,6 +170,39 @@ const MOCK_POST_WORKOUT = {
   ],
 };
 
+// Almost done nudge - user is 21/24 workouts through program (87.5%)
+const MOCK_ALMOST_DONE = {
+  workoutsRemaining: 3,
+  totalWorkouts: 24,
+  programName: 'Strength Builder Pro',
+};
+
+// Mid-program check-in - Week 4 of 8-week program
+const MOCK_MID_PROGRAM_CHECKIN = {
+  weekNumber: 4,
+  totalWeeks: 8,
+  programName: 'Strength Builder Pro',
+  completedWorkouts: 14,
+  volumeGrowth: 18,
+};
+
+// Weekly digest email preview
+const MOCK_WEEKLY_DIGEST = {
+  weekStats: {
+    workouts: 4,
+    volume: 48500,
+    streak: 12,
+  },
+  upcomingWorkouts: [
+    { day: 'Mon', name: 'Upper Body A', focus: 'Chest & Triceps' },
+    { day: 'Wed', name: 'Lower Body A', focus: 'Quads & Glutes' },
+    { day: 'Fri', name: 'Upper Body B', focus: 'Back & Biceps' },
+    { day: 'Sat', name: 'Lower Body B', focus: 'Hamstrings' },
+  ],
+  programProgress: 42,
+  userName: 'Demo User',
+};
+
 // ============================================================================
 // COMPONENT CARDS WITH CONTEXT
 // ============================================================================
@@ -228,6 +265,8 @@ type ActiveModal =
   | 'streak-30'
   | 'streak-90'
   | 'post-workout'
+  | 'almost-done'
+  | 'mid-program-checkin'
   | null;
 
 export default function CommunicationsDemo() {
@@ -421,6 +460,34 @@ export default function CommunicationsDemo() {
                 <p><strong>Actions:</strong> View Details, Close</p>
               </div>
             </ComponentCard>
+
+            {/* Almost Done Nudge */}
+            <ComponentCard
+              title="Almost Done Nudge"
+              trigger="User is 85-95% through program (e.g., 21/24 workouts)"
+              location="Dashboard page load"
+              onShow={() => setActiveModal('almost-done')}
+            >
+              <div className="text-sm text-gray-600 space-y-2">
+                <p><strong>Message:</strong> &quot;3 workouts left!&quot;</p>
+                <p><strong>Tone:</strong> Motivating finish line push</p>
+                <p><strong>Actions:</strong> Start Workout, Dismiss</p>
+              </div>
+            </ComponentCard>
+
+            {/* Mid-Program Check-in */}
+            <ComponentCard
+              title="Mid-Program Check-in (Week 4/6)"
+              trigger="Week 4 (8-week program) or Week 6 (12-week program)"
+              location="Dashboard page load"
+              onShow={() => setActiveModal('mid-program-checkin')}
+            >
+              <div className="text-sm text-gray-600 space-y-2">
+                <p><strong>Options:</strong> Going great, Need adjustment, Taking a break</p>
+                <p><strong>Shows:</strong> Week progress, workouts completed, volume growth %</p>
+                <p><strong>Tone:</strong> Supportive mid-point vibe check</p>
+              </div>
+            </ComponentCard>
           </div>
         </section>
 
@@ -450,51 +517,62 @@ export default function CommunicationsDemo() {
               />
             </div>
           </div>
-        </section>
 
-        {/* Planned Components Section */}
-        <section className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <span className="w-8 h-8 bg-emerald-500 text-white rounded-lg flex items-center justify-center text-sm">+</span>
-            Planned Components (To Build)
-          </h2>
-          <p className="text-gray-600 mb-4">New celebrations and check-ins to implement</p>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Almost Done Nudge */}
-            <div className="bg-white rounded-xl border-2 border-dashed border-emerald-300 p-4">
-              <h3 className="font-bold text-gray-900">🏁 Almost Done Nudge</h3>
-              <p className="text-sm text-gray-600 mt-1"><strong>Trigger:</strong> 85-90% through program</p>
-              <p className="text-sm text-gray-600"><strong>Priority:</strong> HIGH</p>
-              <p className="text-sm text-gray-500 mt-2">Motivate finish line push - &quot;3 workouts left!&quot;</p>
-              <span className="inline-block mt-2 text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded">New</span>
+          {/* PR Callouts - Inline Component */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6 mt-6">
+            <div className="mb-4">
+              <h3 className="font-bold text-lg text-gray-900">PR / Personal Best Callouts</h3>
+              <p className="text-sm text-gray-600 mt-1">
+                <span className="font-medium">Trigger:</span> User sets new weight/rep/volume PR during workout
+              </p>
+              <p className="text-sm text-gray-600">
+                <span className="font-medium">Location:</span> Inline during workout logging, also in post-workout summary
+              </p>
             </div>
 
-            {/* PR Callouts */}
-            <div className="bg-white rounded-xl border-2 border-dashed border-emerald-300 p-4">
-              <h3 className="font-bold text-gray-900">💪 PR / Personal Best</h3>
-              <p className="text-sm text-gray-600 mt-1"><strong>Trigger:</strong> User sets new weight/rep PR</p>
-              <p className="text-sm text-gray-600"><strong>Priority:</strong> MEDIUM</p>
-              <p className="text-sm text-gray-500 mt-2">Inline callout during workout, summary in post-workout</p>
-              <span className="inline-block mt-2 text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded">New</span>
+            <div className="flex flex-wrap gap-3">
+              <PRCallout
+                exerciseName="Bench Press"
+                prType="weight"
+                previousBest={175}
+                newBest={185}
+                unit="lbs"
+              />
+              <PRCallout
+                exerciseName="Squat"
+                prType="reps"
+                previousBest={8}
+                newBest={10}
+              />
+              <PRCallout
+                exerciseName="Deadlift"
+                prType="volume"
+                previousBest={4500}
+                newBest={5200}
+                unit="lbs"
+              />
+            </div>
+          </div>
+
+          {/* Weekly Digest Email Preview */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6 mt-6">
+            <div className="mb-4">
+              <h3 className="font-bold text-lg text-gray-900">Weekly Digest Email Preview</h3>
+              <p className="text-sm text-gray-600 mt-1">
+                <span className="font-medium">Trigger:</span> Monday morning (cron job)
+              </p>
+              <p className="text-sm text-gray-600">
+                <span className="font-medium">Location:</span> User&apos;s email inbox
+              </p>
             </div>
 
-            {/* Week 4/6 Check-in */}
-            <div className="bg-white rounded-xl border-2 border-dashed border-emerald-300 p-4">
-              <h3 className="font-bold text-gray-900">📋 Week 4/6 Check-in</h3>
-              <p className="text-sm text-gray-600 mt-1"><strong>Trigger:</strong> Week 4 (8wk prog) or Week 6 (12wk)</p>
-              <p className="text-sm text-gray-600"><strong>Priority:</strong> MEDIUM</p>
-              <p className="text-sm text-gray-500 mt-2">Mid-program vibe check like week 2, adjust if needed</p>
-              <span className="inline-block mt-2 text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded">New</span>
-            </div>
-
-            {/* Weekly Email Digest */}
-            <div className="bg-white rounded-xl border-2 border-dashed border-emerald-300 p-4">
-              <h3 className="font-bold text-gray-900">📧 Weekly Digest Email</h3>
-              <p className="text-sm text-gray-600 mt-1"><strong>Trigger:</strong> Monday morning</p>
-              <p className="text-sm text-gray-600"><strong>Priority:</strong> MEDIUM</p>
-              <p className="text-sm text-gray-500 mt-2">Last week highlights, this week preview, streak status</p>
-              <span className="inline-block mt-2 text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded">New</span>
+            <div className="max-w-lg">
+              <WeeklyDigestPreview
+                weekStats={MOCK_WEEKLY_DIGEST.weekStats}
+                upcomingWorkouts={MOCK_WEEKLY_DIGEST.upcomingWorkouts}
+                programProgress={MOCK_WEEKLY_DIGEST.programProgress}
+                userName={MOCK_WEEKLY_DIGEST.userName}
+              />
             </div>
           </div>
         </section>
@@ -720,6 +798,34 @@ export default function CommunicationsDemo() {
           prs={MOCK_POST_WORKOUT.prs}
           onClose={closeModal}
           onViewDetails={() => console.log('View details clicked')}
+        />
+      )}
+
+      {activeModal === 'almost-done' && (
+        <AlmostDoneNudge
+          workoutsRemaining={MOCK_ALMOST_DONE.workoutsRemaining}
+          totalWorkouts={MOCK_ALMOST_DONE.totalWorkouts}
+          programName={MOCK_ALMOST_DONE.programName}
+          onClose={closeModal}
+          onStartWorkout={() => {
+            console.log('Start workout clicked');
+            closeModal();
+          }}
+        />
+      )}
+
+      {activeModal === 'mid-program-checkin' && (
+        <MidProgramCheckIn
+          weekNumber={MOCK_MID_PROGRAM_CHECKIN.weekNumber}
+          totalWeeks={MOCK_MID_PROGRAM_CHECKIN.totalWeeks}
+          programName={MOCK_MID_PROGRAM_CHECKIN.programName}
+          completedWorkouts={MOCK_MID_PROGRAM_CHECKIN.completedWorkouts}
+          volumeGrowth={MOCK_MID_PROGRAM_CHECKIN.volumeGrowth}
+          onResponse={(option) => {
+            console.log('Mid-program check-in response:', option);
+            closeModal();
+          }}
+          onDismiss={closeModal}
         />
       )}
     </div>
