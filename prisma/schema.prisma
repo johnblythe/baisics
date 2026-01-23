@@ -97,6 +97,9 @@ model User {
   purchaseSessions PurchaseSession[]
   subscription     Subscription?
   appLogs          AppLog[]
+  foodLogEntries   FoodLogEntry[]
+  recipes          Recipe[]
+  quickFoods       QuickFood[]
 
   // Coach Mode relations
   isCoach          Boolean       @default(false) @map("is_coach")
@@ -621,6 +624,105 @@ model NutritionLog {
 enum NutritionSource {
   MANUAL
   SCREENSHOT
+}
+
+// Food Logging - MFP-style food tracking
+enum FoodSource {
+  MANUAL      // Hand-entered by user
+  USDA_SEARCH // Selected from USDA database
+  AI_PARSED   // Parsed from natural language text
+  QUICK_ADD   // Added from quick foods
+  RECIPE      // Added from a recipe
+  SCREENSHOT  // Parsed from screenshot
+}
+
+enum MealType {
+  BREAKFAST
+  LUNCH
+  DINNER
+  SNACK
+}
+
+model FoodLogEntry {
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String     @map("user_id") @db.Uuid
+  date        DateTime   @db.Date
+  meal        MealType
+  fdcId       String?    @map("fdc_id") // USDA FoodData Central ID
+  name        String
+  brand       String?
+  servingSize Float      @default(1) @map("serving_size")
+  servingUnit String     @default("serving") @map("serving_unit")
+  calories    Int
+  protein     Float
+  carbs       Float
+  fat         Float
+  source      FoodSource @default(MANUAL)
+  recipeId    String?    @map("recipe_id") @db.Uuid
+  notes       String?    @db.Text
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  user   User    @relation(fields: [userId], references: [id])
+  recipe Recipe? @relation(fields: [recipeId], references: [id])
+
+  @@index([userId])
+  @@index([date])
+  @@index([userId, date])
+  @@map("food_log_entries")
+}
+
+model Recipe {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String?  @map("user_id") @db.Uuid // null for public/system recipes
+  name        String
+  emoji       String?  @db.VarChar(10)
+  isPublic    Boolean  @default(false) @map("is_public")
+  servingSize Float    @default(1) @map("serving_size")
+  servingUnit String   @default("serving") @map("serving_unit")
+  calories    Int
+  protein     Float
+  carbs       Float
+  fat         Float
+  ingredients Json     @db.JsonB // Array of { name, amount, unit, calories, protein, carbs, fat }
+  usageCount  Int      @default(0) @map("usage_count")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user           User?          @relation(fields: [userId], references: [id])
+  foodLogEntries FoodLogEntry[]
+
+  @@index([userId])
+  @@index([isPublic])
+  @@index([name])
+  @@index([usageCount])
+  @@map("recipes")
+}
+
+model QuickFood {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  fdcId       String?  @map("fdc_id") // USDA FoodData Central ID if sourced from there
+  name        String
+  brand       String?
+  emoji       String?  @db.VarChar(10)
+  servingSize Float    @default(1) @map("serving_size")
+  servingUnit String   @default("serving") @map("serving_unit")
+  calories    Int
+  protein     Float
+  carbs       Float
+  fat         Float
+  sortOrder   Int      @default(0) @map("sort_order")
+  usageCount  Int      @default(0) @map("usage_count")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([sortOrder])
+  @@index([usageCount])
+  @@map("quick_foods")
 }
 
 model Account {
