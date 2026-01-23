@@ -10,6 +10,7 @@ import { ProgramCompletionCelebration } from '@/components/program-completion/Pr
 import { Week2CheckInModal } from '@/components/week2-checkin/Week2CheckInModal';
 import { RestDayDashboard } from '@/components/rest-day/RestDayDashboard';
 import { AlmostDoneNudge } from '@/components/almost-done/AlmostDoneNudge';
+import { PRCallout } from '@/components/pr-callout/PRCallout';
 import type { RecoveryData } from '@/app/api/programs/[programId]/recovery/route';
 import type { Week2CheckInData } from '@/app/api/programs/[programId]/week2-checkin/route';
 import type { ProgramCompletionData } from '@/app/api/programs/[programId]/completion/route';
@@ -127,6 +128,30 @@ const MOCK_ALMOST_DONE = {
   totalWorkouts: 24,
   programName: 'Strength Builder Pro',
 };
+
+// PR/Personal Best examples
+const MOCK_PR_EXAMPLES = [
+  {
+    exerciseName: 'Bench Press',
+    prType: 'weight' as const,
+    previousBest: 185,
+    newBest: 195,
+    unit: 'lbs',
+  },
+  {
+    exerciseName: 'Pull-ups',
+    prType: 'reps' as const,
+    previousBest: 8,
+    newBest: 10,
+  },
+  {
+    exerciseName: 'Squat',
+    prType: 'volume' as const,
+    previousBest: 4500,
+    newBest: 5250,
+    unit: 'lbs',
+  },
+];
 
 // ============================================================================
 // COMPONENT CARDS WITH CONTEXT
@@ -367,6 +392,41 @@ export default function CommunicationsDemo() {
               />
             </div>
           </div>
+
+          {/* PR Callouts - Inline */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6 mt-6">
+            <div className="mb-4">
+              <h3 className="font-bold text-lg text-gray-900">PR / Personal Best Callouts</h3>
+              <p className="text-sm text-gray-600 mt-1">
+                <span className="font-medium">Trigger:</span> User sets new weight, rep, or volume PR during workout
+              </p>
+              <p className="text-sm text-gray-600">
+                <span className="font-medium">Location:</span> Inline during workout logging, post-workout summary
+              </p>
+            </div>
+
+            <div className="bg-gray-50 rounded-lg p-4">
+              <p className="text-sm text-gray-500 mb-3">Compact badge/chip style for inline use:</p>
+              <div className="flex flex-wrap gap-3">
+                {MOCK_PR_EXAMPLES.map((pr, index) => (
+                  <PRCallout
+                    key={index}
+                    exerciseName={pr.exerciseName}
+                    prType={pr.prType}
+                    previousBest={pr.previousBest}
+                    newBest={pr.newBest}
+                    unit={pr.unit}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-4 text-sm text-gray-600 space-y-1">
+              <p><strong>Features:</strong> Amber/gold accent, spring animation on appearance</p>
+              <p><strong>Tone:</strong> Celebratory but subtle - acknowledgment, not interruption</p>
+              <p className="text-xs text-emerald-600 mt-2">✓ New component - needs approval</p>
+            </div>
+          </div>
         </section>
 
         {/* Planned Components Section */}
@@ -393,15 +453,6 @@ export default function CommunicationsDemo() {
               <p className="text-sm text-gray-600 mt-1"><strong>Trigger:</strong> After every workout</p>
               <p className="text-sm text-gray-600"><strong>Priority:</strong> HIGH</p>
               <p className="text-sm text-gray-500 mt-2">Light stats recap - not a celebration, just info. Sets, volume, duration.</p>
-              <span className="inline-block mt-2 text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded">New</span>
-            </div>
-
-            {/* PR Callouts */}
-            <div className="bg-white rounded-xl border-2 border-dashed border-emerald-300 p-4">
-              <h3 className="font-bold text-gray-900">💪 PR / Personal Best</h3>
-              <p className="text-sm text-gray-600 mt-1"><strong>Trigger:</strong> User sets new weight/rep PR</p>
-              <p className="text-sm text-gray-600"><strong>Priority:</strong> MEDIUM</p>
-              <p className="text-sm text-gray-500 mt-2">Inline callout during workout, summary in post-workout</p>
               <span className="inline-block mt-2 text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded">New</span>
             </div>
 
