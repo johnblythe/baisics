@@ -12,6 +12,7 @@ import { RestDayDashboard } from '@/components/rest-day/RestDayDashboard';
 import { AlmostDoneNudge } from '@/components/almost-done/AlmostDoneNudge';
 import { PRCallout } from '@/components/pr-callout/PRCallout';
 import { MidProgramCheckIn } from '@/components/mid-program-checkin/MidProgramCheckIn';
+import { WeeklyDigestPreview } from '@/components/weekly-digest/WeeklyDigestPreview';
 import type { RecoveryData } from '@/app/api/programs/[programId]/recovery/route';
 import type { Week2CheckInData } from '@/app/api/programs/[programId]/week2-checkin/route';
 import type { ProgramCompletionData } from '@/app/api/programs/[programId]/completion/route';
@@ -162,6 +163,23 @@ const MOCK_PR_EXAMPLES = [
     unit: 'lbs',
   },
 ];
+
+// Weekly digest email preview
+const MOCK_WEEKLY_DIGEST = {
+  weekStats: {
+    workouts: 4,
+    volume: 52000,
+    streak: 5,
+  },
+  upcomingWorkouts: [
+    { day: 'Mon', name: 'Upper Body A', focus: 'Chest & Triceps' },
+    { day: 'Wed', name: 'Lower Body A', focus: 'Quads & Glutes' },
+    { day: 'Fri', name: 'Upper Body B', focus: 'Back & Biceps' },
+    { day: 'Sat', name: 'Lower Body B', focus: 'Hamstrings' },
+  ],
+  programProgress: 42,
+  userName: 'Demo User',
+};
 
 // ============================================================================
 // COMPONENT CARDS WITH CONTEXT
@@ -481,15 +499,6 @@ export default function CommunicationsDemo() {
               <p className="text-sm text-gray-500 mt-2">Light stats recap - not a celebration, just info. Sets, volume, duration.</p>
               <span className="inline-block mt-2 text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded">New</span>
             </div>
-
-            {/* Weekly Email Digest */}
-            <div className="bg-white rounded-xl border-2 border-dashed border-emerald-300 p-4">
-              <h3 className="font-bold text-gray-900">📧 Weekly Digest Email</h3>
-              <p className="text-sm text-gray-600 mt-1"><strong>Trigger:</strong> Monday morning</p>
-              <p className="text-sm text-gray-600"><strong>Priority:</strong> MEDIUM</p>
-              <p className="text-sm text-gray-500 mt-2">Last week highlights, this week preview, streak status</p>
-              <span className="inline-block mt-2 text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded">New</span>
-            </div>
           </div>
         </section>
 
@@ -532,6 +541,34 @@ export default function CommunicationsDemo() {
               <p className="text-sm text-gray-600 mt-1"><strong>Trigger:</strong> After signup (free or premium)</p>
               <p className="text-sm text-gray-600"><strong>File:</strong> welcome.ts</p>
               <p className="text-sm text-gray-500 mt-2">Two variants: Free tier, Premium tier</p>
+            </div>
+          </div>
+
+          {/* Weekly Digest Preview - Inline */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6 mt-6">
+            <div className="mb-4">
+              <h3 className="font-bold text-lg text-gray-900">Weekly Digest Email Preview</h3>
+              <p className="text-sm text-gray-600 mt-1">
+                <span className="font-medium">Trigger:</span> Monday morning (cron job)
+              </p>
+              <p className="text-sm text-gray-600">
+                <span className="font-medium">Contents:</span> Last week stats, program progress, this week schedule, motivational nudge
+              </p>
+            </div>
+
+            <div className="flex justify-center bg-gray-50 rounded-lg p-6">
+              <WeeklyDigestPreview
+                weekStats={MOCK_WEEKLY_DIGEST.weekStats}
+                upcomingWorkouts={MOCK_WEEKLY_DIGEST.upcomingWorkouts}
+                programProgress={MOCK_WEEKLY_DIGEST.programProgress}
+                userName={MOCK_WEEKLY_DIGEST.userName}
+              />
+            </div>
+
+            <div className="mt-4 text-sm text-gray-600 space-y-1">
+              <p><strong>Features:</strong> Email-style header, stats grid, progress bar, schedule preview</p>
+              <p><strong>Tone:</strong> Informative and encouraging - weekly check-in feel</p>
+              <p className="text-xs text-emerald-600 mt-2">✓ New component - needs approval</p>
             </div>
           </div>
         </section>
