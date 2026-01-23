@@ -9,6 +9,7 @@ import { MilestoneCelebrationModal } from '@/components/milestones/MilestoneCele
 import { ProgramCompletionCelebration } from '@/components/program-completion/ProgramCompletionCelebration';
 import { Week2CheckInModal } from '@/components/week2-checkin/Week2CheckInModal';
 import { RestDayDashboard } from '@/components/rest-day/RestDayDashboard';
+import { StreakCelebration } from '@/components/streak/StreakCelebration';
 import type { RecoveryData } from '@/app/api/programs/[programId]/recovery/route';
 import type { Week2CheckInData } from '@/app/api/programs/[programId]/week2-checkin/route';
 import type { ProgramCompletionData } from '@/app/api/programs/[programId]/completion/route';
@@ -135,6 +136,22 @@ const MOCK_FIRST_WEEK: FirstWeekData = {
   programName: 'Strength Builder Pro',
 };
 
+// Streak celebration mock data for each tier
+const MOCK_STREAK_7 = {
+  streakDays: 7,
+  streakTier: 'week' as const,
+};
+
+const MOCK_STREAK_30 = {
+  streakDays: 30,
+  streakTier: 'month' as const,
+};
+
+const MOCK_STREAK_90 = {
+  streakDays: 90,
+  streakTier: 'quarter' as const,
+};
+
 // ============================================================================
 // COMPONENT CARDS WITH CONTEXT
 // ============================================================================
@@ -193,6 +210,9 @@ type ActiveModal =
   | 'milestone-25'
   | 'program-completion'
   | 'week2-checkin'
+  | 'streak-7'
+  | 'streak-30'
+  | 'streak-90'
   | null;
 
 export default function CommunicationsDemo() {
@@ -327,6 +347,48 @@ export default function CommunicationsDemo() {
                 <p><strong>Options:</strong> Going great, Too hard, Too easy, Life happened</p>
                 <p><strong>Shows:</strong> Original goal, workouts completed</p>
                 <p><strong>Follow-up:</strong> Adjust difficulty link if too hard</p>
+              </div>
+            </ComponentCard>
+
+            {/* Streak - 7 Days */}
+            <ComponentCard
+              title="Streak: 7 Days"
+              trigger="User maintains 7-day workout streak"
+              location="After workout completion"
+              onShow={() => setActiveModal('streak-7')}
+            >
+              <div className="text-sm text-gray-600 space-y-2">
+                <p><strong>Icon:</strong> Flame (orange/amber gradient)</p>
+                <p><strong>Tone:</strong> Acknowledging consistency, not over-the-top</p>
+                <p><strong>Actions:</strong> Share, Keep Going</p>
+              </div>
+            </ComponentCard>
+
+            {/* Streak - 30 Days */}
+            <ComponentCard
+              title="Streak: 30 Days"
+              trigger="User maintains 30-day workout streak"
+              location="After workout completion"
+              onShow={() => setActiveModal('streak-30')}
+            >
+              <div className="text-sm text-gray-600 space-y-2">
+                <p><strong>Icon:</strong> Flame (orange/red gradient)</p>
+                <p><strong>Tone:</strong> Recognizing habit formation</p>
+                <p><strong>Actions:</strong> Share, Keep Going</p>
+              </div>
+            </ComponentCard>
+
+            {/* Streak - 90 Days */}
+            <ComponentCard
+              title="Streak: 90 Days"
+              trigger="User maintains 90-day workout streak"
+              location="After workout completion"
+              onShow={() => setActiveModal('streak-90')}
+            >
+              <div className="text-sm text-gray-600 space-y-2">
+                <p><strong>Icon:</strong> Crown (gold/amber gradient)</p>
+                <p><strong>Tone:</strong> Premium achievement, real discipline</p>
+                <p><strong>Actions:</strong> Share, Keep Going</p>
               </div>
             </ComponentCard>
           </div>
@@ -603,6 +665,36 @@ export default function CommunicationsDemo() {
             closeModal();
           }}
           onDismiss={closeModal}
+        />
+      )}
+
+      {activeModal === 'streak-7' && (
+        <StreakCelebration
+          streakDays={MOCK_STREAK_7.streakDays}
+          streakTier={MOCK_STREAK_7.streakTier}
+          userName="Demo User"
+          onClose={closeModal}
+          onShare={() => console.log('Share 7-day streak clicked')}
+        />
+      )}
+
+      {activeModal === 'streak-30' && (
+        <StreakCelebration
+          streakDays={MOCK_STREAK_30.streakDays}
+          streakTier={MOCK_STREAK_30.streakTier}
+          userName="Demo User"
+          onClose={closeModal}
+          onShare={() => console.log('Share 30-day streak clicked')}
+        />
+      )}
+
+      {activeModal === 'streak-90' && (
+        <StreakCelebration
+          streakDays={MOCK_STREAK_90.streakDays}
+          streakTier={MOCK_STREAK_90.streakTier}
+          userName="Demo User"
+          onClose={closeModal}
+          onShare={() => console.log('Share 90-day streak clicked')}
         />
       )}
     </div>
