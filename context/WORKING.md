@@ -1,78 +1,72 @@
-# Session Context - 2026-01-19T09:30:00Z
+# Session Context - 2026-01-23T16:45:00Z
 
 ## Current Session Overview
-- **Main Task/Feature**: Automated screenshot capture for Features page marketing content
+- **Main Task/Feature**: Fix communication components (#295/#296) and plan new celebration touchpoints
 - **Session Duration**: ~1.5 hours
-- **Current Status**: Complete - Features page fully updated with 10 real screenshots at 2x retina resolution
+- **Current Status**: Major bugs fixed, demo page updated with planned components section
 
 ## Recent Activity (Last 30-60 minutes)
 - **What We Just Did**:
-  - Created comprehensive Playwright test suite for 21 screenshots (public + authenticated pages)
-  - Captured screenshots for AI conversation, templates, workout+chat, nutrition, meal prep, check-in, exercise library
-  - Updated Features page with all new screenshots organized into Hero (3) and More Features (7) sections
-  - Added "Built Different" philosophy section (no anxiety streaks, long game thinking, your way)
-- **Active Problems**: None - all tests passing
-- **Current Files**: `tests/screenshots/features.spec.ts`, `src/app/features/page.tsx`, `public/features/*.png`
-- **Test Status**: All 21 Playwright tests passing
+  - Fixed milestone modal bugs (WORKOUT_5 enum didn't exist)
+  - Fixed overflow issues cutting off modal headers
+  - Removed 1-day recovery screen entirely
+  - Bumped recovery threshold from 3 to 5 days
+  - Removed cheesy quotes from recovery messaging
+  - Fixed program completion trigger (was firing after 1 of each workout type, now fires after expected total workouts)
+  - Added "Planned Components" section to demo page
+- **Active Problems**: None blocking
+- **Current Files**: `src/app/dev/communications/page.tsx`, recovery route, milestone modal
+- **Test Status**: Code changes complete, not browser-verified (Playwright session crashed)
 
 ## Key Technical Decisions Made
-- **Architecture Choices**:
-  - Magic link dev flow for test authentication (clicks "Click here to sign in" on verify-request page)
-  - 2x deviceScaleFactor in Playwright for retina screenshots
-  - Separate test user (marcus@test.baisics.app) with real program data
-- **Implementation Approaches**:
-  - Modal dismissal via force click on "Got it"/"Close" buttons
-  - Wait for loaders to disappear before capturing workout screenshots
-  - Hero features use 4:3 aspect ratio, More Features use 16:9 video aspect
+- **Architecture Choices**: Recovery screen only for 5+ day absences (not 1-4 days)
+- **Implementation Approaches**: Program completion = daysPerWeek * durationWeeks total workouts
+- **Technology Selections**: N/A
+- **Performance/Security Considerations**: N/A
 
 ## Code Context
 - **Modified Files**:
-  - `tests/screenshots/features.spec.ts` - full rewrite with 21 tests
-  - `src/app/features/page.tsx` - complete features page update
-  - `playwright.config.ts` - added 2x deviceScaleFactor
-  - `public/features/*.png` - 10 feature screenshots
-- **New Patterns**:
-  - `loginAsTestUser()` helper for authenticated tests
-  - `dismissModals()` helper for cleaning up celebration/welcome modals
-- **Dependencies**: Playwright already installed
-- **Configuration Changes**: Playwright 2x scale for high-res screenshots
+  - `src/app/dev/communications/page.tsx` - Demo page with fixes + planned components
+  - `src/components/milestones/MilestoneCelebrationModal.tsx` - overflow fix
+  - `src/components/first-workout/FirstWorkoutCelebration.tsx` - overflow fix
+  - `src/components/recovery/RecoveryScreen.tsx` - removed quotes, simplified styling
+  - `src/app/api/programs/[programId]/recovery/route.ts` - 5+ day threshold, single tier
+  - `src/app/api/workout-logs/[id]/complete/route.ts` - fixed program completion logic
+- **New Patterns**: None
+- **Dependencies**: None added
+- **Configuration Changes**: None
 
 ## Current Implementation State
 - **Completed**:
-  - Screenshot test suite (21 tests)
-  - Features page with real screenshots
-  - Hero features: AI Program Builder, Workout Logging, Progress Dashboard
-  - More features: Import, Templates, AI Chat, Nutrition, Meal Prep, Check-ins, Exercise Library
-  - Philosophy section with brand messaging
-- **In Progress**: None
-- **Blocked**: None
+  - Milestone modal bugs fixed (WORKOUT_5 issue, overflow)
+  - First workout badge overflow fixed
+  - Recovery screen simplified (5+ days only, no quotes)
+  - Program completion trigger fixed (total workouts, not workout variety)
+  - Demo page updated with planned components
+- **In Progress**: Nothing
+- **Blocked**: Nothing
 - **Next Steps**:
-  - User may want to refine specific screenshots (e.g., more conversation in AI builder, more data in dashboard)
-  - Could add mobile screenshots to features page
-  - Could capture more screens (settings, achievements, etc.)
+  1. Log enhancement issues (goals system, coach kudos, social sharing)
+  2. Build "First Week Complete" celebration (HIGH priority)
+  3. Build streak celebrations (7/30/90 day)
+  4. Build post-workout summary component
 
 ## Important Context for Handoff
-- **Environment Setup**: Dev server must be running on port 3001
-- **Running/Testing**: `npm run screenshots` to capture all, or `npx playwright test --project='Desktop Chrome' tests/screenshots/features.spec.ts -g "pattern"`
+- **Environment Setup**: `npm run dev` on port 3001
+- **Running/Testing**: Demo page at `localhost:3001/dev/communications`
 - **Known Issues**:
-  - AI conversation screenshot may show initial state, not mid-conversation
-  - Dashboard screenshot depends on Marcus's program data state
-- **External Dependencies**: Test personas must be seeded (`npx prisma db seed`)
+  - Recovery stats still show wrong values (API needs separate fix)
+  - Email templates (#296) still need design polish
+- **External Dependencies**: None
 
 ## Conversation Thread
-- **Original Goal**: Run `npm run screenshots` for feature pages
-- **Evolution**:
-  - Started with just running existing tests → fixed auth (wrong cookie name)
-  - Added magic link dev flow for auth → captured authenticated pages
-  - User requested more features, better screenshots → full page rewrite
-  - Added nutrition, meal prep, check-ins, templates, chat, philosophy section
+- **Original Goal**: Review and fix communication components (#295, #296)
+- **Evolution**: Expanded to planning new celebration touchpoints
 - **Lessons Learned**:
-  - Session cookie is `baisics.session-token` not `next-auth.session-token`
-  - Magic link stored in `baisics.__dev_magic_link` cookie in dev mode
-  - Modals need `force: true` click due to backdrop overlay
-- **Alternatives Considered**:
-  - TEST_SESSION_COOKIE env var (rejected - requires manual cookie copy)
-  - Direct credentials auth (exists but magic link flow more reliable)
+  - WORKOUT_5 milestone doesn't exist in schema (jumps 1→10)
+  - Program completion was triggering after workout variety, not total count
+  - User wants distinct celebrations: First Workout → First Week → Program Complete
+- **Alternatives Considered**: Adding WORKOUT_5 to schema (not done, separate decision)
 
 ---
-*Last updated: 2026-01-19*
+*Last updated: 2026-01-23*

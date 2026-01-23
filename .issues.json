@@ -1,6 +1,13 @@
 {
   "issues": [
     {
+      "number": 299,
+      "title": "E2E Testing: Playwright coverage for critical user flows",
+      "labels": [],
+      "status": "closed",
+      "priority": "med"
+    },
+    {
       "number": 296,
       "title": "Email stupidity",
       "labels": ["bug", "content", "design"],
@@ -18,14 +25,14 @@
       "number": 294,
       "title": "Coach dashboard routing & empty state UX",
       "labels": [],
-      "status": "open",
+      "status": "closed",
       "priority": "med"
     },
     {
       "number": 292,
       "title": "Cleanup: Minor issues from /hi route refactor PR review",
       "labels": [],
-      "status": "open",
+      "status": "closed",
       "priority": "low"
     },
     {
@@ -60,9 +67,9 @@
       "number": 174,
       "title": "Rotate exposed credentials from git history",
       "labels": [],
-      "status": "open",
+      "status": "closed",
       "priority": "high"
     }
   ],
-  "lastSyncedAt": "2026-01-19T15:40:00Z"
+  "lastSyncedAt": "2026-01-19T22:50:00Z"
 }

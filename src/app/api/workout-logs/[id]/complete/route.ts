@@ -179,7 +179,7 @@ export async function POST(
         const allWorkouts = program.workoutPlans.flatMap(wp => wp.workouts);
         const workoutPlan = program.workoutPlans[0];
         const daysPerWeek = workoutPlan?.daysPerWeek || 3;
-        const durationWeeks = workoutPlan?.durationWeeks || 8;
+        const durationWeeks = workoutPlan?.phaseDurationWeeks || 8;
 
         // Calculate expected total workouts for program completion
         const expectedTotalWorkouts = daysPerWeek * durationWeeks;
