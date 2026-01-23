@@ -11,6 +11,7 @@ import { Week2CheckInModal } from '@/components/week2-checkin/Week2CheckInModal'
 import { RestDayDashboard } from '@/components/rest-day/RestDayDashboard';
 import { AlmostDoneNudge } from '@/components/almost-done/AlmostDoneNudge';
 import { PRCallout } from '@/components/pr-callout/PRCallout';
+import { MidProgramCheckIn } from '@/components/mid-program-checkin/MidProgramCheckIn';
 import type { RecoveryData } from '@/app/api/programs/[programId]/recovery/route';
 import type { Week2CheckInData } from '@/app/api/programs/[programId]/week2-checkin/route';
 import type { ProgramCompletionData } from '@/app/api/programs/[programId]/completion/route';
@@ -129,6 +130,15 @@ const MOCK_ALMOST_DONE = {
   programName: 'Strength Builder Pro',
 };
 
+// Mid-program check-in - Week 4 of 8-week program
+const MOCK_MID_PROGRAM_CHECKIN = {
+  weekNumber: 4,
+  totalWeeks: 8,
+  programName: 'Strength Builder Pro',
+  completedWorkouts: 14,
+  volumeGrowth: 18, // +18% volume since start
+};
+
 // PR/Personal Best examples
 const MOCK_PR_EXAMPLES = [
   {
@@ -212,6 +222,7 @@ type ActiveModal =
   | 'program-completion'
   | 'week2-checkin'
   | 'almost-done'
+  | 'mid-program-checkin'
   | null;
 
 export default function CommunicationsDemo() {
@@ -363,6 +374,21 @@ export default function CommunicationsDemo() {
                 <p className="text-xs text-emerald-600 mt-2">✓ New component - needs approval</p>
               </div>
             </ComponentCard>
+
+            {/* Mid-Program Check-in */}
+            <ComponentCard
+              title="Mid-Program Check-in"
+              trigger="User reaches Week 4 (8-week) or Week 6 (12-week program)"
+              location="Dashboard page load"
+              onShow={() => setActiveModal('mid-program-checkin')}
+            >
+              <div className="text-sm text-gray-600 space-y-2">
+                <p><strong>Options:</strong> Going great, Need adjustment, Taking a break</p>
+                <p><strong>Shows:</strong> Week progress, workouts completed, volume growth %</p>
+                <p><strong>Tone:</strong> Supportive mid-point vibe check</p>
+                <p className="text-xs text-emerald-600 mt-2">✓ New component - needs approval</p>
+              </div>
+            </ComponentCard>
           </div>
         </section>
 
@@ -453,15 +479,6 @@ export default function CommunicationsDemo() {
               <p className="text-sm text-gray-600 mt-1"><strong>Trigger:</strong> After every workout</p>
               <p className="text-sm text-gray-600"><strong>Priority:</strong> HIGH</p>
               <p className="text-sm text-gray-500 mt-2">Light stats recap - not a celebration, just info. Sets, volume, duration.</p>
-              <span className="inline-block mt-2 text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded">New</span>
-            </div>
-
-            {/* Week 4/6 Check-in */}
-            <div className="bg-white rounded-xl border-2 border-dashed border-emerald-300 p-4">
-              <h3 className="font-bold text-gray-900">📋 Week 4/6 Check-in</h3>
-              <p className="text-sm text-gray-600 mt-1"><strong>Trigger:</strong> Week 4 (8wk prog) or Week 6 (12wk)</p>
-              <p className="text-sm text-gray-600"><strong>Priority:</strong> MEDIUM</p>
-              <p className="text-sm text-gray-500 mt-2">Mid-program vibe check like week 2, adjust if needed</p>
               <span className="inline-block mt-2 text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded">New</span>
             </div>
 
@@ -667,6 +684,21 @@ export default function CommunicationsDemo() {
             console.log('Start workout clicked');
             closeModal();
           }}
+        />
+      )}
+
+      {activeModal === 'mid-program-checkin' && (
+        <MidProgramCheckIn
+          weekNumber={MOCK_MID_PROGRAM_CHECKIN.weekNumber}
+          totalWeeks={MOCK_MID_PROGRAM_CHECKIN.totalWeeks}
+          programName={MOCK_MID_PROGRAM_CHECKIN.programName}
+          completedWorkouts={MOCK_MID_PROGRAM_CHECKIN.completedWorkouts}
+          volumeGrowth={MOCK_MID_PROGRAM_CHECKIN.volumeGrowth}
+          onResponse={(option) => {
+            console.log('Mid-program check-in response:', option);
+            closeModal();
+          }}
+          onDismiss={closeModal}
         />
       )}
     </div>
