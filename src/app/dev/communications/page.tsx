@@ -461,24 +461,6 @@ export default function CommunicationsDemo() {
           <p className="text-gray-600 mb-4">New celebrations and check-ins to implement</p>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Streak Celebrations */}
-            <div className="bg-white rounded-xl border-2 border-dashed border-emerald-300 p-4">
-              <h3 className="font-bold text-gray-900">🔥 Streak Celebrations</h3>
-              <p className="text-sm text-gray-600 mt-1"><strong>Trigger:</strong> 7 / 30 / 90 day streaks</p>
-              <p className="text-sm text-gray-600"><strong>Priority:</strong> HIGH</p>
-              <p className="text-sm text-gray-500 mt-2">Acknowledge consistency without being over-the-top</p>
-              <span className="inline-block mt-2 text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded">New</span>
-            </div>
-
-            {/* Post-Workout Summary */}
-            <div className="bg-white rounded-xl border-2 border-dashed border-emerald-300 p-4">
-              <h3 className="font-bold text-gray-900">📊 Post-Workout Summary</h3>
-              <p className="text-sm text-gray-600 mt-1"><strong>Trigger:</strong> After every workout</p>
-              <p className="text-sm text-gray-600"><strong>Priority:</strong> HIGH</p>
-              <p className="text-sm text-gray-500 mt-2">Light stats recap - not a celebration, just info. Sets, volume, duration.</p>
-              <span className="inline-block mt-2 text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded">New</span>
-            </div>
-
             {/* Almost Done Nudge */}
             <div className="bg-white rounded-xl border-2 border-dashed border-emerald-300 p-4">
               <h3 className="font-bold text-gray-900">🏁 Almost Done Nudge</h3>
