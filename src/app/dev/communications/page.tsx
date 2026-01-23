@@ -10,6 +10,7 @@ import { ProgramCompletionCelebration } from '@/components/program-completion/Pr
 import { Week2CheckInModal } from '@/components/week2-checkin/Week2CheckInModal';
 import { RestDayDashboard } from '@/components/rest-day/RestDayDashboard';
 import { StreakCelebration } from '@/components/streak/StreakCelebration';
+import { PostWorkoutSummary } from '@/components/post-workout/PostWorkoutSummary';
 import type { RecoveryData } from '@/app/api/programs/[programId]/recovery/route';
 import type { Week2CheckInData } from '@/app/api/programs/[programId]/week2-checkin/route';
 import type { ProgramCompletionData } from '@/app/api/programs/[programId]/completion/route';
@@ -152,6 +153,19 @@ const MOCK_STREAK_90 = {
   streakTier: 'quarter' as const,
 };
 
+// Post-workout summary mock data
+const MOCK_POST_WORKOUT = {
+  workoutName: 'Upper Body Push',
+  duration: 47,
+  setsCompleted: 18,
+  totalVolume: 12450,
+  exerciseCount: 5,
+  prs: [
+    { exerciseName: 'Bench Press', type: 'weight' as const, value: 185, unit: 'lbs' },
+    { exerciseName: 'Overhead Press', type: 'reps' as const, value: 10 },
+  ],
+};
+
 // ============================================================================
 // COMPONENT CARDS WITH CONTEXT
 // ============================================================================
@@ -213,6 +227,7 @@ type ActiveModal =
   | 'streak-7'
   | 'streak-30'
   | 'streak-90'
+  | 'post-workout'
   | null;
 
 export default function CommunicationsDemo() {
@@ -389,6 +404,21 @@ export default function CommunicationsDemo() {
                 <p><strong>Icon:</strong> Crown (gold/amber gradient)</p>
                 <p><strong>Tone:</strong> Premium achievement, real discipline</p>
                 <p><strong>Actions:</strong> Share, Keep Going</p>
+              </div>
+            </ComponentCard>
+
+            {/* Post-Workout Summary */}
+            <ComponentCard
+              title="Post-Workout Summary"
+              trigger="After every workout completion"
+              location="After workout logging redirect"
+              onShow={() => setActiveModal('post-workout')}
+            >
+              <div className="text-sm text-gray-600 space-y-2">
+                <p><strong>Purpose:</strong> Informative recap, not a celebration</p>
+                <p><strong>Stats:</strong> Duration, sets, volume, exercises</p>
+                <p><strong>PRs:</strong> Shown if any achieved (amber badge per exercise)</p>
+                <p><strong>Actions:</strong> View Details, Close</p>
               </div>
             </ComponentCard>
           </div>
@@ -695,6 +725,19 @@ export default function CommunicationsDemo() {
           userName="Demo User"
           onClose={closeModal}
           onShare={() => console.log('Share 90-day streak clicked')}
+        />
+      )}
+
+      {activeModal === 'post-workout' && (
+        <PostWorkoutSummary
+          workoutName={MOCK_POST_WORKOUT.workoutName}
+          duration={MOCK_POST_WORKOUT.duration}
+          setsCompleted={MOCK_POST_WORKOUT.setsCompleted}
+          totalVolume={MOCK_POST_WORKOUT.totalVolume}
+          exerciseCount={MOCK_POST_WORKOUT.exerciseCount}
+          prs={MOCK_POST_WORKOUT.prs}
+          onClose={closeModal}
+          onViewDetails={() => console.log('View details clicked')}
         />
       )}
     </div>
