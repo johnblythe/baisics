@@ -3,9 +3,9 @@ import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 import { withDebugOverrides, logDebugState } from '@/lib/debug/api';
 
-// Recovery tier messaging
+// Recovery tier messaging - only triggers after 5+ days of inactivity
 interface RecoveryTier {
-  type: 'welcome_back' | 'no_judgment';
+  type: 'recovery';
   daysMissed: number;
   headline: string;
   subheadline: string;
@@ -13,24 +13,14 @@ interface RecoveryTier {
 }
 
 const getRecoveryTier = (daysSinceLastWorkout: number): RecoveryTier => {
-  if (daysSinceLastWorkout <= 2) {
-    return {
-      type: 'welcome_back',
-      daysMissed: daysSinceLastWorkout,
-      headline: 'Welcome back!',
-      subheadline: 'Your progress is still here',
-      encouragement: "A day off doesn't erase your gains. Let's keep building.",
-    };
-  } else {
-    return {
-      type: 'no_judgment',
-      daysMissed: daysSinceLastWorkout,
-      headline: 'No judgment. Just progress.',
-      subheadline: `Life happened. ${daysSinceLastWorkout} days is nothing in your fitness journey.`,
-      encouragement:
-        "Your lifetime progress is permanent. Every workout you've done still counts. Let's add another.",
-    };
-  }
+  // Only called when daysSinceLastWorkout >= 5
+  return {
+    type: 'recovery',
+    daysMissed: daysSinceLastWorkout,
+    headline: "Ready when you are",
+    subheadline: "Your progress is still here.",
+    encouragement: "Pick up where you left off, or ease back in with a lighter session.",
+  };
 };
 
 // Response type
@@ -173,10 +163,9 @@ export async function GET(
     const isRestDay = weeklyCompleted >= weeklyTarget || completedToday;
 
     // Determine if recovery screen is needed
-    // Criteria: 1+ days missed since last scheduled workout, and NOT a rest day
-    // Simplified: show recovery if daysSinceLastWorkout >= 1 AND not rest day
-    // For 3+ day absence, show "no judgment" tier
-    const needsRecovery = daysSinceLastWorkout >= 1 && !isRestDay;
+    // Only show recovery screen for significant absences (5+ days)
+    // Short breaks (1-4 days) don't need a check-in - just let them work out
+    const needsRecovery = daysSinceLastWorkout >= 5 && !isRestDay;
 
     // Get total volume lifted
     const setLogs = await prisma.setLog.findMany({
@@ -232,9 +221,9 @@ export async function GET(
       lastWorkoutIndex === -1 ? 0 : (lastWorkoutIndex + 1) % workouts.length;
     const nextWorkout = workouts[nextWorkoutIndex];
 
-    // Generate Quick Comeback Workout if 3+ days missed
+    // Generate Quick Comeback Workout if 5+ days missed
     let quickComebackWorkout = null;
-    if (daysSinceLastWorkout >= 3 && nextWorkout) {
+    if (daysSinceLastWorkout >= 5 && nextWorkout) {
       // Take the next scheduled workout and reduce it
       // 3 compound movements, 50% sets, target 70% intensity
       const compoundExercises = nextWorkout.exercises.filter(

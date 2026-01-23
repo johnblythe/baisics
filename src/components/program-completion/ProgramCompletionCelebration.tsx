@@ -177,7 +177,7 @@ export function ProgramCompletionCelebration({
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.8, opacity: 0 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden max-h-[90vh] overflow-y-auto"
+          className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-sm sm:max-w-lg overflow-hidden max-h-[90vh] overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Close button */}
@@ -189,16 +189,16 @@ export function ProgramCompletionCelebration({
           </button>
 
           {/* Header with celebration announcement */}
-          <div className="bg-gradient-to-br from-[#FF6B6B] to-[#0F172A] p-8 text-center text-white relative overflow-hidden">
+          <div className="bg-gradient-to-br from-[#FF6B6B] to-[#0F172A] p-6 sm:p-8 text-center text-white relative overflow-hidden">
             {/* Animated trophy icon */}
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ delay: 0.2, type: 'spring', damping: 15 }}
-              className="relative inline-block mb-4"
+              className="relative inline-block mb-3 sm:mb-4"
             >
-              <div className="w-20 h-20 mx-auto rounded-2xl bg-white/20 flex items-center justify-center">
-                <Trophy className="w-10 h-10" strokeWidth={1.5} />
+              <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-2xl bg-white/20 flex items-center justify-center">
+                <Trophy className="w-8 h-8 sm:w-10 sm:h-10" strokeWidth={1.5} />
               </div>
             </motion.div>
 
@@ -207,39 +207,39 @@ export function ProgramCompletionCelebration({
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.4 }}
             >
-              <h2 className="text-sm font-semibold uppercase tracking-wider mb-2 opacity-80">
+              <h2 className="text-xs sm:text-sm font-semibold uppercase tracking-wider mb-1 sm:mb-2 opacity-80">
                 Program Complete!
               </h2>
-              <h3 className="text-2xl font-bold mb-2">{data.programName}</h3>
-              <p className="text-white/90">
+              <h3 className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2">{data.programName}</h3>
+              <p className="text-white/90 text-sm sm:text-base">
                 You did it! <span className="font-bold">{data.durationWeeks} weeks</span> of hard work paid off.
               </p>
             </motion.div>
           </div>
 
           {/* Content */}
-          <div className="p-6 space-y-6">
-            {/* Stats Grid */}
+          <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+            {/* Stats Grid - 3 cols on larger screens, stacked with flex on mobile */}
             <motion.div
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.6 }}
-              className="grid grid-cols-3 gap-3"
+              className="grid grid-cols-3 gap-2 sm:gap-3"
             >
-              <div className="bg-[#FFE5E5] rounded-xl p-4 text-center">
-                <Dumbbell className="w-6 h-6 mx-auto text-[#FF6B6B] mb-2" />
-                <div className="text-2xl font-bold text-[#0F172A]">{animatedWorkouts}</div>
-                <div className="text-xs text-[#64748B] font-medium">Workouts</div>
+              <div className="bg-[#FFE5E5] rounded-xl p-2 sm:p-4 text-center">
+                <Dumbbell className="w-5 h-5 sm:w-6 sm:h-6 mx-auto text-[#FF6B6B] mb-1 sm:mb-2" />
+                <div className="text-lg sm:text-2xl font-bold text-[#0F172A]">{animatedWorkouts}</div>
+                <div className="text-[10px] sm:text-xs text-[#64748B] font-medium">Workouts</div>
               </div>
-              <div className="bg-[#F8FAFC] rounded-xl p-4 text-center">
-                <TrendingUp className="w-6 h-6 mx-auto text-[#0F172A] mb-2" />
-                <div className="text-2xl font-bold text-[#0F172A]">{formatVolume(animatedVolume)}</div>
-                <div className="text-xs text-[#64748B] font-medium">Total Volume</div>
+              <div className="bg-[#F8FAFC] rounded-xl p-2 sm:p-4 text-center">
+                <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 mx-auto text-[#0F172A] mb-1 sm:mb-2" />
+                <div className="text-lg sm:text-2xl font-bold text-[#0F172A]">{formatVolume(animatedVolume)}</div>
+                <div className="text-[10px] sm:text-xs text-[#64748B] font-medium">Volume</div>
               </div>
-              <div className="bg-[#F0FDF4] rounded-xl p-4 text-center">
-                <Calendar className="w-6 h-6 mx-auto text-emerald-600 mb-2" />
-                <div className="text-2xl font-bold text-[#0F172A]">{animatedSets}</div>
-                <div className="text-xs text-[#64748B] font-medium">Sets Logged</div>
+              <div className="bg-[#F0FDF4] rounded-xl p-2 sm:p-4 text-center">
+                <Calendar className="w-5 h-5 sm:w-6 sm:h-6 mx-auto text-emerald-600 mb-1 sm:mb-2" />
+                <div className="text-lg sm:text-2xl font-bold text-[#0F172A]">{animatedSets}</div>
+                <div className="text-[10px] sm:text-xs text-[#64748B] font-medium">Sets</div>
               </div>
             </motion.div>
 
@@ -249,19 +249,19 @@ export function ProgramCompletionCelebration({
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.8 }}
-                className="bg-gradient-to-r from-[#F8FAFC] to-white rounded-xl p-4 border border-[#E2E8F0]"
+                className="bg-gradient-to-r from-[#F8FAFC] to-white rounded-xl p-3 sm:p-4 border border-[#E2E8F0]"
               >
-                <h4 className="text-sm font-semibold text-[#64748B] mb-3">
+                <h4 className="text-xs sm:text-sm font-semibold text-[#64748B] mb-2 sm:mb-3">
                   Week 1 vs Final Week
                 </h4>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-[#94A3B8]">First Week</p>
-                    <p className="text-lg font-bold text-[#0F172A]">{formatVolume(data.firstWeekVolume)}</p>
+                <div className="flex items-center justify-between gap-1 sm:gap-2">
+                  <div className="min-w-0">
+                    <p className="text-xs sm:text-sm text-[#94A3B8]">First</p>
+                    <p className="text-sm sm:text-lg font-bold text-[#0F172A] truncate">{formatVolume(data.firstWeekVolume)}</p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <ArrowRight className="w-5 h-5 text-[#94A3B8]" />
-                    <div className={`px-3 py-1 rounded-full font-bold text-sm ${
+                  <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 text-[#94A3B8]" />
+                    <div className={`px-2 sm:px-3 py-0.5 sm:py-1 rounded-full font-bold text-xs sm:text-sm ${
                       data.volumeGrowth > 0
                         ? 'bg-emerald-100 text-emerald-700'
                         : 'bg-gray-100 text-gray-600'
@@ -269,9 +269,9 @@ export function ProgramCompletionCelebration({
                       {data.volumeGrowth > 0 ? '+' : ''}{data.volumeGrowth}%
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm text-[#94A3B8]">Final Week</p>
-                    <p className="text-lg font-bold text-[#FF6B6B]">{formatVolume(data.finalWeekVolume)}</p>
+                  <div className="text-right min-w-0">
+                    <p className="text-xs sm:text-sm text-[#94A3B8]">Final</p>
+                    <p className="text-sm sm:text-lg font-bold text-[#FF6B6B] truncate">{formatVolume(data.finalWeekVolume)}</p>
                   </div>
                 </div>
               </motion.div>
@@ -282,29 +282,29 @@ export function ProgramCompletionCelebration({
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 1.0 }}
-              className="space-y-3"
+              className="space-y-2 sm:space-y-3"
             >
               <button
                 onClick={handleShare}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#FF6B6B] hover:bg-[#EF5350] text-white rounded-xl font-medium transition-colors"
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 bg-[#FF6B6B] hover:bg-[#EF5350] text-white rounded-xl font-medium transition-colors text-sm sm:text-base"
               >
-                <Share2 className="w-5 h-5" />
+                <Share2 className="w-4 h-4 sm:w-5 sm:h-5" />
                 Share Achievement
               </button>
 
               <div className="flex gap-2">
                 <button
                   onClick={handleTwitterShare}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-xl transition-colors"
+                  className="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-3 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-xl transition-colors text-sm"
                 >
                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                   </svg>
-                  Post on X
+                  <span className="hidden xs:inline">Post on</span> X
                 </button>
                 <button
                   onClick={handleCopy}
-                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-xl transition-colors ${
+                  className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-3 py-2 rounded-xl transition-colors text-sm ${
                     copied
                       ? 'bg-emerald-500 text-white'
                       : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
@@ -320,7 +320,7 @@ export function ProgramCompletionCelebration({
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                       </svg>
-                      Copy Link
+                      Copy
                     </>
                   )}
                 </button>
@@ -330,7 +330,7 @@ export function ProgramCompletionCelebration({
               {onNextProgram && (
                 <button
                   onClick={handleNextProgram}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#0F172A] hover:bg-[#1E293B] text-white rounded-xl font-medium transition-colors"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 bg-[#0F172A] hover:bg-[#1E293B] text-white rounded-xl font-medium transition-colors text-sm sm:text-base"
                 >
                   Start Your Next Program
                   <ArrowRight className="w-4 h-4" />
@@ -339,10 +339,10 @@ export function ProgramCompletionCelebration({
 
               <button
                 onClick={handleContinue}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm"
               >
                 {!userInteracted && (
-                  <span className="text-sm text-gray-400">
+                  <span className="text-xs sm:text-sm text-gray-400">
                     ({autoAdvanceTimer}s)
                   </span>
                 )}

@@ -2,6 +2,7 @@ import { anthropic } from '@/lib/anthropic';
 import { prisma } from '@/lib/prisma';
 import { sendEmail } from '@/lib/email';
 import { adminProgramCreationTemplate } from '@/lib/email/templates';
+import { trackEvent } from '@/lib/analytics';
 import type { MessageParam } from '@anthropic-ai/sdk/src/resources/messages.js';
 import { ExerciseMeasureUnit, ExerciseMeasureType } from '@prisma/client';
 
@@ -44,6 +45,14 @@ export async function generateProgram(
 ): Promise<GenerationResult> {
   const startTime = Date.now();
   const { userId, profile, context } = options;
+
+  // Track program generation started
+  trackEvent({
+    category: "program",
+    event: "program_generation_started",
+    userId,
+    metadata: { goal: profile.trainingGoal },
+  }).catch(() => {});
 
   try {
     // Sanitize user input to prevent prompt injection
@@ -495,6 +504,14 @@ export async function saveProgramToDatabase(
 
   // Send admin notification (non-blocking)
   sendAdminNotification(savedProgram).catch(console.error);
+
+  // Track program generation completed
+  trackEvent({
+    category: "program",
+    event: "program_generation_completed",
+    userId,
+    metadata: { programId: savedProgram.id, programName: savedProgram.name },
+  }).catch(() => {});
 
   return { id: savedProgram.id, name: savedProgram.name };
 }

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { Exercise } from '@prisma/client';
 import { auth } from '@/auth';
+import { trackEvent } from '@/lib/analytics';
 
 export async function POST(request: Request) {
   try {
@@ -127,6 +128,18 @@ export async function POST(request: Request) {
         })
       )
     );
+
+    // Track workout started
+    trackEvent({
+      category: "workout",
+      event: "workout_started",
+      userId,
+      metadata: {
+        workoutLogId: workoutLog.id,
+        workoutId,
+        programId: workout.workoutPlan.program.id,
+      },
+    }).catch(() => {});
 
     return NextResponse.json({ ...workoutLog, exerciseLogs });
   } catch (error) {
