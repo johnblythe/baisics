@@ -9,6 +9,7 @@ import { MilestoneCelebrationModal } from '@/components/milestones/MilestoneCele
 import { ProgramCompletionCelebration } from '@/components/program-completion/ProgramCompletionCelebration';
 import { Week2CheckInModal } from '@/components/week2-checkin/Week2CheckInModal';
 import { RestDayDashboard } from '@/components/rest-day/RestDayDashboard';
+import { AlmostDoneNudge } from '@/components/almost-done/AlmostDoneNudge';
 import type { RecoveryData } from '@/app/api/programs/[programId]/recovery/route';
 import type { Week2CheckInData } from '@/app/api/programs/[programId]/week2-checkin/route';
 import type { ProgramCompletionData } from '@/app/api/programs/[programId]/completion/route';
@@ -120,6 +121,13 @@ const MOCK_FIRST_WEEK: FirstWeekData = {
   programName: 'Strength Builder Pro',
 };
 
+// Almost done nudge - user is 21/24 workouts through program (87.5%)
+const MOCK_ALMOST_DONE = {
+  workoutsRemaining: 3,
+  totalWorkouts: 24,
+  programName: 'Strength Builder Pro',
+};
+
 // ============================================================================
 // COMPONENT CARDS WITH CONTEXT
 // ============================================================================
@@ -178,6 +186,7 @@ type ActiveModal =
   | 'milestone-25'
   | 'program-completion'
   | 'week2-checkin'
+  | 'almost-done'
   | null;
 
 export default function CommunicationsDemo() {
@@ -314,6 +323,21 @@ export default function CommunicationsDemo() {
                 <p><strong>Follow-up:</strong> Adjust difficulty link if too hard</p>
               </div>
             </ComponentCard>
+
+            {/* Almost Done Nudge */}
+            <ComponentCard
+              title="Almost Done Nudge"
+              trigger="User is 85-95% through program (e.g., 21/24 workouts)"
+              location="Dashboard page load"
+              onShow={() => setActiveModal('almost-done')}
+            >
+              <div className="text-sm text-gray-600 space-y-2">
+                <p><strong>Shows:</strong> Workouts remaining, progress %, motivational push</p>
+                <p><strong>Variants:</strong> Modal (default) or Banner (inline)</p>
+                <p><strong>Tone:</strong> Encouraging finish-line energy</p>
+                <p className="text-xs text-emerald-600 mt-2">✓ New component - needs approval</p>
+              </div>
+            </ComponentCard>
           </div>
         </section>
 
@@ -369,15 +393,6 @@ export default function CommunicationsDemo() {
               <p className="text-sm text-gray-600 mt-1"><strong>Trigger:</strong> After every workout</p>
               <p className="text-sm text-gray-600"><strong>Priority:</strong> HIGH</p>
               <p className="text-sm text-gray-500 mt-2">Light stats recap - not a celebration, just info. Sets, volume, duration.</p>
-              <span className="inline-block mt-2 text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded">New</span>
-            </div>
-
-            {/* Almost Done Nudge */}
-            <div className="bg-white rounded-xl border-2 border-dashed border-emerald-300 p-4">
-              <h3 className="font-bold text-gray-900">🏁 Almost Done Nudge</h3>
-              <p className="text-sm text-gray-600 mt-1"><strong>Trigger:</strong> 85-90% through program</p>
-              <p className="text-sm text-gray-600"><strong>Priority:</strong> HIGH</p>
-              <p className="text-sm text-gray-500 mt-2">Motivate finish line push - &quot;3 workouts left!&quot;</p>
               <span className="inline-block mt-2 text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded">New</span>
             </div>
 
@@ -588,6 +603,19 @@ export default function CommunicationsDemo() {
             closeModal();
           }}
           onDismiss={closeModal}
+        />
+      )}
+
+      {activeModal === 'almost-done' && (
+        <AlmostDoneNudge
+          workoutsRemaining={MOCK_ALMOST_DONE.workoutsRemaining}
+          totalWorkouts={MOCK_ALMOST_DONE.totalWorkouts}
+          programName={MOCK_ALMOST_DONE.programName}
+          onClose={closeModal}
+          onStartWorkout={() => {
+            console.log('Start workout clicked');
+            closeModal();
+          }}
         />
       )}
     </div>
