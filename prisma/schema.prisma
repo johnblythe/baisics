@@ -629,12 +629,14 @@ enum NutritionSource {
 
 // Food Logging - MFP-style food tracking
 enum FoodSource {
-  MANUAL      // Hand-entered by user
-  USDA_SEARCH // Selected from USDA database
-  AI_PARSED   // Parsed from natural language text
-  QUICK_ADD   // Added from quick foods
-  RECIPE      // Added from a recipe
-  SCREENSHOT  // Parsed from screenshot
+  MANUAL          // Hand-entered by user
+  USDA_SEARCH     // Selected from USDA database
+  AI_PARSED       // Parsed from natural language text
+  AI_ESTIMATED    // AI-generated nutrition estimates
+  QUICK_ADD       // Added from quick foods
+  RECIPE          // Added from a recipe
+  SCREENSHOT      // Parsed from screenshot
+  OPEN_FOOD_FACTS // Selected from Open Food Facts database
 }
 
 enum MealType {
