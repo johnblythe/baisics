@@ -1,12 +1,14 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { searchFoods, simplifyFood } from '@/lib/usda/client';
-import { SimplifiedFood } from '@/lib/usda/types';
+import { unifiedSearch } from '@/lib/food-search';
 
 /**
- * Search foods in USDA FoodData Central
+ * Search foods across all sources (QuickFoods, USDA, Open Food Facts)
  * GET /api/foods/search?q=chicken&limit=10
+ *
+ * Returns unified results with source field indicating origin.
+ * User's QuickFoods appear first in results.
  */
 export async function GET(request: Request) {
   // Check authentication
@@ -17,9 +19,9 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url);
   const query = searchParams.get('q')?.trim() || '';
-  const parsedLimit = parseInt(searchParams.get('limit') || '10', 10);
+  const parsedLimit = parseInt(searchParams.get('limit') || '25', 10);
   // Validate limit: handle NaN, clamp between 1 and 50
-  const limit = isNaN(parsedLimit) ? 10 : Math.min(Math.max(parsedLimit, 1), 50);
+  const limit = isNaN(parsedLimit) ? 25 : Math.min(Math.max(parsedLimit, 1), 50);
 
   // Validate query
   if (!query || query.length < 2) {
@@ -30,19 +32,18 @@ export async function GET(request: Request) {
   }
 
   try {
-    const result = await searchFoods(query, limit);
+    const result = await unifiedSearch(query, {
+      userId: session.user.id,
+      pageSize: limit,
+    });
 
-    // Return empty array if no results
-    if (!result.foods || result.foods.length === 0) {
-      return NextResponse.json({ foods: [] });
-    }
-
-    // Simplify foods to only return needed fields
-    const foods: SimplifiedFood[] = result.foods.map(simplifyFood);
-
-    return NextResponse.json({ foods });
+    // Return foods with source field included
+    return NextResponse.json({
+      foods: result.results,
+      counts: result.counts,
+    });
   } catch (error) {
-    console.error('USDA API error:', error);
+    console.error('Food search error:', error);
 
     const errorMessage = error instanceof Error ? error.message : String(error);
     const isDev = process.env.NODE_ENV === 'development';
@@ -81,7 +82,7 @@ export async function GET(request: Request) {
     // Default error for unrecognized errors
     return NextResponse.json(
       {
-        error: 'Failed to search USDA database',
+        error: 'Failed to search food databases',
         ...(isDev && { details: errorMessage })
       },
       { status: 502 }
