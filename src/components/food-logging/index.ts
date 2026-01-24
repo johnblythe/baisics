@@ -41,6 +41,9 @@ export type { DateMenuProps } from './DateMenu';
 export { CopyDayModal } from './CopyDayModal';
 export type { CopyDayModalProps } from './CopyDayModal';
 
+export { DatePickerModal } from './DatePickerModal';
+export type { DatePickerModalProps } from './DatePickerModal';
+
 // USDA Food Search
 export { USDAFoodSearch } from './USDAFoodSearch';
 export type { USDAFoodSearchProps, USDAFoodResult } from './USDAFoodSearch';

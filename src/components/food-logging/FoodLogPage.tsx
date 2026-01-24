@@ -13,6 +13,7 @@ import {
   CreateRecipeModal,
   DateMenu,
   CopyDayModal,
+  DatePickerModal,
   type QuickFoodItem,
   type WeeklyDayData,
   type FoodLogItemData,
@@ -208,6 +209,9 @@ export function FoodLogPage({
   // Copy day modal state
   const [showCopyDayModal, setShowCopyDayModal] = useState(false);
   const [copyFromDate, setCopyFromDate] = useState<Date | null>(null);
+
+  // Date picker modal state (for "Pick a date..." option)
+  const [showDatePickerModal, setShowDatePickerModal] = useState(false);
 
   // Fetch entries for selected date
   const fetchEntries = useCallback(async () => {
@@ -674,10 +678,16 @@ export function FoodLogPage({
     setShowCopyDayModal(true);
   }, [selectedDate]);
 
-  // Handle pick date (for DateMenu) - placeholder for US-011
+  // Handle pick date (for DateMenu) - opens date picker modal
   const handlePickDate = useCallback(() => {
-    // TODO: US-011 will implement the date picker
-    toast.info('Date picker coming soon!');
+    setShowDatePickerModal(true);
+  }, []);
+
+  // Handle date selection from date picker - opens copy day modal with selected date
+  const handleDatePickerSelect = useCallback((date: Date) => {
+    setCopyFromDate(date);
+    setShowDatePickerModal(false);
+    setShowCopyDayModal(true);
   }, []);
 
   // Handle clear day's food log
@@ -1041,6 +1051,15 @@ export function FoodLogPage({
           }}
         />
       )}
+
+      {/* Date Picker Modal (for "Pick a date..." option) */}
+      <DatePickerModal
+        isOpen={showDatePickerModal}
+        onClose={() => setShowDatePickerModal(false)}
+        onSelectDate={handleDatePickerSelect}
+        targetDate={selectedDate}
+        title="Pick a date to copy from"
+      />
 
       {/* Submitting overlay */}
       {isSubmitting && (
