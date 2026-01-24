@@ -32,6 +32,9 @@ export type { RecipeEditorProps, RecipeEditData, RecipeIngredient } from './Reci
 export { MyRecipesSidebar } from './MyRecipesSidebar';
 export type { MyRecipesSidebarProps, Recipe } from './MyRecipesSidebar';
 
+export { CreateRecipeModal } from './CreateRecipeModal';
+export type { CreateRecipeModalProps, RecipeIngredient as CreateRecipeIngredient } from './CreateRecipeModal';
+
 // USDA Food Search
 export { USDAFoodSearch } from './USDAFoodSearch';
 export type { USDAFoodSearchProps, USDAFoodResult } from './USDAFoodSearch';

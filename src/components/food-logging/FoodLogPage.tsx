@@ -10,6 +10,7 @@ import {
   DesktopLayout,
   AIParseResult,
   FoodEditModal,
+  CreateRecipeModal,
   type QuickFoodItem,
   type WeeklyDayData,
   type FoodLogItemData,
@@ -197,6 +198,9 @@ export function FoodLogPage({
 
   // Edit modal state
   const [editingItem, setEditingItem] = useState<FoodEditData | null>(null);
+
+  // Create recipe modal state
+  const [showCreateRecipeModal, setShowCreateRecipeModal] = useState(false);
 
   // Fetch entries for selected date
   const fetchEntries = useCallback(async () => {
@@ -608,6 +612,15 @@ export function FoodLogPage({
     setShowQuickAdd(true);
   };
 
+  // Handle create recipe - use external callback if provided, otherwise show internal modal
+  const handleCreateRecipe = useCallback(() => {
+    if (onCreateRecipe) {
+      onCreateRecipe();
+    } else {
+      setShowCreateRecipeModal(true);
+    }
+  }, [onCreateRecipe]);
+
   // Handle inline food add from MealSection
   const handleInlineFoodAdd = async (food: MealSectionFoodResult) => {
     // Determine source - use food.source if provided, otherwise default to USDA_SEARCH
@@ -810,7 +823,7 @@ export function FoodLogPage({
           setShowQuickAdd={setShowQuickAdd}
           recipes={recipes}
           onRecipeAdd={handleRecipeAdd}
-          onCreateRecipe={onCreateRecipe}
+          onCreateRecipe={handleCreateRecipe}
           enableRecipeSidebar={true}
           onSidebarRecipeAdd={handleSidebarRecipeAdd}
           userId={userId}
@@ -855,7 +868,7 @@ export function FoodLogPage({
           onInlineFoodAdd={handleInlineFoodAdd}
           recipes={recipes}
           onRecipeAdd={handleRecipeAdd}
-          onCreateRecipe={onCreateRecipe}
+          onCreateRecipe={handleCreateRecipe}
           enableRecipeSidebar={true}
           onSidebarRecipeAdd={handleSidebarRecipeAdd}
           userId={userId}
@@ -890,6 +903,16 @@ export function FoodLogPage({
           />
         )}
       </AnimatePresence>
+
+      {/* Create Recipe Modal */}
+      <CreateRecipeModal
+        isOpen={showCreateRecipeModal}
+        onClose={() => setShowCreateRecipeModal(false)}
+        onSave={() => {
+          // Modal already handles API save - just close and refresh would happen via MyRecipesSidebar refetch
+        }}
+        userId={userId}
+      />
 
       {/* Submitting overlay */}
       {isSubmitting && (
