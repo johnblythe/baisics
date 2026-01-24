@@ -479,7 +479,7 @@ export function FoodLogPage({
 
   // Handle USDA food add - also upserts to Quick Add
   const handleUSDAFoodAdd = async (food: USDAFoodResult) => {
-    // Add food entry to the log
+    // Add food entry to the log - use meal from USDAFoodResult (selected by user)
     await addFoodEntry({
       name: food.name,
       calories: food.calories,
@@ -488,7 +488,7 @@ export function FoodLogPage({
       fat: food.fat,
       servingSize: food.servingSize,
       servingUnit: food.servingUnit,
-      meal: parseTargetMeal,
+      meal: food.meal,
       source: 'USDA_SEARCH',
       fdcId: food.fdcId,
     });
