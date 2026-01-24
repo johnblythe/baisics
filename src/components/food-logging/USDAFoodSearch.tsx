@@ -19,6 +19,8 @@ export interface USDAFoodResult {
   fdcId: string;
   brand?: string;
   meal: MealType;
+  /** Source of the food (e.g., USDA, OPEN_FOOD_FACTS, AI_ESTIMATED) */
+  source?: string;
 }
 
 // Get default meal based on current time
@@ -85,6 +87,7 @@ export function USDAFoodSearch({
       fdcId: selectedFood.id, // Use unified id
       brand: selectedFood.brand,
       meal: selectedMeal,
+      source: selectedFood.source, // Preserve source (USDA, OPEN_FOOD_FACTS, AI_ESTIMATED, etc.)
     });
 
     setSelectedFood(null);

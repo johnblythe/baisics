@@ -481,6 +481,9 @@ export function FoodLogPage({
 
   // Handle USDA food add - also upserts to Quick Add
   const handleUSDAFoodAdd = async (food: USDAFoodResult) => {
+    // Determine source - use food.source if provided, otherwise default to USDA_SEARCH
+    const source = food.source || 'USDA_SEARCH';
+
     // Add food entry to the log - use meal from USDAFoodResult (selected by user)
     await addFoodEntry({
       name: food.name,
@@ -491,32 +494,34 @@ export function FoodLogPage({
       servingSize: food.servingSize,
       servingUnit: food.servingUnit,
       meal: food.meal,
-      source: 'USDA_SEARCH',
+      source,
       fdcId: food.fdcId,
     });
 
-    // Upsert to QuickFood for quick re-logging
-    try {
-      await fetch('/api/quick-foods', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: food.name,
-          calories: food.calories,
-          protein: food.protein,
-          carbs: food.carbs,
-          fat: food.fat,
-          servingSize: food.servingSize,
-          servingUnit: food.servingUnit,
-          fdcId: food.fdcId,
-          incrementUsage: true,
-        }),
-      });
-      // Refresh quick foods list
-      await fetchQuickFoods();
-    } catch (err) {
-      console.error('Failed to update quick foods:', err);
-      // Non-blocking - food was already logged, this is just a convenience feature
+    // Upsert to QuickFood for quick re-logging (skip for AI estimated foods)
+    if (source !== 'AI_ESTIMATED') {
+      try {
+        await fetch('/api/quick-foods', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: food.name,
+            calories: food.calories,
+            protein: food.protein,
+            carbs: food.carbs,
+            fat: food.fat,
+            servingSize: food.servingSize,
+            servingUnit: food.servingUnit,
+            fdcId: food.fdcId,
+            incrementUsage: true,
+          }),
+        });
+        // Refresh quick foods list
+        await fetchQuickFoods();
+      } catch (err) {
+        console.error('Failed to update quick foods:', err);
+        // Non-blocking - food was already logged, this is just a convenience feature
+      }
     }
   };
 
