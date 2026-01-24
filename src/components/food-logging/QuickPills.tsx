@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, ArrowUp, Search } from 'lucide-react';
 
 export interface QuickFoodItem {
   id: string;
@@ -23,6 +23,19 @@ export interface QuickPillsProps {
 export function QuickPills({ foods, onAdd, layout = 'horizontal', maxItems }: QuickPillsProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const displayFoods = maxItems ? foods.slice(0, maxItems) : foods;
+
+  // Empty state when no quick foods available
+  if (displayFoods.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-4 text-center">
+        <ArrowUp className="w-5 h-5 text-[#FF6B6B] mb-2 animate-bounce" />
+        <div className="flex items-center gap-2 text-sm text-[#64748B]">
+          <Search className="w-4 h-4" />
+          <span>Search for foods above to start logging</span>
+        </div>
+      </div>
+    );
+  }
 
   if (layout === 'grid') {
     return (
