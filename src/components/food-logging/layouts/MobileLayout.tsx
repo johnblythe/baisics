@@ -17,6 +17,7 @@ import {
   type FoodLogItemData,
   type MealType,
   type USDAFoodResult,
+  type MealSectionFoodResult,
 } from '../index';
 
 export interface RecipeItem {
@@ -63,6 +64,10 @@ export interface MobileLayoutProps {
   onAddToMeal: (meal: string) => void;
   onEditItem?: (item: FoodLogItemData) => void;
   onDeleteItem?: (item: FoodLogItemData) => void;
+  /** Enable inline search in meal sections (instead of modal) */
+  enableInlineSearch?: boolean;
+  /** Callback when food is added via inline meal section search */
+  onInlineFoodAdd?: (food: MealSectionFoodResult) => void;
 
   // Bottom sheet / quick add
   showQuickAdd: boolean;
@@ -154,6 +159,8 @@ export function MobileLayout({
   onAddToMeal,
   onEditItem,
   onDeleteItem,
+  enableInlineSearch = true,
+  onInlineFoodAdd,
   showQuickAdd,
   setShowQuickAdd,
   recipes = [],
@@ -256,6 +263,9 @@ export function MobileLayout({
             onEditItem={onEditItem}
             onDeleteItem={onDeleteItem}
             showItemActions={true}
+            enableInlineSearch={enableInlineSearch && !!onInlineFoodAdd}
+            onFoodAdd={onInlineFoodAdd}
+            userId={userId}
           />
         ))}
       </div>

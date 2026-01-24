@@ -16,6 +16,7 @@ import {
   type FoodLogItemData,
   type MealType,
   type USDAFoodResult,
+  type MealSectionFoodResult,
 } from '../index';
 
 export interface RecipeItem {
@@ -60,6 +61,10 @@ export interface DesktopLayoutProps {
   onAddToMeal: (meal: string) => void;
   onEditItem?: (item: FoodLogItemData) => void;
   onDeleteItem?: (item: FoodLogItemData) => void;
+  /** Enable inline search in meal sections (instead of modal) */
+  enableInlineSearch?: boolean;
+  /** Callback when food is added via inline meal section search */
+  onInlineFoodAdd?: (food: MealSectionFoodResult) => void;
 
   // Recipes
   recipes?: RecipeItem[];
@@ -145,6 +150,8 @@ export function DesktopLayout({
   onAddToMeal,
   onEditItem,
   onDeleteItem,
+  enableInlineSearch = true,
+  onInlineFoodAdd,
   recipes = [],
   onRecipeAdd,
   onCreateRecipe,
@@ -271,6 +278,9 @@ export function DesktopLayout({
                     onEditItem={onEditItem}
                     onDeleteItem={onDeleteItem}
                     showItemActions={true}
+                    enableInlineSearch={enableInlineSearch && !!onInlineFoodAdd}
+                    onFoodAdd={onInlineFoodAdd}
+                    userId={userId}
                   />
                 ))}
               </div>

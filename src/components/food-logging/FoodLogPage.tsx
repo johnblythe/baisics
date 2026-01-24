@@ -20,6 +20,7 @@ import {
   type MacroTargets,
   type USDAFoodResult,
   type FoodEditData,
+  type MealSectionFoodResult,
 } from './index';
 
 // API response types
@@ -565,7 +566,7 @@ export function FoodLogPage({
     }
   };
 
-  // Handle add to specific meal
+  // Handle add to specific meal (legacy - opens bottom sheet)
   const handleAddToMeal = (meal: string) => {
     // Convert lowercase meal string to MealType enum
     const mealType = meal.toUpperCase() as MealType;
@@ -573,6 +574,53 @@ export function FoodLogPage({
       setParseTargetMeal(mealType);
     }
     setShowQuickAdd(true);
+  };
+
+  // Handle inline food add from MealSection
+  const handleInlineFoodAdd = async (food: MealSectionFoodResult) => {
+    // Determine source - use food.source if provided, otherwise default to USDA_SEARCH
+    const source = food.source || 'USDA_SEARCH';
+
+    // Add food entry to the log - meal is pre-selected from the MealSection
+    await addFoodEntry({
+      name: food.name,
+      calories: food.calories,
+      protein: food.protein,
+      carbs: food.carbs,
+      fat: food.fat,
+      servingSize: food.servingSize,
+      servingUnit: food.servingUnit,
+      meal: food.meal,
+      source,
+      fdcId: food.fdcId,
+    });
+
+    // Upsert to QuickFood for quick re-logging (skip for AI estimated foods)
+    if (source !== 'AI_ESTIMATED') {
+      try {
+        await fetch('/api/quick-foods', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: food.name,
+            calories: food.calories,
+            protein: food.protein,
+            carbs: food.carbs,
+            fat: food.fat,
+            servingSize: food.servingSize,
+            servingUnit: food.servingUnit,
+            fdcId: food.fdcId,
+            incrementUsage: true,
+          }),
+        });
+        // Refresh quick foods list
+        await fetchQuickFoods();
+      } catch (err) {
+        console.error('Failed to update quick foods:', err);
+      }
+    }
+
+    toast.success(`Added: ${food.name}`);
   };
 
   // Build macro totals and targets
@@ -724,6 +772,8 @@ export function FoodLogPage({
           onAddToMeal={handleAddToMeal}
           onEditItem={handleEditItem}
           onDeleteItem={handleDeleteItem}
+          enableInlineSearch={true}
+          onInlineFoodAdd={handleInlineFoodAdd}
           showQuickAdd={showQuickAdd}
           setShowQuickAdd={setShowQuickAdd}
           recipes={recipes}
@@ -767,6 +817,8 @@ export function FoodLogPage({
           onAddToMeal={handleAddToMeal}
           onEditItem={handleEditItem}
           onDeleteItem={handleDeleteItem}
+          enableInlineSearch={true}
+          onInlineFoodAdd={handleInlineFoodAdd}
           recipes={recipes}
           onRecipeAdd={handleRecipeAdd}
           onCreateRecipe={onCreateRecipe}

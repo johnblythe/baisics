@@ -15,7 +15,7 @@ export { FoodLogItem } from './FoodLogItem';
 export type { FoodLogItemProps, FoodLogItemData } from './FoodLogItem';
 
 export { MealSection } from './MealSection';
-export type { MealSectionProps, MealType } from './MealSection';
+export type { MealSectionProps, MealType, MealSectionFoodResult } from './MealSection';
 
 export { AIParseResult } from './AIParseResult';
 export type { AIParseResultProps, ParsedFoodItem } from './AIParseResult';
