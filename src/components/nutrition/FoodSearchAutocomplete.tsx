@@ -5,6 +5,50 @@ import { UnifiedFoodResult, FoodSearchSource } from '@/lib/food-search/types';
 import { getRecentFoods, addRecentFood } from '@/lib/foods/recentFoods';
 import { AIEstimateModal } from './AIEstimateModal';
 
+/** Log selection to analytics endpoint */
+async function logSearchSelection(
+  searchId: string,
+  food: UnifiedFoodResult,
+  searchDurationMs: number
+): Promise<void> {
+  try {
+    await fetch('/api/foods/search/log-selection', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        searchId,
+        selectedFdcId: food.id,
+        selectedName: food.name,
+        source: food.source,
+        searchDurationMs,
+      }),
+    });
+  } catch (error) {
+    // Non-critical, don't block user
+    console.error('Failed to log search selection:', error);
+  }
+}
+
+/** Log abandon to analytics endpoint */
+async function logSearchAbandon(
+  searchId: string,
+  searchDurationMs: number
+): Promise<void> {
+  try {
+    await fetch('/api/foods/search/log-abandon', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        searchId,
+        searchDurationMs,
+      }),
+    });
+  } catch (error) {
+    // Non-critical, don't block user
+    console.error('Failed to log search abandon:', error);
+  }
+}
+
 // Colors matching v2a design system
 const COLORS = {
   white: '#FFFFFF',
@@ -52,6 +96,11 @@ export function FoodSearchAutocomplete({
   const [showAIModal, setShowAIModal] = useState(false);
   const [searchComplete, setSearchComplete] = useState(false);
 
+  // Search analytics tracking
+  const [searchId, setSearchId] = useState<string | null>(null);
+  const [searchStartTime, setSearchStartTime] = useState<number | null>(null);
+  const abandonTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -61,14 +110,31 @@ export function FoodSearchAutocomplete({
     setRecentFoods(getRecentFoods(userId));
   }, [userId]);
 
+  // Cleanup abandon timeout on component unmount
+  useEffect(() => {
+    return () => {
+      if (abandonTimeoutRef.current) {
+        clearTimeout(abandonTimeoutRef.current);
+      }
+    };
+  }, []);
+
   // Debounced search
   useEffect(() => {
     if (query.length < 2) {
       setFoods([]);
       setShowingRecent(false);
       setSearchComplete(false);
+      // Reset search tracking when query is cleared
+      setSearchId(null);
+      setSearchStartTime(null);
       // Don't close dropdown here - let onFocus handle showing recents
       return;
+    }
+
+    // Track search start time from first keystroke that triggers search
+    if (searchStartTime === null) {
+      setSearchStartTime(Date.now());
     }
 
     setShowingRecent(false);
@@ -87,6 +153,10 @@ export function FoodSearchAutocomplete({
         setIsOpen(true);
         setHighlightedIndex(-1);
         setSearchComplete(true);
+        // Capture searchId for analytics tracking
+        if (data.searchId) {
+          setSearchId(data.searchId);
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Search failed');
         setFoods([]);
@@ -97,7 +167,7 @@ export function FoodSearchAutocomplete({
     }, 300); // 300ms debounce
 
     return () => clearTimeout(timer);
-  }, [query]);
+  }, [query, searchStartTime]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -111,9 +181,48 @@ export function FoodSearchAutocomplete({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Log abandon when search is closed without selection (debounced)
+  useEffect(() => {
+    // Only log abandon when dropdown closes and we have a valid search session
+    if (!isOpen && searchId && searchStartTime && !showingRecent) {
+      // Clear any existing timeout
+      if (abandonTimeoutRef.current) {
+        clearTimeout(abandonTimeoutRef.current);
+      }
+
+      // Debounce the abandon log - wait 1 second to see if user is just refining
+      abandonTimeoutRef.current = setTimeout(() => {
+        const duration = Date.now() - searchStartTime;
+        logSearchAbandon(searchId, duration);
+        // Reset search tracking after logging abandon
+        setSearchId(null);
+        setSearchStartTime(null);
+      }, 1000);
+    }
+
+    // Cleanup timeout on unmount or when deps change
+    return () => {
+      if (abandonTimeoutRef.current) {
+        clearTimeout(abandonTimeoutRef.current);
+      }
+    };
+  }, [isOpen, searchId, searchStartTime, showingRecent]);
+
   // Handle food selection
   const handleSelect = useCallback(
     (food: UnifiedFoodResult) => {
+      // Cancel any pending abandon timeout
+      if (abandonTimeoutRef.current) {
+        clearTimeout(abandonTimeoutRef.current);
+        abandonTimeoutRef.current = null;
+      }
+
+      // Log selection to analytics (non-blocking)
+      if (searchId && searchStartTime) {
+        const duration = Date.now() - searchStartTime;
+        logSearchSelection(searchId, food, duration);
+      }
+
       // Add to recent foods cache
       addRecentFood(userId, food);
       // Update local recent foods state
@@ -126,8 +235,11 @@ export function FoodSearchAutocomplete({
       setHighlightedIndex(-1);
       setShowingRecent(false);
       setSearchComplete(false);
+      // Reset search tracking
+      setSearchId(null);
+      setSearchStartTime(null);
     },
-    [onSelect, userId]
+    [onSelect, userId, searchId, searchStartTime]
   );
 
   // Handle AI estimated food selection
