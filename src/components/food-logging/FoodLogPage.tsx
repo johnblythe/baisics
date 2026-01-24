@@ -39,6 +39,7 @@ interface FoodLogEntry {
   source: string;
   notes?: string | null;
   createdAt: string;
+  isApproximate?: boolean;
   recipe?: {
     id: string;
     name: string;
@@ -139,6 +140,7 @@ function entryToItemData(entry: FoodLogEntry): FoodLogItemData {
     protein: entry.protein,
     carbs: entry.carbs,
     fat: entry.fat,
+    isApproximate: entry.isApproximate,
   };
 }
 

@@ -94,6 +94,7 @@ export async function POST(request: Request) {
       source,
       recipeId,
       notes,
+      isApproximate,
     } = body;
 
     // Validate required fields
@@ -129,6 +130,9 @@ export async function POST(request: Request) {
     }
 
     // Create entry
+    // Auto-set isApproximate to true for AI_ESTIMATED source
+    const shouldBeApproximate = isApproximate === true || foodSource === FoodSource.AI_ESTIMATED;
+
     const entry = await prisma.foodLogEntry.create({
       data: {
         userId: session.user.id,
@@ -146,6 +150,7 @@ export async function POST(request: Request) {
         source: foodSource,
         recipeId: recipeId || null,
         notes: notes || null,
+        isApproximate: shouldBeApproximate,
       },
       include: {
         recipe: {
