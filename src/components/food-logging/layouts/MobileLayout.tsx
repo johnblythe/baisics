@@ -1,8 +1,8 @@
 'use client';
 
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, ChefHat, Plus, Database } from 'lucide-react';
+import { Clock, ChefHat, Plus, Database, Search } from 'lucide-react';
 import {
   MacroProgressBar,
   QuickInput,
@@ -168,16 +168,12 @@ export function MobileLayout({
   customHeader,
   customFooter,
 }: MobileLayoutProps) {
-  const [showUSDASearch, setShowUSDASearch] = useState(false);
-
   // Calculate remaining if not provided
   const calcRemainingCal = remainingCalories ?? (macroTargets.calories - macroTotals.calories);
   const calcRemainingP = remainingProtein ?? (macroTargets.protein - macroTotals.protein);
 
   const handleUSDAConfirm = (food: USDAFoodResult) => {
     onUSDAFoodAdd?.(food);
-    setShowUSDASearch(false);
-    setShowQuickAdd(false);
   };
 
   return (
@@ -202,8 +198,32 @@ export function MobileLayout({
         <MacroProgressBar layout="horizontal" totals={macroTotals} targets={macroTargets} />
       </div>
 
-      {/* Quick Input */}
+      {/* USDA Food Search - Primary Entry Point */}
+      {onUSDAFoodAdd && (
+        <div className="px-4 py-3 bg-white border-b border-[#E2E8F0]">
+          <div className="flex items-center gap-2 mb-2">
+            <Search className="w-4 h-4 text-[#FF6B6B]" />
+            <span className="text-sm font-medium text-[#0F172A]">Search Foods</span>
+          </div>
+          <USDAFoodSearch
+            userId={userId}
+            onConfirm={handleUSDAConfirm}
+            placeholder="Search foods... (chicken, rice, banana)"
+          />
+        </div>
+      )}
+
+      {/* Quick Pills */}
       <div className="px-4 py-3 bg-white border-b border-[#E2E8F0]">
+        <QuickPills foods={quickFoods} onAdd={onQuickAdd} layout="horizontal" />
+      </div>
+
+      {/* AI Quick Input */}
+      <div className="px-4 py-3 bg-white border-b border-[#E2E8F0]">
+        <div className="flex items-center gap-2 mb-2">
+          <Database className="w-4 h-4 text-[#FF6B6B]" />
+          <span className="text-sm font-medium text-[#0F172A]">AI Quick Add</span>
+        </div>
         <QuickInput
           onSubmit={onAISubmit}
           onFocus={() => {
@@ -213,11 +233,6 @@ export function MobileLayout({
           placeholder={aiInputPlaceholder}
           isLoading={isAILoading}
         />
-      </div>
-
-      {/* Quick Pills */}
-      <div className="px-4 py-3 bg-white border-b border-[#E2E8F0]">
-        <QuickPills foods={quickFoods} onAdd={onQuickAdd} layout="horizontal" />
       </div>
 
       {/* Weekly Strip */}
@@ -318,40 +333,9 @@ export function MobileLayout({
                     onCreateRecipe={onCreateRecipe}
                   />
                 )}
-
-                {/* USDA Database Search Button */}
-                {onUSDAFoodAdd && (
-                  <div>
-                    <h3 className="font-medium text-[#0F172A] mb-2 flex items-center gap-2">
-                      <Database className="w-4 h-4 text-[#FF6B6B]" />
-                      Search Database
-                    </h3>
-                    <button
-                      type="button"
-                      onClick={() => setShowUSDASearch(true)}
-                      className="w-full flex items-center justify-center gap-2 p-3 bg-[#F8FAFC] hover:bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl text-sm text-[#64748B] transition-colors"
-                    >
-                      <Database className="w-4 h-4" />
-                      Search USDA Foods
-                    </button>
-                  </div>
-                )}
               </div>
             </motion.div>
           </>
-        )}
-      </AnimatePresence>
-
-      {/* USDA Search Modal */}
-      <AnimatePresence>
-        {showUSDASearch && onUSDAFoodAdd && (
-          <USDAFoodSearch
-            userId={userId}
-            onConfirm={handleUSDAConfirm}
-            onCancel={() => setShowUSDASearch(false)}
-            isModal={true}
-            placeholder="Search USDA foods..."
-          />
         )}
       </AnimatePresence>
     </div>

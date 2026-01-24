@@ -186,11 +186,26 @@ export function DesktopLayout({
           {/* Left Column: Quick Add (sticky) */}
           <div className="lg:col-span-1">
             <div className="lg:sticky lg:top-6 space-y-4">
+              {/* USDA Food Search - Primary Entry Point */}
+              {onUSDAFoodAdd && (
+                <div className="bg-white rounded-xl border border-[#E2E8F0] p-4">
+                  <h3 className="font-medium text-[#0F172A] mb-3 flex items-center gap-2">
+                    <Search className="w-4 h-4 text-[#FF6B6B]" />
+                    Search Foods
+                  </h3>
+                  <USDAFoodSearch
+                    userId={userId}
+                    onConfirm={onUSDAFoodAdd}
+                    placeholder="Search foods... (chicken, rice, banana)"
+                  />
+                </div>
+              )}
+
               {/* AI Quick Input */}
               <div className="bg-white rounded-xl border border-[#E2E8F0] p-4">
                 <h3 className="font-medium text-[#0F172A] mb-3 flex items-center gap-2">
-                  <Search className="w-4 h-4 text-[#FF6B6B]" />
-                  Quick Add
+                  <Database className="w-4 h-4 text-[#FF6B6B]" />
+                  AI Quick Add
                 </h3>
                 <QuickInput
                   onSubmit={onAISubmit}
@@ -198,21 +213,6 @@ export function DesktopLayout({
                   isLoading={isAILoading}
                 />
               </div>
-
-              {/* USDA Database Search */}
-              {onUSDAFoodAdd && (
-                <div className="bg-white rounded-xl border border-[#E2E8F0] p-4">
-                  <h3 className="font-medium text-[#0F172A] mb-3 flex items-center gap-2">
-                    <Database className="w-4 h-4 text-[#FF6B6B]" />
-                    Search Database
-                  </h3>
-                  <USDAFoodSearch
-                    userId={userId}
-                    onConfirm={onUSDAFoodAdd}
-                    placeholder="Search USDA foods..."
-                  />
-                </div>
-              )}
 
               {/* Today's Progress */}
               <div className="bg-white rounded-xl border border-[#E2E8F0] p-4">
