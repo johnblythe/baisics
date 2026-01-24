@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { UnifiedFoodResult, FoodSearchSource } from '@/lib/food-search/types';
 import { getRecentFoods, addRecentFood } from '@/lib/foods/recentFoods';
+import { AIEstimateModal } from './AIEstimateModal';
 
 // Colors matching v2a design system
 const COLORS = {
@@ -23,6 +24,7 @@ const SOURCE_BADGES: Record<FoodSearchSource, { label: string; color: string; bg
   QUICK_FOOD: { label: 'Your Foods', color: '#059669', bgColor: '#D1FAE5' },
   USDA: { label: 'USDA', color: '#1D4ED8', bgColor: '#DBEAFE' },
   OPEN_FOOD_FACTS: { label: 'OFF', color: '#7C3AED', bgColor: '#EDE9FE' },
+  AI_ESTIMATED: { label: '~ AI', color: '#DC2626', bgColor: '#FEE2E2' },
 };
 
 export interface FoodSearchAutocompleteProps {
@@ -47,6 +49,8 @@ export function FoodSearchAutocomplete({
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [error, setError] = useState<string | null>(null);
   const [showingRecent, setShowingRecent] = useState(false);
+  const [showAIModal, setShowAIModal] = useState(false);
+  const [searchComplete, setSearchComplete] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
@@ -62,11 +66,13 @@ export function FoodSearchAutocomplete({
     if (query.length < 2) {
       setFoods([]);
       setShowingRecent(false);
+      setSearchComplete(false);
       // Don't close dropdown here - let onFocus handle showing recents
       return;
     }
 
     setShowingRecent(false);
+    setSearchComplete(false);
     const timer = setTimeout(async () => {
       setLoading(true);
       setError(null);
@@ -80,9 +86,11 @@ export function FoodSearchAutocomplete({
         setFoods(data.foods || []);
         setIsOpen(true);
         setHighlightedIndex(-1);
+        setSearchComplete(true);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Search failed');
         setFoods([]);
+        setSearchComplete(true);
       } finally {
         setLoading(false);
       }
@@ -117,8 +125,20 @@ export function FoodSearchAutocomplete({
       setIsOpen(false);
       setHighlightedIndex(-1);
       setShowingRecent(false);
+      setSearchComplete(false);
     },
     [onSelect, userId]
+  );
+
+  // Handle AI estimated food selection
+  const handleAIFoodSelect = useCallback(
+    (food: UnifiedFoodResult) => {
+      // Close the modal first
+      setShowAIModal(false);
+      // Then handle like a normal selection
+      handleSelect(food);
+    },
+    [handleSelect]
   );
 
   // Keyboard navigation
@@ -398,8 +418,38 @@ export function FoodSearchAutocomplete({
               </li>
             ))
           )}
+
+          {/* AI Estimate button - shows after search completes or when <3 results */}
+          {!showingRecent && searchComplete && (foods.length < 3 || foods.length === 0) && (
+            <li
+              className="px-4 py-3 border-t cursor-pointer transition-colors hover:bg-gray-50"
+              style={{ borderColor: COLORS.gray100, backgroundColor: COLORS.gray50 }}
+              onClick={() => {
+                setShowAIModal(true);
+                setIsOpen(false);
+              }}
+            >
+              <div className="flex items-center gap-2 text-sm" style={{ color: COLORS.coral }}>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+                <span className="font-medium">Can&apos;t find it? Estimate with AI</span>
+              </div>
+              <p className="text-xs mt-1" style={{ color: COLORS.gray400 }}>
+                Describe your food naturally and get macro estimates
+              </p>
+            </li>
+          )}
         </ul>
       )}
+
+      {/* AI Estimate Modal */}
+      <AIEstimateModal
+        isOpen={showAIModal}
+        onClose={() => setShowAIModal(false)}
+        onAddFood={handleAIFoodSelect}
+        initialDescription={query}
+      />
     </div>
   );
 }
