@@ -16,3 +16,12 @@ export type { FoodLogItemProps, FoodLogItemData } from './FoodLogItem';
 
 export { MealSection } from './MealSection';
 export type { MealSectionProps, MealType } from './MealSection';
+
+// Layout components
+export { MobileLayout, DesktopLayout } from './layouts';
+export type {
+  MobileLayoutProps,
+  DesktopLayoutProps,
+  RecipeItem,
+  MealData,
+} from './layouts';
