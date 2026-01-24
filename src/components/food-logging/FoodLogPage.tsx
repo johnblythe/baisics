@@ -9,6 +9,7 @@ import {
   MobileLayout,
   DesktopLayout,
   AIParseResult,
+  FoodEditModal,
   type QuickFoodItem,
   type WeeklyDayData,
   type FoodLogItemData,
@@ -18,6 +19,7 @@ import {
   type MacroTotals,
   type MacroTargets,
   type USDAFoodResult,
+  type FoodEditData,
 } from './index';
 
 // API response types
@@ -186,6 +188,9 @@ export function FoodLogPage({
 
   // Mobile quick add sheet
   const [showQuickAdd, setShowQuickAdd] = useState(false);
+
+  // Edit modal state
+  const [editingItem, setEditingItem] = useState<FoodEditData | null>(null);
 
   // Fetch entries for selected date
   const fetchEntries = useCallback(async () => {
@@ -515,15 +520,41 @@ export function FoodLogPage({
 
   // Handle edit item
   const handleEditItem = (item: FoodLogItemData) => {
-    // For now, we'll just log - full edit modal would be a separate component
-    console.log('Edit item:', item);
-    // TODO: Open edit modal
+    // Find the full entry to get all fields
+    const allEntries = [
+      ...entries.BREAKFAST,
+      ...entries.LUNCH,
+      ...entries.DINNER,
+      ...entries.SNACK,
+    ];
+    const fullEntry = allEntries.find((e) => e.id === item.id);
+
+    if (fullEntry) {
+      setEditingItem({
+        id: fullEntry.id,
+        name: fullEntry.name,
+        calories: fullEntry.calories,
+        protein: fullEntry.protein,
+        carbs: fullEntry.carbs,
+        fat: fullEntry.fat,
+        servingSize: fullEntry.servingSize,
+        servingUnit: fullEntry.servingUnit,
+      });
+    }
+  };
+
+  // Handle save edit
+  const handleSaveEdit = async (id: string, updates: Partial<FoodEditData>) => {
+    await editFoodEntry(id, updates);
+    setEditingItem(null);
+    toast.success('Food updated');
   };
 
   // Handle delete item
-  const handleDeleteItem = (item: FoodLogItemData) => {
+  const handleDeleteItem = async (item: FoodLogItemData) => {
     if (confirm(`Delete "${item.name}"?`)) {
-      deleteFoodEntry(item.id);
+      await deleteFoodEntry(item.id);
+      toast.success(`Deleted: ${item.name}`);
     }
   };
 
@@ -749,6 +780,18 @@ export function FoodLogPage({
             isPreviousDayReference={parseResult.isPreviousDayReference}
             onConfirm={confirmParsedFoods}
             onCancel={() => setParseResult(null)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Food Edit Modal */}
+      <AnimatePresence>
+        {editingItem && (
+          <FoodEditModal
+            food={editingItem}
+            onSave={handleSaveEdit}
+            onCancel={() => setEditingItem(null)}
+            isSaving={isSubmitting}
           />
         )}
       </AnimatePresence>
