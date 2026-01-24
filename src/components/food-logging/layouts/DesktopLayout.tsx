@@ -84,6 +84,10 @@ export interface DesktopLayoutProps {
   userId?: string;
   onUSDAFoodAdd?: (food: USDAFoodResult) => void;
 
+  // Copy from yesterday
+  selectedDate?: Date;
+  onCopyFromYesterday?: () => void;
+
   // Suggestion
   suggestion?: string;
   suggestionDetail?: string;
@@ -169,6 +173,8 @@ export function DesktopLayout({
   onInlineRecipeAdd,
   userId,
   onUSDAFoodAdd,
+  selectedDate,
+  onCopyFromYesterday,
   suggestion,
   suggestionDetail,
   onSuggestionClick,
@@ -304,6 +310,8 @@ export function DesktopLayout({
                     userId={userId}
                     onRecipeAdd={onInlineRecipeAdd ? (recipe, multiplier) => onInlineRecipeAdd(recipe, multiplier, mealData.meal) : undefined}
                     onCreateRecipe={onCreateRecipe}
+                    selectedDate={selectedDate}
+                    onCopyFromYesterday={onCopyFromYesterday}
                   />
                 ))}
               </div>

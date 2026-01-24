@@ -655,6 +655,11 @@ export function FoodLogPage({
     }
   }, [onCreateRecipe]);
 
+  // Handle copy from yesterday - refresh entries and summary
+  const handleCopyFromYesterday = useCallback(async () => {
+    await Promise.all([fetchEntries(), fetchSummary()]);
+  }, [fetchEntries, fetchSummary]);
+
   // Handle inline food add from MealSection
   const handleInlineFoodAdd = async (food: MealSectionFoodResult) => {
     // Determine source - use food.source if provided, otherwise default to USDA_SEARCH
@@ -863,6 +868,8 @@ export function FoodLogPage({
           onInlineRecipeAdd={handleInlineRecipeAdd}
           userId={userId}
           onUSDAFoodAdd={handleUSDAFoodAdd}
+          selectedDate={selectedDate}
+          onCopyFromYesterday={handleCopyFromYesterday}
           remainingCalories={remainingCalories}
           remainingProtein={remainingProtein}
           suggestion={suggestion}
@@ -909,6 +916,8 @@ export function FoodLogPage({
           onInlineRecipeAdd={handleInlineRecipeAdd}
           userId={userId}
           onUSDAFoodAdd={handleUSDAFoodAdd}
+          selectedDate={selectedDate}
+          onCopyFromYesterday={handleCopyFromYesterday}
           suggestion={suggestion}
           suggestionDetail={suggestion}
           rightContentExtra={errorBanner}

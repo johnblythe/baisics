@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Coffee, Sun, Moon, Apple, Plus, X, Search, Loader2 } from 'lucide-react';
+import { Coffee, Sun, Moon, Apple, Plus, X, Search, Loader2, Copy, Check } from 'lucide-react';
 import { MealType as PrismaMealType } from '@prisma/client';
 import { FoodLogItem, type FoodLogItemData } from './FoodLogItem';
 import { FoodSearchAutocomplete } from '@/components/nutrition/FoodSearchAutocomplete';
@@ -55,6 +55,22 @@ export interface MealSectionFoodResult {
   source?: string;
 }
 
+// Yesterday meal API response type
+interface YesterdayMealResponse {
+  date: string;
+  meal: string;
+  entries: Array<{
+    id: string;
+    name: string;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  }>;
+  totalCalories: number;
+  hasEntries: boolean;
+}
+
 export interface MealSectionProps {
   meal: MealType | string;
   items: FoodLogItemData[];
@@ -73,6 +89,10 @@ export interface MealSectionProps {
   onRecipeAdd?: (recipe: RecipeWithIngredients, multiplier: number) => void;
   /** Callback to open create recipe modal */
   onCreateRecipe?: () => void;
+  /** Current selected date (for copy from yesterday feature) */
+  selectedDate?: Date;
+  /** Callback when meals are copied from yesterday */
+  onCopyFromYesterday?: () => void;
 }
 
 function getMealIcon(meal: string) {
@@ -110,11 +130,19 @@ export function MealSection({
   userId,
   onRecipeAdd,
   onCreateRecipe,
+  selectedDate,
+  onCopyFromYesterday,
 }: MealSectionProps) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [selectedFood, setSelectedFood] = useState<UnifiedFoodResult | null>(null);
   const [recipes, setRecipes] = useState<RecipeWithIngredients[]>([]);
   const [recipesLoading, setRecipesLoading] = useState(false);
+
+  // Copy from yesterday state
+  const [yesterdayMeal, setYesterdayMeal] = useState<YesterdayMealResponse | null>(null);
+  const [isLoadingYesterday, setIsLoadingYesterday] = useState(false);
+  const [isCopying, setIsCopying] = useState(false);
+  const [justCopied, setJustCopied] = useState(false);
 
   const totals = items.reduce(
     (acc, item) => ({
@@ -144,12 +172,67 @@ export function MealSection({
     }
   }, [onRecipeAdd]);
 
+  // Fetch yesterday's meal for copy feature
+  const fetchYesterdayMeal = useCallback(async () => {
+    if (!selectedDate || !onCopyFromYesterday) return;
+    setIsLoadingYesterday(true);
+    try {
+      const dateStr = selectedDate.toISOString().split('T')[0];
+      const mealType = prismaMealType;
+      const response = await fetch(`/api/food-log/yesterday-meal?meal=${mealType}&date=${dateStr}`);
+      if (response.ok) {
+        const data: YesterdayMealResponse = await response.json();
+        setYesterdayMeal(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch yesterday meal:', error);
+    } finally {
+      setIsLoadingYesterday(false);
+    }
+  }, [selectedDate, onCopyFromYesterday, prismaMealType]);
+
+  // Handle copy from yesterday
+  const handleCopyFromYesterday = async () => {
+    if (!selectedDate || !yesterdayMeal?.hasEntries) return;
+
+    setIsCopying(true);
+    try {
+      const response = await fetch('/api/food-log/copy-meal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sourceDate: yesterdayMeal.date,
+          targetDate: selectedDate.toISOString().split('T')[0],
+          meal: prismaMealType,
+        }),
+      });
+
+      if (response.ok) {
+        setJustCopied(true);
+        onCopyFromYesterday?.();
+        // Reset copied state after 2 seconds
+        setTimeout(() => setJustCopied(false), 2000);
+      }
+    } catch (error) {
+      console.error('Failed to copy meal:', error);
+    } finally {
+      setIsCopying(false);
+    }
+  };
+
   // Fetch recipes when search opens
   useEffect(() => {
     if (isSearchOpen && onRecipeAdd) {
       fetchRecipes();
     }
   }, [isSearchOpen, onRecipeAdd, fetchRecipes]);
+
+  // Fetch yesterday's meal when items are empty (for copy feature)
+  useEffect(() => {
+    if (items.length === 0 && selectedDate && onCopyFromYesterday) {
+      fetchYesterdayMeal();
+    }
+  }, [items.length, selectedDate, onCopyFromYesterday, fetchYesterdayMeal]);
 
   // Handle add button click
   const handleAddClick = () => {
@@ -400,13 +483,62 @@ export function MealSection({
         </div>
       ) : items.length === 0 ? (
         /* Empty state - only show when search panel is closed */
-        <button
-          type="button"
-          onClick={handleAddClick}
-          className="w-full p-4 border-2 border-dashed border-[#E2E8F0] rounded-xl text-sm text-[#94A3B8] hover:border-[#FF6B6B] hover:text-[#FF6B6B] transition-colors"
-        >
-          + Add {displayName.toLowerCase()}
-        </button>
+        <div className="border-2 border-dashed border-[#E2E8F0] rounded-xl p-4">
+          {/* Primary add button */}
+          <div className="text-center mb-3">
+            <button
+              type="button"
+              onClick={handleAddClick}
+              className="text-sm text-[#FF6B6B] hover:text-[#EF5350] transition-colors"
+            >
+              + Add {displayName.toLowerCase()}
+            </button>
+          </div>
+
+          {/* Copy from yesterday option */}
+          {selectedDate && onCopyFromYesterday && (
+            <>
+              {isLoadingYesterday ? (
+                <div className="flex items-center justify-center py-2">
+                  <Loader2 className="w-4 h-4 text-[#94A3B8] animate-spin" />
+                </div>
+              ) : yesterdayMeal?.hasEntries ? (
+                <>
+                  {/* "or" divider */}
+                  <div className="flex items-center gap-2 text-[#94A3B8] text-sm">
+                    <div className="flex-1 h-px bg-[#E2E8F0]" />
+                    <span>or</span>
+                    <div className="flex-1 h-px bg-[#E2E8F0]" />
+                  </div>
+
+                  {/* Copy button */}
+                  <button
+                    type="button"
+                    onClick={handleCopyFromYesterday}
+                    disabled={isCopying}
+                    className="w-full mt-3 flex items-center justify-center gap-2 text-sm text-[#64748B] hover:text-[#0F172A] py-2 hover:bg-[#F1F5F9] rounded-lg transition-colors disabled:opacity-50"
+                  >
+                    {isCopying ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : justCopied ? (
+                      <Check className="w-4 h-4 text-green-600" />
+                    ) : (
+                      <Copy className="w-4 h-4" />
+                    )}
+                    {justCopied ? (
+                      <span className="text-green-600">Copied from yesterday</span>
+                    ) : (
+                      <>
+                        Copy from yesterday
+                        <span className="text-[#94A3B8]">({yesterdayMeal.totalCalories} cal)</span>
+                      </>
+                    )}
+                  </button>
+                </>
+              ) : null}
+            </>
+          )}
+        </div>
       ) : null}
     </div>
   );

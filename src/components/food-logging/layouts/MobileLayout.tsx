@@ -91,6 +91,10 @@ export interface MobileLayoutProps {
   userId?: string;
   onUSDAFoodAdd?: (food: USDAFoodResult) => void;
 
+  // Copy from yesterday
+  selectedDate?: Date;
+  onCopyFromYesterday?: () => void;
+
   // Remaining / suggestion
   remainingCalories?: number;
   remainingProtein?: number;
@@ -180,6 +184,8 @@ export function MobileLayout({
   onInlineRecipeAdd,
   userId,
   onUSDAFoodAdd,
+  selectedDate,
+  onCopyFromYesterday,
   remainingCalories,
   remainingProtein,
   suggestion,
@@ -280,6 +286,8 @@ export function MobileLayout({
             userId={userId}
             onRecipeAdd={onInlineRecipeAdd ? (recipe, multiplier) => onInlineRecipeAdd(recipe, multiplier, mealData.meal) : undefined}
             onCreateRecipe={onCreateRecipe}
+            selectedDate={selectedDate}
+            onCopyFromYesterday={onCopyFromYesterday}
           />
         ))}
       </div>
