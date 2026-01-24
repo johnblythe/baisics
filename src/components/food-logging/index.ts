@@ -58,6 +58,9 @@ export type { AIParseResultProps, ParsedFoodItem } from './AIParseResult';
 export { RecipePanel } from './RecipePanel';
 export type { RecipePanelProps, RecipeData } from './RecipePanel';
 
+export { RecipeEditor } from './RecipeEditor';
+export type { RecipeEditorProps, RecipeEditData, RecipeIngredient } from './RecipeEditor';
+
 // Page orchestrator
 export { FoodLogPage } from './FoodLogPage';
 export type { FoodLogPageProps } from './FoodLogPage';
