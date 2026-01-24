@@ -660,8 +660,9 @@ model FoodLogEntry {
   protein     Float
   carbs       Float
   fat         Float
-  source      FoodSource @default(MANUAL)
-  recipeId    String?    @map("recipe_id") @db.Uuid
+  source        FoodSource @default(MANUAL)
+  isApproximate Boolean    @default(false) @map("is_approximate")
+  recipeId      String?    @map("recipe_id") @db.Uuid
   notes       String?    @db.Text
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt @map("updated_at")
