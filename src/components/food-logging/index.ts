@@ -38,6 +38,9 @@ export type { CreateRecipeModalProps, RecipeIngredient as CreateRecipeIngredient
 export { DateMenu } from './DateMenu';
 export type { DateMenuProps } from './DateMenu';
 
+export { CopyDayModal } from './CopyDayModal';
+export type { CopyDayModalProps } from './CopyDayModal';
+
 // USDA Food Search
 export { USDAFoodSearch } from './USDAFoodSearch';
 export type { USDAFoodSearchProps, USDAFoodResult } from './USDAFoodSearch';

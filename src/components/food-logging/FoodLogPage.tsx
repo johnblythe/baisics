@@ -12,6 +12,7 @@ import {
   FoodEditModal,
   CreateRecipeModal,
   DateMenu,
+  CopyDayModal,
   type QuickFoodItem,
   type WeeklyDayData,
   type FoodLogItemData,
@@ -1023,6 +1024,23 @@ export function FoodLogPage({
         }}
         userId={userId}
       />
+
+      {/* Copy Day Modal */}
+      {copyFromDate && (
+        <CopyDayModal
+          isOpen={showCopyDayModal}
+          onClose={() => {
+            setShowCopyDayModal(false);
+            setCopyFromDate(null);
+          }}
+          sourceDate={copyFromDate}
+          targetDate={selectedDate}
+          onCopySuccess={async () => {
+            await Promise.all([fetchEntries(), fetchSummary()]);
+            toast.success('Meals copied successfully');
+          }}
+        />
+      )}
 
       {/* Submitting overlay */}
       {isSubmitting && (
