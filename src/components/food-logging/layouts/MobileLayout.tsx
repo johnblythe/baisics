@@ -1,6 +1,6 @@
 'use client';
 
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, ChefHat, Plus, Database, Search } from 'lucide-react';
 import {
@@ -197,8 +197,6 @@ export function MobileLayout({
   customHeader,
   customFooter,
 }: MobileLayoutProps) {
-  const [showUSDASearch, setShowUSDASearch] = useState(false);
-
   // Calculate remaining if not provided
   const calcRemainingCal = remainingCalories ?? (macroTargets.calories - macroTotals.calories);
   const calcRemainingP = remainingProtein ?? (macroTargets.protein - macroTotals.protein);
@@ -383,40 +381,9 @@ export function MobileLayout({
                     onCreateRecipe={onCreateRecipe}
                   />
                 )}
-
-                {/* USDA Database Search Button */}
-                {onUSDAFoodAdd && (
-                  <div>
-                    <h3 className="font-medium text-[#0F172A] mb-2 flex items-center gap-2">
-                      <Database className="w-4 h-4 text-[#FF6B6B]" />
-                      Search Database
-                    </h3>
-                    <button
-                      type="button"
-                      onClick={() => setShowUSDASearch(true)}
-                      className="w-full flex items-center justify-center gap-2 p-3 bg-[#F8FAFC] hover:bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl text-sm text-[#64748B] transition-colors"
-                    >
-                      <Database className="w-4 h-4" />
-                      Search USDA Foods
-                    </button>
-                  </div>
-                )}
               </div>
             </motion.div>
           </>
-        )}
-      </AnimatePresence>
-
-      {/* USDA Search Modal */}
-      <AnimatePresence>
-        {showUSDASearch && onUSDAFoodAdd && (
-          <USDAFoodSearch
-            userId={userId}
-            onConfirm={handleUSDAConfirm}
-            onCancel={() => setShowUSDASearch(false)}
-            isModal={true}
-            placeholder="Search USDA foods..."
-          />
         )}
       </AnimatePresence>
     </div>
