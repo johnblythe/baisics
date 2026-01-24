@@ -20,6 +20,7 @@ import {
   type USDAFoodResult,
   type MealSectionFoodResult,
   type Recipe,
+  type RecipeWithIngredients,
 } from '../index';
 
 export interface RecipeItem {
@@ -83,6 +84,8 @@ export interface MobileLayoutProps {
   enableRecipeSidebar?: boolean;
   /** Callback when a recipe is added via the self-fetching sidebar */
   onSidebarRecipeAdd?: (recipe: Recipe) => void;
+  /** Callback when a recipe is added via the inline meal section search (with meal context) */
+  onInlineRecipeAdd?: (recipe: RecipeWithIngredients, multiplier: number, meal: string) => void;
 
   // USDA Search
   userId?: string;
@@ -174,6 +177,7 @@ export function MobileLayout({
   onCreateRecipe,
   enableRecipeSidebar = true,
   onSidebarRecipeAdd,
+  onInlineRecipeAdd,
   userId,
   onUSDAFoodAdd,
   remainingCalories,
@@ -274,6 +278,8 @@ export function MobileLayout({
             enableInlineSearch={enableInlineSearch && !!onInlineFoodAdd}
             onFoodAdd={onInlineFoodAdd}
             userId={userId}
+            onRecipeAdd={onInlineRecipeAdd ? (recipe, multiplier) => onInlineRecipeAdd(recipe, multiplier, mealData.meal) : undefined}
+            onCreateRecipe={onCreateRecipe}
           />
         ))}
       </div>

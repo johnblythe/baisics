@@ -23,6 +23,7 @@ import {
   type FoodEditData,
   type MealSectionFoodResult,
   type Recipe,
+  type RecipeWithIngredients,
 } from './index';
 
 // API response types
@@ -516,6 +517,39 @@ export function FoodLogPage({
     }
   };
 
+  // Handle inline recipe add (from meal section search panel - with multiplier and meal context)
+  const handleInlineRecipeAdd = async (recipe: RecipeWithIngredients, multiplier: number, mealStr: string) => {
+    // Convert meal string to MealType enum
+    const meal = mealStr.toUpperCase() as MealType;
+    const servingLabel = multiplier === 1 ? '' : ` (${multiplier}x)`;
+
+    await addFoodEntry({
+      name: recipe.name + servingLabel,
+      calories: Math.round(recipe.calories * multiplier),
+      protein: recipe.protein * multiplier,
+      carbs: recipe.carbs * multiplier,
+      fat: recipe.fat * multiplier,
+      servingSize: recipe.servingSize * multiplier,
+      servingUnit: recipe.servingUnit,
+      meal,
+      source: 'RECIPE',
+      recipeId: recipe.id,
+    });
+
+    toast.success(`Added: ${recipe.name}${servingLabel}`);
+
+    // Increment usage count for the recipe
+    try {
+      await fetch(`/api/recipes/${recipe.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ usageCount: recipe.usageCount + 1 }),
+      });
+    } catch (err) {
+      console.error('Failed to update recipe usage:', err);
+    }
+  };
+
   // Handle USDA food add - also upserts to Quick Add
   const handleUSDAFoodAdd = async (food: USDAFoodResult) => {
     // Determine source - use food.source if provided, otherwise default to USDA_SEARCH
@@ -826,6 +860,7 @@ export function FoodLogPage({
           onCreateRecipe={handleCreateRecipe}
           enableRecipeSidebar={true}
           onSidebarRecipeAdd={handleSidebarRecipeAdd}
+          onInlineRecipeAdd={handleInlineRecipeAdd}
           userId={userId}
           onUSDAFoodAdd={handleUSDAFoodAdd}
           remainingCalories={remainingCalories}
@@ -871,6 +906,7 @@ export function FoodLogPage({
           onCreateRecipe={handleCreateRecipe}
           enableRecipeSidebar={true}
           onSidebarRecipeAdd={handleSidebarRecipeAdd}
+          onInlineRecipeAdd={handleInlineRecipeAdd}
           userId={userId}
           onUSDAFoodAdd={handleUSDAFoodAdd}
           suggestion={suggestion}
