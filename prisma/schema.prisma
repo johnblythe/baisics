@@ -100,6 +100,7 @@ model User {
   foodLogEntries   FoodLogEntry[]
   recipes          Recipe[]
   quickFoods       QuickFood[]
+  foodSearchLogs   FoodSearchLog[]
 
   // Coach Mode relations
   isCoach          Boolean       @default(false) @map("is_coach")
@@ -929,4 +930,29 @@ model MilestoneAchievement {
   @@index([userId])
   @@index([type])
   @@map("milestone_achievements")
+}
+
+// Food Search Analytics - track user search behavior for optimization
+enum FoodSearchAction {
+  SELECTED  // User selected a search result
+  ABANDONED // User closed search without selecting
+  REFINED   // User refined their search query
+}
+
+model FoodSearchLog {
+  id               String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId           String           @map("user_id") @db.Uuid
+  query            String           @db.VarChar(500)
+  resultCount      Int              @map("result_count")
+  selectedFdcId    String?          @map("selected_fdc_id") // FDC ID of selected food, if any
+  selectedName     String?          @map("selected_name") @db.VarChar(500)
+  source           String?          @db.VarChar(50) // USDA, QUICK_FOOD, AI_ESTIMATED, etc.
+  action           FoodSearchAction @default(SELECTED)
+  searchDurationMs Int?             @map("search_duration_ms")
+  createdAt        DateTime         @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
+  @@map("food_search_logs")
 }
