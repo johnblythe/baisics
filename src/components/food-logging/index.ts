@@ -20,6 +20,10 @@ export type { MealSectionProps, MealType } from './MealSection';
 export { AIParseResult } from './AIParseResult';
 export type { AIParseResultProps, ParsedFoodItem } from './AIParseResult';
 
+// Page orchestrator
+export { FoodLogPage } from './FoodLogPage';
+export type { FoodLogPageProps } from './FoodLogPage';
+
 // Layout components
 export { MobileLayout, DesktopLayout } from './layouts';
 export type {
