@@ -10,6 +10,7 @@ import {
   WeeklyStrip,
   MealSection,
   USDAFoodSearch,
+  MyRecipesSidebar,
   type MacroTotals,
   type MacroTargets,
   type QuickFoodItem,
@@ -18,6 +19,7 @@ import {
   type MealType,
   type USDAFoodResult,
   type MealSectionFoodResult,
+  type Recipe,
 } from '../index';
 
 export interface RecipeItem {
@@ -77,6 +79,10 @@ export interface MobileLayoutProps {
   recipes?: RecipeItem[];
   onRecipeAdd?: (item: RecipeItem) => void;
   onCreateRecipe?: () => void;
+  /** Enable self-fetching recipe sidebar in bottom sheet */
+  enableRecipeSidebar?: boolean;
+  /** Callback when a recipe is added via the self-fetching sidebar */
+  onSidebarRecipeAdd?: (recipe: Recipe) => void;
 
   // USDA Search
   userId?: string;
@@ -166,6 +172,8 @@ export function MobileLayout({
   recipes = [],
   onRecipeAdd,
   onCreateRecipe,
+  enableRecipeSidebar = true,
+  onSidebarRecipeAdd,
   userId,
   onUSDAFoodAdd,
   remainingCalories,
@@ -333,7 +341,19 @@ export function MobileLayout({
                     maxItems={6}
                   />
                 </div>
-                {recipes.length > 0 && onRecipeAdd && (
+                {/* My Recipes Sidebar - Self-fetching */}
+                {enableRecipeSidebar && (
+                  <MyRecipesSidebar
+                    onRecipeAdd={(recipe) => {
+                      onSidebarRecipeAdd?.(recipe);
+                      setShowQuickAdd(false);
+                    }}
+                    onCreateRecipe={onCreateRecipe}
+                    maxItems={5}
+                  />
+                )}
+                {/* Legacy Recipes Panel */}
+                {!enableRecipeSidebar && recipes.length > 0 && onRecipeAdd && (
                   <RecipesPanel
                     recipes={recipes}
                     onAdd={(item) => {

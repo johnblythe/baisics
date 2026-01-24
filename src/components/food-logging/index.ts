@@ -29,6 +29,9 @@ export type { RecipePanelProps, RecipeData } from './RecipePanel';
 export { RecipeEditor } from './RecipeEditor';
 export type { RecipeEditorProps, RecipeEditData, RecipeIngredient } from './RecipeEditor';
 
+export { MyRecipesSidebar } from './MyRecipesSidebar';
+export type { MyRecipesSidebarProps, Recipe } from './MyRecipesSidebar';
+
 // USDA Food Search
 export { USDAFoodSearch } from './USDAFoodSearch';
 export type { USDAFoodSearchProps, USDAFoodResult } from './USDAFoodSearch';

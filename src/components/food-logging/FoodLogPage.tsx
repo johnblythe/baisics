@@ -21,6 +21,7 @@ import {
   type USDAFoodResult,
   type FoodEditData,
   type MealSectionFoodResult,
+  type Recipe,
 } from './index';
 
 // API response types
@@ -464,7 +465,7 @@ export function FoodLogPage({
     }
   };
 
-  // Handle recipe add
+  // Handle recipe add (legacy RecipeItem)
   const handleRecipeAdd = (recipe: RecipeItem) => {
     if (onRecipeAdd) {
       onRecipeAdd(recipe);
@@ -479,6 +480,35 @@ export function FoodLogPage({
         source: 'RECIPE',
         recipeId: recipe.id,
       });
+    }
+  };
+
+  // Handle sidebar recipe add (self-fetching Recipe type)
+  const handleSidebarRecipeAdd = async (recipe: Recipe) => {
+    await addFoodEntry({
+      name: recipe.name,
+      calories: recipe.calories,
+      protein: recipe.protein,
+      carbs: recipe.carbs,
+      fat: recipe.fat,
+      servingSize: recipe.servingSize,
+      servingUnit: recipe.servingUnit,
+      meal: MealType.SNACK,
+      source: 'RECIPE',
+      recipeId: recipe.id,
+    });
+
+    toast.success(`Added: ${recipe.name}`);
+
+    // Increment usage count for the recipe
+    try {
+      await fetch(`/api/recipes/${recipe.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ usageCount: recipe.usageCount + 1 }),
+      });
+    } catch (err) {
+      console.error('Failed to update recipe usage:', err);
     }
   };
 
@@ -781,6 +811,8 @@ export function FoodLogPage({
           recipes={recipes}
           onRecipeAdd={handleRecipeAdd}
           onCreateRecipe={onCreateRecipe}
+          enableRecipeSidebar={true}
+          onSidebarRecipeAdd={handleSidebarRecipeAdd}
           userId={userId}
           onUSDAFoodAdd={handleUSDAFoodAdd}
           remainingCalories={remainingCalories}
@@ -824,6 +856,8 @@ export function FoodLogPage({
           recipes={recipes}
           onRecipeAdd={handleRecipeAdd}
           onCreateRecipe={onCreateRecipe}
+          enableRecipeSidebar={true}
+          onSidebarRecipeAdd={handleSidebarRecipeAdd}
           userId={userId}
           onUSDAFoodAdd={handleUSDAFoodAdd}
           suggestion={suggestion}

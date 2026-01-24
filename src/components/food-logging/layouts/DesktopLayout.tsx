@@ -9,6 +9,7 @@ import {
   WeeklyStrip,
   MealSection,
   USDAFoodSearch,
+  MyRecipesSidebar,
   type MacroTotals,
   type MacroTargets,
   type QuickFoodItem,
@@ -17,6 +18,7 @@ import {
   type MealType,
   type USDAFoodResult,
   type MealSectionFoodResult,
+  type Recipe,
 } from '../index';
 
 export interface RecipeItem {
@@ -66,10 +68,14 @@ export interface DesktopLayoutProps {
   /** Callback when food is added via inline meal section search */
   onInlineFoodAdd?: (food: MealSectionFoodResult) => void;
 
-  // Recipes
+  // Recipes (legacy - for passing recipes from parent)
   recipes?: RecipeItem[];
   onRecipeAdd?: (item: RecipeItem) => void;
   onCreateRecipe?: () => void;
+  /** Enable self-fetching recipe sidebar (shows My Recipes section) */
+  enableRecipeSidebar?: boolean;
+  /** Callback when a recipe is added via the self-fetching sidebar */
+  onSidebarRecipeAdd?: (recipe: Recipe) => void;
 
   // USDA Search
   userId?: string;
@@ -155,6 +161,8 @@ export function DesktopLayout({
   recipes = [],
   onRecipeAdd,
   onCreateRecipe,
+  enableRecipeSidebar = true,
+  onSidebarRecipeAdd,
   userId,
   onUSDAFoodAdd,
   suggestion,
@@ -239,8 +247,17 @@ export function DesktopLayout({
                 <QuickPills foods={quickFoods} onAdd={onQuickAdd} layout="grid" maxItems={6} />
               </div>
 
-              {/* Recipes */}
-              {recipes.length > 0 && onRecipeAdd && (
+              {/* My Recipes Sidebar - Self-fetching */}
+              {enableRecipeSidebar && (
+                <MyRecipesSidebar
+                  onRecipeAdd={onSidebarRecipeAdd}
+                  onCreateRecipe={onCreateRecipe}
+                  maxItems={5}
+                />
+              )}
+
+              {/* Legacy Recipes Panel (for passed-in recipes) */}
+              {!enableRecipeSidebar && recipes.length > 0 && onRecipeAdd && (
                 <div className="bg-white rounded-xl border border-[#E2E8F0] p-4">
                   <RecipesPanel
                     recipes={recipes}
