@@ -67,6 +67,8 @@ interface DailySummaryResponse {
     date: string;
     logged: boolean;
     adherencePercent: number | null;
+    protein: number;
+    calories: number;
   }>;
 }
 
@@ -649,9 +651,9 @@ export function FoodLogPage({
     return {
       day: dayOfWeek,
       date: dayDate.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' }),
-      calories: 0, // Would need additional API data for per-day calories
+      calories: day.calories,
       target: macroTargets.calories,
-      protein: 0, // Would need additional API data for per-day protein
+      protein: day.protein,
       proteinTarget: macroTargets.protein,
       logged: day.logged,
       adherence: day.adherencePercent ?? 0,

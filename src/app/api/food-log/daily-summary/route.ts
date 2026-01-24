@@ -21,6 +21,8 @@ interface DayCompliance {
   date: string;
   logged: boolean;
   adherencePercent: number | null;
+  protein: number;
+  calories: number;
 }
 
 interface DailySummaryResponse {
@@ -140,27 +142,30 @@ export async function GET(request: Request): Promise<NextResponse<DailySummaryRe
         },
         select: {
           calories: true,
+          protein: true,
         },
       });
 
       const logged = dayEntries.length > 0;
       let adherencePercent: number | null = null;
 
+      // Calculate day totals
+      const dayCalories = dayEntries.reduce((sum, e) => sum + e.calories, 0);
+      const dayProtein = dayEntries.reduce((sum, e) => sum + e.protein, 0);
+
       if (logged && targets) {
-        const dayCalories = dayEntries.reduce((sum, e) => sum + e.calories, 0);
-        // Calculate adherence as percentage (capped at 100% to avoid overcounting)
-        // Adherence = actual / target, capped at 150% to allow for slight overage
-        const rawPercent = (dayCalories / targets.dailyCalories) * 100;
-        // Consider "adherent" if within 80-120% of target
-        // Score: 100% at target, decreasing as you get further away
-        const deviation = Math.abs(rawPercent - 100);
-        adherencePercent = Math.max(0, Math.round(100 - deviation));
+        // Calculate adherence based on protein (protein is primary goal)
+        const rawPercent = (dayProtein / targets.proteinGrams) * 100;
+        // Cap at 100% - hitting or exceeding protein target = 100%
+        adherencePercent = Math.min(100, Math.round(rawPercent));
       }
 
       weeklyCompliance.push({
         date: dayDate.toISOString().split('T')[0],
         logged,
         adherencePercent,
+        protein: Math.round(dayProtein * 10) / 10,
+        calories: Math.round(dayCalories),
       });
     }
 
