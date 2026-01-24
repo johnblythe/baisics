@@ -85,6 +85,7 @@ interface ParseTextResponse {
   originalText: string;
   isPreviousDayReference: boolean;
   message?: string;
+  detectedMeal?: MealType;
 }
 
 // Props for the FoodLogPage
@@ -363,6 +364,10 @@ export function FoodLogPage({
       if (data.foods.length === 0) {
         setError(data.message || 'No foods detected in your input');
       } else {
+        // Use detected meal from AI if available
+        if (data.detectedMeal) {
+          setParseTargetMeal(data.detectedMeal);
+        }
         setParseResult(data);
       }
     } catch (err) {
