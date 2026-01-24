@@ -267,6 +267,13 @@ export function FoodLogPage({
     onDateChange?.(newDate);
   };
 
+  const goToToday = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    setSelectedDate(today);
+    onDateChange?.(today);
+  };
+
   // Add food entry
   const addFoodEntry = async (food: {
     name: string;
@@ -615,9 +622,13 @@ export function FoodLogPage({
             {isToday(selectedDate) ? 'Today' : formatDateForDisplay(selectedDate)}
           </h1>
           {!isToday(selectedDate) && (
-            <p className="text-sm text-white/80 lg:text-[#64748B]">
-              {formatDateForDisplay(selectedDate)}
-            </p>
+            <button
+              type="button"
+              onClick={goToToday}
+              className="text-sm text-white/90 hover:text-white lg:text-[#FF6B6B] lg:hover:text-[#EF5350] underline mt-0.5 transition-colors"
+            >
+              Jump to Today
+            </button>
           )}
         </div>
         <button
