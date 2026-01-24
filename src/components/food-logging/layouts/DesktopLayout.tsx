@@ -88,6 +88,10 @@ export interface DesktopLayoutProps {
   selectedDate?: Date;
   onCopyFromYesterday?: () => void;
 
+  // USDA Search
+  userId?: string;
+  onUSDAFoodAdd?: (food: USDAFoodResult) => void;
+
   // Suggestion
   suggestion?: string;
   suggestionDetail?: string;
@@ -248,6 +252,21 @@ export function DesktopLayout({
                   isLoading={isAILoading}
                 />
               </div>
+
+              {/* USDA Database Search */}
+              {onUSDAFoodAdd && (
+                <div className="bg-white rounded-xl border border-[#E2E8F0] p-4">
+                  <h3 className="font-medium text-[#0F172A] mb-3 flex items-center gap-2">
+                    <Database className="w-4 h-4 text-[#FF6B6B]" />
+                    Search Database
+                  </h3>
+                  <USDAFoodSearch
+                    userId={userId}
+                    onConfirm={onUSDAFoodAdd}
+                    placeholder="Search USDA foods..."
+                  />
+                </div>
+              )}
 
               {/* Today's Progress */}
               <div className="bg-white rounded-xl border border-[#E2E8F0] p-4">

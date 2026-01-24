@@ -61,6 +61,10 @@ export type { RecipePanelProps, RecipeData } from './RecipePanel';
 export { RecipeEditor } from './RecipeEditor';
 export type { RecipeEditorProps, RecipeEditData, RecipeIngredient } from './RecipeEditor';
 
+// USDA Food Search
+export { USDAFoodSearch } from './USDAFoodSearch';
+export type { USDAFoodSearchProps, USDAFoodResult } from './USDAFoodSearch';
+
 // Page orchestrator
 export { FoodLogPage } from './FoodLogPage';
 export type { FoodLogPageProps } from './FoodLogPage';
