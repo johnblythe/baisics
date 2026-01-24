@@ -35,6 +35,9 @@ export type { MyRecipesSidebarProps, Recipe } from './MyRecipesSidebar';
 export { CreateRecipeModal } from './CreateRecipeModal';
 export type { CreateRecipeModalProps, RecipeIngredient as CreateRecipeIngredient } from './CreateRecipeModal';
 
+export { DateMenu } from './DateMenu';
+export type { DateMenuProps } from './DateMenu';
+
 // USDA Food Search
 export { USDAFoodSearch } from './USDAFoodSearch';
 export type { USDAFoodSearchProps, USDAFoodResult } from './USDAFoodSearch';

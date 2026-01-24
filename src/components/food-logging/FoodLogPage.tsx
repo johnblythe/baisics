@@ -11,6 +11,7 @@ import {
   AIParseResult,
   FoodEditModal,
   CreateRecipeModal,
+  DateMenu,
   type QuickFoodItem,
   type WeeklyDayData,
   type FoodLogItemData,
@@ -202,6 +203,10 @@ export function FoodLogPage({
 
   // Create recipe modal state
   const [showCreateRecipeModal, setShowCreateRecipeModal] = useState(false);
+
+  // Copy day modal state
+  const [showCopyDayModal, setShowCopyDayModal] = useState(false);
+  const [copyFromDate, setCopyFromDate] = useState<Date | null>(null);
 
   // Fetch entries for selected date
   const fetchEntries = useCallback(async () => {
@@ -660,6 +665,42 @@ export function FoodLogPage({
     await Promise.all([fetchEntries(), fetchSummary()]);
   }, [fetchEntries, fetchSummary]);
 
+  // Handle copy from yesterday (for DateMenu) - opens copy day modal
+  const handleDateMenuCopyFromYesterday = useCallback(() => {
+    const yesterday = new Date(selectedDate);
+    yesterday.setDate(yesterday.getDate() - 1);
+    setCopyFromDate(yesterday);
+    setShowCopyDayModal(true);
+  }, [selectedDate]);
+
+  // Handle pick date (for DateMenu) - placeholder for US-011
+  const handlePickDate = useCallback(() => {
+    // TODO: US-011 will implement the date picker
+    toast.info('Date picker coming soon!');
+  }, []);
+
+  // Handle clear day's food log
+  const handleClearDay = useCallback(async () => {
+    setIsSubmitting(true);
+    try {
+      const response = await fetch(`/api/food-log?date=${formatDateForAPI(selectedDate)}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to clear food log');
+      }
+      const data = await response.json();
+      toast.success(`Cleared ${data.deletedCount} entries`);
+      // Refresh data
+      await Promise.all([fetchEntries(), fetchSummary()]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to clear food log');
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [selectedDate, fetchEntries, fetchSummary]);
+
   // Handle inline food add from MealSection
   const handleInlineFoodAdd = async (food: MealSectionFoodResult) => {
     // Determine source - use food.source if provided, otherwise default to USDA_SEARCH
@@ -787,7 +828,7 @@ export function FoodLogPage({
         >
           <ChevronLeft className="w-5 h-5 lg:text-[#64748B]" />
         </button>
-        <div className="text-center">
+        <div className="text-center flex-1">
           <h1 className="text-lg font-bold lg:text-[#0F172A]">
             {isToday(selectedDate) ? 'Today' : formatDateForDisplay(selectedDate)}
           </h1>
@@ -801,13 +842,37 @@ export function FoodLogPage({
             </button>
           )}
         </div>
-        <button
-          type="button"
-          onClick={goToNextDay}
-          className="p-2 hover:bg-white/10 lg:hover:bg-[#F1F5F9] rounded-lg transition-colors"
-        >
-          <ChevronRight className="w-5 h-5 lg:text-[#64748B]" />
-        </button>
+        <div className="flex items-center gap-1">
+          {/* Date menu - mobile variant */}
+          <div className="lg:hidden">
+            <DateMenu
+              selectedDate={selectedDate}
+              isToday={isToday(selectedDate)}
+              variant="mobile"
+              onCopyFromYesterday={handleDateMenuCopyFromYesterday}
+              onPickDate={handlePickDate}
+              onClearDay={handleClearDay}
+            />
+          </div>
+          {/* Date menu - desktop variant */}
+          <div className="hidden lg:block">
+            <DateMenu
+              selectedDate={selectedDate}
+              isToday={isToday(selectedDate)}
+              variant="desktop"
+              onCopyFromYesterday={handleDateMenuCopyFromYesterday}
+              onPickDate={handlePickDate}
+              onClearDay={handleClearDay}
+            />
+          </div>
+          <button
+            type="button"
+            onClick={goToNextDay}
+            className="p-2 hover:bg-white/10 lg:hover:bg-[#F1F5F9] rounded-lg transition-colors"
+          >
+            <ChevronRight className="w-5 h-5 lg:text-[#64748B]" />
+          </button>
+        </div>
       </div>
     </div>
   );

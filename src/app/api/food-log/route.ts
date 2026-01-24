@@ -172,3 +172,47 @@ export async function POST(request: Request) {
     );
   }
 }
+
+// DELETE /api/food-log?date=YYYY-MM-DD - deletes all entries for a specified date
+export async function DELETE(request: Request) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const dateParam = searchParams.get('date');
+
+    if (!dateParam) {
+      return NextResponse.json(
+        { error: 'date query parameter is required' },
+        { status: 400 }
+      );
+    }
+
+    // Parse date and normalize to start of day
+    const date = new Date(dateParam);
+    date.setHours(0, 0, 0, 0);
+
+    // Delete all entries for this user on this date
+    const result = await prisma.foodLogEntry.deleteMany({
+      where: {
+        userId: session.user.id,
+        date: date,
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      deletedCount: result.count,
+      date: date.toISOString().split('T')[0],
+    });
+  } catch (error) {
+    console.error('Error deleting food log entries:', error);
+    return NextResponse.json(
+      { error: 'Failed to delete food log entries' },
+      { status: 500 }
+    );
+  }
+}
