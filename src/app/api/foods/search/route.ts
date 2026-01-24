@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { unifiedSearch } from '@/lib/food-search';
+import { prisma } from '@/lib/prisma';
 
 /**
  * Search foods across all sources (QuickFoods, USDA, Open Food Facts)
@@ -37,10 +38,21 @@ export async function GET(request: Request) {
       pageSize: limit,
     });
 
-    // Return foods with source field included
+    // Log the search query (non-blocking, don't await)
+    const searchLog = await prisma.foodSearchLog.create({
+      data: {
+        userId: session.user.id,
+        query,
+        resultCount: result.results.length,
+        action: 'REFINED', // Initial search is marked as REFINED until selection/abandon
+      },
+    });
+
+    // Return foods with source field and searchId for tracking
     return NextResponse.json({
       foods: result.results,
       counts: result.counts,
+      searchId: searchLog.id,
     });
   } catch (error) {
     console.error('Food search error:', error);
