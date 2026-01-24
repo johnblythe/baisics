@@ -253,6 +253,17 @@ export function FoodSearchAutocomplete({
     [handleSelect]
   );
 
+  // Handle AI estimated food selection
+  const handleAIFoodSelect = useCallback(
+    (food: UnifiedFoodResult) => {
+      // Close the modal first
+      setShowAIModal(false);
+      // Then handle like a normal selection
+      handleSelect(food);
+    },
+    [handleSelect]
+  );
+
   // Keyboard navigation
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
