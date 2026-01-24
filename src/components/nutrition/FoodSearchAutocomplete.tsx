@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { SimplifiedFood } from '@/lib/usda/types';
+import { UnifiedFoodResult, FoodSearchSource } from '@/lib/food-search/types';
 import { getRecentFoods, addRecentFood } from '@/lib/foods/recentFoods';
 
 // Colors matching v2a design system
@@ -18,8 +18,15 @@ const COLORS = {
   coralLight: '#FFE5E5',
 };
 
+/** Source badge configuration */
+const SOURCE_BADGES: Record<FoodSearchSource, { label: string; color: string; bgColor: string }> = {
+  QUICK_FOOD: { label: 'Your Foods', color: '#059669', bgColor: '#D1FAE5' },
+  USDA: { label: 'USDA', color: '#1D4ED8', bgColor: '#DBEAFE' },
+  OPEN_FOOD_FACTS: { label: 'OFF', color: '#7C3AED', bgColor: '#EDE9FE' },
+};
+
 export interface FoodSearchAutocompleteProps {
-  onSelect: (food: SimplifiedFood) => void;
+  onSelect: (food: UnifiedFoodResult) => void;
   placeholder?: string;
   className?: string;
   /** User ID for scoping recent foods. Falls back to 'anonymous' if not provided */
@@ -33,8 +40,8 @@ export function FoodSearchAutocomplete({
   userId = 'anonymous',
 }: FoodSearchAutocompleteProps) {
   const [query, setQuery] = useState('');
-  const [foods, setFoods] = useState<SimplifiedFood[]>([]);
-  const [recentFoods, setRecentFoods] = useState<SimplifiedFood[]>([]);
+  const [foods, setFoods] = useState<UnifiedFoodResult[]>([]);
+  const [recentFoods, setRecentFoods] = useState<UnifiedFoodResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -98,7 +105,7 @@ export function FoodSearchAutocomplete({
 
   // Handle food selection
   const handleSelect = useCallback(
-    (food: SimplifiedFood) => {
+    (food: UnifiedFoodResult) => {
       // Add to recent foods cache
       addRecentFood(userId, food);
       // Update local recent foods state
@@ -161,8 +168,33 @@ export function FoodSearchAutocomplete({
     }
   }, [highlightedIndex, showingRecent, recentFoods.length]);
 
-  const formatMacros = (food: SimplifiedFood) => {
+  const formatMacros = (food: UnifiedFoodResult) => {
     return `${food.calories} cal | ${food.protein}g P | ${food.carbs}g C | ${food.fat}g F`;
+  };
+
+  // Render source badge with optional star icon for user's foods
+  const renderSourceBadge = (source: FoodSearchSource) => {
+    const badge = SOURCE_BADGES[source];
+    const isUserFood = source === 'QUICK_FOOD';
+
+    return (
+      <span
+        className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-medium"
+        style={{ backgroundColor: badge.bgColor, color: badge.color }}
+      >
+        {isUserFood && (
+          <svg
+            className="w-3 h-3"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            aria-hidden="true"
+          >
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+          </svg>
+        )}
+        {badge.label}
+      </span>
+    );
   };
 
   return (
@@ -279,7 +311,7 @@ export function FoodSearchAutocomplete({
             ) : (
               recentFoods.map((food, index) => (
                 <li
-                  key={food.fdcId}
+                  key={food.id}
                   role="option"
                   aria-selected={highlightedIndex === index}
                   className="px-4 py-3 cursor-pointer transition-colors border-b last:border-b-0"
@@ -292,7 +324,7 @@ export function FoodSearchAutocomplete({
                   onMouseEnter={() => setHighlightedIndex(index)}
                 >
                   <div className="flex flex-col gap-0.5">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <span
                         className="font-medium text-sm"
                         style={{ color: COLORS.navy }}
@@ -310,6 +342,7 @@ export function FoodSearchAutocomplete({
                           {food.brand}
                         </span>
                       )}
+                      {food.source && renderSourceBadge(food.source)}
                     </div>
                     <span className="text-xs" style={{ color: COLORS.gray400 }}>
                       per 100g: {formatMacros(food)}
@@ -325,7 +358,7 @@ export function FoodSearchAutocomplete({
           ) : (
             foods.map((food, index) => (
               <li
-                key={food.fdcId}
+                key={food.id}
                 role="option"
                 aria-selected={highlightedIndex === index}
                 className="px-4 py-3 cursor-pointer transition-colors border-b last:border-b-0"
@@ -338,7 +371,7 @@ export function FoodSearchAutocomplete({
                 onMouseEnter={() => setHighlightedIndex(index)}
               >
                 <div className="flex flex-col gap-0.5">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span
                       className="font-medium text-sm"
                       style={{ color: COLORS.navy }}
@@ -356,6 +389,7 @@ export function FoodSearchAutocomplete({
                         {food.brand}
                       </span>
                     )}
+                    {food.source && renderSourceBadge(food.source)}
                   </div>
                   <span className="text-xs" style={{ color: COLORS.gray400 }}>
                     per 100g: {formatMacros(food)}

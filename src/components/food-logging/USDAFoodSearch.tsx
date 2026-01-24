@@ -6,7 +6,7 @@ import { X } from 'lucide-react';
 import { MealType } from '@prisma/client';
 import { FoodSearchAutocomplete } from '@/components/nutrition/FoodSearchAutocomplete';
 import { ServingSizeSelector, type CalculatedMacros } from '@/components/nutrition/ServingSizeSelector';
-import type { SimplifiedFood } from '@/lib/usda/types';
+import type { UnifiedFoodResult } from '@/lib/food-search/types';
 
 export interface USDAFoodResult {
   name: string;
@@ -61,13 +61,13 @@ export function USDAFoodSearch({
   placeholder = 'Search USDA database...',
   className = '',
 }: USDAFoodSearchProps) {
-  const [selectedFood, setSelectedFood] = useState<SimplifiedFood | null>(null);
+  const [selectedFood, setSelectedFood] = useState<UnifiedFoodResult | null>(null);
 
   // Default meal based on current time
   const defaultMeal = useMemo(() => getDefaultMealByTime(), []);
   const [selectedMeal, setSelectedMeal] = useState<MealType>(defaultMeal);
 
-  const handleFoodSelect = (food: SimplifiedFood) => {
+  const handleFoodSelect = (food: UnifiedFoodResult) => {
     setSelectedFood(food);
   };
 
@@ -82,7 +82,7 @@ export function USDAFoodSearch({
       fat: macros.fat,
       servingSize: macros.grams,
       servingUnit: 'g',
-      fdcId: String(selectedFood.fdcId),
+      fdcId: selectedFood.id, // Use unified id
       brand: selectedFood.brand,
       meal: selectedMeal,
     });

@@ -6,7 +6,7 @@ import { MealPlanDisplay } from './components/MealPlanDisplay';
 import { GroceryList } from './components/GroceryList';
 import { FoodSearchAutocomplete } from '@/components/nutrition/FoodSearchAutocomplete';
 import { ServingSizeSelector, CalculatedMacros } from '@/components/nutrition/ServingSizeSelector';
-import { SimplifiedFood } from '@/lib/usda/types';
+import { UnifiedFoodResult } from '@/lib/food-search/types';
 import { addRecentFood } from '@/lib/foods/recentFoods';
 
 interface Macros {
@@ -70,7 +70,7 @@ const ALL_PREFERENCES = [...FREE_PREFERENCES, ...PAID_PREFERENCES];
 /** A food entry logged by the user */
 interface LoggedFoodEntry {
   id: string;
-  food: SimplifiedFood;
+  food: UnifiedFoodResult;
   grams: number;
   calories: number;
   protein: number;
@@ -99,7 +99,7 @@ export default function MealPrepPage() {
   const [savedPlans, setSavedPlans] = useState<MealPlan[]>([]);
 
   // Food tracking state
-  const [selectedFood, setSelectedFood] = useState<SimplifiedFood | null>(null);
+  const [selectedFood, setSelectedFood] = useState<UnifiedFoodResult | null>(null);
   const [loggedFoods, setLoggedFoods] = useState<LoggedFoodEntry[]>([]);
   const [userId, setUserId] = useState<string>('anonymous');
   const [toast, setToast] = useState<{ message: string; visible: boolean }>({ message: '', visible: false });
@@ -169,14 +169,14 @@ export default function MealPrepPage() {
   }, []);
 
   // Handle food selection from autocomplete
-  const handleFoodSelect = useCallback((food: SimplifiedFood) => {
+  const handleFoodSelect = useCallback((food: UnifiedFoodResult) => {
     setSelectedFood(food);
   }, []);
 
   // Handle serving confirmation
   const handleServingConfirm = useCallback((calculatedMacros: CalculatedMacros) => {
     const entry: LoggedFoodEntry = {
-      id: `${Date.now()}-${calculatedMacros.food.fdcId}`,
+      id: `${Date.now()}-${calculatedMacros.food.id}`,
       food: calculatedMacros.food,
       grams: calculatedMacros.grams,
       calories: calculatedMacros.calories,
