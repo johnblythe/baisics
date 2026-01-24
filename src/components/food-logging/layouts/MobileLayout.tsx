@@ -1,20 +1,22 @@
 'use client';
 
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, ChefHat, Plus } from 'lucide-react';
+import { Clock, ChefHat, Plus, Database } from 'lucide-react';
 import {
   MacroProgressBar,
   QuickInput,
   QuickPills,
   WeeklyStrip,
   MealSection,
+  USDAFoodSearch,
   type MacroTotals,
   type MacroTargets,
   type QuickFoodItem,
   type WeeklyDayData,
   type FoodLogItemData,
   type MealType,
+  type USDAFoodResult,
 } from '../index';
 
 export interface RecipeItem {
@@ -70,6 +72,10 @@ export interface MobileLayoutProps {
   recipes?: RecipeItem[];
   onRecipeAdd?: (item: RecipeItem) => void;
   onCreateRecipe?: () => void;
+
+  // USDA Search
+  userId?: string;
+  onUSDAFoodAdd?: (food: USDAFoodResult) => void;
 
   // Remaining / suggestion
   remainingCalories?: number;
@@ -153,6 +159,8 @@ export function MobileLayout({
   recipes = [],
   onRecipeAdd,
   onCreateRecipe,
+  userId,
+  onUSDAFoodAdd,
   remainingCalories,
   remainingProtein,
   suggestion,
@@ -160,9 +168,17 @@ export function MobileLayout({
   customHeader,
   customFooter,
 }: MobileLayoutProps) {
+  const [showUSDASearch, setShowUSDASearch] = useState(false);
+
   // Calculate remaining if not provided
   const calcRemainingCal = remainingCalories ?? (macroTargets.calories - macroTotals.calories);
   const calcRemainingP = remainingProtein ?? (macroTargets.protein - macroTotals.protein);
+
+  const handleUSDAConfirm = (food: USDAFoodResult) => {
+    onUSDAFoodAdd?.(food);
+    setShowUSDASearch(false);
+    setShowQuickAdd(false);
+  };
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col">
@@ -302,9 +318,40 @@ export function MobileLayout({
                     onCreateRecipe={onCreateRecipe}
                   />
                 )}
+
+                {/* USDA Database Search Button */}
+                {onUSDAFoodAdd && (
+                  <div>
+                    <h3 className="font-medium text-[#0F172A] mb-2 flex items-center gap-2">
+                      <Database className="w-4 h-4 text-[#FF6B6B]" />
+                      Search Database
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={() => setShowUSDASearch(true)}
+                      className="w-full flex items-center justify-center gap-2 p-3 bg-[#F8FAFC] hover:bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl text-sm text-[#64748B] transition-colors"
+                    >
+                      <Database className="w-4 h-4" />
+                      Search USDA Foods
+                    </button>
+                  </div>
+                )}
               </div>
             </motion.div>
           </>
+        )}
+      </AnimatePresence>
+
+      {/* USDA Search Modal */}
+      <AnimatePresence>
+        {showUSDASearch && onUSDAFoodAdd && (
+          <USDAFoodSearch
+            userId={userId}
+            onConfirm={handleUSDAConfirm}
+            onCancel={() => setShowUSDASearch(false)}
+            isModal={true}
+            placeholder="Search USDA foods..."
+          />
         )}
       </AnimatePresence>
     </div>

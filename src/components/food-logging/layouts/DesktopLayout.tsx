@@ -1,19 +1,21 @@
 'use client';
 
 import React, { useState, ReactNode } from 'react';
-import { Search, TrendingUp, Clock, ChefHat, Plus } from 'lucide-react';
+import { Search, TrendingUp, Clock, ChefHat, Plus, Database } from 'lucide-react';
 import {
   MacroProgressBar,
   QuickInput,
   QuickPills,
   WeeklyStrip,
   MealSection,
+  USDAFoodSearch,
   type MacroTotals,
   type MacroTargets,
   type QuickFoodItem,
   type WeeklyDayData,
   type FoodLogItemData,
   type MealType,
+  type USDAFoodResult,
 } from '../index';
 
 export interface RecipeItem {
@@ -63,6 +65,10 @@ export interface DesktopLayoutProps {
   recipes?: RecipeItem[];
   onRecipeAdd?: (item: RecipeItem) => void;
   onCreateRecipe?: () => void;
+
+  // USDA Search
+  userId?: string;
+  onUSDAFoodAdd?: (food: USDAFoodResult) => void;
 
   // Suggestion
   suggestion?: string;
@@ -142,6 +148,8 @@ export function DesktopLayout({
   recipes = [],
   onRecipeAdd,
   onCreateRecipe,
+  userId,
+  onUSDAFoodAdd,
   suggestion,
   suggestionDetail,
   onSuggestionClick,
@@ -178,11 +186,11 @@ export function DesktopLayout({
           {/* Left Column: Quick Add (sticky) */}
           <div className="lg:col-span-1">
             <div className="lg:sticky lg:top-6 space-y-4">
-              {/* Search Input */}
+              {/* AI Quick Input */}
               <div className="bg-white rounded-xl border border-[#E2E8F0] p-4">
                 <h3 className="font-medium text-[#0F172A] mb-3 flex items-center gap-2">
                   <Search className="w-4 h-4 text-[#FF6B6B]" />
-                  Add Food
+                  Quick Add
                 </h3>
                 <QuickInput
                   onSubmit={onAISubmit}
@@ -190,6 +198,21 @@ export function DesktopLayout({
                   isLoading={isAILoading}
                 />
               </div>
+
+              {/* USDA Database Search */}
+              {onUSDAFoodAdd && (
+                <div className="bg-white rounded-xl border border-[#E2E8F0] p-4">
+                  <h3 className="font-medium text-[#0F172A] mb-3 flex items-center gap-2">
+                    <Database className="w-4 h-4 text-[#FF6B6B]" />
+                    Search Database
+                  </h3>
+                  <USDAFoodSearch
+                    userId={userId}
+                    onConfirm={onUSDAFoodAdd}
+                    placeholder="Search USDA foods..."
+                  />
+                </div>
+              )}
 
               {/* Today's Progress */}
               <div className="bg-white rounded-xl border border-[#E2E8F0] p-4">

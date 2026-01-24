@@ -16,6 +16,7 @@ import {
   type ParsedFoodItem,
   type MacroTotals,
   type MacroTargets,
+  type USDAFoodResult,
 } from './index';
 
 // API response types
@@ -97,6 +98,8 @@ export interface FoodLogPageProps {
   onCreateRecipe?: () => void;
   /** Callback when a recipe is added (optional, defaults to internal handling) */
   onRecipeAdd?: (recipe: RecipeItem) => void;
+  /** User ID for USDA recent foods tracking */
+  userId?: string;
 }
 
 // Format date for API calls (YYYY-MM-DD)
@@ -146,6 +149,7 @@ export function FoodLogPage({
   recipes = [],
   onCreateRecipe,
   onRecipeAdd,
+  userId,
 }: FoodLogPageProps) {
   // Current selected date
   const [selectedDate, setSelectedDate] = useState<Date>(() => {
@@ -430,6 +434,22 @@ export function FoodLogPage({
     }
   };
 
+  // Handle USDA food add
+  const handleUSDAFoodAdd = (food: USDAFoodResult) => {
+    addFoodEntry({
+      name: food.name,
+      calories: food.calories,
+      protein: food.protein,
+      carbs: food.carbs,
+      fat: food.fat,
+      servingSize: food.servingSize,
+      servingUnit: food.servingUnit,
+      meal: parseTargetMeal,
+      source: 'USDA_SEARCH',
+      fdcId: food.fdcId,
+    });
+  };
+
   // Handle edit item
   const handleEditItem = (item: FoodLogItemData) => {
     // For now, we'll just log - full edit modal would be a separate component
@@ -604,6 +624,8 @@ export function FoodLogPage({
           recipes={recipes}
           onRecipeAdd={handleRecipeAdd}
           onCreateRecipe={onCreateRecipe}
+          userId={userId}
+          onUSDAFoodAdd={handleUSDAFoodAdd}
           remainingCalories={remainingCalories}
           remainingProtein={remainingProtein}
           suggestion={suggestion}
@@ -643,6 +665,8 @@ export function FoodLogPage({
           recipes={recipes}
           onRecipeAdd={handleRecipeAdd}
           onCreateRecipe={onCreateRecipe}
+          userId={userId}
+          onUSDAFoodAdd={handleUSDAFoodAdd}
           suggestion={suggestion}
           suggestionDetail={suggestion}
           rightContentExtra={errorBanner}
