@@ -18,14 +18,21 @@ LOG_DIR="$SCRIPT_DIR/logs"
 # Create log directory
 mkdir -p "$LOG_DIR"
 
+# Determine branch mode
+CURRENT_BRANCH=$(jq -r '.branchName // empty' "$PRD_FILE" 2>/dev/null || echo "")
+WORK_IN_PLACE=false
+if [ -z "$CURRENT_BRANCH" ] || [ "$CURRENT_BRANCH" = "null" ]; then
+  WORK_IN_PLACE=true
+  CURRENT_BRANCH="work-in-place-$(git branch --show-current 2>/dev/null || echo 'unknown')"
+fi
+
 # Archive previous run if branch changed
 if [ -f "$PRD_FILE" ] && [ -f "$LAST_BRANCH_FILE" ]; then
-  CURRENT_BRANCH=$(jq -r '.branchName // empty' "$PRD_FILE" 2>/dev/null || echo "")
   LAST_BRANCH=$(cat "$LAST_BRANCH_FILE" 2>/dev/null || echo "")
 
-  if [ -n "$CURRENT_BRANCH" ] && [ -n "$LAST_BRANCH" ] && [ "$CURRENT_BRANCH" != "$LAST_BRANCH" ]; then
+  if [ -n "$LAST_BRANCH" ] && [ "$CURRENT_BRANCH" != "$LAST_BRANCH" ]; then
     DATE=$(date +%Y-%m-%d)
-    FOLDER_NAME=$(echo "$LAST_BRANCH" | sed 's|^ralph/||')
+    FOLDER_NAME=$(echo "$LAST_BRANCH" | sed 's|^ralph/||' | sed 's|^work-in-place-||')
     ARCHIVE_FOLDER="$ARCHIVE_DIR/$DATE-$FOLDER_NAME"
 
     echo "Archiving previous run: $LAST_BRANCH"
@@ -41,13 +48,8 @@ if [ -f "$PRD_FILE" ] && [ -f "$LAST_BRANCH_FILE" ]; then
   fi
 fi
 
-# Track current branch
-if [ -f "$PRD_FILE" ]; then
-  CURRENT_BRANCH=$(jq -r '.branchName // empty' "$PRD_FILE" 2>/dev/null || echo "")
-  if [ -n "$CURRENT_BRANCH" ]; then
-    echo "$CURRENT_BRANCH" > "$LAST_BRANCH_FILE"
-  fi
-fi
+# Track current branch/mode
+echo "$CURRENT_BRANCH" > "$LAST_BRANCH_FILE"
 
 # Initialize progress file if it doesn't exist
 if [ ! -f "$PROGRESS_FILE" ]; then
@@ -76,6 +78,11 @@ echo ""
 echo "╔═══════════════════════════════════════════════════════════╗"
 echo "║  Ralph Wiggum for Claude Code                             ║"
 echo "║  Max iterations: $MAX_ITERATIONS                                       ║"
+if [ "$WORK_IN_PLACE" = true ]; then
+echo "║  Mode: work-in-place (no branch switching)                ║"
+else
+echo "║  Branch: $(printf '%-43s' "$CURRENT_BRANCH")║"
+fi
 echo "╚═══════════════════════════════════════════════════════════╝"
 echo ""
 

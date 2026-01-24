@@ -401,9 +401,10 @@ export function FoodLogPage({
     }
   };
 
-  // Handle quick food add
-  const handleQuickAdd = (item: QuickFoodItem) => {
-    addFoodEntry({
+  // Handle quick food add - also increments usage count
+  const handleQuickAdd = async (item: QuickFoodItem) => {
+    // Add food entry to the log
+    await addFoodEntry({
       name: item.name,
       calories: item.calories,
       protein: item.protein,
@@ -414,6 +415,27 @@ export function FoodLogPage({
       meal: MealType.SNACK,
       source: 'QUICK_ADD',
     });
+
+    // Increment usage count in QuickFood
+    try {
+      await fetch('/api/quick-foods', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: item.name,
+          calories: item.calories,
+          protein: item.protein,
+          carbs: item.carbs ?? 0,
+          fat: item.fat ?? 0,
+          incrementUsage: true,
+        }),
+      });
+      // Refresh quick foods list to reflect updated order
+      await fetchQuickFoods();
+    } catch (err) {
+      console.error('Failed to update quick food usage:', err);
+      // Non-blocking - food was already logged
+    }
   };
 
   // Handle recipe add
@@ -434,9 +456,10 @@ export function FoodLogPage({
     }
   };
 
-  // Handle USDA food add
-  const handleUSDAFoodAdd = (food: USDAFoodResult) => {
-    addFoodEntry({
+  // Handle USDA food add - also upserts to Quick Add
+  const handleUSDAFoodAdd = async (food: USDAFoodResult) => {
+    // Add food entry to the log
+    await addFoodEntry({
       name: food.name,
       calories: food.calories,
       protein: food.protein,
@@ -448,6 +471,30 @@ export function FoodLogPage({
       source: 'USDA_SEARCH',
       fdcId: food.fdcId,
     });
+
+    // Upsert to QuickFood for quick re-logging
+    try {
+      await fetch('/api/quick-foods', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: food.name,
+          calories: food.calories,
+          protein: food.protein,
+          carbs: food.carbs,
+          fat: food.fat,
+          servingSize: food.servingSize,
+          servingUnit: food.servingUnit,
+          fdcId: food.fdcId,
+          incrementUsage: true,
+        }),
+      });
+      // Refresh quick foods list
+      await fetchQuickFoods();
+    } catch (err) {
+      console.error('Failed to update quick foods:', err);
+      // Non-blocking - food was already logged, this is just a convenience feature
+    }
   };
 
   // Handle edit item
