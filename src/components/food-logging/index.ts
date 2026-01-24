@@ -52,6 +52,9 @@ export type { USDAFoodSearchProps, USDAFoodResult } from './USDAFoodSearch';
 export { FoodLogPage } from './FoodLogPage';
 export type { FoodLogPageProps } from './FoodLogPage';
 
+export { AIParseResult } from './AIParseResult';
+export type { AIParseResultProps, ParsedFoodItem } from './AIParseResult';
+
 // Layout components
 export { MobileLayout, DesktopLayout } from './layouts';
 export type {
