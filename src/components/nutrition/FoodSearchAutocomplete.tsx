@@ -67,8 +67,8 @@ const COLORS = {
 const SOURCE_BADGES: Record<FoodSearchSource, { label: string; color: string; bgColor: string }> = {
   QUICK_FOOD: { label: 'Your Foods', color: '#059669', bgColor: '#D1FAE5' },
   USDA: { label: 'USDA', color: '#1D4ED8', bgColor: '#DBEAFE' },
-  OPEN_FOOD_FACTS: { label: 'OFF', color: '#7C3AED', bgColor: '#EDE9FE' },
-  AI_ESTIMATED: { label: '~ AI', color: '#DC2626', bgColor: '#FEE2E2' },
+  OPEN_FOOD_FACTS: { label: 'Community', color: '#7C3AED', bgColor: '#EDE9FE' },
+  AI_ESTIMATED: { label: '≈ Estimate', color: '#DC2626', bgColor: '#FEE2E2' },
 };
 
 export interface FoodSearchAutocompleteProps {

@@ -26,6 +26,63 @@ const DEFAULT_PAGE_SIZE = 25;
 const SIMILARITY_THRESHOLD = 0.85;
 
 /**
+ * Round a number to whole number
+ */
+function roundMacro(value: number): number {
+  return Math.round(value);
+}
+
+/**
+ * Check if a food has valid nutrition data
+ * Filters out junk entries with 0 everything or clearly bad data
+ */
+function hasValidNutrition(food: UnifiedFoodResult): boolean {
+  // Must have at least some calories or macros
+  if (food.calories === 0 && food.protein === 0 && food.carbs === 0 && food.fat === 0) {
+    return false;
+  }
+  // Reject obviously bad data (negative values, impossibly high values)
+  if (food.calories < 0 || food.calories > 1000) return false;
+  if (food.protein < 0 || food.protein > 100) return false;
+  if (food.carbs < 0 || food.carbs > 100) return false;
+  if (food.fat < 0 || food.fat > 100) return false;
+  return true;
+}
+
+/**
+ * Calculate relevance score for a food result based on query match
+ * Higher score = more relevant
+ */
+function calculateRelevanceScore(food: UnifiedFoodResult, query: string): number {
+  const queryLower = query.toLowerCase();
+  const queryWords = queryLower.split(/\s+/).filter(Boolean);
+  const nameLower = food.name.toLowerCase();
+  const brandLower = (food.brand || '').toLowerCase();
+
+  let score = 0;
+
+  // Exact name match = highest boost
+  if (nameLower === queryLower) score += 100;
+
+  // Name starts with query = good
+  if (nameLower.startsWith(queryLower)) score += 50;
+
+  // Brand match = big boost (user searching for specific brand)
+  for (const word of queryWords) {
+    if (brandLower.includes(word)) score += 30;
+    if (nameLower.includes(word)) score += 10;
+  }
+
+  // User's own foods get priority boost
+  if (food.source === 'QUICK_FOOD') score += 200;
+
+  // Penalize results with very low calories (likely incomplete data)
+  if (food.calories < 5) score -= 20;
+
+  return score;
+}
+
+/**
  * Calculate simple similarity between two strings (case-insensitive)
  * Uses Jaccard similarity on word tokens
  */
@@ -161,10 +218,10 @@ async function searchOpenFoodFacts(
       id: `off:${food.id}`,
       name: food.name,
       brand: food.brand,
-      calories: food.calories,
-      protein: food.protein,
-      carbs: food.carbs,
-      fat: food.fat,
+      calories: roundMacro(food.calories),
+      protein: roundMacro(food.protein),
+      carbs: roundMacro(food.carbs),
+      fat: roundMacro(food.fat),
       source: 'OPEN_FOOD_FACTS' as FoodSearchSource,
     }));
   } catch (error) {
@@ -203,15 +260,24 @@ export async function unifiedSearch(
     skipOff ? Promise.resolve([]) : searchOpenFoodFacts(query, pageSize),
   ]);
 
-  // Combine results in priority order
-  // QuickFoods first (user's foods), then USDA, then Open Food Facts
+  // Combine all results
   const combined = [...quickFoodResults, ...usdaResults, ...offResults];
 
-  // Deduplicate while preserving priority order
-  const deduplicated = deduplicateResults(combined);
+  // Filter out bad data (0 cal/0 everything, invalid values)
+  const validResults = combined.filter(hasValidNutrition);
+
+  // Deduplicate
+  const deduplicated = deduplicateResults(validResults);
+
+  // Sort by relevance score (higher = better match)
+  const sorted = deduplicated.sort((a, b) => {
+    const scoreA = calculateRelevanceScore(a, query);
+    const scoreB = calculateRelevanceScore(b, query);
+    return scoreB - scoreA; // Descending (highest score first)
+  });
 
   return {
-    results: deduplicated,
+    results: sorted,
     counts: {
       quickFoods: quickFoodResults.length,
       usda: usdaResults.length,
