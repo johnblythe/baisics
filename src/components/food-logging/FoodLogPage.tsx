@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Loader2, AlertCircle } from 'lucide-react';
 import { MealType } from '@prisma/client';
+import { toast } from 'sonner';
 import {
   MobileLayout,
   DesktopLayout,
@@ -415,6 +416,9 @@ export function FoodLogPage({
       meal: MealType.SNACK,
       source: 'QUICK_ADD',
     });
+
+    // Show toast confirmation
+    toast.success(`Added: ${item.name}`);
 
     // Increment usage count in QuickFood
     try {
