@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { CalculatorForm } from './CalculatorForm';
 
 // Colors matching v2a design system
 const COLORS = {
@@ -59,6 +60,7 @@ export function NutritionTargetsModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [showCalculator, setShowCalculator] = useState(false);
 
   // Load initial values when modal opens or initialValues change
   useEffect(() => {
@@ -182,7 +184,23 @@ export function NutritionTargetsModal({
     setValues({ dailyCalories: '', proteinGrams: '', carbGrams: '', fatGrams: '' });
     setError(null);
     setValidationErrors([]);
+    setShowCalculator(false);
     onClose();
+  };
+
+  const handleCalculated = (targets: {
+    dailyCalories: number;
+    proteinGrams: number;
+    carbGrams: number;
+    fatGrams: number;
+  }) => {
+    setValues({
+      dailyCalories: targets.dailyCalories.toString(),
+      proteinGrams: targets.proteinGrams.toString(),
+      carbGrams: targets.carbGrams.toString(),
+      fatGrams: targets.fatGrams.toString(),
+    });
+    setShowCalculator(false);
   };
 
   if (!isOpen) return null;
@@ -243,6 +261,41 @@ export function NutritionTargetsModal({
             ) : (
               <>
                 {/* Macro inputs */}
+                {/* Help me calculate expandable section */}
+                <div className="mb-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowCalculator(!showCalculator)}
+                    className="flex items-center gap-2 text-sm font-medium transition-colors hover:opacity-80"
+                    style={{ color: COLORS.coral }}
+                  >
+                    <svg
+                      className={`w-4 h-4 transition-transform ${showCalculator ? 'rotate-90' : ''}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                    Help me calculate
+                  </button>
+
+                  {showCalculator && (
+                    <div
+                      className="mt-3 p-4 rounded-lg border"
+                      style={{ backgroundColor: COLORS.gray50, borderColor: COLORS.gray100 }}
+                    >
+                      <p className="text-sm mb-3" style={{ color: COLORS.gray600 }}>
+                        Enter your stats and we&apos;ll calculate suggested targets
+                      </p>
+                      <CalculatorForm
+                        onCalculated={handleCalculated}
+                        onCollapse={() => setShowCalculator(false)}
+                      />
+                    </div>
+                  )}
+                </div>
+
                 <div className="space-y-4">
                   <div>
                     <label
