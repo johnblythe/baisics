@@ -255,14 +255,18 @@ export function FoodLogPage({
     setIsLoadingQuickFoods(true);
     try {
       const response = await fetch('/api/quick-foods');
+      const data = await response.json();
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to fetch quick foods');
+        // Non-critical - just log and continue with empty quick foods
+        console.warn('Quick foods fetch failed:', data.error || response.status);
+        setQuickFoods([]);
+        return;
       }
-      const data: QuickFoodResponse[] = await response.json();
       setQuickFoods(data);
     } catch (err) {
-      console.error('Error fetching quick foods:', err);
+      // Network error or JSON parse error - continue with empty quick foods
+      console.warn('Quick foods fetch error:', err);
+      setQuickFoods([]);
     } finally {
       setIsLoadingQuickFoods(false);
     }
