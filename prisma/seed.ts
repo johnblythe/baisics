@@ -288,6 +288,21 @@ async function seedPersonas() {
         where: { programId: { in: existingProgramIds } },
       });
 
+      // 3.5. Delete NutritionPlans tied to these programs (and standalone for this user)
+      await prisma.nutritionPlan.deleteMany({
+        where: {
+          OR: [
+            { programId: { in: existingProgramIds } },
+            { userId: user.id },
+          ],
+        },
+      });
+
+      // 3.6. Delete Goal for this user
+      await prisma.goal.deleteMany({
+        where: { userId: user.id },
+      });
+
       // 4. Now safe to delete Programs
       await prisma.program.deleteMany({
         where: { userId: user.id },
