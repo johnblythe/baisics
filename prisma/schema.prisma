@@ -129,6 +129,9 @@ model User {
   // Lifetime milestones
   milestoneAchievements MilestoneAchievement[]
 
+  // Nutrition plans (standalone, not tied to program)
+  nutritionPlans NutritionPlan[]
+
   @@index([email])
   @@map("users")
 }
@@ -316,6 +319,7 @@ model Program {
   stats         UserStats[]
   checkIns      CheckIn[]
   activities    UserActivity[]
+  nutritionPlans NutritionPlan[]
 
   @@index([name])
   @@index([slug])
@@ -793,6 +797,29 @@ model PendingClaim {
   @@index([email])
   @@index([token])
   @@map("pending_claims")
+}
+
+// NutritionPlan - decoupled nutrition targets with versioning
+model NutritionPlan {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId        String?   @map("user_id") @db.Uuid
+  programId     String?   @map("program_id") @db.Uuid
+  phaseNumber   Int       @default(1) @map("phase_number")
+  dailyCalories Int       @map("daily_calories")
+  proteinGrams  Int       @map("protein_grams")
+  carbGrams     Int       @map("carb_grams")
+  fatGrams      Int       @map("fat_grams")
+  effectiveDate DateTime  @default(now()) @map("effective_date")
+  endDate       DateTime? @map("end_date")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  user    User?    @relation(fields: [userId], references: [id])
+  program Program? @relation(fields: [programId], references: [id])
+
+  @@index([userId, endDate])
+  @@index([programId, phaseNumber, endDate])
+  @@map("nutrition_plans")
 }
 
 // Lifetime milestone achievements - badges that persist forever
