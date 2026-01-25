@@ -1,5 +1,14 @@
 # Project Instructions
 
+## Product Philosophy
+
+### Free vs Paid Tiers
+**"If it's core to their success, it's free. If it's convenient to their experience, it's paid."**
+
+- Nutrition tracking, workout logging, progress visibility → Free (core to health outcomes)
+- AI convenience features, advanced analytics, time-savers → Paid (nice-to-have, not essential)
+- When in doubt: can a user achieve their health goal without this feature? If no → free.
+
 ## Domain
 **The domain is baisics.app** - NOT baisics.co, NOT baisics.com. Always use baisics.app.
 

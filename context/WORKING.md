@@ -1,78 +1,88 @@
-# Session Context - 2026-01-19T09:30:00Z
+# Session Context - 2026-01-23T12:00:00Z
 
 ## Current Session Overview
-- **Main Task/Feature**: Automated screenshot capture for Features page marketing content
-- **Session Duration**: ~1.5 hours
-- **Current Status**: Complete - Features page fully updated with 10 real screenshots at 2x retina resolution
+- **Main Task/Feature**: Food logging feature discovery - building demo/mockup UX for "MFP but actually good"
+- **Session Duration**: ~45 minutes
+- **Current Status**: Responsive demo page complete at `/dev/food-logging`, ready for user feedback
 
 ## Recent Activity (Last 30-60 minutes)
 - **What We Just Did**:
-  - Created comprehensive Playwright test suite for 21 screenshots (public + authenticated pages)
-  - Captured screenshots for AI conversation, templates, workout+chat, nutrition, meal prep, check-in, exercise library
-  - Updated Features page with all new screenshots organized into Hero (3) and More Features (7) sections
-  - Added "Built Different" philosophy section (no anxiety streaks, long game thinking, your way)
-- **Active Problems**: None - all tests passing
-- **Current Files**: `tests/screenshots/features.spec.ts`, `src/app/features/page.tsx`, `public/features/*.png`
-- **Test Status**: All 21 Playwright tests passing
+  - Updated CHANGELOG.md with missing production features (USDA search, coach dashboard, gym notes fixes)
+  - Created new branch `feat/food-logging-demo`
+  - Built comprehensive food logging demo with mobile + desktop responsive layouts
+  - Iterated on layout: started with side-by-side → mobile-only → properly responsive
+- **Active Problems**: None - demo is functional and ready for feedback
+- **Current Files**: `src/app/dev/food-logging/page.tsx`
+- **Test Status**: Demo is working, no tests needed for discovery phase
 
 ## Key Technical Decisions Made
 - **Architecture Choices**:
-  - Magic link dev flow for test authentication (clicks "Click here to sign in" on verify-request page)
-  - 2x deviceScaleFactor in Playwright for retina screenshots
-  - Separate test user (marcus@test.baisics.app) with real program data
+  - Separate `MobileLayout` and `DesktopLayout` components with `lg:hidden` / `hidden lg:block`
+  - Shared components (MacroProgressBar, QuickInput, QuickPills, WeeklyStrip, MealSection) with layout prop variants
 - **Implementation Approaches**:
-  - Modal dismissal via force click on "Got it"/"Close" buttons
-  - Wait for loaders to disappear before capturing workout screenshots
-  - Hero features use 4:3 aspect ratio, More Features use 16:9 video aspect
+  - Weekly compliance focus over daily obsession (user's opinionated stance)
+  - AI-powered free text entry ("same proats as yesterday", recipe parsing)
+  - Bottom sheet for mobile quick add, sticky sidebar for desktop
+  - Swipeable horizontal pills on mobile, 2-col grid on desktop
+- **Technology Selections**: Framer Motion for animations, Lucide icons
+- **Performance/Security Considerations**: N/A for demo
 
 ## Code Context
 - **Modified Files**:
-  - `tests/screenshots/features.spec.ts` - full rewrite with 21 tests
-  - `src/app/features/page.tsx` - complete features page update
-  - `playwright.config.ts` - added 2x deviceScaleFactor
-  - `public/features/*.png` - 10 feature screenshots
+  - `CHANGELOG.md` - added missing production features
+  - `src/app/dev/food-logging/page.tsx` - new demo page (859 lines)
 - **New Patterns**:
-  - `loginAsTestUser()` helper for authenticated tests
-  - `dismissModals()` helper for cleaning up celebration/welcome modals
-- **Dependencies**: Playwright already installed
-- **Configuration Changes**: Playwright 2x scale for high-res screenshots
+  - Responsive layout switching with separate mobile/desktop components
+  - MacroProgressBar with `layout="horizontal" | "vertical"` variant
+  - QuickPills with `layout="horizontal" | "grid"` variant
+- **Dependencies**: None new (using existing framer-motion, lucide-react)
+- **Configuration Changes**: None
 
 ## Current Implementation State
 - **Completed**:
-  - Screenshot test suite (21 tests)
-  - Features page with real screenshots
-  - Hero features: AI Program Builder, Workout Logging, Progress Dashboard
-  - More features: Import, Templates, AI Chat, Nutrition, Meal Prep, Check-ins, Exercise Library
-  - Philosophy section with brand messaging
-- **In Progress**: None
+  - Weekly compliance view (collapsible strip with day boxes, avg adherence, protein tracking)
+  - AI text entry with simulated parsing ("same as yesterday", "chicken breast")
+  - Quick add pills (horizontal swipe mobile, grid desktop)
+  - Recipes panel with saved items
+  - Today's log grouped by meal (breakfast/lunch/dinner/snacks)
+  - Running macro totals with progress bars
+  - Smart suggestion card ("Chicken + rice would hit it")
+  - Responsive layouts for mobile and desktop
+- **In Progress**: User is reviewing the demo for feedback
 - **Blocked**: None
 - **Next Steps**:
-  - User may want to refine specific screenshots (e.g., more conversation in AI builder, more data in dashboard)
-  - Could add mobile screenshots to features page
-  - Could capture more screens (settings, achievements, etc.)
+  1. Get user feedback on current demo UX
+  2. Iterate on layout/interactions based on feedback
+  3. Eventually spec out real implementation (DB schema, API routes, etc.)
 
 ## Important Context for Handoff
-- **Environment Setup**: Dev server must be running on port 3001
-- **Running/Testing**: `npm run screenshots` to capture all, or `npx playwright test --project='Desktop Chrome' tests/screenshots/features.spec.ts -g "pattern"`
-- **Known Issues**:
-  - AI conversation screenshot may show initial state, not mid-conversation
-  - Dashboard screenshot depends on Marcus's program data state
-- **External Dependencies**: Test personas must be seeded (`npx prisma db seed`)
+- **Environment Setup**: Dev server on port 3001
+- **Running/Testing**: Visit http://localhost:3001/dev/food-logging
+- **Known Issues**: All interactions are mocked - AI parsing is simulated, foods don't persist
+- **External Dependencies**: Existing USDA search components at `src/components/nutrition/FoodSearchAutocomplete.tsx` can be wired in later
 
 ## Conversation Thread
-- **Original Goal**: Run `npm run screenshots` for feature pages
+- **Original Goal**: User asked how USDA food search is being used, wanted to leverage it for better food logging
 - **Evolution**:
-  - Started with just running existing tests → fixed auth (wrong cookie name)
-  - Added magic link dev flow for auth → captured authenticated pages
-  - User requested more features, better screenshots → full page rewrite
-  - Added nutrition, meal prep, check-ins, templates, chat, philosophy section
+  - Found USDA search only on meal-prep page, not in nutrition logging
+  - User wants "MFP but actually good" with weekly focus, AI text entry, recipes
+  - Started with layout exploration (ASCII mockups Option A/B/C)
+  - Built Option B hybrid, then made it properly responsive
 - **Lessons Learned**:
-  - Session cookie is `baisics.session-token` not `next-auth.session-token`
-  - Magic link stored in `baisics.__dev_magic_link` cookie in dev mode
-  - Modals need `force: true` click due to backdrop overlay
+  - User cares about weekly compliance over daily obsession
+  - Free text AI entry is key differentiator ("same proats as yesterday")
+  - Custom recipes could go into shared BAISICS DB, not just user's account
+  - Quick add must be above the fold - can't require scrolling
 - **Alternatives Considered**:
-  - TEST_SESSION_COOKIE env var (rejected - requires manual cookie copy)
-  - Direct credentials auth (exists but magic link flow more reliable)
+  - Option A: Sticky bottom bar (rejected - less space for input)
+  - Option C: Two-pane always (rejected - doesn't work on mobile)
+  - First iteration forced mobile view with max-w-lg (user correctly pointed out this isn't real responsive design)
+
+## User's Discovery Notes (captured in session)
+- Weekly compliance > daily obsession
+- Free text AI entry: "same proats as yesterday", recipe parsing
+- Custom foods could go into shared BAISICS DB
+- Quick add patterns: recent foods, favorites, saved recipes
 
 ---
-*Last updated: 2026-01-19*
+*Last updated: 2026-01-23*

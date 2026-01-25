@@ -8,6 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Features page with real app screenshots and "Built Different" philosophy section (#297)
+- USDA food database search for nutrition logging (#122, #293)
+  - Search 300k+ foods from USDA FoodData Central
+  - Serving size selector with live macro calculation
+  - Quick-add recent foods
+  - Meal prep page integration
+
+### Changed
+- Template detail page redesign with coral accents and prominent stats (#227, #293)
+- Program review page hero-style header with Start Training CTA (#105, #293)
+- Coaches landing page at `/coaches` with testimonials (#286)
+- Coach dashboard routing improvements (#298)
+  - Coaches route to coach dashboard by default
+  - Empty state for users without programs
+  - Personal dashboard link for coaches
 - `/hi` route refactor with DIY options (#189)
   - "I'll build my own" card → `/templates`
   - "I have a program" card → `/create`
@@ -20,6 +35,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unique page titles for SEO on dashboard, workout, settings pages (#288)
 
 ### Fixed
+- Fix 0 lbs bodyweight not carrying over between sessions (#286)
+- First workout celebration modal redesigned and moved to dashboard (#286, #279)
+- Mobile trainer chat visibility (#286)
+- PR and previous session display during workout (#286)
+- Recent Activity card height overflow (#286)
+- Set cards adaptive sizing - flex for ≤5, scroll for >5 (#286)
+- Dashboard graceful degradation with `Promise.allSettled` (#286)
 - Error handling in `/hi` chat flow
   - `handleInitialIntake` now handles failures with user feedback
   - `handleProgramModification` wrapped in try-catch with finally
