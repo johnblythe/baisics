@@ -1,8 +1,53 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { SimplifiedFood } from '@/lib/usda/types';
+import { UnifiedFoodResult, FoodSearchSource } from '@/lib/food-search/types';
 import { getRecentFoods, addRecentFood } from '@/lib/foods/recentFoods';
+import { AIEstimateModal } from './AIEstimateModal';
+
+/** Log selection to analytics endpoint */
+async function logSearchSelection(
+  searchId: string,
+  food: UnifiedFoodResult,
+  searchDurationMs: number
+): Promise<void> {
+  try {
+    await fetch('/api/foods/search/log-selection', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        searchId,
+        selectedFdcId: food.id,
+        selectedName: food.name,
+        source: food.source,
+        searchDurationMs,
+      }),
+    });
+  } catch (error) {
+    // Non-critical, don't block user
+    console.error('Failed to log search selection:', error);
+  }
+}
+
+/** Log abandon to analytics endpoint */
+async function logSearchAbandon(
+  searchId: string,
+  searchDurationMs: number
+): Promise<void> {
+  try {
+    await fetch('/api/foods/search/log-abandon', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        searchId,
+        searchDurationMs,
+      }),
+    });
+  } catch (error) {
+    // Non-critical, don't block user
+    console.error('Failed to log search abandon:', error);
+  }
+}
 
 // Colors matching v2a design system
 const COLORS = {
@@ -18,8 +63,16 @@ const COLORS = {
   coralLight: '#FFE5E5',
 };
 
+/** Source badge configuration */
+const SOURCE_BADGES: Record<FoodSearchSource, { label: string; color: string; bgColor: string }> = {
+  QUICK_FOOD: { label: 'Your Foods', color: '#059669', bgColor: '#D1FAE5' },
+  USDA: { label: 'USDA', color: '#1D4ED8', bgColor: '#DBEAFE' },
+  OPEN_FOOD_FACTS: { label: 'Community', color: '#7C3AED', bgColor: '#EDE9FE' },
+  AI_ESTIMATED: { label: '≈ Estimate', color: '#DC2626', bgColor: '#FEE2E2' },
+};
+
 export interface FoodSearchAutocompleteProps {
-  onSelect: (food: SimplifiedFood) => void;
+  onSelect: (food: UnifiedFoodResult) => void;
   placeholder?: string;
   className?: string;
   /** User ID for scoping recent foods. Falls back to 'anonymous' if not provided */
@@ -33,13 +86,20 @@ export function FoodSearchAutocomplete({
   userId = 'anonymous',
 }: FoodSearchAutocompleteProps) {
   const [query, setQuery] = useState('');
-  const [foods, setFoods] = useState<SimplifiedFood[]>([]);
-  const [recentFoods, setRecentFoods] = useState<SimplifiedFood[]>([]);
+  const [foods, setFoods] = useState<UnifiedFoodResult[]>([]);
+  const [recentFoods, setRecentFoods] = useState<UnifiedFoodResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [error, setError] = useState<string | null>(null);
   const [showingRecent, setShowingRecent] = useState(false);
+  const [showAIModal, setShowAIModal] = useState(false);
+  const [searchComplete, setSearchComplete] = useState(false);
+
+  // Search analytics tracking
+  const [searchId, setSearchId] = useState<string | null>(null);
+  const [searchStartTime, setSearchStartTime] = useState<number | null>(null);
+  const abandonTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
@@ -50,16 +110,35 @@ export function FoodSearchAutocomplete({
     setRecentFoods(getRecentFoods(userId));
   }, [userId]);
 
+  // Cleanup abandon timeout on component unmount
+  useEffect(() => {
+    return () => {
+      if (abandonTimeoutRef.current) {
+        clearTimeout(abandonTimeoutRef.current);
+      }
+    };
+  }, []);
+
   // Debounced search
   useEffect(() => {
     if (query.length < 2) {
       setFoods([]);
       setShowingRecent(false);
+      setSearchComplete(false);
+      // Reset search tracking when query is cleared
+      setSearchId(null);
+      setSearchStartTime(null);
       // Don't close dropdown here - let onFocus handle showing recents
       return;
     }
 
+    // Track search start time from first keystroke that triggers search
+    if (searchStartTime === null) {
+      setSearchStartTime(Date.now());
+    }
+
     setShowingRecent(false);
+    setSearchComplete(false);
     const timer = setTimeout(async () => {
       setLoading(true);
       setError(null);
@@ -73,16 +152,22 @@ export function FoodSearchAutocomplete({
         setFoods(data.foods || []);
         setIsOpen(true);
         setHighlightedIndex(-1);
+        setSearchComplete(true);
+        // Capture searchId for analytics tracking
+        if (data.searchId) {
+          setSearchId(data.searchId);
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Search failed');
         setFoods([]);
+        setSearchComplete(true);
       } finally {
         setLoading(false);
       }
     }, 300); // 300ms debounce
 
     return () => clearTimeout(timer);
-  }, [query]);
+  }, [query, searchStartTime]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -96,9 +181,48 @@ export function FoodSearchAutocomplete({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Log abandon when search is closed without selection (debounced)
+  useEffect(() => {
+    // Only log abandon when dropdown closes and we have a valid search session
+    if (!isOpen && searchId && searchStartTime && !showingRecent) {
+      // Clear any existing timeout
+      if (abandonTimeoutRef.current) {
+        clearTimeout(abandonTimeoutRef.current);
+      }
+
+      // Debounce the abandon log - wait 1 second to see if user is just refining
+      abandonTimeoutRef.current = setTimeout(() => {
+        const duration = Date.now() - searchStartTime;
+        logSearchAbandon(searchId, duration);
+        // Reset search tracking after logging abandon
+        setSearchId(null);
+        setSearchStartTime(null);
+      }, 1000);
+    }
+
+    // Cleanup timeout on unmount or when deps change
+    return () => {
+      if (abandonTimeoutRef.current) {
+        clearTimeout(abandonTimeoutRef.current);
+      }
+    };
+  }, [isOpen, searchId, searchStartTime, showingRecent]);
+
   // Handle food selection
   const handleSelect = useCallback(
-    (food: SimplifiedFood) => {
+    (food: UnifiedFoodResult) => {
+      // Cancel any pending abandon timeout
+      if (abandonTimeoutRef.current) {
+        clearTimeout(abandonTimeoutRef.current);
+        abandonTimeoutRef.current = null;
+      }
+
+      // Log selection to analytics (non-blocking)
+      if (searchId && searchStartTime) {
+        const duration = Date.now() - searchStartTime;
+        logSearchSelection(searchId, food, duration);
+      }
+
       // Add to recent foods cache
       addRecentFood(userId, food);
       // Update local recent foods state
@@ -110,8 +234,23 @@ export function FoodSearchAutocomplete({
       setIsOpen(false);
       setHighlightedIndex(-1);
       setShowingRecent(false);
+      setSearchComplete(false);
+      // Reset search tracking
+      setSearchId(null);
+      setSearchStartTime(null);
     },
-    [onSelect, userId]
+    [onSelect, userId, searchId, searchStartTime]
+  );
+
+  // Handle AI estimated food selection
+  const handleAIFoodSelect = useCallback(
+    (food: UnifiedFoodResult) => {
+      // Close the modal first
+      setShowAIModal(false);
+      // Then handle like a normal selection
+      handleSelect(food);
+    },
+    [handleSelect]
   );
 
   // Keyboard navigation
@@ -161,8 +300,33 @@ export function FoodSearchAutocomplete({
     }
   }, [highlightedIndex, showingRecent, recentFoods.length]);
 
-  const formatMacros = (food: SimplifiedFood) => {
+  const formatMacros = (food: UnifiedFoodResult) => {
     return `${food.calories} cal | ${food.protein}g P | ${food.carbs}g C | ${food.fat}g F`;
+  };
+
+  // Render source badge with optional star icon for user's foods
+  const renderSourceBadge = (source: FoodSearchSource) => {
+    const badge = SOURCE_BADGES[source];
+    const isUserFood = source === 'QUICK_FOOD';
+
+    return (
+      <span
+        className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-medium"
+        style={{ backgroundColor: badge.bgColor, color: badge.color }}
+      >
+        {isUserFood && (
+          <svg
+            className="w-3 h-3"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            aria-hidden="true"
+          >
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+          </svg>
+        )}
+        {badge.label}
+      </span>
+    );
   };
 
   return (
@@ -279,7 +443,7 @@ export function FoodSearchAutocomplete({
             ) : (
               recentFoods.map((food, index) => (
                 <li
-                  key={food.fdcId}
+                  key={food.id}
                   role="option"
                   aria-selected={highlightedIndex === index}
                   className="px-4 py-3 cursor-pointer transition-colors border-b last:border-b-0"
@@ -292,7 +456,7 @@ export function FoodSearchAutocomplete({
                   onMouseEnter={() => setHighlightedIndex(index)}
                 >
                   <div className="flex flex-col gap-0.5">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <span
                         className="font-medium text-sm"
                         style={{ color: COLORS.navy }}
@@ -310,6 +474,7 @@ export function FoodSearchAutocomplete({
                           {food.brand}
                         </span>
                       )}
+                      {food.source && renderSourceBadge(food.source)}
                     </div>
                     <span className="text-xs" style={{ color: COLORS.gray400 }}>
                       per 100g: {formatMacros(food)}
@@ -325,7 +490,7 @@ export function FoodSearchAutocomplete({
           ) : (
             foods.map((food, index) => (
               <li
-                key={food.fdcId}
+                key={food.id}
                 role="option"
                 aria-selected={highlightedIndex === index}
                 className="px-4 py-3 cursor-pointer transition-colors border-b last:border-b-0"
@@ -338,7 +503,7 @@ export function FoodSearchAutocomplete({
                 onMouseEnter={() => setHighlightedIndex(index)}
               >
                 <div className="flex flex-col gap-0.5">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span
                       className="font-medium text-sm"
                       style={{ color: COLORS.navy }}
@@ -356,6 +521,7 @@ export function FoodSearchAutocomplete({
                         {food.brand}
                       </span>
                     )}
+                    {food.source && renderSourceBadge(food.source)}
                   </div>
                   <span className="text-xs" style={{ color: COLORS.gray400 }}>
                     per 100g: {formatMacros(food)}
@@ -364,8 +530,38 @@ export function FoodSearchAutocomplete({
               </li>
             ))
           )}
+
+          {/* AI Estimate button - shows after search completes or when <3 results */}
+          {!showingRecent && searchComplete && (foods.length < 3 || foods.length === 0) && (
+            <li
+              className="px-4 py-3 border-t cursor-pointer transition-colors hover:bg-gray-50"
+              style={{ borderColor: COLORS.gray100, backgroundColor: COLORS.gray50 }}
+              onClick={() => {
+                setShowAIModal(true);
+                setIsOpen(false);
+              }}
+            >
+              <div className="flex items-center gap-2 text-sm" style={{ color: COLORS.coral }}>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+                <span className="font-medium">Can&apos;t find it? Estimate with AI</span>
+              </div>
+              <p className="text-xs mt-1" style={{ color: COLORS.gray400 }}>
+                Describe your food naturally and get macro estimates
+              </p>
+            </li>
+          )}
         </ul>
       )}
+
+      {/* AI Estimate Modal */}
+      <AIEstimateModal
+        isOpen={showAIModal}
+        onClose={() => setShowAIModal(false)}
+        onAddFood={handleAIFoodSelect}
+        initialDescription={query}
+      />
     </div>
   );
 }

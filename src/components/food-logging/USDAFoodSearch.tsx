@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
+import { MealType } from '@prisma/client';
 import { FoodSearchAutocomplete } from '@/components/nutrition/FoodSearchAutocomplete';
 import { ServingSizeSelector, type CalculatedMacros } from '@/components/nutrition/ServingSizeSelector';
-import type { SimplifiedFood } from '@/lib/usda/types';
+import type { UnifiedFoodResult } from '@/lib/food-search/types';
 
 export interface USDAFoodResult {
   name: string;
@@ -17,7 +18,27 @@ export interface USDAFoodResult {
   servingUnit: string;
   fdcId: string;
   brand?: string;
+  meal: MealType;
+  /** Source of the food (e.g., USDA, OPEN_FOOD_FACTS, AI_ESTIMATED) */
+  source?: string;
 }
+
+// Get default meal based on current time
+function getDefaultMealByTime(): MealType {
+  const hour = new Date().getHours();
+  if (hour < 10) return MealType.BREAKFAST;
+  if (hour < 14) return MealType.LUNCH;
+  if (hour < 20) return MealType.DINNER;
+  return MealType.SNACK;
+}
+
+// Colors matching v2a design system
+const COLORS = {
+  gray100: '#F1F5F9',
+  gray600: '#475569',
+  coral: '#FF6B6B',
+  white: '#FFFFFF',
+};
 
 export interface USDAFoodSearchProps {
   /** User ID for tracking recent foods */
@@ -42,9 +63,13 @@ export function USDAFoodSearch({
   placeholder = 'Search USDA database...',
   className = '',
 }: USDAFoodSearchProps) {
-  const [selectedFood, setSelectedFood] = useState<SimplifiedFood | null>(null);
+  const [selectedFood, setSelectedFood] = useState<UnifiedFoodResult | null>(null);
 
-  const handleFoodSelect = (food: SimplifiedFood) => {
+  // Default meal based on current time
+  const defaultMeal = useMemo(() => getDefaultMealByTime(), []);
+  const [selectedMeal, setSelectedMeal] = useState<MealType>(defaultMeal);
+
+  const handleFoodSelect = (food: UnifiedFoodResult) => {
     setSelectedFood(food);
   };
 
@@ -59,8 +84,10 @@ export function USDAFoodSearch({
       fat: macros.fat,
       servingSize: macros.grams,
       servingUnit: 'g',
-      fdcId: String(selectedFood.fdcId),
+      fdcId: selectedFood.id, // Use unified id
       brand: selectedFood.brand,
+      meal: selectedMeal,
+      source: selectedFood.source, // Preserve source (USDA, OPEN_FOOD_FACTS, AI_ESTIMATED, etc.)
     });
 
     setSelectedFood(null);
@@ -74,6 +101,31 @@ export function USDAFoodSearch({
   const handleBackToSearch = () => {
     setSelectedFood(null);
   };
+
+  // Meal selector component
+  const mealSelector = (
+    <div className="mb-4">
+      <label className="block text-sm font-medium mb-2" style={{ color: COLORS.gray600 }}>
+        Add to meal
+      </label>
+      <div className="flex gap-2 flex-wrap">
+        {Object.values(MealType).map((meal) => (
+          <button
+            key={meal}
+            type="button"
+            onClick={() => setSelectedMeal(meal)}
+            className="px-3 py-1.5 rounded-full text-sm font-medium transition-colors"
+            style={{
+              backgroundColor: selectedMeal === meal ? COLORS.coral : COLORS.gray100,
+              color: selectedMeal === meal ? COLORS.white : COLORS.gray600,
+            }}
+          >
+            {meal.charAt(0) + meal.slice(1).toLowerCase()}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 
   // Non-modal inline version
   if (!isModal) {
@@ -100,6 +152,7 @@ export function USDAFoodSearch({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
             >
+              {mealSelector}
               <ServingSizeSelector
                 food={selectedFood}
                 onConfirm={handleServingConfirm}
@@ -181,6 +234,7 @@ export function USDAFoodSearch({
                 >
                   ← Back to search
                 </button>
+                {mealSelector}
                 <ServingSizeSelector
                   food={selectedFood}
                   onConfirm={handleServingConfirm}

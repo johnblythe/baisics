@@ -1,88 +1,79 @@
-# Session Context - 2026-01-23T12:00:00Z
+# Session Context - 2026-01-24T22:30:00Z
 
 ## Current Session Overview
-- **Main Task/Feature**: Food logging feature discovery - building demo/mockup UX for "MFP but actually good"
-- **Session Duration**: ~45 minutes
-- **Current Status**: Responsive demo page complete at `/dev/food-logging`, ready for user feedback
+- **Main Task/Feature**: Food logging feature - multi-layer search, AI estimation, UX improvements
+- **Session Duration**: ~4 hours
+- **Current Status**: Ralph completed 15 stories for multi-layer search. Now reviewing UX demo page for feedback before creating PRD for fixes + recipes + copy features.
 
 ## Recent Activity (Last 30-60 minutes)
-- **What We Just Did**:
-  - Updated CHANGELOG.md with missing production features (USDA search, coach dashboard, gym notes fixes)
-  - Created new branch `feat/food-logging-demo`
-  - Built comprehensive food logging demo with mobile + desktop responsive layouts
-  - Iterated on layout: started with side-by-side → mobile-only → properly responsive
-- **Active Problems**: None - demo is functional and ready for feedback
-- **Current Files**: `src/app/dev/food-logging/page.tsx`
-- **Test Status**: Demo is working, no tests needed for discovery phase
+- **What We Just Did**: Created real component mockups at `/nutrition/ux-demo` for user review
+- **Active Problems**: User reviewing 3 sections (A: fix broken stuff, B: recipes, C: copy previous day)
+- **Current Files**: `src/app/nutrition/ux-demo/page.tsx`
+- **Test Status**: Demo page compiles and renders, awaiting user feedback
 
 ## Key Technical Decisions Made
-- **Architecture Choices**:
-  - Separate `MobileLayout` and `DesktopLayout` components with `lg:hidden` / `hidden lg:block`
-  - Shared components (MacroProgressBar, QuickInput, QuickPills, WeeklyStrip, MealSection) with layout prop variants
-- **Implementation Approaches**:
-  - Weekly compliance focus over daily obsession (user's opinionated stance)
-  - AI-powered free text entry ("same proats as yesterday", recipe parsing)
-  - Bottom sheet for mobile quick add, sticky sidebar for desktop
-  - Swipeable horizontal pills on mobile, 2-col grid on desktop
-- **Technology Selections**: Framer Motion for animations, Lucide icons
-- **Performance/Security Considerations**: N/A for demo
+- **Architecture Choices**: Multi-layer food search (QuickFoods → USDA → Open Food Facts), unified search service
+- **Implementation Approaches**: Relevance scoring for search results, filter bad OFF data, round macros to whole numbers
+- **Technology Selections**: Open Food Facts API (not local DB yet), Claude for AI estimation
+- **Performance/Security Considerations**: Search analytics logging (FoodSearchLog) for future improvements
 
 ## Code Context
 - **Modified Files**:
-  - `CHANGELOG.md` - added missing production features
-  - `src/app/dev/food-logging/page.tsx` - new demo page (859 lines)
-- **New Patterns**:
-  - Responsive layout switching with separate mobile/desktop components
-  - MacroProgressBar with `layout="horizontal" | "vertical"` variant
-  - QuickPills with `layout="horizontal" | "grid"` variant
-- **Dependencies**: None new (using existing framer-motion, lucide-react)
-- **Configuration Changes**: None
+  - `src/lib/food-search/unified-search.ts` - relevance scoring, bad data filtering, rounding
+  - `src/components/nutrition/FoodSearchAutocomplete.tsx` - source badges (OFF→Community)
+  - `src/app/nutrition/ux-demo/page.tsx` - interactive UX mockups
+  - Schema: FoodSearchLog, isApproximate flag, OPEN_FOOD_FACTS + AI_ESTIMATED enums
+- **New Patterns**: FoodSearchSource enum, unified search with deduplication
+- **Dependencies**: Open Food Facts API client added
+- **Configuration Changes**: USDA_API_KEY added to .env.local
 
 ## Current Implementation State
 - **Completed**:
-  - Weekly compliance view (collapsible strip with day boxes, avg adherence, protein tracking)
-  - AI text entry with simulated parsing ("same as yesterday", "chicken breast")
-  - Quick add pills (horizontal swipe mobile, grid desktop)
-  - Recipes panel with saved items
-  - Today's log grouped by meal (breakfast/lunch/dinner/snacks)
-  - Running macro totals with progress bars
-  - Smart suggestion card ("Chicken + rice would hit it")
-  - Responsive layouts for mobile and desktop
-- **In Progress**: User is reviewing the demo for feedback
-- **Blocked**: None
+  - Multi-layer search (15 Ralph stories)
+  - Relevance scoring (brand matches boosted)
+  - AI estimation endpoint
+  - Search analytics logging
+  - Source badges in UI
+  - isApproximate flag for estimated entries
+- **In Progress**:
+  - UX demo review at `/nutrition/ux-demo`
+  - User reviewing mockups for A/B/C before PRD creation
+- **Blocked**: Nothing
 - **Next Steps**:
-  1. Get user feedback on current demo UX
-  2. Iterate on layout/interactions based on feedback
-  3. Eventually spec out real implementation (DB schema, API routes, etc.)
+  1. Get user feedback on UX demo mockups
+  2. Create PRD for: fix broken stuff (+ Add buttons, weekly %, remaining UI), recipes feature, copy previous day
+  3. Run Ralph on new PRD
 
 ## Important Context for Handoff
 - **Environment Setup**: Dev server on port 3001
-- **Running/Testing**: Visit http://localhost:3001/dev/food-logging
-- **Known Issues**: All interactions are mocked - AI parsing is simulated, foods don't persist
-- **External Dependencies**: Existing USDA search components at `src/components/nutrition/FoodSearchAutocomplete.tsx` can be wired in later
+- **Running/Testing**: `npm run dev`, visit `http://localhost:3001/nutrition/ux-demo`
+- **Known Issues**:
+  - `+ Add` buttons on meal sections don't work
+  - Weekly strip shows 0% despite logged food
+  - "Remaining" at bottom of progress card is confusing
+  - Search results still have data quality issues from APIs
+- **External Dependencies**: USDA API (key in env), Open Food Facts API (no key needed)
 
 ## Conversation Thread
-- **Original Goal**: User asked how USDA food search is being used, wanted to leverage it for better food logging
+- **Original Goal**: Make food logging functional (from prototype to real feature)
 - **Evolution**:
-  - Found USDA search only on meal-prep page, not in nutrition logging
-  - User wants "MFP but actually good" with weekly focus, AI text entry, recipes
-  - Started with layout exploration (ASCII mockups Option A/B/C)
-  - Built Option B hybrid, then made it properly responsive
+  1. Started with fixing Ralph's "UI only" work (nothing actually worked)
+  2. Added USDA API key, fixed flows
+  3. User complained about search quality → added Open Food Facts, relevance scoring
+  4. User found more UX issues → created demo page for review
 - **Lessons Learned**:
-  - User cares about weekly compliance over daily obsession
-  - Free text AI entry is key differentiator ("same proats as yesterday")
-  - Custom recipes could go into shared BAISICS DB, not just user's account
-  - Quick add must be above the fold - can't require scrolling
+  - Ralph "tests" by reading code, not actually running app (misses runtime issues)
+  - API data quality is poor, need relevance scoring + filtering
+  - "Faster > better" for food logging - reduce friction, not perfect accuracy
 - **Alternatives Considered**:
-  - Option A: Sticky bottom bar (rejected - less space for input)
-  - Option C: Two-pane always (rejected - doesn't work on mobile)
-  - First iteration forced mobile view with max-w-lg (user correctly pointed out this isn't real responsive design)
+  - Local OFF database (deferred - API first)
+  - FatSecret API (user said results are shit too)
+  - Manual entry as fallback (user rejected - users don't know macros)
 
-## User's Discovery Notes (captured in session)
-- Weekly compliance > daily obsession
-- Free text AI entry: "same proats as yesterday", recipe parsing
-- Custom foods could go into shared BAISICS DB
-- Quick add patterns: recent foods, favorites, saved recipes
+## User Feedback Pending
+User is reviewing `/nutrition/ux-demo` with 3 sections:
+- **A) Fix Broken Stuff**: +Add buttons, weekly % bug, "Remaining" confusion
+- **B) Recipes/Meals**: Create combos (e.g., "Morning Protein Shake"), one-click add
+- **C) Copy Previous Day**: Copy single meal, copy entire day with meal selection
 
----
-*Last updated: 2026-01-23*
+Waiting for corrections/approval before creating implementation PRD.

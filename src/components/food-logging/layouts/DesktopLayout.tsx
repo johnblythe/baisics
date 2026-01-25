@@ -9,6 +9,7 @@ import {
   WeeklyStrip,
   MealSection,
   USDAFoodSearch,
+  MyRecipesSidebar,
   type MacroTotals,
   type MacroTargets,
   type QuickFoodItem,
@@ -16,6 +17,9 @@ import {
   type FoodLogItemData,
   type MealType,
   type USDAFoodResult,
+  type MealSectionFoodResult,
+  type Recipe,
+  type RecipeWithIngredients,
 } from '../index';
 
 export interface RecipeItem {
@@ -60,15 +64,29 @@ export interface DesktopLayoutProps {
   onAddToMeal: (meal: string) => void;
   onEditItem?: (item: FoodLogItemData) => void;
   onDeleteItem?: (item: FoodLogItemData) => void;
+  /** Enable inline search in meal sections (instead of modal) */
+  enableInlineSearch?: boolean;
+  /** Callback when food is added via inline meal section search */
+  onInlineFoodAdd?: (food: MealSectionFoodResult) => void;
 
-  // Recipes
+  // Recipes (legacy - for passing recipes from parent)
   recipes?: RecipeItem[];
   onRecipeAdd?: (item: RecipeItem) => void;
   onCreateRecipe?: () => void;
+  /** Enable self-fetching recipe sidebar (shows My Recipes section) */
+  enableRecipeSidebar?: boolean;
+  /** Callback when a recipe is added via the self-fetching sidebar */
+  onSidebarRecipeAdd?: (recipe: Recipe) => void;
+  /** Callback when a recipe is added via the inline meal section search (with meal context) */
+  onInlineRecipeAdd?: (recipe: RecipeWithIngredients, multiplier: number, meal: string) => void;
 
   // USDA Search
   userId?: string;
   onUSDAFoodAdd?: (food: USDAFoodResult) => void;
+
+  // Copy from yesterday
+  selectedDate?: Date;
+  onCopyFromYesterday?: () => void;
 
   // Suggestion
   suggestion?: string;
@@ -145,11 +163,18 @@ export function DesktopLayout({
   onAddToMeal,
   onEditItem,
   onDeleteItem,
+  enableInlineSearch = true,
+  onInlineFoodAdd,
   recipes = [],
   onRecipeAdd,
   onCreateRecipe,
+  enableRecipeSidebar = true,
+  onSidebarRecipeAdd,
+  onInlineRecipeAdd,
   userId,
   onUSDAFoodAdd,
+  selectedDate,
+  onCopyFromYesterday,
   suggestion,
   suggestionDetail,
   onSuggestionClick,
@@ -186,11 +211,26 @@ export function DesktopLayout({
           {/* Left Column: Quick Add (sticky) */}
           <div className="lg:col-span-1">
             <div className="lg:sticky lg:top-6 space-y-4">
+              {/* USDA Food Search - Primary Entry Point */}
+              {onUSDAFoodAdd && (
+                <div className="bg-white rounded-xl border border-[#E2E8F0] p-4">
+                  <h3 className="font-medium text-[#0F172A] mb-3 flex items-center gap-2">
+                    <Search className="w-4 h-4 text-[#FF6B6B]" />
+                    Search Foods
+                  </h3>
+                  <USDAFoodSearch
+                    userId={userId}
+                    onConfirm={onUSDAFoodAdd}
+                    placeholder="Search foods... (chicken, rice, banana)"
+                  />
+                </div>
+              )}
+
               {/* AI Quick Input */}
               <div className="bg-white rounded-xl border border-[#E2E8F0] p-4">
                 <h3 className="font-medium text-[#0F172A] mb-3 flex items-center gap-2">
-                  <Search className="w-4 h-4 text-[#FF6B6B]" />
-                  Quick Add
+                  <Database className="w-4 h-4 text-[#FF6B6B]" />
+                  AI Quick Add
                 </h3>
                 <QuickInput
                   onSubmit={onAISubmit}
@@ -198,21 +238,6 @@ export function DesktopLayout({
                   isLoading={isAILoading}
                 />
               </div>
-
-              {/* USDA Database Search */}
-              {onUSDAFoodAdd && (
-                <div className="bg-white rounded-xl border border-[#E2E8F0] p-4">
-                  <h3 className="font-medium text-[#0F172A] mb-3 flex items-center gap-2">
-                    <Database className="w-4 h-4 text-[#FF6B6B]" />
-                    Search Database
-                  </h3>
-                  <USDAFoodSearch
-                    userId={userId}
-                    onConfirm={onUSDAFoodAdd}
-                    placeholder="Search USDA foods..."
-                  />
-                </div>
-              )}
 
               {/* Today's Progress */}
               <div className="bg-white rounded-xl border border-[#E2E8F0] p-4">
@@ -232,8 +257,17 @@ export function DesktopLayout({
                 <QuickPills foods={quickFoods} onAdd={onQuickAdd} layout="grid" maxItems={6} />
               </div>
 
-              {/* Recipes */}
-              {recipes.length > 0 && onRecipeAdd && (
+              {/* My Recipes Sidebar - Self-fetching */}
+              {enableRecipeSidebar && (
+                <MyRecipesSidebar
+                  onRecipeAdd={onSidebarRecipeAdd}
+                  onCreateRecipe={onCreateRecipe}
+                  maxItems={5}
+                />
+              )}
+
+              {/* Legacy Recipes Panel (for passed-in recipes) */}
+              {!enableRecipeSidebar && recipes.length > 0 && onRecipeAdd && (
                 <div className="bg-white rounded-xl border border-[#E2E8F0] p-4">
                   <RecipesPanel
                     recipes={recipes}
@@ -271,6 +305,13 @@ export function DesktopLayout({
                     onEditItem={onEditItem}
                     onDeleteItem={onDeleteItem}
                     showItemActions={true}
+                    enableInlineSearch={enableInlineSearch && !!onInlineFoodAdd}
+                    onFoodAdd={onInlineFoodAdd}
+                    userId={userId}
+                    onRecipeAdd={onInlineRecipeAdd ? (recipe, multiplier) => onInlineRecipeAdd(recipe, multiplier, mealData.meal) : undefined}
+                    onCreateRecipe={onCreateRecipe}
+                    selectedDate={selectedDate}
+                    onCopyFromYesterday={onCopyFromYesterday}
                   />
                 ))}
               </div>

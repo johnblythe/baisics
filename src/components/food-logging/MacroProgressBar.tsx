@@ -47,12 +47,6 @@ export function MacroProgressBar({ layout = 'horizontal', totals, targets }: Mac
             </div>
           </div>
         ))}
-        <div className="pt-2 border-t border-[#E2E8F0]">
-          <div className="text-sm text-[#64748B]">Remaining</div>
-          <div className="text-lg font-bold text-[#0F172A]">
-            {targets.calories - totals.calories} cal · {targets.protein - totals.protein}g P
-          </div>
-        </div>
       </div>
     );
   }

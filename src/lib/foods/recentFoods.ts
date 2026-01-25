@@ -1,20 +1,21 @@
-import { SimplifiedFood } from '@/lib/usda/types';
+import { UnifiedFoodResult } from '@/lib/food-search/types';
 
 const STORAGE_KEY_PREFIX = 'baisics_recent_foods_';
 const MAX_RECENT_FOODS = 10;
 
 /**
- * Type guard to validate a SimplifiedFood object shape
+ * Type guard to validate a UnifiedFoodResult object shape
  * @param obj - Object to validate
- * @returns true if obj is a valid SimplifiedFood
+ * @returns true if obj is a valid UnifiedFoodResult
  */
-function isValidSimplifiedFood(obj: unknown): obj is SimplifiedFood {
+function isValidUnifiedFoodResult(obj: unknown): obj is UnifiedFoodResult {
   if (typeof obj !== 'object' || obj === null) return false;
   const food = obj as Record<string, unknown>;
   return (
-    typeof food.fdcId === 'number' &&
+    typeof food.id === 'string' &&
     typeof food.name === 'string' &&
-    typeof food.calories === 'number'
+    typeof food.calories === 'number' &&
+    typeof food.source === 'string'
   );
 }
 
@@ -29,9 +30,9 @@ function getStorageKey(userId: string): string {
 /**
  * Get recent foods from localStorage
  * @param userId - User ID to scope the recent foods
- * @returns Array of recent SimplifiedFood items (most recent first)
+ * @returns Array of recent UnifiedFoodResult items (most recent first)
  */
-export function getRecentFoods(userId: string): SimplifiedFood[] {
+export function getRecentFoods(userId: string): UnifiedFoodResult[] {
   if (typeof window === 'undefined') return [];
 
   try {
@@ -43,7 +44,7 @@ export function getRecentFoods(userId: string): SimplifiedFood[] {
     if (!Array.isArray(parsed)) return [];
 
     // Validate each entry's shape
-    const validFoods = parsed.filter(isValidSimplifiedFood);
+    const validFoods = parsed.filter(isValidUnifiedFoodResult);
     const invalidCount = parsed.length - validFoods.length;
 
     if (invalidCount > 0) {
@@ -72,11 +73,11 @@ export function getRecentFoods(userId: string): SimplifiedFood[] {
 }
 
 /**
- * Add a food to recent foods (deduped by fdcId, most recent first)
+ * Add a food to recent foods (deduped by id, most recent first)
  * @param userId - User ID to scope the recent foods
  * @param food - Food to add to recent
  */
-export function addRecentFood(userId: string, food: SimplifiedFood): void {
+export function addRecentFood(userId: string, food: UnifiedFoodResult): void {
   if (typeof window === 'undefined') return;
 
   try {
@@ -84,7 +85,7 @@ export function addRecentFood(userId: string, food: SimplifiedFood): void {
     const existing = getRecentFoods(userId);
 
     // Remove duplicate if exists (will re-add at front)
-    const filtered = existing.filter((f) => f.fdcId !== food.fdcId);
+    const filtered = existing.filter((f) => f.id !== food.id);
 
     // Add to front, limit to max
     const updated = [food, ...filtered].slice(0, MAX_RECENT_FOODS);

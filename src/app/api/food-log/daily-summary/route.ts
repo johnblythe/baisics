@@ -15,6 +15,8 @@ interface DayCompliance {
   date: string;
   logged: boolean;
   adherencePercent: number | null;
+  protein: number;
+  calories: number;
 }
 
 // GET /api/food-log/daily-summary - returns daily totals and weekly compliance
@@ -94,23 +96,30 @@ export async function GET(request: Request) {
         },
         select: {
           calories: true,
+          protein: true,
         },
       });
 
       const logged = dayEntries.length > 0;
       let adherencePercent: number | null = null;
 
+      // Calculate day totals
+      const dayCalories = dayEntries.reduce((sum, e) => sum + e.calories, 0);
+      const dayProtein = dayEntries.reduce((sum, e) => sum + e.protein, 0);
+
       if (logged && targets) {
-        const dayCalories = dayEntries.reduce((sum, e) => sum + e.calories, 0);
-        const rawPercent = (dayCalories / targets.dailyCalories) * 100;
-        const deviation = Math.abs(rawPercent - 100);
-        adherencePercent = Math.max(0, Math.round(100 - deviation));
+        // Calculate adherence based on protein (protein is primary goal)
+        const rawPercent = (dayProtein / targets.proteinGrams) * 100;
+        // Cap at 100% - hitting or exceeding protein target = 100%
+        adherencePercent = Math.min(100, Math.round(rawPercent));
       }
 
       weeklyCompliance.push({
         date: dayDate.toISOString().split('T')[0],
         logged,
         adherencePercent,
+        protein: Math.round(dayProtein * 10) / 10,
+        calories: Math.round(dayCalories),
       });
     }
 

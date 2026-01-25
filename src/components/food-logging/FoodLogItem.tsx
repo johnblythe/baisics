@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2, AlertCircle } from 'lucide-react';
 
 export interface FoodLogItemData {
   id: string;
@@ -11,6 +11,7 @@ export interface FoodLogItemData {
   protein: number;
   carbs?: number;
   fat?: number;
+  isApproximate?: boolean;
 }
 
 export interface FoodLogItemProps {
@@ -29,7 +30,18 @@ export function FoodLogItem({
   return (
     <div className="group flex items-center justify-between p-3 bg-[#F8FAFC] rounded-xl hover:bg-[#F1F5F9] transition-colors">
       <div className="flex-1 min-w-0">
-        <div className="text-sm font-medium text-[#0F172A] truncate">{item.name}</div>
+        <div className="flex items-center gap-1.5">
+          <span className="text-sm font-medium text-[#0F172A] truncate">{item.name}</span>
+          {item.isApproximate && (
+            <span
+              className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 bg-amber-100 rounded-full cursor-help"
+              title="Estimated - macros may vary"
+            >
+              <AlertCircle className="w-3 h-3" />
+              ~
+            </span>
+          )}
+        </div>
         {item.time && <div className="text-xs text-[#94A3B8]">{item.time}</div>}
       </div>
       <div className="flex items-center gap-3">

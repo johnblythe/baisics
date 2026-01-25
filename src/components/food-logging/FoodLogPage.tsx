@@ -4,10 +4,16 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Loader2, AlertCircle } from 'lucide-react';
 import { MealType } from '@prisma/client';
+import { toast } from 'sonner';
 import {
   MobileLayout,
   DesktopLayout,
   AIParseResult,
+  FoodEditModal,
+  CreateRecipeModal,
+  DateMenu,
+  CopyDayModal,
+  DatePickerModal,
   type QuickFoodItem,
   type WeeklyDayData,
   type FoodLogItemData,
@@ -17,6 +23,10 @@ import {
   type MacroTotals,
   type MacroTargets,
   type USDAFoodResult,
+  type FoodEditData,
+  type MealSectionFoodResult,
+  type Recipe,
+  type RecipeWithIngredients,
 } from './index';
 
 // API response types
@@ -36,6 +46,7 @@ interface FoodLogEntry {
   source: string;
   notes?: string | null;
   createdAt: string;
+  isApproximate?: boolean;
   recipe?: {
     id: string;
     name: string;
@@ -62,6 +73,8 @@ interface DailySummaryResponse {
     date: string;
     logged: boolean;
     adherencePercent: number | null;
+    protein: number;
+    calories: number;
   }>;
 }
 
@@ -84,6 +97,7 @@ interface ParseTextResponse {
   originalText: string;
   isPreviousDayReference: boolean;
   message?: string;
+  detectedMeal?: MealType;
 }
 
 // Props for the FoodLogPage
@@ -135,6 +149,7 @@ function entryToItemData(entry: FoodLogEntry): FoodLogItemData {
     protein: entry.protein,
     carbs: entry.carbs,
     fat: entry.fat,
+    isApproximate: entry.isApproximate,
   };
 }
 
@@ -184,6 +199,19 @@ export function FoodLogPage({
 
   // Mobile quick add sheet
   const [showQuickAdd, setShowQuickAdd] = useState(false);
+
+  // Edit modal state
+  const [editingItem, setEditingItem] = useState<FoodEditData | null>(null);
+
+  // Create recipe modal state
+  const [showCreateRecipeModal, setShowCreateRecipeModal] = useState(false);
+
+  // Copy day modal state
+  const [showCopyDayModal, setShowCopyDayModal] = useState(false);
+  const [copyFromDate, setCopyFromDate] = useState<Date | null>(null);
+
+  // Date picker modal state (for "Pick a date..." option)
+  const [showDatePickerModal, setShowDatePickerModal] = useState(false);
 
   // Fetch entries for selected date
   const fetchEntries = useCallback(async () => {
@@ -263,6 +291,13 @@ export function FoodLogPage({
     newDate.setDate(newDate.getDate() + 1);
     setSelectedDate(newDate);
     onDateChange?.(newDate);
+  };
+
+  const goToToday = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    setSelectedDate(today);
+    onDateChange?.(today);
   };
 
   // Add food entry
@@ -362,6 +397,10 @@ export function FoodLogPage({
       if (data.foods.length === 0) {
         setError(data.message || 'No foods detected in your input');
       } else {
+        // Use detected meal from AI if available
+        if (data.detectedMeal) {
+          setParseTargetMeal(data.detectedMeal);
+        }
         setParseResult(data);
       }
     } catch (err) {
@@ -401,9 +440,10 @@ export function FoodLogPage({
     }
   };
 
-  // Handle quick food add
-  const handleQuickAdd = (item: QuickFoodItem) => {
-    addFoodEntry({
+  // Handle quick food add - also increments usage count
+  const handleQuickAdd = async (item: QuickFoodItem) => {
+    // Add food entry to the log
+    await addFoodEntry({
       name: item.name,
       calories: item.calories,
       protein: item.protein,
@@ -414,9 +454,33 @@ export function FoodLogPage({
       meal: MealType.SNACK,
       source: 'QUICK_ADD',
     });
+
+    // Show toast confirmation
+    toast.success(`Added: ${item.name}`);
+
+    // Increment usage count in QuickFood
+    try {
+      await fetch('/api/quick-foods', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: item.name,
+          calories: item.calories,
+          protein: item.protein,
+          carbs: item.carbs ?? 0,
+          fat: item.fat ?? 0,
+          incrementUsage: true,
+        }),
+      });
+      // Refresh quick foods list to reflect updated order
+      await fetchQuickFoods();
+    } catch (err) {
+      console.error('Failed to update quick food usage:', err);
+      // Non-blocking - food was already logged
+    }
   };
 
-  // Handle recipe add
+  // Handle recipe add (legacy RecipeItem)
   const handleRecipeAdd = (recipe: RecipeItem) => {
     if (onRecipeAdd) {
       onRecipeAdd(recipe);
@@ -434,9 +498,75 @@ export function FoodLogPage({
     }
   };
 
-  // Handle USDA food add
-  const handleUSDAFoodAdd = (food: USDAFoodResult) => {
-    addFoodEntry({
+  // Handle sidebar recipe add (self-fetching Recipe type)
+  const handleSidebarRecipeAdd = async (recipe: Recipe) => {
+    await addFoodEntry({
+      name: recipe.name,
+      calories: recipe.calories,
+      protein: recipe.protein,
+      carbs: recipe.carbs,
+      fat: recipe.fat,
+      servingSize: recipe.servingSize,
+      servingUnit: recipe.servingUnit,
+      meal: MealType.SNACK,
+      source: 'RECIPE',
+      recipeId: recipe.id,
+    });
+
+    toast.success(`Added: ${recipe.name}`);
+
+    // Increment usage count for the recipe
+    try {
+      await fetch(`/api/recipes/${recipe.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ usageCount: recipe.usageCount + 1 }),
+      });
+    } catch (err) {
+      console.error('Failed to update recipe usage:', err);
+    }
+  };
+
+  // Handle inline recipe add (from meal section search panel - with multiplier and meal context)
+  const handleInlineRecipeAdd = async (recipe: RecipeWithIngredients, multiplier: number, mealStr: string) => {
+    // Convert meal string to MealType enum
+    const meal = mealStr.toUpperCase() as MealType;
+    const servingLabel = multiplier === 1 ? '' : ` (${multiplier}x)`;
+
+    await addFoodEntry({
+      name: recipe.name + servingLabel,
+      calories: Math.round(recipe.calories * multiplier),
+      protein: recipe.protein * multiplier,
+      carbs: recipe.carbs * multiplier,
+      fat: recipe.fat * multiplier,
+      servingSize: recipe.servingSize * multiplier,
+      servingUnit: recipe.servingUnit,
+      meal,
+      source: 'RECIPE',
+      recipeId: recipe.id,
+    });
+
+    toast.success(`Added: ${recipe.name}${servingLabel}`);
+
+    // Increment usage count for the recipe
+    try {
+      await fetch(`/api/recipes/${recipe.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ usageCount: recipe.usageCount + 1 }),
+      });
+    } catch (err) {
+      console.error('Failed to update recipe usage:', err);
+    }
+  };
+
+  // Handle USDA food add - also upserts to Quick Add
+  const handleUSDAFoodAdd = async (food: USDAFoodResult) => {
+    // Determine source - use food.source if provided, otherwise default to USDA_SEARCH
+    const source = food.source || 'USDA_SEARCH';
+
+    // Add food entry to the log - use meal from USDAFoodResult (selected by user)
+    await addFoodEntry({
       name: food.name,
       calories: food.calories,
       protein: food.protein,
@@ -444,27 +574,79 @@ export function FoodLogPage({
       fat: food.fat,
       servingSize: food.servingSize,
       servingUnit: food.servingUnit,
-      meal: parseTargetMeal,
-      source: 'USDA_SEARCH',
+      meal: food.meal,
+      source,
       fdcId: food.fdcId,
     });
+
+    // Upsert to QuickFood for quick re-logging (skip for AI estimated foods)
+    if (source !== 'AI_ESTIMATED') {
+      try {
+        await fetch('/api/quick-foods', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: food.name,
+            calories: food.calories,
+            protein: food.protein,
+            carbs: food.carbs,
+            fat: food.fat,
+            servingSize: food.servingSize,
+            servingUnit: food.servingUnit,
+            fdcId: food.fdcId,
+            incrementUsage: true,
+          }),
+        });
+        // Refresh quick foods list
+        await fetchQuickFoods();
+      } catch (err) {
+        console.error('Failed to update quick foods:', err);
+        // Non-blocking - food was already logged, this is just a convenience feature
+      }
+    }
   };
 
   // Handle edit item
   const handleEditItem = (item: FoodLogItemData) => {
-    // For now, we'll just log - full edit modal would be a separate component
-    console.log('Edit item:', item);
-    // TODO: Open edit modal
-  };
+    // Find the full entry to get all fields
+    const allEntries = [
+      ...entries.BREAKFAST,
+      ...entries.LUNCH,
+      ...entries.DINNER,
+      ...entries.SNACK,
+    ];
+    const fullEntry = allEntries.find((e) => e.id === item.id);
 
-  // Handle delete item
-  const handleDeleteItem = (item: FoodLogItemData) => {
-    if (confirm(`Delete "${item.name}"?`)) {
-      deleteFoodEntry(item.id);
+    if (fullEntry) {
+      setEditingItem({
+        id: fullEntry.id,
+        name: fullEntry.name,
+        calories: fullEntry.calories,
+        protein: fullEntry.protein,
+        carbs: fullEntry.carbs,
+        fat: fullEntry.fat,
+        servingSize: fullEntry.servingSize,
+        servingUnit: fullEntry.servingUnit,
+      });
     }
   };
 
-  // Handle add to specific meal
+  // Handle save edit
+  const handleSaveEdit = async (id: string, updates: Partial<FoodEditData>) => {
+    await editFoodEntry(id, updates);
+    setEditingItem(null);
+    toast.success('Food updated');
+  };
+
+  // Handle delete item
+  const handleDeleteItem = async (item: FoodLogItemData) => {
+    if (confirm(`Delete "${item.name}"?`)) {
+      await deleteFoodEntry(item.id);
+      toast.success(`Deleted: ${item.name}`);
+    }
+  };
+
+  // Handle add to specific meal (legacy - opens bottom sheet)
   const handleAddToMeal = (meal: string) => {
     // Convert lowercase meal string to MealType enum
     const mealType = meal.toUpperCase() as MealType;
@@ -472,6 +654,109 @@ export function FoodLogPage({
       setParseTargetMeal(mealType);
     }
     setShowQuickAdd(true);
+  };
+
+  // Handle create recipe - use external callback if provided, otherwise show internal modal
+  const handleCreateRecipe = useCallback(() => {
+    if (onCreateRecipe) {
+      onCreateRecipe();
+    } else {
+      setShowCreateRecipeModal(true);
+    }
+  }, [onCreateRecipe]);
+
+  // Handle copy from yesterday - refresh entries and summary
+  const handleCopyFromYesterday = useCallback(async () => {
+    await Promise.all([fetchEntries(), fetchSummary()]);
+  }, [fetchEntries, fetchSummary]);
+
+  // Handle copy from yesterday (for DateMenu) - opens copy day modal
+  const handleDateMenuCopyFromYesterday = useCallback(() => {
+    const yesterday = new Date(selectedDate);
+    yesterday.setDate(yesterday.getDate() - 1);
+    setCopyFromDate(yesterday);
+    setShowCopyDayModal(true);
+  }, [selectedDate]);
+
+  // Handle pick date (for DateMenu) - opens date picker modal
+  const handlePickDate = useCallback(() => {
+    setShowDatePickerModal(true);
+  }, []);
+
+  // Handle date selection from date picker - opens copy day modal with selected date
+  const handleDatePickerSelect = useCallback((date: Date) => {
+    setCopyFromDate(date);
+    setShowDatePickerModal(false);
+    setShowCopyDayModal(true);
+  }, []);
+
+  // Handle clear day's food log
+  const handleClearDay = useCallback(async () => {
+    setIsSubmitting(true);
+    try {
+      const response = await fetch(`/api/food-log?date=${formatDateForAPI(selectedDate)}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to clear food log');
+      }
+      const data = await response.json();
+      toast.success(`Cleared ${data.deletedCount} entries`);
+      // Refresh data
+      await Promise.all([fetchEntries(), fetchSummary()]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to clear food log');
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [selectedDate, fetchEntries, fetchSummary]);
+
+  // Handle inline food add from MealSection
+  const handleInlineFoodAdd = async (food: MealSectionFoodResult) => {
+    // Determine source - use food.source if provided, otherwise default to USDA_SEARCH
+    const source = food.source || 'USDA_SEARCH';
+
+    // Add food entry to the log - meal is pre-selected from the MealSection
+    await addFoodEntry({
+      name: food.name,
+      calories: food.calories,
+      protein: food.protein,
+      carbs: food.carbs,
+      fat: food.fat,
+      servingSize: food.servingSize,
+      servingUnit: food.servingUnit,
+      meal: food.meal,
+      source,
+      fdcId: food.fdcId,
+    });
+
+    // Upsert to QuickFood for quick re-logging (skip for AI estimated foods)
+    if (source !== 'AI_ESTIMATED') {
+      try {
+        await fetch('/api/quick-foods', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: food.name,
+            calories: food.calories,
+            protein: food.protein,
+            carbs: food.carbs,
+            fat: food.fat,
+            servingSize: food.servingSize,
+            servingUnit: food.servingUnit,
+            fdcId: food.fdcId,
+            incrementUsage: true,
+          }),
+        });
+        // Refresh quick foods list
+        await fetchQuickFoods();
+      } catch (err) {
+        console.error('Failed to update quick foods:', err);
+      }
+    }
+
+    toast.success(`Added: ${food.name}`);
   };
 
   // Build macro totals and targets
@@ -500,9 +785,9 @@ export function FoodLogPage({
     return {
       day: dayOfWeek,
       date: dayDate.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' }),
-      calories: 0, // Would need additional API data for per-day calories
+      calories: day.calories,
       target: macroTargets.calories,
-      protein: 0, // Would need additional API data for per-day protein
+      protein: day.protein,
       proteinTarget: macroTargets.protein,
       logged: day.logged,
       adherence: day.adherencePercent ?? 0,
@@ -554,23 +839,51 @@ export function FoodLogPage({
         >
           <ChevronLeft className="w-5 h-5 lg:text-[#64748B]" />
         </button>
-        <div className="text-center">
+        <div className="text-center flex-1">
           <h1 className="text-lg font-bold lg:text-[#0F172A]">
             {isToday(selectedDate) ? 'Today' : formatDateForDisplay(selectedDate)}
           </h1>
           {!isToday(selectedDate) && (
-            <p className="text-sm text-white/80 lg:text-[#64748B]">
-              {formatDateForDisplay(selectedDate)}
-            </p>
+            <button
+              type="button"
+              onClick={goToToday}
+              className="text-sm text-white/90 hover:text-white lg:text-[#FF6B6B] lg:hover:text-[#EF5350] underline mt-0.5 transition-colors"
+            >
+              Jump to Today
+            </button>
           )}
         </div>
-        <button
-          type="button"
-          onClick={goToNextDay}
-          className="p-2 hover:bg-white/10 lg:hover:bg-[#F1F5F9] rounded-lg transition-colors"
-        >
-          <ChevronRight className="w-5 h-5 lg:text-[#64748B]" />
-        </button>
+        <div className="flex items-center gap-1">
+          {/* Date menu - mobile variant */}
+          <div className="lg:hidden">
+            <DateMenu
+              selectedDate={selectedDate}
+              isToday={isToday(selectedDate)}
+              variant="mobile"
+              onCopyFromYesterday={handleDateMenuCopyFromYesterday}
+              onPickDate={handlePickDate}
+              onClearDay={handleClearDay}
+            />
+          </div>
+          {/* Date menu - desktop variant */}
+          <div className="hidden lg:block">
+            <DateMenu
+              selectedDate={selectedDate}
+              isToday={isToday(selectedDate)}
+              variant="desktop"
+              onCopyFromYesterday={handleDateMenuCopyFromYesterday}
+              onPickDate={handlePickDate}
+              onClearDay={handleClearDay}
+            />
+          </div>
+          <button
+            type="button"
+            onClick={goToNextDay}
+            className="p-2 hover:bg-white/10 lg:hover:bg-[#F1F5F9] rounded-lg transition-colors"
+          >
+            <ChevronRight className="w-5 h-5 lg:text-[#64748B]" />
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -619,13 +932,20 @@ export function FoodLogPage({
           onAddToMeal={handleAddToMeal}
           onEditItem={handleEditItem}
           onDeleteItem={handleDeleteItem}
+          enableInlineSearch={true}
+          onInlineFoodAdd={handleInlineFoodAdd}
           showQuickAdd={showQuickAdd}
           setShowQuickAdd={setShowQuickAdd}
           recipes={recipes}
           onRecipeAdd={handleRecipeAdd}
-          onCreateRecipe={onCreateRecipe}
+          onCreateRecipe={handleCreateRecipe}
+          enableRecipeSidebar={true}
+          onSidebarRecipeAdd={handleSidebarRecipeAdd}
+          onInlineRecipeAdd={handleInlineRecipeAdd}
           userId={userId}
           onUSDAFoodAdd={handleUSDAFoodAdd}
+          selectedDate={selectedDate}
+          onCopyFromYesterday={handleCopyFromYesterday}
           remainingCalories={remainingCalories}
           remainingProtein={remainingProtein}
           suggestion={suggestion}
@@ -662,11 +982,18 @@ export function FoodLogPage({
           onAddToMeal={handleAddToMeal}
           onEditItem={handleEditItem}
           onDeleteItem={handleDeleteItem}
+          enableInlineSearch={true}
+          onInlineFoodAdd={handleInlineFoodAdd}
           recipes={recipes}
           onRecipeAdd={handleRecipeAdd}
-          onCreateRecipe={onCreateRecipe}
+          onCreateRecipe={handleCreateRecipe}
+          enableRecipeSidebar={true}
+          onSidebarRecipeAdd={handleSidebarRecipeAdd}
+          onInlineRecipeAdd={handleInlineRecipeAdd}
           userId={userId}
           onUSDAFoodAdd={handleUSDAFoodAdd}
+          selectedDate={selectedDate}
+          onCopyFromYesterday={handleCopyFromYesterday}
           suggestion={suggestion}
           suggestionDetail={suggestion}
           rightContentExtra={errorBanner}
@@ -685,6 +1012,54 @@ export function FoodLogPage({
           />
         )}
       </AnimatePresence>
+
+      {/* Food Edit Modal */}
+      <AnimatePresence>
+        {editingItem && (
+          <FoodEditModal
+            food={editingItem}
+            onSave={handleSaveEdit}
+            onCancel={() => setEditingItem(null)}
+            isSaving={isSubmitting}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Create Recipe Modal */}
+      <CreateRecipeModal
+        isOpen={showCreateRecipeModal}
+        onClose={() => setShowCreateRecipeModal(false)}
+        onSave={() => {
+          // Modal already handles API save - just close and refresh would happen via MyRecipesSidebar refetch
+        }}
+        userId={userId}
+      />
+
+      {/* Copy Day Modal */}
+      {copyFromDate && (
+        <CopyDayModal
+          isOpen={showCopyDayModal}
+          onClose={() => {
+            setShowCopyDayModal(false);
+            setCopyFromDate(null);
+          }}
+          sourceDate={copyFromDate}
+          targetDate={selectedDate}
+          onCopySuccess={async () => {
+            await Promise.all([fetchEntries(), fetchSummary()]);
+            toast.success('Meals copied successfully');
+          }}
+        />
+      )}
+
+      {/* Date Picker Modal (for "Pick a date..." option) */}
+      <DatePickerModal
+        isOpen={showDatePickerModal}
+        onClose={() => setShowDatePickerModal(false)}
+        onSelectDate={handleDatePickerSelect}
+        targetDate={selectedDate}
+        title="Pick a date to copy from"
+      />
 
       {/* Submitting overlay */}
       {isSubmitting && (

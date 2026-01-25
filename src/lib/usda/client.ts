@@ -62,18 +62,18 @@ async function parseErrorBody(response: Response): Promise<string> {
   }
 }
 
-/**
- * Search for foods in USDA FoodData Central
- * @param query - Search term
- * @param pageSize - Number of results (default 25, max 200)
- * @returns Search results with foods array
- */
-export async function searchFoods(
-  query: string,
-  pageSize: number = 25
-): Promise<USDASearchResult> {
-  const apiKey = getApiKey();
+/** Data types available in USDA FoodData Central */
+export type USDADataType = 'Branded' | 'Foundation' | 'SR Legacy';
 
+/**
+ * Execute a single search request against USDA API
+ */
+async function executeSearch(
+  apiKey: string,
+  query: string,
+  pageSize: number,
+  dataTypes: USDADataType[]
+): Promise<USDASearchResult> {
   let response: Response;
   try {
     response = await fetch(`${USDA_BASE_URL}/foods/search`, {
@@ -85,7 +85,7 @@ export async function searchFoods(
       body: JSON.stringify({
         query,
         pageSize: Math.min(pageSize, 200),
-        dataType: ['Branded', 'Foundation', 'SR Legacy'],
+        dataType: dataTypes,
       }),
     });
   } catch (error) {
@@ -99,6 +99,71 @@ export async function searchFoods(
   }
 
   return response.json();
+}
+
+/**
+ * Sort foods with Branded first, then alphabetically by name
+ */
+function sortFoodsByPriority(foods: USDAFood[]): USDAFood[] {
+  return [...foods].sort((a, b) => {
+    // Branded items come first
+    const aIsBranded = a.dataType === 'Branded' ? 0 : 1;
+    const bIsBranded = b.dataType === 'Branded' ? 0 : 1;
+    if (aIsBranded !== bIsBranded) {
+      return aIsBranded - bIsBranded;
+    }
+    // Within same type, sort alphabetically by name
+    return a.description.localeCompare(b.description);
+  });
+}
+
+/** Minimum number of Branded results before searching other data types */
+const BRANDED_THRESHOLD = 5;
+
+/**
+ * Search for foods in USDA FoodData Central with tiered approach
+ *
+ * Strategy:
+ * 1. Search Branded foods first (these are products with brands)
+ * 2. If <5 Branded results, supplement with Foundation and SR Legacy
+ * 3. Sort results: Branded first, then by name
+ *
+ * @param query - Search term
+ * @param pageSize - Number of results (default 25, max 200)
+ * @returns Search results with foods array sorted by priority
+ */
+export async function searchFoods(
+  query: string,
+  pageSize: number = 25
+): Promise<USDASearchResult> {
+  const apiKey = getApiKey();
+  const effectivePageSize = Math.min(pageSize, 200);
+
+  // Step 1: Search Branded foods first
+  const brandedResult = await executeSearch(apiKey, query, effectivePageSize, ['Branded']);
+  const brandedFoods = brandedResult.foods;
+
+  // Step 2: If we have enough Branded results, return them sorted
+  if (brandedFoods.length >= BRANDED_THRESHOLD) {
+    return {
+      ...brandedResult,
+      foods: sortFoodsByPriority(brandedFoods),
+    };
+  }
+
+  // Step 3: Not enough Branded results - search Foundation and SR Legacy
+  const remainingSlots = effectivePageSize - brandedFoods.length;
+  const genericResult = await executeSearch(apiKey, query, remainingSlots, ['Foundation', 'SR Legacy']);
+
+  // Combine and sort: Branded first, then generic foods
+  const combinedFoods = sortFoodsByPriority([...brandedFoods, ...genericResult.foods]);
+
+  return {
+    totalHits: brandedResult.totalHits + genericResult.totalHits,
+    currentPage: 1,
+    totalPages: Math.ceil((brandedResult.totalHits + genericResult.totalHits) / effectivePageSize),
+    foods: combinedFoods,
+  };
 }
 
 /**

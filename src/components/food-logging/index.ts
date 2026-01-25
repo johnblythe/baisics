@@ -15,16 +15,34 @@ export { FoodLogItem } from './FoodLogItem';
 export type { FoodLogItemProps, FoodLogItemData } from './FoodLogItem';
 
 export { MealSection } from './MealSection';
-export type { MealSectionProps, MealType } from './MealSection';
+export type { MealSectionProps, MealType, MealSectionFoodResult, RecipeWithIngredients } from './MealSection';
 
 export { AIParseResult } from './AIParseResult';
 export type { AIParseResultProps, ParsedFoodItem } from './AIParseResult';
+
+export { FoodEditModal } from './FoodEditModal';
+export type { FoodEditModalProps, FoodEditData } from './FoodEditModal';
 
 export { RecipePanel } from './RecipePanel';
 export type { RecipePanelProps, RecipeData } from './RecipePanel';
 
 export { RecipeEditor } from './RecipeEditor';
 export type { RecipeEditorProps, RecipeEditData, RecipeIngredient } from './RecipeEditor';
+
+export { MyRecipesSidebar } from './MyRecipesSidebar';
+export type { MyRecipesSidebarProps, Recipe } from './MyRecipesSidebar';
+
+export { CreateRecipeModal } from './CreateRecipeModal';
+export type { CreateRecipeModalProps, RecipeIngredient as CreateRecipeIngredient } from './CreateRecipeModal';
+
+export { DateMenu } from './DateMenu';
+export type { DateMenuProps } from './DateMenu';
+
+export { CopyDayModal } from './CopyDayModal';
+export type { CopyDayModalProps } from './CopyDayModal';
+
+export { DatePickerModal } from './DatePickerModal';
+export type { DatePickerModalProps } from './DatePickerModal';
 
 // USDA Food Search
 export { USDAFoodSearch } from './USDAFoodSearch';

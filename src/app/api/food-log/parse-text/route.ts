@@ -14,10 +14,13 @@ type ParsedFood = {
   confidence: 'high' | 'medium' | 'low';
 };
 
+type MealType = 'BREAKFAST' | 'LUNCH' | 'DINNER' | 'SNACK';
+
 type ParseTextResponse = {
   foods: ParsedFood[];
   originalText: string;
   isPreviousDayReference: boolean;
+  detectedMeal?: MealType;
 };
 
 // POST /api/food-log/parse-text - parses natural language food text
@@ -108,6 +111,8 @@ Extract each food item mentioned and estimate nutritional values. Common pattern
 - "protein shake"
 - Multiple foods separated by commas, "and", or newlines
 
+Also detect if the user mentioned a specific meal (breakfast, lunch, dinner, or snack).
+
 For each food item, provide your best estimate of macros. Use typical serving sizes if not specified.
 If you're uncertain about a food, still provide an estimate but set confidence to "low".
 
@@ -124,15 +129,23 @@ Return ONLY valid JSON (no markdown, no explanation):
       "fat": number (grams),
       "confidence": "high" | "medium" | "low"
     }
-  ]
+  ],
+  "detectedMeal": "BREAKFAST" | "LUNCH" | "DINNER" | "SNACK" | null
 }
+
+Meal detection:
+- "for breakfast", "this morning", "breakfast" → "BREAKFAST"
+- "for lunch", "at lunch", "midday" → "LUNCH"
+- "for dinner", "tonight", "for supper" → "DINNER"
+- "as a snack", "snacking on" → "SNACK"
+- If no meal is mentioned, set detectedMeal to null
 
 Confidence levels:
 - "high": Common food with clear serving size (e.g., "6oz chicken breast", "2 eggs")
 - "medium": Common food but serving size is estimated (e.g., "chicken breast", "some rice")
 - "low": Uncommon food, unclear description, or highly variable nutrition
 
-If the text doesn't contain any food items, return: { "foods": [] }`;
+If the text doesn't contain any food items, return: { "foods": [], "detectedMeal": null }`;
 
     const message = await anthropic.messages.create({
       model: process.env.SONNET_MODEL || 'claude-sonnet-4-20250514',
@@ -157,7 +170,7 @@ If the text doesn't contain any food items, return: { "foods": [] }`;
       jsonText = jsonText.replace(/```json?\n?/g, '').replace(/```$/g, '').trim();
     }
 
-    let parsed: { foods: ParsedFood[] };
+    let parsed: { foods: ParsedFood[]; detectedMeal?: string | null };
     try {
       parsed = JSON.parse(jsonText);
     } catch {
@@ -182,10 +195,17 @@ If the text doesn't contain any food items, return: { "foods": [] }`;
         : 'medium') as 'high' | 'medium' | 'low',
     }));
 
+    // Validate detected meal
+    const validMeals: MealType[] = ['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK'];
+    const detectedMeal = parsed.detectedMeal && validMeals.includes(parsed.detectedMeal as MealType)
+      ? parsed.detectedMeal as MealType
+      : undefined;
+
     return NextResponse.json({
       foods,
       originalText: text,
       isPreviousDayReference: false,
+      detectedMeal,
     } satisfies ParseTextResponse);
   } catch (error) {
     console.error('Error parsing food text:', error);
