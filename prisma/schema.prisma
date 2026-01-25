@@ -312,6 +312,9 @@ model Program {
   week2CheckInShownAt DateTime? @map("week2_check_in_shown_at")
   week2CheckInOption  String?   @map("week2_check_in_option") // "going_great", "too_hard", "too_easy", "life_happened"
 
+  // Phase tracking for nutrition
+  currentPhase Int @default(1) @map("current_phase")
+
   createdByUser User           @relation("ProgramAuthor", fields: [createdBy], references: [id])
   ownerUser     User?          @relation("ProgramOwner", fields: [userId], references: [id])
   clonedFrom    Program?       @relation("ProgramClones", fields: [clonedFromId], references: [id])
