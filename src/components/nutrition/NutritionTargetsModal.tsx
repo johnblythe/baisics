@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { CalculatorForm } from './CalculatorForm';
+import { GoalForm } from './GoalForm';
 
 // Colors matching v2a design system
 const COLORS = {
@@ -61,6 +62,7 @@ export function NutritionTargetsModal({
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [showCalculator, setShowCalculator] = useState(false);
+  const [showGoalForm, setShowGoalForm] = useState(false);
 
   // Load initial values when modal opens or initialValues change
   useEffect(() => {
@@ -185,6 +187,7 @@ export function NutritionTargetsModal({
     setError(null);
     setValidationErrors([]);
     setShowCalculator(false);
+    setShowGoalForm(false);
     onClose();
   };
 
@@ -240,7 +243,36 @@ export function NutritionTargetsModal({
                 </svg>
               </button>
             </div>
+            {/* Set fitness goal link */}
+            <button
+              type="button"
+              onClick={() => setShowGoalForm(!showGoalForm)}
+              className="mt-2 flex items-center gap-1.5 text-sm text-white/90 hover:text-white transition-colors"
+            >
+              <svg
+                className={`w-3 h-3 transition-transform ${showGoalForm ? 'rotate-90' : ''}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+              Set your fitness goal
+            </button>
           </div>
+
+          {/* Fitness Goal Form - expandable */}
+          {showGoalForm && (
+            <div
+              className="px-6 py-4 border-b"
+              style={{ backgroundColor: COLORS.gray50, borderColor: COLORS.gray100 }}
+            >
+              <GoalForm
+                onSaved={() => {/* Could trigger refresh if needed */}}
+                onCollapse={() => setShowGoalForm(false)}
+              />
+            </div>
+          )}
 
           {/* Content */}
           <div className="p-6">
