@@ -132,6 +132,9 @@ model User {
   // Nutrition plans (standalone, not tied to program)
   nutritionPlans NutritionPlan[]
 
+  // User's fitness goal (1:1 relation)
+  goal Goal?
+
   @@index([email])
   @@map("users")
 }
@@ -835,6 +838,14 @@ enum MilestoneType {
   WORKOUT_1000  // The Thousand - 1000 workouts
 }
 
+// User fitness goal - primary goal for nutrition/training recommendations
+enum PrimaryGoal {
+  LOSE_WEIGHT
+  BUILD_MUSCLE
+  MAINTAIN
+  HEALTH
+}
+
 model MilestoneAchievement {
   id        String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId    String        @map("user_id") @db.Uuid
@@ -851,4 +862,20 @@ model MilestoneAchievement {
   @@index([userId])
   @@index([type])
   @@map("milestone_achievements")
+}
+
+// User fitness goal - stores primary goal for personalized recommendations
+model Goal {
+  id           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId       String      @unique @map("user_id") @db.Uuid
+  primaryGoal  PrimaryGoal @map("primary_goal")
+  targetWeight Float?      @map("target_weight")
+  timeframe    String?     @map("timeframe")
+  notes        String?     @db.Text
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("goals")
 }
