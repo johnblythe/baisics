@@ -249,34 +249,61 @@ async function seedPersonas() {
         where: { programId: { in: existingProgramIds } },
       });
 
-      // 2. Delete WorkoutLogs chain: SetLogs -> ExerciseLogs -> WorkoutLogs
-      // Use raw SQL for robust cascading delete to avoid FK constraint issues
+      // 2. Delete WorkoutLogs chain using CTE for atomic cascading delete
+      // Single statement ensures all deletes happen together
       await prisma.$executeRaw`
-        DELETE FROM set_logs
-        WHERE exercise_log_id IN (
+        WITH program_ids AS (
+          SELECT unnest(${existingProgramIds}::uuid[]) AS id
+        ),
+        workout_log_ids AS (
+          SELECT wl.id FROM workout_logs wl
+          WHERE wl.program_id IN (SELECT id FROM program_ids)
+        ),
+        exercise_log_ids AS (
           SELECT el.id FROM exercise_logs el
-          JOIN workout_logs wl ON el.workout_log_id = wl.id
-          WHERE wl.program_id = ANY(${existingProgramIds}::uuid[])
+          WHERE el.workout_log_id IN (SELECT id FROM workout_log_ids)
+        ),
+        deleted_set_logs AS (
+          DELETE FROM set_logs
+          WHERE exercise_log_id IN (SELECT id FROM exercise_log_ids)
+          RETURNING id
+        ),
+        deleted_exercise_logs AS (
+          DELETE FROM exercise_logs
+          WHERE id IN (SELECT id FROM exercise_log_ids)
+          RETURNING id
         )
-      `;
-
-      await prisma.$executeRaw`
-        DELETE FROM exercise_logs
-        WHERE workout_log_id IN (
-          SELECT id FROM workout_logs
-          WHERE program_id = ANY(${existingProgramIds}::uuid[])
-        )
-      `;
-
-      await prisma.$executeRaw`
         DELETE FROM workout_logs
-        WHERE program_id = ANY(${existingProgramIds}::uuid[])
+        WHERE id IN (SELECT id FROM workout_log_ids)
       `;
 
-      // 3. Delete WorkoutPlans (Workouts and Exercises will cascade via onDelete)
-      await prisma.workoutPlan.deleteMany({
-        where: { programId: { in: existingProgramIds } },
-      });
+      // 3. Delete WorkoutPlan chain: Exercises -> Workouts -> WorkoutPlans
+      // Explicit deletion to avoid race conditions during parallel E2E tests
+      await prisma.$executeRaw`
+        WITH program_ids AS (
+          SELECT unnest(${existingProgramIds}::uuid[]) AS id
+        ),
+        workout_plan_ids AS (
+          SELECT wp.id FROM workout_plans wp
+          WHERE wp.program_id IN (SELECT id FROM program_ids)
+        ),
+        workout_ids AS (
+          SELECT w.id FROM workouts w
+          WHERE w.workout_plan_id IN (SELECT id FROM workout_plan_ids)
+        ),
+        deleted_exercises AS (
+          DELETE FROM exercises
+          WHERE workout_id IN (SELECT id FROM workout_ids)
+          RETURNING id
+        ),
+        deleted_workouts AS (
+          DELETE FROM workouts
+          WHERE id IN (SELECT id FROM workout_ids)
+          RETURNING id
+        )
+        DELETE FROM workout_plans
+        WHERE id IN (SELECT id FROM workout_plan_ids)
+      `;
 
       // 3.5. Delete NutritionPlans tied to these programs (and standalone for this user)
       await prisma.nutritionPlan.deleteMany({
@@ -495,21 +522,26 @@ async function seedPersonas() {
       }
     }
 
-    // 5. Create Milestones
+    // 5. Upsert Milestones (use upsert to handle parallel test execution)
     if (persona.milestones) {
-      // Delete existing milestones for clean state
-      await prisma.milestoneAchievement.deleteMany({
-        where: { userId: user.id },
-      });
-
       for (const milestoneSeed of persona.milestones) {
-        await prisma.milestoneAchievement.create({
-          data: {
+        const milestoneData = {
+          earnedAt: new Date(Date.now() - milestoneSeed.earnedAtDaysAgo * 24 * 60 * 60 * 1000),
+          totalWorkouts: milestoneSeed.totalWorkouts,
+          totalVolume: milestoneSeed.totalVolume,
+        };
+        await prisma.milestoneAchievement.upsert({
+          where: {
+            userId_type: {
+              userId: user.id,
+              type: milestoneSeed.type,
+            },
+          },
+          update: milestoneData,
+          create: {
             userId: user.id,
             type: milestoneSeed.type,
-            earnedAt: new Date(Date.now() - milestoneSeed.earnedAtDaysAgo * 24 * 60 * 60 * 1000),
-            totalWorkouts: milestoneSeed.totalWorkouts,
-            totalVolume: milestoneSeed.totalVolume,
+            ...milestoneData,
           },
         });
       }
