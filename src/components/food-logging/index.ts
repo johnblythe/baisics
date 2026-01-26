@@ -52,32 +52,6 @@ export type { USDAFoodSearchProps, USDAFoodResult } from './USDAFoodSearch';
 export { FoodLogPage } from './FoodLogPage';
 export type { FoodLogPageProps } from './FoodLogPage';
 
-export { AIParseResult } from './AIParseResult';
-export type { AIParseResultProps, ParsedFoodItem } from './AIParseResult';
-
-export { FoodEditModal } from './FoodEditModal';
-export type { FoodEditModalProps, FoodEditData } from './FoodEditModal';
-
-export { RecipePanel } from './RecipePanel';
-export type { RecipePanelProps, RecipeData } from './RecipePanel';
-
-export { RecipeEditor } from './RecipeEditor';
-export type { RecipeEditorProps, RecipeEditData, RecipeIngredient } from './RecipeEditor';
-
-export { MyRecipesSidebar } from './MyRecipesSidebar';
-export type { MyRecipesSidebarProps, Recipe } from './MyRecipesSidebar';
-
-export { CreateRecipeModal } from './CreateRecipeModal';
-export type { CreateRecipeModalProps, RecipeIngredient as CreateRecipeIngredient } from './CreateRecipeModal';
-
-// USDA Food Search
-export { USDAFoodSearch } from './USDAFoodSearch';
-export type { USDAFoodSearchProps, USDAFoodResult } from './USDAFoodSearch';
-
-// Page orchestrator
-export { FoodLogPage } from './FoodLogPage';
-export type { FoodLogPageProps } from './FoodLogPage';
-
 // Layout components
 export { MobileLayout, DesktopLayout } from './layouts';
 export type {

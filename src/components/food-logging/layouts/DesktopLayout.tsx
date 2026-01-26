@@ -88,10 +88,6 @@ export interface DesktopLayoutProps {
   selectedDate?: Date;
   onCopyFromYesterday?: () => void;
 
-  // USDA Search
-  userId?: string;
-  onUSDAFoodAdd?: (food: USDAFoodResult) => void;
-
   // Suggestion
   suggestion?: string;
   suggestionDetail?: string;

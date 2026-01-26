@@ -95,10 +95,6 @@ export interface MobileLayoutProps {
   selectedDate?: Date;
   onCopyFromYesterday?: () => void;
 
-  // USDA Search
-  userId?: string;
-  onUSDAFoodAdd?: (food: USDAFoodResult) => void;
-
   // Remaining / suggestion
   remainingCalories?: number;
   remainingProtein?: number;
