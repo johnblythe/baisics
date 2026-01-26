@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, useMemo } from 'react';
-import { SimplifiedFood } from '@/lib/usda/types';
+import { UnifiedFoodResult } from '@/lib/food-search/types';
 
 // Colors matching v2a design system
 const COLORS = {
@@ -24,11 +24,11 @@ export interface CalculatedMacros {
   protein: number;
   carbs: number;
   fat: number;
-  food: SimplifiedFood;
+  food: UnifiedFoodResult;
 }
 
 export interface ServingSizeSelectorProps {
-  food: SimplifiedFood;
+  food: UnifiedFoodResult;
   onConfirm: (macros: CalculatedMacros) => void;
   onCancel?: () => void;
   className?: string;

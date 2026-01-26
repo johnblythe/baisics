@@ -249,43 +249,75 @@ async function seedPersonas() {
         where: { programId: { in: existingProgramIds } },
       });
 
-      // 2. Delete WorkoutLogs chain: SetLogs -> ExerciseLogs -> WorkoutLogs
-      // Get workout log IDs for cascade
-      const workoutLogsToDelete = await prisma.workoutLog.findMany({
-        where: { programId: { in: existingProgramIds } },
-        select: { id: true },
+      // 2. Delete WorkoutLogs chain using CTE for atomic cascading delete
+      // Single statement ensures all deletes happen together
+      await prisma.$executeRaw`
+        WITH program_ids AS (
+          SELECT unnest(${existingProgramIds}::uuid[]) AS id
+        ),
+        workout_log_ids AS (
+          SELECT wl.id FROM workout_logs wl
+          WHERE wl.program_id IN (SELECT id FROM program_ids)
+        ),
+        exercise_log_ids AS (
+          SELECT el.id FROM exercise_logs el
+          WHERE el.workout_log_id IN (SELECT id FROM workout_log_ids)
+        ),
+        deleted_set_logs AS (
+          DELETE FROM set_logs
+          WHERE exercise_log_id IN (SELECT id FROM exercise_log_ids)
+          RETURNING id
+        ),
+        deleted_exercise_logs AS (
+          DELETE FROM exercise_logs
+          WHERE id IN (SELECT id FROM exercise_log_ids)
+          RETURNING id
+        )
+        DELETE FROM workout_logs
+        WHERE id IN (SELECT id FROM workout_log_ids)
+      `;
+
+      // 3. Delete WorkoutPlan chain: Exercises -> Workouts -> WorkoutPlans
+      // Explicit deletion to avoid race conditions during parallel E2E tests
+      await prisma.$executeRaw`
+        WITH program_ids AS (
+          SELECT unnest(${existingProgramIds}::uuid[]) AS id
+        ),
+        workout_plan_ids AS (
+          SELECT wp.id FROM workout_plans wp
+          WHERE wp.program_id IN (SELECT id FROM program_ids)
+        ),
+        workout_ids AS (
+          SELECT w.id FROM workouts w
+          WHERE w.workout_plan_id IN (SELECT id FROM workout_plan_ids)
+        ),
+        deleted_exercises AS (
+          DELETE FROM exercises
+          WHERE workout_id IN (SELECT id FROM workout_ids)
+          RETURNING id
+        ),
+        deleted_workouts AS (
+          DELETE FROM workouts
+          WHERE id IN (SELECT id FROM workout_ids)
+          RETURNING id
+        )
+        DELETE FROM workout_plans
+        WHERE id IN (SELECT id FROM workout_plan_ids)
+      `;
+
+      // 3.5. Delete NutritionPlans tied to these programs (and standalone for this user)
+      await prisma.nutritionPlan.deleteMany({
+        where: {
+          OR: [
+            { programId: { in: existingProgramIds } },
+            { userId: user.id },
+          ],
+        },
       });
-      const workoutLogIds = workoutLogsToDelete.map(wl => wl.id);
 
-      if (workoutLogIds.length > 0) {
-        // Get exercise log IDs for cascade
-        const exerciseLogsToDelete = await prisma.exerciseLog.findMany({
-          where: { workoutLogId: { in: workoutLogIds } },
-          select: { id: true },
-        });
-        const exerciseLogIds = exerciseLogsToDelete.map(el => el.id);
-
-        if (exerciseLogIds.length > 0) {
-          // Delete SetLogs first
-          await prisma.setLog.deleteMany({
-            where: { exerciseLogId: { in: exerciseLogIds } },
-          });
-        }
-
-        // Delete ExerciseLogs
-        await prisma.exerciseLog.deleteMany({
-          where: { workoutLogId: { in: workoutLogIds } },
-        });
-      }
-
-      // Now delete WorkoutLogs
-      await prisma.workoutLog.deleteMany({
-        where: { programId: { in: existingProgramIds } },
-      });
-
-      // 3. Delete WorkoutPlans (Workouts and Exercises will cascade via onDelete)
-      await prisma.workoutPlan.deleteMany({
-        where: { programId: { in: existingProgramIds } },
+      // 3.6. Delete Goal for this user
+      await prisma.goal.deleteMany({
+        where: { userId: user.id },
       });
 
       // 4. Now safe to delete Programs
@@ -490,21 +522,26 @@ async function seedPersonas() {
       }
     }
 
-    // 5. Create Milestones
+    // 5. Upsert Milestones (use upsert to handle parallel test execution)
     if (persona.milestones) {
-      // Delete existing milestones for clean state
-      await prisma.milestoneAchievement.deleteMany({
-        where: { userId: user.id },
-      });
-
       for (const milestoneSeed of persona.milestones) {
-        await prisma.milestoneAchievement.create({
-          data: {
+        const milestoneData = {
+          earnedAt: new Date(Date.now() - milestoneSeed.earnedAtDaysAgo * 24 * 60 * 60 * 1000),
+          totalWorkouts: milestoneSeed.totalWorkouts,
+          totalVolume: milestoneSeed.totalVolume,
+        };
+        await prisma.milestoneAchievement.upsert({
+          where: {
+            userId_type: {
+              userId: user.id,
+              type: milestoneSeed.type,
+            },
+          },
+          update: milestoneData,
+          create: {
             userId: user.id,
             type: milestoneSeed.type,
-            earnedAt: new Date(Date.now() - milestoneSeed.earnedAtDaysAgo * 24 * 60 * 60 * 1000),
-            totalWorkouts: milestoneSeed.totalWorkouts,
-            totalVolume: milestoneSeed.totalVolume,
+            ...milestoneData,
           },
         });
       }
@@ -565,12 +602,182 @@ async function seedSpecialUsers() {
   console.log('  ✓ Coach user (johnblythe+coach@gmail.com)');
 }
 
+/**
+ * Seed starter quick foods for all users
+ * These are common foods that appear until users build their own patterns
+ * USDA-sourced macros for accuracy
+ */
+async function seedStarterQuickFoods() {
+  console.log('Seeding starter quick foods...');
+
+  // 10 common starter foods with USDA-sourced macros
+  const starterFoods = [
+    {
+      name: 'Eggs',
+      emoji: '🥚',
+      servingSize: 1,
+      servingUnit: 'large',
+      calories: 72,
+      protein: 6.3,
+      carbs: 0.4,
+      fat: 4.8,
+      fdcId: '748967', // USDA FDC ID for egg, whole, raw
+    },
+    {
+      name: 'Chicken breast',
+      emoji: '🍗',
+      servingSize: 170,
+      servingUnit: 'g',
+      calories: 280,
+      protein: 52.0,
+      carbs: 0,
+      fat: 6.1,
+      fdcId: '171077', // Chicken breast, boneless, skinless, raw
+    },
+    {
+      name: 'White rice',
+      emoji: '🍚',
+      servingSize: 1,
+      servingUnit: 'cup cooked',
+      calories: 206,
+      protein: 4.3,
+      carbs: 44.5,
+      fat: 0.4,
+      fdcId: '169756', // Rice, white, long-grain, cooked
+    },
+    {
+      name: 'Oatmeal',
+      emoji: '🥣',
+      servingSize: 1,
+      servingUnit: 'cup cooked',
+      calories: 166,
+      protein: 5.9,
+      carbs: 28.0,
+      fat: 3.6,
+      fdcId: '172839', // Oats, regular, cooked
+    },
+    {
+      name: 'Banana',
+      emoji: '🍌',
+      servingSize: 1,
+      servingUnit: 'medium',
+      calories: 105,
+      protein: 1.3,
+      carbs: 27.0,
+      fat: 0.4,
+      fdcId: '173944', // Banana, raw
+    },
+    {
+      name: 'Greek yogurt',
+      emoji: '🥛',
+      servingSize: 1,
+      servingUnit: 'cup',
+      calories: 100,
+      protein: 17.0,
+      carbs: 6.0,
+      fat: 0.7,
+      fdcId: '170903', // Yogurt, Greek, plain, nonfat
+    },
+    {
+      name: 'Protein shake',
+      emoji: '🥤',
+      servingSize: 1,
+      servingUnit: 'scoop',
+      calories: 120,
+      protein: 24.0,
+      carbs: 3.0,
+      fat: 1.5,
+      fdcId: null, // Generic
+    },
+    {
+      name: 'Salmon',
+      emoji: '🐟',
+      servingSize: 170,
+      servingUnit: 'g',
+      calories: 354,
+      protein: 39.0,
+      carbs: 0,
+      fat: 21.0,
+      fdcId: '175167', // Salmon, Atlantic, cooked
+    },
+    {
+      name: 'Ground beef',
+      emoji: '🥩',
+      servingSize: 113,
+      servingUnit: 'g',
+      calories: 287,
+      protein: 19.0,
+      carbs: 0,
+      fat: 23.0,
+      fdcId: '174032', // Beef, ground, 80% lean, cooked
+    },
+    {
+      name: 'Avocado',
+      emoji: '🥑',
+      servingSize: 0.5,
+      servingUnit: 'medium',
+      calories: 160,
+      protein: 2.0,
+      carbs: 8.5,
+      fat: 14.7,
+      fdcId: '171705', // Avocado, raw
+    },
+  ];
+
+  // Get all users
+  const users = await prisma.user.findMany({
+    select: { id: true, email: true },
+  });
+
+  let usersSeeded = 0;
+
+  for (const user of users) {
+    // Check if user already has starter foods
+    const existingStarters = await prisma.quickFood.count({
+      where: {
+        userId: user.id,
+        isStarter: true,
+      },
+    });
+
+    if (existingStarters > 0) {
+      continue; // Skip if already seeded
+    }
+
+    // Seed starter foods for this user (sortOrder starts at 1000 so user foods sort first)
+    for (let i = 0; i < starterFoods.length; i++) {
+      const food = starterFoods[i];
+      await prisma.quickFood.create({
+        data: {
+          userId: user.id,
+          name: food.name,
+          emoji: food.emoji,
+          servingSize: food.servingSize,
+          servingUnit: food.servingUnit,
+          calories: food.calories,
+          protein: food.protein,
+          carbs: food.carbs,
+          fat: food.fat,
+          fdcId: food.fdcId,
+          sortOrder: 1000 + i, // High sortOrder so user foods appear first
+          usageCount: 0,
+          isStarter: true,
+        },
+      });
+    }
+    usersSeeded++;
+  }
+
+  console.log(`  ✓ Starter foods seeded for ${usersSeeded} users (${starterFoods.length} foods each)`);
+}
+
 async function main() {
   console.log('Starting database seed...\n');
 
   await seedExercises();
   await seedPersonas();
   await seedSpecialUsers();
+  await seedStarterQuickFoods();
 
   console.log('\nSeed complete!');
 }

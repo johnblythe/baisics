@@ -6,7 +6,9 @@ You are an autonomous coding agent working on the Baisics project.
 
 1. Read the PRD at `scripts/ralph/prd.json`
 2. Read the progress log at `scripts/ralph/progress.txt` (check Codebase Patterns section first)
-3. Check you're on the correct branch from PRD `branchName`. If not, check it out or create from main.
+3. Handle branching based on PRD `branchName`:
+   - If `branchName` is null or empty: **stay on current branch** (work-in-place mode)
+   - If `branchName` is set: check it out or create from main if needed
 4. Pick the **highest priority** user story where `passes: false`
 5. Implement that single user story completely
 6. Run quality checks: `npm run lint` and `npm run build`

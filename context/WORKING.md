@@ -1,78 +1,79 @@
-# Session Context - 2026-01-19T09:30:00Z
+# Session Context - 2026-01-24T22:30:00Z
 
 ## Current Session Overview
-- **Main Task/Feature**: Automated screenshot capture for Features page marketing content
-- **Session Duration**: ~1.5 hours
-- **Current Status**: Complete - Features page fully updated with 10 real screenshots at 2x retina resolution
+- **Main Task/Feature**: Food logging feature - multi-layer search, AI estimation, UX improvements
+- **Session Duration**: ~4 hours
+- **Current Status**: Ralph completed 15 stories for multi-layer search. Now reviewing UX demo page for feedback before creating PRD for fixes + recipes + copy features.
 
 ## Recent Activity (Last 30-60 minutes)
-- **What We Just Did**:
-  - Created comprehensive Playwright test suite for 21 screenshots (public + authenticated pages)
-  - Captured screenshots for AI conversation, templates, workout+chat, nutrition, meal prep, check-in, exercise library
-  - Updated Features page with all new screenshots organized into Hero (3) and More Features (7) sections
-  - Added "Built Different" philosophy section (no anxiety streaks, long game thinking, your way)
-- **Active Problems**: None - all tests passing
-- **Current Files**: `tests/screenshots/features.spec.ts`, `src/app/features/page.tsx`, `public/features/*.png`
-- **Test Status**: All 21 Playwright tests passing
+- **What We Just Did**: Created real component mockups at `/nutrition/ux-demo` for user review
+- **Active Problems**: User reviewing 3 sections (A: fix broken stuff, B: recipes, C: copy previous day)
+- **Current Files**: `src/app/nutrition/ux-demo/page.tsx`
+- **Test Status**: Demo page compiles and renders, awaiting user feedback
 
 ## Key Technical Decisions Made
-- **Architecture Choices**:
-  - Magic link dev flow for test authentication (clicks "Click here to sign in" on verify-request page)
-  - 2x deviceScaleFactor in Playwright for retina screenshots
-  - Separate test user (marcus@test.baisics.app) with real program data
-- **Implementation Approaches**:
-  - Modal dismissal via force click on "Got it"/"Close" buttons
-  - Wait for loaders to disappear before capturing workout screenshots
-  - Hero features use 4:3 aspect ratio, More Features use 16:9 video aspect
+- **Architecture Choices**: Multi-layer food search (QuickFoods → USDA → Open Food Facts), unified search service
+- **Implementation Approaches**: Relevance scoring for search results, filter bad OFF data, round macros to whole numbers
+- **Technology Selections**: Open Food Facts API (not local DB yet), Claude for AI estimation
+- **Performance/Security Considerations**: Search analytics logging (FoodSearchLog) for future improvements
 
 ## Code Context
 - **Modified Files**:
-  - `tests/screenshots/features.spec.ts` - full rewrite with 21 tests
-  - `src/app/features/page.tsx` - complete features page update
-  - `playwright.config.ts` - added 2x deviceScaleFactor
-  - `public/features/*.png` - 10 feature screenshots
-- **New Patterns**:
-  - `loginAsTestUser()` helper for authenticated tests
-  - `dismissModals()` helper for cleaning up celebration/welcome modals
-- **Dependencies**: Playwright already installed
-- **Configuration Changes**: Playwright 2x scale for high-res screenshots
+  - `src/lib/food-search/unified-search.ts` - relevance scoring, bad data filtering, rounding
+  - `src/components/nutrition/FoodSearchAutocomplete.tsx` - source badges (OFF→Community)
+  - `src/app/nutrition/ux-demo/page.tsx` - interactive UX mockups
+  - Schema: FoodSearchLog, isApproximate flag, OPEN_FOOD_FACTS + AI_ESTIMATED enums
+- **New Patterns**: FoodSearchSource enum, unified search with deduplication
+- **Dependencies**: Open Food Facts API client added
+- **Configuration Changes**: USDA_API_KEY added to .env.local
 
 ## Current Implementation State
 - **Completed**:
-  - Screenshot test suite (21 tests)
-  - Features page with real screenshots
-  - Hero features: AI Program Builder, Workout Logging, Progress Dashboard
-  - More features: Import, Templates, AI Chat, Nutrition, Meal Prep, Check-ins, Exercise Library
-  - Philosophy section with brand messaging
-- **In Progress**: None
-- **Blocked**: None
+  - Multi-layer search (15 Ralph stories)
+  - Relevance scoring (brand matches boosted)
+  - AI estimation endpoint
+  - Search analytics logging
+  - Source badges in UI
+  - isApproximate flag for estimated entries
+- **In Progress**:
+  - UX demo review at `/nutrition/ux-demo`
+  - User reviewing mockups for A/B/C before PRD creation
+- **Blocked**: Nothing
 - **Next Steps**:
-  - User may want to refine specific screenshots (e.g., more conversation in AI builder, more data in dashboard)
-  - Could add mobile screenshots to features page
-  - Could capture more screens (settings, achievements, etc.)
+  1. Get user feedback on UX demo mockups
+  2. Create PRD for: fix broken stuff (+ Add buttons, weekly %, remaining UI), recipes feature, copy previous day
+  3. Run Ralph on new PRD
 
 ## Important Context for Handoff
-- **Environment Setup**: Dev server must be running on port 3001
-- **Running/Testing**: `npm run screenshots` to capture all, or `npx playwright test --project='Desktop Chrome' tests/screenshots/features.spec.ts -g "pattern"`
+- **Environment Setup**: Dev server on port 3001
+- **Running/Testing**: `npm run dev`, visit `http://localhost:3001/nutrition/ux-demo`
 - **Known Issues**:
-  - AI conversation screenshot may show initial state, not mid-conversation
-  - Dashboard screenshot depends on Marcus's program data state
-- **External Dependencies**: Test personas must be seeded (`npx prisma db seed`)
+  - `+ Add` buttons on meal sections don't work
+  - Weekly strip shows 0% despite logged food
+  - "Remaining" at bottom of progress card is confusing
+  - Search results still have data quality issues from APIs
+- **External Dependencies**: USDA API (key in env), Open Food Facts API (no key needed)
 
 ## Conversation Thread
-- **Original Goal**: Run `npm run screenshots` for feature pages
+- **Original Goal**: Make food logging functional (from prototype to real feature)
 - **Evolution**:
-  - Started with just running existing tests → fixed auth (wrong cookie name)
-  - Added magic link dev flow for auth → captured authenticated pages
-  - User requested more features, better screenshots → full page rewrite
-  - Added nutrition, meal prep, check-ins, templates, chat, philosophy section
+  1. Started with fixing Ralph's "UI only" work (nothing actually worked)
+  2. Added USDA API key, fixed flows
+  3. User complained about search quality → added Open Food Facts, relevance scoring
+  4. User found more UX issues → created demo page for review
 - **Lessons Learned**:
-  - Session cookie is `baisics.session-token` not `next-auth.session-token`
-  - Magic link stored in `baisics.__dev_magic_link` cookie in dev mode
-  - Modals need `force: true` click due to backdrop overlay
+  - Ralph "tests" by reading code, not actually running app (misses runtime issues)
+  - API data quality is poor, need relevance scoring + filtering
+  - "Faster > better" for food logging - reduce friction, not perfect accuracy
 - **Alternatives Considered**:
-  - TEST_SESSION_COOKIE env var (rejected - requires manual cookie copy)
-  - Direct credentials auth (exists but magic link flow more reliable)
+  - Local OFF database (deferred - API first)
+  - FatSecret API (user said results are shit too)
+  - Manual entry as fallback (user rejected - users don't know macros)
 
----
-*Last updated: 2026-01-19*
+## User Feedback Pending
+User is reviewing `/nutrition/ux-demo` with 3 sections:
+- **A) Fix Broken Stuff**: +Add buttons, weekly % bug, "Remaining" confusion
+- **B) Recipes/Meals**: Create combos (e.g., "Morning Protein Shake"), one-click add
+- **C) Copy Previous Day**: Copy single meal, copy entire day with meal selection
+
+Waiting for corrections/approval before creating implementation PRD.

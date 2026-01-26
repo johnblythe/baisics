@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import MainLayout from '@/app/components/layouts/MainLayout';
 import { NutritionLogModal } from '@/components/NutritionLogModal';
+import { FoodLogPage } from '@/components/food-logging';
+import { Utensils, Calendar, TrendingUp } from 'lucide-react';
 
 interface NutritionLog {
   id: string;
@@ -25,17 +27,63 @@ interface ChartData {
   fats: number;
 }
 
-export default function NutritionHistoryPage() {
+type ViewMode = 'log' | 'history';
+
+// Extracted header to avoid TypeScript narrowing issues
+function ViewToggleHeader({
+  currentView,
+  onViewChange,
+}: {
+  currentView: ViewMode;
+  onViewChange: (mode: ViewMode) => void;
+}) {
+  return (
+    <div className="sticky top-0 z-30 bg-white border-b border-[#E2E8F0]">
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="flex gap-1 py-2">
+          <button
+            onClick={() => onViewChange('log')}
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+              currentView === 'log'
+                ? 'bg-[#0F172A] text-white'
+                : 'bg-transparent text-[#64748B] hover:bg-[#F8FAFC]'
+            }`}
+          >
+            <Utensils className="w-4 h-4" />
+            Log Food
+          </button>
+          <button
+            onClick={() => onViewChange('history')}
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+              currentView === 'history'
+                ? 'bg-[#0F172A] text-white'
+                : 'bg-transparent text-[#64748B] hover:bg-[#F8FAFC]'
+            }`}
+          >
+            <TrendingUp className="w-4 h-4" />
+            History
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function NutritionPage() {
+  const [viewMode, setViewMode] = useState<ViewMode>('log');
+  const [historyView, setHistoryView] = useState<'calendar' | 'list'>('calendar');
   const [logs, setLogs] = useState<NutritionLog[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [historyLoaded, setHistoryLoaded] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
-  const [viewMode, setViewMode] = useState<'calendar' | 'list'>('calendar');
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
+  // Fetch history logs only when switching to history view
   const fetchLogs = async () => {
+    if (historyLoaded) return;
+    setLoading(true);
     try {
-      // Fetch last 30 days
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
@@ -46,6 +94,7 @@ export default function NutritionHistoryPage() {
       if (response.ok) {
         const data = await response.json();
         setLogs(data.logs || []);
+        setHistoryLoaded(true);
       }
     } catch (err) {
       console.error('Failed to fetch nutrition logs:', err);
@@ -54,12 +103,16 @@ export default function NutritionHistoryPage() {
     }
   };
 
-  useEffect(() => {
-    fetchLogs();
-  }, []);
+  // Load history when switching to history view
+  const handleViewChange = (mode: ViewMode) => {
+    setViewMode(mode);
+    if (mode === 'history' && !historyLoaded) {
+      fetchLogs();
+    }
+  };
 
-  // Prepare chart data (last 14 days)
-  const chartData: ChartData[] = React.useMemo(() => {
+  // Chart data (last 14 days)
+  const chartData: ChartData[] = useMemo(() => {
     const last14Days: ChartData[] = [];
     const today = new Date();
 
@@ -82,13 +135,13 @@ export default function NutritionHistoryPage() {
     return last14Days;
   }, [logs]);
 
-  // Get logged dates as a Set for quick lookup
-  const loggedDates = React.useMemo(() => {
+  // Logged dates set
+  const loggedDates = useMemo(() => {
     return new Set(logs.map(l => l.date.split('T')[0]));
   }, [logs]);
 
-  // Calendar generation
-  const calendarDays = React.useMemo(() => {
+  // Calendar days
+  const calendarDays = useMemo(() => {
     const year = currentMonth.getFullYear();
     const month = currentMonth.getMonth();
     const firstDay = new Date(year, month, 1);
@@ -98,12 +151,10 @@ export default function NutritionHistoryPage() {
 
     const days: { date: Date | null; isCurrentMonth: boolean }[] = [];
 
-    // Padding for days before month starts
     for (let i = 0; i < startPadding; i++) {
       days.push({ date: null, isCurrentMonth: false });
     }
 
-    // Days of the month
     for (let i = 1; i <= totalDays; i++) {
       days.push({ date: new Date(year, month, i), isCurrentMonth: true });
     }
@@ -122,7 +173,11 @@ export default function NutritionHistoryPage() {
   };
 
   const handleSaved = () => {
-    fetchLogs();
+    // Refresh history data
+    setHistoryLoaded(false);
+    if (viewMode === 'history') {
+      fetchLogs();
+    }
   };
 
   const navigateMonth = (delta: number) => {
@@ -144,18 +199,21 @@ export default function NutritionHistoryPage() {
     return date > today;
   };
 
-  if (loading) {
+  // Show food logging view
+  if (viewMode === 'log') {
     return (
       <MainLayout>
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="w-6 h-6 border-2 border-[#F1F5F9] border-t-[#FF6B6B] rounded-full animate-spin" />
-        </div>
+        <ViewToggleHeader currentView={viewMode} onViewChange={handleViewChange} />
+        <FoodLogPage />
       </MainLayout>
     );
   }
 
+  // Show history view
   return (
     <MainLayout>
+      <ViewToggleHeader currentView={viewMode} onViewChange={handleViewChange} />
+
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -206,7 +264,11 @@ export default function NutritionHistoryPage() {
             14-Day Trends
           </h2>
 
-          {logs.length === 0 ? (
+          {loading ? (
+            <div className="h-64 flex items-center justify-center">
+              <div className="w-6 h-6 border-2 border-[#F1F5F9] border-t-[#FF6B6B] rounded-full animate-spin" />
+            </div>
+          ) : logs.length === 0 ? (
             <div className="h-64 flex items-center justify-center text-[#94A3B8]">
               <div className="text-center">
                 <p className="mb-2">No nutrition data yet</p>
@@ -287,22 +349,23 @@ export default function NutritionHistoryPage() {
           )}
         </div>
 
-        {/* View Toggle */}
+        {/* Calendar/List Toggle */}
         <div className="flex gap-2">
           <button
-            onClick={() => setViewMode('calendar')}
-            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-              viewMode === 'calendar'
+            onClick={() => setHistoryView('calendar')}
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+              historyView === 'calendar'
                 ? 'bg-[#0F172A] text-white'
                 : 'bg-white text-[#64748B] border border-[#E2E8F0] hover:border-[#94A3B8]'
             }`}
           >
+            <Calendar className="w-4 h-4" />
             Calendar
           </button>
           <button
-            onClick={() => setViewMode('list')}
+            onClick={() => setHistoryView('list')}
             className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-              viewMode === 'list'
+              historyView === 'list'
                 ? 'bg-[#0F172A] text-white'
                 : 'bg-white text-[#64748B] border border-[#E2E8F0] hover:border-[#94A3B8]'
             }`}
@@ -312,7 +375,7 @@ export default function NutritionHistoryPage() {
         </div>
 
         {/* Calendar View */}
-        {viewMode === 'calendar' && (
+        {historyView === 'calendar' && (
           <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm p-6">
             {/* Month Navigation */}
             <div className="flex items-center justify-between mb-6">
@@ -379,7 +442,7 @@ export default function NutritionHistoryPage() {
                       <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-emerald-500" />
                     )}
 
-                    {/* Tooltip on hover */}
+                    {/* Tooltip */}
                     {hasLog && log && (
                       <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-[#0F172A] text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
                         <div className="font-medium">{log.calories} kcal</div>
@@ -406,7 +469,7 @@ export default function NutritionHistoryPage() {
         )}
 
         {/* List View */}
-        {viewMode === 'list' && (
+        {historyView === 'list' && (
           <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden">
             {logs.length === 0 ? (
               <div className="p-12 text-center text-[#94A3B8]">

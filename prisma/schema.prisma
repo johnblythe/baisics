@@ -97,6 +97,10 @@ model User {
   purchaseSessions PurchaseSession[]
   subscription     Subscription?
   appLogs          AppLog[]
+  foodLogEntries   FoodLogEntry[]
+  recipes          Recipe[]
+  quickFoods       QuickFood[]
+  foodSearchLogs   FoodSearchLog[]
 
   // Coach Mode relations
   isCoach          Boolean       @default(false) @map("is_coach")
@@ -128,6 +132,12 @@ model User {
 
   // Lifetime milestones
   milestoneAchievements MilestoneAchievement[]
+
+  // Nutrition plans (standalone, not tied to program)
+  nutritionPlans NutritionPlan[]
+
+  // User's fitness goal (1:1 relation)
+  goal Goal?
 
   @@index([email])
   @@map("users")
@@ -306,6 +316,9 @@ model Program {
   week2CheckInShownAt DateTime? @map("week2_check_in_shown_at")
   week2CheckInOption  String?   @map("week2_check_in_option") // "going_great", "too_hard", "too_easy", "life_happened"
 
+  // Phase tracking for nutrition
+  currentPhase Int @default(1) @map("current_phase")
+
   createdByUser User           @relation("ProgramAuthor", fields: [createdBy], references: [id])
   ownerUser     User?          @relation("ProgramOwner", fields: [userId], references: [id])
   clonedFrom    Program?       @relation("ProgramClones", fields: [clonedFromId], references: [id])
@@ -316,6 +329,7 @@ model Program {
   stats         UserStats[]
   checkIns      CheckIn[]
   activities    UserActivity[]
+  nutritionPlans NutritionPlan[]
 
   @@index([name])
   @@index([slug])
@@ -623,6 +637,111 @@ enum NutritionSource {
   SCREENSHOT
 }
 
+// Food Logging - MFP-style food tracking
+enum FoodSource {
+  MANUAL          // Hand-entered by user
+  USDA_SEARCH     // Selected from USDA database
+  AI_PARSED       // Parsed from natural language text
+  AI_ESTIMATED    // AI-generated nutrition estimates
+  QUICK_ADD       // Added from quick foods
+  RECIPE          // Added from a recipe
+  SCREENSHOT      // Parsed from screenshot
+  OPEN_FOOD_FACTS // Selected from Open Food Facts database
+}
+
+enum MealType {
+  BREAKFAST
+  LUNCH
+  DINNER
+  SNACK
+}
+
+model FoodLogEntry {
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String     @map("user_id") @db.Uuid
+  date        DateTime   @db.Date
+  meal        MealType
+  fdcId       String?    @map("fdc_id") // USDA FoodData Central ID
+  name        String
+  brand       String?
+  servingSize Float      @default(1) @map("serving_size")
+  servingUnit String     @default("serving") @map("serving_unit")
+  calories    Int
+  protein     Float
+  carbs       Float
+  fat         Float
+  source        FoodSource @default(MANUAL)
+  isApproximate Boolean    @default(false) @map("is_approximate")
+  recipeId      String?    @map("recipe_id") @db.Uuid
+  notes       String?    @db.Text
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  user   User    @relation(fields: [userId], references: [id])
+  recipe Recipe? @relation(fields: [recipeId], references: [id])
+
+  @@index([userId])
+  @@index([date])
+  @@index([userId, date])
+  @@map("food_log_entries")
+}
+
+model Recipe {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String?  @map("user_id") @db.Uuid // null for public/system recipes
+  name        String
+  emoji       String?  @db.VarChar(10)
+  isPublic    Boolean  @default(false) @map("is_public")
+  servingSize Float    @default(1) @map("serving_size")
+  servingUnit String   @default("serving") @map("serving_unit")
+  calories    Int
+  protein     Float
+  carbs       Float
+  fat         Float
+  ingredients Json     @db.JsonB // Array of { name, amount, unit, calories, protein, carbs, fat }
+  usageCount  Int      @default(0) @map("usage_count")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user           User?          @relation(fields: [userId], references: [id])
+  foodLogEntries FoodLogEntry[]
+
+  @@index([userId])
+  @@index([isPublic])
+  @@index([name])
+  @@index([usageCount])
+  @@map("recipes")
+}
+
+model QuickFood {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  fdcId       String?  @map("fdc_id") // USDA FoodData Central ID if sourced from there
+  name        String
+  brand       String?
+  emoji       String?  @db.VarChar(10)
+  servingSize Float    @default(1) @map("serving_size")
+  servingUnit String   @default("serving") @map("serving_unit")
+  calories    Int
+  protein     Float
+  carbs       Float
+  fat         Float
+  sortOrder   Int      @default(0) @map("sort_order")
+  usageCount  Int      @default(0) @map("usage_count")
+  isStarter   Boolean  @default(false) @map("is_starter") // Seed foods - user foods take priority
+  lastUsedAt  DateTime? @map("last_used_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([sortOrder])
+  @@index([usageCount])
+  @@index([isStarter])
+  @@map("quick_foods")
+}
+
 model Account {
   id                String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId            String  @map("user_id") @db.Uuid
@@ -795,6 +914,29 @@ model PendingClaim {
   @@map("pending_claims")
 }
 
+// NutritionPlan - decoupled nutrition targets with versioning
+model NutritionPlan {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId        String?   @map("user_id") @db.Uuid
+  programId     String?   @map("program_id") @db.Uuid
+  phaseNumber   Int       @default(1) @map("phase_number")
+  dailyCalories Int       @map("daily_calories")
+  proteinGrams  Int       @map("protein_grams")
+  carbGrams     Int       @map("carb_grams")
+  fatGrams      Int       @map("fat_grams")
+  effectiveDate DateTime  @default(now()) @map("effective_date")
+  endDate       DateTime? @map("end_date")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  user    User?    @relation(fields: [userId], references: [id])
+  program Program? @relation(fields: [programId], references: [id])
+
+  @@index([userId, endDate])
+  @@index([programId, phaseNumber, endDate])
+  @@map("nutrition_plans")
+}
+
 // Lifetime milestone achievements - badges that persist forever
 enum MilestoneType {
   WORKOUT_1     // Day One - 1 workout
@@ -806,6 +948,14 @@ enum MilestoneType {
   WORKOUT_365   // Year's Worth - 365 workouts
   WORKOUT_500   // Five Hundred - 500 workouts
   WORKOUT_1000  // The Thousand - 1000 workouts
+}
+
+// User fitness goal - primary goal for nutrition/training recommendations
+enum PrimaryGoal {
+  LOSE_WEIGHT
+  BUILD_MUSCLE
+  MAINTAIN
+  HEALTH
 }
 
 model MilestoneAchievement {
@@ -824,4 +974,45 @@ model MilestoneAchievement {
   @@index([userId])
   @@index([type])
   @@map("milestone_achievements")
+}
+
+// User fitness goal - stores primary goal for personalized recommendations
+model Goal {
+  id           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId       String      @unique @map("user_id") @db.Uuid
+  primaryGoal  PrimaryGoal @map("primary_goal")
+  targetWeight Float?      @map("target_weight")
+  timeframe    String?     @map("timeframe")
+  notes        String?     @db.Text
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("goals")
+}
+
+// Food Search Analytics - track user search behavior for optimization
+enum FoodSearchAction {
+  SELECTED  // User selected a search result
+  ABANDONED // User closed search without selecting
+  REFINED   // User refined their search query
+}
+
+model FoodSearchLog {
+  id               String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId           String           @map("user_id") @db.Uuid
+  query            String           @db.VarChar(500)
+  resultCount      Int              @map("result_count")
+  selectedFdcId    String?          @map("selected_fdc_id") // FDC ID of selected food, if any
+  selectedName     String?          @map("selected_name") @db.VarChar(500)
+  source           String?          @db.VarChar(50) // USDA, QUICK_FOOD, AI_ESTIMATED, etc.
+  action           FoodSearchAction @default(SELECTED)
+  searchDurationMs Int?             @map("search_duration_ms")
+  createdAt        DateTime         @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
+  @@map("food_search_logs")
 }
