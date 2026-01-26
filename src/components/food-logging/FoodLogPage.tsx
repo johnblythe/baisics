@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Loader2, AlertCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Loader2, AlertCircle, Target } from 'lucide-react';
+import { NutritionTargetsModal } from '@/components/nutrition/NutritionTargetsModal';
 import { MealType } from '@prisma/client';
 import { toast } from 'sonner';
 import {
@@ -76,6 +77,9 @@ interface DailySummaryResponse {
     protein: number;
     calories: number;
   }>;
+  source?: string;
+  isDefault?: boolean;
+  hasPersonalizedTargets?: boolean;
 }
 
 interface QuickFoodResponse {
@@ -212,6 +216,9 @@ export function FoodLogPage({
 
   // Date picker modal state (for "Pick a date..." option)
   const [showDatePickerModal, setShowDatePickerModal] = useState(false);
+
+  // Nutrition targets modal state
+  const [showTargetsModal, setShowTargetsModal] = useState(false);
 
   // Fetch entries for selected date
   const fetchEntries = useCallback(async () => {
@@ -907,6 +914,26 @@ export function FoodLogPage({
     </div>
   ) : null;
 
+  // Targets banner - shows when using default targets
+  const targetsBanner = summary?.isDefault ? (
+    <div className="mx-4 mt-4 p-3 bg-[#FFE5E5] border border-[#FF6B6B]/20 rounded-xl flex items-center gap-3">
+      <div className="w-8 h-8 bg-[#FF6B6B] rounded-full flex items-center justify-center flex-shrink-0">
+        <Target className="w-4 h-4 text-white" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium text-[#0F172A]">Set your nutrition targets</p>
+        <p className="text-xs text-[#64748B]">Personalize your calorie and macro goals</p>
+      </div>
+      <button
+        type="button"
+        onClick={() => setShowTargetsModal(true)}
+        className="px-3 py-1.5 bg-[#FF6B6B] text-white text-sm font-medium rounded-lg hover:bg-[#EF5350] transition-colors flex-shrink-0"
+      >
+        Set Goals
+      </button>
+    </div>
+  ) : null;
+
   // Calculate remaining for suggestion
   const remainingCalories = macroTargets.calories - macroTotals.calories;
   const remainingProtein = macroTargets.protein - macroTotals.protein;
@@ -921,6 +948,9 @@ export function FoodLogPage({
 
   return (
     <>
+      {/* Targets banner - above both layouts */}
+      {targetsBanner}
+
       {/* Mobile Layout */}
       <div className="lg:hidden">
         <MobileLayout
@@ -1063,6 +1093,22 @@ export function FoodLogPage({
         onSelectDate={handleDatePickerSelect}
         targetDate={selectedDate}
         title="Pick a date to copy from"
+      />
+
+      {/* Nutrition Targets Modal */}
+      <NutritionTargetsModal
+        isOpen={showTargetsModal}
+        onClose={() => setShowTargetsModal(false)}
+        onSaved={() => {
+          // Refresh summary to get updated targets
+          fetchSummary();
+        }}
+        initialValues={summary?.targets ? {
+          dailyCalories: summary.targets.dailyCalories,
+          proteinGrams: summary.targets.proteinGrams,
+          carbGrams: summary.targets.carbGrams,
+          fatGrams: summary.targets.fatGrams,
+        } : undefined}
       />
 
       {/* Submitting overlay */}
