@@ -33,7 +33,8 @@ export async function GET(request: Request) {
     const dateParam = searchParams.get('date');
 
     // Default to today if no date provided
-    const date = dateParam ? new Date(dateParam) : new Date();
+    // Add time component to parse as local time (avoids UTC midnight → previous day in local)
+    const date = dateParam ? new Date(dateParam + 'T00:00:00') : new Date();
     date.setHours(0, 0, 0, 0);
 
     // Get entries for the specified date using FoodLogEntry

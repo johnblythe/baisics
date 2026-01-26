@@ -22,7 +22,8 @@ export async function GET(request: Request) {
     }
 
     // Parse date and normalize to start of day
-    const date = new Date(dateParam);
+    // Add time component to parse as local time (avoids UTC midnight → previous day in local)
+    const date = new Date(dateParam + 'T00:00:00');
     date.setHours(0, 0, 0, 0);
 
     const entries = await prisma.foodLogEntry.findMany({
@@ -192,7 +193,8 @@ export async function DELETE(request: Request) {
     }
 
     // Parse date and normalize to start of day
-    const date = new Date(dateParam);
+    // Add time component to parse as local time (avoids UTC midnight → previous day in local)
+    const date = new Date(dateParam + 'T00:00:00');
     date.setHours(0, 0, 0, 0);
 
     // Delete all entries for this user on this date

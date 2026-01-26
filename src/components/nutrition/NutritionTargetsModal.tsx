@@ -105,12 +105,43 @@ export function NutritionTargetsModal({
     }
   };
 
+  // Calculate calories from macros: P*4 + C*4 + F*9
+  const calculateCaloriesFromMacros = (protein: string, carbs: string, fat: string): string => {
+    const p = parseInt(protein, 10) || 0;
+    const c = parseInt(carbs, 10) || 0;
+    const f = parseInt(fat, 10) || 0;
+    if (p === 0 && c === 0 && f === 0) return '';
+    return String(Math.round(p * 4 + c * 4 + f * 9));
+  };
+
   const handleValueChange = (field: keyof NutritionValues, value: string) => {
     // Only allow numbers
     if (value && !/^\d*$/.test(value)) return;
-    setValues(prev => ({ ...prev, [field]: value }));
     setError(null);
     setValidationErrors([]);
+
+    // If user edits calories directly, clear macros (kcal-only mode)
+    if (field === 'dailyCalories') {
+      setValues({
+        dailyCalories: value,
+        proteinGrams: '',
+        carbGrams: '',
+        fatGrams: '',
+      });
+      return;
+    }
+
+    // If user edits macros, auto-calculate calories
+    const newValues = { ...values, [field]: value };
+    const calculatedCalories = calculateCaloriesFromMacros(
+      field === 'proteinGrams' ? value : newValues.proteinGrams,
+      field === 'carbGrams' ? value : newValues.carbGrams,
+      field === 'fatGrams' ? value : newValues.fatGrams
+    );
+    setValues({
+      ...newValues,
+      dailyCalories: calculatedCalories,
+    });
   };
 
   const validateValues = (): boolean => {
@@ -120,24 +151,34 @@ export function NutritionTargetsModal({
     const carbs = parseInt(values.carbGrams, 10) || 0;
     const fat = parseInt(values.fatGrams, 10) || 0;
 
-    // Check required fields
-    if (!values.dailyCalories) errors.push('Daily calories is required');
-    if (!values.proteinGrams) errors.push('Protein is required');
-    if (!values.carbGrams && values.carbGrams !== '0') errors.push('Carbs is required');
-    if (!values.fatGrams) errors.push('Fat is required');
+    // Calories is always required
+    if (!values.dailyCalories) {
+      errors.push('Daily calories is required');
+    }
 
-    // Check bounds
+    // Check calorie bounds
     if (values.dailyCalories && (cal < BOUNDS.dailyCalories.min || cal > BOUNDS.dailyCalories.max)) {
       errors.push(`Calories must be ${BOUNDS.dailyCalories.min}-${BOUNDS.dailyCalories.max}`);
     }
-    if (values.proteinGrams && (protein < BOUNDS.proteinGrams.min || protein > BOUNDS.proteinGrams.max)) {
-      errors.push(`Protein must be ${BOUNDS.proteinGrams.min}-${BOUNDS.proteinGrams.max}g`);
-    }
-    if ((values.carbGrams || values.carbGrams === '0') && (carbs < BOUNDS.carbGrams.min || carbs > BOUNDS.carbGrams.max)) {
-      errors.push(`Carbs must be ${BOUNDS.carbGrams.min}-${BOUNDS.carbGrams.max}g`);
-    }
-    if (values.fatGrams && (fat < BOUNDS.fatGrams.min || fat > BOUNDS.fatGrams.max)) {
-      errors.push(`Fat must be ${BOUNDS.fatGrams.min}-${BOUNDS.fatGrams.max}g`);
+
+    // Macros are optional (kcal-only mode), but if provided, check bounds
+    const hasMacros = values.proteinGrams || values.carbGrams || values.fatGrams;
+    if (hasMacros) {
+      // If any macro is set, all should be set
+      if (!values.proteinGrams) errors.push('Protein is required when using macros');
+      if (!values.carbGrams && values.carbGrams !== '0') errors.push('Carbs is required when using macros');
+      if (!values.fatGrams) errors.push('Fat is required when using macros');
+
+      // Check macro bounds
+      if (values.proteinGrams && (protein < BOUNDS.proteinGrams.min || protein > BOUNDS.proteinGrams.max)) {
+        errors.push(`Protein must be ${BOUNDS.proteinGrams.min}-${BOUNDS.proteinGrams.max}g`);
+      }
+      if ((values.carbGrams || values.carbGrams === '0') && (carbs < BOUNDS.carbGrams.min || carbs > BOUNDS.carbGrams.max)) {
+        errors.push(`Carbs must be ${BOUNDS.carbGrams.min}-${BOUNDS.carbGrams.max}g`);
+      }
+      if (values.fatGrams && (fat < BOUNDS.fatGrams.min || fat > BOUNDS.fatGrams.max)) {
+        errors.push(`Fat must be ${BOUNDS.fatGrams.min}-${BOUNDS.fatGrams.max}g`);
+      }
     }
 
     setValidationErrors(errors);
@@ -150,15 +191,30 @@ export function NutritionTargetsModal({
     setSaving(true);
     setError(null);
 
+    const dailyCalories = parseInt(values.dailyCalories, 10);
+    const hasMacros = values.proteinGrams || values.carbGrams || values.fatGrams;
+
+    // If kcal-only mode, calculate default macro distribution
+    // 30% protein, 40% carbs, 30% fat
+    const proteinGrams = hasMacros
+      ? parseInt(values.proteinGrams, 10)
+      : Math.round((dailyCalories * 0.30) / 4);
+    const carbGrams = hasMacros
+      ? parseInt(values.carbGrams, 10)
+      : Math.round((dailyCalories * 0.40) / 4);
+    const fatGrams = hasMacros
+      ? parseInt(values.fatGrams, 10)
+      : Math.round((dailyCalories * 0.30) / 9);
+
     try {
       const response = await fetch('/api/nutrition-plan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          dailyCalories: parseInt(values.dailyCalories, 10),
-          proteinGrams: parseInt(values.proteinGrams, 10),
-          carbGrams: parseInt(values.carbGrams, 10),
-          fatGrams: parseInt(values.fatGrams, 10),
+          dailyCalories,
+          proteinGrams,
+          carbGrams,
+          fatGrams,
         }),
       });
 

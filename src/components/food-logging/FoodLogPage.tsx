@@ -145,10 +145,6 @@ function entryToItemData(entry: FoodLogEntry): FoodLogItemData {
   return {
     id: entry.id,
     name: entry.name,
-    time: new Date(entry.createdAt).toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-    }),
     calories: entry.calories,
     protein: entry.protein,
     carbs: entry.carbs,
@@ -638,6 +634,7 @@ export function FoodLogPage({
         fat: fullEntry.fat,
         servingSize: fullEntry.servingSize,
         servingUnit: fullEntry.servingUnit,
+        meal: fullEntry.meal,
       });
     }
   };
@@ -787,7 +784,8 @@ export function FoodLogPage({
 
   // Build weekly data - map API response to WeeklyDayData interface
   const weekData: WeeklyDayData[] = (summary?.weeklyCompliance ?? []).map((day) => {
-    const dayDate = new Date(day.date);
+    // Parse date as local time by adding time component (avoids UTC midnight → previous day in local)
+    const dayDate = new Date(day.date + 'T00:00:00');
     const dayOfWeek = dayDate.toLocaleDateString('en-US', { weekday: 'short' }).charAt(0);
     const todayDate = new Date();
     todayDate.setHours(0, 0, 0, 0);
@@ -916,21 +914,23 @@ export function FoodLogPage({
 
   // Targets banner - shows when using default targets
   const targetsBanner = summary?.isDefault ? (
-    <div className="mx-4 mt-4 p-3 bg-[#FFE5E5] border border-[#FF6B6B]/20 rounded-xl flex items-center gap-3">
-      <div className="w-8 h-8 bg-[#FF6B6B] rounded-full flex items-center justify-center flex-shrink-0">
-        <Target className="w-4 h-4 text-white" />
+    <div className="max-w-6xl mx-auto px-4">
+      <div className="mt-4 p-3 bg-[#FFE5E5] border border-[#FF6B6B]/20 rounded-xl flex items-center gap-3">
+        <div className="w-8 h-8 bg-[#FF6B6B] rounded-full flex items-center justify-center flex-shrink-0">
+          <Target className="w-4 h-4 text-white" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium text-[#0F172A]">Set your nutrition targets</p>
+          <p className="text-xs text-[#64748B]">Personalize your calorie and macro goals</p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setShowTargetsModal(true)}
+          className="px-3 py-1.5 bg-[#FF6B6B] text-white text-sm font-medium rounded-lg hover:bg-[#EF5350] transition-colors flex-shrink-0"
+        >
+          Set Goals
+        </button>
       </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-[#0F172A]">Set your nutrition targets</p>
-        <p className="text-xs text-[#64748B]">Personalize your calorie and macro goals</p>
-      </div>
-      <button
-        type="button"
-        onClick={() => setShowTargetsModal(true)}
-        className="px-3 py-1.5 bg-[#FF6B6B] text-white text-sm font-medium rounded-lg hover:bg-[#EF5350] transition-colors flex-shrink-0"
-      >
-        Set Goals
-      </button>
     </div>
   ) : null;
 

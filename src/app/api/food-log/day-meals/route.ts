@@ -23,7 +23,8 @@ export async function GET(request: Request) {
     }
 
     // Parse the date
-    const targetDate = new Date(dateParam);
+    // Add time component to parse as local time (avoids UTC midnight → previous day in local)
+    const targetDate = new Date(dateParam + 'T00:00:00');
     targetDate.setHours(0, 0, 0, 0);
 
     // Get all entries for the date

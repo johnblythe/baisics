@@ -184,6 +184,16 @@ export function DesktopLayout({
 }: DesktopLayoutProps) {
   const [weekExpanded, setWeekExpanded] = useState(defaultWeeklyExpanded);
 
+  // Check if selected date is today
+  const isSelectedDateToday = selectedDate
+    ? selectedDate.toDateString() === new Date().toDateString()
+    : true;
+
+  // Format date for display
+  const mealsTitle = isSelectedDateToday
+    ? "Today's Meals"
+    : selectedDate?.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) + "'s Meals";
+
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
       {/* Header */}
@@ -292,9 +302,9 @@ export function DesktopLayout({
               summaryMessage={weeklySummaryMessage}
             />
 
-            {/* Today's Log */}
+            {/* Meals Log */}
             <div className="bg-white rounded-xl border border-[#E2E8F0] p-4">
-              <h3 className="font-medium text-[#0F172A] mb-4">Today&apos;s Meals</h3>
+              <h3 className="font-medium text-[#0F172A] mb-4">{mealsTitle}</h3>
               <div className="space-y-4">
                 {meals.map((mealData) => (
                   <MealSection

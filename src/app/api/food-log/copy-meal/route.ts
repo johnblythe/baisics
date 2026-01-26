@@ -32,10 +32,11 @@ export async function POST(request: Request) {
     }
 
     // Parse dates
-    const source = new Date(sourceDate);
+    // Add time component to parse as local time (avoids UTC midnight → previous day in local)
+    const source = new Date(sourceDate + 'T00:00:00');
     source.setHours(0, 0, 0, 0);
 
-    const target = new Date(targetDate);
+    const target = new Date(targetDate + 'T00:00:00');
     target.setHours(0, 0, 0, 0);
 
     // Get source entries

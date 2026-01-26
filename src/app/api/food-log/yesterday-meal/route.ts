@@ -32,7 +32,8 @@ export async function GET(request: Request) {
     }
 
     // Calculate yesterday's date (relative to the provided date or today)
-    const baseDate = dateParam ? new Date(dateParam) : new Date();
+    // Add time component to parse as local time (avoids UTC midnight → previous day in local)
+    const baseDate = dateParam ? new Date(dateParam + 'T00:00:00') : new Date();
     baseDate.setHours(0, 0, 0, 0);
 
     const yesterdayDate = new Date(baseDate);

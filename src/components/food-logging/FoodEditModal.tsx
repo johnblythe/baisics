@@ -3,6 +3,14 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { X, Save, Loader2 } from 'lucide-react';
+import { MealType } from '@prisma/client';
+
+const MEAL_OPTIONS = [
+  { value: 'BREAKFAST', label: 'Breakfast' },
+  { value: 'LUNCH', label: 'Lunch' },
+  { value: 'DINNER', label: 'Dinner' },
+  { value: 'SNACK', label: 'Snack' },
+];
 
 export interface FoodEditData {
   id: string;
@@ -13,6 +21,7 @@ export interface FoodEditData {
   fat: number;
   servingSize?: number;
   servingUnit?: string;
+  meal?: MealType;
 }
 
 export interface FoodEditModalProps {
@@ -35,6 +44,7 @@ export function FoodEditModal({
   const [fat, setFat] = useState(food.fat.toString());
   const [servingSize, setServingSize] = useState(food.servingSize?.toString() ?? '1');
   const [servingUnit, setServingUnit] = useState(food.servingUnit ?? 'serving');
+  const [meal, setMeal] = useState<MealType>(food.meal ?? MealType.SNACK);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,6 +56,7 @@ export function FoodEditModal({
       fat: parseFloat(fat) || 0,
       servingSize: parseFloat(servingSize) || 1,
       servingUnit,
+      meal,
     });
   };
 
@@ -92,6 +103,25 @@ export function FoodEditModal({
               onChange={(e) => setName(e.target.value)}
               className="w-full px-3 py-2 border border-[#E2E8F0] rounded-xl text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]/50 focus:border-[#FF6B6B]"
             />
+          </div>
+
+          {/* Meal */}
+          <div className="mb-4">
+            <label htmlFor="meal" className="block text-sm font-medium text-[#64748B] mb-1">
+              Meal
+            </label>
+            <select
+              id="meal"
+              value={meal}
+              onChange={(e) => setMeal(e.target.value as MealType)}
+              className="w-full px-3 py-2 border border-[#E2E8F0] rounded-xl text-[#0F172A] bg-white focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]/50 focus:border-[#FF6B6B]"
+            >
+              {MEAL_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Serving Size */}
