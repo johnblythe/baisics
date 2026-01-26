@@ -250,38 +250,28 @@ async function seedPersonas() {
       });
 
       // 2. Delete WorkoutLogs chain: SetLogs -> ExerciseLogs -> WorkoutLogs
-      // Get workout log IDs for cascade
-      const workoutLogsToDelete = await prisma.workoutLog.findMany({
-        where: { programId: { in: existingProgramIds } },
-        select: { id: true },
-      });
-      const workoutLogIds = workoutLogsToDelete.map(wl => wl.id);
+      // Use raw SQL for robust cascading delete to avoid FK constraint issues
+      await prisma.$executeRaw`
+        DELETE FROM set_logs
+        WHERE exercise_log_id IN (
+          SELECT el.id FROM exercise_logs el
+          JOIN workout_logs wl ON el.workout_log_id = wl.id
+          WHERE wl.program_id = ANY(${existingProgramIds}::uuid[])
+        )
+      `;
 
-      if (workoutLogIds.length > 0) {
-        // Get exercise log IDs for cascade
-        const exerciseLogsToDelete = await prisma.exerciseLog.findMany({
-          where: { workoutLogId: { in: workoutLogIds } },
-          select: { id: true },
-        });
-        const exerciseLogIds = exerciseLogsToDelete.map(el => el.id);
+      await prisma.$executeRaw`
+        DELETE FROM exercise_logs
+        WHERE workout_log_id IN (
+          SELECT id FROM workout_logs
+          WHERE program_id = ANY(${existingProgramIds}::uuid[])
+        )
+      `;
 
-        if (exerciseLogIds.length > 0) {
-          // Delete SetLogs first
-          await prisma.setLog.deleteMany({
-            where: { exerciseLogId: { in: exerciseLogIds } },
-          });
-        }
-
-        // Delete ExerciseLogs
-        await prisma.exerciseLog.deleteMany({
-          where: { workoutLogId: { in: workoutLogIds } },
-        });
-      }
-
-      // Now delete WorkoutLogs
-      await prisma.workoutLog.deleteMany({
-        where: { programId: { in: existingProgramIds } },
-      });
+      await prisma.$executeRaw`
+        DELETE FROM workout_logs
+        WHERE program_id = ANY(${existingProgramIds}::uuid[])
+      `;
 
       // 3. Delete WorkoutPlans (Workouts and Exercises will cascade via onDelete)
       await prisma.workoutPlan.deleteMany({
