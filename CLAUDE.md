@@ -174,3 +174,10 @@ Personas provide real data; debug states override behavior:
 - Login as `taylor@test.baisics.app` + `?debug_state=missed_7_days` → test recovery flow
 - Login as `alex@test.baisics.app` + `?debug_state=first_workout` → test onboarding
 - Login as `derek@test.baisics.app` + `?debug_state=milestone_50` → test milestone celebration
+## UI Pattern: No Sidebars
+
+The app does not use sidebar navigation. Navigation patterns:
+- **Tabs**: Used within pages (e.g., /nutrition has Log | History | Recipes tabs)
+- **Header nav**: Top-level navigation, may need dropdowns for sections with multiple pages (future work)
+
+When adding new pages to an existing section, prefer adding tabs over introducing sidebars.
