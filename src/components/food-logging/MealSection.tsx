@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Coffee, Sun, Moon, Apple, Plus, X, Search, Loader2, Copy, Check } from 'lucide-react';
+import { Coffee, Sun, Moon, Apple, Plus, X, Search, Loader2, Copy, Check, BookOpen } from 'lucide-react';
+import { SaveMealAsRecipeModal } from './SaveMealAsRecipeModal';
 import { MealType as PrismaMealType } from '@prisma/client';
 import { FoodLogItem, type FoodLogItemData } from './FoodLogItem';
 import { FoodSearchAutocomplete } from '@/components/nutrition/FoodSearchAutocomplete';
@@ -95,6 +96,16 @@ export interface MealSectionProps {
   onCopyFromYesterday?: () => void;
   /** Callback to open copy meal modal for this specific meal type */
   onOpenCopyMealModal?: (mealType: PrismaMealType) => void;
+  /** Callback when meal is saved as recipe - receives the created recipe */
+  onSaveAsRecipe?: (recipe: {
+    id: string;
+    name: string;
+    emoji: string | null;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  }) => void;
 }
 
 function getMealIcon(meal: string) {
@@ -135,11 +146,13 @@ export function MealSection({
   selectedDate,
   onCopyFromYesterday,
   onOpenCopyMealModal,
+  onSaveAsRecipe,
 }: MealSectionProps) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [selectedFood, setSelectedFood] = useState<UnifiedFoodResult | null>(null);
   const [recipes, setRecipes] = useState<RecipeWithIngredients[]>([]);
   const [recipesLoading, setRecipesLoading] = useState(false);
+  const [showSaveRecipeModal, setShowSaveRecipeModal] = useState(false);
 
   // Copy from yesterday state
   const [yesterdayMeal, setYesterdayMeal] = useState<YesterdayMealResponse | null>(null);
@@ -329,6 +342,17 @@ export function MealSection({
               title={isViewingPastDate ? 'Cannot copy to past dates' : `Copy ${displayName.toLowerCase()} from...`}
             >
               <Copy className="w-4 h-4" />
+            </button>
+          )}
+          {/* Save as Recipe button - only show when items >= 2 */}
+          {items.length >= 2 && onSaveAsRecipe && (
+            <button
+              type="button"
+              onClick={() => setShowSaveRecipeModal(true)}
+              className="text-xs text-[#64748B] hover:text-[#0F172A] font-medium flex items-center gap-1"
+            >
+              <BookOpen className="w-3 h-3" />
+              Save as Recipe
             </button>
           )}
           <button
@@ -570,6 +594,18 @@ export function MealSection({
           )}
         </div>
       ) : null}
+
+      {/* Save as Recipe Modal */}
+      <SaveMealAsRecipeModal
+        isOpen={showSaveRecipeModal}
+        onClose={() => setShowSaveRecipeModal(false)}
+        items={items}
+        mealName={displayName}
+        onSave={(recipe) => {
+          onSaveAsRecipe?.(recipe);
+          setShowSaveRecipeModal(false);
+        }}
+      />
     </div>
   );
 }

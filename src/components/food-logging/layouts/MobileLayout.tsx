@@ -100,6 +100,17 @@ export interface MobileLayoutProps {
   /** Callback to open copy meal modal for a specific meal type */
   onOpenCopyMealModal?: (mealType: PrismaMealType) => void;
 
+  // Save meal as recipe
+  onSaveAsRecipe?: (recipe: {
+    id: string;
+    name: string;
+    emoji: string | null;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  }) => void;
+
   // Remaining / suggestion
   remainingCalories?: number;
   remainingProtein?: number;
@@ -109,6 +120,9 @@ export interface MobileLayoutProps {
   // Custom content slots
   customHeader?: ReactNode;
   customFooter?: ReactNode;
+
+  // Recipe sidebar refresh trigger
+  recipeSidebarRefreshTrigger?: number;
 }
 
 function RecipesPanel({
@@ -192,12 +206,14 @@ export function MobileLayout({
   selectedDate,
   onCopyFromYesterday,
   onOpenCopyMealModal,
+  onSaveAsRecipe,
   remainingCalories,
   remainingProtein,
   suggestion,
   onSuggestionClick,
   customHeader,
   customFooter,
+  recipeSidebarRefreshTrigger,
 }: MobileLayoutProps) {
   // Calculate remaining if not provided
   const calcRemainingCal = remainingCalories ?? (macroTargets.calories - macroTotals.calories);
@@ -295,6 +311,7 @@ export function MobileLayout({
             selectedDate={selectedDate}
             onCopyFromYesterday={onCopyFromYesterday}
             onOpenCopyMealModal={onOpenCopyMealModal}
+            onSaveAsRecipe={onSaveAsRecipe}
           />
         ))}
       </div>
@@ -371,6 +388,7 @@ export function MobileLayout({
                     }}
                     onCreateRecipe={onCreateRecipe}
                     maxItems={5}
+                    refreshTrigger={recipeSidebarRefreshTrigger}
                   />
                 )}
                 {/* Legacy Recipes Panel */}

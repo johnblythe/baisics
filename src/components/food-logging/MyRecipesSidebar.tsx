@@ -25,6 +25,8 @@ export interface MyRecipesSidebarProps {
   maxItems?: number;
   /** Optional callback to view all recipes */
   onViewAll?: () => void;
+  /** Trigger to refresh recipes (increment to refresh) */
+  refreshTrigger?: number;
 }
 
 export function MyRecipesSidebar({
@@ -32,6 +34,7 @@ export function MyRecipesSidebar({
   onCreateRecipe,
   maxItems = 5,
   onViewAll,
+  refreshTrigger = 0,
 }: MyRecipesSidebarProps) {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -58,7 +61,7 @@ export function MyRecipesSidebar({
 
   useEffect(() => {
     fetchRecipes();
-  }, [fetchRecipes]);
+  }, [fetchRecipes, refreshTrigger]);
 
   const handleRecipeClick = (recipe: Recipe) => {
     onRecipeAdd?.(recipe);

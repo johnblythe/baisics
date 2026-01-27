@@ -93,6 +93,17 @@ export interface DesktopLayoutProps {
   /** Callback to open copy meal modal for a specific meal type */
   onOpenCopyMealModal?: (mealType: PrismaMealType) => void;
 
+  // Save meal as recipe
+  onSaveAsRecipe?: (recipe: {
+    id: string;
+    name: string;
+    emoji: string | null;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  }) => void;
+
   // Suggestion
   suggestion?: string;
   suggestionDetail?: string;
@@ -102,6 +113,9 @@ export interface DesktopLayoutProps {
   customHeader?: ReactNode;
   leftSidebarExtra?: ReactNode;
   rightContentExtra?: ReactNode;
+
+  // Recipe sidebar refresh trigger
+  recipeSidebarRefreshTrigger?: number;
 }
 
 function RecipesPanel({
@@ -181,12 +195,14 @@ export function DesktopLayout({
   selectedDate,
   onCopyFromYesterday,
   onOpenCopyMealModal,
+  onSaveAsRecipe,
   suggestion,
   suggestionDetail,
   onSuggestionClick,
   customHeader,
   leftSidebarExtra,
   rightContentExtra,
+  recipeSidebarRefreshTrigger,
 }: DesktopLayoutProps) {
   const [weekExpanded, setWeekExpanded] = useState(defaultWeeklyExpanded);
 
@@ -279,6 +295,7 @@ export function DesktopLayout({
                   onRecipeAdd={onSidebarRecipeAdd}
                   onCreateRecipe={onCreateRecipe}
                   maxItems={5}
+                  refreshTrigger={recipeSidebarRefreshTrigger}
                 />
               )}
 
@@ -329,6 +346,7 @@ export function DesktopLayout({
                     selectedDate={selectedDate}
                     onCopyFromYesterday={onCopyFromYesterday}
                     onOpenCopyMealModal={onOpenCopyMealModal}
+                    onSaveAsRecipe={onSaveAsRecipe}
                   />
                 ))}
               </div>
