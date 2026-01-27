@@ -295,7 +295,7 @@ export function CopyMealModal({
                     </div>
                     <span className={`text-sm ${isTargetMeal ? 'text-[#FF6B6B]' : 'text-gray-500'}`}>
                       {meal.hasEntries
-                        ? `${meal.calories} cal · ${meal.protein}g protein`
+                        ? `${meal.entryCount} item${meal.entryCount !== 1 ? 's' : ''} · ${meal.calories} cal · ${meal.protein}g protein`
                         : 'No entries'
                       }
                     </span>
