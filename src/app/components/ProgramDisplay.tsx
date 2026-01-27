@@ -370,12 +370,13 @@ function PhaseCard({
 }
 
 export const ProgramDisplay = forwardRef<ProgramDisplayRef, ProgramDisplayProps>(({
-  program,
+  program: initialProgram,
   userEmail: initialUserEmail = null,
   onRequestUpsell,
   isUpsellOpen = false,
   onCloseUpsell,
 }, ref) => {
+  const [program, setProgram] = useState(initialProgram);
   const [activePlanIndex, setActivePlanIndex] = useState(0);
   const [userEmail, setUserEmail] = useState(initialUserEmail);
   const [user, setUser] = useState<User | null>(null);
@@ -392,9 +393,24 @@ export const ProgramDisplay = forwardRef<ProgramDisplayRef, ProgramDisplayProps>
   };
 
   const handleSwapComplete = (newExercise: { id: string; name: string }) => {
-    // For now, just close the modal - in a real implementation,
-    // this would update the program state with the new exercise
-    console.log('Swapped to:', newExercise);
+    if (!swapExercise) return;
+
+    // Update the program state with the new exercise name
+    setProgram(prev => ({
+      ...prev,
+      workoutPlans: prev.workoutPlans.map(plan => ({
+        ...plan,
+        workouts: plan.workouts?.map(workout => ({
+          ...workout,
+          exercises: workout.exercises?.map((ex: any) =>
+            ex.id === swapExercise.id || ex.name === swapExercise.name
+              ? { ...ex, name: newExercise.name, exerciseLibraryId: newExercise.id }
+              : ex
+          )
+        }))
+      }))
+    }));
+
     setSwapModalOpen(false);
     setSwapExercise(null);
   };
