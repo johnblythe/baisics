@@ -42,10 +42,11 @@ export async function POST(request: Request) {
     }
 
     // Parse dates
-    const source = new Date(sourceDate);
+    // Add time component to parse as local time (avoids UTC midnight → previous day in local)
+    const source = new Date(sourceDate + 'T00:00:00');
     source.setHours(0, 0, 0, 0);
 
-    const target = new Date(targetDate);
+    const target = new Date(targetDate + 'T00:00:00');
     target.setHours(0, 0, 0, 0);
 
     // Get all source entries for selected meals
@@ -57,11 +58,13 @@ export async function POST(request: Request) {
       },
     });
 
+    // Handle empty meals gracefully - return success with 0 items
     if (sourceEntries.length === 0) {
-      return NextResponse.json(
-        { error: 'No entries found for the source date and selected meals' },
-        { status: 404 }
-      );
+      return NextResponse.json({
+        copied: 0,
+        byMeal: {},
+        message: 'No entries found to copy',
+      });
     }
 
     // Create new entries for target date
@@ -86,13 +89,15 @@ export async function POST(request: Request) {
       })),
     });
 
-    // Calculate totals
-    const totalCalories = sourceEntries.reduce((sum, e) => sum + e.calories, 0);
+    // Calculate count per meal type
+    const byMeal: Record<string, number> = {};
+    for (const entry of sourceEntries) {
+      byMeal[entry.meal] = (byMeal[entry.meal] || 0) + 1;
+    }
 
     return NextResponse.json({
       copied: createdEntries.count,
-      meals: meals,
-      totalCalories,
+      byMeal,
       message: `Copied ${createdEntries.count} items from ${sourceDate}`,
     });
   } catch (error) {
