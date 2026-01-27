@@ -12,6 +12,7 @@ import { getMacros } from '@/utils/formatting';
 import { WorkoutPlan } from '@/types/program';
 import { MacroDisplay } from '@/components/MacroDisplay';
 import { ExerciseCard } from '@/components/exercise/ExerciseCard';
+import { ExerciseSwapModal } from '@/components/ExerciseSwapModal';
 
 interface ProgramDisplayProps {
   program: Program;
@@ -45,7 +46,7 @@ function getCategoryFromExercise(exercise: any): string {
 }
 
 // Workout Day Card Component
-function WorkoutDayCard({ workout, index, defaultOpen = false }: { workout: any; index: number; defaultOpen?: boolean }) {
+function WorkoutDayCard({ workout, index, defaultOpen = false, onSwapExercise }: { workout: any; index: number; defaultOpen?: boolean; onSwapExercise?: (exerciseId: string, exerciseName: string) => void }) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
@@ -146,6 +147,7 @@ function WorkoutDayCard({ workout, index, defaultOpen = false }: { workout: any;
                       notes: exercise.notes,
                       instructions: exercise.instructions,
                     }}
+                    onSwap={() => onSwapExercise?.(exercise.id || `exercise-${i}`, exercise.name)}
                   />
                 ))}
               </div>
@@ -192,7 +194,8 @@ function PhaseCard({
   isActive,
   onSelect,
   isLocked,
-  onRequestUpsell
+  onRequestUpsell,
+  onSwapExercise
 }: {
   plan: any;
   phaseNumber: number;
@@ -201,6 +204,7 @@ function PhaseCard({
   onSelect: () => void;
   isLocked: boolean;
   onRequestUpsell: () => void;
+  onSwapExercise?: (exerciseId: string, exerciseName: string) => void;
 }) {
   const [isExpanded, setIsExpanded] = useState(isActive);
   const totalExercises = plan.workouts?.reduce((sum: number, w: any) => sum + (w.exercises?.length || 0), 0) || 0;
@@ -343,6 +347,7 @@ function PhaseCard({
                         workout={workout}
                         index={i}
                         defaultOpen={i === 0}
+                        onSwapExercise={onSwapExercise}
                       />
                     ))}
                   </div>
@@ -376,6 +381,23 @@ export const ProgramDisplay = forwardRef<ProgramDisplayRef, ProgramDisplayProps>
   const [user, setUser] = useState<User | null>(null);
   const [isSticky, setIsSticky] = useState(false);
   const headerRef = useRef<HTMLDivElement>(null);
+
+  // Exercise swap modal state
+  const [swapModalOpen, setSwapModalOpen] = useState(false);
+  const [swapExercise, setSwapExercise] = useState<{ id: string; name: string } | null>(null);
+
+  const handleOpenSwapModal = (exerciseId: string, exerciseName: string) => {
+    setSwapExercise({ id: exerciseId, name: exerciseName });
+    setSwapModalOpen(true);
+  };
+
+  const handleSwapComplete = (newExercise: { id: string; name: string }) => {
+    // For now, just close the modal - in a real implementation,
+    // this would update the program state with the new exercise
+    console.log('Swapped to:', newExercise);
+    setSwapModalOpen(false);
+    setSwapExercise(null);
+  };
 
   useImperativeHandle(ref, () => ({
     generateWorkoutPDF: async (programId: string) => {
@@ -453,6 +475,12 @@ export const ProgramDisplay = forwardRef<ProgramDisplayRef, ProgramDisplayProps>
 
   return (
     <div className="space-y-6" style={{ fontFamily: "'Outfit', sans-serif" }}>
+      {/* Physician Disclaimer - Top of page */}
+      <DisclaimerBanner
+        variant="inline"
+        showAcknowledgeButton={false}
+      />
+
       {/* Program Header - Hero Style */}
       <div ref={headerRef} className="relative overflow-hidden rounded-2xl shadow-xl">
         {/* Gradient background */}
@@ -659,6 +687,7 @@ export const ProgramDisplay = forwardRef<ProgramDisplayRef, ProgramDisplayProps>
             onSelect={() => {}}
             isLocked={!isPhaseUnlocked(activePlanIndex)}
             onRequestUpsell={onRequestUpsell}
+            onSwapExercise={handleOpenSwapModal}
           />
         </motion.div>
       </AnimatePresence>
@@ -686,11 +715,19 @@ export const ProgramDisplay = forwardRef<ProgramDisplayRef, ProgramDisplayProps>
         </div>
       )}
 
-      {/* Disclaimer - moved to bottom, already collapsible */}
-      <DisclaimerBanner
-        variant="inline"
-        showAcknowledgeButton={false}
-      />
+      {/* Exercise Swap Modal */}
+      {swapExercise && (
+        <ExerciseSwapModal
+          isOpen={swapModalOpen}
+          onClose={() => {
+            setSwapModalOpen(false);
+            setSwapExercise(null);
+          }}
+          exerciseId={swapExercise.id}
+          exerciseName={swapExercise.name}
+          onSwap={handleSwapComplete}
+        />
+      )}
 
       {/* Upsell Modal */}
       <UpsellModal
