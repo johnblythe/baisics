@@ -216,6 +216,9 @@ export function FoodLogPage({
   // Nutrition targets modal state
   const [showTargetsModal, setShowTargetsModal] = useState(false);
 
+  // Recipe sidebar refresh trigger
+  const [recipeSidebarRefreshTrigger, setRecipeSidebarRefreshTrigger] = useState(0);
+
   // Fetch entries for selected date
   const fetchEntries = useCallback(async () => {
     setIsLoadingEntries(true);
@@ -678,6 +681,12 @@ export function FoodLogPage({
     await Promise.all([fetchEntries(), fetchSummary()]);
   }, [fetchEntries, fetchSummary]);
 
+  // Handle save meal as recipe - refresh sidebar
+  const handleSaveAsRecipe = useCallback(() => {
+    // Increment trigger to refresh MyRecipesSidebar
+    setRecipeSidebarRefreshTrigger((prev) => prev + 1);
+  }, []);
+
   // Handle copy from yesterday (for DateMenu) - opens copy day modal
   const handleDateMenuCopyFromYesterday = useCallback(() => {
     const yesterday = new Date(selectedDate);
@@ -980,6 +989,8 @@ export function FoodLogPage({
           onUSDAFoodAdd={handleUSDAFoodAdd}
           selectedDate={selectedDate}
           onCopyFromYesterday={handleCopyFromYesterday}
+          onSaveAsRecipe={handleSaveAsRecipe}
+          recipeSidebarRefreshTrigger={recipeSidebarRefreshTrigger}
           remainingCalories={remainingCalories}
           remainingProtein={remainingProtein}
           suggestion={suggestion}
@@ -1028,6 +1039,8 @@ export function FoodLogPage({
           onUSDAFoodAdd={handleUSDAFoodAdd}
           selectedDate={selectedDate}
           onCopyFromYesterday={handleCopyFromYesterday}
+          onSaveAsRecipe={handleSaveAsRecipe}
+          recipeSidebarRefreshTrigger={recipeSidebarRefreshTrigger}
           suggestion={suggestion}
           suggestionDetail={suggestion}
           rightContentExtra={errorBanner}

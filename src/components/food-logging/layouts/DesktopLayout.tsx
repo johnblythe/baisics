@@ -88,6 +88,17 @@ export interface DesktopLayoutProps {
   selectedDate?: Date;
   onCopyFromYesterday?: () => void;
 
+  // Save meal as recipe
+  onSaveAsRecipe?: (recipe: {
+    id: string;
+    name: string;
+    emoji: string | null;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  }) => void;
+
   // Suggestion
   suggestion?: string;
   suggestionDetail?: string;
@@ -97,6 +108,9 @@ export interface DesktopLayoutProps {
   customHeader?: ReactNode;
   leftSidebarExtra?: ReactNode;
   rightContentExtra?: ReactNode;
+
+  // Recipe sidebar refresh trigger
+  recipeSidebarRefreshTrigger?: number;
 }
 
 function RecipesPanel({
@@ -175,12 +189,14 @@ export function DesktopLayout({
   onUSDAFoodAdd,
   selectedDate,
   onCopyFromYesterday,
+  onSaveAsRecipe,
   suggestion,
   suggestionDetail,
   onSuggestionClick,
   customHeader,
   leftSidebarExtra,
   rightContentExtra,
+  recipeSidebarRefreshTrigger,
 }: DesktopLayoutProps) {
   const [weekExpanded, setWeekExpanded] = useState(defaultWeeklyExpanded);
 
@@ -273,6 +289,7 @@ export function DesktopLayout({
                   onRecipeAdd={onSidebarRecipeAdd}
                   onCreateRecipe={onCreateRecipe}
                   maxItems={5}
+                  refreshTrigger={recipeSidebarRefreshTrigger}
                 />
               )}
 
@@ -322,6 +339,7 @@ export function DesktopLayout({
                     onCreateRecipe={onCreateRecipe}
                     selectedDate={selectedDate}
                     onCopyFromYesterday={onCopyFromYesterday}
+                    onSaveAsRecipe={onSaveAsRecipe}
                   />
                 ))}
               </div>
