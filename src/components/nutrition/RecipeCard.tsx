@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useId } from 'react';
+import React, { useState, useCallback, useId, useRef, useEffect } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -18,7 +18,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { ChevronDown, ChevronUp, Plus, Trash2, Loader2, GripVertical, X, Check } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus, Trash2, Loader2, GripVertical, X, Check, Coffee, Sun, Moon, Apple } from 'lucide-react';
 
 // Type for recipe ingredient in edit mode
 interface EditableIngredient {
@@ -57,9 +57,12 @@ export interface RecipeCardProps {
       fat: number;
     }[];
   };
+  /** Callback when recipe data is updated (edit/save) */
   onUpdate?: () => void;
+  /** Callback when recipe is deleted */
   onDelete?: () => void;
-  onLog?: (recipeId: string, mealType: string) => void;
+  /** Selected date for logging (defaults to today) */
+  selectedDate?: Date;
 }
 
 // Common emoji options for quick selection
@@ -202,11 +205,24 @@ function SortableIngredient({ ingredient, onUpdate, onRemove, canRemove }: Sorta
   );
 }
 
-export function RecipeCard({ recipe, onUpdate, onDelete, onLog }: RecipeCardProps) {
+// Meal type options for the dropdown
+const MEAL_OPTIONS = [
+  { value: 'BREAKFAST', label: 'Breakfast', icon: Coffee },
+  { value: 'LUNCH', label: 'Lunch', icon: Sun },
+  { value: 'DINNER', label: 'Dinner', icon: Moon },
+  { value: 'SNACK', label: 'Snack', icon: Apple },
+] as const;
+
+export function RecipeCard({ recipe, onUpdate, onDelete, selectedDate }: RecipeCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Log It dropdown state
+  const [showMealSelector, setShowMealSelector] = useState(false);
+  const [isLogging, setIsLogging] = useState(false);
+  const mealSelectorRef = useRef<HTMLDivElement>(null);
 
   // Edit mode state
   const [editName, setEditName] = useState(recipe.name);
@@ -216,6 +232,19 @@ export function RecipeCard({ recipe, onUpdate, onDelete, onLog }: RecipeCardProp
 
   // Unique ID prefix for dnd-kit
   const idPrefix = useId();
+
+  // Close meal selector when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (mealSelectorRef.current && !mealSelectorRef.current.contains(event.target as Node)) {
+        setShowMealSelector(false);
+      }
+    }
+    if (showMealSelector) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showMealSelector]);
 
   // dnd-kit sensors
   const sensors = useSensors(
@@ -368,11 +397,39 @@ export function RecipeCard({ recipe, onUpdate, onDelete, onLog }: RecipeCardProp
     }
   }, []);
 
-  // Log recipe handler
-  const handleLogRecipe = useCallback(() => {
-    // TODO: US-006 - Open meal selector dropdown and log recipe
-    onLog?.(recipe.id, 'breakfast'); // placeholder
-  }, [recipe.id, onLog]);
+  // Log recipe handler - logs to selected meal
+  const handleLogRecipe = useCallback(async (mealType: string) => {
+    setIsLogging(true);
+    setError(null);
+    setShowMealSelector(false);
+
+    try {
+      // Use selectedDate or default to today
+      const logDate = selectedDate || new Date();
+      const dateStr = logDate.toISOString().split('T')[0];
+
+      const response = await fetch(`/api/recipes/${recipe.id}/log`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          meal: mealType,
+          date: dateStr,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to log recipe');
+      }
+
+      // Trigger update to refresh usageCount
+      onUpdate?.();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to log recipe');
+    } finally {
+      setIsLogging(false);
+    }
+  }, [recipe.id, selectedDate, onUpdate]);
 
   // Calculate edit mode totals
   const editTotals = isEditing ? calculateTotals(editIngredients) : null;
@@ -546,6 +603,13 @@ export function RecipeCard({ recipe, onUpdate, onDelete, onLog }: RecipeCardProp
           ) : (
             /* View mode - read-only ingredients */
             <>
+              {/* Error message (for logging errors) */}
+              {error && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-600 mb-4">
+                  {error}
+                </div>
+              )}
+
               {recipe.ingredients && recipe.ingredients.length > 0 && (
                 <div>
                   <div className="text-xs font-medium text-[#94A3B8] uppercase tracking-wider mb-2">
@@ -574,15 +638,49 @@ export function RecipeCard({ recipe, onUpdate, onDelete, onLog }: RecipeCardProp
 
               {/* Action buttons */}
               <div className="flex gap-2 pt-2">
-                <button
-                  className="flex-1 px-3 py-2 bg-[#FF6B6B] text-white text-sm font-medium rounded-lg hover:bg-[#EF5350] transition-colors"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleLogRecipe();
-                  }}
-                >
-                  Log It
-                </button>
+                {/* Log It button with meal selector dropdown */}
+                <div className="relative flex-1" ref={mealSelectorRef}>
+                  <button
+                    className="w-full px-3 py-2 bg-[#FF6B6B] text-white text-sm font-medium rounded-lg hover:bg-[#EF5350] transition-colors flex items-center justify-center gap-1 disabled:opacity-50"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowMealSelector(!showMealSelector);
+                    }}
+                    disabled={isLogging}
+                  >
+                    {isLogging ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <>
+                        Log It
+                        <ChevronDown className="w-3 h-3" />
+                      </>
+                    )}
+                  </button>
+
+                  {/* Meal selector dropdown */}
+                  {showMealSelector && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl border border-[#E2E8F0] shadow-lg z-30 overflow-hidden">
+                      {MEAL_OPTIONS.map((option) => {
+                        const Icon = option.icon;
+                        return (
+                          <button
+                            key={option.value}
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleLogRecipe(option.value);
+                            }}
+                            className="w-full px-3 py-2.5 flex items-center gap-2 text-sm text-[#0F172A] hover:bg-[#F8FAFC] transition-colors text-left"
+                          >
+                            <Icon className="w-4 h-4 text-[#64748B]" />
+                            {option.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
                 <button
                   className="px-3 py-2 border border-[#E2E8F0] text-[#64748B] text-sm font-medium rounded-lg hover:bg-[#F8FAFC] transition-colors"
                   onClick={(e) => {
