@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, Loader2, Calendar, Coffee, Sun, Moon, Cookie } from 'lucide-react';
+import { X, Loader2, Calendar, Coffee, Sun, Moon, Cookie, ChevronLeft } from 'lucide-react';
 import { MealType } from '@prisma/client';
 
 // Meal icon mapping
@@ -67,6 +67,23 @@ interface DaySummary {
   entryCount: number;
 }
 
+interface MealDetail {
+  meal: MealType;
+  calories: number;
+  protein: number;
+  entryCount: number;
+  hasEntries: boolean;
+}
+
+interface DayMealsResponse {
+  date: string;
+  meals: MealDetail[];
+  totalCalories: number;
+  totalProtein: number;
+  totalEntries: number;
+  hasAnyEntries: boolean;
+}
+
 export function CopyMealModal({
   isOpen,
   onClose,
@@ -77,6 +94,9 @@ export function CopyMealModal({
   const [days, setDays] = useState<DaySummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  const [mealDetails, setMealDetails] = useState<DayMealsResponse | null>(null);
+  const [isLoadingDetails, setIsLoadingDetails] = useState(false);
 
   const Icon = MEAL_ICONS[mealType];
   const mealName = MEAL_NAMES[mealType];
@@ -143,8 +163,42 @@ export function CopyMealModal({
     if (!isOpen) {
       setDays([]);
       setError(null);
+      setSelectedDay(null);
+      setMealDetails(null);
     }
   }, [isOpen]);
+
+  // Handle day selection - fetch full meal details
+  const handleSelectDay = async (dayDate: string) => {
+    if (selectedDay === dayDate) {
+      // Already selected, do nothing
+      return;
+    }
+
+    setSelectedDay(dayDate);
+    setIsLoadingDetails(true);
+    setMealDetails(null);
+
+    try {
+      const response = await fetch(`/api/food-log/day-meals?date=${dayDate}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch meal details');
+      }
+      const data: DayMealsResponse = await response.json();
+      setMealDetails(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load meal details');
+      setSelectedDay(null);
+    } finally {
+      setIsLoadingDetails(false);
+    }
+  };
+
+  // Go back to day selection
+  const handleBackToDays = () => {
+    setSelectedDay(null);
+    setMealDetails(null);
+  };
 
   if (!isOpen) return null;
 
@@ -161,6 +215,15 @@ export function CopyMealModal({
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <div className="flex items-center gap-3">
+            {selectedDay && (
+              <button
+                type="button"
+                onClick={handleBackToDays}
+                className="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 -ml-1 mr-1"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+            )}
             <div className="p-2 bg-[#F1F5F9] rounded-lg">
               <Icon className="w-5 h-5 text-[#64748B]" />
             </div>
@@ -168,7 +231,12 @@ export function CopyMealModal({
               <h3 className="font-semibold text-gray-900">
                 Copy {mealName}
               </h3>
-              <p className="text-sm text-gray-500">Select a day to copy from</p>
+              <p className="text-sm text-gray-500">
+                {selectedDay
+                  ? `From ${formatDateForDisplay(new Date(selectedDay + 'T00:00:00'))}`
+                  : 'Select a day to copy from'
+                }
+              </p>
             </div>
           </div>
           <button
@@ -182,7 +250,7 @@ export function CopyMealModal({
 
         {/* Content */}
         <div className="p-4 max-h-[60vh] overflow-y-auto">
-          {isLoading ? (
+          {isLoading || isLoadingDetails ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="w-6 h-6 text-[#FF6B6B] animate-spin" />
             </div>
@@ -197,7 +265,46 @@ export function CopyMealModal({
                 Close
               </button>
             </div>
+          ) : selectedDay && mealDetails ? (
+            // Meal details view - shows all meals for the selected day
+            <div className="space-y-3">
+              <p className="text-sm text-gray-500 mb-4">
+                {mealDetails.totalCalories} cal · {mealDetails.totalProtein}g protein total
+              </p>
+              {mealDetails.meals.map((meal) => {
+                const MealIcon = MEAL_ICONS[meal.meal];
+                const mealDisplayName = MEAL_NAMES[meal.meal];
+                const isTargetMeal = meal.meal === mealType;
+
+                return (
+                  <div
+                    key={meal.meal}
+                    className={`flex items-center justify-between p-3 rounded-lg ${
+                      !meal.hasEntries
+                        ? 'bg-gray-50 opacity-50'
+                        : isTargetMeal
+                          ? 'bg-[#FF6B6B]/5 border-2 border-[#FF6B6B]/30'
+                          : 'bg-gray-50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <MealIcon className={`w-4 h-4 ${isTargetMeal ? 'text-[#FF6B6B]' : 'text-gray-400'}`} />
+                      <span className={`font-medium ${isTargetMeal ? 'text-[#FF6B6B]' : 'text-gray-900'}`}>
+                        {mealDisplayName}
+                      </span>
+                    </div>
+                    <span className={`text-sm ${isTargetMeal ? 'text-[#FF6B6B]' : 'text-gray-500'}`}>
+                      {meal.hasEntries
+                        ? `${meal.calories} cal · ${meal.protein}g protein`
+                        : 'No entries'
+                      }
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
           ) : (
+            // Day selection view - shows last 7 days
             <div className="space-y-2">
               {days.map((day) => {
                 const dayDate = new Date(day.date + 'T00:00:00');
@@ -212,11 +319,7 @@ export function CopyMealModal({
                         ? 'bg-gray-50 opacity-50 cursor-not-allowed'
                         : 'bg-gray-50 hover:bg-[#FF6B6B]/5 hover:border-[#FF6B6B]/20 border-2 border-transparent cursor-pointer'
                     }`}
-                    onClick={() => {
-                      // This will be wired in US-003/US-004 to select the day
-                      // For now, just log that a day was clicked
-                      console.log('Selected day:', day.date);
-                    }}
+                    onClick={() => handleSelectDay(day.date)}
                   >
                     <div className="flex items-center gap-3">
                       <Calendar className={`w-4 h-4 ${!day.hasEntries ? 'text-gray-300' : 'text-gray-400'}`} />
