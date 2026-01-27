@@ -4,13 +4,16 @@ import { auth } from '@/auth';
 
 export async function POST(request: Request) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const body = await request.json();
-    const { exerciseId, newExerciseLibraryId } = body;
+    const { exerciseId, newExerciseLibraryId, userId: bodyUserId } = body;
+
+    // Get userId from session or request body (for anonymous users)
+    const session = await auth();
+    const userId = session?.user?.id || bodyUserId;
+
+    if (!userId) {
+      return NextResponse.json({ error: 'userId required' }, { status: 400 });
+    }
 
     if (!exerciseId || !newExerciseLibraryId) {
       return NextResponse.json(
@@ -26,7 +29,7 @@ export async function POST(request: Request) {
         workout: {
           workoutPlan: {
             program: {
-              createdBy: session.user.id,
+              createdBy: userId,
             },
           },
         },

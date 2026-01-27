@@ -726,6 +726,7 @@ export const ProgramDisplay = forwardRef<ProgramDisplayRef, ProgramDisplayProps>
           exerciseId={swapExercise.id}
           exerciseName={swapExercise.name}
           onSwap={handleSwapComplete}
+          userId={program.createdByUser?.id}
         />
       )}
 

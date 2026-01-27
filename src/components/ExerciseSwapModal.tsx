@@ -22,6 +22,8 @@ interface ExerciseSwapModalProps {
   exerciseId: string;
   exerciseName: string;
   onSwap: (newExercise: { id: string; name: string }) => void;
+  /** userId for anonymous users who don't have a session */
+  userId?: string;
 }
 
 const DIFFICULTY_COLORS: Record<string, string> = {
@@ -36,6 +38,7 @@ export function ExerciseSwapModal({
   exerciseId,
   exerciseName,
   onSwap,
+  userId,
 }: ExerciseSwapModalProps) {
   const [loading, setLoading] = useState(true);
   const [swapping, setSwapping] = useState<string | null>(null);
@@ -80,6 +83,7 @@ export function ExerciseSwapModal({
         body: JSON.stringify({
           exerciseId,
           newExerciseLibraryId: newExercise.id,
+          userId,
         }),
       });
 
