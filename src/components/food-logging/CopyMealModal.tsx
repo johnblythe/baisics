@@ -97,6 +97,8 @@ export function CopyMealModal({
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [mealDetails, setMealDetails] = useState<DayMealsResponse | null>(null);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
+  const [selectedMeal, setSelectedMeal] = useState<MealType | null>(null);
+  const [isCopying, setIsCopying] = useState(false);
 
   const Icon = MEAL_ICONS[mealType];
   const mealName = MEAL_NAMES[mealType];
@@ -165,6 +167,7 @@ export function CopyMealModal({
       setError(null);
       setSelectedDay(null);
       setMealDetails(null);
+      setSelectedMeal(null);
     }
   }, [isOpen]);
 
@@ -198,6 +201,48 @@ export function CopyMealModal({
   const handleBackToDays = () => {
     setSelectedDay(null);
     setMealDetails(null);
+    setSelectedMeal(null);
+  };
+
+  // Handle meal selection for copying
+  const handleSelectMeal = (meal: MealType, hasEntries: boolean) => {
+    if (!hasEntries) return;
+    setSelectedMeal(meal === selectedMeal ? null : meal);
+  };
+
+  // Handle copy meal
+  const handleCopyMeal = async () => {
+    if (!selectedDay || !selectedMeal) return;
+
+    setIsCopying(true);
+    try {
+      const response = await fetch('/api/food-log/copy-meal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sourceDate: selectedDay,
+          targetDate: formatDateForAPI(targetDate),
+          meal: selectedMeal,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to copy meal');
+      }
+
+      const data = await response.json();
+
+      // Show success message (using alert for now, could be toast)
+      alert(`Copied ${data.copied} item${data.copied !== 1 ? 's' : ''} to ${MEAL_NAMES[selectedMeal]}`);
+
+      onCopySuccess();
+      onClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to copy meal');
+    } finally {
+      setIsCopying(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -269,37 +314,40 @@ export function CopyMealModal({
             // Meal details view - shows all meals for the selected day
             <div className="space-y-3">
               <p className="text-sm text-gray-500 mb-4">
-                {mealDetails.totalCalories} cal · {mealDetails.totalProtein}g protein total
+                Select a meal to copy · {mealDetails.totalCalories} cal total
               </p>
               {mealDetails.meals.map((meal) => {
                 const MealIcon = MEAL_ICONS[meal.meal];
                 const mealDisplayName = MEAL_NAMES[meal.meal];
-                const isTargetMeal = meal.meal === mealType;
+                const isSelected = meal.meal === selectedMeal;
 
                 return (
-                  <div
+                  <button
                     key={meal.meal}
-                    className={`flex items-center justify-between p-3 rounded-lg ${
+                    type="button"
+                    disabled={!meal.hasEntries}
+                    onClick={() => handleSelectMeal(meal.meal, meal.hasEntries)}
+                    className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors ${
                       !meal.hasEntries
-                        ? 'bg-gray-50 opacity-50'
-                        : isTargetMeal
-                          ? 'bg-[#FF6B6B]/5 border-2 border-[#FF6B6B]/30'
-                          : 'bg-gray-50'
+                        ? 'bg-gray-50 opacity-50 cursor-not-allowed'
+                        : isSelected
+                          ? 'bg-[#FF6B6B]/10 border-2 border-[#FF6B6B] cursor-pointer'
+                          : 'bg-gray-50 hover:bg-gray-100 border-2 border-transparent cursor-pointer'
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <MealIcon className={`w-4 h-4 ${isTargetMeal ? 'text-[#FF6B6B]' : 'text-gray-400'}`} />
-                      <span className={`font-medium ${isTargetMeal ? 'text-[#FF6B6B]' : 'text-gray-900'}`}>
+                      <MealIcon className={`w-4 h-4 ${isSelected ? 'text-[#FF6B6B]' : 'text-gray-400'}`} />
+                      <span className={`font-medium ${isSelected ? 'text-[#FF6B6B]' : 'text-gray-900'}`}>
                         {mealDisplayName}
                       </span>
                     </div>
-                    <span className={`text-sm ${isTargetMeal ? 'text-[#FF6B6B]' : 'text-gray-500'}`}>
+                    <span className={`text-sm ${isSelected ? 'text-[#FF6B6B]' : 'text-gray-500'}`}>
                       {meal.hasEntries
                         ? `${meal.entryCount} item${meal.entryCount !== 1 ? 's' : ''} · ${meal.calories} cal · ${meal.protein}g protein`
                         : 'No entries'
                       }
                     </span>
-                  </div>
+                  </button>
                 );
               })}
             </div>
@@ -349,6 +397,23 @@ export function CopyMealModal({
           >
             Cancel
           </button>
+          {selectedDay && selectedMeal && (
+            <button
+              type="button"
+              onClick={handleCopyMeal}
+              disabled={isCopying}
+              className="flex-1 px-4 py-2 bg-[#FF6B6B] text-white rounded-lg hover:bg-[#EF5350] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {isCopying ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Copying...
+                </>
+              ) : (
+                `Copy ${MEAL_NAMES[selectedMeal]}`
+              )}
+            </button>
+          )}
         </div>
       </div>
     </div>
