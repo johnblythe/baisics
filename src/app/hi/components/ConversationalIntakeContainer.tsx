@@ -20,7 +20,7 @@ import { User } from "@prisma/client";
 import { ConversationalInterface } from "./ConversationalInterface";
 import Link from "next/link";
 import { Program, IntakeFormData } from "@/types";
-import { trackEventClient } from "@/lib/analytics";
+import { trackEventClient } from "@/lib/analytics-client";
 
 // Define the ref type
 export interface ConversationalIntakeRef {

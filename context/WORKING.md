@@ -1,79 +1,62 @@
-# Session Context - 2026-01-24T22:30:00Z
+# Session Context - 2026-01-26T19:45:00Z
 
 ## Current Session Overview
-- **Main Task/Feature**: Food logging feature - multi-layer search, AI estimation, UX improvements
-- **Session Duration**: ~4 hours
-- **Current Status**: Ralph completed 15 stories for multi-layer search. Now reviewing UX demo page for feedback before creating PRD for fixes + recipes + copy features.
+- **Main Task/Feature**: Branch cleanup and food logging merge to main
+- **Session Duration**: ~2 hours
+- **Current Status**: Cleanup complete, food logging merged, UX issues logged
 
 ## Recent Activity (Last 30-60 minutes)
-- **What We Just Did**: Created real component mockups at `/nutrition/ux-demo` for user review
-- **Active Problems**: User reviewing 3 sections (A: fix broken stuff, B: recipes, C: copy previous day)
-- **Current Files**: `src/app/nutrition/ux-demo/page.tsx`
-- **Test Status**: Demo page compiles and renders, awaiting user feedback
+- **What We Just Did**: Merged PR #328 (Food Logging UX), created issue #330 for UX bugs found during testing
+- **Active Problems**: Food search relevance issues (brand pollution), results disappearing while scrolling, "no foods found" showing during active search
+- **Current Files**: None actively modified - just merged to main
+- **Test Status**: Build passes, E2E tests have pre-existing seed FK issue (#329)
 
 ## Key Technical Decisions Made
-- **Architecture Choices**: Multi-layer food search (QuickFoods → USDA → Open Food Facts), unified search service
-- **Implementation Approaches**: Relevance scoring for search results, filter bad OFF data, round macros to whole numbers
-- **Technology Selections**: Open Food Facts API (not local DB yet), Claude for AI estimation
-- **Performance/Security Considerations**: Search analytics logging (FoodSearchLog) for future improvements
+- **Architecture Choices**: Food logging rebased onto main (which includes Nutrition Architecture #322)
+- **Implementation Approaches**: Squash merge for cleaner history
+- **Technology Selections**: USDA + Open Food Facts for food search, AI estimation fallback
+- **Performance/Security Considerations**: None this session
 
 ## Code Context
-- **Modified Files**:
-  - `src/lib/food-search/unified-search.ts` - relevance scoring, bad data filtering, rounding
-  - `src/components/nutrition/FoodSearchAutocomplete.tsx` - source badges (OFF→Community)
-  - `src/app/nutrition/ux-demo/page.tsx` - interactive UX mockups
-  - Schema: FoodSearchLog, isApproximate flag, OPEN_FOOD_FACTS + AI_ESTIMATED enums
-- **New Patterns**: FoodSearchSource enum, unified search with deduplication
-- **Dependencies**: Open Food Facts API client added
-- **Configuration Changes**: USDA_API_KEY added to .env.local
+- **Modified Files**: Fixed duplicate exports in `src/components/food-logging/index.ts`, layout files, `FoodSearchAutocomplete.tsx`
+- **New Patterns**: None
+- **Dependencies**: None added
+- **Configuration Changes**: None
 
 ## Current Implementation State
 - **Completed**:
-  - Multi-layer search (15 Ralph stories)
-  - Relevance scoring (brand matches boosted)
-  - AI estimation endpoint
-  - Search analytics logging
-  - Source badges in UI
-  - isApproximate flag for estimated entries
-- **In Progress**:
-  - UX demo review at `/nutrition/ux-demo`
-  - User reviewing mockups for A/B/C before PRD creation
-- **Blocked**: Nothing
+  - Branch cleanup (27 branches deleted)
+  - Issues created for deferred work (#323 error handling, #324 doing-batch features)
+  - Food logging merged to main (PR #328)
+  - UX issues logged (#330)
+- **In Progress**: None
+- **Blocked**: E2E tests blocked by seed FK issue (#329)
 - **Next Steps**:
-  1. Get user feedback on UX demo mockups
-  2. Create PRD for: fix broken stuff (+ Add buttons, weekly %, remaining UI), recipes feature, copy previous day
-  3. Run Ralph on new PRD
+  1. Fix food search relevance (brand pollution) - highest impact
+  2. Fix "no foods found" showing during active search
+  3. Fix recipe sidebar not updating after create
+  4. Fix Create Recipe modal scroll/height
 
 ## Important Context for Handoff
-- **Environment Setup**: Dev server on port 3001
-- **Running/Testing**: `npm run dev`, visit `http://localhost:3001/nutrition/ux-demo`
-- **Known Issues**:
-  - `+ Add` buttons on meal sections don't work
-  - Weekly strip shows 0% despite logged food
-  - "Remaining" at bottom of progress card is confusing
-  - Search results still have data quality issues from APIs
-- **External Dependencies**: USDA API (key in env), Open Food Facts API (no key needed)
+- **Environment Setup**: Standard - `npm run dev` on port 3001
+- **Running/Testing**: E2E tests fail due to seed script FK constraint (#329)
+- **Known Issues**: See #330 for full list of food logging UX bugs
+- **External Dependencies**: USDA FoodData Central API, Open Food Facts API
 
 ## Conversation Thread
-- **Original Goal**: Make food logging functional (from prototype to real feature)
-- **Evolution**:
-  1. Started with fixing Ralph's "UI only" work (nothing actually worked)
-  2. Added USDA API key, fixed flows
-  3. User complained about search quality → added Open Food Facts, relevance scoring
-  4. User found more UX issues → created demo page for review
-- **Lessons Learned**:
-  - Ralph "tests" by reading code, not actually running app (misses runtime issues)
-  - API data quality is poor, need relevance scoring + filtering
-  - "Faster > better" for food logging - reduce friction, not perfect accuracy
-- **Alternatives Considered**:
-  - Local OFF database (deferred - API first)
-  - FatSecret API (user said results are shit too)
-  - Manual entry as fallback (user rejected - users don't know macros)
+- **Original Goal**: Clean up local branches, assess what's merged vs needs work
+- **Evolution**: Cleanup → Rebase food-logging-fixes → Merge to main → Testing found UX issues
+- **Lessons Learned**: Most ralph branches had work already merged via squash PRs; rebase with `-X ours` helps when branch is far behind
+- **Alternatives Considered**: Cherry-picking individual commits (too many conflicts due to 84 commits behind)
 
-## User Feedback Pending
-User is reviewing `/nutrition/ux-demo` with 3 sections:
-- **A) Fix Broken Stuff**: +Add buttons, weekly % bug, "Remaining" confusion
-- **B) Recipes/Meals**: Create combos (e.g., "Morning Protein Shake"), one-click add
-- **C) Copy Previous Day**: Copy single meal, copy entire day with meal selection
+## Open Issues Created This Session
+- #323 - Error handling & SEO improvements (from ralph/error-handling-seo-batch)
+- #324 - Features from ralph/doing-batch-jan10 (date picker, share cards, photo comparison, ingredient swap)
+- #329 - Seed script FK constraint errors
+- #330 - Food Logging UX Issues & Bugs (active testing tracker)
 
-Waiting for corrections/approval before creating implementation PRD.
+## Remaining Branches
+```
+agent/20251230-095811-session-57460cfd  ← tied to worktree
+main ← current, up to date
+```

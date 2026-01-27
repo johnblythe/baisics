@@ -1,6 +1,6 @@
 /**
- * Client-safe analytics utilities
- * Use this file for client components - it doesn't import Prisma
+ * Client-safe analytics tracking
+ * Use this in 'use client' components
  */
 
 export type AnalyticsCategory =
@@ -36,7 +36,7 @@ export type AnalyticsEvent =
   | "screen_shown"
   | "option_selected";
 
-export interface TrackEventParams {
+interface TrackEventParams {
   category: AnalyticsCategory;
   event: AnalyticsEvent;
   userId?: string;
@@ -45,6 +45,7 @@ export interface TrackEventParams {
 
 /**
  * Track event from client-side via API
+ * Fire-and-forget - won't throw on failure
  */
 export async function trackEventClient(params: TrackEventParams): Promise<void> {
   try {
@@ -54,6 +55,6 @@ export async function trackEventClient(params: TrackEventParams): Promise<void> 
       body: JSON.stringify(params),
     });
   } catch {
-    // Silent fail
+    // Silent fail - analytics shouldn't break the app
   }
 }
