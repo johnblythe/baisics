@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, Loader2, Calendar, Coffee, Sun, Moon, Cookie, ChevronLeft } from 'lucide-react';
+import { X, Loader2, Calendar, Coffee, Sun, Moon, Cookie, ChevronLeft, Square, CheckSquare } from 'lucide-react';
 import { MealType } from '@prisma/client';
 
 // Meal icon mapping
@@ -99,6 +99,9 @@ export function CopyMealModal({
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
   const [selectedMeal, setSelectedMeal] = useState<MealType | null>(null);
   const [isCopying, setIsCopying] = useState(false);
+  // For "Copy Entire Day" mode - track which meals are checked
+  const [selectedMeals, setSelectedMeals] = useState<Set<MealType>>(new Set());
+  const [isCopyEntireDayMode, setIsCopyEntireDayMode] = useState(false);
 
   const Icon = MEAL_ICONS[mealType];
   const mealName = MEAL_NAMES[mealType];
@@ -168,6 +171,8 @@ export function CopyMealModal({
       setSelectedDay(null);
       setMealDetails(null);
       setSelectedMeal(null);
+      setSelectedMeals(new Set());
+      setIsCopyEntireDayMode(false);
     }
   }, [isOpen]);
 
@@ -181,6 +186,8 @@ export function CopyMealModal({
     setSelectedDay(dayDate);
     setIsLoadingDetails(true);
     setMealDetails(null);
+    setSelectedMeal(null);
+    setIsCopyEntireDayMode(false);
 
     try {
       const response = await fetch(`/api/food-log/day-meals?date=${dayDate}`);
@@ -189,6 +196,11 @@ export function CopyMealModal({
       }
       const data: DayMealsResponse = await response.json();
       setMealDetails(data);
+      // Initialize selectedMeals with all meals that have entries (for Copy Entire Day)
+      const mealsWithEntries = new Set<MealType>(
+        data.meals.filter((m) => m.hasEntries).map((m) => m.meal)
+      );
+      setSelectedMeals(mealsWithEntries);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load meal details');
       setSelectedDay(null);
@@ -202,12 +214,51 @@ export function CopyMealModal({
     setSelectedDay(null);
     setMealDetails(null);
     setSelectedMeal(null);
+    setSelectedMeals(new Set());
+    setIsCopyEntireDayMode(false);
   };
 
-  // Handle meal selection for copying
+  // Handle meal selection for copying (single meal mode)
   const handleSelectMeal = (meal: MealType, hasEntries: boolean) => {
     if (!hasEntries) return;
+    // Exit "Copy Entire Day" mode when selecting a single meal
+    setIsCopyEntireDayMode(false);
     setSelectedMeal(meal === selectedMeal ? null : meal);
+  };
+
+  // Toggle meal checkbox for "Copy Entire Day" mode
+  const handleToggleMealCheckbox = (meal: MealType, e: React.MouseEvent) => {
+    e.stopPropagation(); // Don't trigger meal selection
+    setSelectedMeals((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(meal)) {
+        newSet.delete(meal);
+      } else {
+        newSet.add(meal);
+      }
+      return newSet;
+    });
+  };
+
+  // Enter "Copy Entire Day" mode
+  const handleEnterCopyEntireDayMode = () => {
+    setSelectedMeal(null);
+    setIsCopyEntireDayMode(true);
+  };
+
+  // Calculate totals for selected meals in Copy Entire Day mode
+  const getSelectedMealsTotals = () => {
+    if (!mealDetails) return { calories: 0, protein: 0, entries: 0 };
+    return mealDetails.meals
+      .filter((m) => selectedMeals.has(m.meal))
+      .reduce(
+        (acc, m) => ({
+          calories: acc.calories + m.calories,
+          protein: acc.protein + m.protein,
+          entries: acc.entries + m.entryCount,
+        }),
+        { calories: 0, protein: 0, entries: 0 }
+      );
   };
 
   // Handle copy meal
@@ -314,34 +365,54 @@ export function CopyMealModal({
             // Meal details view - shows all meals for the selected day
             <div className="space-y-3">
               <p className="text-sm text-gray-500 mb-4">
-                Select a meal to copy · {mealDetails.totalCalories} cal total
+                {isCopyEntireDayMode
+                  ? 'Check the meals you want to copy'
+                  : 'Select a meal to copy · ' + mealDetails.totalCalories + ' cal total'
+                }
               </p>
               {mealDetails.meals.map((meal) => {
                 const MealIcon = MEAL_ICONS[meal.meal];
                 const mealDisplayName = MEAL_NAMES[meal.meal];
                 const isSelected = meal.meal === selectedMeal;
+                const isChecked = selectedMeals.has(meal.meal);
 
                 return (
                   <button
                     key={meal.meal}
                     type="button"
                     disabled={!meal.hasEntries}
-                    onClick={() => handleSelectMeal(meal.meal, meal.hasEntries)}
+                    onClick={() => isCopyEntireDayMode
+                      ? handleToggleMealCheckbox(meal.meal, { stopPropagation: () => {} } as React.MouseEvent)
+                      : handleSelectMeal(meal.meal, meal.hasEntries)
+                    }
                     className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors ${
                       !meal.hasEntries
                         ? 'bg-gray-50 opacity-50 cursor-not-allowed'
-                        : isSelected
+                        : isCopyEntireDayMode && isChecked
                           ? 'bg-[#FF6B6B]/10 border-2 border-[#FF6B6B] cursor-pointer'
-                          : 'bg-gray-50 hover:bg-gray-100 border-2 border-transparent cursor-pointer'
+                          : isSelected
+                            ? 'bg-[#FF6B6B]/10 border-2 border-[#FF6B6B] cursor-pointer'
+                            : 'bg-gray-50 hover:bg-gray-100 border-2 border-transparent cursor-pointer'
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <MealIcon className={`w-4 h-4 ${isSelected ? 'text-[#FF6B6B]' : 'text-gray-400'}`} />
-                      <span className={`font-medium ${isSelected ? 'text-[#FF6B6B]' : 'text-gray-900'}`}>
+                      {isCopyEntireDayMode && meal.hasEntries && (
+                        isChecked
+                          ? <CheckSquare className="w-4 h-4 text-[#FF6B6B]" />
+                          : <Square className="w-4 h-4 text-gray-400" />
+                      )}
+                      <MealIcon className={`w-4 h-4 ${
+                        (isCopyEntireDayMode && isChecked) || isSelected ? 'text-[#FF6B6B]' : 'text-gray-400'
+                      }`} />
+                      <span className={`font-medium ${
+                        (isCopyEntireDayMode && isChecked) || isSelected ? 'text-[#FF6B6B]' : 'text-gray-900'
+                      }`}>
                         {mealDisplayName}
                       </span>
                     </div>
-                    <span className={`text-sm ${isSelected ? 'text-[#FF6B6B]' : 'text-gray-500'}`}>
+                    <span className={`text-sm ${
+                      (isCopyEntireDayMode && isChecked) || isSelected ? 'text-[#FF6B6B]' : 'text-gray-500'
+                    }`}>
                       {meal.hasEntries
                         ? `${meal.entryCount} item${meal.entryCount !== 1 ? 's' : ''} · ${meal.calories} cal · ${meal.protein}g protein`
                         : 'No entries'
@@ -350,6 +421,29 @@ export function CopyMealModal({
                   </button>
                 );
               })}
+
+              {/* Macros preview for Copy Entire Day mode */}
+              {isCopyEntireDayMode && selectedMeals.size > 0 && (
+                <div className="mt-4 p-3 bg-[#FF6B6B]/5 rounded-lg border border-[#FF6B6B]/20">
+                  <p className="text-sm font-medium text-gray-700">
+                    Copying {selectedMeals.size} meal{selectedMeals.size !== 1 ? 's' : ''}:
+                  </p>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {getSelectedMealsTotals().entries} items · {getSelectedMealsTotals().calories} cal · {getSelectedMealsTotals().protein}g protein
+                  </p>
+                </div>
+              )}
+
+              {/* Copy Entire Day button - only show when not in that mode and a single meal isn't selected */}
+              {!isCopyEntireDayMode && !selectedMeal && mealDetails.hasAnyEntries && (
+                <button
+                  type="button"
+                  onClick={handleEnterCopyEntireDayMode}
+                  className="w-full mt-4 px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-[#FF6B6B] hover:text-[#FF6B6B] transition-colors"
+                >
+                  Copy Entire Day...
+                </button>
+              )}
             </div>
           ) : (
             // Day selection view - shows last 7 days
@@ -392,12 +486,12 @@ export function CopyMealModal({
         <div className="flex gap-3 p-4 border-t border-gray-200 bg-gray-50">
           <button
             type="button"
-            onClick={onClose}
+            onClick={isCopyEntireDayMode ? () => setIsCopyEntireDayMode(false) : onClose}
             className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100"
           >
-            Cancel
+            {isCopyEntireDayMode ? 'Back' : 'Cancel'}
           </button>
-          {selectedDay && selectedMeal && (
+          {selectedDay && selectedMeal && !isCopyEntireDayMode && (
             <button
               type="button"
               onClick={handleCopyMeal}
@@ -411,6 +505,22 @@ export function CopyMealModal({
                 </>
               ) : (
                 `Copy ${MEAL_NAMES[selectedMeal]}`
+              )}
+            </button>
+          )}
+          {isCopyEntireDayMode && selectedMeals.size > 0 && (
+            <button
+              type="button"
+              disabled={isCopying}
+              className="flex-1 px-4 py-2 bg-[#FF6B6B] text-white rounded-lg hover:bg-[#EF5350] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {isCopying ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Copying...
+                </>
+              ) : (
+                `Copy ${selectedMeals.size} Meal${selectedMeals.size !== 1 ? 's' : ''}`
               )}
             </button>
           )}
