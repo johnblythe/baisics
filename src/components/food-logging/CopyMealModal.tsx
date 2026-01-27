@@ -296,6 +296,41 @@ export function CopyMealModal({
     }
   };
 
+  // Handle copy entire day (multiple meals)
+  const handleCopyEntireDay = async () => {
+    if (!selectedDay || selectedMeals.size === 0) return;
+
+    setIsCopying(true);
+    try {
+      const response = await fetch('/api/food-log/copy-day', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sourceDate: selectedDay,
+          targetDate: formatDateForAPI(targetDate),
+          meals: Array.from(selectedMeals),
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to copy meals');
+      }
+
+      const data = await response.json();
+
+      // Show success message (using alert for now, could be toast)
+      alert(`Copied ${data.copied} item${data.copied !== 1 ? 's' : ''} from ${selectedMeals.size} meal${selectedMeals.size !== 1 ? 's' : ''}`);
+
+      onCopySuccess();
+      onClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to copy meals');
+    } finally {
+      setIsCopying(false);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -511,6 +546,7 @@ export function CopyMealModal({
           {isCopyEntireDayMode && selectedMeals.size > 0 && (
             <button
               type="button"
+              onClick={handleCopyEntireDay}
               disabled={isCopying}
               className="flex-1 px-4 py-2 bg-[#FF6B6B] text-white rounded-lg hover:bg-[#EF5350] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
