@@ -3,6 +3,7 @@
 import React, { ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, ChefHat, Plus, Database, Search } from 'lucide-react';
+import { MealType as PrismaMealType } from '@prisma/client';
 import {
   MacroProgressBar,
   QuickInput,
@@ -95,6 +96,10 @@ export interface MobileLayoutProps {
   selectedDate?: Date;
   onCopyFromYesterday?: () => void;
 
+  // Copy meal modal
+  /** Callback to open copy meal modal for a specific meal type */
+  onOpenCopyMealModal?: (mealType: PrismaMealType) => void;
+
   // Remaining / suggestion
   remainingCalories?: number;
   remainingProtein?: number;
@@ -186,6 +191,7 @@ export function MobileLayout({
   onUSDAFoodAdd,
   selectedDate,
   onCopyFromYesterday,
+  onOpenCopyMealModal,
   remainingCalories,
   remainingProtein,
   suggestion,
@@ -288,6 +294,7 @@ export function MobileLayout({
             onCreateRecipe={onCreateRecipe}
             selectedDate={selectedDate}
             onCopyFromYesterday={onCopyFromYesterday}
+            onOpenCopyMealModal={onOpenCopyMealModal}
           />
         ))}
       </div>

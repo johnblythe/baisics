@@ -41,6 +41,9 @@ export type { DateMenuProps } from './DateMenu';
 export { CopyDayModal } from './CopyDayModal';
 export type { CopyDayModalProps } from './CopyDayModal';
 
+export { CopyMealModal } from './CopyMealModal';
+export type { CopyMealModalProps } from './CopyMealModal';
+
 export { DatePickerModal } from './DatePickerModal';
 export type { DatePickerModalProps } from './DatePickerModal';
 

@@ -2,6 +2,7 @@
 
 import React, { useState, ReactNode } from 'react';
 import { Search, TrendingUp, Clock, ChefHat, Plus, Database } from 'lucide-react';
+import { MealType as PrismaMealType } from '@prisma/client';
 import {
   MacroProgressBar,
   QuickInput,
@@ -87,6 +88,10 @@ export interface DesktopLayoutProps {
   // Copy from yesterday
   selectedDate?: Date;
   onCopyFromYesterday?: () => void;
+
+  // Copy meal modal
+  /** Callback to open copy meal modal for a specific meal type */
+  onOpenCopyMealModal?: (mealType: PrismaMealType) => void;
 
   // Suggestion
   suggestion?: string;
@@ -175,6 +180,7 @@ export function DesktopLayout({
   onUSDAFoodAdd,
   selectedDate,
   onCopyFromYesterday,
+  onOpenCopyMealModal,
   suggestion,
   suggestionDetail,
   onSuggestionClick,
@@ -322,6 +328,7 @@ export function DesktopLayout({
                     onCreateRecipe={onCreateRecipe}
                     selectedDate={selectedDate}
                     onCopyFromYesterday={onCopyFromYesterday}
+                    onOpenCopyMealModal={onOpenCopyMealModal}
                   />
                 ))}
               </div>
