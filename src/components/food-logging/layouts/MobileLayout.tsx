@@ -55,6 +55,8 @@ export interface MobileLayoutProps {
   // Quick pills
   quickFoods: QuickFoodItem[];
   onQuickAdd: (item: QuickFoodItem) => void;
+  /** Callback for logging recipes from QuickPills (with meal selection) */
+  onQuickRecipeLog?: (item: QuickFoodItem, meal: 'BREAKFAST' | 'LUNCH' | 'DINNER' | 'SNACK') => Promise<void>;
 
   // Weekly strip
   weekData: WeeklyDayData[];
@@ -178,6 +180,7 @@ export function MobileLayout({
   isAILoading,
   quickFoods,
   onQuickAdd,
+  onQuickRecipeLog,
   weekData,
   weeklyExpanded,
   onWeeklyToggle,
@@ -256,7 +259,7 @@ export function MobileLayout({
 
       {/* Quick Pills */}
       <div className="px-4 py-3 bg-white border-b border-[#E2E8F0]">
-        <QuickPills foods={quickFoods} onAdd={onQuickAdd} layout="horizontal" />
+        <QuickPills foods={quickFoods} onAdd={onQuickAdd} onRecipeLog={onQuickRecipeLog} layout="horizontal" />
       </div>
 
       {/* AI Quick Input */}
@@ -368,6 +371,10 @@ export function MobileLayout({
                       onQuickAdd(item);
                       setShowQuickAdd(false);
                     }}
+                    onRecipeLog={onQuickRecipeLog ? async (item, meal) => {
+                      await onQuickRecipeLog(item, meal);
+                      setShowQuickAdd(false);
+                    } : undefined}
                     layout="grid"
                     maxItems={6}
                   />

@@ -53,6 +53,8 @@ export interface DesktopLayoutProps {
   // Quick pills
   quickFoods: QuickFoodItem[];
   onQuickAdd: (item: QuickFoodItem) => void;
+  /** Callback for logging recipes from QuickPills (with meal selection) */
+  onQuickRecipeLog?: (item: QuickFoodItem, meal: 'BREAKFAST' | 'LUNCH' | 'DINNER' | 'SNACK') => Promise<void>;
 
   // Weekly strip
   weekData: WeeklyDayData[];
@@ -170,6 +172,7 @@ export function DesktopLayout({
   isAILoading,
   quickFoods,
   onQuickAdd,
+  onQuickRecipeLog,
   weekData,
   defaultWeeklyExpanded = true,
   weeklySummaryMessage,
@@ -280,7 +283,7 @@ export function DesktopLayout({
                   <Clock className="w-4 h-4 text-[#FF6B6B]" />
                   Quick Add
                 </h3>
-                <QuickPills foods={quickFoods} onAdd={onQuickAdd} layout="grid" maxItems={6} />
+                <QuickPills foods={quickFoods} onAdd={onQuickAdd} onRecipeLog={onQuickRecipeLog} layout="grid" maxItems={6} />
               </div>
 
               {/* My Recipes Sidebar - Self-fetching */}
