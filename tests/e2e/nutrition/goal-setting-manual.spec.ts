@@ -46,7 +46,7 @@ test.describe("Nutrition - manual goal setting", () => {
     await expect(modal).toBeVisible({ timeout: 5000 });
 
     // Verify the modal header
-    await expect(page.getByText("Nutrition Targets")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Nutrition Targets" })).toBeVisible();
 
     // Test label associations - use the id selectors added in previous stories
     // Daily Calories input
