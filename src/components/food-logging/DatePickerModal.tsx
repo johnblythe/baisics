@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { X, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { formatDateForAPI } from '@/lib/date-utils';
 
 export interface DatePickerModalProps {
   /** Whether the modal is open */
@@ -27,10 +28,6 @@ const MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December',
 ];
-
-function formatDateForAPI(date: Date): string {
-  return date.toISOString().split('T')[0];
-}
 
 function getMonthData(year: number, month: number): MonthData {
   const firstDay = new Date(year, month, 1);

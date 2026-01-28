@@ -19,6 +19,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { ChevronDown, ChevronUp, Plus, Trash2, Loader2, GripVertical, X, Check, Coffee, Sun, Moon, Apple } from 'lucide-react';
+import { formatDateForAPI } from '@/lib/date-utils';
 
 // Type for recipe ingredient in edit mode
 interface EditableIngredient {
@@ -406,7 +407,7 @@ export function RecipeCard({ recipe, onUpdate, onDelete, selectedDate }: RecipeC
     try {
       // Use selectedDate or default to today
       const logDate = selectedDate || new Date();
-      const dateStr = logDate.toISOString().split('T')[0];
+      const dateStr = formatDateForAPI(logDate);
 
       const response = await fetch(`/api/recipes/${recipe.id}/log`, {
         method: 'POST',
@@ -435,7 +436,7 @@ export function RecipeCard({ recipe, onUpdate, onDelete, selectedDate }: RecipeC
   const editTotals = isEditing ? calculateTotals(editIngredients) : null;
 
   return (
-    <div className="bg-white border border-[#E2E8F0] rounded-xl overflow-hidden hover:border-[#94A3B8] transition-colors">
+    <div className="bg-white border border-[#E2E8F0] rounded-xl hover:border-[#94A3B8] transition-colors">
       {/* Collapsed state - always visible */}
       {!isEditing ? (
         <button
