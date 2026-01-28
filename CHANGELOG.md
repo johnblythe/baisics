@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Copy Meals feature for nutrition logging (#326)
+  - Copy button on each meal section header to copy from previous days
+  - Day picker showing last 7 days with calorie summaries
+  - Copy single meal or select multiple meals to copy entire day
+  - Preview macros before copying
 - Features page with real app screenshots and "Built Different" philosophy section (#297)
 - USDA food database search for nutrition logging (#122, #293)
   - Search 300k+ foods from USDA FoodData Central
