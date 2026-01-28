@@ -335,6 +335,7 @@ export function FoodSearchAutocomplete({
       <div className="relative">
         <input
           ref={inputRef}
+          id="food-search"
           type="text"
           role="combobox"
           value={query}

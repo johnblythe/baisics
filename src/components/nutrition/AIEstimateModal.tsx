@@ -297,11 +297,12 @@ export function AIEstimateModal({
 
               {/* Editable name */}
               <div>
-                <label className="block text-xs font-medium mb-1" style={{ color: COLORS.gray600 }}>
+                <label htmlFor="ai-estimate-name" className="block text-xs font-medium mb-1" style={{ color: COLORS.gray600 }}>
                   Name
                 </label>
                 <input
                   type="text"
+                  id="ai-estimate-name"
                   value={editedName}
                   onChange={(e) => setEditedName(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg border text-sm"
@@ -312,24 +313,28 @@ export function AIEstimateModal({
               {/* Macro grid */}
               <div className="grid grid-cols-4 gap-3">
                 <MacroInput
+                  id="ai-estimate-calories"
                   label="Calories"
                   value={editedCalories}
                   onChange={setEditedCalories}
                   unit="kcal"
                 />
                 <MacroInput
+                  id="ai-estimate-protein"
                   label="Protein"
                   value={editedProtein}
                   onChange={setEditedProtein}
                   unit="g"
                 />
                 <MacroInput
+                  id="ai-estimate-carbs"
                   label="Carbs"
                   value={editedCarbs}
                   onChange={setEditedCarbs}
                   unit="g"
                 />
                 <MacroInput
+                  id="ai-estimate-fat"
                   label="Fat"
                   value={editedFat}
                   onChange={setEditedFat}
@@ -373,21 +378,23 @@ export function AIEstimateModal({
 }
 
 interface MacroInputProps {
+  id: string;
   label: string;
   value: number;
   onChange: (value: number) => void;
   unit: string;
 }
 
-function MacroInput({ label, value, onChange, unit }: MacroInputProps) {
+function MacroInput({ id, label, value, onChange, unit }: MacroInputProps) {
   return (
     <div>
-      <label className="block text-xs font-medium mb-1" style={{ color: COLORS.gray600 }}>
+      <label htmlFor={id} className="block text-xs font-medium mb-1" style={{ color: COLORS.gray600 }}>
         {label}
       </label>
       <div className="relative">
         <input
           type="number"
+          id={id}
           value={value}
           onChange={(e) => onChange(Math.max(0, parseInt(e.target.value) || 0))}
           className="w-full px-2 py-2 rounded-lg border text-sm text-center"

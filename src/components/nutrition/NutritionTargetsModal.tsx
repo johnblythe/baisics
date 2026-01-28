@@ -387,12 +387,14 @@ export function NutritionTargetsModal({
                 <div className="space-y-4">
                   <div>
                     <label
+                      htmlFor="daily-calories"
                       className="block text-sm font-medium mb-1"
                       style={{ color: COLORS.gray600 }}
                     >
                       Daily Calories
                     </label>
                     <input
+                      id="daily-calories"
                       type="text"
                       inputMode="numeric"
                       value={values.dailyCalories}
@@ -411,12 +413,14 @@ export function NutritionTargetsModal({
                   <div className="grid grid-cols-3 gap-3">
                     <div>
                       <label
+                        htmlFor="protein-grams"
                         className="block text-sm font-medium mb-1"
                         style={{ color: COLORS.gray600 }}
                       >
                         Protein (g)
                       </label>
                       <input
+                        id="protein-grams"
                         type="text"
                         inputMode="numeric"
                         value={values.proteinGrams}
@@ -430,12 +434,14 @@ export function NutritionTargetsModal({
                     </div>
                     <div>
                       <label
+                        htmlFor="carb-grams"
                         className="block text-sm font-medium mb-1"
                         style={{ color: COLORS.gray600 }}
                       >
                         Carbs (g)
                       </label>
                       <input
+                        id="carb-grams"
                         type="text"
                         inputMode="numeric"
                         value={values.carbGrams}
@@ -449,12 +455,14 @@ export function NutritionTargetsModal({
                     </div>
                     <div>
                       <label
+                        htmlFor="fat-grams"
                         className="block text-sm font-medium mb-1"
                         style={{ color: COLORS.gray600 }}
                       >
                         Fat (g)
                       </label>
                       <input
+                        id="fat-grams"
                         type="text"
                         inputMode="numeric"
                         value={values.fatGrams}

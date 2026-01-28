@@ -103,14 +103,14 @@ export function ServingSizeSelector({
       {/* Serving size input */}
       <div className="mb-4">
         <label
-          htmlFor="grams-input"
+          htmlFor="serving-size"
           className="block text-sm font-medium mb-2"
           style={{ color: COLORS.gray600 }}
         >
           Serving size (grams)
         </label>
         <input
-          id="grams-input"
+          id="serving-size"
           type="number"
           min={0}
           value={grams}

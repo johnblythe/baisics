@@ -24,6 +24,8 @@ export interface Persona {
   journey: PersonaJourney;
   workoutCount: number;
   hasProgram: boolean;
+  /** Whether this user has nutrition data (food logs, targets) */
+  hasNutritionData?: boolean;
 }
 
 /**
@@ -130,3 +132,25 @@ export function getPersona(name: PersonaName): Persona {
   }
   return persona;
 }
+
+/**
+ * Get a persona suitable for nutrition testing (fresh state, no nutrition data).
+ * Use "alex" by default as they have no workouts and represent a fresh user.
+ *
+ * @returns Persona suitable for fresh nutrition testing
+ */
+export function getFreshNutritionPersona(): Persona {
+  return getPersona("alex");
+}
+
+/**
+ * Get personas grouped by nutrition testing needs.
+ */
+export const NUTRITION_TEST_PERSONAS = {
+  /** Fresh user with no nutrition data */
+  fresh: getPersona("alex"),
+  /** Free tier user for basic nutrition features */
+  freeTier: getPersona("sarah"),
+  /** Paid tier user for advanced nutrition features */
+  paidTier: getPersona("marcus"),
+} as const;

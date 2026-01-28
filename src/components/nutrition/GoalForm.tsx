@@ -144,12 +144,14 @@ export function GoalForm({ onSaved, onCollapse }: GoalFormProps) {
       {/* Primary Goal dropdown */}
       <div>
         <label
+          htmlFor="goal-primary"
           className="block text-sm font-medium mb-1"
           style={{ color: COLORS.gray600 }}
         >
           What&apos;s your primary fitness goal?
         </label>
         <select
+          id="goal-primary"
           value={values.primaryGoal}
           onChange={(e) => handleChange('primaryGoal', e.target.value)}
           className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors appearance-none bg-white"
@@ -167,6 +169,7 @@ export function GoalForm({ onSaved, onCollapse }: GoalFormProps) {
       {/* Target Weight - optional */}
       <div>
         <label
+          htmlFor="goal-target-weight"
           className="block text-sm font-medium mb-1"
           style={{ color: COLORS.gray600 }}
         >
@@ -174,6 +177,7 @@ export function GoalForm({ onSaved, onCollapse }: GoalFormProps) {
         </label>
         <div className="flex items-center gap-2">
           <input
+            id="goal-target-weight"
             type="text"
             inputMode="decimal"
             value={values.targetWeight}
@@ -189,12 +193,14 @@ export function GoalForm({ onSaved, onCollapse }: GoalFormProps) {
       {/* Timeframe - optional */}
       <div>
         <label
+          htmlFor="goal-timeframe"
           className="block text-sm font-medium mb-1"
           style={{ color: COLORS.gray600 }}
         >
           Timeframe (optional)
         </label>
         <input
+          id="goal-timeframe"
           type="text"
           value={values.timeframe}
           onChange={(e) => handleChange('timeframe', e.target.value)}

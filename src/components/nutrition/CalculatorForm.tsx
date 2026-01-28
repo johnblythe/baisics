@@ -142,6 +142,7 @@ export function CalculatorForm({ onCalculated, onCollapse }: CalculatorFormProps
       {/* Height */}
       <div>
         <label
+          htmlFor="calc-height-feet"
           className="block text-sm font-medium mb-1"
           style={{ color: COLORS.gray600 }}
         >
@@ -151,6 +152,7 @@ export function CalculatorForm({ onCalculated, onCollapse }: CalculatorFormProps
           <div className="flex-1">
             <div className="flex items-center gap-1">
               <input
+                id="calc-height-feet"
                 type="text"
                 inputMode="numeric"
                 value={values.feet}
@@ -165,8 +167,10 @@ export function CalculatorForm({ onCalculated, onCollapse }: CalculatorFormProps
           <div className="flex-1">
             <div className="flex items-center gap-1">
               <input
+                id="calc-height-inches"
                 type="text"
                 inputMode="numeric"
+                aria-label="Height inches"
                 value={values.inches}
                 onChange={(e) => handleNumberChange('inches', e.target.value)}
                 placeholder="8"
@@ -183,12 +187,14 @@ export function CalculatorForm({ onCalculated, onCollapse }: CalculatorFormProps
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label
+            htmlFor="calc-weight"
             className="block text-sm font-medium mb-1"
             style={{ color: COLORS.gray600 }}
           >
             Weight (lbs)
           </label>
           <input
+            id="calc-weight"
             type="text"
             inputMode="numeric"
             value={values.weightLbs}
@@ -200,12 +206,14 @@ export function CalculatorForm({ onCalculated, onCollapse }: CalculatorFormProps
         </div>
         <div>
           <label
+            htmlFor="calc-age"
             className="block text-sm font-medium mb-1"
             style={{ color: COLORS.gray600 }}
           >
             Age
           </label>
           <input
+            id="calc-age"
             type="text"
             inputMode="numeric"
             value={values.age}
@@ -220,12 +228,14 @@ export function CalculatorForm({ onCalculated, onCollapse }: CalculatorFormProps
       {/* Sex dropdown */}
       <div>
         <label
+          htmlFor="calc-sex"
           className="block text-sm font-medium mb-1"
           style={{ color: COLORS.gray600 }}
         >
           Sex
         </label>
         <select
+          id="calc-sex"
           value={values.sex}
           onChange={(e) => handleChange('sex', e.target.value)}
           className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors appearance-none bg-white"
@@ -243,12 +253,14 @@ export function CalculatorForm({ onCalculated, onCollapse }: CalculatorFormProps
       {/* Activity Level dropdown */}
       <div>
         <label
+          htmlFor="calc-activity"
           className="block text-sm font-medium mb-1"
           style={{ color: COLORS.gray600 }}
         >
           Activity Level
         </label>
         <select
+          id="calc-activity"
           value={values.activityLevel}
           onChange={(e) => handleChange('activityLevel', e.target.value)}
           className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors appearance-none bg-white"
@@ -266,12 +278,14 @@ export function CalculatorForm({ onCalculated, onCollapse }: CalculatorFormProps
       {/* Goal dropdown */}
       <div>
         <label
+          htmlFor="calc-goal"
           className="block text-sm font-medium mb-1"
           style={{ color: COLORS.gray600 }}
         >
           Goal
         </label>
         <select
+          id="calc-goal"
           value={values.goal}
           onChange={(e) => handleChange('goal', e.target.value)}
           className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors appearance-none bg-white"
