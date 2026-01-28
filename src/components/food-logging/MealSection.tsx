@@ -8,6 +8,7 @@ import { FoodLogItem, type FoodLogItemData } from './FoodLogItem';
 import { FoodSearchAutocomplete } from '@/components/nutrition/FoodSearchAutocomplete';
 import { ServingSizeSelector, type CalculatedMacros } from '@/components/nutrition/ServingSizeSelector';
 import type { UnifiedFoodResult } from '@/lib/food-search/types';
+import { formatDateForAPI } from '@/lib/date-utils';
 
 export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'snacks';
 
@@ -193,7 +194,7 @@ export function MealSection({
     if (!selectedDate || !onCopyFromYesterday) return;
     setIsLoadingYesterday(true);
     try {
-      const dateStr = selectedDate.toISOString().split('T')[0];
+      const dateStr = formatDateForAPI(selectedDate);
       const mealType = prismaMealType;
       const response = await fetch(`/api/food-log/yesterday-meal?meal=${mealType}&date=${dateStr}`);
       if (response.ok) {
@@ -218,7 +219,7 @@ export function MealSection({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           sourceDate: yesterdayMeal.date,
-          targetDate: selectedDate.toISOString().split('T')[0],
+          targetDate: formatDateForAPI(selectedDate),
           meal: prismaMealType,
         }),
       });
