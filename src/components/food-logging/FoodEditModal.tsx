@@ -76,7 +76,7 @@ export function FoodEditModal({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 20 }}
-        className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-white border-t border-[#E2E8F0] shadow-lg lg:bottom-auto lg:top-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:max-w-md lg:w-full lg:rounded-2xl lg:border lg:shadow-xl"
+        className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-white border-t border-[#E2E8F0] shadow-lg max-h-[90vh] overflow-y-auto lg:bottom-auto lg:top-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:max-w-md lg:w-full lg:rounded-2xl lg:border lg:shadow-xl"
       >
         {/* Header */}
         <div className="flex items-center justify-between mb-4">

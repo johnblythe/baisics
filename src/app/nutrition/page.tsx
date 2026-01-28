@@ -5,7 +5,8 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } f
 import MainLayout from '@/app/components/layouts/MainLayout';
 import { NutritionLogModal } from '@/components/NutritionLogModal';
 import { FoodLogPage } from '@/components/food-logging';
-import { Utensils, Calendar, TrendingUp } from 'lucide-react';
+import { NutritionTabs } from '@/components/nutrition/NutritionTabs';
+import { Calendar } from 'lucide-react';
 
 interface NutritionLog {
   id: string;
@@ -28,46 +29,6 @@ interface ChartData {
 }
 
 type ViewMode = 'log' | 'history';
-
-// Extracted header to avoid TypeScript narrowing issues
-function ViewToggleHeader({
-  currentView,
-  onViewChange,
-}: {
-  currentView: ViewMode;
-  onViewChange: (mode: ViewMode) => void;
-}) {
-  return (
-    <div className="sticky top-0 z-30 bg-white border-b border-[#E2E8F0]">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="flex gap-1 py-2">
-          <button
-            onClick={() => onViewChange('log')}
-            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-              currentView === 'log'
-                ? 'bg-[#0F172A] text-white'
-                : 'bg-transparent text-[#64748B] hover:bg-[#F8FAFC]'
-            }`}
-          >
-            <Utensils className="w-4 h-4" />
-            Log Food
-          </button>
-          <button
-            onClick={() => onViewChange('history')}
-            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-              currentView === 'history'
-                ? 'bg-[#0F172A] text-white'
-                : 'bg-transparent text-[#64748B] hover:bg-[#F8FAFC]'
-            }`}
-          >
-            <TrendingUp className="w-4 h-4" />
-            History
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export default function NutritionPage() {
   const [viewMode, setViewMode] = useState<ViewMode>('log');
@@ -104,10 +65,13 @@ export default function NutritionPage() {
   };
 
   // Load history when switching to history view
-  const handleViewChange = (mode: ViewMode) => {
-    setViewMode(mode);
-    if (mode === 'history' && !historyLoaded) {
-      fetchLogs();
+  const handleViewChange = (mode: 'log' | 'history' | 'recipes') => {
+    // 'recipes' is handled by Link navigation, not local state
+    if (mode === 'log' || mode === 'history') {
+      setViewMode(mode);
+      if (mode === 'history' && !historyLoaded) {
+        fetchLogs();
+      }
     }
   };
 
@@ -203,7 +167,7 @@ export default function NutritionPage() {
   if (viewMode === 'log') {
     return (
       <MainLayout>
-        <ViewToggleHeader currentView={viewMode} onViewChange={handleViewChange} />
+        <NutritionTabs activeTab="log" onTabChange={handleViewChange} />
         <FoodLogPage />
       </MainLayout>
     );
@@ -212,7 +176,7 @@ export default function NutritionPage() {
   // Show history view
   return (
     <MainLayout>
-      <ViewToggleHeader currentView={viewMode} onViewChange={handleViewChange} />
+      <NutritionTabs activeTab="history" onTabChange={handleViewChange} />
 
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
         {/* Header */}

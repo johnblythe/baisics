@@ -120,9 +120,12 @@ export interface FoodLogPageProps {
   userId?: string;
 }
 
-// Format date for API calls (YYYY-MM-DD)
+// Format date for API calls (YYYY-MM-DD) using local timezone
 function formatDateForAPI(date: Date): string {
-  return date.toISOString().split('T')[0];
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 // Format date for display (e.g., "Monday, Jan 23")
@@ -182,6 +185,18 @@ export function FoodLogPage({
   });
   const [summary, setSummary] = useState<DailySummaryResponse | null>(null);
   const [quickFoods, setQuickFoods] = useState<QuickFoodResponse[]>([]);
+  const [topRecipes, setTopRecipes] = useState<Array<{
+    id: string;
+    name: string;
+    emoji: string | null;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+    servingSize: number;
+    servingUnit: string;
+    usageCount: number;
+  }>>([]);
 
   // Loading states
   const [isLoadingEntries, setIsLoadingEntries] = useState(true);
@@ -215,6 +230,9 @@ export function FoodLogPage({
 
   // Nutrition targets modal state
   const [showTargetsModal, setShowTargetsModal] = useState(false);
+
+  // Recipe sidebar refresh trigger
+  const [recipeSidebarRefreshTrigger, setRecipeSidebarRefreshTrigger] = useState(0);
 
   // Fetch entries for selected date
   const fetchEntries = useCallback(async () => {
@@ -275,6 +293,25 @@ export function FoodLogPage({
     }
   }, []);
 
+  // Fetch top recipes by usageCount (for QuickPills)
+  const fetchTopRecipes = useCallback(async () => {
+    try {
+      const response = await fetch('/api/recipes?limit=3');
+      const data = await response.json();
+      if (!response.ok) {
+        console.warn('Top recipes fetch failed:', data.error || response.status);
+        setTopRecipes([]);
+        return;
+      }
+      // Filter to only recipes with usageCount > 0 (actually used recipes)
+      const usedRecipes = data.filter((r: { usageCount: number }) => r.usageCount > 0);
+      setTopRecipes(usedRecipes.slice(0, 3));
+    } catch (err) {
+      console.warn('Top recipes fetch error:', err);
+      setTopRecipes([]);
+    }
+  }, []);
+
   // Fetch data on mount and date change
   useEffect(() => {
     fetchEntries();
@@ -283,7 +320,8 @@ export function FoodLogPage({
 
   useEffect(() => {
     fetchQuickFoods();
-  }, [fetchQuickFoods]);
+    fetchTopRecipes();
+  }, [fetchQuickFoods, fetchTopRecipes]);
 
   // Date navigation
   const goToPreviousDay = () => {
@@ -534,6 +572,40 @@ export function FoodLogPage({
     }
   };
 
+  // Handle recipe log from QuickPills (uses /api/recipes/[id]/log endpoint)
+  const handleQuickRecipeLog = async (
+    item: QuickFoodItem,
+    meal: 'BREAKFAST' | 'LUNCH' | 'DINNER' | 'SNACK'
+  ) => {
+    if (!item.recipeId) return;
+
+    try {
+      const response = await fetch(`/api/recipes/${item.recipeId}/log`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          meal,
+          date: formatDateForAPI(selectedDate),
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to log recipe');
+      }
+
+      toast.success(`Added: ${item.name}`);
+
+      // Refresh entries and summary to show the new log
+      await Promise.all([fetchEntries(), fetchSummary()]);
+
+      // Refresh top recipes (usageCount changed)
+      await fetchTopRecipes();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to log recipe');
+    }
+  };
+
   // Handle inline recipe add (from meal section search panel - with multiplier and meal context)
   const handleInlineRecipeAdd = async (recipe: RecipeWithIngredients, multiplier: number, mealStr: string) => {
     // Convert meal string to MealType enum
@@ -678,6 +750,12 @@ export function FoodLogPage({
     await Promise.all([fetchEntries(), fetchSummary()]);
   }, [fetchEntries, fetchSummary]);
 
+  // Handle save meal as recipe - refresh sidebar
+  const handleSaveAsRecipe = useCallback(() => {
+    // Increment trigger to refresh MyRecipesSidebar
+    setRecipeSidebarRefreshTrigger((prev) => prev + 1);
+  }, []);
+
   // Handle copy from yesterday (for DateMenu) - opens copy day modal
   const handleDateMenuCopyFromYesterday = useCallback(() => {
     const yesterday = new Date(selectedDate);
@@ -812,8 +890,20 @@ export function FoodLogPage({
     { meal: 'snack', items: entries.SNACK.map(entryToItemData) },
   ];
 
-  // Build quick foods for pills
-  const quickFoodItems: QuickFoodItem[] = quickFoods.map((qf) => ({
+  // Build quick foods for pills (recipes first, then regular quick foods)
+  const recipeItems: QuickFoodItem[] = topRecipes.map((r) => ({
+    id: `recipe-${r.id}`,
+    name: r.name,
+    calories: r.calories,
+    protein: r.protein,
+    carbs: r.carbs,
+    fat: r.fat,
+    emoji: r.emoji ?? undefined,
+    isRecipe: true,
+    recipeId: r.id,
+  }));
+
+  const regularQuickFoods: QuickFoodItem[] = quickFoods.map((qf) => ({
     id: qf.id,
     name: qf.name,
     calories: qf.calories,
@@ -822,6 +912,9 @@ export function FoodLogPage({
     fat: qf.fat,
     emoji: qf.emoji ?? undefined,
   }));
+
+  // Recipes appear first (visually distinct), then regular quick foods
+  const quickFoodItems: QuickFoodItem[] = [...recipeItems, ...regularQuickFoods];
 
   // Loading state
   const isLoading = isLoadingEntries || isLoadingSummary || isLoadingQuickFoods;
@@ -961,6 +1054,7 @@ export function FoodLogPage({
           isAILoading={isAIParsing}
           quickFoods={quickFoodItems}
           onQuickAdd={handleQuickAdd}
+          onQuickRecipeLog={handleQuickRecipeLog}
           weekData={weekData}
           meals={mealsData}
           onAddToMeal={handleAddToMeal}
@@ -980,6 +1074,8 @@ export function FoodLogPage({
           onUSDAFoodAdd={handleUSDAFoodAdd}
           selectedDate={selectedDate}
           onCopyFromYesterday={handleCopyFromYesterday}
+          onSaveAsRecipe={handleSaveAsRecipe}
+          recipeSidebarRefreshTrigger={recipeSidebarRefreshTrigger}
           remainingCalories={remainingCalories}
           remainingProtein={remainingProtein}
           suggestion={suggestion}
@@ -1011,6 +1107,7 @@ export function FoodLogPage({
           isAILoading={isAIParsing}
           quickFoods={quickFoodItems}
           onQuickAdd={handleQuickAdd}
+          onQuickRecipeLog={handleQuickRecipeLog}
           weekData={weekData}
           meals={mealsData}
           onAddToMeal={handleAddToMeal}
@@ -1028,6 +1125,8 @@ export function FoodLogPage({
           onUSDAFoodAdd={handleUSDAFoodAdd}
           selectedDate={selectedDate}
           onCopyFromYesterday={handleCopyFromYesterday}
+          onSaveAsRecipe={handleSaveAsRecipe}
+          recipeSidebarRefreshTrigger={recipeSidebarRefreshTrigger}
           suggestion={suggestion}
           suggestionDetail={suggestion}
           rightContentExtra={errorBanner}
