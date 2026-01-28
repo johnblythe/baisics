@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Utensils, TrendingUp, BookOpen } from 'lucide-react';
@@ -24,7 +25,8 @@ const tabs = [
   { value: 'recipes' as const, label: 'Recipes', icon: BookOpen, href: '/nutrition/recipes' },
 ];
 
-export function NutritionTabs({ activeTab, onTabChange }: NutritionTabsProps) {
+// Inner component that uses useSearchParams (must be wrapped in Suspense)
+function NutritionTabsInner({ activeTab, onTabChange }: NutritionTabsProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -82,5 +84,33 @@ export function NutritionTabs({ activeTab, onTabChange }: NutritionTabsProps) {
         </div>
       </div>
     </div>
+  );
+}
+
+// Wrapper with Suspense boundary for useSearchParams
+export function NutritionTabs(props: NutritionTabsProps) {
+  return (
+    <Suspense fallback={
+      <div className="sticky top-0 z-30 bg-white border-b border-[#E2E8F0]">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="flex gap-1 py-2">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <div
+                  key={tab.value}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-transparent text-[#94A3B8]"
+                >
+                  <Icon className="w-4 h-4" />
+                  {tab.label}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    }>
+      <NutritionTabsInner {...props} />
+    </Suspense>
   );
 }
