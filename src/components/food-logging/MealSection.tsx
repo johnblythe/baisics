@@ -93,6 +93,8 @@ export interface MealSectionProps {
   selectedDate?: Date;
   /** Callback when meals are copied from yesterday */
   onCopyFromYesterday?: () => void;
+  /** Callback to open copy meal modal for this specific meal type */
+  onOpenCopyMealModal?: (mealType: PrismaMealType) => void;
 }
 
 function getMealIcon(meal: string) {
@@ -132,6 +134,7 @@ export function MealSection({
   onCreateRecipe,
   selectedDate,
   onCopyFromYesterday,
+  onOpenCopyMealModal,
 }: MealSectionProps) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [selectedFood, setSelectedFood] = useState<UnifiedFoodResult | null>(null);
@@ -288,6 +291,15 @@ export function MealSection({
     setSelectedFood(null);
   };
 
+  // Check if viewing a past date (disable copy button for past dates)
+  const isViewingPastDate = selectedDate ? (() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const viewDate = new Date(selectedDate);
+    viewDate.setHours(0, 0, 0, 0);
+    return viewDate < today;
+  })() : false;
+
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
@@ -302,14 +314,32 @@ export function MealSection({
             </span>
           )}
         </div>
-        <button
-          type="button"
-          onClick={handleAddClick}
-          className="text-xs text-[#FF6B6B] hover:text-[#EF5350] font-medium flex items-center gap-1"
-        >
-          <Plus className="w-3 h-3" />
-          Add
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Copy from button - opens modal to copy from previous days */}
+          {onOpenCopyMealModal && (
+            <button
+              type="button"
+              onClick={() => onOpenCopyMealModal(prismaMealType)}
+              disabled={isViewingPastDate}
+              className={`p-1.5 rounded-lg transition-colors ${
+                isViewingPastDate
+                  ? 'text-[#CBD5E1] cursor-not-allowed'
+                  : 'text-[#94A3B8] hover:text-[#64748B] hover:bg-[#F1F5F9]'
+              }`}
+              title={isViewingPastDate ? 'Cannot copy to past dates' : `Copy ${displayName.toLowerCase()} from...`}
+            >
+              <Copy className="w-4 h-4" />
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={handleAddClick}
+            className="text-xs text-[#FF6B6B] hover:text-[#EF5350] font-medium flex items-center gap-1"
+          >
+            <Plus className="w-3 h-3" />
+            Add
+          </button>
+        </div>
       </div>
 
       {/* Food items list */}

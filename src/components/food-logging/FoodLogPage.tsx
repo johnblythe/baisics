@@ -14,6 +14,7 @@ import {
   CreateRecipeModal,
   DateMenu,
   CopyDayModal,
+  CopyMealModal,
   DatePickerModal,
   type QuickFoodItem,
   type WeeklyDayData,
@@ -215,6 +216,10 @@ export function FoodLogPage({
 
   // Nutrition targets modal state
   const [showTargetsModal, setShowTargetsModal] = useState(false);
+
+  // Copy meal modal state
+  const [showCopyMealModal, setShowCopyMealModal] = useState(false);
+  const [copyMealType, setCopyMealType] = useState<MealType>(MealType.SNACK);
 
   // Fetch entries for selected date
   const fetchEntries = useCallback(async () => {
@@ -720,6 +725,12 @@ export function FoodLogPage({
     }
   }, [selectedDate, fetchEntries, fetchSummary]);
 
+  // Handle open copy meal modal
+  const handleOpenCopyMealModal = useCallback((mealType: MealType) => {
+    setCopyMealType(mealType);
+    setShowCopyMealModal(true);
+  }, []);
+
   // Handle inline food add from MealSection
   const handleInlineFoodAdd = async (food: MealSectionFoodResult) => {
     // Determine source - use food.source if provided, otherwise default to USDA_SEARCH
@@ -980,6 +991,7 @@ export function FoodLogPage({
           onUSDAFoodAdd={handleUSDAFoodAdd}
           selectedDate={selectedDate}
           onCopyFromYesterday={handleCopyFromYesterday}
+          onOpenCopyMealModal={handleOpenCopyMealModal}
           remainingCalories={remainingCalories}
           remainingProtein={remainingProtein}
           suggestion={suggestion}
@@ -1028,6 +1040,7 @@ export function FoodLogPage({
           onUSDAFoodAdd={handleUSDAFoodAdd}
           selectedDate={selectedDate}
           onCopyFromYesterday={handleCopyFromYesterday}
+          onOpenCopyMealModal={handleOpenCopyMealModal}
           suggestion={suggestion}
           suggestionDetail={suggestion}
           rightContentExtra={errorBanner}
@@ -1093,6 +1106,17 @@ export function FoodLogPage({
         onSelectDate={handleDatePickerSelect}
         targetDate={selectedDate}
         title="Pick a date to copy from"
+      />
+
+      {/* Copy Meal Modal (for copying a specific meal from previous days) */}
+      <CopyMealModal
+        isOpen={showCopyMealModal}
+        onClose={() => setShowCopyMealModal(false)}
+        mealType={copyMealType}
+        targetDate={selectedDate}
+        onCopySuccess={async () => {
+          await Promise.all([fetchEntries(), fetchSummary()]);
+        }}
       />
 
       {/* Nutrition Targets Modal */}
