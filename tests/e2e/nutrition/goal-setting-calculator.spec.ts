@@ -1,6 +1,5 @@
 import { test, expect } from "@playwright/test";
 import { loginAsUser } from "../../fixtures/auth";
-import { seedPersonas } from "../../fixtures/seed";
 import { getPersona } from "../../fixtures/personas";
 
 test.describe("Nutrition - calculator-based goal setting", () => {
@@ -8,9 +7,6 @@ test.describe("Nutrition - calculator-based goal setting", () => {
   test.describe.configure({ mode: "serial" });
 
   // Seed personas before all tests
-  test.beforeAll(async () => {
-    await seedPersonas();
-  });
 
   test("should calculate nutrition targets using TDEE calculator", async ({ page }) => {
     // Get alex persona (fresh user, free tier)

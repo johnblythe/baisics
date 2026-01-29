@@ -1,6 +1,5 @@
 import { test, expect } from "@playwright/test";
 import { loginAsUser } from "../../fixtures/auth";
-import { seedPersonas } from "../../fixtures/seed";
 import { getPersona } from "../../fixtures/personas";
 
 test.describe("Dashboard - main dashboard loads with all components", () => {
@@ -8,9 +7,6 @@ test.describe("Dashboard - main dashboard loads with all components", () => {
   test.describe.configure({ mode: "serial" });
 
   // Seed personas before all tests in this file
-  test.beforeAll(async () => {
-    await seedPersonas();
-  });
 
   test("should display all key dashboard sections for user with program", async ({
     page,

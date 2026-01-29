@@ -26,14 +26,10 @@
 
 import { test, expect } from "@playwright/test";
 import { loginAsUser } from "../../fixtures/auth";
-import { seedPersonas } from "../../fixtures/seed";
 import { getFreshNutritionPersona } from "../../fixtures/personas";
 
 test.describe("Nutrition Food Search and Logging", () => {
   // Seed personas before all tests in this file
-  test.beforeAll(async () => {
-    await seedPersonas();
-  });
 
   test("should open inline search panel when clicking Add on a meal", async ({ page }) => {
     const persona = getFreshNutritionPersona();

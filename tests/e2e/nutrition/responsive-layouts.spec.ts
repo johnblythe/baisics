@@ -15,7 +15,6 @@
 
 import { test, expect } from "@playwright/test";
 import { loginAsUser } from "../../fixtures/auth";
-import { seedPersonas } from "../../fixtures/seed";
 import { getFreshNutritionPersona } from "../../fixtures/personas";
 
 // Mobile viewport (iPhone SE size)
@@ -26,9 +25,6 @@ const DESKTOP_VIEWPORT = { width: 1440, height: 900 };
 
 test.describe("Responsive Layouts", () => {
   // Seed personas before all tests in this file
-  test.beforeAll(async () => {
-    await seedPersonas();
-  });
 
   test.describe("Mobile Layout", () => {
     test.beforeEach(async ({ page }) => {

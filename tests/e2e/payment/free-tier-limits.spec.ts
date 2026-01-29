@@ -1,6 +1,5 @@
 import { test, expect } from "@playwright/test";
 import { loginAsUser } from "../../fixtures/auth";
-import { seedPersonas } from "../../fixtures/seed";
 import { getPersona } from "../../fixtures/personas";
 
 test.describe("Free tier limits - upgrade prompt on 2nd program", () => {
@@ -8,9 +7,6 @@ test.describe("Free tier limits - upgrade prompt on 2nd program", () => {
   test.describe.configure({ mode: "serial" });
 
   // Seed personas before all tests in this file
-  test.beforeAll(async () => {
-    await seedPersonas();
-  });
 
   test("should show upgrade prompt when free user tries to claim a second program", async ({
     page,
