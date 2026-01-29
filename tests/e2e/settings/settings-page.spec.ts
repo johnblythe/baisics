@@ -9,13 +9,9 @@
 
 import { test, expect } from "@playwright/test";
 import { loginAsUser } from "../../fixtures/auth";
-import { seedPersonas } from "../../fixtures/seed";
 import { getPersona } from "../../fixtures/personas";
 
 test.describe("Settings Page", () => {
-  test.beforeAll(async () => {
-    await seedPersonas();
-  });
 
   test("should load /settings without errors", async ({ page }) => {
     const persona = getPersona("marcus"); // paid user with full data

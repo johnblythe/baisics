@@ -1,6 +1,5 @@
 import { test, expect } from "@playwright/test";
 import { loginAsUser } from "../../fixtures/auth";
-import { seedPersonas } from "../../fixtures/seed";
 import { getPersona } from "../../fixtures/personas";
 
 test.describe("Workout - start workout loads exercises", () => {
@@ -8,9 +7,6 @@ test.describe("Workout - start workout loads exercises", () => {
   test.describe.configure({ mode: "serial" });
 
   // Seed personas before all tests
-  test.beforeAll(async () => {
-    await seedPersonas();
-  });
 
   test("should navigate from dashboard to workout page and see exercises", async ({
     page,

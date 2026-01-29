@@ -7,7 +7,6 @@
 
 import { test as base, expect } from "@playwright/test";
 import { loginAsUser } from "../../fixtures/auth";
-import { seedPersonas } from "../../fixtures/seed";
 import { getPersona, getFreshNutritionPersona, NUTRITION_TEST_PERSONAS } from "../../fixtures/personas";
 import {
   navigateToNutrition,
@@ -82,7 +81,6 @@ export const test = base.extend<{
 export { expect };
 export {
   loginAsUser,
-  seedPersonas,
   getPersona,
   getFreshNutritionPersona,
   NUTRITION_TEST_PERSONAS,

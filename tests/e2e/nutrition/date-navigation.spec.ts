@@ -21,7 +21,6 @@
 
 import { test, expect } from "@playwright/test";
 import { loginAsUser } from "../../fixtures/auth";
-import { seedPersonas } from "../../fixtures/seed";
 import { getFreshNutritionPersona } from "../../fixtures/personas";
 
 // Helper to get today's date in the format used by the header
@@ -57,9 +56,6 @@ function getDateNDaysAgoFormatted(n: number): string {
 
 test.describe("Nutrition Date Navigation", () => {
   // Seed personas before all tests in this file
-  test.beforeAll(async () => {
-    await seedPersonas();
-  });
 
   test("should show 'Today' in header when viewing current date", async ({ page }) => {
     const persona = getFreshNutritionPersona();

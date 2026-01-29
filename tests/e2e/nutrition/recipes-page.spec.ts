@@ -17,13 +17,9 @@
 
 import { test, expect } from "@playwright/test";
 import { loginAsUser } from "../../fixtures/auth";
-import { seedPersonas } from "../../fixtures/seed";
 import { getFreshNutritionPersona } from "../../fixtures/personas";
 
 test.describe("Nutrition Recipes Page", () => {
-  test.beforeAll(async () => {
-    await seedPersonas();
-  });
 
   test.describe("Page Load & Navigation", () => {
     test("should load /nutrition/recipes without errors", async ({ page }) => {

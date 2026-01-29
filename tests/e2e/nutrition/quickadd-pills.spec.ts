@@ -19,14 +19,10 @@
 
 import { test, expect } from "@playwright/test";
 import { loginAsUser } from "../../fixtures/auth";
-import { seedPersonas } from "../../fixtures/seed";
 import { getFreshNutritionPersona } from "../../fixtures/personas";
 
 test.describe("QuickAdd Pills Flow", () => {
   // Seed personas before all tests in this file
-  test.beforeAll(async () => {
-    await seedPersonas();
-  });
 
   test("should see QuickPills section on nutrition page", async ({ page }) => {
     const persona = getFreshNutritionPersona();

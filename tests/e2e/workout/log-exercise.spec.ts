@@ -1,6 +1,5 @@
 import { test, expect } from "@playwright/test";
 import { loginAsUser } from "../../fixtures/auth";
-import { seedPersonas } from "../../fixtures/seed";
 import { getPersona } from "../../fixtures/personas";
 
 test.describe("Workout - log exercise set", () => {
@@ -8,9 +7,6 @@ test.describe("Workout - log exercise set", () => {
   test.describe.configure({ mode: "serial" });
 
   // Seed personas before all tests
-  test.beforeAll(async () => {
-    await seedPersonas();
-  });
 
   test("should log weight and reps for a set and see it marked as completed", async ({
     page,

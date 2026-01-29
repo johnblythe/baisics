@@ -23,14 +23,10 @@
 
 import { test, expect } from "@playwright/test";
 import { loginAsUser } from "../../fixtures/auth";
-import { seedPersonas } from "../../fixtures/seed";
 import { getFreshNutritionPersona } from "../../fixtures/personas";
 
 test.describe("Nutrition AI Text Parsing", () => {
   // Seed personas before all tests in this file
-  test.beforeAll(async () => {
-    await seedPersonas();
-  });
 
   test("should see AI Quick Add section with sparkle button", async ({ page }) => {
     const persona = getFreshNutritionPersona();

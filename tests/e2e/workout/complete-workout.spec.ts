@@ -1,6 +1,5 @@
 import { test, expect } from "@playwright/test";
 import { loginAsUser } from "../../fixtures/auth";
-import { seedPersonas } from "../../fixtures/seed";
 import { getPersona } from "../../fixtures/personas";
 
 test.describe("Workout - complete workout updates status", () => {
@@ -8,9 +7,6 @@ test.describe("Workout - complete workout updates status", () => {
   test.describe.configure({ mode: "serial" });
 
   // Seed personas before all tests
-  test.beforeAll(async () => {
-    await seedPersonas();
-  });
 
   test("should complete workout, see completion response, and verify workout in Recent Activity", async ({
     page,
