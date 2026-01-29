@@ -56,6 +56,8 @@ export interface MobileLayoutProps {
   // Quick pills
   quickFoods: QuickFoodItem[];
   onQuickAdd: (item: QuickFoodItem) => void;
+  /** Callback for logging recipes from QuickPills (with meal selection) */
+  onQuickRecipeLog?: (item: QuickFoodItem, meal: 'BREAKFAST' | 'LUNCH' | 'DINNER' | 'SNACK') => Promise<void>;
 
   // Weekly strip
   weekData: WeeklyDayData[];
@@ -100,6 +102,17 @@ export interface MobileLayoutProps {
   /** Callback to open copy meal modal for a specific meal type */
   onOpenCopyMealModal?: (mealType: PrismaMealType) => void;
 
+  // Save meal as recipe
+  onSaveAsRecipe?: (recipe: {
+    id: string;
+    name: string;
+    emoji: string | null;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  }) => void;
+
   // Remaining / suggestion
   remainingCalories?: number;
   remainingProtein?: number;
@@ -109,6 +122,9 @@ export interface MobileLayoutProps {
   // Custom content slots
   customHeader?: ReactNode;
   customFooter?: ReactNode;
+
+  // Recipe sidebar refresh trigger
+  recipeSidebarRefreshTrigger?: number;
 }
 
 function RecipesPanel({
@@ -169,6 +185,7 @@ export function MobileLayout({
   isAILoading,
   quickFoods,
   onQuickAdd,
+  onQuickRecipeLog,
   weekData,
   weeklyExpanded,
   onWeeklyToggle,
@@ -192,12 +209,14 @@ export function MobileLayout({
   selectedDate,
   onCopyFromYesterday,
   onOpenCopyMealModal,
+  onSaveAsRecipe,
   remainingCalories,
   remainingProtein,
   suggestion,
   onSuggestionClick,
   customHeader,
   customFooter,
+  recipeSidebarRefreshTrigger,
 }: MobileLayoutProps) {
   // Calculate remaining if not provided
   const calcRemainingCal = remainingCalories ?? (macroTargets.calories - macroTotals.calories);
@@ -246,7 +265,7 @@ export function MobileLayout({
 
       {/* Quick Pills */}
       <div className="px-4 py-3 bg-white border-b border-[#E2E8F0]">
-        <QuickPills foods={quickFoods} onAdd={onQuickAdd} layout="horizontal" />
+        <QuickPills foods={quickFoods} onAdd={onQuickAdd} onRecipeLog={onQuickRecipeLog} layout="horizontal" />
       </div>
 
       {/* AI Quick Input */}
@@ -295,6 +314,7 @@ export function MobileLayout({
             selectedDate={selectedDate}
             onCopyFromYesterday={onCopyFromYesterday}
             onOpenCopyMealModal={onOpenCopyMealModal}
+            onSaveAsRecipe={onSaveAsRecipe}
           />
         ))}
       </div>
@@ -358,6 +378,10 @@ export function MobileLayout({
                       onQuickAdd(item);
                       setShowQuickAdd(false);
                     }}
+                    onRecipeLog={onQuickRecipeLog ? async (item, meal) => {
+                      await onQuickRecipeLog(item, meal);
+                      setShowQuickAdd(false);
+                    } : undefined}
                     layout="grid"
                     maxItems={6}
                   />
@@ -371,6 +395,7 @@ export function MobileLayout({
                     }}
                     onCreateRecipe={onCreateRecipe}
                     maxItems={5}
+                    refreshTrigger={recipeSidebarRefreshTrigger}
                   />
                 )}
                 {/* Legacy Recipes Panel */}

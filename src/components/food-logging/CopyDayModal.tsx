@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Coffee, Sun, Moon, Cookie, Loader2 } from 'lucide-react';
 import { MealType } from '@prisma/client';
+import { formatDateForAPI } from '@/lib/date-utils';
 
 // Meal icon mapping
 const MEAL_ICONS: Record<MealType, typeof Coffee> = {
@@ -48,10 +49,6 @@ export interface CopyDayModalProps {
   targetDate: Date;
   /** Callback when copy succeeds - refresh data */
   onCopySuccess: () => void;
-}
-
-function formatDateForAPI(date: Date): string {
-  return date.toISOString().split('T')[0];
 }
 
 function formatDateForDisplay(date: Date): string {

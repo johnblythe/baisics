@@ -54,6 +54,8 @@ export interface DesktopLayoutProps {
   // Quick pills
   quickFoods: QuickFoodItem[];
   onQuickAdd: (item: QuickFoodItem) => void;
+  /** Callback for logging recipes from QuickPills (with meal selection) */
+  onQuickRecipeLog?: (item: QuickFoodItem, meal: 'BREAKFAST' | 'LUNCH' | 'DINNER' | 'SNACK') => Promise<void>;
 
   // Weekly strip
   weekData: WeeklyDayData[];
@@ -93,6 +95,17 @@ export interface DesktopLayoutProps {
   /** Callback to open copy meal modal for a specific meal type */
   onOpenCopyMealModal?: (mealType: PrismaMealType) => void;
 
+  // Save meal as recipe
+  onSaveAsRecipe?: (recipe: {
+    id: string;
+    name: string;
+    emoji: string | null;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  }) => void;
+
   // Suggestion
   suggestion?: string;
   suggestionDetail?: string;
@@ -102,6 +115,9 @@ export interface DesktopLayoutProps {
   customHeader?: ReactNode;
   leftSidebarExtra?: ReactNode;
   rightContentExtra?: ReactNode;
+
+  // Recipe sidebar refresh trigger
+  recipeSidebarRefreshTrigger?: number;
 }
 
 function RecipesPanel({
@@ -161,6 +177,7 @@ export function DesktopLayout({
   isAILoading,
   quickFoods,
   onQuickAdd,
+  onQuickRecipeLog,
   weekData,
   defaultWeeklyExpanded = true,
   weeklySummaryMessage,
@@ -181,12 +198,14 @@ export function DesktopLayout({
   selectedDate,
   onCopyFromYesterday,
   onOpenCopyMealModal,
+  onSaveAsRecipe,
   suggestion,
   suggestionDetail,
   onSuggestionClick,
   customHeader,
   leftSidebarExtra,
   rightContentExtra,
+  recipeSidebarRefreshTrigger,
 }: DesktopLayoutProps) {
   const [weekExpanded, setWeekExpanded] = useState(defaultWeeklyExpanded);
 
@@ -270,7 +289,7 @@ export function DesktopLayout({
                   <Clock className="w-4 h-4 text-[#FF6B6B]" />
                   Quick Add
                 </h3>
-                <QuickPills foods={quickFoods} onAdd={onQuickAdd} layout="grid" maxItems={6} />
+                <QuickPills foods={quickFoods} onAdd={onQuickAdd} onRecipeLog={onQuickRecipeLog} layout="grid" maxItems={6} />
               </div>
 
               {/* My Recipes Sidebar - Self-fetching */}
@@ -279,6 +298,7 @@ export function DesktopLayout({
                   onRecipeAdd={onSidebarRecipeAdd}
                   onCreateRecipe={onCreateRecipe}
                   maxItems={5}
+                  refreshTrigger={recipeSidebarRefreshTrigger}
                 />
               )}
 
@@ -329,6 +349,7 @@ export function DesktopLayout({
                     selectedDate={selectedDate}
                     onCopyFromYesterday={onCopyFromYesterday}
                     onOpenCopyMealModal={onOpenCopyMealModal}
+                    onSaveAsRecipe={onSaveAsRecipe}
                   />
                 ))}
               </div>
