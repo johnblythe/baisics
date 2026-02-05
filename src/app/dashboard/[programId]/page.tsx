@@ -1055,7 +1055,7 @@ function DashboardContent() {
                   </div>
                 </button>
                 <Link
-                  href="/check-in"
+                  href="/pulse"
                   className="w-full flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-[#FF6B6B] transition-colors text-left group"
                 >
                   <span className="text-lg">⚖️</span>
@@ -1065,7 +1065,7 @@ function DashboardContent() {
                   </div>
                 </Link>
                 <Link
-                  href="/check-in"
+                  href="/pulse"
                   className="w-full flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-[#FF6B6B] transition-colors text-left group"
                 >
                   <span className="text-lg">📷</span>

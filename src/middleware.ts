@@ -33,5 +33,6 @@ export const config = {
     "/dashboard/:path*",
     "/program/:path*",
     "/check-in/:path*",
+    "/pulse/:path*",
   ],
 };

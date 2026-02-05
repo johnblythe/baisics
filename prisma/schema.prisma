@@ -139,6 +139,10 @@ model User {
   // User's fitness goal (1:1 relation)
   goal Goal?
 
+  // Daily Pulse (lightweight daily check-in)
+  dailyPulses DailyPulse[]
+  pulsePhotos PulsePhoto[]
+
   @@index([email])
   @@map("users")
 }
@@ -997,6 +1001,40 @@ enum FoodSearchAction {
   SELECTED  // User selected a search result
   ABANDONED // User closed search without selecting
   REFINED   // User refined their search query
+}
+
+model DailyPulse {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  date      DateTime @db.Date
+  weight    Float?   @map("weight")
+  notes     String?  @map("notes") @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user   User         @relation(fields: [userId], references: [id])
+  photos PulsePhoto[]
+
+  @@unique([userId, date])
+  @@index([userId])
+  @@index([userId, date])
+  @@map("daily_pulses")
+}
+
+model PulsePhoto {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  pulseId    String   @map("pulse_id") @db.Uuid
+  userId     String   @map("user_id") @db.Uuid
+  fileName   String   @map("file_name")
+  base64Data String   @map("base64_data") @db.Text
+  sortOrder  Int      @default(0) @map("sort_order")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  pulse DailyPulse @relation(fields: [pulseId], references: [id], onDelete: Cascade)
+  user  User       @relation(fields: [userId], references: [id])
+
+  @@index([pulseId])
+  @@map("pulse_photos")
 }
 
 model FoodSearchLog {

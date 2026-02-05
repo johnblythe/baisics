@@ -62,6 +62,12 @@ export default function Header() {
                       Nutrition
                     </Link>
                     <Link
+                      href="/pulse"
+                      className="text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors"
+                    >
+                      Pulse
+                    </Link>
+                    <Link
                       href="/blog"
                       className="text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors"
                     >
@@ -172,6 +178,13 @@ export default function Header() {
                           onClick={() => setIsMenuOpen(false)}
                         >
                           Nutrition
+                        </Link>
+                        <Link
+                          href="/pulse"
+                          className="block px-4 py-2.5 text-sm font-medium text-[#475569] hover:bg-[#F8FAFC]"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          Pulse
                         </Link>
                         <Link
                           href="/blog"
