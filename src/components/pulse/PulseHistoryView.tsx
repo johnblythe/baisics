@@ -414,7 +414,7 @@ export function PulseHistoryView() {
           const hitGoal = goalProgress?.hitGoal ?? false;
           return (
             <div
-              className={`relative rounded-xl px-4 py-4 transition-all overflow-hidden ${
+              className={`relative rounded-xl px-4 py-4 transition-all ${
                 hitGoal
                   ? 'bg-gradient-to-br from-emerald-50 via-emerald-50/80 to-emerald-100/50 border border-emerald-200 shadow-sm'
                   : 'bg-white border border-[#F1F5F9] shadow-sm'
