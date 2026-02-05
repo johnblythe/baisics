@@ -220,8 +220,8 @@ export function PulseHistoryView() {
         </div>
       </div>
 
-      {/* Goal CTA when no target weight is set */}
-      {targetWeight === null && !showGoalForm && (
+      {/* Goal section */}
+      {!showGoalForm && targetWeight === null && (
         <div className="bg-[#FFE5E5] rounded-xl px-4 py-3 flex items-center justify-between">
           <p className="text-sm text-[#0F172A]">Set a goal weight to see a target line on your chart</p>
           <button
@@ -233,8 +233,52 @@ export function PulseHistoryView() {
         </div>
       )}
 
-      {/* Inline goal form */}
-      {targetWeight === null && showGoalForm && (
+      {!showGoalForm && targetWeight !== null && (() => {
+        const latestWeight = chartData.length > 0 ? chartData[chartData.length - 1].weight : null;
+        const diff = latestWeight != null ? latestWeight - targetWeight : null;
+        const hitGoal = diff != null && diff <= 0;
+        return (
+          <div className={`rounded-xl px-4 py-3 flex items-center justify-between ${hitGoal ? 'bg-emerald-50 border border-emerald-200' : 'bg-white border border-[#F1F5F9]'}`}>
+            <div className="flex items-center gap-3">
+              <span className="inline-block w-5 border-t-2 border-dashed border-[#94A3B8]" />
+              <div>
+                <span className="text-sm font-medium text-[#0F172A]">Goal: {targetWeight} lbs</span>
+                {diff != null && (
+                  <span className={`ml-2 text-xs font-medium ${hitGoal ? 'text-emerald-600' : 'text-[#94A3B8]'}`}>
+                    {hitGoal
+                      ? `Hit! ${Math.abs(diff).toFixed(1)} lbs below`
+                      : `${diff.toFixed(1)} lbs to go`}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => { setGoalInput(String(targetWeight)); setShowGoalForm(true); setTimeout(() => goalInputRef.current?.focus(), 100); }}
+                className="text-xs text-[#94A3B8] hover:text-[#475569] transition-colors"
+              >
+                Edit
+              </button>
+              <button
+                onClick={async () => {
+                  await fetch('/api/goal', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ primaryGoal: 'HEALTH', targetWeight: null }),
+                  });
+                  setTargetWeight(null);
+                }}
+                className="text-xs text-[#94A3B8] hover:text-red-500 transition-colors"
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* Inline goal form (create or edit) */}
+      {showGoalForm && (
         <div className="bg-white rounded-xl border border-[#F1F5F9] px-4 py-3 flex items-center gap-3">
           <label className="text-sm text-[#475569] whitespace-nowrap">Goal weight:</label>
           <input
@@ -262,14 +306,6 @@ export function PulseHistoryView() {
           >
             Cancel
           </button>
-        </div>
-      )}
-
-      {/* Goal weight label when target is set */}
-      {targetWeight !== null && (
-        <div className="flex items-center gap-2 text-sm text-[#94A3B8]">
-          <span className="inline-block w-4 border-t-2 border-dashed border-[#94A3B8]" />
-          <span>Goal: {targetWeight} lbs</span>
         </div>
       )}
 
