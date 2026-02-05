@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import Link from 'next/link';
 import {
   LineChart,
   Line,
@@ -51,6 +52,11 @@ export function PulseHistoryView() {
   const [loading, setLoading] = useState(true);
   const [days, setDays] = useState(30);
 
+  // Photo modal state
+  const [viewingPhotos, setViewingPhotos] = useState<{date: string, displayDate: string} | null>(null);
+  const [modalPhotos, setModalPhotos] = useState<{id: string, base64Data: string, fileName: string}[]>([]);
+  const [loadingPhotos, setLoadingPhotos] = useState(false);
+
   useEffect(() => {
     setLoading(true);
     fetch(`/api/pulse/history?days=${days}`)
@@ -76,6 +82,20 @@ export function PulseHistoryView() {
     () => [...history].reverse(),
     [history]
   );
+
+  const viewPhotos = async (entry: HistoryEntry) => {
+    setViewingPhotos({ date: entry.date, displayDate: entry.displayDate });
+    setLoadingPhotos(true);
+    try {
+      const res = await fetch(`/api/pulse?date=${entry.date}`);
+      const data = await res.json();
+      setModalPhotos(data.pulse?.photos ?? []);
+    } catch {
+      setModalPhotos([]);
+    } finally {
+      setLoadingPhotos(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -114,7 +134,7 @@ export function PulseHistoryView() {
     return (
       <div className="max-w-2xl mx-auto px-4 py-16 text-center">
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#FFE5E5] mb-4">
-          <span className="text-3xl">📊</span>
+          <span className="text-3xl">&#x1F4CA;</span>
         </div>
         <h3 className="text-lg font-semibold text-[#0F172A] mb-1">
           Start your Daily Pulse
@@ -149,7 +169,7 @@ export function PulseHistoryView() {
       <div className="grid grid-cols-3 gap-3">
         <div className="bg-white rounded-xl border border-[#F1F5F9] p-4 text-center">
           <div className="text-2xl font-bold text-[#0F172A]">
-            🔥 {streak.current}
+            &#x1F525; {streak.current}
           </div>
           <div className="text-xs text-[#94A3B8] uppercase tracking-wider mt-1">
             Current Streak
@@ -172,6 +192,24 @@ export function PulseHistoryView() {
           </div>
         </div>
       </div>
+
+      {/* Goal CTA when no target weight is set */}
+      {targetWeight === null && (
+        <div className="bg-[#FFE5E5] rounded-xl px-4 py-3 flex items-center justify-between">
+          <p className="text-sm text-[#0F172A]">Set a goal weight to see a target line on your chart</p>
+          <Link href="/settings" className="text-sm font-medium text-[#FF6B6B] hover:underline whitespace-nowrap ml-3">
+            Set Goal
+          </Link>
+        </div>
+      )}
+
+      {/* Goal weight label when target is set */}
+      {targetWeight !== null && (
+        <div className="flex items-center gap-2 text-sm text-[#94A3B8]">
+          <span className="inline-block w-4 border-t-2 border-dashed border-[#94A3B8]" />
+          <span>Goal: {targetWeight} lbs</span>
+        </div>
+      )}
 
       {/* Weight Trend Chart */}
       {chartData.length > 1 && (
@@ -260,15 +298,46 @@ export function PulseHistoryView() {
                 )}
               </div>
               {entry.photoCount > 0 && (
-                <div className="flex items-center gap-1 text-xs text-[#94A3B8]">
+                <button
+                  onClick={() => viewPhotos(entry)}
+                  className="flex items-center gap-1 text-xs text-[#94A3B8] hover:text-[#FF6B6B] transition-colors"
+                >
                   <Camera className="w-3.5 h-3.5" />
                   <span>{entry.photoCount}</span>
-                </div>
+                </button>
               )}
             </div>
           ))}
         </div>
       </div>
+
+      {/* Photo viewing modal */}
+      {viewingPhotos && (
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4" onClick={() => setViewingPhotos(null)}>
+          <div className="bg-white rounded-2xl max-w-lg w-full max-h-[85vh] overflow-y-auto p-4" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-[#0F172A]">{viewingPhotos.displayDate}</h3>
+              <button onClick={() => setViewingPhotos(null)} className="text-[#94A3B8] hover:text-[#0F172A]">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            {loadingPhotos ? (
+              <div className="py-8 text-center text-[#94A3B8]">Loading photos...</div>
+            ) : modalPhotos.length === 0 ? (
+              <div className="py-8 text-center text-[#94A3B8]">No photos found</div>
+            ) : (
+              <div className="grid grid-cols-2 gap-3">
+                {modalPhotos.map(photo => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img key={photo.id} src={photo.base64Data} alt={photo.fileName} className="w-full rounded-lg object-cover aspect-square" />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

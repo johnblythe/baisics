@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { toast } from 'sonner';
 import { formatDateForAPI } from '@/lib/date-utils';
 
 // ---------------------------------------------------------------------------
@@ -104,12 +105,6 @@ function todayStr(): string {
   return formatDateForAPI(new Date());
 }
 
-function minDateStr(): string {
-  const d = new Date();
-  d.setDate(d.getDate() - 7);
-  return formatDateForAPI(d);
-}
-
 function formatDisplayDate(dateStr: string): string {
   const [year, month, day] = dateStr.split('-').map(Number);
   const d = new Date(year, month - 1, day);
@@ -119,6 +114,35 @@ function formatDisplayDate(dateStr: string): string {
     day: 'numeric',
     year: 'numeric',
   });
+}
+
+// ---------------------------------------------------------------------------
+// SVG Spinner (reusable)
+// ---------------------------------------------------------------------------
+
+function Spinner({ className = 'w-5 h-5' }: { className?: string }) {
+  return (
+    <svg
+      className={`animate-spin ${className}`}
+      fill="none"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
+      <circle
+        className="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="4"
+      />
+      <path
+        className="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+      />
+    </svg>
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -136,21 +160,18 @@ export default function PulseLogView() {
   const [existingPulse, setExistingPulse] = useState<Pulse | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [streakExtended, setStreakExtended] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [deletingPhotoId, setDeletingPhotoId] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const savedTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const streakTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const dateInputRef = useRef<HTMLInputElement>(null);
+  const dragCounterRef = useRef(0);
 
   // Fetch pulse for a given date --------------------------------------------
   const fetchPulse = useCallback(async (targetDate: string) => {
     setLoading(true);
     setError(null);
-    setSaved(false);
-    setStreakExtended(false);
     try {
       const res = await fetch(`/api/pulse?date=${targetDate}`);
       if (!res.ok) throw new Error('Failed to load pulse');
@@ -186,8 +207,6 @@ export default function PulseLogView() {
   useEffect(() => {
     return () => {
       photos.forEach((p) => URL.revokeObjectURL(p.preview));
-      if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
-      if (streakTimerRef.current) clearTimeout(streakTimerRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -199,16 +218,12 @@ export default function PulseLogView() {
   };
 
   const handleWeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    // Allow empty, digits, and one decimal point
-    if (val === '' || /^\d*\.?\d{0,1}$/.test(val)) {
-      setWeight(val);
-    }
+    setWeight(e.target.value);
   };
 
-  const handlePhotoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
+  const processFiles = async (files: File[]) => {
+    const imageFiles = files.filter((f) => f.type.startsWith('image/'));
+    if (imageFiles.length === 0) return;
 
     const existingCount = (existingPulse?.photos?.length ?? 0) + photos.length;
     const remaining = 4 - existingCount;
@@ -217,21 +232,50 @@ export default function PulseLogView() {
       return;
     }
 
-    const filesToProcess = Array.from(files).slice(0, remaining);
+    const filesToProcess = imageFiles.slice(0, remaining);
 
     try {
       const compressed = await Promise.all(filesToProcess.map(compressImage));
       const newPhotos: LocalPhoto[] = compressed.map((c) => ({
         ...c,
-        preview: c.base64Data, // base64 works as img src directly
+        preview: c.base64Data,
       }));
       setPhotos((prev) => [...prev, ...newPhotos]);
     } catch {
       setError('Failed to process photo. Try a different image.');
     }
+  };
 
+  const handlePhotoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    await processFiles(Array.from(files));
     // Reset file input so same file can be re-selected
     if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    dragCounterRef.current = 0;
+    setIsDragging(false);
+    const files = Array.from(e.dataTransfer.files);
+    await processFiles(files);
+  };
+
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    dragCounterRef.current++;
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    dragCounterRef.current--;
+    if (dragCounterRef.current === 0) setIsDragging(false);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
   };
 
   const removeLocalPhoto = (index: number) => {
@@ -304,17 +348,14 @@ export default function PulseLogView() {
       setStreak(data.streak);
       setPhotos([]); // clear local photos — they're saved now
 
-      // Brief success feedback
-      setSaved(true);
-      savedTimerRef.current = setTimeout(() => setSaved(false), 2500);
+      // Toast feedback
+      toast.success('Pulse saved');
 
-      // Streak toast
       if (data.streak.extended) {
-        setStreakExtended(true);
-        streakTimerRef.current = setTimeout(
-          () => setStreakExtended(false),
-          3500,
-        );
+        toast('\uD83D\uDD25 ' + data.streak.current + ' day streak!', {
+          icon: '\uD83D\uDD25',
+          duration: 3500,
+        });
       }
     } catch (err) {
       setError(
@@ -370,17 +411,30 @@ export default function PulseLogView() {
             <span className="text-sm text-[#475569]">
               {formatDisplayDate(date)}
             </span>
-            <label className="text-xs text-[#FF6B6B] cursor-pointer hover:underline">
+            <button
+              type="button"
+              onClick={() => {
+                try {
+                  dateInputRef.current?.showPicker();
+                } catch {
+                  // fallback: focus triggers picker on some browsers
+                  dateInputRef.current?.focus();
+                }
+              }}
+              className="text-xs text-[#FF6B6B] cursor-pointer hover:underline font-medium bg-transparent border-none outline-none"
+            >
               change
-              <input
-                type="date"
-                value={date}
-                max={todayStr()}
-                min={minDateStr()}
-                onChange={handleDateChange}
-                className="sr-only"
-              />
-            </label>
+            </button>
+            <input
+              ref={dateInputRef}
+              type="date"
+              value={date}
+              max={todayStr()}
+              onChange={handleDateChange}
+              className="absolute w-0 h-0 overflow-hidden opacity-0 pointer-events-none"
+              tabIndex={-1}
+              aria-hidden="true"
+            />
           </div>
         </div>
 
@@ -438,7 +492,17 @@ export default function PulseLogView() {
       {/* ---------------------------------------------------------------- */}
       {/* Photo Section                                                    */}
       {/* ---------------------------------------------------------------- */}
-      <div className="bg-white rounded-2xl border border-[#F1F5F9] p-6">
+      <div
+        className={`bg-white rounded-2xl border p-6 transition-colors ${
+          isDragging
+            ? 'border-[#FF6B6B] bg-[#FFE5E5]/30'
+            : 'border-[#F1F5F9]'
+        }`}
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
+      >
         {/* Existing photos */}
         {existingPulse?.photos && existingPulse.photos.length > 0 && (
           <div className="grid grid-cols-4 gap-2 mb-4">
@@ -458,7 +522,7 @@ export default function PulseLogView() {
                   aria-label={`Delete photo ${photo.fileName}`}
                 >
                   {deletingPhotoId === photo.id ? (
-                    <span className="animate-spin">&#8635;</span>
+                    <Spinner className="w-3.5 h-3.5" />
                   ) : (
                     '\u00D7'
                   )}
@@ -492,12 +556,16 @@ export default function PulseLogView() {
           </div>
         )}
 
-        {/* Add photo button */}
+        {/* Add photo button / drop zone */}
         {canAddPhoto && (
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="w-full flex items-center justify-center gap-2 py-4 border-2 border-dashed border-[#F1F5F9] rounded-xl text-[#94A3B8] hover:border-[#FF6B6B] hover:text-[#FF6B6B] transition-colors"
+            className={`w-full flex items-center justify-center gap-2 py-4 border-2 border-dashed rounded-xl transition-colors ${
+              isDragging
+                ? 'border-[#FF6B6B] text-[#FF6B6B] bg-[#FFE5E5]/20'
+                : 'border-[#F1F5F9] text-[#94A3B8] hover:border-[#FF6B6B] hover:text-[#FF6B6B]'
+            }`}
           >
             <svg
               className="w-5 h-5"
@@ -519,7 +587,9 @@ export default function PulseLogView() {
                 d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
               />
             </svg>
-            <span className="text-sm font-medium">Add Photo</span>
+            <span className="text-sm font-medium">
+              {isDragging ? 'Drop photos here' : 'Add Photo'}
+            </span>
           </button>
         )}
 
@@ -570,45 +640,8 @@ export default function PulseLogView() {
       >
         {saving ? (
           <>
-            <svg
-              className="animate-spin w-5 h-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-              />
-            </svg>
+            <Spinner />
             Saving...
-          </>
-        ) : saved ? (
-          <>
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-            Saved!
           </>
         ) : (
           <>
@@ -630,25 +663,6 @@ export default function PulseLogView() {
           </>
         )}
       </button>
-
-      {/* ---------------------------------------------------------------- */}
-      {/* Streak toast                                                     */}
-      {/* ---------------------------------------------------------------- */}
-      {streakExtended && (
-        <div
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-[#0F172A] text-white px-5 py-3 rounded-xl shadow-lg flex items-center gap-2 animate-bounce z-50"
-          role="status"
-          aria-live="polite"
-        >
-          <span aria-hidden="true">&#x1F525;</span>
-          <span
-            className="font-bold"
-            style={{ fontFamily: 'Space Mono, monospace' }}
-          >
-            {streak.current} day streak!
-          </span>
-        </div>
-      )}
     </div>
   );
 }
