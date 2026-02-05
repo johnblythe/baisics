@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
@@ -24,7 +25,11 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
   const params = await searchParams;
   const claimToken = params.claim;
-  const personalDashboard = params.personal === 'true';
+
+  // Check mode cookie in addition to ?personal=true query param
+  const cookieStore = await cookies();
+  const modeCookie = cookieStore.get('baisics-mode')?.value;
+  const personalDashboard = params.personal === 'true' || modeCookie === 'consumer';
   let claimData: { source?: string; toolData?: Record<string, unknown> } | null = null;
 
   // Check if user is a coach and redirect to coach dashboard (unless personal=true)

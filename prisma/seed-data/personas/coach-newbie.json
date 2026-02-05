@@ -1,0 +1,11 @@
+{
+  "id": "coach-newbie",
+  "user": {
+    "email": "coach-new@test.baisics.app",
+    "name": "Nina Newcoach",
+    "isPremium": true,
+    "isCoach": true,
+    "streakCurrent": 0,
+    "streakLongest": 0
+  }
+}

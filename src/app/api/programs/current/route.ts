@@ -103,7 +103,10 @@ export async function GET() {
 
     const program = await prisma.program.findFirst({
       where: {
-        createdBy: userId,
+        OR: [
+          { userId: userId, active: true },
+          { createdBy: userId, userId: null, isTemplate: false, active: true }
+        ]
       },
       orderBy: {
         createdAt: 'desc',

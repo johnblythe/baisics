@@ -10,15 +10,23 @@ export default function ProgramRedirectPage() {
   useEffect(() => {
     async function fetchCurrentProgram() {
       try {
-        const response = await fetch('/api/programs/current');
-        if (response.ok) {
-          const program = await response.json();
+        const [programRes, userRes] = await Promise.all([fetch('/api/programs/current'), fetch('/api/user')]);
+        if (programRes.ok) {
+          const program = await programRes.json();
           if (program?.id) {
             router.replace(`/program/${program.id}`);
             return;
           }
         }
-        // No program found, redirect to create one
+        // No program found - coaches go to coach dashboard, others to /hi
+        if (userRes.ok) {
+          const user = await userRes.json();
+          if (user?.isCoach) {
+            router.replace('/coach/dashboard');
+            return;
+          }
+        }
+
         router.replace('/hi');
       } catch (error) {
         console.error('Failed to fetch current program:', error);
