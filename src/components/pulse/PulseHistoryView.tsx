@@ -486,7 +486,7 @@ export function PulseHistoryView() {
                     <MoreHorizontal className="w-4 h-4" />
                   </button>
                   {showGoalMenu && (
-                    <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-[#F1F5F9] py-1 z-10 min-w-[120px]">
+                    <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-[#F1F5F9] py-1 z-50 min-w-[120px]">
                       <button
                         onClick={() => {
                           setGoalInput(String(targetWeight));
