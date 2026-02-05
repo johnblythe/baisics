@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
-import Link from 'next/link';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import {
   LineChart,
   Line,
@@ -52,6 +51,12 @@ export function PulseHistoryView() {
   const [loading, setLoading] = useState(true);
   const [days, setDays] = useState(30);
 
+  // Goal inline form
+  const [goalInput, setGoalInput] = useState('');
+  const [settingGoal, setSettingGoal] = useState(false);
+  const [showGoalForm, setShowGoalForm] = useState(false);
+  const goalInputRef = useRef<HTMLInputElement>(null);
+
   // Photo modal state
   const [viewingPhotos, setViewingPhotos] = useState<{date: string, displayDate: string} | null>(null);
   const [modalPhotos, setModalPhotos] = useState<{id: string, base64Data: string, fileName: string}[]>([]);
@@ -94,6 +99,28 @@ export function PulseHistoryView() {
       setModalPhotos([]);
     } finally {
       setLoadingPhotos(false);
+    }
+  };
+
+  const saveGoalWeight = async () => {
+    const weight = parseFloat(goalInput);
+    if (isNaN(weight) || weight <= 0) return;
+    setSettingGoal(true);
+    try {
+      const res = await fetch('/api/goal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ primaryGoal: 'LOSE_WEIGHT', targetWeight: weight }),
+      });
+      if (res.ok) {
+        setTargetWeight(weight);
+        setShowGoalForm(false);
+        setGoalInput('');
+      }
+    } catch {
+      // silent
+    } finally {
+      setSettingGoal(false);
     }
   };
 
@@ -194,12 +221,47 @@ export function PulseHistoryView() {
       </div>
 
       {/* Goal CTA when no target weight is set */}
-      {targetWeight === null && (
+      {targetWeight === null && !showGoalForm && (
         <div className="bg-[#FFE5E5] rounded-xl px-4 py-3 flex items-center justify-between">
           <p className="text-sm text-[#0F172A]">Set a goal weight to see a target line on your chart</p>
-          <Link href="/settings" className="text-sm font-medium text-[#FF6B6B] hover:underline whitespace-nowrap ml-3">
+          <button
+            onClick={() => { setShowGoalForm(true); setTimeout(() => goalInputRef.current?.focus(), 100); }}
+            className="text-sm font-medium text-[#FF6B6B] hover:underline whitespace-nowrap ml-3"
+          >
             Set Goal
-          </Link>
+          </button>
+        </div>
+      )}
+
+      {/* Inline goal form */}
+      {targetWeight === null && showGoalForm && (
+        <div className="bg-white rounded-xl border border-[#F1F5F9] px-4 py-3 flex items-center gap-3">
+          <label className="text-sm text-[#475569] whitespace-nowrap">Goal weight:</label>
+          <input
+            ref={goalInputRef}
+            type="number"
+            step="0.1"
+            inputMode="decimal"
+            placeholder="e.g. 175"
+            value={goalInput}
+            onChange={(e) => setGoalInput(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') saveGoalWeight(); }}
+            className="w-24 px-2 py-1.5 text-sm border border-[#E2E8F0] rounded-lg text-center outline-none focus:border-[#FF6B6B]"
+          />
+          <span className="text-xs text-[#94A3B8]">lbs</span>
+          <button
+            onClick={saveGoalWeight}
+            disabled={settingGoal || !goalInput}
+            className="px-3 py-1.5 text-sm font-medium text-white bg-[#FF6B6B] hover:bg-[#EF5350] disabled:bg-[#F1F5F9] disabled:text-[#94A3B8] rounded-lg transition-colors"
+          >
+            {settingGoal ? 'Saving...' : 'Save'}
+          </button>
+          <button
+            onClick={() => { setShowGoalForm(false); setGoalInput(''); }}
+            className="text-xs text-[#94A3B8] hover:text-[#475569]"
+          >
+            Cancel
+          </button>
         </div>
       )}
 
