@@ -497,8 +497,8 @@ function DashboardContent() {
       if (week2CheckIn?.shouldShow && !recovery?.needsRecovery) {
         const week2DismissedKey = `week2-checkin-dismissed-${programId}`;
         const dismissCount = parseInt(localStorage.getItem(week2DismissedKey) || '0', 10);
-        // Stop showing after 3 dismissals - user clearly doesn't want it
-        if (dismissCount < 3) {
+        // Stop showing after 2 dismissals - user clearly doesn't want it
+        if (dismissCount < 2) {
           setShowWeek2CheckIn(true);
         }
       }
