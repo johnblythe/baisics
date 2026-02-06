@@ -22,7 +22,9 @@ import {
   CheckCircle,
   MoreHorizontal,
   X,
+  AlertCircle,
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface HistoryEntry {
   date: string;
@@ -113,6 +115,7 @@ export function PulseHistoryView() {
   const [targetWeight, setTargetWeight] = useState<number | null>(null);
   const [totalPulses, setTotalPulses] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [days, setDays] = useState(30);
 
   // Goal inline form
@@ -146,16 +149,20 @@ export function PulseHistoryView() {
 
   useEffect(() => {
     setLoading(true);
+    setFetchError(null);
     fetch(`/api/pulse/history?days=${days}`)
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error(`Failed to load history (${r.status})`);
+        return r.json();
+      })
       .then((data: HistoryResponse) => {
         setHistory(data.history);
         setStreak(data.streak);
         setTargetWeight(data.targetWeight);
         setTotalPulses(data.totalPulses);
       })
-      .catch(() => {
-        // silent fail — empty state handles it
+      .catch((err) => {
+        setFetchError(err.message || 'Failed to load history');
       })
       .finally(() => setLoading(false));
   }, [days]);
@@ -173,15 +180,20 @@ export function PulseHistoryView() {
 
   const recentEntries = useMemo(() => [...history].reverse(), [history]);
 
+  const [photoFetchError, setPhotoFetchError] = useState<string | null>(null);
+
   const viewPhotos = async (entry: HistoryEntry) => {
     setViewingPhotos({ date: entry.date, displayDate: entry.displayDate });
     setActivePhotoIndex(0);
     setLoadingPhotos(true);
+    setPhotoFetchError(null);
     try {
       const res = await fetch(`/api/pulse?date=${entry.date}`);
+      if (!res.ok) throw new Error('Failed to load photos');
       const data = await res.json();
       setModalPhotos(data.pulse?.photos ?? []);
-    } catch {
+    } catch (err) {
+      setPhotoFetchError(err instanceof Error ? err.message : 'Failed to load photos');
       setModalPhotos([]);
     } finally {
       setLoadingPhotos(false);
@@ -190,7 +202,10 @@ export function PulseHistoryView() {
 
   const saveGoalWeight = async () => {
     const weight = parseFloat(goalInput);
-    if (isNaN(weight) || weight <= 0) return;
+    if (isNaN(weight) || weight <= 0) {
+      toast.error('Please enter a valid weight');
+      return;
+    }
     setSettingGoal(true);
     try {
       const res = await fetch('/api/goal', {
@@ -198,13 +213,13 @@ export function PulseHistoryView() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ primaryGoal: 'LOSE_WEIGHT', targetWeight: weight }),
       });
-      if (res.ok) {
-        setTargetWeight(weight);
-        setShowGoalForm(false);
-        setGoalInput('');
-      }
+      if (!res.ok) throw new Error('Failed to save goal');
+      setTargetWeight(weight);
+      setShowGoalForm(false);
+      setGoalInput('');
+      toast.success('Goal saved');
     } catch {
-      // silent
+      toast.error('Failed to save goal. Please try again.');
     } finally {
       setSettingGoal(false);
     }
@@ -280,6 +295,30 @@ export function PulseHistoryView() {
             ))}
           </div>
         </div>
+      </div>
+    );
+  }
+
+  /* ─── Error State ─── */
+  if (fetchError) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-16 text-center">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-50 mb-4">
+          <AlertCircle className="w-8 h-8 text-red-400" />
+        </div>
+        <h3
+          className="text-lg font-semibold text-[#0F172A] mb-2"
+          style={{ fontFamily: 'Outfit, sans-serif' }}
+        >
+          Couldn&apos;t load history
+        </h3>
+        <p className="text-sm text-[#94A3B8] mb-6 max-w-xs mx-auto">{fetchError}</p>
+        <button
+          onClick={() => setDays(days)} // triggers refetch
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#FF6B6B] hover:bg-[#EF5350] text-white text-sm font-medium rounded-full transition-colors shadow-sm"
+        >
+          Try again
+        </button>
       </div>
     );
   }
@@ -500,13 +539,21 @@ export function PulseHistoryView() {
                       </button>
                       <button
                         onClick={async () => {
-                          await fetch('/api/goal', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ primaryGoal: 'HEALTH', targetWeight: null }),
-                          });
+                          const prevWeight = targetWeight;
                           setTargetWeight(null);
                           setShowGoalMenu(false);
+                          try {
+                            const res = await fetch('/api/goal', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ primaryGoal: 'HEALTH', targetWeight: null }),
+                            });
+                            if (!res.ok) throw new Error('Failed to remove goal');
+                            toast.success('Goal removed');
+                          } catch {
+                            setTargetWeight(prevWeight); // rollback
+                            toast.error('Failed to remove goal. Please try again.');
+                          }
                         }}
                         className="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors"
                       >
@@ -853,6 +900,11 @@ export function PulseHistoryView() {
                     <div className="w-4 h-4 border-2 border-[#F1F5F9] border-t-[#FF6B6B] rounded-full animate-spin" />
                     Loading photos...
                   </div>
+                </div>
+              ) : photoFetchError ? (
+                <div className="py-12 text-center">
+                  <AlertCircle className="w-8 h-8 text-red-400 mx-auto mb-2" />
+                  <p className="text-sm text-[#94A3B8]">{photoFetchError}</p>
                 </div>
               ) : modalPhotos.length === 0 ? (
                 <div className="py-12 text-center text-sm text-[#94A3B8]">No photos found</div>

@@ -4,6 +4,22 @@ import { prisma } from "@/lib/prisma";
 import { updateStreak, getStreak } from "@/lib/streaks";
 
 const MAX_PHOTOS = 4;
+const MAX_PHOTO_SIZE_BYTES = 5 * 1024 * 1024; // 5MB per photo
+
+// Validate base64 data URL format
+function isValidBase64Image(data: string): boolean {
+  if (!data || typeof data !== 'string') return false;
+  // Must be a data URL with image MIME type
+  const dataUrlRegex = /^data:image\/(jpeg|jpg|png|gif|webp);base64,[A-Za-z0-9+/=]+$/i;
+  return dataUrlRegex.test(data);
+}
+
+// Estimate base64 size (base64 is ~4/3 of original)
+function estimateBase64Size(data: string): number {
+  const base64Part = data.split(',')[1];
+  if (!base64Part) return 0;
+  return Math.ceil((base64Part.length * 3) / 4);
+}
 
 function parseDate(dateStr: string): Date | null {
   const match = dateStr.match(/^\d{4}-\d{2}-\d{2}$/);
@@ -93,9 +109,42 @@ export async function POST(request: Request) {
       }
     }
 
-    // Validate photos
-    if (photos && (!Array.isArray(photos) || photos.length > MAX_PHOTOS)) {
-      return NextResponse.json({ error: `Maximum ${MAX_PHOTOS} photos allowed` }, { status: 400 });
+    // Validate photos array
+    if (photos && !Array.isArray(photos)) {
+      return NextResponse.json({ error: "Photos must be an array" }, { status: 400 });
+    }
+
+    // Validate each photo
+    if (photos && photos.length > 0) {
+      for (const photo of photos) {
+        if (!photo.fileName || typeof photo.fileName !== 'string') {
+          return NextResponse.json({ error: "Each photo must have a fileName" }, { status: 400 });
+        }
+        if (!isValidBase64Image(photo.base64Data)) {
+          return NextResponse.json({ error: "Invalid image format. Must be a valid base64 data URL (jpeg, png, gif, or webp)" }, { status: 400 });
+        }
+        if (estimateBase64Size(photo.base64Data) > MAX_PHOTO_SIZE_BYTES) {
+          return NextResponse.json({ error: "Photo exceeds maximum size of 5MB" }, { status: 400 });
+        }
+      }
+    }
+
+    // Check existing photo count + new photos doesn't exceed limit
+    const existingPulse = await prisma.dailyPulse.findUnique({
+      where: { userId_date: { userId, date } },
+      include: { _count: { select: { photos: true } } },
+    });
+    const existingPhotoCount = existingPulse?._count?.photos ?? 0;
+    const newPhotoCount = photos?.length ?? 0;
+    if (existingPhotoCount + newPhotoCount > MAX_PHOTOS) {
+      return NextResponse.json({
+        error: `Cannot add ${newPhotoCount} photo(s). You have ${existingPhotoCount} and max is ${MAX_PHOTOS}.`
+      }, { status: 400 });
+    }
+
+    // Validate notes length
+    if (notes && typeof notes === 'string' && notes.length > 2000) {
+      return NextResponse.json({ error: "Notes must be 2000 characters or less" }, { status: 400 });
     }
 
     // Upsert the daily pulse

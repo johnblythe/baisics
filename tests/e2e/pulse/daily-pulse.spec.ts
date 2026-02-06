@@ -44,7 +44,8 @@ test.describe("Daily Pulse", () => {
       await expect(page.getByRole("button", { name: /Save Pulse/i })).toBeVisible({ timeout: 5000 });
 
       // Log tab should have active styling (dark bg + white text)
-      const logTab = page.locator("button", { hasText: "Log" }).first();
+      // Note: Tabs use Link components (render as <a>), not buttons
+      const logTab = page.locator("a", { hasText: "Log" }).first();
       await expect(logTab).toBeVisible();
       await expect(logTab).toHaveClass(/bg-\[#0F172A\]/);
     });
@@ -167,15 +168,18 @@ test.describe("Daily Pulse", () => {
       await page.goto("/pulse");
       await page.waitForSelector("main", { timeout: 10000 });
 
-      // Click History tab
-      const historyTab = page.locator("button", { hasText: "History" });
+      // Click History tab (tabs use Link components, render as <a>)
+      const historyTab = page.locator("a", { hasText: "History" });
       await historyTab.click();
+
+      // Should navigate to /pulse/history
+      await page.waitForURL("**/pulse/history", { timeout: 5000 });
 
       // History tab should become active
       await expect(historyTab).toHaveClass(/bg-\[#0F172A\]/, { timeout: 3000 });
 
       // Log tab should no longer have active styling
-      const logTab = page.locator("button", { hasText: "Log" }).first();
+      const logTab = page.locator("a", { hasText: "Log" }).first();
       await expect(logTab).not.toHaveClass(/bg-\[#0F172A\]/);
 
       // History content should appear — for a fresh user, the empty state
@@ -190,15 +194,17 @@ test.describe("Daily Pulse", () => {
       await page.goto("/pulse");
       await page.waitForSelector("main", { timeout: 10000 });
 
-      // Switch to History
-      await page.locator("button", { hasText: "History" }).click();
+      // Switch to History (tabs use Link components, render as <a>)
+      await page.locator("a", { hasText: "History" }).click();
+      await page.waitForURL("**/pulse/history", { timeout: 5000 });
       await expect(
-        page.locator("button", { hasText: "History" })
+        page.locator("a", { hasText: "History" })
       ).toHaveClass(/bg-\[#0F172A\]/, { timeout: 3000 });
 
       // Switch back to Log
-      const logTab = page.locator("button", { hasText: "Log" }).first();
+      const logTab = page.locator("a", { hasText: "Log" }).first();
       await logTab.click();
+      await page.waitForURL("**/pulse", { timeout: 5000 });
 
       // Log tab should be active again
       await expect(logTab).toHaveClass(/bg-\[#0F172A\]/, { timeout: 3000 });
@@ -216,15 +222,13 @@ test.describe("Daily Pulse", () => {
     test("should show empty state when no pulses exist", async ({ page }) => {
       const persona = getPersona("alex");
       await loginAsUser(page, persona.email);
-      await page.goto("/pulse");
+      // Navigate directly to history route
+      await page.goto("/pulse/history");
       await page.waitForSelector("main", { timeout: 10000 });
-
-      // Switch to History tab
-      await page.locator("button", { hasText: "History" }).click();
 
       // Should show the empty state message
       await expect(page.getByText("Start your Daily Pulse")).toBeVisible({ timeout: 5000 });
-      await expect(page.getByText("Track your weight daily to see trends here")).toBeVisible({ timeout: 5000 });
+      await expect(page.getByText(/Track your weight daily/i)).toBeVisible({ timeout: 5000 });
     });
 
     test("should show streak stats cards when pulses exist", async ({ page }) => {
@@ -237,16 +241,14 @@ test.describe("Daily Pulse", () => {
         data: { date: today, weight: 175.0, notes: "Test" },
       });
 
-      await page.goto("/pulse");
+      // Navigate directly to history route
+      await page.goto("/pulse/history");
       await page.waitForSelector("main", { timeout: 10000 });
 
-      // Switch to History tab
-      await page.locator("button", { hasText: "History" }).click();
-
       // Should see the three stat cards
-      await expect(page.getByText("Current Streak")).toBeVisible({ timeout: 5000 });
+      await expect(page.getByText("Day Streak")).toBeVisible({ timeout: 5000 });
       await expect(page.getByText("Best Streak")).toBeVisible({ timeout: 5000 });
-      await expect(page.getByText("Total Check-ins")).toBeVisible({ timeout: 5000 });
+      await expect(page.getByText("Check-ins")).toBeVisible({ timeout: 5000 });
     });
 
     test("should show recent entries list when pulses exist", async ({ page }) => {
@@ -259,11 +261,9 @@ test.describe("Daily Pulse", () => {
         data: { date: today, weight: 172.3 },
       });
 
-      await page.goto("/pulse");
+      // Navigate directly to history route
+      await page.goto("/pulse/history");
       await page.waitForSelector("main", { timeout: 10000 });
-
-      // Switch to History tab
-      await page.locator("button", { hasText: "History" }).click();
 
       // Should show "Recent Entries" heading
       await expect(page.getByText("Recent Entries")).toBeVisible({ timeout: 5000 });
@@ -282,11 +282,9 @@ test.describe("Daily Pulse", () => {
         data: { date: today, weight: 170.0 },
       });
 
-      await page.goto("/pulse");
+      // Navigate directly to history route
+      await page.goto("/pulse/history");
       await page.waitForSelector("main", { timeout: 10000 });
-
-      // Switch to History tab
-      await page.locator("button", { hasText: "History" }).click();
 
       // Should show period selector buttons: 7d, 30d, 90d
       await expect(page.getByRole("button", { name: "7d" })).toBeVisible({ timeout: 5000 });
@@ -341,6 +339,77 @@ test.describe("Daily Pulse", () => {
       const pulseLink = page.locator("header a[href='/pulse']");
       await expect(pulseLink).toBeVisible({ timeout: 5000 });
       await expect(pulseLink).toHaveText(/Pulse/);
+    });
+  });
+
+  // --------------------------------------------------------------------------
+  // Photo Upload
+  // --------------------------------------------------------------------------
+
+  test.describe("Photo Upload", () => {
+    test("should allow uploading a photo", async ({ page }) => {
+      const persona = getPersona("alex");
+      await loginAsUser(page, persona.email);
+      await page.goto("/pulse");
+      await page.waitForSelector("main", { timeout: 10000 });
+
+      // Wait for the form to load
+      await expect(page.getByRole("button", { name: /Save Pulse/i })).toBeVisible({ timeout: 5000 });
+
+      // Upload a test image via file input
+      const fileInput = page.locator('input[type="file"]');
+
+      // Create a simple 1x1 PNG as base64 test data
+      // Using a data URL to create a small test image
+      const testImageBuffer = Buffer.from(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+        'base64'
+      );
+
+      await fileInput.setInputFiles({
+        name: 'test-photo.png',
+        mimeType: 'image/png',
+        buffer: testImageBuffer,
+      });
+
+      // Should show the photo preview
+      await expect(page.locator('img[alt="Preview 1"]')).toBeVisible({ timeout: 5000 });
+
+      // Should see "1 photo" indicator or similar
+      await expect(page.locator('text=/1.*photo|photo.*1/i')).toBeVisible({ timeout: 5000 });
+    });
+
+    test("should allow removing a photo before saving", async ({ page }) => {
+      const persona = getPersona("alex");
+      await loginAsUser(page, persona.email);
+      await page.goto("/pulse");
+      await page.waitForSelector("main", { timeout: 10000 });
+
+      // Wait for the form to load
+      await expect(page.getByRole("button", { name: /Save Pulse/i })).toBeVisible({ timeout: 5000 });
+
+      // Upload a test image
+      const fileInput = page.locator('input[type="file"]');
+      const testImageBuffer = Buffer.from(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+        'base64'
+      );
+
+      await fileInput.setInputFiles({
+        name: 'test-photo.png',
+        mimeType: 'image/png',
+        buffer: testImageBuffer,
+      });
+
+      // Should show the photo preview
+      await expect(page.locator('img[alt="Preview 1"]')).toBeVisible({ timeout: 5000 });
+
+      // Click the remove button (× on the photo)
+      const removeButton = page.locator('button[aria-label="Remove photo"]').first();
+      await removeButton.click();
+
+      // Photo should no longer be visible
+      await expect(page.locator('img[alt="Preview 1"]')).not.toBeVisible({ timeout: 3000 });
     });
   });
 });
