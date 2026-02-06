@@ -496,8 +496,9 @@ function DashboardContent() {
       // Show Week 2 check-in if needed and not showing recovery screen
       if (week2CheckIn?.shouldShow && !recovery?.needsRecovery) {
         const week2DismissedKey = `week2-checkin-dismissed-${programId}`;
-        const lastDismissed = sessionStorage.getItem(week2DismissedKey);
-        if (!lastDismissed) {
+        const dismissCount = parseInt(localStorage.getItem(week2DismissedKey) || '0', 10);
+        // Stop showing after 3 dismissals - user clearly doesn't want it
+        if (dismissCount < 3) {
           setShowWeek2CheckIn(true);
         }
       }
@@ -636,9 +637,12 @@ function DashboardContent() {
   }, [program?.id, recoveryData?.daysSinceLastWorkout, handleRecoveryDismiss]);
 
   // Handle Week 2 check-in dismiss (ask me later)
+  // Uses localStorage with counter - stops showing after 3 dismissals
   const handleWeek2CheckInDismiss = useCallback(() => {
     if (program?.id) {
-      sessionStorage.setItem(`week2-checkin-dismissed-${program.id}`, 'true');
+      const key = `week2-checkin-dismissed-${program.id}`;
+      const currentCount = parseInt(localStorage.getItem(key) || '0', 10);
+      localStorage.setItem(key, String(currentCount + 1));
     }
     setShowWeek2CheckIn(false);
   }, [program?.id]);

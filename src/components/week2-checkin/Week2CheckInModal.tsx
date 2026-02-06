@@ -113,7 +113,7 @@ export function Week2CheckInModal({
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden"
+          className="w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
         >
           <AnimatePresence mode="wait">
@@ -125,28 +125,28 @@ export function Week2CheckInModal({
                 exit={{ opacity: 0 }}
               >
                 {/* Header */}
-                <div className="px-6 py-8 bg-gradient-to-br from-[#FFE5E5] to-white text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#FFE5E5] flex items-center justify-center">
-                    <span className="text-3xl">👋</span>
+                <div className="px-4 sm:px-6 py-6 sm:py-8 bg-gradient-to-br from-[#FFE5E5] to-white text-center">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 rounded-full bg-[#FFE5E5] flex items-center justify-center">
+                    <span className="text-2xl sm:text-3xl">👋</span>
                   </div>
-                  <h2 className="text-2xl font-bold text-[#0F172A] mb-2">
+                  <h2 className="text-xl sm:text-2xl font-bold text-[#0F172A] mb-1 sm:mb-2">
                     Week {data.programStats.weekNumber} Check-in
                   </h2>
-                  <p className="text-[#475569]">
+                  <p className="text-sm sm:text-base text-[#475569]">
                     You&apos;ve completed {data.completedWorkouts} workouts! How&apos;s it going?
                   </p>
                 </div>
 
                 {/* Original Goals Reminder */}
                 {data.originalGoals.trainingGoal && (
-                  <div className="px-6 py-4 bg-[#F8FAFC] border-y border-[#E2E8F0]">
+                  <div className="px-4 sm:px-6 py-3 sm:py-4 bg-[#F8FAFC] border-y border-[#E2E8F0]">
                     <p
-                      className="text-xs font-medium text-[#94A3B8] uppercase tracking-wider mb-2"
+                      className="text-[10px] sm:text-xs font-medium text-[#94A3B8] uppercase tracking-wider mb-1 sm:mb-2"
                       style={{ fontFamily: "'Space Mono', monospace" }}
                     >
                       Your original goal
                     </p>
-                    <p className="text-[#0F172A] font-medium">
+                    <p className="text-sm sm:text-base text-[#0F172A] font-medium">
                       {formatGoal(data.originalGoals.trainingGoal)}
                       {data.originalGoals.daysAvailable && (
                         <span className="text-[#64748B]">
@@ -158,15 +158,15 @@ export function Week2CheckInModal({
                   </div>
                 )}
 
-                {/* Options Grid */}
-                <div className="px-6 py-6">
-                  <div className="grid grid-cols-2 gap-3">
+                {/* Options Grid - stacks on very small screens */}
+                <div className="px-4 sm:px-6 py-4 sm:py-6">
+                  <div className="grid grid-cols-2 gap-2 sm:gap-3">
                     {OPTIONS.map((option) => (
                       <button
                         key={option.id}
                         onClick={() => setSelectedOption(option.id)}
                         className={`
-                          p-4 rounded-xl border-2 text-left transition-all duration-200
+                          p-3 sm:p-4 rounded-xl border-2 text-left transition-all duration-200
                           ${
                             selectedOption === option.id
                               ? 'border-[#FF6B6B] bg-[#FFE5E5]/50 shadow-md'
@@ -174,21 +174,21 @@ export function Week2CheckInModal({
                           }
                         `}
                       >
-                        <div className="text-2xl mb-2">{option.emoji}</div>
-                        <div className="font-semibold text-[#0F172A] mb-1">{option.label}</div>
-                        <div className="text-xs text-[#64748B]">{option.description}</div>
+                        <div className="text-xl sm:text-2xl mb-1 sm:mb-2">{option.emoji}</div>
+                        <div className="font-semibold text-sm sm:text-base text-[#0F172A] mb-0.5 sm:mb-1">{option.label}</div>
+                        <div className="text-[11px] sm:text-xs text-[#64748B] leading-tight">{option.description}</div>
                       </button>
                     ))}
                   </div>
                 </div>
 
                 {/* Action Buttons */}
-                <div className="px-6 pb-6 space-y-3">
+                <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-2 sm:space-y-3">
                   <button
                     onClick={handleSubmit}
                     disabled={!selectedOption || isSubmitting}
                     className={`
-                      w-full px-6 py-4 font-semibold rounded-xl transition-all duration-200
+                      w-full px-4 sm:px-6 py-3 sm:py-4 font-semibold rounded-xl transition-all duration-200 text-sm sm:text-base
                       ${
                         selectedOption && !isSubmitting
                           ? 'bg-[#FF6B6B] text-white hover:bg-[#EF5350] shadow-lg shadow-[#FF6B6B]/25'
@@ -198,7 +198,7 @@ export function Week2CheckInModal({
                   >
                     {isSubmitting ? (
                       <span className="flex items-center justify-center gap-2">
-                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                         Submitting...
                       </span>
                     ) : (
@@ -208,7 +208,7 @@ export function Week2CheckInModal({
 
                   <button
                     onClick={onDismiss}
-                    className="w-full px-6 py-3 text-[#64748B] font-medium hover:text-[#0F172A] transition-colors text-center"
+                    className="w-full px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base text-[#64748B] font-medium hover:text-[#0F172A] transition-colors text-center"
                   >
                     Ask me later
                   </button>
