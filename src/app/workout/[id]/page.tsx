@@ -332,6 +332,8 @@ export default function WorkoutPage() {
     try {
       const response = await fetch(`/api/workout-logs/${workoutLog.id}/complete`, {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ completedAt: workoutDate.toISOString() }),
       });
 
       if (!response.ok) {
