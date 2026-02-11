@@ -52,6 +52,9 @@ function hasValidNutrition(food: UnifiedFoodResult): boolean {
 /**
  * Calculate relevance score for a food result based on query match
  * Higher score = more relevant
+ *
+ * Prioritizes name matches over brand matches to avoid "brand pollution"
+ * where searching "fresh blueberries" returns "Meadow Fresh" branded products.
  */
 function calculateRelevanceScore(food: UnifiedFoodResult, query: string): number {
   const queryLower = query.toLowerCase();
@@ -64,13 +67,39 @@ function calculateRelevanceScore(food: UnifiedFoodResult, query: string): number
   // Exact name match = highest boost
   if (nameLower === queryLower) score += 100;
 
-  // Name starts with query = good
+  // Name starts with query = very good
   if (nameLower.startsWith(queryLower)) score += 50;
 
-  // Brand match = big boost (user searching for specific brand)
+  // Count how many query words appear in the name vs only in brand
+  let nameMatches = 0;
+  let brandOnlyMatches = 0;
+
   for (const word of queryWords) {
-    if (brandLower.includes(word)) score += 30;
-    if (nameLower.includes(word)) score += 10;
+    const inName = nameLower.includes(word);
+    const inBrand = brandLower.includes(word);
+
+    if (inName) {
+      // Name match = strong boost
+      score += 25;
+      nameMatches++;
+    } else if (inBrand) {
+      // Brand-only match = small boost (user might be filtering by brand)
+      // but don't let it dominate name matches
+      score += 5;
+      brandOnlyMatches++;
+    }
+  }
+
+  // Bonus for matching most/all query words in name
+  if (queryWords.length > 0) {
+    const nameMatchRatio = nameMatches / queryWords.length;
+    score += Math.round(nameMatchRatio * 30); // Up to +30 for all words in name
+  }
+
+  // Penalize results where most query words only matched brand, not name
+  // This prevents "Meadow Fresh" from ranking high for "fresh blueberries"
+  if (brandOnlyMatches > nameMatches && nameMatches === 0) {
+    score -= 20;
   }
 
   // User's own foods get priority boost

@@ -113,6 +113,8 @@ export default function WorkoutPage() {
   const [programCompletionData, setProgramCompletionData] = useState<ProgramCompletionData | null>(null);
   // Exercise history (PR and last session data)
   const [exerciseHistory, setExerciseHistory] = useState<Record<string, ExerciseHistory>>({});
+  // Track which exercises had history fetch failures
+  const [historyLoadFailed, setHistoryLoadFailed] = useState<Set<string>>(new Set());
 
   const findFirstIncompletePosition = (exercises: ExerciseWithLogs[]) => {
     for (let i = 0; i < exercises.length; i++) {
@@ -248,6 +250,7 @@ export default function WorkoutPage() {
       if (exercises.length === 0) return;
 
       const historyData: Record<string, ExerciseHistory> = {};
+      const failedExercises: string[] = [];
 
       // Fetch history for all exercises in parallel
       await Promise.all(
@@ -257,14 +260,18 @@ export default function WorkoutPage() {
             if (response.ok) {
               const data = await response.json();
               historyData[exercise.id] = data;
+            } else {
+              failedExercises.push(exercise.id);
             }
           } catch (error) {
             console.error(`Failed to fetch history for exercise ${exercise.id}:`, error);
+            failedExercises.push(exercise.id);
           }
         })
       );
 
       setExerciseHistory(historyData);
+      setHistoryLoadFailed(new Set(failedExercises));
     };
 
     fetchExerciseHistory();
@@ -689,6 +696,7 @@ export default function WorkoutPage() {
                     notes={currentLog.notes}
                     isEditing={isEditingCompletedSet}
                     history={exerciseHistory[currentExercise.id]}
+                    historyLoadFailed={historyLoadFailed.has(currentExercise.id)}
                     onComplete={(weight, reps, notes) => {
                       const setIndex = currentSetIndex >= 0 ? currentSetIndex : 0;
                       // Save all data in one API call when completing/updating

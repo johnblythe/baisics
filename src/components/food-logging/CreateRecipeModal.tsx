@@ -209,7 +209,7 @@ export function CreateRecipeModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-      <div className="bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden w-full max-w-md max-h-[90vh] flex flex-col">
+      <div className="bg-white rounded-xl shadow-xl border border-gray-200 w-full max-w-sm sm:max-w-lg max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <h3 className="font-semibold text-[#0F172A]">Create Recipe</h3>
@@ -221,8 +221,8 @@ export function CreateRecipeModal({
           </button>
         </div>
 
-        {/* Content - scrollable */}
-        <div className="p-4 space-y-4 overflow-y-auto flex-1">
+        {/* Name/emoji and search - fixed section (dropdown needs space) */}
+        <div className="p-4 pb-0 space-y-4">
           {/* Name and emoji row */}
           <div className="flex gap-3">
             <div className="relative">
@@ -261,7 +261,7 @@ export function CreateRecipeModal({
             />
           </div>
 
-          {/* Ingredients section */}
+          {/* Ingredients header and search */}
           <div>
             <div className="text-sm font-medium text-gray-700 mb-2">Ingredients</div>
 
@@ -281,7 +281,7 @@ export function CreateRecipeModal({
                 />
               </div>
             ) : (
-              <div className="mb-2">
+              <div className="mb-2 relative">
                 <FoodSearchAutocomplete
                   onSelect={handleFoodSelect}
                   placeholder="Search to add ingredient..."
@@ -289,47 +289,51 @@ export function CreateRecipeModal({
                 />
               </div>
             )}
+          </div>
+        </div>
 
-            {/* Ingredient list */}
-            {ingredients.length > 0 ? (
-              <div className="border border-gray-200 rounded-lg divide-y divide-gray-100">
-                {ingredients.map((ing) => (
-                  <div key={ing.id} className="flex items-center justify-between p-3">
-                    <div className="min-w-0 flex-1">
-                      <div className="text-sm font-medium text-[#0F172A] truncate">
-                        {ing.name}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {ing.servingSize}
-                        {ing.servingUnit}
-                      </div>
+        {/* Ingredients list and totals - scrollable section */}
+        <div className="px-4 pb-4 overflow-y-auto flex-1 min-h-0">
+
+          {/* Ingredient list */}
+          {ingredients.length > 0 ? (
+            <div className="border border-gray-200 rounded-lg divide-y divide-gray-100">
+              {ingredients.map((ing) => (
+                <div key={ing.id} className="flex items-center justify-between p-3">
+                  <div className="min-w-0 flex-1">
+                    <div className="text-sm font-medium text-[#0F172A] truncate">
+                      {ing.name}
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="text-right">
-                        <div className="text-sm font-medium">{ing.calories} cal</div>
-                        <div className="text-xs text-green-600">{ing.protein}g P</div>
-                      </div>
-                      <button
-                        onClick={() => handleRemoveIngredient(ing.id)}
-                        className="text-gray-400 hover:text-red-500 transition-colors"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
+                    <div className="text-xs text-gray-500">
+                      {ing.servingSize}
+                      {ing.servingUnit}
                     </div>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 text-gray-400 text-sm border-2 border-dashed border-gray-200 rounded-lg">
-                <Plus className="w-6 h-6 mx-auto mb-2 opacity-50" />
-                Search above to add ingredients
-              </div>
-            )}
-          </div>
+                  <div className="flex items-center gap-3">
+                    <div className="text-right">
+                      <div className="text-sm font-medium">{ing.calories} cal</div>
+                      <div className="text-xs text-green-600">{ing.protein}g P</div>
+                    </div>
+                    <button
+                      onClick={() => handleRemoveIngredient(ing.id)}
+                      className="text-gray-400 hover:text-red-500 transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-gray-400 text-sm border-2 border-dashed border-gray-200 rounded-lg">
+              <Plus className="w-6 h-6 mx-auto mb-2 opacity-50" />
+              Search above to add ingredients
+            </div>
+          )}
 
           {/* Running total */}
           {ingredients.length > 0 && (
-            <div className="bg-gray-50 rounded-lg p-3">
+            <div className="bg-gray-50 rounded-lg p-3 mt-4">
               <div className="flex justify-between items-center">
                 <span className="font-semibold text-[#0F172A]">Total</span>
                 <div className="text-right">
