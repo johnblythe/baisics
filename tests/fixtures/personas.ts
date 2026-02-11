@@ -16,7 +16,8 @@ export type PersonaJourney =
   | "cruising"
   | "veteran"
   | "returning"
-  | "lapsed";
+  | "lapsed"
+  | "coach";
 
 export interface Persona {
   email: string;
@@ -26,6 +27,12 @@ export interface Persona {
   hasProgram: boolean;
   /** Whether this user has nutrition data (food logs, targets) */
   hasNutritionData?: boolean;
+  /** Whether this user is a coach */
+  isCoach?: boolean;
+  /** Number of clients (for coaches) */
+  clientCount?: number;
+  /** Number of templates (for coaches) */
+  templateCount?: number;
 }
 
 /**
@@ -110,6 +117,27 @@ export const PERSONAS = {
     workoutCount: 65,
     hasProgram: true,
   },
+  // Coach personas
+  coachNewbie: {
+    email: "coach-new@test.baisics.app",
+    tier: "paid" as PersonaTier,
+    journey: "coach" as PersonaJourney,
+    workoutCount: 0,
+    hasProgram: false,
+    isCoach: true,
+    clientCount: 0,
+    templateCount: 0,
+  },
+  coachPro: {
+    email: "coach-pro@test.baisics.app",
+    tier: "paid" as PersonaTier,
+    journey: "coach" as PersonaJourney,
+    workoutCount: 0,
+    hasProgram: false,
+    isCoach: true,
+    clientCount: 5,
+    templateCount: 3,
+  },
 } as const;
 
 export type PersonaName = keyof typeof PERSONAS;
@@ -153,4 +181,14 @@ export const NUTRITION_TEST_PERSONAS = {
   freeTier: getPersona("sarah"),
   /** Paid tier user for advanced nutrition features */
   paidTier: getPersona("marcus"),
+} as const;
+
+/**
+ * Get personas grouped by coach testing needs.
+ */
+export const COACH_TEST_PERSONAS = {
+  /** New coach with no clients or templates (empty state testing) */
+  empty: getPersona("coachNewbie"),
+  /** Active coach with 5 clients and 3 templates */
+  active: getPersona("coachPro"),
 } as const;

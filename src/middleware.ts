@@ -34,5 +34,9 @@ export const config = {
     "/program/:path*",
     "/check-in/:path*",
     "/pulse/:path*",
+    "/coach/:path*",
+    "/settings/:path*",
+    "/nutrition/:path*",
+    "/library/:path*",
   ],
 };

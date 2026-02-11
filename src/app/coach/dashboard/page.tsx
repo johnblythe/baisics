@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import MainLayout from '@/app/components/layouts/MainLayout';
-import { Settings, TrendingUp, Dumbbell } from 'lucide-react';
+import { FileText } from 'lucide-react';
 import { ProgramAssignModal } from '@/components/ProgramAssignModal';
 import { CoachOnboardingWizard } from '@/components/CoachOnboardingWizard';
 
@@ -269,25 +269,11 @@ export default function CoachDashboard() {
             </div>
             <div className="flex items-center gap-3">
               <Link
-                href="/dashboard?personal=true"
+                href="/coach/programs/create"
                 className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-[#E2E8F0] text-[#475569] rounded-lg hover:bg-[#F1F5F9] transition-colors"
               >
-                <Dumbbell className="w-4 h-4" />
-                My Workouts
-              </Link>
-              <Link
-                href="/coach/analytics"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-[#E2E8F0] text-[#475569] rounded-lg hover:bg-[#F1F5F9] transition-colors"
-              >
-                <TrendingUp className="w-4 h-4" />
-                Analytics
-              </Link>
-              <Link
-                href="/coach/settings"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-[#E2E8F0] text-[#475569] rounded-lg hover:bg-[#F1F5F9] transition-colors"
-              >
-                <Settings className="w-4 h-4" />
-                Settings
+                <FileText className="w-4 h-4" />
+                Create Program
               </Link>
               <button
                 onClick={() => setShowAddModal(true)}

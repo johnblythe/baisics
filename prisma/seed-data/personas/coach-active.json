@@ -1,0 +1,209 @@
+{
+  "id": "coach-active",
+  "user": {
+    "email": "coach-pro@test.baisics.app",
+    "name": "Coach Pete",
+    "isPremium": true,
+    "isCoach": true,
+    "streakCurrent": 0,
+    "streakLongest": 0
+  },
+  "clients": [
+    {
+      "clientEmail": "alex@test.baisics.app",
+      "nickname": "Alex T",
+      "inviteStatus": "ACCEPTED",
+      "invitedAtDaysAgo": 30
+    },
+    {
+      "clientEmail": "sarah@test.baisics.app",
+      "nickname": "Sarah M",
+      "inviteStatus": "ACCEPTED",
+      "invitedAtDaysAgo": 21
+    },
+    {
+      "clientEmail": "jordan@test.baisics.app",
+      "inviteStatus": "ACCEPTED",
+      "invitedAtDaysAgo": 14
+    },
+    {
+      "clientEmail": "taylor@test.baisics.app",
+      "nickname": "Taylor (lapsed)",
+      "inviteStatus": "ACCEPTED",
+      "invitedAtDaysAgo": 60
+    },
+    {
+      "clientEmail": "kim@test.baisics.app",
+      "inviteStatus": "PENDING",
+      "invitedAtDaysAgo": 2
+    }
+  ],
+  "templates": [
+    {
+      "name": "Beginner Strength 3x/week",
+      "description": "Foundation program for new lifters. Focus on compound movements with progressive overload.",
+      "category": "strength",
+      "difficulty": "beginner",
+      "durationWeeks": 8,
+      "daysPerWeek": 3,
+      "isTemplate": true,
+      "cloneCount": 2,
+      "workoutPlan": {
+        "daysPerWeek": 3,
+        "phase": 1,
+        "phaseName": "Foundation",
+        "splitType": "Full Body",
+        "workouts": [
+          {
+            "name": "Full Body A",
+            "focus": "Squat Focus",
+            "dayNumber": 1,
+            "exercises": [
+              { "name": "Goblet Squat", "sets": 3, "reps": 10, "restPeriod": 90, "sortOrder": 0 },
+              { "name": "Dumbbell Bench Press", "sets": 3, "reps": 10, "restPeriod": 90, "sortOrder": 1 },
+              { "name": "Dumbbell Row", "sets": 3, "reps": 10, "restPeriod": 90, "sortOrder": 2 },
+              { "name": "Plank", "sets": 3, "reps": 30, "restPeriod": 60, "sortOrder": 3 }
+            ]
+          },
+          {
+            "name": "Full Body B",
+            "focus": "Hinge Focus",
+            "dayNumber": 2,
+            "exercises": [
+              { "name": "Romanian Deadlift", "sets": 3, "reps": 10, "restPeriod": 90, "sortOrder": 0 },
+              { "name": "Incline Dumbbell Press", "sets": 3, "reps": 10, "restPeriod": 90, "sortOrder": 1 },
+              { "name": "Lat Pulldown", "sets": 3, "reps": 10, "restPeriod": 90, "sortOrder": 2 },
+              { "name": "Face Pull", "sets": 3, "reps": 15, "restPeriod": 60, "sortOrder": 3 }
+            ]
+          },
+          {
+            "name": "Full Body C",
+            "focus": "Push Focus",
+            "dayNumber": 3,
+            "exercises": [
+              { "name": "Bulgarian Split Squat", "sets": 3, "reps": 8, "restPeriod": 90, "sortOrder": 0 },
+              { "name": "Bench Press", "sets": 3, "reps": 10, "restPeriod": 90, "sortOrder": 1 },
+              { "name": "Bent Over Barbell Row", "sets": 3, "reps": 10, "restPeriod": 90, "sortOrder": 2 },
+              { "name": "Alternating Dumbbell Curls", "sets": 2, "reps": 12, "restPeriod": 60, "sortOrder": 3 }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "4-Day Upper/Lower Split",
+      "description": "Intermediate program for those ready to increase training frequency.",
+      "category": "hypertrophy",
+      "difficulty": "intermediate",
+      "durationWeeks": 12,
+      "daysPerWeek": 4,
+      "isTemplate": true,
+      "cloneCount": 0,
+      "workoutPlan": {
+        "daysPerWeek": 4,
+        "phase": 1,
+        "phaseName": "Hypertrophy",
+        "splitType": "Upper/Lower",
+        "workouts": [
+          {
+            "name": "Upper A",
+            "focus": "Push Emphasis",
+            "dayNumber": 1,
+            "exercises": [
+              { "name": "Bench Press", "sets": 4, "reps": 8, "restPeriod": 120, "sortOrder": 0 },
+              { "name": "Bent Over Barbell Row", "sets": 4, "reps": 8, "restPeriod": 120, "sortOrder": 1 },
+              { "name": "Dumbbell Shoulder Press", "sets": 3, "reps": 10, "restPeriod": 90, "sortOrder": 2 },
+              { "name": "Face Pull", "sets": 3, "reps": 15, "restPeriod": 60, "sortOrder": 3 },
+              { "name": "Alternating Dumbbell Curls", "sets": 3, "reps": 12, "restPeriod": 60, "sortOrder": 4 }
+            ]
+          },
+          {
+            "name": "Lower A",
+            "focus": "Squat Focus",
+            "dayNumber": 2,
+            "exercises": [
+              { "name": "Squat", "sets": 4, "reps": 6, "restPeriod": 180, "sortOrder": 0 },
+              { "name": "Romanian Deadlift", "sets": 3, "reps": 10, "restPeriod": 120, "sortOrder": 1 },
+              { "name": "Leg Press", "sets": 3, "reps": 12, "restPeriod": 90, "sortOrder": 2 },
+              { "name": "Leg Curl", "sets": 3, "reps": 12, "restPeriod": 60, "sortOrder": 3 }
+            ]
+          },
+          {
+            "name": "Upper B",
+            "focus": "Pull Emphasis",
+            "dayNumber": 3,
+            "exercises": [
+              { "name": "Pull-Ups", "sets": 4, "reps": 8, "restPeriod": 120, "sortOrder": 0 },
+              { "name": "Incline Dumbbell Press", "sets": 4, "reps": 10, "restPeriod": 90, "sortOrder": 1 },
+              { "name": "Cable Row", "sets": 3, "reps": 12, "restPeriod": 90, "sortOrder": 2 },
+              { "name": "Lateral Raise", "sets": 3, "reps": 15, "restPeriod": 60, "sortOrder": 3 },
+              { "name": "Cable One Arm Tricep Extension", "sets": 3, "reps": 12, "restPeriod": 60, "sortOrder": 4 }
+            ]
+          },
+          {
+            "name": "Lower B",
+            "focus": "Deadlift Focus",
+            "dayNumber": 4,
+            "exercises": [
+              { "name": "Deadlift", "sets": 4, "reps": 5, "restPeriod": 180, "sortOrder": 0 },
+              { "name": "Bulgarian Split Squat", "sets": 3, "reps": 10, "restPeriod": 90, "sortOrder": 1 },
+              { "name": "Leg Extension", "sets": 3, "reps": 15, "restPeriod": 60, "sortOrder": 2 },
+              { "name": "Standing Calf Raise", "sets": 4, "reps": 15, "restPeriod": 60, "sortOrder": 3 }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "Home Workout - Minimal Equipment",
+      "description": "Bodyweight and dumbbell program for clients training at home.",
+      "category": "general",
+      "difficulty": "beginner",
+      "durationWeeks": 6,
+      "daysPerWeek": 3,
+      "isTemplate": true,
+      "cloneCount": 1,
+      "workoutPlan": {
+        "daysPerWeek": 3,
+        "phase": 1,
+        "phaseName": "Foundation",
+        "splitType": "Full Body",
+        "workouts": [
+          {
+            "name": "Home Day 1",
+            "focus": "Full Body",
+            "dayNumber": 1,
+            "exercises": [
+              { "name": "Goblet Squat", "sets": 3, "reps": 12, "restPeriod": 60, "sortOrder": 0 },
+              { "name": "Push-Ups", "sets": 3, "reps": 10, "restPeriod": 60, "sortOrder": 1 },
+              { "name": "Dumbbell Row", "sets": 3, "reps": 12, "restPeriod": 60, "sortOrder": 2 },
+              { "name": "Plank", "sets": 3, "reps": 30, "restPeriod": 45, "sortOrder": 3 }
+            ]
+          },
+          {
+            "name": "Home Day 2",
+            "focus": "Lower Body",
+            "dayNumber": 2,
+            "exercises": [
+              { "name": "Romanian Deadlift", "sets": 3, "reps": 12, "restPeriod": 60, "sortOrder": 0 },
+              { "name": "Bulgarian Split Squat", "sets": 3, "reps": 10, "restPeriod": 60, "sortOrder": 1 },
+              { "name": "Glute Bridge", "sets": 3, "reps": 15, "restPeriod": 45, "sortOrder": 2 },
+              { "name": "Dead Bug", "sets": 3, "reps": 10, "restPeriod": 45, "sortOrder": 3 }
+            ]
+          },
+          {
+            "name": "Home Day 3",
+            "focus": "Upper Body",
+            "dayNumber": 3,
+            "exercises": [
+              { "name": "Dumbbell Bench Press", "sets": 3, "reps": 12, "restPeriod": 60, "sortOrder": 0 },
+              { "name": "Dumbbell Row", "sets": 3, "reps": 12, "restPeriod": 60, "sortOrder": 1 },
+              { "name": "Dumbbell Shoulder Press", "sets": 3, "reps": 10, "restPeriod": 60, "sortOrder": 2 },
+              { "name": "Alternating Dumbbell Curls", "sets": 2, "reps": 12, "restPeriod": 45, "sortOrder": 3 }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -6,7 +6,7 @@
  * "prisma": { "seed": "npx tsx prisma/seed.ts" }
  */
 
-import { PrismaClient, Difficulty, MovementPattern, MuscleGroup, ExerciseTier, SubscriptionStatus, MilestoneType } from '@prisma/client';
+import { PrismaClient, Difficulty, MovementPattern, MuscleGroup, ExerciseTier, SubscriptionStatus, MilestoneType, InviteStatus } from '@prisma/client';
 import exercisesData from './seed-data/exercises.json';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -17,6 +17,8 @@ import type {
   ExerciseLogSeed,
   CheckInSeed,
   MilestoneSeed,
+  CoachClientSeed,
+  CoachTemplateSeed,
 } from './seed-data/personas/types';
 
 const prisma = new PrismaClient();
@@ -153,6 +155,7 @@ async function seedPersonas() {
       update: {
         name: persona.user.name,
         isPremium: persona.user.isPremium,
+        isCoach: persona.user.isCoach ?? false,
         streakCurrent: persona.user.streakCurrent,
         streakLongest: persona.user.streakLongest,
         streakLastActivityAt: persona.user.streakLastActivityAt
@@ -163,6 +166,7 @@ async function seedPersonas() {
         email: persona.user.email,
         name: persona.user.name,
         isPremium: persona.user.isPremium,
+        isCoach: persona.user.isCoach ?? false,
         streakCurrent: persona.user.streakCurrent,
         streakLongest: persona.user.streakLongest,
         streakLastActivityAt: persona.user.streakLastActivityAt
@@ -171,35 +175,37 @@ async function seedPersonas() {
       },
     });
 
-    // 2. Upsert UserIntake
-    await prisma.userIntake.upsert({
-      where: { userId: user.id },
-      update: {
-        sex: persona.intake.sex,
-        trainingGoal: persona.intake.trainingGoal,
-        daysAvailable: persona.intake.daysAvailable,
-        dailyBudget: persona.intake.dailyBudget,
-        experienceLevel: persona.intake.experienceLevel,
-        age: persona.intake.age,
-        weight: persona.intake.weight,
-        height: persona.intake.height,
-        trainingPreferences: persona.intake.trainingPreferences ?? [],
-        additionalInfo: persona.intake.additionalInfo,
-      },
-      create: {
-        userId: user.id,
-        sex: persona.intake.sex,
-        trainingGoal: persona.intake.trainingGoal,
-        daysAvailable: persona.intake.daysAvailable,
-        dailyBudget: persona.intake.dailyBudget,
-        experienceLevel: persona.intake.experienceLevel,
-        age: persona.intake.age,
-        weight: persona.intake.weight,
-        height: persona.intake.height,
-        trainingPreferences: persona.intake.trainingPreferences ?? [],
+    // 2. Upsert UserIntake (optional for coaches)
+    if (persona.intake) {
+      await prisma.userIntake.upsert({
+        where: { userId: user.id },
+        update: {
+          sex: persona.intake.sex,
+          trainingGoal: persona.intake.trainingGoal,
+          daysAvailable: persona.intake.daysAvailable,
+          dailyBudget: persona.intake.dailyBudget,
+          experienceLevel: persona.intake.experienceLevel,
+          age: persona.intake.age,
+          weight: persona.intake.weight,
+          height: persona.intake.height,
+          trainingPreferences: persona.intake.trainingPreferences ?? [],
+          additionalInfo: persona.intake.additionalInfo,
+        },
+        create: {
+          userId: user.id,
+          sex: persona.intake.sex,
+          trainingGoal: persona.intake.trainingGoal,
+          daysAvailable: persona.intake.daysAvailable,
+          dailyBudget: persona.intake.dailyBudget,
+          experienceLevel: persona.intake.experienceLevel,
+          age: persona.intake.age,
+          weight: persona.intake.weight,
+          height: persona.intake.height,
+          trainingPreferences: persona.intake.trainingPreferences ?? [],
         additionalInfo: persona.intake.additionalInfo,
       },
     });
+    }
 
     // 3. Create Subscription if persona is paid
     if (persona.subscription) {
@@ -326,7 +332,7 @@ async function seedPersonas() {
       });
     }
 
-    for (const programSeed of persona.programs) {
+    for (const programSeed of persona.programs || []) {
       // Create Program
       const program = await prisma.program.create({
         data: {
@@ -544,6 +550,119 @@ async function seedPersonas() {
             ...milestoneData,
           },
         });
+      }
+    }
+
+    // 7. Seed Coach-specific data (clients and templates)
+    if (persona.user.isCoach) {
+      // Seed coach templates
+      if (persona.templates && persona.templates.length > 0) {
+        for (const templateSeed of persona.templates) {
+          const template = await prisma.program.create({
+            data: {
+              name: templateSeed.name,
+              description: templateSeed.description,
+              createdBy: user.id,
+              userId: null, // Templates have no owner
+              active: false,
+              isTemplate: true,
+              cloneCount: templateSeed.cloneCount ?? 0,
+              category: templateSeed.category,
+              difficulty: templateSeed.difficulty,
+              durationWeeks: templateSeed.durationWeeks,
+              daysPerWeek: templateSeed.daysPerWeek,
+            },
+          });
+
+          // Create WorkoutPlan for template
+          const workoutPlan = await prisma.workoutPlan.create({
+            data: {
+              programId: template.id,
+              userId: user.id,
+              daysPerWeek: templateSeed.workoutPlan.daysPerWeek,
+              phase: templateSeed.workoutPlan.phase ?? 1,
+              phaseName: templateSeed.workoutPlan.phaseName,
+              splitType: templateSeed.workoutPlan.splitType,
+              dailyCalories: templateSeed.workoutPlan.dailyCalories ?? 2000,
+              proteinGrams: templateSeed.workoutPlan.proteinGrams ?? 150,
+              carbGrams: templateSeed.workoutPlan.carbGrams ?? 200,
+              fatGrams: templateSeed.workoutPlan.fatGrams ?? 70,
+            },
+          });
+
+          // Create Workouts and Exercises for template
+          for (const workoutSeed of templateSeed.workoutPlan.workouts) {
+            const workout = await prisma.workout.create({
+              data: {
+                workoutPlanId: workoutPlan.id,
+                name: workoutSeed.name,
+                focus: workoutSeed.focus,
+                dayNumber: workoutSeed.dayNumber,
+                warmup: workoutSeed.warmup,
+                cooldown: workoutSeed.cooldown,
+              },
+            });
+
+            for (const exerciseSeed of workoutSeed.exercises) {
+              const exerciseLib = await prisma.exerciseLibrary.findUnique({
+                where: { name: exerciseSeed.name },
+              });
+              if (exerciseLib) {
+                await prisma.exercise.create({
+                  data: {
+                    workoutId: workout.id,
+                    exerciseLibraryId: exerciseLib.id,
+                    name: exerciseSeed.name,
+                    sets: exerciseSeed.sets,
+                    reps: exerciseSeed.reps,
+                    restPeriod: exerciseSeed.restPeriod,
+                    sortOrder: exerciseSeed.sortOrder ?? 0,
+                    notes: exerciseSeed.notes,
+                  },
+                });
+              }
+            }
+          }
+          console.log(`      Created template: ${template.name}`);
+        }
+      }
+
+      // Seed coach-client relationships (clients must be seeded first)
+      if (persona.clients && persona.clients.length > 0) {
+        for (const clientSeed of persona.clients) {
+          // Find the client user by email
+          const clientUser = await prisma.user.findUnique({
+            where: { email: clientSeed.clientEmail },
+          });
+          if (clientUser) {
+            const inviteSentAt = new Date();
+            inviteSentAt.setDate(inviteSentAt.getDate() - clientSeed.invitedAtDaysAgo);
+
+            await prisma.coachClient.upsert({
+              where: {
+                coachId_clientId: {
+                  coachId: user.id,
+                  clientId: clientUser.id,
+                },
+              },
+              update: {
+                nickname: clientSeed.nickname,
+                inviteStatus: clientSeed.inviteStatus as InviteStatus,
+                inviteSentAt,
+              },
+              create: {
+                coachId: user.id,
+                clientId: clientUser.id,
+                nickname: clientSeed.nickname,
+                inviteStatus: clientSeed.inviteStatus as InviteStatus,
+                inviteSentAt,
+              },
+            });
+            console.log(`      Linked client: ${clientSeed.clientEmail} (${clientSeed.inviteStatus})`);
+          } else {
+            console.log(`      ⚠ Client not found: ${clientSeed.clientEmail}`);
+          }
+        }
       }
     }
 

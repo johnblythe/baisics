@@ -160,7 +160,7 @@ export function ProgramAssignModal({
               </div>
               <p className="text-[#64748B] mb-4">No programs available</p>
               <Link
-                href="/program/create"
+                href="/coach/programs/create"
                 className="text-sm text-[#FF6B6B] hover:text-[#EF5350] font-medium"
               >
                 Create a program →
@@ -222,7 +222,7 @@ export function ProgramAssignModal({
         <div className="px-6 py-4 border-t border-[#E2E8F0] bg-[#F8FAFC]">
           <div className="flex items-center justify-between">
             <Link
-              href="/program/templates"
+              href="/coach/programs"
               className="text-sm text-[#64748B] hover:text-[#0F172A]"
             >
               Manage templates →

@@ -168,10 +168,37 @@ export type UserSeed = {
   email: string;
   name?: string;
   isPremium: boolean;
+  isCoach?: boolean;
   // Streaks
   streakCurrent: number;
   streakLongest: number;
   streakLastActivityAt?: RelativeDate;
+};
+
+/**
+ * Coach client relationship seed
+ */
+export type CoachClientSeed = {
+  clientEmail: string; // References another persona's email
+  nickname?: string;
+  inviteStatus: 'PENDING' | 'ACCEPTED' | 'EXPIRED' | 'CANCELLED';
+  invitedAtDaysAgo: number;
+  acceptedAtDaysAgo?: number;
+};
+
+/**
+ * Coach template seed (program templates created by coach)
+ */
+export type CoachTemplateSeed = {
+  name: string;
+  description?: string;
+  category?: string;
+  difficulty?: string;
+  durationWeeks?: number;
+  daysPerWeek?: number;
+  isTemplate: true;
+  cloneCount?: number;
+  workoutPlan: WorkoutPlanSeed;
 };
 
 /**
@@ -206,14 +233,18 @@ export type PersonaSeed = {
   id: string;
   /** User data */
   user: UserSeed;
-  /** User intake/profile */
-  intake: UserIntakeSeed;
+  /** User intake/profile (optional for coaches who don't track their own workouts) */
+  intake?: UserIntakeSeed;
   /** Optional subscription (for paid users) */
   subscription?: SubscriptionSeed;
   /** Programs (most users have 1, some have multiple) */
-  programs: ProgramSeed[];
+  programs?: ProgramSeed[];
   /** Milestone achievements */
   milestones?: MilestoneSeed[];
+  /** Coach-specific: client relationships */
+  clients?: CoachClientSeed[];
+  /** Coach-specific: program templates */
+  templates?: CoachTemplateSeed[];
 };
 
 // ============ Utility Types ============

@@ -13,7 +13,7 @@ export async function POST(request: Request) {
       }, { status: 401 });
     }
 
-    const { parsed } = await request.json();
+    const { parsed, isTemplate, clientId } = await request.json();
 
     if (!parsed) {
       return NextResponse.json({
@@ -23,15 +23,34 @@ export async function POST(request: Request) {
       }, { status: 400 });
     }
 
+    // If clientId provided, verify coach-client relationship
+    if (clientId) {
+      const relationship = await prisma.coachClient.findFirst({
+        where: { coachId: session.user.id, clientId, inviteStatus: 'ACCEPTED' },
+      });
+      if (!relationship) {
+        return NextResponse.json({
+          error: true,
+          reason: 'Unauthorized',
+          details: ['Client not found or not in your client list']
+        }, { status: 403 });
+      }
+    }
+
+    // For coach flow: don't set userId on the master program (it's a template/source)
+    // For consumer flow: set userId to themselves
+    const isCoachFlow = clientId || isTemplate;
+
     // Create the program in the database
     const savedProgram = await prisma.program.create({
       data: {
         name: parsed.program?.name || 'Imported Program',
         description: parsed.program?.description || '',
         createdBy: session.user.id,
-        userId: session.user.id,
+        userId: isCoachFlow ? null : session.user.id,
         source: 'uploaded',
-        active: true,
+        active: isCoachFlow ? false : true,
+        isTemplate: isTemplate || false,
         workoutPlans: {
           create: {
             phase: parsed.workoutPlan?.phase || 1,
@@ -103,19 +122,98 @@ export async function POST(request: Request) {
       }
     });
 
-    // Deactivate other programs for this user
-    await prisma.program.updateMany({
-      where: {
-        userId: session.user.id,
-        id: { not: savedProgram.id },
-        active: true
-      },
-      data: { active: false }
-    });
+    // For consumer flow: deactivate their other programs
+    if (!isCoachFlow) {
+      await prisma.program.updateMany({
+        where: {
+          userId: session.user.id,
+          id: { not: savedProgram.id },
+          active: true
+        },
+        data: { active: false }
+      });
+    }
+
+    // If clientId provided, clone and assign to client
+    let assignedProgramId: string | undefined;
+    if (clientId) {
+      // Deactivate client's existing programs
+      await prisma.program.updateMany({
+        where: { userId: clientId, active: true },
+        data: { active: false },
+      });
+
+      const slug = `${savedProgram.name.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`;
+
+      const clonedProgram = await prisma.program.create({
+        data: {
+          name: savedProgram.name,
+          slug,
+          description: savedProgram.description,
+          createdBy: session.user.id,
+          userId: clientId,
+          active: true,
+          source: 'assigned',
+          isTemplate: false,
+          clonedFromId: savedProgram.id,
+          workoutPlans: {
+            create: savedProgram.workoutPlans.map((plan) => ({
+              phase: plan.phase,
+              phaseName: plan.phaseName,
+              phaseDurationWeeks: plan.phaseDurationWeeks,
+              daysPerWeek: plan.daysPerWeek,
+              dailyCalories: plan.dailyCalories,
+              proteinGrams: plan.proteinGrams,
+              carbGrams: plan.carbGrams,
+              fatGrams: plan.fatGrams,
+              splitType: plan.splitType,
+              phaseExplanation: plan.phaseExplanation,
+              phaseExpectations: plan.phaseExpectations,
+              phaseKeyPoints: plan.phaseKeyPoints,
+              progressionProtocol: plan.progressionProtocol,
+              user: { connect: { id: clientId } },
+              workouts: {
+                create: plan.workouts.map((w) => ({
+                  name: w.name,
+                  dayNumber: w.dayNumber,
+                  focus: w.focus,
+                  warmup: w.warmup,
+                  cooldown: w.cooldown,
+                  exercises: {
+                    create: w.exercises.map((ex) => ({
+                      name: ex.name,
+                      sets: ex.sets,
+                      reps: ex.reps,
+                      restPeriod: ex.restPeriod,
+                      intensity: ex.intensity,
+                      measureType: ex.measureType,
+                      measureValue: ex.measureValue,
+                      measureUnit: ex.measureUnit,
+                      notes: ex.notes,
+                      sortOrder: ex.sortOrder,
+                      exerciseLibraryId: ex.exerciseLibraryId,
+                    })),
+                  },
+                })),
+              },
+            })),
+          },
+        },
+      });
+
+      // Increment clone count on source program
+      await prisma.program.update({
+        where: { id: savedProgram.id },
+        data: { cloneCount: { increment: 1 } },
+      });
+
+      assignedProgramId = clonedProgram.id;
+    }
 
     return NextResponse.json({
       success: true,
-      program: savedProgram
+      program: savedProgram,
+      assignedProgramId,
     });
 
   } catch (error) {

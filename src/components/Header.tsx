@@ -6,11 +6,34 @@ import Image from 'next/image';
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAppMode } from '@/contexts/AppModeContext';
+
+const COACH_NAV_LINKS = [
+  { href: '/coach/dashboard', label: 'Dashboard' },
+  { href: '/coach/programs', label: 'Programs' },
+  { href: '/coach/settings', label: 'Settings' },
+];
+
+const CONSUMER_NAV_LINKS = [
+  { href: '/dashboard', label: 'Dashboard' },
+  { href: '/library', label: 'Library' },
+  { href: '/program', label: 'My Program' },
+  { href: '/nutrition', label: 'Nutrition' },
+  { href: '/pulse', label: 'Pulse' },
+  { href: '/blog', label: 'Blog' },
+];
 
 export default function Header() {
   const { data: session } = useSession();
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { mode, isCoach, setMode } = useAppMode();
+
+  const navLinks = mode === 'coach' ? COACH_NAV_LINKS : CONSUMER_NAV_LINKS;
+  const logoHref = session
+    ? mode === 'coach' ? '/coach/dashboard' : '/dashboard'
+    : '/';
+  const settingsHref = mode === 'coach' ? '/coach/settings' : '/settings';
 
   const handleGetStarted = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -22,7 +45,7 @@ export default function Header() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 lg:h-20">
             {/* Logo */}
-            <Link href={session ? "/dashboard" : "/"} className="flex items-center gap-2">
+            <Link href={logoHref} className="flex items-center gap-2">
               <div className="w-8 h-8 bg-[#FF6B6B] rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">B</span>
               </div>
@@ -35,44 +58,43 @@ export default function Header() {
             <div className="flex items-center gap-4">
               {session ? (
                 <>
+                  {/* Mode Toggle - Coaches Only */}
+                  {isCoach && (
+                    <div className="hidden md:flex items-center bg-[#F1F5F9] rounded-full p-0.5">
+                      <button
+                        onClick={() => setMode('coach')}
+                        className={`px-3 py-1 text-xs font-semibold rounded-full transition-colors ${
+                          mode === 'coach'
+                            ? 'bg-[#FF6B6B] text-white'
+                            : 'text-[#64748B] hover:text-[#0F172A]'
+                        }`}
+                      >
+                        Coach
+                      </button>
+                      <button
+                        onClick={() => setMode('consumer')}
+                        className={`px-3 py-1 text-xs font-semibold rounded-full transition-colors ${
+                          mode === 'consumer'
+                            ? 'bg-[#0F172A] text-white'
+                            : 'text-[#64748B] hover:text-[#0F172A]'
+                        }`}
+                      >
+                        Personal
+                      </button>
+                    </div>
+                  )}
+
                   {/* Desktop Navigation - Authenticated */}
                   <nav className="hidden md:flex items-center gap-6">
-                    <Link
-                      href="/dashboard"
-                      className="text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors"
-                    >
-                      Dashboard
-                    </Link>
-                    <Link
-                      href="/library"
-                      className="text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors"
-                    >
-                      Library
-                    </Link>
-                    <Link
-                      href="/program"
-                      className="text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors"
-                    >
-                      My Program
-                    </Link>
-                    <Link
-                      href="/nutrition"
-                      className="text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors"
-                    >
-                      Nutrition
-                    </Link>
-                    <Link
-                      href="/pulse"
-                      className="text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors"
-                    >
-                      Pulse
-                    </Link>
-                    <Link
-                      href="/blog"
-                      className="text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors"
-                    >
-                      Blog
-                    </Link>
+                    {navLinks.map((link) => (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        className="text-sm font-medium text-[#475569] hover:text-[#0F172A] transition-colors"
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
                   </nav>
 
                   {/* User Menu - Authenticated */}
@@ -105,7 +127,7 @@ export default function Header() {
                         <Menu.Item>
                           {({ active }) => (
                             <Link
-                              href="/settings"
+                              href={settingsHref}
                               className={`${
                                 active ? 'bg-[#F8FAFC]' : ''
                               } block px-4 py-2.5 text-sm text-[#475569] font-medium`}
@@ -151,48 +173,44 @@ export default function Header() {
                     {/* Mobile Menu Dropdown - Authenticated */}
                     {isMenuOpen && (
                       <div className="absolute right-4 mt-2 w-48 py-2 bg-white rounded-xl shadow-lg border border-[#F1F5F9]">
-                        <Link
-                          href="/dashboard"
-                          className="block px-4 py-2.5 text-sm font-medium text-[#475569] hover:bg-[#F8FAFC]"
-                          onClick={() => setIsMenuOpen(false)}
-                        >
-                          Dashboard
-                        </Link>
-                        <Link
-                          href="/library"
-                          className="block px-4 py-2.5 text-sm font-medium text-[#475569] hover:bg-[#F8FAFC]"
-                          onClick={() => setIsMenuOpen(false)}
-                        >
-                          Library
-                        </Link>
-                        <Link
-                          href="/program"
-                          className="block px-4 py-2.5 text-sm font-medium text-[#475569] hover:bg-[#F8FAFC]"
-                          onClick={() => setIsMenuOpen(false)}
-                        >
-                          My Program
-                        </Link>
-                        <Link
-                          href="/nutrition"
-                          className="block px-4 py-2.5 text-sm font-medium text-[#475569] hover:bg-[#F8FAFC]"
-                          onClick={() => setIsMenuOpen(false)}
-                        >
-                          Nutrition
-                        </Link>
-                        <Link
-                          href="/pulse"
-                          className="block px-4 py-2.5 text-sm font-medium text-[#475569] hover:bg-[#F8FAFC]"
-                          onClick={() => setIsMenuOpen(false)}
-                        >
-                          Pulse
-                        </Link>
-                        <Link
-                          href="/blog"
-                          className="block px-4 py-2.5 text-sm font-medium text-[#475569] hover:bg-[#F8FAFC]"
-                          onClick={() => setIsMenuOpen(false)}
-                        >
-                          Blog
-                        </Link>
+                        {/* Mobile Mode Toggle */}
+                        {isCoach && (
+                          <>
+                            <div className="flex items-center gap-1 px-3 py-2">
+                              <button
+                                onClick={() => { setMode('coach'); setIsMenuOpen(false); }}
+                                className={`flex-1 px-2 py-1 text-xs font-semibold rounded-full text-center transition-colors ${
+                                  mode === 'coach'
+                                    ? 'bg-[#FF6B6B] text-white'
+                                    : 'bg-[#F1F5F9] text-[#64748B]'
+                                }`}
+                              >
+                                Coach
+                              </button>
+                              <button
+                                onClick={() => { setMode('consumer'); setIsMenuOpen(false); }}
+                                className={`flex-1 px-2 py-1 text-xs font-semibold rounded-full text-center transition-colors ${
+                                  mode === 'consumer'
+                                    ? 'bg-[#0F172A] text-white'
+                                    : 'bg-[#F1F5F9] text-[#64748B]'
+                                }`}
+                              >
+                                Personal
+                              </button>
+                            </div>
+                            <div className="border-t border-[#F1F5F9] my-1" />
+                          </>
+                        )}
+                        {navLinks.map((link) => (
+                          <Link
+                            key={link.href}
+                            href={link.href}
+                            className="block px-4 py-2.5 text-sm font-medium text-[#475569] hover:bg-[#F8FAFC]"
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            {link.label}
+                          </Link>
+                        ))}
                       </div>
                     )}
                   </div>

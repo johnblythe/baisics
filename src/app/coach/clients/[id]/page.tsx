@@ -21,6 +21,8 @@ interface ClientDetails {
       name: string;
       description: string | null;
       createdAt: string;
+      isTemplate: boolean;
+      active: boolean;
       workoutPlans: Array<{
         workouts: Array<{
           id: string;
@@ -164,20 +166,20 @@ export default function ClientDetailPage() {
     );
   }
 
-  const currentProgram = client.client.programs[0];
+  const currentProgram = client.client.programs?.[0] || null;
   const weightData = currentProgram?.stats
-    .filter((s) => s.weight)
-    .map((s) => ({
+    ?.filter((s) => s.weight)
+    ?.map((s) => ({
       date: new Date(s.createdAt).toLocaleDateString(),
       weight: s.weight,
     }))
-    .reverse();
+    ?.reverse() || [];
 
-  const totalWorkouts = currentProgram?.workoutPlans.reduce(
+  const totalWorkouts = currentProgram?.workoutPlans?.reduce(
     (acc, plan) => acc + plan.workouts.length,
     0
   ) || 0;
-  const completedWorkouts = currentProgram?.workoutLogs.length || 0;
+  const completedWorkouts = currentProgram?.workoutLogs?.length || 0;
   const completionRate = totalWorkouts > 0
     ? Math.round((completedWorkouts / totalWorkouts) * 100)
     : 0;
@@ -280,24 +282,24 @@ export default function ClientDetailPage() {
             </div>
 
             {/* Client Info */}
-            {client.client.userIntakes[0] && (
+            {client.client.userIntakes?.[0] && (
               <div className="mt-6 grid grid-cols-3 gap-4">
                 <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                   <div className="text-sm text-gray-500 dark:text-gray-400">Goal</div>
                   <div className="font-medium text-gray-900 dark:text-white">
-                    {client.client.userIntakes[0].trainingGoal}
+                    {client.client.userIntakes?.[0]?.trainingGoal}
                   </div>
                 </div>
                 <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                   <div className="text-sm text-gray-500 dark:text-gray-400">Days/Week</div>
                   <div className="font-medium text-gray-900 dark:text-white">
-                    {client.client.userIntakes[0].daysAvailable}
+                    {client.client.userIntakes?.[0]?.daysAvailable}
                   </div>
                 </div>
                 <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                   <div className="text-sm text-gray-500 dark:text-gray-400">Experience</div>
                   <div className="font-medium text-gray-900 dark:text-white">
-                    {client.client.userIntakes[0].experienceLevel || 'Not set'}
+                    {client.client.userIntakes?.[0]?.experienceLevel || 'Not set'}
                   </div>
                 </div>
               </div>
@@ -359,7 +361,7 @@ export default function ClientDetailPage() {
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                 Recent Workouts
               </h2>
-              {currentProgram?.workoutLogs.length ? (
+              {currentProgram?.workoutLogs?.length ? (
                 <div className="space-y-3">
                   {currentProgram.workoutLogs.slice(0, 5).map((log) => (
                     <div
@@ -466,9 +468,9 @@ export default function ClientDetailPage() {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Programs
             </h2>
-            {client.client.programs.length > 0 ? (
+            {client.client.programs?.length > 0 ? (
               <div className="space-y-4">
-                {client.client.programs.map((program) => (
+                {client.client.programs?.map((program) => (
                   <div
                     key={program.id}
                     className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg"

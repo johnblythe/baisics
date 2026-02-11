@@ -27,7 +27,7 @@ const STEPS = [
     title: 'Create or Import Programs',
     description: 'Build custom programs manually, generate with AI, or import existing PDFs.',
     icon: '📋',
-    action: { label: 'Import Program', href: '/import' },
+    action: { label: 'Import Program', href: '/coach/programs/create' },
   },
   {
     id: 'branding',

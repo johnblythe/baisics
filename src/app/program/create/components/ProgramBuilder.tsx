@@ -7,6 +7,12 @@ import { ExerciseSearchModal } from './ExerciseSearchModal';
 import { Plus, X, Layers } from 'lucide-react';
 import { toast } from 'sonner';
 
+export type { ProgramFormData, WorkoutFormData };
+
+interface ProgramBuilderProps {
+  onSave?: (data: ProgramFormData) => Promise<{ programId: string }>;
+}
+
 const GOALS = [
   { value: 'strength', label: 'Strength' },
   { value: 'hypertrophy', label: 'Muscle Building' },
@@ -27,7 +33,7 @@ interface Phase {
   workouts: WorkoutFormData[];
 }
 
-export function ProgramBuilder() {
+export function ProgramBuilder({ onSave }: ProgramBuilderProps = {}) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -203,6 +209,15 @@ export function ProgramBuilder() {
 
     startTransition(async () => {
       try {
+        if (onSave) {
+          // Use custom save handler (e.g. coach program creation)
+          await onSave(data);
+          toast.success('Program saved!', {
+            description: `Program created successfully.`,
+          });
+          return;
+        }
+
         const result = await createManualProgram(data);
         if (result?.error) {
           const errorMessage = 'formErrors' in result.error
