@@ -82,11 +82,14 @@ export const authOptions: NextAuthOptions = {
 
         // Production: send email via SES
         const emailHtml = magicLinkTemplate({ signInLink: url });
-        await sendEmail({
+        const result = await sendEmail({
           to: identifier,
           subject: "Sign in to Baisics",
           html: emailHtml,
         });
+        if (!result.success) {
+          throw new Error(`Failed to send magic link: ${result.error}`);
+        }
 
         // Track magic link requested
         trackEvent({
