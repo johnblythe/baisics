@@ -1176,7 +1176,8 @@ export function FoodLogPage({
         isOpen={showCreateRecipeModal}
         onClose={() => setShowCreateRecipeModal(false)}
         onSave={() => {
-          // Modal already handles API save - just close and refresh would happen via MyRecipesSidebar refetch
+          // Trigger sidebar refresh after recipe is saved
+          setRecipeSidebarRefreshTrigger(prev => prev + 1);
         }}
         userId={userId}
       />

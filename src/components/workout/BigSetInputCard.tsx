@@ -15,6 +15,8 @@ interface BigSetInputCardProps {
   notes?: string;
   isEditing?: boolean;
   history?: ExerciseHistory;
+  /** Indicates if history data failed to load */
+  historyLoadFailed?: boolean;
   onComplete: (weight: number, reps: number, notes?: string) => void;
 }
 
@@ -26,6 +28,7 @@ export function BigSetInputCard({
   notes = '',
   isEditing = false,
   history,
+  historyLoadFailed = false,
   onComplete,
 }: BigSetInputCardProps) {
   // Local state for immediate UI response - NO auto-saving until complete
@@ -83,6 +86,13 @@ export function BigSetInputCard({
               </p>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Show subtle indicator when history failed to load and no data available */}
+      {!history && historyLoadFailed && (
+        <div className="mb-4 text-xs text-white/40 text-center">
+          History unavailable
         </div>
       )}
 

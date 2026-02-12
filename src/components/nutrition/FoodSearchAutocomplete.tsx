@@ -170,6 +170,7 @@ export function FoodSearchAutocomplete({
   }, [query, searchStartTime]);
 
   // Close dropdown when clicking outside
+  // Using 'click' instead of 'mousedown' to avoid closing during scroll gestures
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -177,8 +178,8 @@ export function FoodSearchAutocomplete({
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
   // Log abandon when search is closed without selection (debounced)
@@ -485,9 +486,15 @@ export function FoodSearchAutocomplete({
               ))
             )
           ) : foods.length === 0 ? (
-            <li className="px-4 py-3 text-sm" style={{ color: COLORS.gray400 }}>
-              No foods found for &quot;{query}&quot;
-            </li>
+            loading ? (
+              <li className="px-4 py-3 text-sm" style={{ color: COLORS.gray400 }}>
+                Searching food databases...
+              </li>
+            ) : searchComplete ? (
+              <li className="px-4 py-3 text-sm" style={{ color: COLORS.gray400 }}>
+                No foods found for &quot;{query}&quot;
+              </li>
+            ) : null
           ) : (
             foods.map((food, index) => (
               <li
