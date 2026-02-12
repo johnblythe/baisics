@@ -261,6 +261,7 @@ export default function WorkoutPage() {
               const data = await response.json();
               historyData[exercise.id] = data;
             } else {
+              console.warn(`History fetch for exercise ${exercise.id} returned ${response.status}`);
               failedExercises.push(exercise.id);
             }
           } catch (error) {

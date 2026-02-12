@@ -96,9 +96,9 @@ function calculateRelevanceScore(food: UnifiedFoodResult, query: string): number
     score += Math.round(nameMatchRatio * 30); // Up to +30 for all words in name
   }
 
-  // Penalize results where most query words only matched brand, not name
+  // Penalize results where brand matched but name didn't
   // This prevents "Meadow Fresh" from ranking high for "fresh blueberries"
-  if (brandOnlyMatches > nameMatches && nameMatches === 0) {
+  if (nameMatches === 0 && brandOnlyMatches > 0) {
     score -= 20;
   }
 

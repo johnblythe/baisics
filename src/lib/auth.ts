@@ -88,7 +88,10 @@ export const authOptions: NextAuthOptions = {
           html: emailHtml,
         });
         if (!result.success) {
-          throw new Error(`Failed to send magic link: ${result.error}`);
+          const errorMsg = result.error instanceof Error
+            ? result.error.message
+            : String(result.error);
+          throw new Error(`Failed to send magic link: ${errorMsg}`);
         }
 
         // Track magic link requested

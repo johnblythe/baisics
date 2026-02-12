@@ -485,14 +485,16 @@ export function FoodSearchAutocomplete({
                 </li>
               ))
             )
-          ) : foods.length === 0 && searchComplete ? (
-            <li className="px-4 py-3 text-sm" style={{ color: COLORS.gray400 }}>
-              No foods found for &quot;{query}&quot;
-            </li>
-          ) : foods.length === 0 && loading ? (
-            <li className="px-4 py-3 text-sm" style={{ color: COLORS.gray400 }}>
-              Searching food databases...
-            </li>
+          ) : foods.length === 0 ? (
+            loading ? (
+              <li className="px-4 py-3 text-sm" style={{ color: COLORS.gray400 }}>
+                Searching food databases...
+              </li>
+            ) : searchComplete ? (
+              <li className="px-4 py-3 text-sm" style={{ color: COLORS.gray400 }}>
+                No foods found for &quot;{query}&quot;
+              </li>
+            ) : null
           ) : (
             foods.map((food, index) => (
               <li
