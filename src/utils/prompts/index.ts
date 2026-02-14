@@ -19,13 +19,13 @@ ${existingDataSection}
 REQUIRED FIELDS (must have all to proceed):
 - sex: "male" | "female" | "other"
 - trainingGoal: what they want to achieve
+- age: number (ask naturally, e.g. "How old are you?" or "What's your age?")
 - weight: in lbs (convert kg if needed)
+- height: in inches (convert if needed, e.g. 5'10" = 70 inches)
 - workoutEnvironment: "gym" | "home" | "travel" | "outdoors"
 - equipmentAccess: what equipment they have
 
 OPTIONAL FIELDS (use defaults if not mentioned):
-- age: number or null
-- height: in inches (convert if needed) or null
 - daysPerWeek: default 3
 - timePerDay: default 60 (minutes)
 - workoutStyle: "strength" | "cardio" | "yoga" | "hybrid" (default "strength")

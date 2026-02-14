@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { UpgradeModal } from '@/components/UpgradeModal';
 
 interface CloneButtonProps {
   programId: string;
@@ -11,6 +12,8 @@ interface CloneButtonProps {
 export function CloneButton({ programId, isAuthenticated }: CloneButtonProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [currentProgramName, setCurrentProgramName] = useState<string | undefined>();
   const router = useRouter();
 
   const handleClone = async () => {
@@ -33,7 +36,8 @@ export function CloneButton({ programId, isAuthenticated }: CloneButtonProps) {
 
       if (!res.ok) {
         if (data.error === 'upgrade_required') {
-          setError(data.message || 'Upgrade to premium to clone more programs');
+          setCurrentProgramName(data.currentProgram?.name);
+          setShowUpgradeModal(true);
         } else {
           setError(data.error || 'Failed to clone program');
         }
@@ -76,6 +80,13 @@ export function CloneButton({ programId, isAuthenticated }: CloneButtonProps) {
       {error && (
         <p className="text-sm text-[#EF5350] text-center">{error}</p>
       )}
+
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        context="program_limit"
+        currentProgramName={currentProgramName}
+      />
     </div>
   );
 }

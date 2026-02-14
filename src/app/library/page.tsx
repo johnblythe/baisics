@@ -414,16 +414,16 @@ function LibraryPageContent() {
 
           {/* CTA for custom program */}
           <div className="mt-12 bg-[var(--color-navy)] rounded-2xl p-8 text-center text-white">
-            <h2 className="text-2xl font-bold mb-3">Need something custom?</h2>
+            <h2 className="text-2xl font-bold mb-3">Don&apos;t see what you need?</h2>
             <p className="text-white/70 mb-6 max-w-xl mx-auto">
-              Our AI can create a completely personalized program based on your goals, schedule,
-              and equipment.
+              Chat with our AI coach to build a program tailored to your goals, schedule, and
+              equipment.
             </p>
             <Link
               href="/hi"
               className="inline-flex items-center gap-2 px-6 py-3 bg-[var(--color-coral)] text-white rounded-lg font-bold hover:bg-[var(--color-coral-dark)] transition-colors"
             >
-              Create Custom Program
+              Chat with AI to build yours
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"

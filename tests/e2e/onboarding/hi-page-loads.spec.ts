@@ -7,10 +7,14 @@
  * Covers:
  * - Page loads without console errors about PrismaClient
  * - No "unable to run in browser" errors
- * - Chat interface renders correctly
+ * - Chat interface renders correctly (hero layout with prominent textarea)
+ * - Quick start pill buttons render
+ * - "or" divider separates chat input from quick starts
+ * - DIY text links render
  * - Page is interactive (can type in input)
  *
  * @see US-011
+ * @see #351 - /hi onboarding layout update
  */
 
 import { test, expect } from "@playwright/test";
@@ -71,30 +75,48 @@ test.describe("/hi Onboarding Page", () => {
     expect(browserErrors).toHaveLength(0);
   });
 
-  test("should render chat interface", async ({ page }) => {
+  test("should render hero heading and textarea", async ({ page }) => {
     // Navigate to /hi
     await page.goto("/hi");
 
     // Wait for the page to load past the loading spinner
     await page.waitForSelector("main", { timeout: 10000 });
 
-    // The chat interface should render:
+    // Wait for initial typing indicator to finish and welcome message to appear
+    await page.waitForTimeout(1500);
+
     // 1. Hero heading "Let's Build Your Program"
     const heading = page.getByRole("heading", {
       name: /let.*s build your program/i,
     });
     await expect(heading).toBeVisible({ timeout: 10000 });
 
-    // 2. Chat messages container (white rounded container)
-    const chatContainer = page.locator(".messages-container");
-    await expect(chatContainer).toBeVisible({ timeout: 5000 });
-
-    // 3. Textarea for user input
+    // 2. Textarea for user input (hero form - large and prominent)
     const textarea = page.locator("textarea");
     await expect(textarea).toBeVisible({ timeout: 5000 });
   });
 
-  test("should show welcome message in chat", async ({ page }) => {
+  test("should show hero form with prominent textarea before conversation starts", async ({ page }) => {
+    await page.goto("/hi");
+    await page.waitForSelector("main", { timeout: 10000 });
+
+    // Wait for welcome message
+    await page.waitForTimeout(1500);
+
+    // Hero textarea should have larger styling (text-lg class, p-6 padding, border-2)
+    const textarea = page.locator("textarea");
+    await expect(textarea).toBeVisible({ timeout: 5000 });
+
+    // The hero textarea has specific classes: text-lg, p-6, border-2, rounded-2xl
+    await expect(textarea).toHaveClass(/text-lg/);
+    await expect(textarea).toHaveClass(/rounded-2xl/);
+
+    // "Start chatting" submit button should be present
+    const submitButton = page.getByRole("button", { name: /start chatting/i });
+    await expect(submitButton).toBeVisible({ timeout: 5000 });
+  });
+
+  test("should show welcome message bubble", async ({ page }) => {
     // Navigate to /hi
     await page.goto("/hi");
 
@@ -105,14 +127,22 @@ test.describe("/hi Onboarding Page", () => {
     // The welcome message appears after a 1 second typing delay
     await page.waitForTimeout(1500);
 
-    // Should see at least one assistant message (welcome message)
-    const chatContainer = page.locator(".messages-container");
-    const assistantMessages = chatContainer.locator(
-      '[class*="bg-[#0F172A]"]'
-    );
+    // Welcome message should appear in a navy bubble (bg-[#0F172A])
+    // In the new layout, it's rendered inline above the hero form, not in a .messages-container
+    const welcomeBubble = page.locator('[class*="bg-[#0F172A]"]').first();
+    await expect(welcomeBubble).toBeVisible({ timeout: 5000 });
+  });
 
-    // Wait for assistant message to appear (navy background)
-    await expect(assistantMessages.first()).toBeVisible({ timeout: 5000 });
+  test("should show 'or' divider between chat input and quick starts", async ({ page }) => {
+    await page.goto("/hi");
+    await page.waitForSelector("main", { timeout: 10000 });
+
+    // Wait for welcome message to load
+    await page.waitForTimeout(1500);
+
+    // The "or" divider text should be visible
+    const orDivider = page.getByText("or", { exact: true });
+    await expect(orDivider).toBeVisible({ timeout: 5000 });
   });
 
   test("should allow typing in chat input", async ({ page }) => {
@@ -134,7 +164,7 @@ test.describe("/hi Onboarding Page", () => {
     await expect(textarea).toHaveValue(testMessage);
   });
 
-  test("should show Quick Start prompts", async ({ page }) => {
+  test("should show Quick Start pill buttons", async ({ page }) => {
     // Navigate to /hi
     await page.goto("/hi");
 
@@ -144,16 +174,13 @@ test.describe("/hi Onboarding Page", () => {
     // Wait for initial content to render
     await page.waitForTimeout(1500);
 
-    // Should see "Quick start:" label
-    const quickStartLabel = page.getByText(/quick start/i);
-    await expect(quickStartLabel).toBeVisible({ timeout: 5000 });
-
-    // Should see the quick prompt buttons (Build Muscle, Lose Weight, Get Stronger, General Fitness)
-    const buildMuscleBtn = page.getByRole("button", { name: /build muscle/i });
-    await expect(buildMuscleBtn).toBeVisible({ timeout: 5000 });
-
+    // Quick start buttons (pill-style, below "or" divider)
+    // Labels are: "Lose weight", "Build muscle", "Get stronger", "General fitness"
     const loseWeightBtn = page.getByRole("button", { name: /lose weight/i });
-    await expect(loseWeightBtn).toBeVisible();
+    await expect(loseWeightBtn).toBeVisible({ timeout: 5000 });
+
+    const buildMuscleBtn = page.getByRole("button", { name: /build muscle/i });
+    await expect(buildMuscleBtn).toBeVisible();
 
     const getStrongerBtn = page.getByRole("button", { name: /get stronger/i });
     await expect(getStrongerBtn).toBeVisible();
@@ -162,6 +189,23 @@ test.describe("/hi Onboarding Page", () => {
       name: /general fitness/i,
     });
     await expect(generalFitnessBtn).toBeVisible();
+  });
+
+  test("should show DIY text links", async ({ page }) => {
+    await page.goto("/hi");
+    await page.waitForSelector("main", { timeout: 10000 });
+
+    // Wait for initial content to render
+    await page.waitForTimeout(1500);
+
+    // DIY links: "Browse templates" and "I have a program"
+    const browseTemplates = page.getByRole("link", { name: /browse templates/i });
+    await expect(browseTemplates).toBeVisible({ timeout: 5000 });
+    await expect(browseTemplates).toHaveAttribute("href", "/templates");
+
+    const haveProgram = page.getByRole("link", { name: /i have a program/i });
+    await expect(haveProgram).toBeVisible({ timeout: 5000 });
+    await expect(haveProgram).toHaveAttribute("href", "/create");
   });
 
   test("should have no critical JavaScript errors on load", async ({
