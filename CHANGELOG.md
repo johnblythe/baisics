@@ -8,6 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Coach program builder at `/coach/programs/create` (#345)
+  - Build or import programs for clients
+  - Save as template or assign directly to client
+  - Integrated with existing ProgramBuilder component
+- Coach/Personal mode toggle in header for coaches (#345)
+  - Switch between coach dashboard and personal workouts
+  - Mode persists via cookie
+- Recipe management improvements (#336)
+  - Save meals as recipes from meal section
+  - Recipe book with search and filters
+  - QuickPills for fast recipe logging
 - Copy Meals feature for nutrition logging (#326)
   - Copy button on each meal section header to copy from previous days
   - Day picker showing last 7 days with calorie summaries
@@ -40,6 +51,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unique page titles for SEO on dashboard, workout, settings pages (#288)
 
 ### Fixed
+- Sticky exercise header during workout logging on mobile (#346)
+- Backdated workout date now respected when completing workouts (#346)
+- Food search shows "Searching..." instead of "No foods found" during loading (#330)
+- Recipe sidebar updates immediately after creating recipe (#330)
+- Create Recipe modal responsive sizing and scroll handling (#330)
+- Food search relevance - name matches prioritized over brand matches (#330)
+- Search dropdown no longer closes during scroll gestures (#330)
+- Exercise history shows "History unavailable" when fetch fails (#285)
+- Magic link email failures now throw instead of silently failing (#321)
 - Fix 0 lbs bodyweight not carrying over between sessions (#286)
 - First workout celebration modal redesigned and moved to dashboard (#286, #279)
 - Mobile trainer chat visibility (#286)
