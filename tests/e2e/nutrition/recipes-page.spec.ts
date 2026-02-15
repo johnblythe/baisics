@@ -39,7 +39,7 @@ test.describe("Nutrition Recipes Page", () => {
       await page.waitForSelector("main", { timeout: 10000 });
 
       // Recipes tab should have active styling (bg-[#0F172A] text-white)
-      const recipesTab = page.locator("a", { hasText: "Recipes" });
+      const recipesTab = page.locator("a", { hasText: "Recipes" }).first();
       await expect(recipesTab).toBeVisible();
       await expect(recipesTab).toHaveClass(/bg-\[#0F172A\]/);
     });
@@ -50,7 +50,7 @@ test.describe("Nutrition Recipes Page", () => {
       await page.goto("/nutrition/recipes");
       await page.waitForSelector("main", { timeout: 10000 });
 
-      const logTab = page.locator("a", { hasText: "Log Food" });
+      const logTab = page.locator("a", { hasText: "Log Food" }).first();
       await logTab.click();
       await page.waitForURL("**/nutrition", { timeout: 5000 });
     });
@@ -94,7 +94,7 @@ test.describe("Nutrition Recipes Page", () => {
       await expect(page.locator(".animate-spin")).toBeHidden({ timeout: 5000 });
 
       // Click the header "Create New" button
-      await page.locator("button", { hasText: "Create New" }).click();
+      await page.locator("button", { hasText: "Create New" }).first().click();
 
       // Modal should appear
       await expect(page.getByText("Create Recipe").first()).toBeVisible({ timeout: 3000 });
@@ -108,7 +108,7 @@ test.describe("Nutrition Recipes Page", () => {
       await expect(page.locator(".animate-spin")).toBeHidden({ timeout: 5000 });
 
       // Open create modal
-      await page.locator("button", { hasText: "Create New" }).click();
+      await page.locator("button", { hasText: "Create New" }).first().click();
       await expect(page.getByText("Create Recipe").first()).toBeVisible({ timeout: 3000 });
 
       // Fill recipe name
@@ -310,7 +310,7 @@ test.describe("Nutrition Recipes Page", () => {
       await page.getByText("Editable Recipe").first().click();
 
       // Click Edit button
-      await page.locator("button", { hasText: /edit/i }).click();
+      await page.locator("button", { hasText: /edit/i }).first().click();
 
       // Should show editable name input
       const nameInput = page.locator('input[value="Editable Recipe"]');
@@ -320,7 +320,7 @@ test.describe("Nutrition Recipes Page", () => {
     test("should save edited recipe name", async ({ page }) => {
       // Expand and edit
       await page.getByText("Editable Recipe").first().click();
-      await page.locator("button", { hasText: /edit/i }).click();
+      await page.locator("button", { hasText: /edit/i }).first().click();
 
       // Change name
       const nameInput = page.locator('input[value="Editable Recipe"]');
@@ -328,7 +328,7 @@ test.describe("Nutrition Recipes Page", () => {
       await nameInput.fill("Updated Recipe Name");
 
       // Save
-      const saveButton = page.locator("button", { hasText: /save/i });
+      const saveButton = page.locator("button", { hasText: /save/i }).first();
       await saveButton.click();
 
       // Wait for save to complete
@@ -371,7 +371,7 @@ test.describe("Nutrition Recipes Page", () => {
       });
 
       // Click Delete
-      await page.locator("button", { hasText: /delete/i }).click();
+      await page.locator("button", { hasText: /delete/i }).first().click();
 
       // Recipe should be removed from the list
       await expect(page.getByText("Deletable Recipe")).toBeHidden({ timeout: 5000 });

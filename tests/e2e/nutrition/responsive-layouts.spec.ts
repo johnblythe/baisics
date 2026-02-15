@@ -79,7 +79,7 @@ test.describe("Responsive Layouts", () => {
 
       // QuickPills on mobile use layout="horizontal" which renders as overflow-x-auto
       // First, let's log a food to populate QuickPills
-      const addButton = page.locator('[data-testid="add-food-breakfast"]');
+      const addButton = page.locator('[data-testid="add-food-breakfast"]').first();
       await addButton.click();
 
       const searchInput = page.locator('input[role="combobox"], input[placeholder*="search" i]');
@@ -167,7 +167,7 @@ test.describe("Responsive Layouts", () => {
       await page.waitForSelector("main", { timeout: 10000 });
 
       // Find and click Add button for Breakfast
-      const addButton = page.locator('[data-testid="add-food-breakfast"]');
+      const addButton = page.locator('[data-testid="add-food-breakfast"]').first();
       await expect(addButton).toBeVisible({ timeout: 5000 });
       await addButton.click();
 
@@ -308,7 +308,7 @@ test.describe("Responsive Layouts", () => {
       await page.waitForSelector("main", { timeout: 10000 });
 
       // Add some food to create scrollable content
-      const addButton = page.locator('[data-testid="add-food-breakfast"]');
+      const addButton = page.locator('[data-testid="add-food-breakfast"]').first();
       await addButton.click();
 
       const searchInput = page.locator('input[role="combobox"], input[placeholder*="search" i]');
@@ -341,7 +341,7 @@ test.describe("Responsive Layouts", () => {
       await page.waitForSelector("main", { timeout: 10000 });
 
       // Find and click Add button for Lunch
-      const addButton = page.locator('[data-testid="add-food-lunch"]');
+      const addButton = page.locator('[data-testid="add-food-lunch"]').first();
       await expect(addButton).toBeVisible({ timeout: 5000 });
       await addButton.click();
 
