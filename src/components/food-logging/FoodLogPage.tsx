@@ -948,6 +948,7 @@ export function FoodLogPage({
         <button
           type="button"
           onClick={goToPreviousDay}
+          data-testid="prev-day"
           className="p-2 hover:bg-white/10 lg:hover:bg-[#F1F5F9] rounded-lg transition-colors"
         >
           <ChevronLeft className="w-5 h-5 lg:text-[#64748B]" />
@@ -992,6 +993,7 @@ export function FoodLogPage({
           <button
             type="button"
             onClick={goToNextDay}
+            data-testid="next-day"
             className="p-2 hover:bg-white/10 lg:hover:bg-[#F1F5F9] rounded-lg transition-colors"
           >
             <ChevronRight className="w-5 h-5 lg:text-[#64748B]" />

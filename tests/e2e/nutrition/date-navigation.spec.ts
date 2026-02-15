@@ -83,7 +83,7 @@ test.describe("Nutrition Date Navigation", () => {
     await expect(page.locator("h1")).toContainText("Today");
 
     // Click the left arrow (previous day) button - find the ChevronLeft icon's parent button
-    const leftArrowButton = page.locator('button:has(svg[class*="lucide-chevron-left"])');
+    const leftArrowButton = page.locator('[data-testid="prev-day"]').first();
     await expect(leftArrowButton).toBeVisible({ timeout: 3000 });
     await leftArrowButton.click();
 
@@ -103,7 +103,7 @@ test.describe("Nutrition Date Navigation", () => {
     await page.waitForSelector("main", { timeout: 10000 });
 
     // Navigate to previous day
-    const leftArrowButton = page.locator('button:has(svg[class*="lucide-chevron-left"])');
+    const leftArrowButton = page.locator('[data-testid="prev-day"]').first();
     await leftArrowButton.click();
 
     // Wait for date to change
@@ -122,7 +122,7 @@ test.describe("Nutrition Date Navigation", () => {
     await page.waitForSelector("main", { timeout: 10000 });
 
     // Navigate back 3 days
-    const leftArrowButton = page.locator('button:has(svg[class*="lucide-chevron-left"])');
+    const leftArrowButton = page.locator('[data-testid="prev-day"]').first();
     await leftArrowButton.click();
     await page.waitForTimeout(300);
     await leftArrowButton.click();
@@ -153,14 +153,14 @@ test.describe("Nutrition Date Navigation", () => {
     await page.waitForSelector("main", { timeout: 10000 });
 
     // First go to yesterday
-    const leftArrowButton = page.locator('button:has(svg[class*="lucide-chevron-left"])');
+    const leftArrowButton = page.locator('[data-testid="prev-day"]').first();
     await leftArrowButton.click();
 
     // Wait for date to change
     await expect(page.locator("h1")).not.toContainText("Today", { timeout: 3000 });
 
     // Now click right arrow to go back to today
-    const rightArrowButton = page.locator('button:has(svg[class*="lucide-chevron-right"])');
+    const rightArrowButton = page.locator('[data-testid="next-day"]').first();
     await expect(rightArrowButton).toBeVisible();
     await rightArrowButton.click();
 
@@ -177,7 +177,7 @@ test.describe("Nutrition Date Navigation", () => {
 
     // WeeklyStrip has a Calendar icon and day indicators
     // Look for the weekly strip component by finding the calendar icon and day boxes
-    const weeklyStrip = page.locator("button:has(svg.lucide-calendar)");
+    const weeklyStrip = page.locator('[data-testid="weekly-strip-toggle"]').first();
     await expect(weeklyStrip).toBeVisible({ timeout: 5000 });
 
     // Should have 7 day indicator boxes (single letters like M, T, W, etc.)
@@ -194,7 +194,7 @@ test.describe("Nutrition Date Navigation", () => {
     await page.waitForSelector("main", { timeout: 10000 });
 
     // Find the weekly strip
-    const weeklyStrip = page.locator("button:has(svg.lucide-calendar)");
+    const weeklyStrip = page.locator('[data-testid="weekly-strip-toggle"]').first();
     await expect(weeklyStrip).toBeVisible({ timeout: 5000 });
 
     // Today should be highlighted with coral background (bg-[#FF6B6B])
@@ -214,7 +214,7 @@ test.describe("Nutrition Date Navigation", () => {
     await page.waitForSelector("main", { timeout: 10000 });
 
     // Find and click the weekly strip
-    const weeklyStrip = page.locator("button:has(svg.lucide-calendar)");
+    const weeklyStrip = page.locator('[data-testid="weekly-strip-toggle"]').first();
     await expect(weeklyStrip).toBeVisible({ timeout: 5000 });
     await weeklyStrip.click();
 
@@ -240,7 +240,7 @@ test.describe("Nutrition Date Navigation", () => {
     // so reloading always returns to today. This test verifies that behavior.
 
     // Navigate to yesterday
-    const leftArrowButton = page.locator('button:has(svg[class*="lucide-chevron-left"])');
+    const leftArrowButton = page.locator('[data-testid="prev-day"]').first();
     await leftArrowButton.click();
     await expect(page.locator("h1")).not.toContainText("Today", { timeout: 3000 });
 

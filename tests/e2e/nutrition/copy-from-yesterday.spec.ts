@@ -35,11 +35,7 @@ test.describe("Nutrition Copy from Yesterday", () => {
     searchTerm: string
   ): Promise<string> {
     // Open inline search for the meal
-    const addButton = page
-      .locator("div")
-      .filter({ hasText: new RegExp(`^${mealName}`) })
-      .first()
-      .locator("button", { hasText: /add/i });
+    const addButton = page.locator(`[data-testid="add-food-${mealName.toLowerCase()}"]`).first();
     await addButton.click();
 
     // Wait for search input
@@ -75,7 +71,7 @@ test.describe("Nutrition Copy from Yesterday", () => {
    */
   async function goToYesterday(page: import("@playwright/test").Page): Promise<void> {
     // Click the left arrow to go to previous day
-    const leftArrow = page.locator('button:has(svg[class*="lucide-chevron-left"])');
+    const leftArrow = page.locator('[data-testid="prev-day"]').first();
     await leftArrow.click();
     // Wait for page to update
     await page.waitForTimeout(500);
@@ -85,9 +81,9 @@ test.describe("Nutrition Copy from Yesterday", () => {
    * Helper to navigate back to today using "Jump to Today" link.
    */
   async function goToToday(page: import("@playwright/test").Page): Promise<void> {
-    // Click "Jump to Today" link that appears when not on today
-    const todayLink = page.getByRole("link", { name: /jump to today/i });
-    await todayLink.click();
+    // Click "Jump to Today" button that appears when not on today
+    const todayButton = page.getByRole("button", { name: /jump to today/i });
+    await todayButton.click();
     // Wait for page to update
     await page.waitForTimeout(500);
   }
