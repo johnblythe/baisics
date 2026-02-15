@@ -1,6 +1,7 @@
 'use client';
 
 import { Program } from '@/types';
+import Link from 'next/link';
 import { UpsellModal } from './UpsellModal';
 import { useEffect, useState, useRef, forwardRef, useImperativeHandle } from 'react';
 import { User } from '@prisma/client';
@@ -945,12 +946,12 @@ export const ProgramDisplay = forwardRef<ProgramDisplayRef, ProgramDisplayProps>
                   <h4 className="text-xl font-bold text-[#0F172A]">You&apos;re In!</h4>
                   <p className="text-sm text-[#475569]">Your full program is now unlocked.</p>
                   <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
-                    <a
+                    <Link
                       href="/dashboard"
                       className="px-6 py-3 bg-[#FF6B6B] text-white font-bold rounded-xl hover:bg-[#EF5350] transition-all shadow-lg shadow-[#FF6B6B]/25 text-center"
                     >
                       Go to My Dashboard
-                    </a>
+                    </Link>
                     <button
                       onClick={() => window.location.reload()}
                       className="px-6 py-3 text-[#475569] hover:text-[#0F172A] font-medium transition-colors text-center"

@@ -72,14 +72,14 @@ export default function PostSignupPrototype() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-white mb-1">You're In!</h2>
+              <h2 className="text-2xl font-bold text-white mb-1">You&apos;re In!</h2>
               <p className="text-white/80 text-sm">Your full program is now unlocked</p>
             </div>
 
             {/* What's next section */}
             <div className="p-6">
               <h3 className="text-xs text-[#94A3B8] uppercase tracking-wider font-semibold mb-4">
-                Here's what you can do now
+                Here&apos;s what you can do now
               </h3>
 
               <div className="space-y-3 mb-6">

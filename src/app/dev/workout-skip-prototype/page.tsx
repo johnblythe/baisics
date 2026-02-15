@@ -332,7 +332,7 @@ export default function WorkoutSkipPrototype() {
                 </div>
                 <h3 className="text-lg font-bold text-[#0F172A] mb-2">Skip remaining sets?</h3>
                 <p className="text-sm text-[#64748B] mb-6">
-                  You've logged {completedSets} of {currentMovement?.targetSets} sets.
+                  You&apos;ve logged {completedSets} of {currentMovement?.targetSets} sets.
                   The remaining {remainingSets} will be marked as skipped.
                 </p>
                 <div className="space-y-2">
