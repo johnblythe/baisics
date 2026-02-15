@@ -394,7 +394,7 @@ export default function TemplateDetailClient({ template }: TemplateDetailClientP
                         Upgrade to Pro
                       </button>
                       <p className="text-xs text-white/60">
-                        Or <a href="/dashboard" className="underline hover:text-white/80">manage your existing program</a>
+                        Or <Link href="/dashboard" className="underline hover:text-white/80">manage your existing program</Link>
                       </p>
                     </div>
                   ) : (
