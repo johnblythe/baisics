@@ -38,8 +38,8 @@ test.describe("Nutrition Edit and Delete Food", () => {
    * Returns the name of the food added for verification.
    */
   async function addFoodToMeal(page: import("@playwright/test").Page, mealName: string, searchTerm: string): Promise<string> {
-    // Open inline search for the meal using data-testid
-    const addButton = page.locator(`[data-testid="add-food-${mealName.toLowerCase()}"]`);
+    // Open inline search for the meal
+    const addButton = page.locator(`[data-testid="add-food-${mealName.toLowerCase()}"]`).first();
     await addButton.click();
 
     // Wait for search input

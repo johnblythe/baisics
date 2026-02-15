@@ -67,7 +67,7 @@ test.describe("QuickAdd Pills Flow", () => {
 
     // First, log a food via search to populate QuickPills
     // Open inline search for Breakfast
-    const addButton = page.locator('[data-testid="add-food-breakfast"]');
+    const addButton = page.locator('[data-testid="add-food-breakfast"]').first();
     await addButton.click();
 
     const searchInput = page.locator('input[role="combobox"], input[placeholder*="search" i]');
@@ -113,7 +113,7 @@ test.describe("QuickAdd Pills Flow", () => {
     await page.waitForSelector("main", { timeout: 10000 });
 
     // First, log a food to populate QuickPills
-    const addButton = page.locator('[data-testid="add-food-breakfast"]');
+    const addButton = page.locator('[data-testid="add-food-breakfast"]').first();
     await addButton.click();
 
     const searchInput = page.locator('input[role="combobox"], input[placeholder*="search" i]');
@@ -190,7 +190,7 @@ test.describe("QuickAdd Pills Flow", () => {
     }
 
     // Log a food to populate QuickPills
-    const addButton = page.locator('[data-testid="add-food-lunch"]');
+    const addButton = page.locator('[data-testid="add-food-lunch"]').first();
     await addButton.click();
 
     const searchInput = page.locator('input[role="combobox"], input[placeholder*="search" i]');
