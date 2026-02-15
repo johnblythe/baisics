@@ -67,11 +67,7 @@ test.describe("QuickAdd Pills Flow", () => {
 
     // First, log a food via search to populate QuickPills
     // Open inline search for Breakfast
-    const addButton = page
-      .locator("div")
-      .filter({ hasText: /^Breakfast/ })
-      .first()
-      .locator("button", { hasText: /add/i });
+    const addButton = page.locator('[data-testid="add-food-breakfast"]');
     await addButton.click();
 
     const searchInput = page.locator('input[role="combobox"], input[placeholder*="search" i]');
@@ -117,11 +113,7 @@ test.describe("QuickAdd Pills Flow", () => {
     await page.waitForSelector("main", { timeout: 10000 });
 
     // First, log a food to populate QuickPills
-    const addButton = page
-      .locator("div")
-      .filter({ hasText: /^Breakfast/ })
-      .first()
-      .locator("button", { hasText: /add/i });
+    const addButton = page.locator('[data-testid="add-food-breakfast"]');
     await addButton.click();
 
     const searchInput = page.locator('input[role="combobox"], input[placeholder*="search" i]');
@@ -198,11 +190,7 @@ test.describe("QuickAdd Pills Flow", () => {
     }
 
     // Log a food to populate QuickPills
-    const addButton = page
-      .locator("div")
-      .filter({ hasText: /^Lunch/ })
-      .first()
-      .locator("button", { hasText: /add/i });
+    const addButton = page.locator('[data-testid="add-food-lunch"]');
     await addButton.click();
 
     const searchInput = page.locator('input[role="combobox"], input[placeholder*="search" i]');

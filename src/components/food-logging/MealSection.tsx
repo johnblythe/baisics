@@ -315,7 +315,7 @@ export function MealSection({
   })() : false;
 
   return (
-    <div>
+    <div data-testid={`meal-section-${meal.toLowerCase()}`}>
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <div className="p-1.5 bg-[#F1F5F9] rounded-lg text-[#64748B]">
@@ -359,6 +359,7 @@ export function MealSection({
           <button
             type="button"
             onClick={handleAddClick}
+            data-testid={`add-food-${meal.toLowerCase()}`}
             className="text-xs text-[#FF6B6B] hover:text-[#EF5350] font-medium flex items-center gap-1"
           >
             <Plus className="w-3 h-3" />

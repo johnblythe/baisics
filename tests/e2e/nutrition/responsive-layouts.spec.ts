@@ -79,11 +79,7 @@ test.describe("Responsive Layouts", () => {
 
       // QuickPills on mobile use layout="horizontal" which renders as overflow-x-auto
       // First, let's log a food to populate QuickPills
-      const addButton = page
-        .locator("div")
-        .filter({ hasText: /^Breakfast/ })
-        .first()
-        .locator("button", { hasText: /add/i });
+      const addButton = page.locator('[data-testid="add-food-breakfast"]');
       await addButton.click();
 
       const searchInput = page.locator('input[role="combobox"], input[placeholder*="search" i]');
@@ -171,8 +167,7 @@ test.describe("Responsive Layouts", () => {
       await page.waitForSelector("main", { timeout: 10000 });
 
       // Find and click Add button for Breakfast
-      const breakfastSection = page.locator("div").filter({ hasText: /^Breakfast/ }).first();
-      const addButton = breakfastSection.locator("button", { hasText: /add/i });
+      const addButton = page.locator('[data-testid="add-food-breakfast"]');
       await expect(addButton).toBeVisible({ timeout: 5000 });
       await addButton.click();
 
@@ -313,11 +308,7 @@ test.describe("Responsive Layouts", () => {
       await page.waitForSelector("main", { timeout: 10000 });
 
       // Add some food to create scrollable content
-      const addButton = page
-        .locator("div")
-        .filter({ hasText: /^Breakfast/ })
-        .first()
-        .locator("button", { hasText: /add/i });
+      const addButton = page.locator('[data-testid="add-food-breakfast"]');
       await addButton.click();
 
       const searchInput = page.locator('input[role="combobox"], input[placeholder*="search" i]');
@@ -350,8 +341,7 @@ test.describe("Responsive Layouts", () => {
       await page.waitForSelector("main", { timeout: 10000 });
 
       // Find and click Add button for Lunch
-      const lunchSection = page.locator("div").filter({ hasText: /^Lunch/ }).first();
-      const addButton = lunchSection.locator("button", { hasText: /add/i });
+      const addButton = page.locator('[data-testid="add-food-lunch"]');
       await expect(addButton).toBeVisible({ timeout: 5000 });
       await addButton.click();
 
