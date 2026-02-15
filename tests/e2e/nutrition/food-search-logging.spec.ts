@@ -38,16 +38,8 @@ test.describe("Nutrition Food Search and Logging", () => {
     await page.goto("/nutrition");
     await page.waitForSelector("main", { timeout: 10000 });
 
-    // Find Breakfast section and click Add button
-    const breakfastSection = page.locator("text=Breakfast").first();
-    await expect(breakfastSection).toBeVisible({ timeout: 5000 });
-
-    // Click the Add button near Breakfast
-    const addButton = page
-      .locator("div")
-      .filter({ hasText: /^Breakfast/ })
-      .first()
-      .locator("button", { hasText: /add/i });
+    // Click the Add button on Breakfast section
+    const addButton = page.locator('[data-testid="add-food-breakfast"]').first();
     await addButton.click();
 
     // Verify the inline search panel opens - should show search input
@@ -66,11 +58,7 @@ test.describe("Nutrition Food Search and Logging", () => {
     await page.waitForSelector("main", { timeout: 10000 });
 
     // Open inline search on Breakfast
-    const addButton = page
-      .locator("div")
-      .filter({ hasText: /^Breakfast/ })
-      .first()
-      .locator("button", { hasText: /add/i });
+    const addButton = page.locator('[data-testid="add-food-breakfast"]').first();
     await addButton.click();
 
     // Wait for search input
@@ -100,11 +88,7 @@ test.describe("Nutrition Food Search and Logging", () => {
     await page.waitForSelector("main", { timeout: 10000 });
 
     // Open inline search
-    const addButton = page
-      .locator("div")
-      .filter({ hasText: /^Breakfast/ })
-      .first()
-      .locator("button", { hasText: /add/i });
+    const addButton = page.locator('[data-testid="add-food-breakfast"]').first();
     await addButton.click();
 
     const searchInput = page.locator('input[role="combobox"], input[placeholder*="search" i]');
@@ -140,11 +124,7 @@ test.describe("Nutrition Food Search and Logging", () => {
     await page.waitForSelector("main", { timeout: 10000 });
 
     // Open inline search
-    const addButton = page
-      .locator("div")
-      .filter({ hasText: /^Breakfast/ })
-      .first()
-      .locator("button", { hasText: /add/i });
+    const addButton = page.locator('[data-testid="add-food-breakfast"]').first();
     await addButton.click();
 
     const searchInput = page.locator('input[role="combobox"], input[placeholder*="search" i]');
@@ -181,11 +161,7 @@ test.describe("Nutrition Food Search and Logging", () => {
     await page.waitForSelector("main", { timeout: 10000 });
 
     // Open inline search for Lunch
-    const addButtonLunch = page
-      .locator("div")
-      .filter({ hasText: /^Lunch/ })
-      .first()
-      .locator("button", { hasText: /add/i });
+    const addButtonLunch = page.locator('[data-testid="add-food-lunch"]').first();
     await addButtonLunch.click();
 
     const searchInput = page.locator('input[role="combobox"], input[placeholder*="search" i]');
@@ -247,11 +223,7 @@ test.describe("Nutrition Food Search and Logging", () => {
     const calorieDisplay = page.locator("text=/\\d+\\s*\\/\\s*\\d+\\s*cal/i").first();
 
     // Open inline search for Snack
-    const addButtonSnack = page
-      .locator("div")
-      .filter({ hasText: /^Snack/ })
-      .first()
-      .locator("button", { hasText: /add/i });
+    const addButtonSnack = page.locator('[data-testid="add-food-snack"]').first();
     await addButtonSnack.click();
 
     const searchInput = page.locator('input[role="combobox"], input[placeholder*="search" i]');
@@ -289,11 +261,7 @@ test.describe("Nutrition Food Search and Logging", () => {
     await page.waitForSelector("main", { timeout: 10000 });
 
     // Open inline search
-    const addButton = page
-      .locator("div")
-      .filter({ hasText: /^Dinner/ })
-      .first()
-      .locator("button", { hasText: /add/i });
+    const addButton = page.locator('[data-testid="add-food-dinner"]').first();
     await addButton.click();
 
     const searchInput = page.locator('input[role="combobox"], input[placeholder*="search" i]');
@@ -320,11 +288,7 @@ test.describe("Nutrition Food Search and Logging", () => {
     await page.waitForSelector("main", { timeout: 10000 });
 
     // Open inline search
-    const addButton = page
-      .locator("div")
-      .filter({ hasText: /^Breakfast/ })
-      .first()
-      .locator("button", { hasText: /add/i });
+    const addButton = page.locator('[data-testid="add-food-breakfast"]').first();
     await addButton.click();
 
     const searchInput = page.locator('input[role="combobox"], input[placeholder*="search" i]');

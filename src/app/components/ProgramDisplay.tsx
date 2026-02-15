@@ -4,7 +4,7 @@ import { Program } from '@/types';
 import { UpsellModal } from './UpsellModal';
 import { useEffect, useState, useRef, forwardRef, useImperativeHandle } from 'react';
 import { User } from '@prisma/client';
-import { getUser } from '@/lib/actions/user';
+import { getUser, updateUser } from '@/lib/actions/user';
 import { DisclaimerBanner } from '@/components/DisclaimerBanner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { generateWorkoutPDF } from '@/utils/pdf';
@@ -13,10 +13,13 @@ import { WorkoutPlan } from '@/types/program';
 import { MacroDisplay } from '@/components/MacroDisplay';
 import { ExerciseCard } from '@/components/exercise/ExerciseCard';
 import { ExerciseSwapModal } from '@/components/ExerciseSwapModal';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 interface ProgramDisplayProps {
   program: Program;
   userEmail?: string | null;
+  userId?: string | null;
   onRequestUpsell: () => void;
   isUpsellOpen?: boolean;
   onCloseUpsell?: () => void;
@@ -372,6 +375,7 @@ function PhaseCard({
 export const ProgramDisplay = forwardRef<ProgramDisplayRef, ProgramDisplayProps>(({
   program: initialProgram,
   userEmail: initialUserEmail = null,
+  userId: propUserId = null,
   onRequestUpsell,
   isUpsellOpen = false,
   onCloseUpsell,
@@ -381,7 +385,11 @@ export const ProgramDisplay = forwardRef<ProgramDisplayRef, ProgramDisplayProps>
   const [userEmail, setUserEmail] = useState(initialUserEmail);
   const [user, setUser] = useState<User | null>(null);
   const [isSticky, setIsSticky] = useState(false);
+  const [inlineEmail, setInlineEmail] = useState('');
+  const [inlineEmailSubmitting, setInlineEmailSubmitting] = useState(false);
+  const [showInlineSuccess, setShowInlineSuccess] = useState(false);
   const headerRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   // Exercise swap modal state
   const [swapModalOpen, setSwapModalOpen] = useState(false);
@@ -427,19 +435,50 @@ export const ProgramDisplay = forwardRef<ProgramDisplayRef, ProgramDisplayProps>
 
   const handleEmailSubmit = async (email: string) => {
     setUserEmail(email);
-    const userId = new URLSearchParams(window.location.search).get('userId');
+    const userId = propUserId || new URLSearchParams(window.location.search).get('userId');
     if (userId) {
       const result = await getUser(userId);
       if (result.success && result.user) {
         setUser(result.user);
       }
     }
-    onCloseUpsell?.();
+    // Don't close modal here — UpsellModal shows success state with dashboard CTA
+  };
+
+  const handleInlineEmailSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inlineEmail || inlineEmailSubmitting) return;
+    setInlineEmailSubmitting(true);
+    try {
+      const userId = propUserId || new URLSearchParams(window.location.search).get('userId');
+      if (!userId) {
+        console.error('No user ID available for inline email submit');
+        return;
+      }
+
+      // Save email to user
+      const response = await updateUser(userId, { email: inlineEmail });
+
+      if (response.success) {
+        // Auto sign-in to create a real NextAuth session
+        await signIn('credentials', { email: inlineEmail, userId, redirect: false });
+        router.refresh();
+
+        setUserEmail(inlineEmail);
+        const userResult = await getUser(userId);
+        if (userResult.success && userResult.user) {
+          setUser(userResult.user);
+        }
+        setShowInlineSuccess(true);
+      }
+    } finally {
+      setInlineEmailSubmitting(false);
+    }
   };
 
   useEffect(() => {
     const fetchUser = async () => {
-      const userId = new URLSearchParams(window.location.search).get('userId');
+      const userId = propUserId || new URLSearchParams(window.location.search).get('userId');
       if (userId) {
         const result = await getUser(userId);
         if (result.success && result.user) {
@@ -449,7 +488,7 @@ export const ProgramDisplay = forwardRef<ProgramDisplayRef, ProgramDisplayProps>
       }
     };
     fetchUser();
-  }, []);
+  }, [propUserId]);
 
   // Sticky header observer
   useEffect(() => {
@@ -491,6 +530,37 @@ export const ProgramDisplay = forwardRef<ProgramDisplayRef, ProgramDisplayProps>
 
   return (
     <div className="space-y-6" style={{ fontFamily: "'Outfit', sans-serif" }}>
+      {/* Preview Banner - non-authenticated users only */}
+      {!userEmail && (
+        <div className="bg-gradient-to-r from-[#0F172A] to-[#1E293B] text-white rounded-2xl overflow-hidden">
+          <div className="px-4 sm:px-6 py-3">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#FF6B6B]/20 border border-[#FF6B6B]/30">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF6B6B] opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#FF6B6B]"></span>
+                  </span>
+                  <span className="text-xs font-semibold text-[#FF6B6B] uppercase tracking-wider" style={{ fontFamily: "'Space Mono', monospace" }}>Preview</span>
+                </div>
+                <span className="text-sm text-white/80">
+                  Viewing <span className="font-semibold text-white">Phase 1 of {totalPhases}</span>
+                </span>
+              </div>
+              <button
+                onClick={() => onRequestUpsell?.()}
+                className="text-sm font-medium text-white/90 hover:text-white flex items-center gap-2 group"
+              >
+                <span>Unlock full program</span>
+                <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Physician Disclaimer - Top of page */}
       <DisclaimerBanner
         variant="inline"
@@ -525,6 +595,73 @@ export const ProgramDisplay = forwardRef<ProgramDisplayRef, ProgramDisplayProps>
               <p className="text-base sm:text-lg text-white/70 max-w-2xl leading-relaxed">{program.description}</p>
             )}
           </div>
+
+          {/* Value Comparison Card - non-authenticated users only */}
+          {!userEmail && (
+            <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-4 sm:p-6 mb-6 lg:mb-8">
+              <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
+                {/* What preview includes */}
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
+                      <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                    </div>
+                    <span className="text-sm font-semibold text-white/90 uppercase tracking-wider" style={{ fontFamily: "'Space Mono', monospace" }}>Preview includes</span>
+                  </div>
+                  <ul className="space-y-2">
+                    {[
+                      "Phase 1 workouts",
+                      "Exercise descriptions",
+                      "Rep & set guidance",
+                    ].map((item, i) => (
+                      <li key={i} className="flex items-center gap-2 text-sm text-white/70">
+                        <svg className="w-4 h-4 text-white/50 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* What signup unlocks */}
+                <div className="sm:border-l sm:border-white/10 sm:pl-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-6 h-6 rounded-full bg-[#FF6B6B]/20 flex items-center justify-center">
+                      <svg className="w-3.5 h-3.5 text-[#FF6B6B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                    </div>
+                    <span className="text-sm font-semibold text-[#FF6B6B] uppercase tracking-wider" style={{ fontFamily: "'Space Mono', monospace" }}>Free signup unlocks</span>
+                  </div>
+                  <ul className="space-y-2">
+                    {[
+                      `All ${totalPhases} phases`,
+                      "Personalized nutrition",
+                      "Progress tracking",
+                      "PDF export",
+                    ].map((item, i) => (
+                      <li key={i} className="flex items-center gap-2 text-sm text-white/90">
+                        <svg className="w-4 h-4 text-[#FF6B6B] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                  <button
+                    onClick={() => onRequestUpsell?.()}
+                    className="mt-4 w-full sm:w-auto px-6 py-2.5 bg-[#FF6B6B] text-white font-semibold rounded-xl hover:bg-[#EF5350] transition-all shadow-lg shadow-[#FF6B6B]/25 text-sm"
+                  >
+                    Keep My Program — Free
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Stats Badges Row */}
           <div className="flex flex-wrap gap-3 mb-6 lg:mb-8">
@@ -630,7 +767,7 @@ export const ProgramDisplay = forwardRef<ProgramDisplayRef, ProgramDisplayProps>
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                   </svg>
-                  Save & Share
+                  Keep My Program
                 </button>
               )}
             </div>
@@ -644,20 +781,23 @@ export const ProgramDisplay = forwardRef<ProgramDisplayRef, ProgramDisplayProps>
           {program.workoutPlans.map((_, index) => (
             <button
               key={index}
-              onClick={() => setActivePlanIndex(index)}
+              onClick={() => {
+                if (isPhaseUnlocked(index)) {
+                  setActivePlanIndex(index);
+                } else {
+                  onRequestUpsell();
+                }
+              }}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all flex-shrink-0 ${
                 activePlanIndex === index
                   ? 'bg-[#FF6B6B] text-white shadow-lg shadow-[#FF6B6B]/25'
                   : isPhaseUnlocked(index)
                     ? 'bg-white text-[#475569] border border-[#E2E8F0] hover:border-[#FF6B6B]/50 hover:text-[#FF6B6B]'
-                    : 'bg-[#F1F5F9] text-[#94A3B8] border border-[#E2E8F0] cursor-not-allowed'
+                    : 'bg-[#F1F5F9] text-[#94A3B8] border border-[#E2E8F0] hover:bg-[#FFE5E5]/50 hover:border-[#FF6B6B]/30 hover:text-[#FF6B6B]'
               }`}
-              disabled={!isPhaseUnlocked(index)}
             >
               {!isPhaseUnlocked(index) && (
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
+                <span className="text-sm">&#x1F512;</span>
               )}
               <span style={{ fontFamily: "'Space Mono', monospace" }}>Phase {index + 1}</span>
               {activePlanIndex === index && (
@@ -701,7 +841,7 @@ export const ProgramDisplay = forwardRef<ProgramDisplayRef, ProgramDisplayProps>
             totalPhases={totalPhases}
             isActive={true}
             onSelect={() => {}}
-            isLocked={!isPhaseUnlocked(activePlanIndex)}
+            isLocked={false}
             onRequestUpsell={onRequestUpsell}
             onSwapExercise={handleOpenSwapModal}
           />
@@ -731,6 +871,126 @@ export const ProgramDisplay = forwardRef<ProgramDisplayRef, ProgramDisplayProps>
         </div>
       )}
 
+      {/* Combined Locked Phases Section - non-authenticated users only */}
+      {!userEmail && totalPhases > 1 && (
+        <div id="unlock-program-section" className="scroll-mt-24">
+          <div className="bg-white rounded-2xl border-2 border-dashed border-[#E2E8F0] overflow-hidden">
+            {/* Blurred phase previews */}
+            <div className="p-5 blur-[2px] opacity-30 pointer-events-none select-none">
+              <div className="space-y-4">
+                {program.workoutPlans.slice(1).map((plan: any, i) => (
+                  <div key={i} className="flex items-start gap-4">
+                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#94A3B8] to-[#64748B] flex flex-col items-center justify-center flex-shrink-0">
+                      <span className="text-[9px] uppercase tracking-wider text-white/80" style={{ fontFamily: "'Space Mono', monospace" }}>Phase</span>
+                      <span className="text-xl font-extrabold text-white">{i + 2}</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg font-bold text-[#0F172A]">{plan.name || `Phase ${i + 2}`}</h3>
+                      <p className="text-sm text-[#64748B] line-clamp-1">{plan.phaseExplanation || 'Training phase'}</p>
+                      <div className="flex gap-3 mt-2">
+                        <span className="text-xs text-[#94A3B8]">{plan.workouts?.length || 0} days/wk</span>
+                        <span className="text-xs text-[#94A3B8]">{plan.workouts?.reduce((sum: number, w: any) => sum + (w.exercises?.length || 0), 0) || 0} exercises</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Unlock content */}
+            <div className="px-6 pb-8 pt-2 text-center">
+              {/* Lock icon */}
+              <div className="w-16 h-16 rounded-2xl bg-[#FFE5E5] flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-[#FF6B6B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+
+              <h3 className="text-xl font-bold text-[#0F172A] mb-2">
+                {totalPhases === 2
+                  ? 'Phase 2'
+                  : `Phases 2-${totalPhases}`
+                }
+              </h3>
+              <p className="text-sm text-[#64748B] mb-6">
+                Get the full {totalPhases * 4}-week program plus tracking dashboard — completely free.
+              </p>
+
+              {/* Benefits list */}
+              <div className="flex flex-wrap justify-center gap-2 mb-6">
+                {[
+                  'Unlock all phases',
+                  'Personalized nutrition plan',
+                  'Progress tracking dashboard',
+                  'PDF export',
+                  'Food logging & meal planning',
+                ].map((item, i) => (
+                  <span key={i} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#F8FAFC] border border-[#F1F5F9] text-xs text-[#475569]">
+                    <svg className="w-3 h-3 text-[#FF6B6B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    {item}
+                  </span>
+                ))}
+              </div>
+
+              {/* Inline email capture / success state */}
+              {showInlineSuccess ? (
+                <div className="text-center space-y-4">
+                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-[#FFE5E5] mb-2">
+                    <svg className="w-7 h-7 text-[#FF6B6B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <h4 className="text-xl font-bold text-[#0F172A]">You&apos;re In!</h4>
+                  <p className="text-sm text-[#475569]">Your full program is now unlocked.</p>
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+                    <a
+                      href="/dashboard"
+                      className="px-6 py-3 bg-[#FF6B6B] text-white font-bold rounded-xl hover:bg-[#EF5350] transition-all shadow-lg shadow-[#FF6B6B]/25 text-center"
+                    >
+                      Go to My Dashboard
+                    </a>
+                    <button
+                      onClick={() => window.location.reload()}
+                      className="px-6 py-3 text-[#475569] hover:text-[#0F172A] font-medium transition-colors text-center"
+                    >
+                      Continue viewing program
+                    </button>
+                  </div>
+                  <p className="text-xs text-[#94A3B8]">Check your email for a welcome message</p>
+                </div>
+              ) : (
+                <div className="max-w-md mx-auto">
+                  <form onSubmit={handleInlineEmailSubmit} className="space-y-3">
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <input
+                        type="email"
+                        value={inlineEmail}
+                        onChange={(e) => setInlineEmail(e.target.value)}
+                        placeholder="your@email.com"
+                        required
+                        className="flex-1 px-4 py-3 border-2 border-[#E2E8F0] rounded-xl text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:border-[#FF6B6B] transition-colors text-center sm:text-left"
+                      />
+                      <button
+                        type="submit"
+                        disabled={inlineEmailSubmitting}
+                        className="px-6 py-3 bg-[#FF6B6B] text-white font-bold rounded-xl hover:bg-[#EF5350] transition-all shadow-lg shadow-[#FF6B6B]/25 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                      >
+                        {inlineEmailSubmitting ? 'Unlocking...' : 'Unlock Full Program'}
+                      </button>
+                    </div>
+                    <p className="text-xs text-[#94A3B8]">
+                      100% free &bull; No credit card &bull; Instant access
+                    </p>
+                  </form>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Exercise Swap Modal */}
       {swapExercise && (
         <ExerciseSwapModal
@@ -754,6 +1014,7 @@ export const ProgramDisplay = forwardRef<ProgramDisplayRef, ProgramDisplayProps>
         onPurchase={() => onCloseUpsell?.()}
         userEmail={userEmail}
         user={user}
+        userId={propUserId}
       />
     </div>
   );

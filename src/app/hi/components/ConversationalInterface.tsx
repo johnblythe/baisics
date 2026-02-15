@@ -24,16 +24,16 @@ import { clearWelcomeData } from "@/components/ClaimWelcomeBanner";
 
 // Quick start prompts for new users
 const QUICK_PROMPTS = [
-  { label: '💪 Build Muscle', message: "I want to build muscle and get stronger. I can train 4-5 days per week." },
-  { label: '🔥 Lose Weight', message: "I want to lose weight and get in better shape. Looking for something I can stick with." },
-  { label: '⚡ Get Stronger', message: "I want to focus on building strength. Interested in compound lifts and progressive overload." },
-  { label: '🎯 General Fitness', message: "I just want to get healthier and more fit overall. Not sure where to start." },
+  { label: 'Lose weight', message: "I want to lose weight and get in better shape. Looking for something I can stick with." },
+  { label: 'Build muscle', message: "I want to build muscle and get stronger. I can train 4-5 days per week." },
+  { label: 'Get stronger', message: "I want to focus on building strength. Interested in compound lifts and progressive overload." },
+  { label: 'General fitness', message: "I just want to get healthier and more fit overall. Not sure where to start." },
 ];
 
-// DIY navigation cards - these link to other pages, not chat triggers
+// DIY navigation links - secondary options for users who want to self-serve
 const DIY_CARDS = [
-  { label: '🛠️ I\'ll build my own', href: '/templates', description: 'Browse templates or start from scratch' },
-  { label: '📋 I have a program', href: '/create', description: 'Import your existing workout plan' },
+  { label: 'Browse templates', href: '/templates', description: 'Browse templates or start from scratch' },
+  { label: 'I have a program', href: '/create', description: 'Import your existing workout plan' },
 ];
 
 // Add type for example program phase
@@ -569,21 +569,60 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
     }
   };
 
-  // Form section for initial conversation (hidden during generation)
-  const renderFormSection = () => {
+  const hasConversationStarted = messages.length > 1;
+
+  // Hero form: large, prominent input shown before conversation starts
+  const renderHeroForm = () => {
+    if (hasConversationStarted || showDataReview || isGeneratingProgram || isTyping) return null;
     return (
       <form
         onSubmit={handleSubmit}
-        className={`mt-6 ${showDataReview || isGeneratingProgram ? 'hidden' : ''}`}
+        className="w-full"
       >
-        <div className="flex flex-col space-y-5">
+        <div className="relative">
+          <textarea
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Tell me about your goals, schedule, and what equipment you have..."
+            rows={3}
+            autoFocus={true}
+            className="w-full p-6 border-2 border-[#E2E8F0] rounded-2xl bg-white text-[#0F172A] placeholder-[#94A3B8] focus:ring-4 focus:ring-[#FF6B6B]/15 focus:border-[#FF6B6B] resize-none transition-all duration-300 text-lg shadow-sm"
+            style={{ fontFamily: "'Outfit', sans-serif" }}
+          />
+          <div className="flex items-center justify-between mt-3">
+            <div className="hidden lg:block text-xs text-[#94A3B8]" style={{ fontFamily: "'Space Mono', monospace" }}>
+              ⌘ + Return to send
+            </div>
+            <button
+              type="submit"
+              disabled={!inputValue.trim() || isTyping}
+              className="ml-auto px-8 py-3.5 bg-[#FF6B6B] hover:bg-[#EF5350] text-white text-base font-semibold rounded-xl shadow-lg shadow-[#FF6B6B]/25 hover:shadow-xl hover:shadow-[#FF6B6B]/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+            >
+              Start chatting
+            </button>
+          </div>
+        </div>
+      </form>
+    );
+  };
+
+  // Compact form shown at bottom of chat once conversation is underway
+  const renderChatForm = () => {
+    if (!hasConversationStarted || showDataReview || isGeneratingProgram) return null;
+    return (
+      <form
+        onSubmit={handleSubmit}
+        className="mt-4"
+      >
+        <div className="flex flex-col space-y-3">
           <div className="relative">
             <textarea
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={!extractedData && !messages ? "Share your fitness journey and goals..." : "Keep the info coming!"}
-              rows={4}
+              placeholder="Keep the info coming!"
+              rows={3}
               autoFocus={true}
               className="w-full p-5 border-2 border-[#F1F5F9] rounded-xl bg-[#F8FAFC] text-[#0F172A] placeholder-[#94A3B8] focus:ring-2 focus:ring-[#FF6B6B]/20 focus:border-[#FF6B6B] resize-none transition-all duration-300 text-base"
               style={{ fontFamily: "'Outfit', sans-serif" }}
@@ -597,7 +636,7 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
             disabled={!inputValue.trim() || isTyping}
             className="px-8 py-4 bg-[#FF6B6B] hover:bg-[#EF5350] text-white text-lg font-semibold rounded-xl shadow-lg shadow-[#FF6B6B]/25 hover:shadow-xl hover:shadow-[#FF6B6B]/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
           >
-            {!extractedData || !messages ? "Share Your Story" : "Tell me more"}
+            Tell me more
           </button>
         </div>
       </form>
@@ -629,6 +668,7 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
           <ProgramDisplay
             program={program}
             userEmail={localUser?.email}
+            userId={localUserId}
             onRequestUpsell={() => setIsUpsellOpen(!isUpsellOpen)}
             isUpsellOpen={isUpsellOpen}
             onCloseUpsell={() => setIsUpsellOpen(false)}
@@ -647,128 +687,157 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
           />
         ) : (
           <div className="flex-1 flex flex-col">
-            {/* Hero Section - shows when conversation just started */}
-            {messages.length <= 1 && !isTyping && (
+            {/* ===== PRE-CONVERSATION: Hero + Input + Shortcuts ===== */}
+            {!hasConversationStarted && !isTyping && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-center mb-8"
+                className="flex flex-col items-center"
               >
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#0F172A] mb-3">
-                  Let&apos;s Build Your Program
-                </h1>
-                <p className="text-[#64748B] text-lg md:text-xl">
-                  Tell me about your goals, or pick one below to get started
-                </p>
-              </motion.div>
-            )}
+                {/* Hero Section */}
+                <div className="text-center mb-8 mt-4">
+                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#0F172A] mb-3">
+                    Let&apos;s Build Your Program
+                  </h1>
+                  <p className="text-[#64748B] text-lg md:text-xl max-w-lg mx-auto">
+                    Tell me about your goals, schedule, and what equipment you have access to.
+                  </p>
+                </div>
 
-            {/* Chat Messages Container */}
-            <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 messages-container relative bg-white rounded-2xl border border-[#F1F5F9] shadow-sm">
-              <AnimatePresence>
-                {messages.map((message, index) => (
+                {/* Welcome message bubble */}
+                {messages.length === 1 && (
                   <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    className={`flex ${message.role === "assistant" ? "justify-start" : "justify-end"}`}
+                    className="w-full max-w-2xl mx-auto mb-6"
                   >
-                    <div
-                      className={`max-w-[85%] p-5 rounded-2xl transition-all duration-300 ${
-                        message.role === "assistant"
-                          ? "bg-[#0F172A] text-white shadow-lg"
-                          : "bg-white border-l-4 border-[#FF6B6B] text-[#0F172A] shadow-sm"
-                      }`}
-                    >
-                      <p className={`whitespace-pre-wrap text-base leading-relaxed ${message.role === "assistant" ? "text-white" : "text-[#0F172A]"}`}>
-                        {message.content}
-                      </p>
+                    <div className="bg-[#0F172A] text-white p-4 rounded-2xl rounded-tl-sm shadow-lg">
+                      <p className="text-base leading-relaxed whitespace-pre-wrap">{messages[0].content}</p>
                     </div>
                   </motion.div>
-                ))}
-              </AnimatePresence>
+                )}
 
-              {isTyping && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="flex items-center space-x-2"
-                >
-                  <div className="w-2 h-2 bg-[#FF6B6B] rounded-full animate-bounce" />
-                  <div className="w-2 h-2 bg-[#FF6B6B] rounded-full animate-bounce" style={{ animationDelay: "0.15s" }} />
-                  <div className="w-2 h-2 bg-[#FF6B6B] rounded-full animate-bounce" style={{ animationDelay: "0.3s" }} />
-                </motion.div>
-              )}
-              <div ref={messagesEndRef} />
-
-              {/* Escape hatch link - shows after chat has started */}
-              {messages.length > 1 && !isTyping && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.5 }}
-                  className="absolute bottom-3 right-3"
-                >
-                  <Link
-                    href="/templates"
-                    className="text-xs text-[#94A3B8] hover:text-[#64748B] transition-colors"
-                    style={{ fontFamily: "'Space Mono', monospace" }}
-                  >
-                    Prefer to build your own? →
-                  </Link>
-                </motion.div>
-              )}
-            </div>
-
-            {/* Quick Start Prompts - shows when conversation just started */}
-            {messages.length <= 1 && !isTyping && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="mt-6"
-              >
-                <p className="text-sm text-[#94A3B8] mb-4 text-center">Quick start:</p>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {/* Quick Start Prompts - chat shortcuts above input */}
+                <div className="flex flex-wrap justify-center gap-2 mb-4 max-w-2xl mx-auto">
                   {QUICK_PROMPTS.map((prompt, idx) => (
                     <button
                       key={idx}
                       type="button"
                       onClick={() => {
                         setInputValue(prompt.message);
-                        // Auto-submit after a brief delay so user sees what was filled
                         setTimeout(() => {
                           handleSubmit({ preventDefault: () => {} } as React.FormEvent);
                         }, 100);
                       }}
-                      className="px-5 py-4 bg-[#F8FAFC] hover:bg-[#FFE5E5] border border-[#E2E8F0] hover:border-[#FF6B6B] rounded-xl text-sm font-medium text-[#0F172A] transition-all duration-200"
+                      className="px-4 py-2 bg-[#F8FAFC] hover:bg-[#FFE5E5] border border-[#E2E8F0] hover:border-[#FF6B6B] rounded-full text-sm text-[#475569] hover:text-[#0F172A] transition-all duration-200"
                     >
                       {prompt.label}
                     </button>
                   ))}
                 </div>
 
-                {/* DIY Options - second row for users who want to build their own */}
-                <p className="text-sm text-[#94A3B8] mt-6 mb-4 text-center">Or go your own way:</p>
-                <div className="grid grid-cols-2 gap-3">
+                {/* Primary Action: Chat Input */}
+                <div className="w-full max-w-2xl mx-auto mb-8">
+                  {renderHeroForm()}
+                </div>
+
+                {/* "or" divider */}
+                <div className="flex items-center w-full max-w-md mx-auto mb-6">
+                  <div className="flex-1 h-px bg-[#E2E8F0]" />
+                  <span className="px-4 text-sm text-[#94A3B8]" style={{ fontFamily: "'Space Mono', monospace" }}>or</span>
+                  <div className="flex-1 h-px bg-[#E2E8F0]" />
+                </div>
+
+                {/* DIY Options - minimal text links */}
+                <div className="flex flex-wrap justify-center gap-4">
                   {DIY_CARDS.map((card, idx) => (
                     <Link
                       key={idx}
                       href={card.href}
-                      className="px-5 py-4 bg-white hover:bg-[#F8FAFC] border-2 border-[#E2E8F0] hover:border-[#0F172A] rounded-xl text-center transition-all duration-200 group"
+                      className="text-sm text-[#94A3B8] hover:text-[#FF6B6B] transition-colors duration-200"
+                      style={{ fontFamily: "'Space Mono', monospace" }}
                     >
-                      <span className="block text-sm font-medium text-[#0F172A]">{card.label}</span>
-                      <span className="block text-xs text-[#94A3B8] mt-1 group-hover:text-[#64748B]">{card.description}</span>
+                      {card.label} →
                     </Link>
                   ))}
                 </div>
               </motion.div>
             )}
+
+            {/* Typing indicator for initial message */}
+            {!hasConversationStarted && isTyping && (
+              <div className="flex items-center justify-center space-x-2 py-12">
+                <div className="w-2 h-2 bg-[#FF6B6B] rounded-full animate-bounce" />
+                <div className="w-2 h-2 bg-[#FF6B6B] rounded-full animate-bounce" style={{ animationDelay: "0.15s" }} />
+                <div className="w-2 h-2 bg-[#FF6B6B] rounded-full animate-bounce" style={{ animationDelay: "0.3s" }} />
+              </div>
+            )}
+
+            {/* ===== POST-CONVERSATION: Chat Messages ===== */}
+            {hasConversationStarted && (
+              <>
+                <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 messages-container relative bg-white rounded-2xl border border-[#F1F5F9] shadow-sm">
+                  <AnimatePresence>
+                    {messages.map((message, index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        className={`flex ${message.role === "assistant" ? "justify-start" : "justify-end"}`}
+                      >
+                        <div
+                          className={`max-w-[85%] p-5 rounded-2xl transition-all duration-300 ${
+                            message.role === "assistant"
+                              ? "bg-[#0F172A] text-white shadow-lg"
+                              : "bg-white border-l-4 border-[#FF6B6B] text-[#0F172A] shadow-sm"
+                          }`}
+                        >
+                          <p className={`whitespace-pre-wrap text-base leading-relaxed ${message.role === "assistant" ? "text-white" : "text-[#0F172A]"}`}>
+                            {message.content}
+                          </p>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+
+                  {isTyping && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="flex items-center space-x-2"
+                    >
+                      <div className="w-2 h-2 bg-[#FF6B6B] rounded-full animate-bounce" />
+                      <div className="w-2 h-2 bg-[#FF6B6B] rounded-full animate-bounce" style={{ animationDelay: "0.15s" }} />
+                      <div className="w-2 h-2 bg-[#FF6B6B] rounded-full animate-bounce" style={{ animationDelay: "0.3s" }} />
+                    </motion.div>
+                  )}
+                  <div ref={messagesEndRef} />
+
+                  {/* Escape hatch link */}
+                  {!isTyping && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.5 }}
+                      className="absolute bottom-3 right-3"
+                    >
+                      <Link
+                        href="/templates"
+                        className="text-xs text-[#94A3B8] hover:text-[#64748B] transition-colors"
+                        style={{ fontFamily: "'Space Mono', monospace" }}
+                      >
+                        Prefer to build your own? →
+                      </Link>
+                    </motion.div>
+                  )}
+                </div>
+              </>
+            )}
           </div>
         )}
 
-        {renderFormSection()}
+        {renderChatForm()}
       </div>
     </>
   );

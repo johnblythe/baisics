@@ -2,10 +2,12 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { ProgramTemplate, PROGRAM_TEMPLATES } from '@/data/templates';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { UpgradeModal } from '@/components/UpgradeModal';
 
 const DIFFICULTY_COLORS: Record<ProgramTemplate['difficulty'], string> = {
   beginner: 'bg-emerald-100 text-emerald-700',
@@ -32,12 +34,49 @@ interface TemplateDetailClientProps {
 
 export default function TemplateDetailClient({ template }: TemplateDetailClientProps) {
   const router = useRouter();
+  const { data: session } = useSession();
   const [generating, setGenerating] = useState(false);
   const [customDays, setCustomDays] = useState<number | null>(null);
+  const [cloneError, setCloneError] = useState<string | null>(null);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [currentProgramName, setCurrentProgramName] = useState<string | undefined>();
 
   async function handleGenerate() {
     setGenerating(true);
+    setCloneError(null);
 
+    // Authenticated users: clone the template directly
+    if (session?.user) {
+      try {
+        const res = await fetch('/api/programs/clone', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sourceId: template.id, sourceType: 'static' }),
+        });
+        const data = await res.json();
+
+        if (data.success && data.redirectUrl) {
+          router.push(data.redirectUrl);
+          return;
+        }
+
+        if (data.error === 'upgrade_required') {
+          setCloneError(data.message);
+          setCurrentProgramName(data.currentProgram?.name);
+          setShowUpgradeModal(true);
+          setGenerating(false);
+          return;
+        }
+
+        // Fallback: redirect to /hi
+        setGenerating(false);
+      } catch {
+        setGenerating(false);
+      }
+      return;
+    }
+
+    // Unauthenticated users: redirect to /hi with template context
     const templateContext = encodeURIComponent(
       JSON.stringify({
         templateId: template.id,
@@ -342,12 +381,27 @@ export default function TemplateDetailClient({ template }: TemplateDetailClientP
                       boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
                     }}
                   >
-                    {generating ? 'Preparing...' : 'Generate My Program →'}
+                    {generating ? 'Preparing...' : session?.user ? 'Claim This Program →' : 'Generate My Program →'}
                   </button>
 
-                  <p className="text-xs text-center mt-4 text-white/60">
-                    Free • No credit card required
-                  </p>
+                  {cloneError ? (
+                    <div className="mt-4 bg-white/15 backdrop-blur-sm rounded-xl p-4 text-center space-y-3">
+                      <p className="text-sm text-white font-medium">{cloneError}</p>
+                      <button
+                        onClick={() => setShowUpgradeModal(true)}
+                        className="inline-block px-6 py-2.5 bg-white text-[#FF6B6B] font-bold rounded-xl hover:bg-white/90 transition-all shadow-lg text-sm"
+                      >
+                        Upgrade to Pro
+                      </button>
+                      <p className="text-xs text-white/60">
+                        Or <a href="/dashboard" className="underline hover:text-white/80">manage your existing program</a>
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-center mt-4 text-white/60">
+                      Free • No credit card required
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -438,6 +492,13 @@ export default function TemplateDetailClient({ template }: TemplateDetailClientP
         {/* Footer */}
         <Footer />
       </div>
+
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        context="program_limit"
+        currentProgramName={currentProgramName}
+      />
     </>
   );
 }

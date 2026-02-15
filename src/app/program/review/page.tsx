@@ -101,6 +101,7 @@ function ProgramReviewContent() {
         //@ts-ignore
         program={program}
         userEmail={user?.email}
+        userId={searchParams.get("userId")}
         onRequestUpsell={() => setIsUpsellOpen(!isUpsellOpen)}
         isUpsellOpen={isUpsellOpen}
         onCloseUpsell={() => setIsUpsellOpen(false)}

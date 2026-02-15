@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { validateEmail } from "@/utils/forms/validation";
-import ReactConfetti from "react-confetti";
 import { updateUser } from '@/lib/actions/user';
 import { welcomeFreeTemplate, welcomePremiumTemplate } from '@/lib/email/templates';
 import { adminSignupNotificationTemplate } from '@/lib/email/templates/admin';
@@ -8,6 +7,9 @@ import { sendEmailAction } from "../hi/actions";
 import { User } from "@prisma/client";
 import { sendGTMEvent } from "@next/third-parties/google";
 import { useABTest } from "@/utils/abTest";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface UpsellModalProps {
   isOpen: boolean;
@@ -16,6 +18,7 @@ interface UpsellModalProps {
   onPurchase: () => void;
   userEmail?: string | null;
   user?: User | null;
+  userId?: string | null;
   onSuccessfulSubmit?: () => void;
 }
 
@@ -317,29 +320,156 @@ function VariantC({ onClose, formProps }: { onClose: () => void; formProps: Vari
 }
 
 // =============================================================================
+// SUCCESS VIEW (shared across all variants)
+// =============================================================================
+function SuccessView({ email, onClose }: { email: string; onClose: () => void }) {
+  const handleContinueViewing = () => {
+    onClose();
+    window.location.reload();
+  };
+
+  return (
+    <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden relative animate-[successFadeIn_0.4s_ease-out]">
+      {/* Confetti header */}
+      <div className="bg-gradient-to-br from-[#FF6B6B] to-[#EF5350] p-6 text-center relative overflow-hidden">
+        {/* Decorative circles */}
+        <div className="absolute top-2 left-4 w-3 h-3 rounded-full bg-white/20" />
+        <div className="absolute top-8 left-12 w-2 h-2 rounded-full bg-white/30" />
+        <div className="absolute top-4 right-8 w-4 h-4 rounded-full bg-white/20" />
+        <div className="absolute bottom-4 right-4 w-2 h-2 rounded-full bg-white/30" />
+        <div className="absolute bottom-6 left-8 w-3 h-3 rounded-full bg-white/20" />
+
+        {/* Checkmark icon */}
+        <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center mx-auto mb-3 shadow-lg animate-[successPop_0.5s_cubic-bezier(0.175,0.885,0.32,1.275)]">
+          <svg className="w-8 h-8 text-[#FF6B6B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+
+        <h2 className="text-2xl font-bold text-white mb-1 animate-[successSlideUp_0.5s_ease-out_0.2s_both]">
+          You&apos;re In!
+        </h2>
+        <p className="text-white/80 text-sm animate-[successSlideUp_0.5s_ease-out_0.3s_both]">
+          Your full program is now unlocked
+        </p>
+      </div>
+
+      {/* What's next section */}
+      <div className="p-6">
+        <h3 className="text-xs text-[#94A3B8] uppercase tracking-wider font-semibold mb-4" style={{ fontFamily: "'Space Mono', monospace" }}>
+          Here&apos;s what you can do now
+        </h3>
+
+        <div className="space-y-3 mb-6">
+          <div className="flex items-start gap-3 p-3 rounded-xl bg-[#F8FAFC] border border-[#F1F5F9]">
+            <div className="w-10 h-10 rounded-lg bg-[#0F172A] flex items-center justify-center flex-shrink-0">
+              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+            </div>
+            <div>
+              <p className="font-semibold text-[#0F172A]">View all phases</p>
+              <p className="text-sm text-[#64748B]">Your complete program</p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3 p-3 rounded-xl bg-[#F8FAFC] border border-[#F1F5F9]">
+            <div className="w-10 h-10 rounded-lg bg-[#0F172A] flex items-center justify-center flex-shrink-0">
+              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+            </div>
+            <div>
+              <p className="font-semibold text-[#0F172A]">Download PDF</p>
+              <p className="text-sm text-[#64748B]">Take it to the gym offline</p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3 p-3 rounded-xl bg-[#FFE5E5] border border-[#FFD5D5]">
+            <div className="w-10 h-10 rounded-lg bg-[#FF6B6B] flex items-center justify-center flex-shrink-0">
+              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <div>
+              <p className="font-semibold text-[#0F172A]">Track your progress</p>
+              <p className="text-sm text-[#64748B]">Log workouts & see your gains</p>
+            </div>
+            <span className="ml-auto px-2 py-0.5 rounded-full bg-[#FF6B6B] text-white text-xs font-bold self-center">
+              NEW
+            </span>
+          </div>
+        </div>
+
+        {/* Primary CTA */}
+        <Link
+          href="/dashboard"
+          className="block w-full px-6 py-4 bg-[#FF6B6B] text-white font-bold rounded-xl hover:bg-[#EF5350] transition-all shadow-lg shadow-[#FF6B6B]/25 text-center text-lg mb-3"
+        >
+          Go to My Dashboard
+        </Link>
+
+        {/* Secondary link */}
+        <button
+          onClick={handleContinueViewing}
+          className="w-full px-6 py-3 text-[#64748B] font-medium hover:text-[#0F172A] transition-colors text-sm"
+        >
+          Continue viewing program
+        </button>
+
+        {/* Email note */}
+        <div className="mt-6 pt-4 border-t border-[#F1F5F9] text-center">
+          <p className="text-xs text-[#94A3B8]">
+            We sent a welcome email to{' '}
+            {email ? (
+              <span className="font-medium text-[#475569]">{email}</span>
+            ) : (
+              'you'
+            )}
+            <br />with a link to access your program anytime.
+          </p>
+        </div>
+      </div>
+
+      {/* Keyframe animations */}
+      <style jsx>{`
+        @keyframes successFadeIn {
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes successPop {
+          0% { transform: scale(0); }
+          70% { transform: scale(1.1); }
+          100% { transform: scale(1); }
+        }
+        @keyframes successSlideUp {
+          from { opacity: 0; transform: translateY(12px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+// =============================================================================
 // MAIN COMPONENT WITH A/B TEST
 // =============================================================================
-export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEmail, user, onSuccessfulSubmit }: UpsellModalProps) {
+export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEmail, user, userId: propUserId, onSuccessfulSubmit }: UpsellModalProps) {
   const [email, setEmail] = useState(userEmail || user?.email || "");
   const [emailError, setEmailError] = useState("");
-  const [showConfetti, setShowConfetti] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   // A/B Test: randomly assign variant A, B, or C
   const { variant, trackConversion, trackDismiss } = useABTest('upsell_modal_v1', ['A', 'B', 'C']);
 
-  useEffect(() => {
-    if (showConfetti) {
-      const timer = setTimeout(() => setShowConfetti(false), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [showConfetti]);
-
-  // Reset email when modal opens
+  // Reset state when modal opens
   useEffect(() => {
     if (isOpen) {
       setEmail(userEmail || user?.email || "");
       setEmailError("");
+      setShowSuccess(false);
     }
   }, [isOpen, userEmail, user?.email]);
 
@@ -356,11 +486,13 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
     }
 
     try {
-      const userId = new URLSearchParams(window.location.search).get('userId');
-      const programId = new URLSearchParams(window.location.search).get('programId');
+      // Use prop userId first, fall back to URL param
+      const urlParams = new URLSearchParams(window.location.search);
+      const userId = propUserId || urlParams.get('userId');
+      const programId = urlParams.get('programId');
 
       if (!userId) {
-        throw new Error("No user ID found in URL");
+        throw new Error("No user ID found");
       }
 
       // Track conversion with variant info
@@ -381,13 +513,13 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
       const response = await updateUser(userId, { email });
 
       if (response.success) {
-        setShowConfetti(true);
+        // Auto sign-in to create a real NextAuth session
+        await signIn('credentials', { email, userId, redirect: false });
+        router.refresh();
+
+        setShowSuccess(true);
         onEmailSubmit(email);
         onSuccessfulSubmit?.();
-
-        setTimeout(() => {
-          onClose();
-        }, 1500);
 
         // Send emails asynchronously
         Promise.all([
@@ -396,7 +528,7 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
             subject: 'Welcome to Baisics!',
             html: welcomeFreeTemplate({
               upgradeLink: process.env.NEXT_PUBLIC_STRIPE_LINK,
-              programLink: `${process.env.NEXT_PUBLIC_APP_URL}/hi?userId=${userId}&programId=${programId}`
+              programLink: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`
             })
           }).catch(error => console.error('Welcome email error:', error)),
 
@@ -435,11 +567,15 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 overflow-y-auto">
-      {showConfetti && <ReactConfetti />}
-
-      {variant === 'A' && <VariantA onClose={handleClose} formProps={formProps} />}
-      {variant === 'B' && <VariantB onClose={handleClose} formProps={formProps} />}
-      {variant === 'C' && <VariantC onClose={handleClose} formProps={formProps} />}
+      {showSuccess ? (
+        <SuccessView email={email} onClose={onClose} />
+      ) : (
+        <>
+          {variant === 'A' && <VariantA onClose={handleClose} formProps={formProps} />}
+          {variant === 'B' && <VariantB onClose={handleClose} formProps={formProps} />}
+          {variant === 'C' && <VariantC onClose={handleClose} formProps={formProps} />}
+        </>
+      )}
     </div>
   );
 }

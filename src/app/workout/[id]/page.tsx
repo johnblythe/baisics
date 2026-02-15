@@ -41,6 +41,13 @@ function formatRestDuration(seconds: number): string {
   return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 }
 
+// Extract RPE value from exercise notes (stored as "RPE 8 ..." in notes field)
+function parseRPE(notes?: string | null): string | null {
+  if (!notes) return null;
+  const match = notes.match(/RPE\s+([\d]+-?[\d]*)/i);
+  return match ? match[1] : null;
+}
+
 interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
@@ -59,6 +66,7 @@ interface Exercise {
   };
   videoUrl?: string;
   instructions?: string[];
+  notes?: string | null;
 }
 
 interface SetLog {
@@ -478,6 +486,22 @@ export default function WorkoutPage() {
     }
   };
 
+  const skipRemainingAndNext = () => {
+    // Move to next exercise without logging remaining sets
+    if (currentExerciseIndex < exercises.length - 1) {
+      setCurrentExerciseIndex(prev => prev + 1);
+      setSelectedSetIndex(null);
+    }
+  };
+
+  const skipMovementAndNext = () => {
+    // Skip entire exercise, move to next
+    if (currentExerciseIndex < exercises.length - 1) {
+      setCurrentExerciseIndex(prev => prev + 1);
+      setSelectedSetIndex(null);
+    }
+  };
+
   return (
     <MainLayout>
       <div className="max-w-7xl mx-auto px-4 py-8">
@@ -621,10 +645,26 @@ export default function WorkoutPage() {
                   <h3 className="text-2xl font-bold text-[#0F172A]">
                     {currentExercise.name}
                   </h3>
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0F172A] border border-[#0F172A]">
-                    <span className="text-sm font-medium text-white">
-                      {currentExercise.sets} sets × {formatExerciseMeasure(currentExercise)}
-                    </span>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0F172A] border border-[#0F172A]">
+                      <span className="text-sm font-medium text-white">
+                        {currentExercise.sets} sets × {formatExerciseMeasure(currentExercise)}
+                      </span>
+                    </div>
+                    {/* RPE Tooltip */}
+                    {parseRPE(currentExercise.notes) && (
+                      <span className="group relative inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#FFE5E5] text-[#FF6B6B] text-xs font-medium cursor-help">
+                        RPE {parseRPE(currentExercise.notes)}
+                        <svg className="w-3 h-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span className="invisible group-hover:visible absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-3 bg-[#0F172A] text-white text-xs rounded-lg shadow-lg z-50 font-normal">
+                          <strong className="block mb-1">Rate of Perceived Exertion (1-10)</strong>
+                          <span className="text-white/80">How hard the set should feel. 6-7 = moderate effort, 8 = hard but doable, 9 = near max, 10 = absolute max.</span>
+                          <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[#0F172A]"></span>
+                        </span>
+                      </span>
+                    )}
                   </div>
                 </div>
                 {currentExercise.instructions && currentExercise.instructions.length > 0 && (
@@ -715,6 +755,39 @@ export default function WorkoutPage() {
                       setSelectedSetIndex(null);
                     }}
                   />
+                );
+              })()}
+
+              {/* Skip links - only show when not on last exercise, not all sets complete, not editing a completed set */}
+              {(() => {
+                const activeIdx = currentExercise.logs.findIndex(l => !l.isCompleted);
+                const allComplete = activeIdx === -1 && selectedSetIndex === null;
+                const editingCompleted = selectedSetIndex !== null && currentExercise.logs[selectedSetIndex]?.isCompleted;
+                const isLastExercise = currentExerciseIndex >= exercises.length - 1;
+
+                if (allComplete || editingCompleted || isLastExercise) return null;
+
+                const hasCompletedSome = currentExercise.logs.some(l => l.isCompleted);
+                const remainingCount = currentExercise.logs.filter(l => !l.isCompleted).length;
+
+                return (
+                  <div className="text-center mt-3">
+                    {hasCompletedSome ? (
+                      <button
+                        onClick={skipRemainingAndNext}
+                        className="text-sm text-[#94A3B8] hover:text-[#FF6B6B] transition-colors"
+                      >
+                        Skip remaining {remainingCount} set{remainingCount !== 1 ? 's' : ''} &rarr;
+                      </button>
+                    ) : (
+                      <button
+                        onClick={skipMovementAndNext}
+                        className="text-sm text-[#94A3B8] hover:text-[#FF6B6B] transition-colors"
+                      >
+                        Skip this movement &rarr;
+                      </button>
+                    )}
+                  </div>
                 );
               })()}
 

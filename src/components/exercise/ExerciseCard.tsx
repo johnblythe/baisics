@@ -30,6 +30,13 @@ interface ExerciseCardProps {
   onSwap?: () => void;
 }
 
+// Extract RPE value from notes string (e.g. "RPE 8 Keep core tight" → "8")
+function parseRPE(notes: string | null | undefined): string | null {
+  if (!notes) return null;
+  const match = notes.match(/\bRPE\s+(\d+(?:-\d+)?)/i);
+  return match ? match[1] : null;
+}
+
 export function ExerciseCard({
   exercise,
   isExpanded: controlledIsExpanded,
@@ -37,6 +44,7 @@ export function ExerciseCard({
   onSwap
 }: ExerciseCardProps) {
   const [internalExpanded, setInternalExpanded] = useState(false);
+  const rpeValue = parseRPE(exercise.notes);
 
   // Support both controlled and uncontrolled mode
   const isExpanded = controlledIsExpanded !== undefined ? controlledIsExpanded : internalExpanded;
@@ -84,6 +92,17 @@ export function ExerciseCard({
                 <>
                   <span className="text-[#94A3B8]">•</span>
                   <span className="text-[#94A3B8]">{formatRest(exercise.rest)} rest</span>
+                </>
+              )}
+              {rpeValue && (
+                <>
+                  <span className="text-[#94A3B8]">•</span>
+                  <span className="group relative cursor-help px-1.5 py-0.5 rounded bg-[#FFE5E5] text-[#FF6B6B] text-xs font-medium">
+                    RPE {rpeValue}
+                    <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-52 rounded-lg bg-[#0F172A] px-3 py-2 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-lg z-10 text-center">
+                      Rate of Perceived Exertion (1-10). How hard this set should feel — 10 = max effort.
+                    </span>
+                  </span>
                 </>
               )}
             </div>
