@@ -58,12 +58,18 @@ export const authOptions: NextAuthOptions = {
       },
       from: emailConfig.from,
       sendVerificationRequest: async ({ identifier, url }) => {
+        // Wrap the NextAuth callback URL in an intermediate page.
+        // This prevents email client link previews from consuming the
+        // one-time token and lets users escape in-app browsers.
+        const origin = new URL(url).origin;
+        const intermediateUrl = `${origin}/auth/magic-login?callbackUrl=${encodeURIComponent(url)}`;
+
         // Dev mode: store in cookie for display on verify page
         if (process.env.NODE_ENV !== "production") {
-          console.log(`\n🔗 MAGIC LINK for ${identifier}:\n${url}\n`);
+          console.log(`\n🔗 MAGIC LINK for ${identifier}:\n${intermediateUrl}\n`);
 
           const cookieStore = await cookies();
-          cookieStore.set("baisics.__dev_magic_link", url, {
+          cookieStore.set("baisics.__dev_magic_link", intermediateUrl, {
             httpOnly: false,
             secure: false,
             sameSite: "lax",
@@ -81,7 +87,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         // Production: send email via SES
-        const emailHtml = magicLinkTemplate({ signInLink: url });
+        const emailHtml = magicLinkTemplate({ signInLink: intermediateUrl });
         const result = await sendEmail({
           to: identifier,
           subject: "Sign in to Baisics",
