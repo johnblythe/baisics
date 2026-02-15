@@ -73,8 +73,8 @@ test.describe("Nutrition Copy from Yesterday", () => {
     // Click the left arrow to go to previous day
     const leftArrow = page.locator('[data-testid="prev-day"]').first();
     await leftArrow.click();
-    // Wait for page to update
-    await page.waitForTimeout(500);
+    // Wait for date header to change away from "Today"
+    await expect(page.locator("h1")).not.toContainText("Today", { timeout: 3000 });
   }
 
   /**
@@ -84,8 +84,8 @@ test.describe("Nutrition Copy from Yesterday", () => {
     // Click "Jump to Today" button that appears when not on today
     const todayButton = page.getByRole("button", { name: /jump to today/i });
     await todayButton.click();
-    // Wait for page to update
-    await page.waitForTimeout(500);
+    // Wait for date header to show "Today"
+    await expect(page.locator("h1")).toContainText("Today", { timeout: 3000 });
   }
 
   test("should show copy from yesterday option when yesterday has food", async ({
@@ -230,17 +230,13 @@ test.describe("Nutrition Copy from Yesterday", () => {
     // Wait for copy to complete
     await expect(page.locator('text=/copied from yesterday/i')).toBeVisible({ timeout: 5000 });
 
-    // Wait for data refresh
-    await page.waitForTimeout(1000);
-
-    // Get the calorie display after copying
-    const calorieDisplayAfter = page.locator("text=/\\d+\\s*\\/\\s*2000/i").first();
-    const afterText = (await calorieDisplayAfter.textContent()) || "0";
-    const afterMatch = afterText.match(/(\d+)/);
-    const afterCalories = afterMatch ? parseInt(afterMatch[1], 10) : 0;
-
     // Calories should have increased after copying
-    expect(afterCalories).toBeGreaterThan(beforeCalories);
+    await expect(async () => {
+      const afterText = (await page.locator("text=/\\d+\\s*\\/\\s*2000/i").first().textContent()) || "0";
+      const afterMatch = afterText.match(/(\d+)/);
+      const afterCalories = afterMatch ? parseInt(afterMatch[1], 10) : 0;
+      expect(afterCalories).toBeGreaterThan(beforeCalories);
+    }).toPass({ timeout: 5000 });
   });
 
   test("should not show copy option when yesterday has no food for that meal", async ({
@@ -387,7 +383,8 @@ test.describe("Nutrition Copy from Yesterday", () => {
 
     // Add multiple foods to Dinner for yesterday
     await addFoodToMeal(page, "Dinner", "steak");
-    await page.waitForTimeout(500);
+    // Wait for first food to appear before adding second
+    await expect(page.locator('[data-testid="food-log-item"]').filter({ hasText: /steak/i }).first()).toBeVisible({ timeout: 5000 });
     await addFoodToMeal(page, "Dinner", "potato");
 
     // Wait for both foods to appear

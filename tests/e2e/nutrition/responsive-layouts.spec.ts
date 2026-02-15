@@ -95,9 +95,6 @@ test.describe("Responsive Layouts", () => {
       await page.getByRole("button", { name: /confirm/i }).click();
       await expect(searchInput).not.toBeVisible({ timeout: 5000 });
 
-      // Wait for QuickPills to populate
-      await page.waitForTimeout(1500);
-
       // Look for horizontal scroll container for QuickPills
       // The QuickPills with horizontal layout has overflow-x-auto and whitespace-nowrap
       const horizontalScrollContainer = page.locator('.overflow-x-auto, [class*="overflow-x"]');
@@ -187,9 +184,7 @@ test.describe("Responsive Layouts", () => {
       await page.getByRole("button", { name: /confirm/i }).click();
 
       // Verify food was added
-      await page.waitForTimeout(1000);
-      const addedFood = page.locator("text=/chicken/i");
-      await expect(addedFood.first()).toBeVisible({ timeout: 5000 });
+      await expect(page.locator('[data-testid="food-log-item"]').filter({ hasText: /chicken/i }).first()).toBeVisible({ timeout: 5000 });
     });
   });
 
@@ -361,9 +356,7 @@ test.describe("Responsive Layouts", () => {
       await page.getByRole("button", { name: /confirm/i }).click();
 
       // Verify food was added
-      await page.waitForTimeout(1000);
-      const addedFood = page.locator("text=/rice/i");
-      await expect(addedFood.first()).toBeVisible({ timeout: 5000 });
+      await expect(page.locator('[data-testid="food-log-item"]').filter({ hasText: /rice/i }).first()).toBeVisible({ timeout: 5000 });
     });
   });
 
@@ -387,7 +380,6 @@ test.describe("Responsive Layouts", () => {
 
       // Switch to mobile viewport
       await page.setViewportSize(MOBILE_VIEWPORT);
-      await page.waitForTimeout(500); // Allow CSS to recalculate
 
       // The 3-column grid should no longer be visible (becomes single column)
       // Desktop layout uses hidden lg:block, so on mobile the MobileLayout should render

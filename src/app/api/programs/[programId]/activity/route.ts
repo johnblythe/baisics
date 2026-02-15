@@ -53,14 +53,6 @@ export async function GET(
       return NextResponse.json({ error: 'Program not found' }, { status: 404 });
     }
 
-    // Mock visit data for now
-    const mockVisits = Array.from({ length: 10 }, () => ({
-      date: new Date(
-        startDate.getTime() + Math.random() * (Date.now() - startDate.getTime())
-      ).toISOString(),
-      type: 'visit' as const
-    }));
-
     // De-duplicate workouts: only one workout entry per day
     const seenWorkoutDays = new Set<string>();
     const dedupedWorkoutLogs = program.workoutLogs.filter(log => {
@@ -90,7 +82,6 @@ export async function GET(
         date: checkIn.date.toISOString(),
         type: 'check-in' as const
       })),
-      ...mockVisits
     ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     return NextResponse.json(activities);

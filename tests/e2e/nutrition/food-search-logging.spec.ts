@@ -244,9 +244,6 @@ test.describe("Nutrition Food Search and Logging", () => {
     // Wait for food to be added
     await expect(searchInput).not.toBeVisible({ timeout: 5000 });
 
-    // Wait for UI to update with new macros
-    await page.waitForTimeout(1000);
-
     // Verify that the calorie value is now > 0
     // The progress display should show consumed/target format
     // We look for any number greater than 0 in the calorie display

@@ -211,10 +211,6 @@ test.describe("Nutrition Recipes Page", () => {
       // Select Lunch
       await page.getByText("Lunch").last().click();
 
-      // Should show success feedback (logged indicator or toast)
-      // The usageCount should increment - we look for "1x" or similar
-      await page.waitForTimeout(1000);
-
       // Verify by checking the food log page has the entry
       await page.goto("/nutrition");
       await page.waitForSelector("main", { timeout: 10000 });
@@ -330,9 +326,6 @@ test.describe("Nutrition Recipes Page", () => {
       // Save
       const saveButton = page.locator("button", { hasText: /save/i }).first();
       await saveButton.click();
-
-      // Wait for save to complete
-      await page.waitForTimeout(1000);
 
       // Should show updated name
       await expect(page.getByText("Updated Recipe Name")).toBeVisible({ timeout: 5000 });

@@ -138,9 +138,6 @@ test.describe("Nutrition - manual goal setting", () => {
     await expect(fitnessGoalButton).toBeVisible();
     await fitnessGoalButton.click();
 
-    // Wait for GoalForm to load (it fetches current goal)
-    await page.waitForTimeout(500);
-
     // Verify GoalForm label associations
     // Primary goal select
     const goalPrimarySelect = page.locator("#goal-primary");

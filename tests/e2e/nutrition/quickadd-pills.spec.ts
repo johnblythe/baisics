@@ -87,22 +87,8 @@ test.describe("QuickAdd Pills Flow", () => {
     // Wait for food to be added
     await expect(searchInput).not.toBeVisible({ timeout: 5000 });
 
-    // Wait a moment for QuickPills to refresh
-    await page.waitForTimeout(1000);
-
-    // Now verify QuickPills shows the recently added food
-    // QuickPills buttons contain the food name, calories, and a + icon
-    const quickPillButton = page.locator('button').filter({
-      hasText: /banana/i,
-    }).first();
-
-    // If the food was added to QuickPills, it should appear in the Quick Add section
-    // Note: QuickPills may take a moment to refresh after adding food
-    const pillVisible = await quickPillButton.isVisible().catch(() => false);
-
-    // If pill isn't visible yet, that's acceptable - the API refresh may not be instant
-    // The key test is that QuickPills section exists
-    expect(true).toBeTruthy(); // Baseline pass - QuickPills functionality exists
+    // Verify the food was actually logged in a meal section
+    await expect(page.locator('[data-testid="food-log-item"]').filter({ hasText: /banana/i }).first()).toBeVisible({ timeout: 5000 });
   });
 
   test("should click QuickPill and add food instantly (no modal)", async ({ page }) => {
@@ -129,42 +115,29 @@ test.describe("QuickAdd Pills Flow", () => {
     await page.getByRole("button", { name: /confirm/i }).click();
     await expect(searchInput).not.toBeVisible({ timeout: 5000 });
 
-    // Wait for QuickPills to refresh
-    await page.waitForTimeout(1500);
-
     // Look for a QuickPill button to click (could be any food)
     // QuickPills on desktop are in grid layout, on mobile in horizontal scroll
     const quickPillButton = page.locator('button').filter({
       has: page.locator('svg[class*="plus"], [class*="Plus"]'),
     }).first();
 
-    // Check if any QuickPill is visible
-    const hasQuickPill = await quickPillButton.isVisible().catch(() => false);
+    // Wait for QuickPills to refresh — pill must be visible to test click behavior
+    const hasQuickPill = await quickPillButton.isVisible({ timeout: 5000 }).catch(() => false);
 
-    if (hasQuickPill) {
-      // Get initial snack count before clicking
-      const snackSection = page.locator("div").filter({ hasText: /^Snack/ }).first();
-      const initialSnackText = await snackSection.textContent() || "";
-
-      // Click the QuickPill
-      await quickPillButton.click();
-
-      // Wait for toast confirmation (added: {food name})
-      await expect(page.locator("text=/added:/i")).toBeVisible({ timeout: 3000 });
-
-      // Verify no modal appeared (instant add, no confirmation dialog)
-      const modal = page.locator('[role="dialog"]');
-      const modalVisible = await modal.isVisible().catch(() => false);
-      expect(modalVisible).toBeFalsy();
-
-      // Food should be added to Snack section (default meal for QuickPills)
-      // The snack section should now show the food
-      await page.waitForTimeout(500);
-      const updatedSnackText = await snackSection.textContent() || "";
-
-      // Snack section should have changed (food was added)
-      // This is a soft check since the exact text depends on the food added
+    if (!hasQuickPill) {
+      test.skip(true, "QuickPills not populated after logging food — API refresh may be async");
+      return;
     }
+
+    // Click the QuickPill
+    await quickPillButton.click();
+
+    // Wait for toast confirmation (added: {food name})
+    await expect(page.locator("text=/added:/i")).toBeVisible({ timeout: 3000 });
+
+    // Verify no modal appeared (instant add, no confirmation dialog)
+    const modal = page.locator('[role="dialog"]');
+    await expect(modal).not.toBeVisible();
   });
 
   test("should verify macro bars update after QuickPill add", async ({ page }) => {
@@ -206,37 +179,36 @@ test.describe("QuickAdd Pills Flow", () => {
     await page.getByRole("button", { name: /confirm/i }).click();
     await expect(searchInput).not.toBeVisible({ timeout: 5000 });
 
-    // Wait for data to settle and QuickPills to update
-    await page.waitForTimeout(2000);
-
     // Look for QuickPill buttons
     const quickPillButtons = page.locator('button').filter({
       has: page.locator('svg[class*="plus"], [class*="Plus"]'),
     });
 
-    const pillCount = await quickPillButtons.count();
+    const hasQuickPills = await quickPillButtons.first().isVisible({ timeout: 5000 }).catch(() => false);
 
-    if (pillCount > 0) {
-      // Get current calorie display before clicking QuickPill
-      const calorieDisplayBefore = await page.locator("text=/\\d+\\s*\\/\\s*2000/i").textContent();
-      const caloriesBeforeMatch = calorieDisplayBefore?.match(/(\d+)\s*\/\s*2000/);
-      const caloriesBefore = caloriesBeforeMatch ? parseInt(caloriesBeforeMatch[1], 10) : 0;
+    if (!hasQuickPills) {
+      test.skip(true, "QuickPills not populated — cannot test macro update");
+      return;
+    }
 
-      // Click a QuickPill
-      await quickPillButtons.first().click();
+    // Get current calorie display before clicking QuickPill
+    const calorieDisplayBefore = await page.locator("text=/\\d+\\s*\\/\\s*2000/i").textContent();
+    const caloriesBeforeMatch = calorieDisplayBefore?.match(/(\d+)\s*\/\s*2000/);
+    const caloriesBefore = caloriesBeforeMatch ? parseInt(caloriesBeforeMatch[1], 10) : 0;
 
-      // Wait for toast and data refresh
-      await expect(page.locator("text=/added:/i")).toBeVisible({ timeout: 3000 });
-      await page.waitForTimeout(1000);
+    // Click a QuickPill
+    await quickPillButtons.first().click();
 
-      // Get calorie display after adding
+    // Wait for toast and data refresh
+    await expect(page.locator("text=/added:/i")).toBeVisible({ timeout: 3000 });
+
+    // Wait for calorie display to update
+    await expect(async () => {
       const calorieDisplayAfter = await page.locator("text=/\\d+\\s*\\/\\s*2000/i").textContent();
       const caloriesAfterMatch = calorieDisplayAfter?.match(/(\d+)\s*\/\s*2000/);
       const caloriesAfter = caloriesAfterMatch ? parseInt(caloriesAfterMatch[1], 10) : 0;
-
-      // Calories should have increased
       expect(caloriesAfter).toBeGreaterThan(caloriesBefore);
-    }
+    }).toPass({ timeout: 5000 });
   });
 
   test("should show empty state when no quick foods available", async ({ page }) => {
@@ -262,7 +234,7 @@ test.describe("QuickAdd Pills Flow", () => {
     });
     const hasPills = await quickPillButtons.count() > 0;
 
-    // Either empty state or pills should be present
+    // Either empty state or pills should be present — one must be true
     expect(hasEmptyState || hasPills).toBeTruthy();
   });
 
@@ -292,6 +264,12 @@ test.describe("QuickAdd Pills Flow", () => {
       // Pills should be in a flex row with gap
       const firstPill = quickPillButtons.first();
       await expect(firstPill).toBeVisible();
+    } else {
+      // Fresh user — empty state or no pills section is acceptable
+      const emptyState = page.locator("text=/search for foods above to start logging/i");
+      const mealSections = page.locator('[data-testid^="add-food-"]');
+      const hasContent = await emptyState.isVisible().catch(() => false) || await mealSections.first().isVisible().catch(() => false);
+      expect(hasContent).toBeTruthy();
     }
   });
 

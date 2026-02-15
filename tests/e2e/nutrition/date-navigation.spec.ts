@@ -124,9 +124,9 @@ test.describe("Nutrition Date Navigation", () => {
     // Navigate back 3 days
     const leftArrowButton = page.locator('[data-testid="prev-day"]').first();
     await leftArrowButton.click();
-    await page.waitForTimeout(300);
+    await expect(page.locator("h1")).not.toContainText("Today", { timeout: 3000 });
     await leftArrowButton.click();
-    await page.waitForTimeout(300);
+    await expect(page.locator("h1")).toContainText(getDateNDaysAgoFormatted(2), { timeout: 3000 });
     await leftArrowButton.click();
 
     // Verify we're 3 days in the past

@@ -147,9 +147,6 @@ test.describe("Nutrition AI Text Parsing", () => {
     await expect(page.locator("text=/add to log/i")).not.toBeVisible({ timeout: 5000 });
 
     // Verify food appears in one of the meal sections
-    // AI-parsed foods go to the detected meal or default meal
-    // The food should appear somewhere on the page
-    await page.waitForTimeout(1000); // Wait for state update
     await expect(page.locator("text=/banana/i").first()).toBeVisible({ timeout: 5000 });
   });
 
@@ -222,10 +219,12 @@ test.describe("Nutrition AI Text Parsing", () => {
     const sparklesButton = page.locator("button").filter({ has: page.locator('svg.lucide-sparkles') });
     await sparklesButton.click();
 
-    // Wait for parsing to complete
-    // Either shows parsed result or error message
-    // With very short text, it might parse to nothing or show an error
-    await page.waitForTimeout(5000);
+    // Wait for parsing to complete — either result modal or error message
+    await expect(async () => {
+      const hasError = await page.locator("text=/no foods detected/i").isVisible().catch(() => false);
+      const hasResult = await page.locator("text=/add to log/i").isVisible().catch(() => false);
+      expect(hasError || hasResult).toBe(true);
+    }).toPass({ timeout: 15000 });
 
     // Either the modal appears with no foods or an error is shown
     const hasError = await page.locator("text=/no foods detected/i").isVisible().catch(() => false);

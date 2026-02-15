@@ -81,7 +81,7 @@ test.describe("Nutrition Edit and Delete Food", () => {
     await expect(lunchSection).toContainText(/chicken/i, { timeout: 5000 });
 
     // Find the food item row (FoodLogItem component)
-    const foodItem = page.locator('[class*="group"]').filter({ hasText: /chicken/i }).first();
+    const foodItem = page.locator('[data-testid="food-log-item"]').filter({ hasText: /chicken/i }).first();
     await expect(foodItem).toBeVisible();
 
     // Hover over the food item to reveal action buttons
@@ -111,7 +111,7 @@ test.describe("Nutrition Edit and Delete Food", () => {
     await expect(breakfastSection).toContainText(/banana/i, { timeout: 5000 });
 
     // Find and hover over the food item
-    const foodItem = page.locator('[class*="group"]').filter({ hasText: /banana/i }).first();
+    const foodItem = page.locator('[data-testid="food-log-item"]').filter({ hasText: /banana/i }).first();
     await foodItem.hover();
 
     // Click the edit button
@@ -160,7 +160,7 @@ test.describe("Nutrition Edit and Delete Food", () => {
     await expect(dinnerSection).toContainText(/rice/i, { timeout: 5000 });
 
     // Find and click edit
-    const foodItem = page.locator('[class*="group"]').filter({ hasText: /rice/i }).first();
+    const foodItem = page.locator('[data-testid="food-log-item"]').filter({ hasText: /rice/i }).first();
     await foodItem.hover();
     const editButton = foodItem.locator('button[aria-label*="Edit"]');
     await editButton.click();
@@ -211,7 +211,7 @@ test.describe("Nutrition Edit and Delete Food", () => {
     await expect(snackSection).toContainText(/almond/i, { timeout: 5000 });
 
     // Find and click edit on the almond item
-    const foodItem = page.locator('[class*="group"]').filter({ hasText: /almond/i }).first();
+    const foodItem = page.locator('[data-testid="food-log-item"]').filter({ hasText: /almond/i }).first();
     await foodItem.hover();
     const editButton = foodItem.locator('button[aria-label*="Edit"]');
     await editButton.click();
@@ -229,17 +229,9 @@ test.describe("Nutrition Edit and Delete Food", () => {
     // Modal should close
     await expect(page.locator('text="Edit Food"')).not.toBeVisible({ timeout: 3000 });
 
-    // Wait for data refresh
-    await page.waitForTimeout(500);
-
     // Verify the food now appears in Breakfast section, not Snack
     const breakfastSection = page.locator("div").filter({ hasText: /^Breakfast/ }).first();
     await expect(breakfastSection).toContainText(/almond/i, { timeout: 5000 });
-
-    // Snack section should no longer have almonds
-    // (We'll check that it doesn't show the specific almond entry)
-    // Note: Need to wait a moment for the UI to refresh
-    await page.waitForTimeout(500);
   });
 
   test("should save changes and verify persistence on reload", async ({ page }) => {
@@ -257,7 +249,7 @@ test.describe("Nutrition Edit and Delete Food", () => {
     await expect(lunchSection).toContainText(/salmon/i, { timeout: 5000 });
 
     // Edit the food
-    const foodItem = page.locator('[class*="group"]').filter({ hasText: /salmon/i }).first();
+    const foodItem = page.locator('[data-testid="food-log-item"]').filter({ hasText: /salmon/i }).first();
     await foodItem.hover();
     const editButton = foodItem.locator('button[aria-label*="Edit"]');
     await editButton.click();
@@ -308,20 +300,17 @@ test.describe("Nutrition Edit and Delete Food", () => {
     });
 
     // Find and click delete
-    const foodItem = page.locator('[class*="group"]').filter({ hasText: /beef/i }).first();
+    const foodItem = page.locator('[data-testid="food-log-item"]').filter({ hasText: /beef/i }).first();
     await foodItem.hover();
     const deleteButton = foodItem.locator('button[aria-label*="Delete"]');
     await expect(deleteButton).toBeVisible({ timeout: 2000 });
     await deleteButton.click();
 
-    // Wait for the food to be removed
-    await page.waitForTimeout(500);
-
     // Verify beef no longer appears in dinner section
-    // The section might still exist but should not contain beef
-    // If section becomes empty, it shows the empty state with "+ Add dinner"
-    const dinnerText = await dinnerSection.textContent();
-    expect(dinnerText?.toLowerCase()).not.toContain('beef');
+    await expect(async () => {
+      const dinnerText = await dinnerSection.textContent();
+      expect(dinnerText?.toLowerCase()).not.toContain('beef');
+    }).toPass({ timeout: 5000 });
   });
 
   test("should update macro totals after deleting food", async ({ page }) => {
@@ -349,17 +338,13 @@ test.describe("Nutrition Edit and Delete Food", () => {
 
     // Add two foods
     await addFoodToMeal(page, "Lunch", "chicken");
-    await page.waitForTimeout(500);
+    await expect(page.locator('[data-testid="food-log-item"]').filter({ hasText: /chicken/i }).first()).toBeVisible({ timeout: 5000 });
     await addFoodToMeal(page, "Lunch", "rice");
 
     // Wait for both foods to appear
     const lunchSection = page.locator("div").filter({ hasText: /^Lunch/ }).first();
     await expect(lunchSection).toContainText(/chicken/i, { timeout: 5000 });
     await expect(lunchSection).toContainText(/rice/i, { timeout: 5000 });
-
-    // Get current calorie total from progress display (e.g., "250 / 2000 cal")
-    // Wait for the totals to update
-    await page.waitForTimeout(500);
 
     // Get the initial calorie display value
     const calorieDisplayBefore = page.locator("text=/\\d+\\s*\\/\\s*2000/i").first();
@@ -373,23 +358,19 @@ test.describe("Nutrition Edit and Delete Food", () => {
     });
 
     // Delete the chicken entry
-    const chickenItem = page.locator('[class*="group"]').filter({ hasText: /chicken/i }).first();
+    const chickenItem = page.locator('[data-testid="food-log-item"]').filter({ hasText: /chicken/i }).first();
     await chickenItem.hover();
     const deleteButton = chickenItem.locator('button[aria-label*="Delete"]');
     await expect(deleteButton).toBeVisible({ timeout: 2000 });
     await deleteButton.click();
 
-    // Wait for deletion to complete
-    await page.waitForTimeout(1000);
-
-    // Get the calorie display after deletion
-    const calorieDisplayAfter = page.locator("text=/\\d+\\s*\\/\\s*2000/i").first();
-    const afterText = await calorieDisplayAfter.textContent() || "0";
-    const afterMatch = afterText.match(/(\d+)/);
-    const afterCalories = afterMatch ? parseInt(afterMatch[1], 10) : 0;
-
     // Calories should have decreased after deletion
-    expect(afterCalories).toBeLessThan(beforeCalories);
+    await expect(async () => {
+      const afterText = await page.locator("text=/\\d+\\s*\\/\\s*2000/i").first().textContent() || "0";
+      const afterMatch = afterText.match(/(\d+)/);
+      const afterCalories = afterMatch ? parseInt(afterMatch[1], 10) : 0;
+      expect(afterCalories).toBeLessThan(beforeCalories);
+    }).toPass({ timeout: 5000 });
   });
 
   test("should cancel edit modal without saving changes", async ({ page }) => {
@@ -407,7 +388,7 @@ test.describe("Nutrition Edit and Delete Food", () => {
     await expect(breakfastSection).toContainText(/egg/i, { timeout: 5000 });
 
     // Open edit modal
-    const foodItem = page.locator('[class*="group"]').filter({ hasText: /egg/i }).first();
+    const foodItem = page.locator('[data-testid="food-log-item"]').filter({ hasText: /egg/i }).first();
     await foodItem.hover();
     const editButton = foodItem.locator('button[aria-label*="Edit"]');
     await editButton.click();
