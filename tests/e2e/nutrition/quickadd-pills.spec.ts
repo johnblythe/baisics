@@ -20,6 +20,7 @@
 import { test, expect } from "@playwright/test";
 import { loginAsUser } from "../../fixtures/auth";
 import { getFreshNutritionPersona } from "../../fixtures/personas";
+import { visibleLayout } from "../../fixtures/nutrition-helpers";
 
 test.describe("QuickAdd Pills Flow", () => {
   // Seed personas before all tests in this file
@@ -30,26 +31,24 @@ test.describe("QuickAdd Pills Flow", () => {
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
     await page.waitForSelector("main", { timeout: 10000 });
+    const layout = visibleLayout(page);
 
     // QuickPills section appears in a container with "Quick Add" title on desktop
     // or directly as pills below the progress bars on mobile
-    // Desktop: look for "Quick Add" heading with Clock icon
-    const quickAddSection = page.locator("text=Quick Add").first();
-
-    // On desktop, the Quick Add section should be visible in the right sidebar
-    // On mobile, there's a QuickPills horizontal strip
-    const isDesktop = await page.viewportSize()!.width >= 1024;
+    const isDesktop = (page.viewportSize()?.width ?? 1280) >= 1024;
 
     if (isDesktop) {
+      // Desktop: look for "Quick Add" heading
+      const quickAddSection = layout.getByRole('heading', { name: 'Quick Add', exact: true });
       await expect(quickAddSection).toBeVisible({ timeout: 5000 });
     } else {
       // On mobile, QuickPills are in a horizontal scrollable area
       // They appear after the macro progress section
-      const quickPillsContainer = page.locator(
+      const quickPillsContainer = layout.locator(
         'div:has(button:has-text("+"))'
       ).first();
       // If no quick foods, empty state shows "Search for foods above to start logging"
-      const emptyState = page.locator(
+      const emptyState = layout.locator(
         "text=/search for foods above to start logging/i"
       );
       const hasQuickFoods = await quickPillsContainer.isVisible().catch(() => false);
@@ -64,13 +63,14 @@ test.describe("QuickAdd Pills Flow", () => {
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
     await page.waitForSelector("main", { timeout: 10000 });
+    const layout = visibleLayout(page);
 
     // First, log a food via search to populate QuickPills
     // Open inline search for Breakfast
-    const addButton = page.locator('[data-testid="add-food-breakfast"]').first();
+    const addButton = layout.locator('[data-testid="add-food-breakfast"]');
     await addButton.click();
 
-    const searchInput = page.locator('input[role="combobox"], input[placeholder*="search" i]');
+    const searchInput = layout.getByPlaceholder(/Search foods for/i);
     await expect(searchInput).toBeVisible({ timeout: 3000 });
 
     // Search and add a food to populate QuickPills
@@ -88,7 +88,7 @@ test.describe("QuickAdd Pills Flow", () => {
     await expect(searchInput).not.toBeVisible({ timeout: 5000 });
 
     // Verify the food was actually logged in a meal section
-    await expect(page.locator('[data-testid="food-log-item"]').filter({ hasText: /banana/i }).first()).toBeVisible({ timeout: 5000 });
+    await expect(layout.locator('[data-testid="food-log-item"]').filter({ hasText: /banana/i }).first()).toBeVisible({ timeout: 5000 });
   });
 
   test("should click QuickPill and add food instantly (no modal)", async ({ page }) => {
@@ -97,12 +97,13 @@ test.describe("QuickAdd Pills Flow", () => {
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
     await page.waitForSelector("main", { timeout: 10000 });
+    const layout = visibleLayout(page);
 
     // First, log a food to populate QuickPills
-    const addButton = page.locator('[data-testid="add-food-breakfast"]').first();
+    const addButton = layout.locator('[data-testid="add-food-breakfast"]');
     await addButton.click();
 
-    const searchInput = page.locator('input[role="combobox"], input[placeholder*="search" i]');
+    const searchInput = layout.getByPlaceholder(/Search foods for/i);
     await expect(searchInput).toBeVisible({ timeout: 3000 });
 
     await searchInput.fill("apple");
@@ -117,7 +118,7 @@ test.describe("QuickAdd Pills Flow", () => {
 
     // Look for a QuickPill button to click (could be any food)
     // QuickPills on desktop are in grid layout, on mobile in horizontal scroll
-    const quickPillButton = page.locator('button').filter({
+    const quickPillButton = layout.locator('button').filter({
       has: page.locator('svg[class*="plus"], [class*="Plus"]'),
     }).first();
 
@@ -146,6 +147,7 @@ test.describe("QuickAdd Pills Flow", () => {
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
     await page.waitForSelector("main", { timeout: 10000 });
+    const layout = visibleLayout(page);
 
     // Set up nutrition targets first so we have progress bars
     const setGoalsButton = page.getByRole("button", { name: /set goals/i });
@@ -163,10 +165,10 @@ test.describe("QuickAdd Pills Flow", () => {
     }
 
     // Log a food to populate QuickPills
-    const addButton = page.locator('[data-testid="add-food-lunch"]').first();
+    const addButton = layout.locator('[data-testid="add-food-lunch"]');
     await addButton.click();
 
-    const searchInput = page.locator('input[role="combobox"], input[placeholder*="search" i]');
+    const searchInput = layout.getByPlaceholder(/Search foods for/i);
     await expect(searchInput).toBeVisible({ timeout: 3000 });
 
     await searchInput.fill("egg");
@@ -180,7 +182,7 @@ test.describe("QuickAdd Pills Flow", () => {
     await expect(searchInput).not.toBeVisible({ timeout: 5000 });
 
     // Look for QuickPill buttons
-    const quickPillButtons = page.locator('button').filter({
+    const quickPillButtons = layout.locator('button').filter({
       has: page.locator('svg[class*="plus"], [class*="Plus"]'),
     });
 
@@ -192,7 +194,7 @@ test.describe("QuickAdd Pills Flow", () => {
     }
 
     // Get current calorie display before clicking QuickPill
-    const calorieDisplayBefore = await page.locator("text=/\\d+\\s*\\/\\s*2000/i").textContent();
+    const calorieDisplayBefore = await layout.locator("text=/\\d+\\s*\\/\\s*2000/i").textContent();
     const caloriesBeforeMatch = calorieDisplayBefore?.match(/(\d+)\s*\/\s*2000/);
     const caloriesBefore = caloriesBeforeMatch ? parseInt(caloriesBeforeMatch[1], 10) : 0;
 
@@ -204,7 +206,7 @@ test.describe("QuickAdd Pills Flow", () => {
 
     // Wait for calorie display to update
     await expect(async () => {
-      const calorieDisplayAfter = await page.locator("text=/\\d+\\s*\\/\\s*2000/i").textContent();
+      const calorieDisplayAfter = await layout.locator("text=/\\d+\\s*\\/\\s*2000/i").textContent();
       const caloriesAfterMatch = calorieDisplayAfter?.match(/(\d+)\s*\/\s*2000/);
       const caloriesAfter = caloriesAfterMatch ? parseInt(caloriesAfterMatch[1], 10) : 0;
       expect(caloriesAfter).toBeGreaterThan(caloriesBefore);
@@ -219,17 +221,18 @@ test.describe("QuickAdd Pills Flow", () => {
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
     await page.waitForSelector("main", { timeout: 10000 });
+    const layout = visibleLayout(page);
 
     // On a fresh user with no quick foods, the QuickPills component
     // shows an empty state with "Search for foods above to start logging"
-    const emptyState = page.locator("text=/search for foods above to start logging/i");
+    const emptyState = layout.locator("text=/search for foods above to start logging/i");
 
     // The empty state may or may not be visible depending on whether
     // the user has any starter foods seeded
     const hasEmptyState = await emptyState.isVisible().catch(() => false);
 
     // If no empty state, there should be QuickPill buttons
-    const quickPillButtons = page.locator('button').filter({
+    const quickPillButtons = layout.locator('button').filter({
       has: page.locator('svg[class*="plus"], [class*="Plus"]'),
     });
     const hasPills = await quickPillButtons.count() > 0;
@@ -247,13 +250,14 @@ test.describe("QuickAdd Pills Flow", () => {
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
     await page.waitForSelector("main", { timeout: 10000 });
+    const layout = visibleLayout(page);
 
     // On mobile, QuickPills are in a horizontal scrollable container
     // Look for the pills container with overflow-x-auto class
-    const pillsContainer = page.locator('.overflow-x-auto, [style*="overflow-x"]').first();
+    const pillsContainer = layout.locator('.overflow-x-auto, [style*="overflow-x"]').first();
 
     // If user has quick foods, verify the container is scrollable
-    const quickPillButtons = page.locator('button').filter({
+    const quickPillButtons = layout.locator('button').filter({
       has: page.locator('svg[class*="plus"], [class*="Plus"]'),
     });
 
@@ -266,8 +270,8 @@ test.describe("QuickAdd Pills Flow", () => {
       await expect(firstPill).toBeVisible();
     } else {
       // Fresh user — empty state or no pills section is acceptable
-      const emptyState = page.locator("text=/search for foods above to start logging/i");
-      const mealSections = page.locator('[data-testid^="add-food-"]');
+      const emptyState = layout.locator("text=/search for foods above to start logging/i");
+      const mealSections = layout.locator('[data-testid^="add-food-"]');
       const hasContent = await emptyState.isVisible().catch(() => false) || await mealSections.first().isVisible().catch(() => false);
       expect(hasContent).toBeTruthy();
     }
@@ -282,18 +286,19 @@ test.describe("QuickAdd Pills Flow", () => {
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
     await page.waitForSelector("main", { timeout: 10000 });
+    const layout = visibleLayout(page);
 
     // On desktop, QuickPills are in a grid layout in the "Quick Add" section
-    const quickAddHeading = page.locator("h3").filter({ hasText: /quick add/i });
+    const quickAddHeading = layout.locator("h3").filter({ hasText: /quick add/i });
     await expect(quickAddHeading).toBeVisible({ timeout: 5000 });
 
     // The grid container should have grid-cols-2 class
-    const gridContainer = page.locator('.grid.grid-cols-2').first();
+    const gridContainer = layout.locator('.grid.grid-cols-2').first();
     const hasGrid = await gridContainer.isVisible().catch(() => false);
 
     // If grid not visible, check for empty state
     if (!hasGrid) {
-      const emptyState = page.locator("text=/search for foods above to start logging/i");
+      const emptyState = layout.locator("text=/search for foods above to start logging/i");
       await expect(emptyState).toBeVisible();
     }
   });

@@ -1058,7 +1058,7 @@ export function FoodLogPage({
       {targetsBanner}
 
       {/* Mobile Layout */}
-      <div className="lg:hidden">
+      <div className="lg:hidden" data-testid="mobile-layout">
         <MobileLayout
           customHeader={customHeader}
           macroTotals={macroTotals}
@@ -1112,7 +1112,7 @@ export function FoodLogPage({
       </div>
 
       {/* Desktop Layout */}
-      <div className="hidden lg:block">
+      <div className="hidden lg:block" data-testid="desktop-layout">
         <DesktopLayout
           customHeader={customHeader}
           macroTotals={macroTotals}

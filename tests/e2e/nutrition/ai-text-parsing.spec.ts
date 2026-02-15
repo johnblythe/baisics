@@ -24,6 +24,7 @@
 import { test, expect } from "@playwright/test";
 import { loginAsUser } from "../../fixtures/auth";
 import { getFreshNutritionPersona } from "../../fixtures/personas";
+import { visibleLayout } from "../../fixtures/nutrition-helpers";
 
 test.describe("Nutrition AI Text Parsing", () => {
   // Seed personas before all tests in this file
@@ -34,17 +35,18 @@ test.describe("Nutrition AI Text Parsing", () => {
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
     await page.waitForSelector("main", { timeout: 10000 });
+    const layout = visibleLayout(page);
 
     // Look for AI Quick Add section
-    await expect(page.locator("text=/ai quick add/i")).toBeVisible({ timeout: 5000 });
+    await expect(layout.getByRole('heading', { name: 'AI Quick Add' })).toBeVisible({ timeout: 5000 });
 
     // Look for the QuickInput component - it has a text input with placeholder
-    const quickInput = page.locator('input[placeholder*="chicken breast"]');
+    const quickInput = layout.locator('input[placeholder*="chicken breast"]');
     await expect(quickInput).toBeVisible({ timeout: 3000 });
 
     // Look for the sparkles button (AI submit button)
     // The sparkles button is a button containing an SVG with Sparkles icon
-    const sparklesButton = page.locator("button").filter({ has: page.locator('svg.lucide-sparkles') });
+    const sparklesButton = layout.locator("button").filter({ has: page.locator('svg.lucide-sparkles') });
     await expect(sparklesButton).toBeVisible();
   });
 
@@ -54,9 +56,10 @@ test.describe("Nutrition AI Text Parsing", () => {
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
     await page.waitForSelector("main", { timeout: 10000 });
+    const layout = visibleLayout(page);
 
     // Find the QuickInput component input
-    const quickInput = page.locator('input[placeholder*="chicken breast"]');
+    const quickInput = layout.locator('input[placeholder*="chicken breast"]');
     await expect(quickInput).toBeVisible({ timeout: 3000 });
 
     // Enter freeform text
@@ -72,14 +75,15 @@ test.describe("Nutrition AI Text Parsing", () => {
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
     await page.waitForSelector("main", { timeout: 10000 });
+    const layout = visibleLayout(page);
 
     // Find and fill the QuickInput
-    const quickInput = page.locator('input[placeholder*="chicken breast"]');
+    const quickInput = layout.locator('input[placeholder*="chicken breast"]');
     await expect(quickInput).toBeVisible({ timeout: 3000 });
     await quickInput.fill("chicken breast 6oz");
 
     // Click the sparkles button to trigger AI parsing
-    const sparklesButton = page.locator("button").filter({ has: page.locator('svg.lucide-sparkles') });
+    const sparklesButton = layout.locator("button").filter({ has: page.locator('svg.lucide-sparkles') });
     await sparklesButton.click();
 
     // Wait for loading to complete and result modal to appear
@@ -100,12 +104,13 @@ test.describe("Nutrition AI Text Parsing", () => {
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
     await page.waitForSelector("main", { timeout: 10000 });
+    const layout = visibleLayout(page);
 
     // Enter freeform text and parse
-    const quickInput = page.locator('input[placeholder*="chicken breast"]');
+    const quickInput = layout.locator('input[placeholder*="chicken breast"]');
     await quickInput.fill("2 eggs scrambled");
 
-    const sparklesButton = page.locator("button").filter({ has: page.locator('svg.lucide-sparkles') });
+    const sparklesButton = layout.locator("button").filter({ has: page.locator('svg.lucide-sparkles') });
     await sparklesButton.click();
 
     // Wait for result modal
@@ -128,12 +133,13 @@ test.describe("Nutrition AI Text Parsing", () => {
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
     await page.waitForSelector("main", { timeout: 10000 });
+    const layout = visibleLayout(page);
 
     // Enter freeform text and parse
-    const quickInput = page.locator('input[placeholder*="chicken breast"]');
+    const quickInput = layout.locator('input[placeholder*="chicken breast"]');
     await quickInput.fill("banana");
 
-    const sparklesButton = page.locator("button").filter({ has: page.locator('svg.lucide-sparkles') });
+    const sparklesButton = layout.locator("button").filter({ has: page.locator('svg.lucide-sparkles') });
     await sparklesButton.click();
 
     // Wait for result modal
@@ -147,7 +153,7 @@ test.describe("Nutrition AI Text Parsing", () => {
     await expect(page.locator("text=/add to log/i")).not.toBeVisible({ timeout: 5000 });
 
     // Verify food appears in one of the meal sections
-    await expect(page.locator("text=/banana/i").first()).toBeVisible({ timeout: 5000 });
+    await expect(layout.locator("text=/banana/i").first()).toBeVisible({ timeout: 5000 });
   });
 
   test("should close parsed result modal when clicking Edit", async ({ page }) => {
@@ -156,12 +162,13 @@ test.describe("Nutrition AI Text Parsing", () => {
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
     await page.waitForSelector("main", { timeout: 10000 });
+    const layout = visibleLayout(page);
 
     // Enter freeform text and parse
-    const quickInput = page.locator('input[placeholder*="chicken breast"]');
+    const quickInput = layout.locator('input[placeholder*="chicken breast"]');
     await quickInput.fill("salmon 4oz");
 
-    const sparklesButton = page.locator("button").filter({ has: page.locator('svg.lucide-sparkles') });
+    const sparklesButton = layout.locator("button").filter({ has: page.locator('svg.lucide-sparkles') });
     await sparklesButton.click();
 
     // Wait for result modal
@@ -175,7 +182,7 @@ test.describe("Nutrition AI Text Parsing", () => {
     await expect(page.locator("text=/add to log/i")).not.toBeVisible({ timeout: 3000 });
 
     // Food should NOT be added (no salmon in meal sections)
-    await expect(page.locator("div").filter({ hasText: /^(Breakfast|Lunch|Dinner|Snack)/ }).locator("text=/salmon/i")).not.toBeVisible();
+    await expect(layout.locator("div").filter({ hasText: /^(Breakfast|Lunch|Dinner|Snack)/ }).locator("text=/salmon/i")).not.toBeVisible();
   });
 
   test("should parse multiple foods from single text input", async ({ page }) => {
@@ -184,12 +191,13 @@ test.describe("Nutrition AI Text Parsing", () => {
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
     await page.waitForSelector("main", { timeout: 10000 });
+    const layout = visibleLayout(page);
 
     // Enter multiple foods in freeform text
-    const quickInput = page.locator('input[placeholder*="chicken breast"]');
+    const quickInput = layout.locator('input[placeholder*="chicken breast"]');
     await quickInput.fill("2 eggs and toast with butter");
 
-    const sparklesButton = page.locator("button").filter({ has: page.locator('svg.lucide-sparkles') });
+    const sparklesButton = layout.locator("button").filter({ has: page.locator('svg.lucide-sparkles') });
     await sparklesButton.click();
 
     // Wait for result modal
@@ -211,12 +219,13 @@ test.describe("Nutrition AI Text Parsing", () => {
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
     await page.waitForSelector("main", { timeout: 10000 });
+    const layout = visibleLayout(page);
 
     // Find the QuickInput but don't enter anything meaningful
-    const quickInput = page.locator('input[placeholder*="chicken breast"]');
+    const quickInput = layout.locator('input[placeholder*="chicken breast"]');
     await quickInput.fill("xyz"); // Very short text that might not parse to food
 
-    const sparklesButton = page.locator("button").filter({ has: page.locator('svg.lucide-sparkles') });
+    const sparklesButton = layout.locator("button").filter({ has: page.locator('svg.lucide-sparkles') });
     await sparklesButton.click();
 
     // Wait for parsing to complete — either result modal or error message

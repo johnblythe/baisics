@@ -16,6 +16,7 @@
 import { test, expect } from "@playwright/test";
 import { loginAsUser } from "../../fixtures/auth";
 import { getFreshNutritionPersona } from "../../fixtures/personas";
+import { visibleLayout } from "../../fixtures/nutrition-helpers";
 
 // Mobile viewport (iPhone SE size)
 const MOBILE_VIEWPORT = { width: 375, height: 667 };
@@ -38,24 +39,26 @@ test.describe("Responsive Layouts", () => {
       await page.goto("/nutrition");
       await page.waitForSelector("main", { timeout: 10000 });
 
+      const layout = visibleLayout(page);
+
       // On mobile, MobileLayout is shown (lg:hidden class makes DesktopLayout hidden)
       // The layout should be a single column stacked vertically
 
       // Check that the macro progress section is visible
-      const macroProgressSection = page.locator("text=/calories/i").first();
+      const macroProgressSection = layout.locator("text=/calories/i").first();
       await expect(macroProgressSection).toBeVisible({ timeout: 5000 });
 
       // On mobile, macro bars should be in horizontal layout (side-by-side Calories and Protein)
       // Look for the horizontal flex container with macro bars
-      const horizontalMacroContainer = page.locator('div.flex.items-center.gap-4').first();
+      const horizontalMacroContainer = layout.locator('div.flex.items-center.gap-4').first();
       const hasHorizontalMacros = await horizontalMacroContainer.isVisible().catch(() => false);
 
       // Mobile uses horizontal layout for progress bars
       expect(hasHorizontalMacros).toBeTruthy();
 
       // Verify meal sections are visible and stacked
-      const breakfastSection = page.locator("div").filter({ hasText: /^Breakfast/ }).first();
-      const lunchSection = page.locator("div").filter({ hasText: /^Lunch/ }).first();
+      const breakfastSection = layout.locator("div").filter({ hasText: /^Breakfast/ }).first();
+      const lunchSection = layout.locator("div").filter({ hasText: /^Lunch/ }).first();
 
       await expect(breakfastSection).toBeVisible();
       await expect(lunchSection).toBeVisible();
@@ -77,12 +80,14 @@ test.describe("Responsive Layouts", () => {
       await page.goto("/nutrition");
       await page.waitForSelector("main", { timeout: 10000 });
 
+      const layout = visibleLayout(page);
+
       // QuickPills on mobile use layout="horizontal" which renders as overflow-x-auto
       // First, let's log a food to populate QuickPills
-      const addButton = page.locator('[data-testid="add-food-breakfast"]').first();
+      const addButton = layout.locator('[data-testid="add-food-breakfast"]');
       await addButton.click();
 
-      const searchInput = page.locator('input[role="combobox"], input[placeholder*="search" i]');
+      const searchInput = layout.getByPlaceholder(/Search foods for/i);
       await expect(searchInput).toBeVisible({ timeout: 3000 });
 
       await searchInput.fill("banana");
@@ -97,12 +102,12 @@ test.describe("Responsive Layouts", () => {
 
       // Look for horizontal scroll container for QuickPills
       // The QuickPills with horizontal layout has overflow-x-auto and whitespace-nowrap
-      const horizontalScrollContainer = page.locator('.overflow-x-auto, [class*="overflow-x"]');
+      const horizontalScrollContainer = layout.locator('.overflow-x-auto, [class*="overflow-x"]');
       const hasHorizontalScroll = await horizontalScrollContainer.count() > 0;
 
       // On mobile, either we have horizontal scroll container or empty state
       // Both are valid mobile layouts
-      const emptyState = page.locator("text=/search for foods above to start logging/i");
+      const emptyState = layout.locator("text=/search for foods above to start logging/i");
       const hasEmptyState = await emptyState.isVisible().catch(() => false);
 
       expect(hasHorizontalScroll || hasEmptyState).toBeTruthy();
@@ -114,6 +119,8 @@ test.describe("Responsive Layouts", () => {
       await loginAsUser(page, persona.email);
       await page.goto("/nutrition");
       await page.waitForSelector("main", { timeout: 10000 });
+
+      const layout = visibleLayout(page);
 
       // Set nutrition targets first
       const setGoalsButton = page.getByRole("button", { name: /set goals/i });
@@ -131,15 +138,15 @@ test.describe("Responsive Layouts", () => {
       }
 
       // Verify calorie progress text is visible and readable
-      const calorieText = page.locator("text=/\\d+\\s*\\/\\s*2000/i").first();
+      const calorieText = layout.locator("text=/\\d+\\s*\\/\\s*2000/i").first();
       await expect(calorieText).toBeVisible({ timeout: 5000 });
 
       // Verify protein progress text is visible
-      const proteinText = page.locator("text=/\\d+g\\s*\\/\\s*150g/i").first();
+      const proteinText = layout.locator("text=/\\d+g\\s*\\/\\s*150g/i").first();
       await expect(proteinText).toBeVisible({ timeout: 5000 });
 
       // Check that progress bars have sufficient width to be visible
-      const progressBars = page.locator('div.h-2.bg-\\[\\#E2E8F0\\].rounded-full');
+      const progressBars = layout.locator('div.h-2.bg-\\[\\#E2E8F0\\].rounded-full');
       const barCount = await progressBars.count();
 
       // Should have at least 2 progress bars (calories and protein in horizontal layout)
@@ -163,13 +170,15 @@ test.describe("Responsive Layouts", () => {
       await page.goto("/nutrition");
       await page.waitForSelector("main", { timeout: 10000 });
 
+      const layout = visibleLayout(page);
+
       // Find and click Add button for Breakfast
-      const addButton = page.locator('[data-testid="add-food-breakfast"]').first();
+      const addButton = layout.locator('[data-testid="add-food-breakfast"]');
       await expect(addButton).toBeVisible({ timeout: 5000 });
       await addButton.click();
 
       // Verify search panel opens
-      const searchInput = page.locator('input[role="combobox"], input[placeholder*="search" i]');
+      const searchInput = layout.getByPlaceholder(/Search foods for/i);
       await expect(searchInput).toBeVisible({ timeout: 3000 });
 
       // Search and add food
@@ -184,7 +193,7 @@ test.describe("Responsive Layouts", () => {
       await page.getByRole("button", { name: /confirm/i }).click();
 
       // Verify food was added
-      await expect(page.locator('[data-testid="food-log-item"]').filter({ hasText: /chicken/i }).first()).toBeVisible({ timeout: 5000 });
+      await expect(layout.locator('[data-testid="food-log-item"]').filter({ hasText: /chicken/i }).first()).toBeVisible({ timeout: 5000 });
     });
   });
 
@@ -200,24 +209,26 @@ test.describe("Responsive Layouts", () => {
       await page.goto("/nutrition");
       await page.waitForSelector("main", { timeout: 10000 });
 
+      const layout = visibleLayout(page);
+
       // On desktop, DesktopLayout is shown (hidden lg:block)
       // The layout uses lg:grid-cols-3 for 1 col sidebar + 2 col content
 
       // Look for the 3-column grid container
-      const gridContainer = page.locator('div.grid.lg\\:grid-cols-3');
+      const gridContainer = layout.locator('div.grid.lg\\:grid-cols-3');
       await expect(gridContainer).toBeVisible({ timeout: 5000 });
 
       // The left sidebar should contain "Quick Add" section
-      const quickAddHeading = page.locator("h3").filter({ hasText: /quick add/i });
+      const quickAddHeading = layout.getByRole('heading', { name: 'Quick Add', exact: true });
       await expect(quickAddHeading).toBeVisible({ timeout: 5000 });
 
       // The right content should contain "Today's Meals" or similar
-      const mealsHeading = page.locator("text=/meals/i").first();
+      const mealsHeading = layout.locator("text=/meals/i").first();
       await expect(mealsHeading).toBeVisible({ timeout: 5000 });
 
       // Verify sidebar and content are side-by-side (not stacked)
-      const sidebar = page.locator('div.lg\\:col-span-1').first();
-      const content = page.locator('div.lg\\:col-span-2').first();
+      const sidebar = layout.locator('div.lg\\:col-span-1').first();
+      const content = layout.locator('div.lg\\:col-span-2').first();
 
       const sidebarBox = await sidebar.boundingBox();
       const contentBox = await content.boundingBox();
@@ -238,17 +249,19 @@ test.describe("Responsive Layouts", () => {
       await page.goto("/nutrition");
       await page.waitForSelector("main", { timeout: 10000 });
 
+      const layout = visibleLayout(page);
+
       // On desktop, QuickPills uses layout="grid" with grid-cols-2
-      const quickAddHeading = page.locator("h3").filter({ hasText: /quick add/i });
+      const quickAddHeading = layout.getByRole('heading', { name: 'Quick Add', exact: true });
       await expect(quickAddHeading).toBeVisible({ timeout: 5000 });
 
       // Look for grid container within Quick Add section
-      const gridContainer = page.locator('.grid.grid-cols-2').first();
+      const gridContainer = layout.locator('.grid.grid-cols-2').first();
       const hasGrid = await gridContainer.isVisible().catch(() => false);
 
       // If no grid visible, check for empty state (valid for fresh users)
       if (!hasGrid) {
-        const emptyState = page.locator("text=/search for foods above to start logging/i");
+        const emptyState = layout.locator("text=/search for foods above to start logging/i");
         const hasEmptyState = await emptyState.isVisible().catch(() => false);
         expect(hasEmptyState).toBeTruthy();
       } else {
@@ -262,6 +275,8 @@ test.describe("Responsive Layouts", () => {
       await loginAsUser(page, persona.email);
       await page.goto("/nutrition");
       await page.waitForSelector("main", { timeout: 10000 });
+
+      const layout = visibleLayout(page);
 
       // Set nutrition targets first
       const setGoalsButton = page.getByRole("button", { name: /set goals/i });
@@ -280,14 +295,14 @@ test.describe("Responsive Layouts", () => {
 
       // On desktop, the "Today's Progress" section uses vertical layout
       // This shows all 4 macros stacked (Calories, Protein, Carbs, Fat)
-      const todaysProgressHeading = page.locator("h3").filter({ hasText: /today's progress/i });
+      const todaysProgressHeading = layout.locator("h3").filter({ hasText: /today's progress/i });
       await expect(todaysProgressHeading).toBeVisible({ timeout: 5000 });
 
       // Verify all macro labels are visible in vertical layout
-      const caloriesLabel = page.locator("span").filter({ hasText: /^calories$/i });
-      const proteinLabel = page.locator("span").filter({ hasText: /^protein$/i });
-      const carbsLabel = page.locator("span").filter({ hasText: /^carbs$/i });
-      const fatLabel = page.locator("span").filter({ hasText: /^fat$/i });
+      const caloriesLabel = layout.locator("span").filter({ hasText: /^calories$/i });
+      const proteinLabel = layout.locator("span").filter({ hasText: /^protein$/i });
+      const carbsLabel = layout.locator("span").filter({ hasText: /^carbs$/i });
+      const fatLabel = layout.locator("span").filter({ hasText: /^fat$/i });
 
       await expect(caloriesLabel.first()).toBeVisible({ timeout: 3000 });
       await expect(proteinLabel.first()).toBeVisible({ timeout: 3000 });
@@ -302,11 +317,13 @@ test.describe("Responsive Layouts", () => {
       await page.goto("/nutrition");
       await page.waitForSelector("main", { timeout: 10000 });
 
+      const layout = visibleLayout(page);
+
       // Add some food to create scrollable content
-      const addButton = page.locator('[data-testid="add-food-breakfast"]').first();
+      const addButton = layout.locator('[data-testid="add-food-breakfast"]');
       await addButton.click();
 
-      const searchInput = page.locator('input[role="combobox"], input[placeholder*="search" i]');
+      const searchInput = layout.getByPlaceholder(/Search foods for/i);
       await expect(searchInput).toBeVisible({ timeout: 3000 });
 
       await searchInput.fill("banana");
@@ -320,7 +337,7 @@ test.describe("Responsive Layouts", () => {
       await expect(searchInput).not.toBeVisible({ timeout: 5000 });
 
       // The sidebar should have lg:sticky lg:top-6 classes
-      const stickySidebar = page.locator('div.lg\\:sticky.lg\\:top-6');
+      const stickySidebar = layout.locator('div.lg\\:sticky.lg\\:top-6');
       await expect(stickySidebar).toBeVisible({ timeout: 3000 });
 
       // Verify the Quick Add heading is within the sticky container
@@ -335,13 +352,15 @@ test.describe("Responsive Layouts", () => {
       await page.goto("/nutrition");
       await page.waitForSelector("main", { timeout: 10000 });
 
+      const layout = visibleLayout(page);
+
       // Find and click Add button for Lunch
-      const addButton = page.locator('[data-testid="add-food-lunch"]').first();
+      const addButton = layout.locator('[data-testid="add-food-lunch"]');
       await expect(addButton).toBeVisible({ timeout: 5000 });
       await addButton.click();
 
       // Verify search panel opens
-      const searchInput = page.locator('input[role="combobox"], input[placeholder*="search" i]');
+      const searchInput = layout.getByPlaceholder(/Search foods for/i);
       await expect(searchInput).toBeVisible({ timeout: 3000 });
 
       // Search and add food
@@ -356,7 +375,7 @@ test.describe("Responsive Layouts", () => {
       await page.getByRole("button", { name: /confirm/i }).click();
 
       // Verify food was added
-      await expect(page.locator('[data-testid="food-log-item"]').filter({ hasText: /rice/i }).first()).toBeVisible({ timeout: 5000 });
+      await expect(layout.locator('[data-testid="food-log-item"]').filter({ hasText: /rice/i }).first()).toBeVisible({ timeout: 5000 });
     });
   });
 
@@ -370,29 +389,30 @@ test.describe("Responsive Layouts", () => {
       await page.goto("/nutrition");
       await page.waitForSelector("main", { timeout: 10000 });
 
-      // Verify desktop layout elements
-      const gridContainer = page.locator('div.grid.lg\\:grid-cols-3');
+      // Verify desktop layout elements (scoped to desktop-layout)
+      const desktopLayout = visibleLayout(page);
+      const gridContainer = desktopLayout.locator('div.grid.lg\\:grid-cols-3');
       await expect(gridContainer).toBeVisible({ timeout: 5000 });
 
       // Quick Add heading should be visible on desktop
-      const quickAddHeading = page.locator("h3").filter({ hasText: /quick add/i });
+      const quickAddHeading = desktopLayout.locator("h3").filter({ hasText: /quick add/i });
       await expect(quickAddHeading).toBeVisible({ timeout: 3000 });
 
       // Switch to mobile viewport
       await page.setViewportSize(MOBILE_VIEWPORT);
 
-      // The 3-column grid should no longer be visible (becomes single column)
-      // Desktop layout uses hidden lg:block, so on mobile the MobileLayout should render
+      // Now scope to mobile layout
+      const mobileLayout = visibleLayout(page);
 
       // On mobile, the Quick Add sidebar becomes a bottom sheet (not visible by default)
       // Instead, we should see the mobile header with coral background
-      const mobileHeader = page.locator('div.bg-\\[\\#FF6B6B\\]').first();
+      const mobileHeader = mobileLayout.locator('div.bg-\\[\\#FF6B6B\\]').first();
       const hasCoralHeader = await mobileHeader.isVisible().catch(() => false);
 
       // Mobile layout should have distinct styling
       // Either coral header visible OR meals stacked vertically
-      const breakfastSection = page.locator("div").filter({ hasText: /^Breakfast/ }).first();
-      const lunchSection = page.locator("div").filter({ hasText: /^Lunch/ }).first();
+      const breakfastSection = mobileLayout.locator("div").filter({ hasText: /^Breakfast/ }).first();
+      const lunchSection = mobileLayout.locator("div").filter({ hasText: /^Lunch/ }).first();
 
       await expect(breakfastSection).toBeVisible({ timeout: 3000 });
       await expect(lunchSection).toBeVisible({ timeout: 3000 });

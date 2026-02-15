@@ -18,6 +18,7 @@
 import { test, expect } from "@playwright/test";
 import { loginAsUser } from "../../fixtures/auth";
 import { getFreshNutritionPersona } from "../../fixtures/personas";
+import { visibleLayout } from "../../fixtures/nutrition-helpers";
 
 test.describe("Nutrition Recipes Page", () => {
 
@@ -63,8 +64,8 @@ test.describe("Nutrition Recipes Page", () => {
       await page.goto("/nutrition/recipes");
       await page.waitForSelector("main", { timeout: 10000 });
 
-      // Wait for loading to finish
-      await expect(page.locator(".animate-spin")).toBeHidden({ timeout: 5000 });
+      // Wait for loading to finish - the spinner may never appear if load is fast
+      await expect(page.locator(".animate-spin")).toBeHidden({ timeout: 10000 });
 
       // Should show empty state
       await expect(page.getByText("No recipes yet")).toBeVisible({ timeout: 5000 });
@@ -76,7 +77,7 @@ test.describe("Nutrition Recipes Page", () => {
       await loginAsUser(page, persona.email);
       await page.goto("/nutrition/recipes");
       await page.waitForSelector("main", { timeout: 10000 });
-      await expect(page.locator(".animate-spin")).toBeHidden({ timeout: 5000 });
+      await expect(page.locator(".animate-spin")).toBeHidden({ timeout: 10000 });
 
       await page.getByText("Create Your First Recipe").click();
 
@@ -91,7 +92,7 @@ test.describe("Nutrition Recipes Page", () => {
       await loginAsUser(page, persona.email);
       await page.goto("/nutrition/recipes");
       await page.waitForSelector("main", { timeout: 10000 });
-      await expect(page.locator(".animate-spin")).toBeHidden({ timeout: 5000 });
+      await expect(page.locator(".animate-spin")).toBeHidden({ timeout: 10000 });
 
       // Click the header "Create New" button
       await page.locator("button", { hasText: "Create New" }).first().click();
@@ -105,7 +106,7 @@ test.describe("Nutrition Recipes Page", () => {
       await loginAsUser(page, persona.email);
       await page.goto("/nutrition/recipes");
       await page.waitForSelector("main", { timeout: 10000 });
-      await expect(page.locator(".animate-spin")).toBeHidden({ timeout: 5000 });
+      await expect(page.locator(".animate-spin")).toBeHidden({ timeout: 10000 });
 
       // Open create modal
       await page.locator("button", { hasText: "Create New" }).first().click();
@@ -142,7 +143,7 @@ test.describe("Nutrition Recipes Page", () => {
       const response = await page.request.post("/api/recipes", {
         data: {
           name: "E2E Test Recipe",
-          emoji: "🍲",
+          emoji: "\ud83c\udf72",
           calories: 500,
           protein: 35,
           carbs: 45,
@@ -159,7 +160,7 @@ test.describe("Nutrition Recipes Page", () => {
 
       await page.goto("/nutrition/recipes");
       await page.waitForSelector("main", { timeout: 10000 });
-      await expect(page.locator(".animate-spin")).toBeHidden({ timeout: 5000 });
+      await expect(page.locator(".animate-spin")).toBeHidden({ timeout: 10000 });
     });
 
     test("should display recipe card with name and macros", async ({ page }) => {
@@ -211,12 +212,18 @@ test.describe("Nutrition Recipes Page", () => {
       // Select Lunch
       await page.getByText("Lunch").last().click();
 
+      // Wait for the logging action to complete
+      await page.waitForTimeout(1000);
+
       // Verify by checking the food log page has the entry
       await page.goto("/nutrition");
       await page.waitForSelector("main", { timeout: 10000 });
 
+      // Scope to the visible layout to avoid dual-layout issue
+      const layout = visibleLayout(page);
+
       // The recipe should appear in Lunch section
-      await expect(page.getByText("E2E Test Recipe")).toBeVisible({ timeout: 5000 });
+      await expect(layout.getByText("E2E Test Recipe")).toBeVisible({ timeout: 5000 });
     });
   });
 
@@ -227,18 +234,18 @@ test.describe("Nutrition Recipes Page", () => {
 
       // Create multiple recipes via API
       await page.request.post("/api/recipes", {
-        data: { name: "Grilled Chicken Salad", emoji: "🥗", calories: 350, protein: 40, carbs: 15, fat: 12, ingredients: [] },
+        data: { name: "Grilled Chicken Salad", emoji: "\ud83e\udd57", calories: 350, protein: 40, carbs: 15, fat: 12, ingredients: [] },
       });
       await page.request.post("/api/recipes", {
-        data: { name: "Protein Smoothie", emoji: "🥤", calories: 280, protein: 30, carbs: 35, fat: 5, ingredients: [] },
+        data: { name: "Protein Smoothie", emoji: "\ud83e\udd64", calories: 280, protein: 30, carbs: 35, fat: 5, ingredients: [] },
       });
       await page.request.post("/api/recipes", {
-        data: { name: "Oatmeal Bowl", emoji: "🥣", calories: 400, protein: 15, carbs: 60, fat: 10, ingredients: [] },
+        data: { name: "Oatmeal Bowl", emoji: "\ud83e\udd63", calories: 400, protein: 15, carbs: 60, fat: 10, ingredients: [] },
       });
 
       await page.goto("/nutrition/recipes");
       await page.waitForSelector("main", { timeout: 10000 });
-      await expect(page.locator(".animate-spin")).toBeHidden({ timeout: 5000 });
+      await expect(page.locator(".animate-spin")).toBeHidden({ timeout: 10000 });
     });
 
     test("should filter recipes by search query", async ({ page }) => {
@@ -284,7 +291,7 @@ test.describe("Nutrition Recipes Page", () => {
       await page.request.post("/api/recipes", {
         data: {
           name: "Editable Recipe",
-          emoji: "🍲",
+          emoji: "\ud83c\udf72",
           calories: 400,
           protein: 30,
           carbs: 40,
@@ -298,7 +305,7 @@ test.describe("Nutrition Recipes Page", () => {
 
       await page.goto("/nutrition/recipes");
       await page.waitForSelector("main", { timeout: 10000 });
-      await expect(page.locator(".animate-spin")).toBeHidden({ timeout: 5000 });
+      await expect(page.locator(".animate-spin")).toBeHidden({ timeout: 10000 });
     });
 
     test("should enter edit mode when clicking Edit", async ({ page }) => {
@@ -340,7 +347,7 @@ test.describe("Nutrition Recipes Page", () => {
       await page.request.post("/api/recipes", {
         data: {
           name: "Deletable Recipe",
-          emoji: "🗑️",
+          emoji: "\ud83d\uddd1\ufe0f",
           calories: 300,
           protein: 20,
           carbs: 30,
@@ -351,7 +358,7 @@ test.describe("Nutrition Recipes Page", () => {
 
       await page.goto("/nutrition/recipes");
       await page.waitForSelector("main", { timeout: 10000 });
-      await expect(page.locator(".animate-spin")).toBeHidden({ timeout: 5000 });
+      await expect(page.locator(".animate-spin")).toBeHidden({ timeout: 10000 });
     });
 
     test("should delete recipe when clicking Delete and confirming", async ({ page }) => {

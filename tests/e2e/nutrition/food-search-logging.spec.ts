@@ -27,6 +27,7 @@
 import { test, expect } from "@playwright/test";
 import { loginAsUser } from "../../fixtures/auth";
 import { getFreshNutritionPersona } from "../../fixtures/personas";
+import { visibleLayout } from "../../fixtures/nutrition-helpers";
 
 test.describe("Nutrition Food Search and Logging", () => {
   // Seed personas before all tests in this file
@@ -38,16 +39,18 @@ test.describe("Nutrition Food Search and Logging", () => {
     await page.goto("/nutrition");
     await page.waitForSelector("main", { timeout: 10000 });
 
+    const layout = visibleLayout(page);
+
     // Click the Add button on Breakfast section
-    const addButton = page.locator('[data-testid="add-food-breakfast"]').first();
+    const addButton = layout.locator('[data-testid="add-food-breakfast"]');
     await addButton.click();
 
     // Verify the inline search panel opens - should show search input
-    const searchInput = page.locator('input[role="combobox"], input[placeholder*="search" i]');
+    const searchInput = layout.getByPlaceholder(/Search foods for/i);
     await expect(searchInput).toBeVisible({ timeout: 3000 });
 
     // Should also show "Adding to Breakfast" indicator
-    await expect(page.locator("text=/adding to breakfast/i")).toBeVisible();
+    await expect(layout.locator("text=/adding to breakfast/i")).toBeVisible();
   });
 
   test("should show search results when typing in search box", async ({ page }) => {
@@ -57,12 +60,14 @@ test.describe("Nutrition Food Search and Logging", () => {
     await page.goto("/nutrition");
     await page.waitForSelector("main", { timeout: 10000 });
 
+    const layout = visibleLayout(page);
+
     // Open inline search on Breakfast
-    const addButton = page.locator('[data-testid="add-food-breakfast"]').first();
+    const addButton = layout.locator('[data-testid="add-food-breakfast"]');
     await addButton.click();
 
     // Wait for search input
-    const searchInput = page.locator('input[role="combobox"], input[placeholder*="search" i]');
+    const searchInput = layout.getByPlaceholder(/Search foods for/i);
     await expect(searchInput).toBeVisible({ timeout: 3000 });
 
     // Type a search query
@@ -87,11 +92,13 @@ test.describe("Nutrition Food Search and Logging", () => {
     await page.goto("/nutrition");
     await page.waitForSelector("main", { timeout: 10000 });
 
+    const layout = visibleLayout(page);
+
     // Open inline search
-    const addButton = page.locator('[data-testid="add-food-breakfast"]').first();
+    const addButton = layout.locator('[data-testid="add-food-breakfast"]');
     await addButton.click();
 
-    const searchInput = page.locator('input[role="combobox"], input[placeholder*="search" i]');
+    const searchInput = layout.getByPlaceholder(/Search foods for/i);
     await expect(searchInput).toBeVisible({ timeout: 3000 });
 
     // Search for a food
@@ -123,11 +130,13 @@ test.describe("Nutrition Food Search and Logging", () => {
     await page.goto("/nutrition");
     await page.waitForSelector("main", { timeout: 10000 });
 
+    const layout = visibleLayout(page);
+
     // Open inline search
-    const addButton = page.locator('[data-testid="add-food-breakfast"]').first();
+    const addButton = layout.locator('[data-testid="add-food-breakfast"]');
     await addButton.click();
 
-    const searchInput = page.locator('input[role="combobox"], input[placeholder*="search" i]');
+    const searchInput = layout.getByPlaceholder(/Search foods for/i);
     await expect(searchInput).toBeVisible({ timeout: 3000 });
 
     // Search and select a food
@@ -160,11 +169,13 @@ test.describe("Nutrition Food Search and Logging", () => {
     await page.goto("/nutrition");
     await page.waitForSelector("main", { timeout: 10000 });
 
+    const layout = visibleLayout(page);
+
     // Open inline search for Lunch
-    const addButtonLunch = page.locator('[data-testid="add-food-lunch"]').first();
+    const addButtonLunch = layout.locator('[data-testid="add-food-lunch"]');
     await addButtonLunch.click();
 
-    const searchInput = page.locator('input[role="combobox"], input[placeholder*="search" i]');
+    const searchInput = layout.getByPlaceholder(/Search foods for/i);
     await expect(searchInput).toBeVisible({ timeout: 3000 });
 
     // Search and select a food
@@ -186,7 +197,7 @@ test.describe("Nutrition Food Search and Logging", () => {
 
     // Verify the food appears in the Lunch section
     // The meal section should now show the food item
-    const lunchSection = page.locator("div").filter({ hasText: /^Lunch/ }).first();
+    const lunchSection = layout.locator("div").filter({ hasText: /^Lunch/ }).first();
     await expect(lunchSection).toContainText(/salmon/i, { timeout: 5000 });
 
     // Verify meal totals updated (should show cal and P)
@@ -200,6 +211,8 @@ test.describe("Nutrition Food Search and Logging", () => {
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
     await page.waitForSelector("main", { timeout: 10000 });
+
+    const layout = visibleLayout(page);
 
     // First, set some nutrition targets so we have progress bars
     // Open targets modal
@@ -220,13 +233,13 @@ test.describe("Nutrition Food Search and Logging", () => {
     }
 
     // Get initial calorie display (should be 0 or close to it)
-    const calorieDisplay = page.locator("text=/\\d+\\s*\\/\\s*\\d+\\s*cal/i").first();
+    const calorieDisplay = layout.locator("text=/\\d+\\s*\\/\\s*\\d+\\s*cal/i").first();
 
     // Open inline search for Snack
-    const addButtonSnack = page.locator('[data-testid="add-food-snack"]').first();
+    const addButtonSnack = layout.locator('[data-testid="add-food-snack"]');
     await addButtonSnack.click();
 
-    const searchInput = page.locator('input[role="combobox"], input[placeholder*="search" i]');
+    const searchInput = layout.getByPlaceholder(/Search foods for/i);
     await expect(searchInput).toBeVisible({ timeout: 3000 });
 
     // Search and add a food with known macros
@@ -247,7 +260,7 @@ test.describe("Nutrition Food Search and Logging", () => {
     // Verify that the calorie value is now > 0
     // The progress display should show consumed/target format
     // We look for any number greater than 0 in the calorie display
-    await expect(page.locator("text=/[1-9]\\d*\\s*\\/\\s*2000/i")).toBeVisible({ timeout: 5000 });
+    await expect(layout.locator("text=/[1-9]\\d*\\s*\\/\\s*2000/i")).toBeVisible({ timeout: 5000 });
   });
 
   test("should handle empty search results gracefully", async ({ page }) => {
@@ -257,11 +270,13 @@ test.describe("Nutrition Food Search and Logging", () => {
     await page.goto("/nutrition");
     await page.waitForSelector("main", { timeout: 10000 });
 
+    const layout = visibleLayout(page);
+
     // Open inline search
-    const addButton = page.locator('[data-testid="add-food-dinner"]').first();
+    const addButton = layout.locator('[data-testid="add-food-dinner"]');
     await addButton.click();
 
-    const searchInput = page.locator('input[role="combobox"], input[placeholder*="search" i]');
+    const searchInput = layout.getByPlaceholder(/Search foods for/i);
     await expect(searchInput).toBeVisible({ timeout: 3000 });
 
     // Search for something unlikely to exist
@@ -284,21 +299,23 @@ test.describe("Nutrition Food Search and Logging", () => {
     await page.goto("/nutrition");
     await page.waitForSelector("main", { timeout: 10000 });
 
+    const layout = visibleLayout(page);
+
     // Open inline search
-    const addButton = page.locator('[data-testid="add-food-breakfast"]').first();
+    const addButton = layout.locator('[data-testid="add-food-breakfast"]');
     await addButton.click();
 
-    const searchInput = page.locator('input[role="combobox"], input[placeholder*="search" i]');
+    const searchInput = layout.getByPlaceholder(/Search foods for/i);
     await expect(searchInput).toBeVisible({ timeout: 3000 });
 
     // Click Cancel button
-    const cancelButton = page.locator("button", { hasText: /cancel/i }).last();
+    const cancelButton = layout.locator("button", { hasText: /cancel/i }).last();
     await cancelButton.click();
 
     // Search panel should close
     await expect(searchInput).not.toBeVisible({ timeout: 3000 });
 
     // The empty state should show again with "+ Add breakfast" text
-    await expect(page.locator("text=/add breakfast/i")).toBeVisible();
+    await expect(layout.locator("text=/add breakfast/i")).toBeVisible();
   });
 });

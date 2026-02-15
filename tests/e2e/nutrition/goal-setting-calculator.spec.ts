@@ -139,6 +139,15 @@ test.describe("Nutrition - calculator-based goal setting", () => {
     await expect(magicLinkButton).toBeVisible({ timeout: 10000 });
     await magicLinkButton.click();
 
+    // Handle intermediate "Confirm sign in" page (PR #364)
+    try {
+      const signInLink = page.getByRole("link", { name: /sign in to baisics/i });
+      await signInLink.waitFor({ state: "visible", timeout: 5000 });
+      await signInLink.click();
+    } catch {
+      // Already redirected through
+    }
+
     // Wait for redirect
     await page.waitForURL((url) => !url.pathname.includes("/auth/"), { timeout: 15000 });
 
