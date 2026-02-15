@@ -464,14 +464,14 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
   // A/B Test: randomly assign variant A, B, or C
   const { variant, trackConversion, trackDismiss } = useABTest('upsell_modal_v1', ['A', 'B', 'C']);
 
-  // Reset state when modal opens
+  // Reset state when modal opens (only on isOpen change, not email prop changes)
   useEffect(() => {
     if (isOpen) {
       setEmail(userEmail || user?.email || "");
       setEmailError("");
       setShowSuccess(false);
     }
-  }, [isOpen, userEmail, user?.email]);
+  }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleClose = () => {
     trackDismiss();
@@ -513,13 +513,14 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
       const response = await updateUser(userId, { email });
 
       if (response.success) {
-        // Auto sign-in to create a real NextAuth session
-        await signIn('credentials', { email, userId, redirect: false });
-        router.refresh();
-
+        // Show success state FIRST, before any navigation/refresh side effects
         setShowSuccess(true);
         onEmailSubmit(email);
         onSuccessfulSubmit?.();
+
+        // Auto sign-in to create a real NextAuth session (after success view is shown)
+        await signIn('credentials', { email, userId, redirect: false });
+        router.refresh();
 
         // Send emails asynchronously
         Promise.all([
