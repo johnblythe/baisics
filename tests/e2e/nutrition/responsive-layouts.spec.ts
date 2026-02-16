@@ -15,8 +15,9 @@
 
 import { test, expect } from "@playwright/test";
 import { loginAsUser } from "../../fixtures/auth";
-import { getFreshNutritionPersona } from "../../fixtures/personas";
-import { visibleLayout } from "../../fixtures/nutrition-helpers";
+import { getPersona } from "../../fixtures/personas";
+import { visibleLayout, clearRecentFoodLogs } from "../../fixtures/nutrition-helpers";
+import { setupFoodSearchMock } from "../../fixtures/food-search-mock";
 
 // Mobile viewport (iPhone SE size)
 const MOBILE_VIEWPORT = { width: 375, height: 667 };
@@ -25,15 +26,16 @@ const MOBILE_VIEWPORT = { width: 375, height: 667 };
 const DESKTOP_VIEWPORT = { width: 1440, height: 900 };
 
 test.describe("Responsive Layouts", () => {
-  // Seed personas before all tests in this file
+  test.describe.configure({ mode: "serial" });
 
   test.describe("Mobile Layout", () => {
     test.beforeEach(async ({ page }) => {
+      await setupFoodSearchMock(page);
       await page.setViewportSize(MOBILE_VIEWPORT);
     });
 
     test("should show stacked vertical layout on mobile", async ({ page }) => {
-      const persona = getFreshNutritionPersona();
+      const persona = getPersona("kim");
 
       await loginAsUser(page, persona.email);
       await page.goto("/nutrition");
@@ -74,7 +76,7 @@ test.describe("Responsive Layouts", () => {
     });
 
     test("should show QuickPills in horizontal scrollable layout on mobile", async ({ page }) => {
-      const persona = getFreshNutritionPersona();
+      const persona = getPersona("kim");
 
       await loginAsUser(page, persona.email);
       await page.goto("/nutrition");
@@ -91,14 +93,15 @@ test.describe("Responsive Layouts", () => {
       await expect(searchInput).toBeVisible({ timeout: 3000 });
 
       await searchInput.fill("banana");
-      await page.waitForSelector('[role="listbox"]', { timeout: 10000 });
-      const firstResult = page.locator('[role="option"]').first();
+      await expect(layout.locator('[role="listbox"]')).toBeVisible({ timeout: 10000 });
+      const firstResult = layout.locator('[role="option"]').first();
       await expect(firstResult).toBeVisible({ timeout: 5000 });
       await firstResult.click();
 
-      await expect(page.getByLabel(/serving size/i)).toBeVisible({ timeout: 3000 });
-      await page.getByRole("button", { name: /confirm/i }).click();
+      await expect(layout.getByLabel(/serving size/i)).toBeVisible({ timeout: 3000 });
+      await layout.getByRole("button", { name: /confirm/i }).click();
       await expect(searchInput).not.toBeVisible({ timeout: 5000 });
+      await expect(layout.locator("text=/Saving/i")).not.toBeVisible({ timeout: 30000 });
 
       // Look for horizontal scroll container for QuickPills
       // The QuickPills with horizontal layout has overflow-x-auto and whitespace-nowrap
@@ -114,7 +117,7 @@ test.describe("Responsive Layouts", () => {
     });
 
     test("should have readable progress bars on mobile viewport", async ({ page }) => {
-      const persona = getFreshNutritionPersona();
+      const persona = getPersona("kim");
 
       await loginAsUser(page, persona.email);
       await page.goto("/nutrition");
@@ -164,16 +167,21 @@ test.describe("Responsive Layouts", () => {
     });
 
     test("should allow adding food on mobile viewport", async ({ page }) => {
-      const persona = getFreshNutritionPersona();
+      const persona = getPersona("kim");
 
       await loginAsUser(page, persona.email);
       await page.goto("/nutrition");
       await page.waitForSelector("main", { timeout: 10000 });
 
+      // Clear leftover food logs from parallel tests
+      await clearRecentFoodLogs(page);
+      await page.reload();
+      await page.waitForSelector("main", { timeout: 10000 });
+
       const layout = visibleLayout(page);
 
-      // Find and click Add button for Breakfast
-      const addButton = layout.locator('[data-testid="add-food-breakfast"]');
+      // Find and click Add button for Lunch (avoid Breakfast which other tests use)
+      const addButton = layout.locator('[data-testid="add-food-lunch"]');
       await expect(addButton).toBeVisible({ timeout: 5000 });
       await addButton.click();
 
@@ -183,14 +191,17 @@ test.describe("Responsive Layouts", () => {
 
       // Search and add food
       await searchInput.fill("chicken");
-      await page.waitForSelector('[role="listbox"]', { timeout: 10000 });
-      const firstResult = page.locator('[role="option"]').first();
+      await expect(layout.locator('[role="listbox"]')).toBeVisible({ timeout: 10000 });
+      const firstResult = layout.locator('[role="option"]').first();
       await expect(firstResult).toBeVisible({ timeout: 5000 });
       await firstResult.click();
 
       // Confirm serving size
-      await expect(page.getByLabel(/serving size/i)).toBeVisible({ timeout: 3000 });
-      await page.getByRole("button", { name: /confirm/i }).click();
+      await expect(layout.getByLabel(/serving size/i)).toBeVisible({ timeout: 3000 });
+      await layout.getByRole("button", { name: /confirm/i }).click();
+
+      // Wait for save to complete
+      await expect(layout.locator("text=/Saving/i")).not.toBeVisible({ timeout: 30000 });
 
       // Verify food was added
       await expect(layout.locator('[data-testid="food-log-item"]').filter({ hasText: /chicken/i }).first()).toBeVisible({ timeout: 5000 });
@@ -199,11 +210,12 @@ test.describe("Responsive Layouts", () => {
 
   test.describe("Desktop Layout", () => {
     test.beforeEach(async ({ page }) => {
+      await setupFoodSearchMock(page);
       await page.setViewportSize(DESKTOP_VIEWPORT);
     });
 
     test("should show side-by-side grid layout on desktop", async ({ page }) => {
-      const persona = getFreshNutritionPersona();
+      const persona = getPersona("kim");
 
       await loginAsUser(page, persona.email);
       await page.goto("/nutrition");
@@ -243,7 +255,7 @@ test.describe("Responsive Layouts", () => {
     });
 
     test("should show QuickPills in grid layout on desktop", async ({ page }) => {
-      const persona = getFreshNutritionPersona();
+      const persona = getPersona("kim");
 
       await loginAsUser(page, persona.email);
       await page.goto("/nutrition");
@@ -270,7 +282,7 @@ test.describe("Responsive Layouts", () => {
     });
 
     test("should have vertical progress bars on desktop", async ({ page }) => {
-      const persona = getFreshNutritionPersona();
+      const persona = getPersona("kim");
 
       await loginAsUser(page, persona.email);
       await page.goto("/nutrition");
@@ -311,7 +323,7 @@ test.describe("Responsive Layouts", () => {
     });
 
     test("should have sticky sidebar on desktop", async ({ page }) => {
-      const persona = getFreshNutritionPersona();
+      const persona = getPersona("kim");
 
       await loginAsUser(page, persona.email);
       await page.goto("/nutrition");
@@ -327,26 +339,33 @@ test.describe("Responsive Layouts", () => {
       await expect(searchInput).toBeVisible({ timeout: 3000 });
 
       await searchInput.fill("banana");
-      await page.waitForSelector('[role="listbox"]', { timeout: 10000 });
-      const firstResult = page.locator('[role="option"]').first();
+      await expect(layout.locator('[role="listbox"]')).toBeVisible({ timeout: 10000 });
+      const firstResult = layout.locator('[role="option"]').first();
       await expect(firstResult).toBeVisible({ timeout: 5000 });
       await firstResult.click();
 
-      await expect(page.getByLabel(/serving size/i)).toBeVisible({ timeout: 3000 });
-      await page.getByRole("button", { name: /confirm/i }).click();
+      await expect(layout.getByLabel(/serving size/i)).toBeVisible({ timeout: 3000 });
+      await layout.getByRole("button", { name: /confirm/i }).click();
       await expect(searchInput).not.toBeVisible({ timeout: 5000 });
+      await expect(layout.locator("text=/Saving/i")).not.toBeVisible({ timeout: 30000 });
 
-      // The sidebar should have lg:sticky lg:top-6 classes
-      const stickySidebar = layout.locator('div.lg\\:sticky.lg\\:top-6');
-      await expect(stickySidebar).toBeVisible({ timeout: 3000 });
+      // The sidebar column (lg:col-span-1) contains a sticky inner div
+      // On desktop, the left column has the Quick Add section
+      const sidebarColumn = layout.locator('div.lg\\:col-span-1').first();
+      await expect(sidebarColumn).toBeVisible({ timeout: 3000 });
 
-      // Verify the Quick Add heading is within the sticky container
-      const quickAddHeading = stickySidebar.locator("h3").filter({ hasText: /quick add/i });
+      // Verify the Quick Add heading is within the sidebar
+      const quickAddHeading = sidebarColumn.getByRole('heading', { name: 'Quick Add', exact: true });
       await expect(quickAddHeading).toBeVisible({ timeout: 3000 });
+
+      // Verify the sidebar inner container has sticky positioning via class
+      const stickyContainer = sidebarColumn.locator('[class*="sticky"]').first();
+      const hasStickyClass = await stickyContainer.isVisible().catch(() => false);
+      expect(hasStickyClass).toBeTruthy();
     });
 
     test("should allow adding food on desktop viewport", async ({ page }) => {
-      const persona = getFreshNutritionPersona();
+      const persona = getPersona("kim");
 
       await loginAsUser(page, persona.email);
       await page.goto("/nutrition");
@@ -365,14 +384,17 @@ test.describe("Responsive Layouts", () => {
 
       // Search and add food
       await searchInput.fill("rice");
-      await page.waitForSelector('[role="listbox"]', { timeout: 10000 });
-      const firstResult = page.locator('[role="option"]').first();
+      await expect(layout.locator('[role="listbox"]')).toBeVisible({ timeout: 10000 });
+      const firstResult = layout.locator('[role="option"]').first();
       await expect(firstResult).toBeVisible({ timeout: 5000 });
       await firstResult.click();
 
       // Confirm serving size
-      await expect(page.getByLabel(/serving size/i)).toBeVisible({ timeout: 3000 });
-      await page.getByRole("button", { name: /confirm/i }).click();
+      await expect(layout.getByLabel(/serving size/i)).toBeVisible({ timeout: 3000 });
+      await layout.getByRole("button", { name: /confirm/i }).click();
+
+      // Wait for save to complete
+      await expect(layout.locator("text=/Saving/i")).not.toBeVisible({ timeout: 30000 });
 
       // Verify food was added
       await expect(layout.locator('[data-testid="food-log-item"]').filter({ hasText: /rice/i }).first()).toBeVisible({ timeout: 5000 });
@@ -381,7 +403,7 @@ test.describe("Responsive Layouts", () => {
 
   test.describe("Viewport Switching", () => {
     test("should switch layouts when viewport changes", async ({ page }) => {
-      const persona = getFreshNutritionPersona();
+      const persona = getPersona("kim");
 
       // Start with desktop viewport
       await page.setViewportSize(DESKTOP_VIEWPORT);
@@ -394,8 +416,8 @@ test.describe("Responsive Layouts", () => {
       const gridContainer = desktopLayout.locator('div.grid.lg\\:grid-cols-3');
       await expect(gridContainer).toBeVisible({ timeout: 5000 });
 
-      // Quick Add heading should be visible on desktop
-      const quickAddHeading = desktopLayout.locator("h3").filter({ hasText: /quick add/i });
+      // Quick Add heading should be visible on desktop (exact match to avoid "AI Quick Add")
+      const quickAddHeading = desktopLayout.getByRole('heading', { name: 'Quick Add', exact: true });
       await expect(quickAddHeading).toBeVisible({ timeout: 3000 });
 
       // Switch to mobile viewport

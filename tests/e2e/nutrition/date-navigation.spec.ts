@@ -21,7 +21,7 @@
 
 import { test, expect } from "@playwright/test";
 import { loginAsUser } from "../../fixtures/auth";
-import { getFreshNutritionPersona } from "../../fixtures/personas";
+import { getPersona } from "../../fixtures/personas";
 import { visibleLayout } from "../../fixtures/nutrition-helpers";
 
 // Helper to get today's date in the format used by the header
@@ -56,10 +56,11 @@ function getDateNDaysAgoFormatted(n: number): string {
 }
 
 test.describe("Nutrition Date Navigation", () => {
+  test.describe.configure({ mode: "serial" });
   // Seed personas before all tests in this file
 
   test("should show 'Today' in header when viewing current date", async ({ page }) => {
-    const persona = getFreshNutritionPersona();
+    const persona = getPersona("derek");
 
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
@@ -76,7 +77,7 @@ test.describe("Nutrition Date Navigation", () => {
   });
 
   test("should navigate to previous day when clicking left arrow", async ({ page }) => {
-    const persona = getFreshNutritionPersona();
+    const persona = getPersona("derek");
 
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
@@ -101,7 +102,7 @@ test.describe("Nutrition Date Navigation", () => {
   });
 
   test("should show 'Jump to Today' button when viewing past date", async ({ page }) => {
-    const persona = getFreshNutritionPersona();
+    const persona = getPersona("derek");
 
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
@@ -122,7 +123,7 @@ test.describe("Nutrition Date Navigation", () => {
   });
 
   test("should return to current date when clicking 'Jump to Today'", async ({ page }) => {
-    const persona = getFreshNutritionPersona();
+    const persona = getPersona("derek");
 
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
@@ -155,7 +156,7 @@ test.describe("Nutrition Date Navigation", () => {
   });
 
   test("should navigate to next day when clicking right arrow", async ({ page }) => {
-    const persona = getFreshNutritionPersona();
+    const persona = getPersona("derek");
 
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
@@ -180,7 +181,7 @@ test.describe("Nutrition Date Navigation", () => {
   });
 
   test("should show WeeklyStrip with 7 day indicators", async ({ page }) => {
-    const persona = getFreshNutritionPersona();
+    const persona = getPersona("derek");
 
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
@@ -200,7 +201,7 @@ test.describe("Nutrition Date Navigation", () => {
   });
 
   test("should highlight today in WeeklyStrip with coral color", async ({ page }) => {
-    const persona = getFreshNutritionPersona();
+    const persona = getPersona("derek");
 
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
@@ -222,7 +223,7 @@ test.describe("Nutrition Date Navigation", () => {
   });
 
   test("should expand WeeklyStrip when clicked to show detailed view", async ({ page }) => {
-    const persona = getFreshNutritionPersona();
+    const persona = getPersona("derek");
 
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
@@ -247,7 +248,7 @@ test.describe("Nutrition Date Navigation", () => {
   });
 
   test("should persist date when reloading page", async ({ page }) => {
-    const persona = getFreshNutritionPersona();
+    const persona = getPersona("derek");
 
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");

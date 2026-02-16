@@ -811,8 +811,14 @@ export function FoodLogPage({
 
   // Handle inline food add from MealSection
   const handleInlineFoodAdd = async (food: MealSectionFoodResult) => {
-    // Determine source - use food.source if provided, otherwise default to USDA_SEARCH
-    const source = food.source || 'USDA_SEARCH';
+    // Map FoodSearchSource values to Prisma FoodSource enum values
+    const sourceMap: Record<string, string> = {
+      'USDA': 'USDA_SEARCH',
+      'QUICK_FOOD': 'QUICK_ADD',
+      'OPEN_FOOD_FACTS': 'OPEN_FOOD_FACTS',
+      'AI_ESTIMATED': 'AI_ESTIMATED',
+    };
+    const source = sourceMap[food.source || ''] || food.source || 'USDA_SEARCH';
 
     // Add food entry to the log - meal is pre-selected from the MealSection
     await addFoodEntry({

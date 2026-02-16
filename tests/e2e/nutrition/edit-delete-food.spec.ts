@@ -28,11 +28,17 @@
 
 import { test, expect } from "@playwright/test";
 import { loginAsUser } from "../../fixtures/auth";
-import { getFreshNutritionPersona } from "../../fixtures/personas";
-import { visibleLayout } from "../../fixtures/nutrition-helpers";
+import { getPersona } from "../../fixtures/personas";
+import { visibleLayout, clearRecentFoodLogs } from "../../fixtures/nutrition-helpers";
+import { setupFoodSearchMock } from "../../fixtures/food-search-mock";
 
 test.describe("Nutrition Edit and Delete Food", () => {
-  // Seed personas before all tests in this file
+  // Tests mutate shared persona data — run sequentially to avoid race conditions
+  test.describe.configure({ mode: "serial" });
+
+  test.beforeEach(async ({ page }) => {
+    await setupFoodSearchMock(page);
+  });
 
   /**
    * Helper to add a food item to Lunch section.
@@ -51,29 +57,37 @@ test.describe("Nutrition Edit and Delete Food", () => {
 
     // Search and select a food
     await searchInput.fill(searchTerm);
-    await page.waitForSelector('[role="listbox"]', { timeout: 10000 });
+    await expect(layout.locator('[role="listbox"]')).toBeVisible({ timeout: 10000 });
 
     // Get the first result text for verification
-    const firstResult = page.locator('[role="option"]').first();
+    const firstResult = layout.locator('[role="option"]').first();
     await expect(firstResult).toBeVisible({ timeout: 5000 });
     const foodName = await firstResult.textContent() || searchTerm;
     await firstResult.click();
 
     // Wait for serving size selector and confirm
-    await expect(page.getByLabel(/serving size/i)).toBeVisible({ timeout: 3000 });
-    await page.getByRole("button", { name: /confirm/i }).click();
+    await expect(layout.getByLabel(/serving size/i)).toBeVisible({ timeout: 3000 });
+    await layout.getByRole("button", { name: /confirm/i }).click();
 
     // Wait for food to be added - search panel should close
     await expect(searchInput).not.toBeVisible({ timeout: 5000 });
+
+    // Wait for save to complete (Saving indicator disappears)
+    await expect(layout.locator("text=/Saving/i")).not.toBeVisible({ timeout: 30000 });
 
     return foodName;
   }
 
   test("should show edit and delete buttons on food item hover", async ({ page }) => {
-    const persona = getFreshNutritionPersona();
+    const persona = getPersona("jordan");
 
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
+    await page.waitForSelector("main", { timeout: 10000 });
+
+    // Clear any leftover food logs for clean state
+    await clearRecentFoodLogs(page);
+    await page.reload();
     await page.waitForSelector("main", { timeout: 10000 });
 
     const layout = visibleLayout(page);
@@ -102,10 +116,15 @@ test.describe("Nutrition Edit and Delete Food", () => {
   });
 
   test("should open edit modal when clicking edit button", async ({ page }) => {
-    const persona = getFreshNutritionPersona();
+    const persona = getPersona("jordan");
 
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
+    await page.waitForSelector("main", { timeout: 10000 });
+
+    // Clear any leftover food logs for clean state
+    await clearRecentFoodLogs(page);
+    await page.reload();
     await page.waitForSelector("main", { timeout: 10000 });
 
     const layout = visibleLayout(page);
@@ -153,13 +172,18 @@ test.describe("Nutrition Edit and Delete Food", () => {
   });
 
   test("should allow modifying food name and macros", async ({ page }) => {
-    const persona = getFreshNutritionPersona();
+    const persona = getPersona("jordan");
 
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
     await page.waitForSelector("main", { timeout: 10000 });
 
-    const layout = visibleLayout(page);
+    // Clear any leftover food logs for clean state
+    await clearRecentFoodLogs(page);
+    await page.reload();
+    await page.waitForSelector("main", { timeout: 10000 });
+
+    let layout = visibleLayout(page);
 
     // Add a food first
     await addFoodToMeal(page, "Dinner", "rice");
@@ -192,27 +216,37 @@ test.describe("Nutrition Edit and Delete Food", () => {
     await proteinInput.clear();
     await proteinInput.fill("6");
 
-    // Save changes
-    await page.getByRole("button", { name: /save changes/i }).click();
+    // Save changes — buttons are sticky at bottom of modal
+    const saveBtn = page.getByRole("button", { name: /save changes/i });
+    await saveBtn.click();
 
     // Modal should close
-    await expect(page.locator('text="Edit Food"')).not.toBeVisible({ timeout: 3000 });
+    await expect(page.locator('text="Edit Food"')).not.toBeVisible({ timeout: 5000 });
+
+    // Re-acquire layout after modal interaction
+    layout = visibleLayout(page);
 
     // Verify the updated food appears with new name
-    await expect(dinnerSection).toContainText(/Brown Rice - Custom/i, { timeout: 5000 });
+    const dinnerSectionAfter = layout.locator("div").filter({ hasText: /^Dinner/ }).first();
+    await expect(dinnerSectionAfter).toContainText(/Brown Rice - Custom/i, { timeout: 5000 });
 
     // Verify updated calories show (250 cal)
-    await expect(dinnerSection).toContainText(/250 cal/i, { timeout: 3000 });
+    await expect(dinnerSectionAfter).toContainText(/250 cal/i, { timeout: 3000 });
   });
 
   test("should allow changing meal assignment via dropdown", async ({ page }) => {
-    const persona = getFreshNutritionPersona();
+    const persona = getPersona("jordan");
 
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
     await page.waitForSelector("main", { timeout: 10000 });
 
-    const layout = visibleLayout(page);
+    // Clear any leftover food logs for clean state
+    await clearRecentFoodLogs(page);
+    await page.reload();
+    await page.waitForSelector("main", { timeout: 10000 });
+
+    let layout = visibleLayout(page);
 
     // Add a food to Snack
     await addFoodToMeal(page, "Snack", "almonds");
@@ -234,11 +268,15 @@ test.describe("Nutrition Edit and Delete Food", () => {
     const mealSelect = page.locator('#meal');
     await mealSelect.selectOption("BREAKFAST");
 
-    // Save changes
-    await page.getByRole("button", { name: /save changes/i }).click();
+    // Save changes — buttons are sticky at bottom of modal
+    const saveChangesBtn = page.getByRole("button", { name: /save changes/i });
+    await saveChangesBtn.click();
 
     // Modal should close
     await expect(page.locator('text="Edit Food"')).not.toBeVisible({ timeout: 3000 });
+
+    // Re-acquire layout after modal interaction
+    layout = visibleLayout(page);
 
     // Verify the food now appears in Breakfast section, not Snack
     const breakfastSection = layout.locator("div").filter({ hasText: /^Breakfast/ }).first();
@@ -246,10 +284,15 @@ test.describe("Nutrition Edit and Delete Food", () => {
   });
 
   test("should save changes and verify persistence on reload", async ({ page }) => {
-    const persona = getFreshNutritionPersona();
+    const persona = getPersona("jordan");
 
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
+    await page.waitForSelector("main", { timeout: 10000 });
+
+    // Clear any leftover food logs for clean state
+    await clearRecentFoodLogs(page);
+    await page.reload();
     await page.waitForSelector("main", { timeout: 10000 });
 
     let layout = visibleLayout(page);
@@ -275,8 +318,9 @@ test.describe("Nutrition Edit and Delete Food", () => {
     await nameInput.clear();
     await nameInput.fill("Edited Salmon Entry");
 
-    // Save
-    await page.getByRole("button", { name: /save changes/i }).click();
+    // Save changes — buttons are sticky at bottom of modal
+    const saveChangesBtn = page.getByRole("button", { name: /save changes/i });
+    await saveChangesBtn.click();
     await expect(page.locator('text="Edit Food"')).not.toBeVisible({ timeout: 3000 });
 
     // Verify change appears
@@ -295,10 +339,15 @@ test.describe("Nutrition Edit and Delete Food", () => {
   });
 
   test("should delete food entry after confirmation", async ({ page }) => {
-    const persona = getFreshNutritionPersona();
+    const persona = getPersona("jordan");
 
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
+    await page.waitForSelector("main", { timeout: 10000 });
+
+    // Clear any leftover food logs for clean state
+    await clearRecentFoodLogs(page);
+    await page.reload();
     await page.waitForSelector("main", { timeout: 10000 });
 
     const layout = visibleLayout(page);
@@ -332,10 +381,15 @@ test.describe("Nutrition Edit and Delete Food", () => {
   });
 
   test("should update macro totals after deleting food", async ({ page }) => {
-    const persona = getFreshNutritionPersona();
+    const persona = getPersona("jordan");
 
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
+    await page.waitForSelector("main", { timeout: 10000 });
+
+    // Clear any leftover food logs for clean state
+    await clearRecentFoodLogs(page);
+    await page.reload();
     await page.waitForSelector("main", { timeout: 10000 });
 
     const layout = visibleLayout(page);
@@ -394,10 +448,15 @@ test.describe("Nutrition Edit and Delete Food", () => {
   });
 
   test("should cancel edit modal without saving changes", async ({ page }) => {
-    const persona = getFreshNutritionPersona();
+    const persona = getPersona("jordan");
 
     await loginAsUser(page, persona.email);
     await page.goto("/nutrition");
+    await page.waitForSelector("main", { timeout: 10000 });
+
+    // Clear any leftover food logs for clean state
+    await clearRecentFoodLogs(page);
+    await page.reload();
     await page.waitForSelector("main", { timeout: 10000 });
 
     const layout = visibleLayout(page);

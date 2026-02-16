@@ -71,7 +71,7 @@ export async function PATCH(
 
     // Validate and update date if provided
     if (body.date !== undefined) {
-      const logDate = new Date(body.date);
+      const logDate = new Date(body.date + 'T00:00:00');
       logDate.setHours(0, 0, 0, 0);
       updateData.date = logDate;
     }
