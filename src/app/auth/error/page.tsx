@@ -18,8 +18,16 @@ function ErrorContent() {
         return 'You do not have permission to sign in.';
       case 'Verification':
         return 'The verification link was invalid or has expired.';
+      case 'OAuthSignin':
+        return 'Could not start Google sign-in. Please try again.';
+      case 'OAuthCallback':
+        return 'Google sign-in was cancelled or failed. Please try again.';
+      case 'OAuthCreateAccount':
+        return 'Could not create your account. Please try a different sign-in method.';
+      case 'OAuthAccountNotLinked':
+        return 'This email is already linked to a different sign-in method. Try your original method.';
       default:
-        return 'An unknown error occurred.';
+        return 'An unexpected error occurred. Please try again.';
     }
   };
 
