@@ -41,7 +41,7 @@ test.describe("Nutrition - calculator-based goal setting", () => {
     await calculateButton.click();
 
     // Wait for the calculator form to expand
-    await page.waitForTimeout(300);
+    await expect(page.locator("#calc-height-feet")).toBeVisible({ timeout: 3000 });
 
     // Verify CalculatorForm label associations using the ids from US-002
     // Height feet input
@@ -107,11 +107,7 @@ test.describe("Nutrition - calculator-based goal setting", () => {
     await expect(calculateMyTargetsButton).toBeVisible();
     await calculateMyTargetsButton.click();
 
-    // Wait for calculation to complete - the calculator should collapse
-    // and the nutrition targets should be populated
-    await page.waitForTimeout(2000);
-
-    // Verify that the main inputs now have values populated from the calculator
+    // Wait for calculation to complete and nutrition targets to be populated
     const caloriesInput = page.locator("#daily-calories");
     await expect(caloriesInput).toBeVisible();
 
@@ -143,6 +139,15 @@ test.describe("Nutrition - calculator-based goal setting", () => {
     await expect(magicLinkButton).toBeVisible({ timeout: 10000 });
     await magicLinkButton.click();
 
+    // Handle intermediate "Confirm sign in" page (PR #364)
+    try {
+      const signInLink = page.getByRole("link", { name: /sign in to baisics/i });
+      await signInLink.waitFor({ state: "visible", timeout: 5000 });
+      await signInLink.click();
+    } catch {
+      // Already redirected through
+    }
+
     // Wait for redirect
     await page.waitForURL((url) => !url.pathname.includes("/auth/"), { timeout: 15000 });
 
@@ -168,7 +173,7 @@ test.describe("Nutrition - calculator-based goal setting", () => {
     // Expand calculator
     const calculateButton = page.getByText(/help me calculate/i);
     await calculateButton.click();
-    await page.waitForTimeout(300);
+    await expect(page.locator("#calc-height-feet")).toBeVisible({ timeout: 3000 });
 
     // Try to calculate without filling any fields
     const calculateMyTargetsButton = page.getByRole("button", { name: /calculate my targets/i });

@@ -35,6 +35,16 @@ export async function loginAsUser(page: Page, email: string): Promise<void> {
   await expect(magicLinkButton).toBeVisible({ timeout: 10000 });
   await magicLinkButton.click();
 
+  // PR #364 added an intermediate "Confirm sign in" page at /auth/magic-login.
+  // If we land there, click the "Sign in to Baisics" link to complete auth.
+  try {
+    const signInLink = page.getByRole("link", { name: /sign in to baisics/i });
+    await signInLink.waitFor({ state: "visible", timeout: 5000 });
+    await signInLink.click();
+  } catch {
+    // Not on the intermediate page — already redirected through
+  }
+
   // Wait for authentication to complete - user will be redirected away from verify-request
   // They'll go to /dashboard (existing user) or /hi (new user)
   await page.waitForURL((url) => {

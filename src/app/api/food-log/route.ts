@@ -115,7 +115,8 @@ export async function POST(request: Request) {
     }
 
     // Parse and normalize date
-    const logDate = new Date(date);
+    // Add time component to parse as local time (avoids UTC midnight → previous day in local)
+    const logDate = new Date(date + 'T00:00:00');
     logDate.setHours(0, 0, 0, 0);
 
     // Validate source if provided

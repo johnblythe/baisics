@@ -111,6 +111,15 @@ test.describe("Nutrition - manual goal setting", () => {
     await expect(magicLinkButton).toBeVisible({ timeout: 10000 });
     await magicLinkButton.click();
 
+    // Handle intermediate "Confirm sign in" page (PR #364)
+    try {
+      const signInLink = page.getByRole("link", { name: /sign in to baisics/i });
+      await signInLink.waitFor({ state: "visible", timeout: 5000 });
+      await signInLink.click();
+    } catch {
+      // Already redirected through
+    }
+
     // Wait for redirect (new user goes to /hi or /dashboard)
     await page.waitForURL((url) => !url.pathname.includes("/auth/"), { timeout: 15000 });
 
@@ -137,9 +146,6 @@ test.describe("Nutrition - manual goal setting", () => {
     const fitnessGoalButton = page.getByText(/set your fitness goal/i);
     await expect(fitnessGoalButton).toBeVisible();
     await fitnessGoalButton.click();
-
-    // Wait for GoalForm to load (it fetches current goal)
-    await page.waitForTimeout(500);
 
     // Verify GoalForm label associations
     // Primary goal select

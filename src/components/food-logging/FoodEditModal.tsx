@@ -76,10 +76,10 @@ export function FoodEditModal({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 20 }}
-        className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-white border-t border-[#E2E8F0] shadow-lg max-h-[90vh] overflow-y-auto lg:bottom-auto lg:top-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:max-w-md lg:w-full lg:rounded-2xl lg:border lg:shadow-xl"
+        className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-[#E2E8F0] shadow-lg max-h-[90vh] flex flex-col lg:bottom-auto lg:top-[5vh] lg:mx-auto lg:max-w-md lg:w-full lg:rounded-2xl lg:border lg:shadow-xl"
       >
         {/* Header */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between p-4 pb-0 mb-4 flex-shrink-0">
           <h2 className="text-lg font-bold text-[#0F172A]">Edit Food</h2>
           <button
             type="button"
@@ -90,7 +90,8 @@ export function FoodEditModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="flex flex-col min-h-0 flex-1">
+         <div className="flex-1 overflow-y-auto px-4">
           {/* Name */}
           <div className="mb-4">
             <label htmlFor="food-name" className="block text-sm font-medium text-[#64748B] mb-1">
@@ -214,8 +215,9 @@ export function FoodEditModal({
             </div>
           </div>
 
+         </div>
           {/* Action buttons */}
-          <div className="flex gap-2">
+          <div className="flex gap-2 p-4 flex-shrink-0 border-t border-[#E2E8F0]">
             <button
               type="submit"
               disabled={isSaving}

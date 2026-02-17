@@ -28,7 +28,7 @@ export function FoodLogItem({
   showActions = false,
 }: FoodLogItemProps) {
   return (
-    <div className="group flex items-center justify-between p-3 bg-[#F8FAFC] rounded-xl hover:bg-[#F1F5F9] transition-colors">
+    <div data-testid="food-log-item" className="group flex items-center justify-between p-3 bg-[#F8FAFC] rounded-xl hover:bg-[#F1F5F9] transition-colors">
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
           <span className="text-sm font-medium text-[#0F172A] truncate">{item.name}</span>

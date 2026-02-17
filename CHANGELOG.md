@@ -8,6 +8,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- RPE hover explainer tooltip on exercises (#352)
+- "Skip to next movement" and "Skip remaining sets" links during workout (#356)
+- Post-signup success modal with feature cards and dashboard CTA (#355)
+- Intermediate magic link landing page — opens in system browser (#364)
+- Daily Pulse — lightweight daily weight + photo check-in (#343)
+
+### Changed
+- `/hi` onboarding layout — quick starts moved below chat, less distracting (#351)
+- Intake conversation now asks about age and height (#349)
+- Program preview page redesigned — banner, value card, locked phase indicators, inline email capture (#353, #354)
+- "Generate my program" in library now generates directly instead of redirecting to /hi (#348)
+- "Start training" email links to proper preview page (#350)
+- E2E test locators migrated to data-testid selectors across nutrition tests (#358, #359)
+- Template claim buttons use modal instead of scroll-to-form (#353)
+
+### Fixed
+- Signup modal success view disappearing after email submit (#366)
+- Program-user association via auto sign-in on claim (#357)
+- E2E strict mode violations — duplicate locators from mobile/desktop layouts (#358)
+- Remove mock visit data from activity heatmap — was showing fake activity for new users
+
+### Added
 - Coach program builder at `/coach/programs/create` (#345)
   - Build or import programs for clients
   - Save as template or assign directly to client
