@@ -1,6 +1,7 @@
 import { NextAuthOptions, getServerSession } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import EmailProvider from "next-auth/providers/email";
+import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { cookies } from "next/headers";
 import { prisma } from "./prisma";
@@ -46,6 +47,16 @@ export const authOptions: NextAuthOptions = {
     },
   },
   providers: [
+    // Google OAuth — only registered when credentials are configured
+    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+      ? [
+          GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            allowDangerousEmailAccountLinking: true,
+          }),
+        ]
+      : []),
     EmailProvider({
       server: {
         host: emailConfig.host,
@@ -147,11 +158,11 @@ export const authOptions: NextAuthOptions = {
         metadata: { email: user.email },
       }).catch(() => {});
 
-      // Send admin notification when a new user signs up via magic link
+      // Send admin notification when a new user signs up
       if (user.email && process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
         sendEmail({
           to: process.env.NEXT_PUBLIC_ADMIN_EMAIL,
-          subject: `New Magic Link Signup: ${user.email}`,
+          subject: `New Signup: ${user.email}`,
           html: adminSignupNotificationTemplate({
             userEmail: user.email,
             isPremium: false,
@@ -162,8 +173,11 @@ export const authOptions: NextAuthOptions = {
     },
   },
   callbacks: {
-    signIn: async () => {
-      // Coach signup is handled in /api/coaches/signup before magic link is sent
+    signIn: async ({ account, profile }) => {
+      // Only allow Google sign-in if the email is verified by Google
+      if (account?.provider === "google") {
+        return (profile as any)?.email_verified === true;
+      }
       return true;
     },
     session: async ({ session, token }) => {
