@@ -599,6 +599,64 @@ export default function LandingPageV3() {
           </div>
         </section>
 
+        {/* Testimonials */}
+        <section className="py-20 px-6 bg-[var(--color-gray-50)]">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl sm:text-4xl font-bold text-[var(--color-navy)]">Real People, Real Results</h2>
+              <p className="mt-3 text-lg text-[var(--color-gray-500)]">No actors. No stock photos. Just people who stopped overthinking and started training.</p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[
+                {
+                  quote: "I was intimidated by the gym. Baisics gave me a plan that actually made sense for a complete beginner.",
+                  name: "Alex M.",
+                  result: "3 months in",
+                },
+                {
+                  quote: "Down 22 lbs and actually enjoying my workouts. The AI-built program adapts as I get stronger.",
+                  name: "Sarah K.",
+                  result: "Lost 22 lbs",
+                },
+                {
+                  quote: "As a busy parent, I needed something flexible. 30-minute home workouts that actually work.",
+                  name: "Jordan T.",
+                  result: "Stay-at-home dad",
+                },
+                {
+                  quote: "Finally a fitness app that doesn't try to sell me supplements on every screen.",
+                  name: "Chris R.",
+                  result: "6 months in",
+                },
+                {
+                  quote: "Hit my first pull-up at 62. Never thought I'd say that.",
+                  name: "Robert L.",
+                  result: "Age 62",
+                },
+              ].map((testimonial, i) => (
+                <div
+                  key={i}
+                  className="p-6 bg-white rounded-2xl border border-[var(--color-gray-200)] shadow-sm flex flex-col"
+                >
+                  <div className="mb-4 text-[var(--color-coral)]">
+                    <svg className="w-8 h-8 opacity-40" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+                    </svg>
+                  </div>
+                  <p className="text-[var(--color-navy)] font-medium leading-relaxed flex-1">
+                    &ldquo;{testimonial.quote}&rdquo;
+                  </p>
+                  <div className="mt-5 pt-4 border-t border-[var(--color-gray-100)] flex items-center justify-between">
+                    <span className="font-semibold text-sm text-[var(--color-navy)]">{testimonial.name}</span>
+                    <span className="font-mono text-xs text-[var(--color-coral)] uppercase tracking-wider">{testimonial.result}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Pricing */}
         <section id="pricing" className="py-20 px-6 bg-[var(--color-navy)]">
           <div className="max-w-5xl mx-auto">

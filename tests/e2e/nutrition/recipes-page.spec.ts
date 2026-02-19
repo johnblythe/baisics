@@ -229,11 +229,11 @@ test.describe("Nutrition Recipes Page", () => {
       // Click Log It
       await page.getByText("Log It").click();
 
-      // Select Lunch
+      // Select Lunch — triggers the log API call
       await page.getByText("Lunch").last().click();
 
-      // Wait for the logging action to complete
-      await page.waitForTimeout(1000);
+      // Wait for the log API call to complete before navigating away
+      await page.waitForLoadState("networkidle");
 
       // Verify by checking the food log page has the entry
       await page.goto("/nutrition");
