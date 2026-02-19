@@ -19,8 +19,10 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -51,7 +53,9 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "TRICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -222,8 +226,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "OTHER",
+    "targetMuscles": [
+      "CORE",
+      "CORE_FRONT"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -650,8 +657,10 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -1006,7 +1015,11 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "CHEST",
+      "TRICEPS",
+      "SHOULDERS_FRONT"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -1109,7 +1122,11 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "SHOULDERS",
+      "SHOULDERS_FRONT",
+      "TRICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -1341,8 +1358,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "SQUAT",
+    "targetMuscles": [
+      "QUADRICEPS",
+      "GLUTES",
+      "HAMSTRINGS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -1809,8 +1830,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "SQUAT",
+    "targetMuscles": [
+      "QUADRICEPS",
+      "GLUTES",
+      "HAMSTRINGS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -1841,7 +1866,11 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "CHEST",
+      "TRICEPS",
+      "SHOULDERS_FRONT"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -1946,8 +1975,10 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -1977,8 +2008,10 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -2464,8 +2497,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "UPPER_BACK",
+      "LATS",
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -2494,8 +2531,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "UPPER_BACK",
+      "LATS",
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -2525,8 +2566,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "UPPER_BACK",
+      "LATS",
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -2701,8 +2746,10 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "TRAPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -2890,8 +2937,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "SQUAT",
+    "targetMuscles": [
+      "QUADRICEPS",
+      "GLUTES",
+      "HAMSTRINGS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -2998,8 +3049,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "OTHER",
+    "targetMuscles": [
+      "SHOULDERS",
+      "CORE",
+      "FOREARMS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -3215,7 +3270,11 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "CHEST",
+      "TRICEPS",
+      "SHOULDERS_FRONT"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -3553,8 +3612,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "UPPER_BACK",
+      "LATS",
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -3852,8 +3915,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "UPPER_BACK",
+      "LATS",
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -3883,8 +3950,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "OTHER",
+    "targetMuscles": [
+      "CORE",
+      "CORE_SIDE"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -4625,8 +4695,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "LUNGE",
+    "targetMuscles": [
+      "QUADRICEPS",
+      "GLUTES"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -4655,8 +4728,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "LUNGE",
+    "targetMuscles": [
+      "QUADRICEPS",
+      "GLUTES"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -4684,8 +4760,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "OTHER",
+    "targetMuscles": [
+      "CHEST",
+      "QUADRICEPS",
+      "CORE"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -4820,8 +4900,10 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -4961,8 +5043,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "OTHER",
+    "targetMuscles": [
+      "CORE",
+      "CORE_FRONT"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -4992,8 +5077,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "OTHER",
+    "targetMuscles": [
+      "BICEPS",
+      "SHOULDERS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -5023,8 +5111,10 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -5092,8 +5182,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "SHOULDERS_REAR",
+      "UPPER_BACK"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -5124,7 +5217,9 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "CHEST"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -5155,7 +5250,9 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "CHEST"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -5184,8 +5281,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "BICEPS",
+      "FOREARMS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -5251,8 +5351,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "UPPER_BACK",
+      "LATS",
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -5493,7 +5597,9 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "SHOULDERS_SIDE"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -5522,7 +5628,10 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "SHOULDERS_SIDE",
+      "SHOULDERS_FRONT"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -5553,7 +5662,9 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "SHOULDERS_SIDE"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -5655,7 +5766,9 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "TRICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -5724,8 +5837,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "HINGE",
+    "targetMuscles": [
+      "GLUTES",
+      "HAMSTRINGS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -5825,8 +5941,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "SHOULDERS_REAR",
+      "UPPER_BACK"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -5930,7 +6049,9 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "TRICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -5960,8 +6081,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "UPPER_BACK",
+      "LATS",
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -5991,8 +6116,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "UPPER_BACK",
+      "LATS",
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -6205,8 +6334,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "SHOULDERS_REAR",
+      "UPPER_BACK",
+      "TRAPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -6237,7 +6370,9 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "TRICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -6267,8 +6402,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "SHOULDERS",
+      "TRAPS",
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -6298,8 +6437,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "ROTATION",
+    "targetMuscles": [
+      "CORE",
+      "CORE_SIDE"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -6328,8 +6470,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "ROTATION",
+    "targetMuscles": [
+      "CORE",
+      "CORE_SIDE"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -7107,7 +7252,9 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "CHEST"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -7319,8 +7466,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "UPPER_BACK",
+      "LATS",
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -7350,8 +7501,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "UPPER_BACK",
+      "LATS",
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -7490,8 +7645,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "LATS",
+      "BICEPS",
+      "UPPER_BACK"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -7894,7 +8053,10 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "TRICEPS",
+      "CHEST"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -7925,7 +8087,10 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "TRICEPS",
+      "CHEST"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -7994,7 +8159,10 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "TRICEPS",
+      "CHEST"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -8253,7 +8421,10 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "TRICEPS",
+      "CHEST"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -8321,7 +8492,10 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "TRICEPS",
+      "CHEST"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -8351,7 +8525,10 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "TRICEPS",
+      "CHEST"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -8414,8 +8591,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "LATS",
+      "BICEPS",
+      "UPPER_BACK"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -8522,8 +8703,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "OTHER",
+    "targetMuscles": [
+      "QUADRICEPS",
+      "CALVES"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -8553,8 +8737,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "UPPER_BACK",
+      "LATS",
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -8584,8 +8772,13 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "HINGE",
+    "targetMuscles": [
+      "HAMSTRINGS",
+      "GLUTES",
+      "LOWER_BACK",
+      "QUADRICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -9017,8 +9210,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PLANK",
+    "targetMuscles": [
+      "CORE",
+      "CORE_FRONT"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -9048,8 +9244,13 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "HINGE",
+    "targetMuscles": [
+      "HAMSTRINGS",
+      "GLUTES",
+      "LOWER_BACK",
+      "QUADRICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -9160,8 +9361,13 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "HINGE",
+    "targetMuscles": [
+      "HAMSTRINGS",
+      "GLUTES",
+      "LOWER_BACK",
+      "QUADRICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -9677,7 +9883,10 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "TRICEPS",
+      "CHEST"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -9746,7 +9955,11 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "CHEST",
+      "TRICEPS",
+      "SHOULDERS_FRONT"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -10337,8 +10550,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "UPPER_BACK",
+      "LATS",
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -10404,8 +10621,10 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -10434,7 +10653,11 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "CHEST",
+      "TRICEPS",
+      "SHOULDERS_FRONT"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -10505,8 +10728,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "OTHER",
+    "targetMuscles": [
+      "BICEPS",
+      "SHOULDERS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -10682,7 +10908,9 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "SHOULDERS_SIDE"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -10713,7 +10941,9 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "SHOULDERS_SIDE"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -11036,7 +11266,10 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "SHOULDERS",
+      "TRICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -11176,8 +11409,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "HINGE",
+    "targetMuscles": [
+      "HAMSTRINGS",
+      "GLUTES",
+      "LOWER_BACK"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -11205,8 +11442,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "UPPER_BACK",
+      "LATS",
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -11236,8 +11477,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "UPPER_BACK",
+      "LATS",
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -11600,8 +11845,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "LUNGE",
+    "targetMuscles": [
+      "QUADRICEPS",
+      "GLUTES"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -11631,8 +11879,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "LUNGE",
+    "targetMuscles": [
+      "QUADRICEPS",
+      "GLUTES"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -11662,8 +11913,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "SQUAT",
+    "targetMuscles": [
+      "QUADRICEPS",
+      "GLUTES",
+      "HIP_ADDUCTORS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -11793,8 +12048,10 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -11859,8 +12116,10 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -12385,8 +12644,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "SHOULDERS_REAR",
+      "UPPER_BACK"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -12416,8 +12678,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "SHOULDERS_REAR",
+      "UPPER_BACK"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -12561,7 +12826,11 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "CHEST",
+      "TRICEPS",
+      "SHOULDERS_FRONT"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -13399,8 +13668,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "SQUAT",
+    "targetMuscles": [
+      "QUADRICEPS",
+      "GLUTES"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -13502,8 +13774,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "SQUAT",
+    "targetMuscles": [
+      "QUADRICEPS",
+      "GLUTES",
+      "CORE"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -13714,8 +13990,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "HINGE",
+    "targetMuscles": [
+      "GLUTES",
+      "HAMSTRINGS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -13817,8 +14096,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "LUNGE",
+    "targetMuscles": [
+      "QUADRICEPS",
+      "GLUTES"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -13885,8 +14167,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "SQUAT",
+    "targetMuscles": [
+      "QUADRICEPS",
+      "GLUTES",
+      "CALVES"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -13914,8 +14200,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "SQUAT",
+    "targetMuscles": [
+      "QUADRICEPS",
+      "GLUTES",
+      "SHOULDERS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -13945,8 +14235,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "SQUAT",
+    "targetMuscles": [
+      "QUADRICEPS",
+      "GLUTES"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -14153,8 +14446,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "OTHER",
+    "targetMuscles": [
+      "SHOULDERS",
+      "CORE",
+      "UPPER_BACK"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -14610,8 +14907,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "OTHER",
+    "targetMuscles": [
+      "CORE",
+      "CORE_FRONT",
+      "HIP_FLEXORS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -14675,8 +14976,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "OTHER",
+    "targetMuscles": [
+      "CORE",
+      "CORE_FRONT",
+      "HIP_FLEXORS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -14994,8 +15299,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "HINGE",
+    "targetMuscles": [
+      "GLUTES",
+      "HAMSTRINGS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -15313,7 +15621,11 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "CHEST",
+      "SHOULDERS_FRONT",
+      "TRICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -15382,7 +15694,11 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "CHEST",
+      "SHOULDERS_FRONT",
+      "TRICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -16189,8 +16505,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "UPPER_BACK",
+      "BICEPS",
+      "LATS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -16699,8 +17019,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "OTHER",
+    "targetMuscles": [
+      "CALVES",
+      "SHOULDERS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -16849,8 +17172,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "HINGE",
+    "targetMuscles": [
+      "HAMSTRINGS",
+      "GLUTES",
+      "LOWER_BACK"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -17362,7 +17689,9 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "TRICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -17988,8 +18317,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "SQUAT",
+    "targetMuscles": [
+      "QUADRICEPS",
+      "GLUTES",
+      "CORE"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -18018,8 +18351,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "LATS",
+      "BICEPS",
+      "UPPER_BACK"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -18048,8 +18385,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "LATS",
+      "BICEPS",
+      "UPPER_BACK"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -18201,8 +18542,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "LUNGE",
+    "targetMuscles": [
+      "QUADRICEPS",
+      "GLUTES",
+      "HIP_ADDUCTORS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -18267,7 +18612,9 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "SHOULDERS_SIDE"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -18329,8 +18676,10 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "OTHER",
+    "targetMuscles": [
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -18359,8 +18708,10 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "OTHER",
+    "targetMuscles": [
+      "QUADRICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -19831,8 +20182,10 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "OTHER",
+    "targetMuscles": [
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -20116,7 +20469,9 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "TRICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -20362,8 +20717,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "UPPER_BACK",
+      "LATS",
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -20502,8 +20861,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "OTHER",
+    "targetMuscles": [
+      "CORE",
+      "CHEST",
+      "QUADRICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -20533,8 +20896,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "OTHER",
+    "targetMuscles": [
+      "CORE",
+      "CHEST",
+      "QUADRICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -20859,7 +21226,7 @@
     "benefits": [],
     "difficulty": "INTERMEDIATE",
     "isCompound": true,
-    "movementPattern": "PUSH",
+    "movementPattern": "SQUAT",
     "targetMuscles": [
       "QUADRICEPS"
     ],
@@ -20938,7 +21305,7 @@
     "benefits": [],
     "difficulty": "INTERMEDIATE",
     "isCompound": true,
-    "movementPattern": "PUSH",
+    "movementPattern": "SQUAT",
     "targetMuscles": [
       "QUADRICEPS"
     ],
@@ -21086,8 +21453,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "LATS",
+      "BICEPS",
+      "UPPER_BACK"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -22719,7 +23090,9 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "TRICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -22783,7 +23156,10 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "SHOULDERS",
+      "TRICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -22929,7 +23305,9 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "TRICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -23263,7 +23641,11 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "CHEST",
+      "TRICEPS",
+      "SHOULDERS_FRONT"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -23326,8 +23708,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "UPPER_BACK",
+      "LATS",
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -23356,8 +23742,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "UPPER_BACK",
+      "LATS",
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -23529,8 +23919,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "SQUAT",
+    "targetMuscles": [
+      "QUADRICEPS",
+      "GLUTES"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -23624,8 +24017,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PLANK",
+    "targetMuscles": [
+      "CORE",
+      "CORE_FRONT"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -23655,8 +24051,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PLANK",
+    "targetMuscles": [
+      "CORE",
+      "CHEST",
+      "TRICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -24282,8 +24682,10 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -24495,8 +24897,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "LATS",
+      "BICEPS",
+      "UPPER_BACK"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -24526,8 +24932,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "LATS",
+      "BICEPS",
+      "UPPER_BACK"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -24557,8 +24967,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "LATS",
+      "BICEPS",
+      "UPPER_BACK"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -24588,8 +25002,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "LATS",
+      "BICEPS",
+      "UPPER_BACK"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -24619,8 +25037,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "LATS",
+      "BICEPS",
+      "UPPER_BACK"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -24650,8 +25072,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "LATS",
+      "BICEPS",
+      "UPPER_BACK"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -24833,7 +25259,11 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "CHEST",
+      "TRICEPS",
+      "SHOULDERS_FRONT"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -24901,7 +25331,11 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "CHEST",
+      "TRICEPS",
+      "SHOULDERS_FRONT"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -25045,7 +25479,11 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "CHEST",
+      "TRICEPS",
+      "SHOULDERS_FRONT"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -25076,7 +25514,11 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "CHEST",
+      "TRICEPS",
+      "CORE_SIDE"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -25107,7 +25549,11 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "CHEST",
+      "TRICEPS",
+      "CORE_SIDE"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -25138,7 +25584,11 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "CHEST",
+      "TRICEPS",
+      "SHOULDERS_FRONT"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -25414,8 +25864,13 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "HINGE",
+    "targetMuscles": [
+      "HAMSTRINGS",
+      "GLUTES",
+      "LOWER_BACK",
+      "UPPER_BACK"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -25591,8 +26046,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "UPPER_BACK",
+      "CORE",
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -26012,8 +26471,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "SHOULDERS_REAR",
+      "UPPER_BACK"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -26226,8 +26688,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "LUNGE",
+    "targetMuscles": [
+      "QUADRICEPS",
+      "GLUTES"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -26257,8 +26722,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "LUNGE",
+    "targetMuscles": [
+      "QUADRICEPS",
+      "GLUTES"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -26738,8 +27206,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "HINGE",
+    "targetMuscles": [
+      "HAMSTRINGS",
+      "GLUTES",
+      "LOWER_BACK"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -27097,8 +27569,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "ROTATION",
+    "targetMuscles": [
+      "CORE",
+      "CORE_SIDE"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -27533,8 +28008,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "UPPER_BACK",
+      "LATS",
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -27564,8 +28043,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "UPPER_BACK",
+      "LATS",
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -27960,7 +28443,10 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "SHOULDERS",
+      "TRICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -28449,7 +28935,10 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "SHOULDERS",
+      "TRICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -28898,8 +29387,10 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "TRAPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -29213,8 +29704,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PLANK",
+    "targetMuscles": [
+      "CORE",
+      "CORE_SIDE"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -29429,7 +29923,11 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "CHEST",
+      "TRICEPS",
+      "SHOULDERS_FRONT"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -29457,8 +29955,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "UPPER_BACK",
+      "LATS",
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -29489,7 +29991,9 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "TRICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -29664,8 +30168,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "HINGE",
+    "targetMuscles": [
+      "HAMSTRINGS",
+      "GLUTES",
+      "LOWER_BACK"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -29729,7 +30237,11 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "CHEST",
+      "TRICEPS",
+      "SHOULDERS_FRONT"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -29757,8 +30269,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "UPPER_BACK",
+      "LATS",
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -30046,8 +30562,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "HINGE",
+    "targetMuscles": [
+      "HAMSTRINGS",
+      "GLUTES",
+      "LOWER_BACK"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -30113,8 +30633,13 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "OTHER",
+    "targetMuscles": [
+      "UPPER_BACK",
+      "BICEPS",
+      "QUADRICEPS",
+      "GLUTES"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -30144,8 +30669,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "HINGE",
+    "targetMuscles": [
+      "HAMSTRINGS",
+      "GLUTES",
+      "LOWER_BACK"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -30287,7 +30816,9 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "TRICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -32694,8 +33225,10 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "OTHER",
+    "targetMuscles": [
+      "CALVES"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -34044,8 +34577,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "LUNGE",
+    "targetMuscles": [
+      "QUADRICEPS",
+      "GLUTES"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -34111,8 +34647,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "LUNGE",
+    "targetMuscles": [
+      "QUADRICEPS",
+      "GLUTES"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -34643,8 +35182,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "LUNGE",
+    "targetMuscles": [
+      "QUADRICEPS",
+      "GLUTES",
+      "CALVES"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -34674,8 +35217,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "LATS",
+      "UPPER_BACK",
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -34705,8 +35252,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "LUNGE",
+    "targetMuscles": [
+      "QUADRICEPS",
+      "GLUTES"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -34736,8 +35286,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "HINGE",
+    "targetMuscles": [
+      "CORE",
+      "GLUTES",
+      "HAMSTRINGS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -34765,8 +35319,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "CARRY",
+    "targetMuscles": [
+      "FOREARMS",
+      "CORE",
+      "CALVES"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -34796,8 +35354,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "OTHER",
+    "targetMuscles": [
+      "CORE",
+      "CORE_FRONT",
+      "CORE_SIDE"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -34825,8 +35387,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "OTHER",
+    "targetMuscles": [
+      "BICEPS",
+      "TRICEPS",
+      "CHEST"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -34855,7 +35421,10 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "SHOULDERS",
+      "SHOULDERS_SIDE"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -35223,8 +35792,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "UPPER_BACK",
+      "LATS",
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -35292,8 +35865,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "UPPER_BACK",
+      "LATS",
+      "BICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -35469,8 +36046,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "SQUAT",
+    "targetMuscles": [
+      "QUADRICEPS",
+      "SHOULDERS",
+      "GLUTES"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -35500,8 +36081,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "SQUAT",
+    "targetMuscles": [
+      "QUADRICEPS",
+      "SHOULDERS",
+      "GLUTES"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -35716,7 +36301,11 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "TRICEPS",
+      "CHEST",
+      "SHOULDERS_FRONT"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -35780,7 +36369,9 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "TRICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -35810,7 +36401,9 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "TRICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -35840,7 +36433,9 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "TRICEPS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -36073,8 +36668,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "OTHER",
+    "targetMuscles": [
+      "QUADRICEPS",
+      "CHEST",
+      "CORE"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -36140,8 +36739,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "OTHER",
+    "targetMuscles": [
+      "CORE",
+      "SHOULDERS",
+      "GLUTES"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -36718,8 +37321,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "LUNGE",
+    "targetMuscles": [
+      "QUADRICEPS",
+      "GLUTES"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -36898,8 +37504,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "LATS",
+      "BICEPS",
+      "UPPER_BACK"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -36965,7 +37575,11 @@
     "difficulty": "BEGINNER",
     "isCompound": false,
     "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "targetMuscles": [
+      "CHEST",
+      "TRICEPS",
+      "SHOULDERS_FRONT"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -37071,8 +37685,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "LATS",
+      "BICEPS",
+      "UPPER_BACK"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -37102,8 +37720,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "LATS",
+      "BICEPS",
+      "UPPER_BACK"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -37133,8 +37755,12 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "LATS",
+      "BICEPS",
+      "UPPER_BACK"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -37505,8 +38131,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "LATS",
+      "UPPER_BACK"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -37722,8 +38351,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "ROTATION",
+    "targetMuscles": [
+      "CORE",
+      "CORE_SIDE"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],
@@ -38013,8 +38645,11 @@
     "benefits": [],
     "difficulty": "BEGINNER",
     "isCompound": false,
-    "movementPattern": "PUSH",
-    "targetMuscles": [],
+    "movementPattern": "PULL",
+    "targetMuscles": [
+      "BICEPS",
+      "FOREARMS"
+    ],
     "secondaryMuscles": [],
     "videoUrl": null,
     "images": [],

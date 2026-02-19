@@ -229,11 +229,17 @@ test.describe("Nutrition Recipes Page", () => {
       // Click Log It
       await page.getByText("Log It").click();
 
+      // Set up response listener before clicking to avoid race condition
+      const logResponse = page.waitForResponse(
+        (res) => res.url().includes("/api/recipes/") && res.url().includes("/log") && res.status() === 200,
+        { timeout: 5000 }
+      );
+
       // Select Lunch
       await page.getByText("Lunch").last().click();
 
-      // Wait for the logging action to complete
-      await page.waitForTimeout(1000);
+      // Wait for the recipe log API call to complete
+      await logResponse;
 
       // Verify by checking the food log page has the entry
       await page.goto("/nutrition");

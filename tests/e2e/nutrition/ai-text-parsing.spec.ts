@@ -240,6 +240,13 @@ test.describe("Nutrition AI Text Parsing", () => {
     await quickInput.fill("xyz");
 
     const sparklesButton = layout.locator("button").filter({ has: page.locator('svg.lucide-sparkles') });
+
+    // Set up response listener before clicking to avoid race condition
+    const parseResponse = page.waitForResponse(
+      (res) => res.url().includes("/api/food-log/parse-text"),
+      { timeout: 5000 }
+    );
+
     await sparklesButton.click();
 
     // After clicking sparkles, QuickInput clears the input immediately and
@@ -247,9 +254,8 @@ test.describe("Nutrition AI Text Parsing", () => {
     // Verify the input was cleared (submit happened successfully)
     await expect(quickInput).toHaveValue("", { timeout: 3000 });
 
-    // The mocked AI returns empty result quickly — page should remain functional
-    // Wait a moment for the response to be processed
-    await page.waitForTimeout(1000);
+    // The mocked AI returns empty result quickly — wait for it to be processed
+    await parseResponse;
 
     // Page should still be functional
     await expect(page.locator("main")).toBeVisible();

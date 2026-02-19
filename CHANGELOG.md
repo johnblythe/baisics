@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Testimonials section on landing page with responsive card grid (#303)
 - RPE hover explainer tooltip on exercises (#352)
 - "Skip to next movement" and "Skip remaining sets" links during workout (#356)
 - Post-signup success modal with feature cards and dashboard CTA (#355)
@@ -24,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Template claim buttons use modal instead of scroll-to-form (#353)
 
 ### Fixed
+- Replace waitForTimeout with condition-based waits in e2e tests (#362)
+- Populate empty targetMuscles for 189 exercises and correct 135 movementPattern values in seed data (#334)
 - Signup modal success view disappearing after email submit (#366)
 - Program-user association via auto sign-in on claim (#357)
 - E2E strict mode violations — duplicate locators from mobile/desktop layouts (#358)
