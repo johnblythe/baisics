@@ -467,7 +467,7 @@ export default function CoachSettingsPage() {
               className="px-6 py-3 bg-[#FF6B6B] text-white font-medium rounded-lg hover:bg-[#EF5350] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {saving && <Loader2 className="w-4 h-4 animate-spin" />}
-              {saving ? 'Saving...' : 'Save Changes'}
+              {saving ? 'Updating...' : 'Update Settings'}
             </button>
           </div>
         </div>

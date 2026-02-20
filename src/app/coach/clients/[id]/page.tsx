@@ -239,7 +239,7 @@ export default function ClientDetailPage() {
                       onClick={handleSave}
                       className="px-4 py-2 bg-[#FF6B6B] text-white rounded-lg hover:bg-[#EF5350]"
                     >
-                      Save
+                      Update
                     </button>
                   </>
                 ) : (

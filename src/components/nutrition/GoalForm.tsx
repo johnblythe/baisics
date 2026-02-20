@@ -45,6 +45,7 @@ export function GoalForm({ onSaved, onCollapse }: GoalFormProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [hasExistingGoal, setHasExistingGoal] = useState(false);
 
   // Load existing goal on mount
   useEffect(() => {
@@ -63,6 +64,7 @@ export function GoalForm({ onSaved, onCollapse }: GoalFormProps) {
             targetWeight: data.goal.targetWeight?.toString() || '',
             timeframe: data.goal.timeframe || '',
           });
+          setHasExistingGoal(true);
         }
       }
     } catch (err) {
@@ -252,14 +254,14 @@ export function GoalForm({ onSaved, onCollapse }: GoalFormProps) {
                 borderTopColor: COLORS.white,
               }}
             />
-            Saving...
+            {hasExistingGoal ? 'Updating...' : 'Saving...'}
           </>
         ) : (
           <>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
-            Save Goal
+            {hasExistingGoal ? 'Update Goal' : 'Save Goal'}
           </>
         )}
       </button>

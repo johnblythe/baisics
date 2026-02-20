@@ -102,6 +102,8 @@ export function BigSetInputCard({
           <input
             id={`weight-input-${setNumber}`}
             type="number"
+            inputMode="numeric"
+            pattern="[0-9]*"
             placeholder="185"
             value={localWeight}
             onChange={(e) => setLocalWeight(e.target.value)}
@@ -113,6 +115,8 @@ export function BigSetInputCard({
           <input
             id={`reps-input-${setNumber}`}
             type="number"
+            inputMode="numeric"
+            pattern="[0-9]*"
             placeholder="10"
             value={localReps}
             onChange={(e) => setLocalReps(e.target.value)}

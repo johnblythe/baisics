@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Sticky workout header now sticks to top of viewport instead of below nav bar (#369)
+- Numeric inputs show number keypad on mobile across workout and food logging flows (#370)
+- "Save" buttons now say "Update" when editing existing data across 10 components (#371)
+
 ### Added
 - Testimonials section on landing page with responsive card grid (#303)
 - RPE hover explainer tooltip on exercises (#352)

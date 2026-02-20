@@ -539,10 +539,10 @@ export function NutritionTargetsModal({
                       borderTopColor: COLORS.white,
                     }}
                   />
-                  Saving...
+                  {initialValues ? 'Updating...' : 'Saving...'}
                 </>
               ) : (
-                'Save Targets'
+                initialValues ? 'Update Targets' : 'Save Targets'
               )}
             </button>
           </div>

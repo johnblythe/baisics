@@ -591,7 +591,7 @@ export default function WorkoutPage() {
         {/* Exercise Card */}
         <div className="bg-white rounded-2xl border-l-4 border-l-[#FF6B6B] border border-[#E2E8F0] shadow-md">
           {/* Exercise Header - Sticky on mobile so user knows which exercise they're logging */}
-          <div className="bg-[#F8FAFC] px-6 py-5 border-b border-[#E2E8F0] sticky top-16 z-10">
+          <div className="bg-[#F8FAFC] px-6 py-5 border-b border-[#E2E8F0] sticky top-0 z-[51]">
             <div className="flex items-center justify-between mb-3">
               <span className="font-['Space_Mono'] text-xs uppercase tracking-wider text-[#64748B]">
                 Exercise {currentExerciseIndex + 1} of {exercises.length}

@@ -591,7 +591,7 @@ export function PulseHistoryView() {
             disabled={settingGoal || !goalInput}
             className="px-4 py-2 text-sm font-medium text-white bg-[#FF6B6B] hover:bg-[#EF5350] disabled:bg-[#F1F5F9] disabled:text-[#94A3B8] rounded-lg transition-colors shadow-sm"
           >
-            {settingGoal ? 'Saving...' : 'Save'}
+            {settingGoal ? (targetWeight !== null ? 'Updating...' : 'Saving...') : (targetWeight !== null ? 'Update' : 'Save')}
           </button>
           <button
             onClick={() => {

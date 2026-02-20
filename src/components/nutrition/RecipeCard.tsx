@@ -589,7 +589,7 @@ export function RecipeCard({ recipe, onUpdate, onDelete, selectedDate }: RecipeC
                   ) : (
                     <Check className="w-4 h-4" />
                   )}
-                  {isSaving ? 'Saving...' : 'Save'}
+                  {isSaving ? 'Updating...' : 'Update'}
                 </button>
                 <button
                   onClick={handleCancelEdit}
