@@ -261,6 +261,8 @@ export function RecipeEditor({
               <label className="block text-xs text-[#64748B] mb-1">Serving Size</label>
               <input
                 type="number"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 value={servingSize}
                 onChange={(e) => setServingSize(parseFloat(e.target.value) || 1)}
                 min={0.1}
@@ -327,6 +329,8 @@ export function RecipeEditor({
                   <div className="flex gap-2">
                     <input
                       type="number"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       value={ing.amount || ''}
                       onChange={(e) => updateIngredient(index, 'amount', parseFloat(e.target.value) || 0)}
                       placeholder="Amount"
@@ -351,6 +355,8 @@ export function RecipeEditor({
                       <label className="block text-xs text-[#94A3B8] mb-0.5">Cal</label>
                       <input
                         type="number"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
                         value={ing.calories || ''}
                         onChange={(e) => updateIngredient(index, 'calories', parseInt(e.target.value) || 0)}
                         placeholder="0"
@@ -362,6 +368,8 @@ export function RecipeEditor({
                       <label className="block text-xs text-green-600 mb-0.5">P (g)</label>
                       <input
                         type="number"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
                         value={ing.protein || ''}
                         onChange={(e) => updateIngredient(index, 'protein', parseFloat(e.target.value) || 0)}
                         placeholder="0"
@@ -374,6 +382,8 @@ export function RecipeEditor({
                       <label className="block text-xs text-amber-600 mb-0.5">C (g)</label>
                       <input
                         type="number"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
                         value={ing.carbs || ''}
                         onChange={(e) => updateIngredient(index, 'carbs', parseFloat(e.target.value) || 0)}
                         placeholder="0"
@@ -386,6 +396,8 @@ export function RecipeEditor({
                       <label className="block text-xs text-blue-600 mb-0.5">F (g)</label>
                       <input
                         type="number"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
                         value={ing.fat || ''}
                         onChange={(e) => updateIngredient(index, 'fat', parseFloat(e.target.value) || 0)}
                         placeholder="0"
@@ -421,7 +433,7 @@ export function RecipeEditor({
             className="flex-1 py-3 bg-[#FF6B6B] text-white font-semibold rounded-xl hover:bg-[#EF5350] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isSaving && <Loader2 className="w-4 h-4 animate-spin" />}
-            {isSaving ? 'Saving...' : 'Save Recipe'}
+            {isSaving ? (isEditing ? 'Updating...' : 'Saving...') : (isEditing ? 'Update Recipe' : 'Save Recipe')}
           </button>
           <button
             type="button"

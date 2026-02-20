@@ -134,6 +134,8 @@ export function FoodEditModal({
               <input
                 id="serving-size"
                 type="number"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 step="0.1"
                 min="0"
                 value={servingSize}
@@ -164,6 +166,8 @@ export function FoodEditModal({
               <input
                 id="calories"
                 type="number"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 step="1"
                 min="0"
                 value={calories}
@@ -178,6 +182,8 @@ export function FoodEditModal({
               <input
                 id="protein"
                 type="number"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 step="0.1"
                 min="0"
                 value={protein}
@@ -192,6 +198,8 @@ export function FoodEditModal({
               <input
                 id="carbs"
                 type="number"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 step="0.1"
                 min="0"
                 value={carbs}
@@ -206,6 +214,8 @@ export function FoodEditModal({
               <input
                 id="fat"
                 type="number"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 step="0.1"
                 min="0"
                 value={fat}
@@ -226,12 +236,12 @@ export function FoodEditModal({
               {isSaving ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Saving...
+                  Updating...
                 </>
               ) : (
                 <>
                   <Save className="w-4 h-4" />
-                  Save Changes
+                  Update
                 </>
               )}
             </button>

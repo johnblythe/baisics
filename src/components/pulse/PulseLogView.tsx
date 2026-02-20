@@ -641,7 +641,7 @@ export default function PulseLogView() {
         {saving ? (
           <>
             <Spinner />
-            Saving...
+            {existingPulse ? 'Updating...' : 'Saving...'}
           </>
         ) : (
           <>
@@ -659,7 +659,7 @@ export default function PulseLogView() {
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            Save Pulse
+            {existingPulse ? 'Update Pulse' : 'Save Pulse'}
           </>
         )}
       </button>

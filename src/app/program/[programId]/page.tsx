@@ -644,10 +644,10 @@ export default function ProgramPage() {
                     {isSaving ? (
                       <>
                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                        Saving...
+                        Updating...
                       </>
                     ) : (
-                      'Save Changes'
+                      'Update'
                     )}
                   </button>
                 </>
@@ -876,10 +876,10 @@ export default function ProgramPage() {
                     {isSaving ? (
                       <>
                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                        Saving...
+                        Updating...
                       </>
                     ) : (
-                      'Save Changes'
+                      'Update'
                     )}
                   </button>
                 </div>
