@@ -7,10 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Food Staples — pin frequently-eaten foods to meal slots as a swipeable carousel (#376)
+  - Rich card (Option C): macro chips, daily % bars, expandable ingredients
+  - Optimistic confirm with background POST, localStorage dismiss persistence
+  - "Pin as staple" action on logged food items
+  - CRUD API with max-5-per-slot transaction enforcement
+
 ### Fixed
 - Sticky workout header now sticks to top of viewport instead of below nav bar (#369)
 - Numeric inputs show number keypad on mobile across workout and food logging flows (#370)
 - "Save" buttons now say "Update" when editing existing data across 10 components (#371)
+- daily-summary N+1 query — replaced 7-query loop with single groupBy (#376)
 
 ### Added
 - Testimonials section on landing page with responsive card grid (#303)
