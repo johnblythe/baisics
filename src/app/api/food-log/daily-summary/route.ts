@@ -83,40 +83,49 @@ export async function GET(request: Request) {
     };
 
     // Calculate weekly compliance (last 7 days ending on the specified date)
-    const weeklyCompliance: DayCompliance[] = [];
+    // Single groupBy query instead of 7 individual queries
+    const weekStart = new Date(date);
+    weekStart.setDate(date.getDate() - 6);
+    weekStart.setHours(0, 0, 0, 0);
 
+    const weeklyAggregates = await prisma.foodLogEntry.groupBy({
+      by: ['date'],
+      where: {
+        userId,
+        date: { gte: weekStart, lte: date },
+      },
+      _sum: { calories: true, protein: true },
+      _count: { id: true },
+    });
+
+    // Index aggregates by date string for O(1) lookup
+    const aggregatesByDate = new Map(
+      weeklyAggregates.map((agg) => [
+        new Date(agg.date).toISOString().split('T')[0],
+        agg,
+      ])
+    );
+
+    const weeklyCompliance: DayCompliance[] = [];
     for (let i = 6; i >= 0; i--) {
       const dayDate = new Date(date);
       dayDate.setDate(date.getDate() - i);
       dayDate.setHours(0, 0, 0, 0);
+      const dayKey = dayDate.toISOString().split('T')[0];
 
-      const dayEntries = await prisma.foodLogEntry.findMany({
-        where: {
-          userId,
-          date: dayDate,
-        },
-        select: {
-          calories: true,
-          protein: true,
-        },
-      });
+      const agg = aggregatesByDate.get(dayKey);
+      const logged = !!agg && (agg._count?.id ?? 0) > 0;
+      const dayCalories = agg?._sum?.calories ?? 0;
+      const dayProtein = agg?._sum?.protein ?? 0;
 
-      const logged = dayEntries.length > 0;
       let adherencePercent: number | null = null;
-
-      // Calculate day totals
-      const dayCalories = dayEntries.reduce((sum, e) => sum + e.calories, 0);
-      const dayProtein = dayEntries.reduce((sum, e) => sum + e.protein, 0);
-
       if (logged && targets) {
-        // Calculate adherence based on protein (protein is primary goal)
         const rawPercent = (dayProtein / targets.proteinGrams) * 100;
-        // Cap at 100% - hitting or exceeding protein target = 100%
         adherencePercent = Math.min(100, Math.round(rawPercent));
       }
 
       weeklyCompliance.push({
-        date: dayDate.toISOString().split('T')[0],
+        date: dayKey,
         logged,
         adherencePercent,
         protein: Math.round(dayProtein * 10) / 10,
