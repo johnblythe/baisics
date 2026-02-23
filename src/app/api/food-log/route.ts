@@ -94,6 +94,7 @@ export async function POST(request: Request) {
       servingUnit,
       source,
       recipeId,
+      stapleId,
       notes,
       isApproximate,
     } = body;
@@ -151,6 +152,7 @@ export async function POST(request: Request) {
         servingUnit: servingUnit || 'serving',
         source: foodSource,
         recipeId: recipeId || null,
+        stapleId: stapleId || null,
         notes: notes || null,
         isApproximate: shouldBeApproximate,
       },
