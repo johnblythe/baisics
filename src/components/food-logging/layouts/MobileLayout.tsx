@@ -23,6 +23,7 @@ import {
   type Recipe,
   type RecipeWithIngredients,
 } from '../index';
+import type { FoodStaple } from '@/hooks/useStaples';
 
 export interface RecipeItem {
   id: string;
@@ -125,6 +126,16 @@ export interface MobileLayoutProps {
 
   // Recipe sidebar refresh trigger
   recipeSidebarRefreshTrigger?: number;
+
+  // Staples
+  staples?: Record<string, FoodStaple[]>;
+  dailyTargets?: { calories: number; protein: number; carbs: number; fat: number };
+  dismissedSlots?: Set<string>;
+  isToday?: boolean;
+  onConfirmStaple?: (staple: FoodStaple) => void;
+  onDismissSlot?: (mealSlot: string) => void;
+  onDeleteStaple?: (stapleId: string) => void;
+  onPinAsStaple?: (item: FoodLogItemData, meal: string) => void;
 }
 
 function RecipesPanel({
@@ -217,6 +228,14 @@ export function MobileLayout({
   customHeader,
   customFooter,
   recipeSidebarRefreshTrigger,
+  staples,
+  dailyTargets,
+  dismissedSlots,
+  isToday: isTodayProp,
+  onConfirmStaple,
+  onDismissSlot,
+  onDeleteStaple,
+  onPinAsStaple,
 }: MobileLayoutProps) {
   // Calculate remaining if not provided
   const calcRemainingCal = remainingCalories ?? (macroTargets.calories - macroTotals.calories);
@@ -315,6 +334,14 @@ export function MobileLayout({
             onCopyFromYesterday={onCopyFromYesterday}
             onOpenCopyMealModal={onOpenCopyMealModal}
             onSaveAsRecipe={onSaveAsRecipe}
+            staples={staples?.[mealData.meal.toUpperCase()]}
+            dailyTargets={dailyTargets}
+            isDismissed={dismissedSlots?.has(mealData.meal.toUpperCase())}
+            isToday={isTodayProp}
+            onConfirmStaple={onConfirmStaple}
+            onDismissStaples={onDismissSlot ? () => onDismissSlot(mealData.meal.toUpperCase()) : undefined}
+            onDeleteStaple={onDeleteStaple}
+            onPinAsStaple={onPinAsStaple ? (item) => onPinAsStaple(item, mealData.meal) : undefined}
           />
         ))}
       </div>

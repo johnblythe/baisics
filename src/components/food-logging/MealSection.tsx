@@ -3,12 +3,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Coffee, Sun, Moon, Apple, Plus, X, Search, Loader2, Copy, Check, BookOpen } from 'lucide-react';
 import { SaveMealAsRecipeModal } from './SaveMealAsRecipeModal';
+import { StapleCarousel } from './StapleCarousel';
 import { MealType as PrismaMealType } from '@prisma/client';
 import { FoodLogItem, type FoodLogItemData } from './FoodLogItem';
 import { FoodSearchAutocomplete } from '@/components/nutrition/FoodSearchAutocomplete';
 import { ServingSizeSelector, type CalculatedMacros } from '@/components/nutrition/ServingSizeSelector';
 import type { UnifiedFoodResult } from '@/lib/food-search/types';
 import { formatDateForAPI } from '@/lib/date-utils';
+import type { FoodStaple } from '@/hooks/useStaples';
 
 export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'snacks';
 
@@ -107,6 +109,22 @@ export interface MealSectionProps {
     carbs: number;
     fat: number;
   }) => void;
+  /** Staples for this meal slot */
+  staples?: FoodStaple[];
+  /** Daily macro targets for staple % bars */
+  dailyTargets?: { calories: number; protein: number; carbs: number; fat: number };
+  /** Whether this slot's staples are dismissed for today */
+  isDismissed?: boolean;
+  /** Whether we're viewing today (staples only show for today) */
+  isToday?: boolean;
+  /** Confirm a staple (log it) */
+  onConfirmStaple?: (staple: FoodStaple) => void;
+  /** Dismiss staples for this slot */
+  onDismissStaples?: () => void;
+  /** Delete a staple permanently */
+  onDeleteStaple?: (stapleId: string) => void;
+  /** Pin a food item as a staple */
+  onPinAsStaple?: (item: FoodLogItemData) => void;
 }
 
 function getMealIcon(meal: string) {
@@ -148,6 +166,14 @@ export function MealSection({
   onCopyFromYesterday,
   onOpenCopyMealModal,
   onSaveAsRecipe,
+  staples,
+  dailyTargets,
+  isDismissed,
+  isToday,
+  onConfirmStaple,
+  onDismissStaples,
+  onDeleteStaple,
+  onPinAsStaple,
 }: MealSectionProps) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [selectedFood, setSelectedFood] = useState<UnifiedFoodResult | null>(null);
@@ -368,6 +394,17 @@ export function MealSection({
         </div>
       </div>
 
+      {/* Staple carousel — only for today, when staples exist and not dismissed */}
+      {isToday && !isDismissed && staples && staples.length > 0 && dailyTargets && onConfirmStaple && onDismissStaples && onDeleteStaple && (
+        <StapleCarousel
+          staples={staples}
+          dailyTargets={dailyTargets}
+          onConfirm={onConfirmStaple}
+          onDismiss={onDismissStaples}
+          onDelete={onDeleteStaple}
+        />
+      )}
+
       {/* Food items list */}
       {items.length > 0 && (
         <div className="space-y-1 mb-2">
@@ -377,6 +414,7 @@ export function MealSection({
               item={item}
               onEdit={onEditItem}
               onDelete={onDeleteItem}
+              onPinAsStaple={isToday ? onPinAsStaple : undefined}
               showActions={showItemActions}
             />
           ))}

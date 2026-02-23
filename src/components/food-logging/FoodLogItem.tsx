@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Pencil, Trash2, AlertCircle } from 'lucide-react';
+import { Pencil, Trash2, AlertCircle, Pin } from 'lucide-react';
 
 export interface FoodLogItemData {
   id: string;
@@ -18,6 +18,7 @@ export interface FoodLogItemProps {
   item: FoodLogItemData;
   onEdit?: (item: FoodLogItemData) => void;
   onDelete?: (item: FoodLogItemData) => void;
+  onPinAsStaple?: (item: FoodLogItemData) => void;
   showActions?: boolean;
 }
 
@@ -25,6 +26,7 @@ export function FoodLogItem({
   item,
   onEdit,
   onDelete,
+  onPinAsStaple,
   showActions = false,
 }: FoodLogItemProps) {
   return (
@@ -49,8 +51,19 @@ export function FoodLogItem({
           <div className="text-sm font-medium text-[#0F172A]">{item.calories} cal</div>
           <div className="text-xs text-green-600">{item.protein}g P</div>
         </div>
-        {showActions && (onEdit || onDelete) && (
+        {showActions && (onEdit || onDelete || onPinAsStaple) && (
           <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            {onPinAsStaple && (
+              <button
+                type="button"
+                onClick={() => onPinAsStaple(item)}
+                className="p-1.5 text-[#94A3B8] hover:text-[#FF6B6B] hover:bg-[#FFE5E5] rounded-lg transition-colors"
+                aria-label={`Pin ${item.name} as staple`}
+                title="Pin as staple"
+              >
+                <Pin className="w-3.5 h-3.5" />
+              </button>
+            )}
             {onEdit && (
               <button
                 type="button"

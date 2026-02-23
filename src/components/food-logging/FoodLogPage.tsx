@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight, Loader2, AlertCircle, Target } from 'lucide-
 import { NutritionTargetsModal } from '@/components/nutrition/NutritionTargetsModal';
 import { MealType } from '@prisma/client';
 import { toast } from 'sonner';
+import { useStaples, type FoodStaple } from '@/hooks/useStaples';
 import {
   MobileLayout,
   DesktopLayout,
@@ -238,6 +239,16 @@ export function FoodLogPage({
 
   // Recipe sidebar refresh trigger
   const [recipeSidebarRefreshTrigger, setRecipeSidebarRefreshTrigger] = useState(0);
+
+  // Staples
+  const {
+    staples: staplesBySlot,
+    dismissedSlots,
+    confirmStaple,
+    dismissSlot,
+    deleteStaple,
+    createStaple,
+  } = useStaples();
 
   // Fetch entries for selected date
   const fetchEntries = useCallback(async () => {
@@ -862,6 +873,57 @@ export function FoodLogPage({
     toast.success(`Added: ${food.name}`);
   };
 
+  // Staple handlers
+  const handleConfirmStaple = useCallback(async (staple: FoodStaple) => {
+    // Optimistic: add entry to local state immediately
+    const optimisticEntry = {
+      id: `optimistic-${Date.now()}`,
+      name: staple.name,
+      calories: staple.calories,
+      protein: staple.protein,
+      carbs: staple.carbs,
+      fat: staple.fat,
+      servingSize: 1,
+      servingUnit: 'serving',
+      meal: staple.mealSlot,
+      date: formatDateForAPI(selectedDate),
+      source: 'STAPLE',
+      createdAt: new Date().toISOString(),
+    } as FoodLogEntry;
+
+    setEntries(prev => ({
+      ...prev,
+      [staple.mealSlot]: [...prev[staple.mealSlot], optimisticEntry],
+    }));
+
+    // Dismiss the carousel for this slot
+    dismissSlot(staple.mealSlot);
+
+    // Fire POST in background
+    await confirmStaple(staple, selectedDate);
+
+    // Refresh to get real entry ID
+    await Promise.all([fetchEntries(), fetchSummary()]);
+  }, [selectedDate, dismissSlot, confirmStaple, fetchEntries, fetchSummary]);
+
+  const handlePinAsStaple = useCallback(async (item: FoodLogItemData, meal: string) => {
+    const mealSlot = meal.toUpperCase() as MealType;
+    await createStaple({
+      mealSlot,
+      name: item.name,
+      calories: item.calories,
+      protein: item.protein,
+      carbs: item.carbs ?? 0,
+      fat: item.fat ?? 0,
+    });
+  }, [createStaple]);
+
+  const handleDismissSlot = useCallback((mealSlot: string) => {
+    dismissSlot(mealSlot as MealType);
+  }, [dismissSlot]);
+
+  const isTodaySelected = selectedDate.toDateString() === new Date().toDateString();
+
   // Build macro totals and targets
   const macroTotals: MacroTotals = {
     calories: summary?.totals.totalCalories ?? 0,
@@ -1099,6 +1161,14 @@ export function FoodLogPage({
           remainingCalories={remainingCalories}
           remainingProtein={remainingProtein}
           suggestion={suggestion}
+          staples={staplesBySlot}
+          dailyTargets={macroTargets}
+          dismissedSlots={dismissedSlots}
+          isToday={isTodaySelected}
+          onConfirmStaple={handleConfirmStaple}
+          onDismissSlot={handleDismissSlot}
+          onDeleteStaple={deleteStaple}
+          onPinAsStaple={handlePinAsStaple}
           customFooter={errorBanner ? (
             <>
               {errorBanner}
@@ -1151,6 +1221,14 @@ export function FoodLogPage({
           suggestion={suggestion}
           suggestionDetail={suggestion}
           rightContentExtra={errorBanner}
+          staples={staplesBySlot}
+          dailyTargets={macroTargets}
+          dismissedSlots={dismissedSlots}
+          isToday={isTodaySelected}
+          onConfirmStaple={handleConfirmStaple}
+          onDismissSlot={handleDismissSlot}
+          onDeleteStaple={deleteStaple}
+          onPinAsStaple={handlePinAsStaple}
         />
       </div>
 
