@@ -132,9 +132,10 @@ export interface MobileLayoutProps {
   dailyTargets?: { calories: number; protein: number; carbs: number; fat: number };
   dismissedSlots?: Set<string>;
   isToday?: boolean;
-  onConfirmStaple?: (staple: FoodStaple) => void;
+  onLogStaple?: (staple: FoodStaple) => void;
   onDismissSlot?: (mealSlot: string) => void;
   onDeleteStaple?: (stapleId: string) => void;
+  onManageStaples?: (mealSlot: string) => void;
   onPinAsStaple?: (item: FoodLogItemData, meal: string) => void;
 }
 
@@ -232,9 +233,10 @@ export function MobileLayout({
   dailyTargets,
   dismissedSlots,
   isToday: isTodayProp,
-  onConfirmStaple,
+  onLogStaple,
   onDismissSlot,
   onDeleteStaple,
+  onManageStaples,
   onPinAsStaple,
 }: MobileLayoutProps) {
   // Calculate remaining if not provided
@@ -338,9 +340,10 @@ export function MobileLayout({
             dailyTargets={dailyTargets}
             isDismissed={dismissedSlots?.has(mealData.meal.toUpperCase())}
             isToday={isTodayProp}
-            onConfirmStaple={onConfirmStaple}
+            onLogStaple={onLogStaple}
             onDismissStaples={onDismissSlot ? () => onDismissSlot(mealData.meal.toUpperCase()) : undefined}
             onDeleteStaple={onDeleteStaple}
+            onManageStaples={onManageStaples ? () => onManageStaples(mealData.meal.toUpperCase()) : undefined}
             onPinAsStaple={onPinAsStaple ? (item) => onPinAsStaple(item, mealData.meal) : undefined}
           />
         ))}

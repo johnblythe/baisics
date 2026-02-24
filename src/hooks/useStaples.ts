@@ -3,6 +3,8 @@ import { MealType } from '@prisma/client';
 import { formatDateForAPI } from '@/lib/date-utils';
 import { toast } from 'sonner';
 
+export type StapleItem = string | { name: string };
+
 export interface FoodStaple {
   id: string;
   userId: string;
@@ -15,8 +17,9 @@ export interface FoodStaple {
   fat: number;
   recipeId: string | null;
   quickFoodId: string | null;
-  items: unknown[] | null;
+  items: StapleItem[] | null;
   sortOrder: number;
+  autoLog: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -39,10 +42,13 @@ export interface UseStaplesReturn {
   dismissedSlots: Set<MealType>;
   isLoading: boolean;
   fetchStaples: () => Promise<void>;
-  confirmStaple: (staple: FoodStaple, date: Date) => Promise<void>;
+  logStaple: (staple: FoodStaple, date: Date) => Promise<string | null>;
+  undoLogStaple: (entryId: string, mealSlot: MealType) => Promise<void>;
   dismissSlot: (mealSlot: MealType) => void;
+  undismissSlot: (mealSlot: MealType) => void;
   deleteStaple: (stapleId: string) => Promise<void>;
   createStaple: (data: CreateStaplePayload) => Promise<FoodStaple | null>;
+  toggleAutoLog: (stapleId: string) => Promise<void>;
 }
 
 const DISMISS_STORAGE_KEY = 'baisics_staple_dismissals';
@@ -135,8 +141,7 @@ export function useStaples(): UseStaplesReturn {
     fetchStaples();
   }, [fetchStaples]);
 
-  const confirmStaple = useCallback(async (staple: FoodStaple, date: Date) => {
-    // Fire POST in background — caller handles optimistic UI
+  const logStaple = useCallback(async (staple: FoodStaple, date: Date): Promise<string | null> => {
     try {
       const res = await fetch('/api/food-log', {
         method: 'POST',
@@ -156,10 +161,35 @@ export function useStaples(): UseStaplesReturn {
       if (!res.ok) {
         throw new Error('Failed to log staple');
       }
-      toast.success(`Logged: ${staple.name}`);
+      const data = await res.json();
+      return data.id ?? null;
     } catch (error) {
-      console.error('Error confirming staple:', error);
+      console.error('Error logging staple:', error);
       toast.error('Failed to log staple');
+      return null;
+    }
+  }, []);
+
+  const undoLogStaple = useCallback(async (entryId: string, mealSlot: MealType) => {
+    try {
+      const res = await fetch(`/api/food-log/${entryId}`, { method: 'DELETE' });
+      if (!res.ok) {
+        throw new Error('Failed to undo');
+      }
+      // Un-dismiss the slot so carousel reappears
+      const today = formatDateForAPI(new Date());
+      const key = getDismissKey(mealSlot, today);
+      const dismissals = loadDismissals();
+      dismissals.delete(key);
+      saveDismissals(dismissals);
+      setDismissedSlots(prev => {
+        const next = new Set(prev);
+        next.delete(mealSlot);
+        return next;
+      });
+    } catch (error) {
+      console.error('Error undoing staple log:', error);
+      toast.error('Failed to undo');
     }
   }, []);
 
@@ -213,6 +243,45 @@ export function useStaples(): UseStaplesReturn {
     }
   }, []);
 
+  const undismissSlot = useCallback((mealSlot: MealType) => {
+    const today = formatDateForAPI(new Date());
+    const key = getDismissKey(mealSlot, today);
+    const dismissals = loadDismissals();
+    dismissals.delete(key);
+    saveDismissals(dismissals);
+    setDismissedSlots(prev => {
+      const next = new Set(prev);
+      next.delete(mealSlot);
+      return next;
+    });
+  }, []);
+
+  const toggleAutoLog = useCallback(async (stapleId: string) => {
+    const staple = allStaples.find(s => s.id === stapleId);
+    if (!staple) return;
+
+    const newValue = !staple.autoLog;
+
+    // Optimistic update
+    setAllStaples(prev => prev.map(s => s.id === stapleId ? { ...s, autoLog: newValue } : s));
+
+    try {
+      const res = await fetch(`/api/food-staples/${stapleId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ autoLog: newValue }),
+      });
+      if (!res.ok) {
+        // Revert
+        setAllStaples(prev => prev.map(s => s.id === stapleId ? { ...s, autoLog: !newValue } : s));
+        toast.error('Failed to update auto-log');
+      }
+    } catch {
+      setAllStaples(prev => prev.map(s => s.id === stapleId ? { ...s, autoLog: !newValue } : s));
+      toast.error('Failed to update auto-log');
+    }
+  }, [allStaples]);
+
   const staples = groupByMealSlot(allStaples);
 
   return {
@@ -220,9 +289,12 @@ export function useStaples(): UseStaplesReturn {
     dismissedSlots,
     isLoading,
     fetchStaples,
-    confirmStaple,
+    logStaple,
+    undoLogStaple,
     dismissSlot,
+    undismissSlot,
     deleteStaple,
     createStaple,
+    toggleAutoLog,
   };
 }

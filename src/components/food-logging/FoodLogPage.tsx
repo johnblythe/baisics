@@ -7,6 +7,7 @@ import { NutritionTargetsModal } from '@/components/nutrition/NutritionTargetsMo
 import { MealType } from '@prisma/client';
 import { toast } from 'sonner';
 import { useStaples, type FoodStaple } from '@/hooks/useStaples';
+import { StapleManageModal } from './StapleManageModal';
 import {
   MobileLayout,
   DesktopLayout,
@@ -244,11 +245,18 @@ export function FoodLogPage({
   const {
     staples: staplesBySlot,
     dismissedSlots,
-    confirmStaple,
+    logStaple,
+    undoLogStaple,
     dismissSlot,
+    undismissSlot,
     deleteStaple,
     createStaple,
+    fetchStaples,
+    toggleAutoLog,
   } = useStaples();
+
+  // Manage modal state
+  const [managingSlot, setManagingSlot] = useState<MealType | null>(null);
 
   // Fetch entries for selected date
   const fetchEntries = useCallback(async () => {
@@ -874,7 +882,7 @@ export function FoodLogPage({
   };
 
   // Staple handlers
-  const handleConfirmStaple = useCallback(async (staple: FoodStaple) => {
+  const handleLogStaple = useCallback(async (staple: FoodStaple) => {
     // Optimistic: add entry to local state immediately
     const optimisticEntry = {
       id: `optimistic-${Date.now()}`,
@@ -899,12 +907,31 @@ export function FoodLogPage({
     // Dismiss the carousel for this slot
     dismissSlot(staple.mealSlot);
 
-    // Fire POST in background
-    await confirmStaple(staple, selectedDate);
+    // Fire POST and get real entry ID
+    const entryId = await logStaple(staple, selectedDate);
 
-    // Refresh to get real entry ID
+    // Refresh to get real entry
     await Promise.all([fetchEntries(), fetchSummary()]);
-  }, [selectedDate, dismissSlot, confirmStaple, fetchEntries, fetchSummary]);
+
+    // Show undo toast
+    if (entryId) {
+      toast(`Logged: ${staple.name}`, {
+        action: {
+          label: 'Undo',
+          onClick: async () => {
+            await undoLogStaple(entryId, staple.mealSlot);
+            // Remove entry and refresh
+            setEntries(prev => ({
+              ...prev,
+              [staple.mealSlot]: prev[staple.mealSlot].filter(e => e.id !== entryId),
+            }));
+            await Promise.all([fetchEntries(), fetchSummary()]);
+          },
+        },
+        duration: 5000,
+      });
+    }
+  }, [selectedDate, dismissSlot, logStaple, undoLogStaple, fetchEntries, fetchSummary]);
 
   const handlePinAsStaple = useCallback(async (item: FoodLogItemData, meal: string) => {
     const mealSlot = meal.toUpperCase() as MealType;
@@ -921,6 +948,23 @@ export function FoodLogPage({
   const handleDismissSlot = useCallback((mealSlot: string) => {
     dismissSlot(mealSlot as MealType);
   }, [dismissSlot]);
+
+  const handleReorderStaples = useCallback(async (stapleIds: string[]) => {
+    if (!managingSlot) return;
+    try {
+      const res = await fetch('/api/food-staples/reorder', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mealSlot: managingSlot, stapleIds }),
+      });
+      if (!res.ok) {
+        toast.error('Failed to reorder staples');
+      }
+      await fetchStaples();
+    } catch {
+      toast.error('Failed to reorder staples');
+    }
+  }, [managingSlot, fetchStaples]);
 
   const isTodaySelected = selectedDate.toDateString() === new Date().toDateString();
 
@@ -1165,9 +1209,10 @@ export function FoodLogPage({
           dailyTargets={macroTargets}
           dismissedSlots={dismissedSlots}
           isToday={isTodaySelected}
-          onConfirmStaple={handleConfirmStaple}
+          onLogStaple={handleLogStaple}
           onDismissSlot={handleDismissSlot}
           onDeleteStaple={deleteStaple}
+          onManageStaples={(slot: string) => setManagingSlot(slot as MealType)}
           onPinAsStaple={handlePinAsStaple}
           customFooter={errorBanner ? (
             <>
@@ -1225,9 +1270,10 @@ export function FoodLogPage({
           dailyTargets={macroTargets}
           dismissedSlots={dismissedSlots}
           isToday={isTodaySelected}
-          onConfirmStaple={handleConfirmStaple}
+          onLogStaple={handleLogStaple}
           onDismissSlot={handleDismissSlot}
           onDeleteStaple={deleteStaple}
+          onManageStaples={(slot: string) => setManagingSlot(slot as MealType)}
           onPinAsStaple={handlePinAsStaple}
         />
       </div>
@@ -1304,6 +1350,23 @@ export function FoodLogPage({
           await Promise.all([fetchEntries(), fetchSummary()]);
         }}
       />
+
+      {/* Staple Manage Modal */}
+      <AnimatePresence>
+        {managingSlot && (
+          <StapleManageModal
+            mealSlot={managingSlot}
+            staples={staplesBySlot[managingSlot] || []}
+            onClose={() => {
+              setManagingSlot(null);
+              fetchStaples();
+            }}
+            onDelete={deleteStaple}
+            onReorder={handleReorderStaples}
+            onToggleAutoLog={toggleAutoLog}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Nutrition Targets Modal */}
       <NutritionTargetsModal

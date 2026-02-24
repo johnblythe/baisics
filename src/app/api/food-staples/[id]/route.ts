@@ -23,7 +23,7 @@ export async function PATCH(
     }
 
     const body = await request.json();
-    const { sortOrder, mealSlot, name, emoji, calories, protein, carbs, fat } = body;
+    const { sortOrder, mealSlot, name, emoji, calories, protein, carbs, fat, autoLog } = body;
 
     // Validate mealSlot if provided
     if (mealSlot && !Object.values(MealType).includes(mealSlot)) {
@@ -44,6 +44,7 @@ export async function PATCH(
         ...(protein != null ? { protein: parseFloat(protein.toString()) } : {}),
         ...(carbs != null ? { carbs: parseFloat(carbs.toString()) } : {}),
         ...(fat != null ? { fat: parseFloat(fat.toString()) } : {}),
+        ...(autoLog != null ? { autoLog: Boolean(autoLog) } : {}),
       },
     });
 

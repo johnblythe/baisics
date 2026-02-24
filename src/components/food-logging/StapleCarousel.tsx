@@ -2,23 +2,25 @@
 
 import React, { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Check, X, Trash2, Pin, ChevronDown } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Check, X, Trash2, Pin, ChevronDown, Settings, Clock } from 'lucide-react';
 import type { FoodStaple } from '@/hooks/useStaples';
 
 export interface StapleCarouselProps {
   staples: FoodStaple[];
   dailyTargets: { calories: number; protein: number; carbs: number; fat: number };
-  onConfirm: (staple: FoodStaple) => void;
+  onLog: (staple: FoodStaple) => void;
   onDismiss: () => void;
   onDelete: (stapleId: string) => void;
+  onManage?: () => void;
 }
 
 export function StapleCarousel({
   staples,
   dailyTargets,
-  onConfirm,
+  onLog,
   onDismiss,
   onDelete,
+  onManage,
 }: StapleCarouselProps) {
   const [index, setIndex] = useState(0);
   const [expanded, setExpanded] = useState(false);
@@ -83,11 +85,25 @@ export function StapleCarousel({
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Pin badge */}
+        {/* Pin badge + manage gear */}
         <div className="absolute -top-2 left-3 z-10 flex items-center gap-1 px-2 py-0.5 bg-white border border-gray-200 rounded-full">
           <Pin className="w-3 h-3 text-[#FF6B6B]" />
           <span className="text-[10px] font-medium text-gray-500 uppercase tracking-wide">Staple</span>
+          {current.autoLog && (
+            <span title="Auto-logs daily (coming soon)">
+              <Clock className="w-3 h-3 text-[#FF6B6B]" />
+            </span>
+          )}
         </div>
+        {onManage && (
+          <button
+            onClick={onManage}
+            className="absolute -top-2 right-3 z-10 p-1 bg-white border border-gray-200 rounded-full text-gray-400 hover:text-gray-600 transition-colors"
+            title="Manage staples"
+          >
+            <Settings className="w-3 h-3" />
+          </button>
+        )}
 
         {/* Main carousel area */}
         <div className="flex items-start px-3 pt-4 pb-2">
@@ -170,7 +186,7 @@ export function StapleCarousel({
           {/* Action buttons */}
           <div className="flex flex-col items-center gap-1 ml-2 shrink-0">
             <button
-              onClick={() => onConfirm(current)}
+              onClick={() => onLog(current)}
               className="p-1.5 rounded-md text-emerald-600 hover:bg-emerald-100 transition-colors"
               title="Log this staple"
             >

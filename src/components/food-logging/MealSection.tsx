@@ -118,11 +118,13 @@ export interface MealSectionProps {
   /** Whether we're viewing today (staples only show for today) */
   isToday?: boolean;
   /** Confirm a staple (log it) */
-  onConfirmStaple?: (staple: FoodStaple) => void;
+  onLogStaple?: (staple: FoodStaple) => void;
   /** Dismiss staples for this slot */
   onDismissStaples?: () => void;
   /** Delete a staple permanently */
   onDeleteStaple?: (stapleId: string) => void;
+  /** Open manage staples modal */
+  onManageStaples?: () => void;
   /** Pin a food item as a staple */
   onPinAsStaple?: (item: FoodLogItemData) => void;
 }
@@ -170,9 +172,10 @@ export function MealSection({
   dailyTargets,
   isDismissed,
   isToday,
-  onConfirmStaple,
+  onLogStaple,
   onDismissStaples,
   onDeleteStaple,
+  onManageStaples,
   onPinAsStaple,
 }: MealSectionProps) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -395,13 +398,14 @@ export function MealSection({
       </div>
 
       {/* Staple carousel — only for today, when staples exist and not dismissed */}
-      {isToday && !isDismissed && staples && staples.length > 0 && dailyTargets && onConfirmStaple && onDismissStaples && onDeleteStaple && (
+      {isToday && !isDismissed && staples && staples.length > 0 && dailyTargets && onLogStaple && onDismissStaples && onDeleteStaple && (
         <StapleCarousel
           staples={staples}
           dailyTargets={dailyTargets}
-          onConfirm={onConfirmStaple}
+          onLog={onLogStaple}
           onDismiss={onDismissStaples}
           onDelete={onDeleteStaple}
+          onManage={onManageStaples}
         />
       )}
 
