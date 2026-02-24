@@ -7,6 +7,7 @@ import { Calendar, ChevronDown, ChevronUp } from 'lucide-react';
 export interface WeeklyDayData {
   day: string;
   date: string;
+  fullDate: string; // YYYY-MM-DD for navigation
   calories: number;
   target: number;
   protein: number;
@@ -21,9 +22,10 @@ export interface WeeklyStripProps {
   expanded?: boolean;
   onToggle?: () => void;
   summaryMessage?: string;
+  onDayClick?: (dateStr: string) => void;
 }
 
-export function WeeklyStrip({ weekData, expanded: controlledExpanded, onToggle, summaryMessage }: WeeklyStripProps) {
+export function WeeklyStrip({ weekData, expanded: controlledExpanded, onToggle, summaryMessage, onDayClick }: WeeklyStripProps) {
   const [internalExpanded, setInternalExpanded] = useState(false);
   const expanded = controlledExpanded ?? internalExpanded;
   const toggle = onToggle ?? (() => setInternalExpanded(!internalExpanded));
@@ -48,7 +50,11 @@ export function WeeklyStrip({ weekData, expanded: controlledExpanded, onToggle, 
             {weekData.map((day, i) => (
               <div
                 key={i}
+                role={onDayClick ? 'button' : undefined}
+                tabIndex={onDayClick ? 0 : undefined}
+                onClick={onDayClick ? (e) => { e.stopPropagation(); onDayClick(day.fullDate); } : undefined}
                 className={`w-6 h-6 rounded-md flex items-center justify-center text-xs font-medium
+                  ${onDayClick ? 'cursor-pointer hover:ring-2 hover:ring-[#FF6B6B]/30' : ''}
                   ${day.isToday
                     ? 'bg-[#FF6B6B] text-white'
                     : day.logged
@@ -87,9 +93,16 @@ export function WeeklyStrip({ weekData, expanded: controlledExpanded, onToggle, 
             <div className="px-4 pb-4">
               <div className="grid grid-cols-7 gap-2">
                 {weekData.map((day, i) => (
-                  <div key={i} className="text-center">
+                  <div
+                    key={i}
+                    className={`text-center ${onDayClick ? 'cursor-pointer' : ''}`}
+                    role={onDayClick ? 'button' : undefined}
+                    tabIndex={onDayClick ? 0 : undefined}
+                    onClick={onDayClick ? () => onDayClick(day.fullDate) : undefined}
+                  >
                     <div className={`
                       aspect-square rounded-xl flex flex-col items-center justify-center text-xs
+                      ${onDayClick ? 'hover:ring-2 hover:ring-inset hover:ring-[#FF6B6B]/30' : ''}
                       ${day.isToday
                         ? 'bg-[#FF6B6B] text-white'
                         : day.logged

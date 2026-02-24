@@ -86,7 +86,7 @@ function SortableStapleRow({ staple, onDelete, onToggleAutoLog }: SortableStaple
           className={`relative w-10 h-5 rounded-full transition-colors shrink-0 ${
             staple.autoLog ? 'bg-[#FF6B6B]' : 'bg-[#E2E8F0]'
           }`}
-          title={staple.autoLog ? 'Auto-log enabled (coming soon)' : 'Enable auto-log'}
+          title={staple.autoLog ? 'Auto-log enabled' : 'Enable auto-log'}
         >
           <span
             className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${
@@ -226,7 +226,7 @@ export function StapleManageModal({
         <div className="p-4 pt-2 flex-shrink-0 border-t border-[#E2E8F0]">
           {items.length > 0 && (
             <p className="text-xs text-gray-400 mb-3 flex items-center gap-1.5">
-              <span>💡</span> Drag to reorder. Toggle auto-log for daily logging (coming soon).
+              <span>💡</span> Drag to reorder. Toggle auto-log for daily logging.
             </p>
           )}
           <button

@@ -65,6 +65,7 @@ export interface MobileLayoutProps {
   weeklyExpanded?: boolean;
   onWeeklyToggle?: () => void;
   weeklySummaryMessage?: string;
+  onDayClick?: (dateStr: string) => void;
 
   // Meals
   meals: MealData[];
@@ -203,6 +204,7 @@ export function MobileLayout({
   weeklyExpanded,
   onWeeklyToggle,
   weeklySummaryMessage,
+  onDayClick,
   meals,
   onAddToMeal,
   onEditItem,
@@ -315,6 +317,7 @@ export function MobileLayout({
           expanded={weeklyExpanded}
           onToggle={onWeeklyToggle}
           summaryMessage={weeklySummaryMessage}
+          onDayClick={onDayClick}
         />
       </div>
 

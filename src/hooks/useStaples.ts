@@ -257,13 +257,14 @@ export function useStaples(): UseStaplesReturn {
   }, []);
 
   const toggleAutoLog = useCallback(async (stapleId: string) => {
-    const staple = allStaples.find(s => s.id === stapleId);
-    if (!staple) return;
-
-    const newValue = !staple.autoLog;
-
-    // Optimistic update
-    setAllStaples(prev => prev.map(s => s.id === stapleId ? { ...s, autoLog: newValue } : s));
+    // Use functional state access to avoid stale closure
+    let newValue = false;
+    setAllStaples(prev => {
+      const staple = prev.find(s => s.id === stapleId);
+      if (!staple) return prev;
+      newValue = !staple.autoLog;
+      return prev.map(s => s.id === stapleId ? { ...s, autoLog: newValue } : s);
+    });
 
     try {
       const res = await fetch(`/api/food-staples/${stapleId}`, {
@@ -272,7 +273,6 @@ export function useStaples(): UseStaplesReturn {
         body: JSON.stringify({ autoLog: newValue }),
       });
       if (!res.ok) {
-        // Revert
         setAllStaples(prev => prev.map(s => s.id === stapleId ? { ...s, autoLog: !newValue } : s));
         toast.error('Failed to update auto-log');
       }
@@ -280,7 +280,7 @@ export function useStaples(): UseStaplesReturn {
       setAllStaples(prev => prev.map(s => s.id === stapleId ? { ...s, autoLog: !newValue } : s));
       toast.error('Failed to update auto-log');
     }
-  }, [allStaples]);
+  }, []);
 
   const staples = groupByMealSlot(allStaples);
 

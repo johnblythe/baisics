@@ -62,6 +62,7 @@ export interface DesktopLayoutProps {
   weekData: WeeklyDayData[];
   defaultWeeklyExpanded?: boolean;
   weeklySummaryMessage?: string;
+  onDayClick?: (dateStr: string) => void;
 
   // Meals
   meals: MealData[];
@@ -194,6 +195,7 @@ export function DesktopLayout({
   weekData,
   defaultWeeklyExpanded = true,
   weeklySummaryMessage,
+  onDayClick,
   meals,
   onAddToMeal,
   onEditItem,
@@ -349,6 +351,7 @@ export function DesktopLayout({
               expanded={weekExpanded}
               onToggle={() => setWeekExpanded(!weekExpanded)}
               summaryMessage={weeklySummaryMessage}
+              onDayClick={onDayClick}
             />
 
             {/* Meals Log */}

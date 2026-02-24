@@ -82,17 +82,20 @@ export async function GET(request: Request) {
       fatGrams: nutritionResult.plan.fatGrams,
     };
 
-    // Calculate weekly compliance (last 7 days ending on the specified date)
+    // Calculate weekly compliance (Sun-Sat week containing the specified date)
     // Single groupBy query instead of 7 individual queries
+    const dayOfWeek = date.getDay(); // 0=Sun, 1=Mon, ...
     const weekStart = new Date(date);
-    weekStart.setDate(date.getDate() - 6);
+    weekStart.setDate(date.getDate() - dayOfWeek); // back to Sunday
     weekStart.setHours(0, 0, 0, 0);
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6); // Saturday
 
     const weeklyAggregates = await prisma.foodLogEntry.groupBy({
       by: ['date'],
       where: {
         userId,
-        date: { gte: weekStart, lte: date },
+        date: { gte: weekStart, lte: weekEnd },
       },
       _sum: { calories: true, protein: true },
       _count: { id: true },
@@ -107,9 +110,9 @@ export async function GET(request: Request) {
     );
 
     const weeklyCompliance: DayCompliance[] = [];
-    for (let i = 6; i >= 0; i--) {
-      const dayDate = new Date(date);
-      dayDate.setDate(date.getDate() - i);
+    for (let i = 0; i <= 6; i++) {
+      const dayDate = new Date(weekStart);
+      dayDate.setDate(weekStart.getDate() + i);
       dayDate.setHours(0, 0, 0, 0);
       const dayKey = dayDate.toISOString().split('T')[0];
 

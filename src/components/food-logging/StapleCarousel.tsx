@@ -78,9 +78,9 @@ export function StapleCarousel({
   };
 
   return (
-    <div className="mx-3 mt-2 mb-1">
+    <div className="mt-2 mb-1">
       <div
-        className="relative rounded-lg border-2 border-dashed border-gray-200 bg-gray-50/60 overflow-hidden"
+        className="relative rounded-xl border-2 border-dashed border-[#E2E8F0] bg-gray-50/60"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -90,7 +90,7 @@ export function StapleCarousel({
           <Pin className="w-3 h-3 text-[#FF6B6B]" />
           <span className="text-[10px] font-medium text-gray-500 uppercase tracking-wide">Staple</span>
           {current.autoLog && (
-            <span title="Auto-logs daily (coming soon)">
+            <span title="Auto-logs daily">
               <Clock className="w-3 h-3 text-[#FF6B6B]" />
             </span>
           )}
@@ -184,7 +184,7 @@ export function StapleCarousel({
           )}
 
           {/* Action buttons */}
-          <div className="flex flex-col items-center gap-1 ml-2 shrink-0">
+          <div className="flex flex-col items-center gap-1 ml-1 shrink-0">
             <button
               onClick={() => onLog(current)}
               className="p-1.5 rounded-md text-emerald-600 hover:bg-emerald-100 transition-colors"

@@ -91,7 +91,7 @@ export function DateMenu({
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+        <div className="absolute right-0 top-full mt-1 w-48 bg-white text-[#0F172A] rounded-lg shadow-lg border border-gray-200 py-1 z-50">
           {/* Copy from... option with submenu */}
           <div
             className="relative"
@@ -110,22 +110,24 @@ export function DateMenu({
 
             {/* Submenu */}
             {showCopySubmenu && (
-              <div className="absolute left-full top-0 ml-1 w-44 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
-                <button
-                  type="button"
-                  onClick={handleCopyFromYesterday}
-                  className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
-                >
-                  Yesterday
-                </button>
-                <button
-                  type="button"
-                  onClick={handlePickDate}
-                  className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2"
-                >
-                  <Calendar className="w-3 h-3" />
-                  Pick a date...
-                </button>
+              <div className="absolute left-full top-0 pl-1 w-44 z-50">
+                <div className="bg-white rounded-lg shadow-lg border border-gray-200 py-1">
+                  <button
+                    type="button"
+                    onClick={handleCopyFromYesterday}
+                    className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
+                  >
+                    Yesterday
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handlePickDate}
+                    className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2"
+                  >
+                    <Calendar className="w-3 h-3" />
+                    Pick a date...
+                  </button>
+                </div>
               </div>
             )}
           </div>

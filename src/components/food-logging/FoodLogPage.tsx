@@ -369,6 +369,12 @@ export function FoodLogPage({
     onDateChange?.(today);
   };
 
+  const handleDayClick = (dateStr: string) => {
+    const newDate = new Date(dateStr + 'T00:00:00');
+    setSelectedDate(newDate);
+    onDateChange?.(newDate);
+  };
+
   // Add food entry
   const addFoodEntry = async (food: {
     name: string;
@@ -780,6 +786,11 @@ export function FoodLogPage({
     setRecipeSidebarRefreshTrigger((prev) => prev + 1);
   }, []);
 
+  // Handle suggestion card click - open quick add
+  const handleSuggestionClick = useCallback(() => {
+    setShowQuickAdd(true);
+  }, []);
+
   // Handle copy from yesterday (for DateMenu) - opens copy day modal
   const handleDateMenuCopyFromYesterday = useCallback(() => {
     const yesterday = new Date(selectedDate);
@@ -943,17 +954,25 @@ export function FoodLogPage({
       carbs: item.carbs ?? 0,
       fat: item.fat ?? 0,
     });
-  }, [createStaple]);
+    // Auto-dismiss carousel — item is already logged, no need to show "log this" prompt
+    dismissSlot(mealSlot);
+  }, [createStaple, dismissSlot]);
 
   const handleUnpinStaple = useCallback(async (item: FoodLogItemData, meal: string) => {
     const mealSlot = meal.toUpperCase() as MealType;
-    const slotStaples = staplesBySlot[mealSlot] || [];
-    const match = slotStaples.find(s => s.name.toLowerCase() === item.name.toLowerCase());
+    // Fetch fresh staples to avoid stale closure
+    const res = await fetch('/api/food-staples');
+    if (!res.ok) return;
+    const data = await res.json();
+    const allStaples: Array<{ id: string; name: string; mealSlot: string }> = data.staples;
+    const match = allStaples.find(
+      s => s.mealSlot === mealSlot && s.name.toLowerCase() === item.name.toLowerCase()
+    );
     if (match) {
       await deleteStaple(match.id);
       toast('Unpinned staple');
     }
-  }, [staplesBySlot, deleteStaple]);
+  }, [deleteStaple]);
 
   const handleDismissSlot = useCallback((mealSlot: string) => {
     dismissSlot(mealSlot as MealType);
@@ -1005,6 +1024,7 @@ export function FoodLogPage({
     return {
       day: dayOfWeek,
       date: dayDate.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' }),
+      fullDate: day.date, // YYYY-MM-DD from API
       calories: day.calories,
       target: macroTargets.calories,
       protein: day.protein,
@@ -1174,6 +1194,7 @@ export function FoodLogPage({
     suggestion = `${remainingCalories} cal remaining`;
   }
 
+
   return (
     <>
       {/* Targets banner - above both layouts */}
@@ -1191,6 +1212,7 @@ export function FoodLogPage({
           onQuickAdd={handleQuickAdd}
           onQuickRecipeLog={handleQuickRecipeLog}
           weekData={weekData}
+          onDayClick={handleDayClick}
           meals={mealsData}
           onAddToMeal={handleAddToMeal}
           onEditItem={handleEditItem}
@@ -1215,6 +1237,7 @@ export function FoodLogPage({
           remainingCalories={remainingCalories}
           remainingProtein={remainingProtein}
           suggestion={suggestion}
+          onSuggestionClick={handleSuggestionClick}
           staples={staplesBySlot}
           dailyTargets={macroTargets}
           dismissedSlots={dismissedSlots}
@@ -1255,6 +1278,7 @@ export function FoodLogPage({
           onQuickAdd={handleQuickAdd}
           onQuickRecipeLog={handleQuickRecipeLog}
           weekData={weekData}
+          onDayClick={handleDayClick}
           meals={mealsData}
           onAddToMeal={handleAddToMeal}
           onEditItem={handleEditItem}
@@ -1276,6 +1300,7 @@ export function FoodLogPage({
           recipeSidebarRefreshTrigger={recipeSidebarRefreshTrigger}
           suggestion={suggestion}
           suggestionDetail={suggestion}
+          onSuggestionClick={handleSuggestionClick}
           rightContentExtra={errorBanner}
           staples={staplesBySlot}
           dailyTargets={macroTargets}
