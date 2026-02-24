@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Loader2, AlertCircle, Target } from 'lucide-react';
 import { NutritionTargetsModal } from '@/components/nutrition/NutritionTargetsModal';
@@ -31,6 +32,7 @@ import {
   type MealSectionFoodResult,
   type Recipe,
   type RecipeWithIngredients,
+  type MergedQuickItem,
 } from './index';
 
 // API response types
@@ -172,6 +174,22 @@ export function FoodLogPage({
   onRecipeAdd,
   userId,
 }: FoodLogPageProps) {
+  // Tab state + URL sync
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState<'log' | 'pantry'>(() =>
+    searchParams.get('tab') === 'pantry' ? 'pantry' : 'log'
+  );
+
+  const handleTabChange = useCallback((tab: 'log' | 'pantry') => {
+    setActiveTab(tab);
+    if (tab === 'pantry') {
+      router.replace('/nutrition?tab=pantry', { scroll: false });
+    } else {
+      router.replace('/nutrition', { scroll: false });
+    }
+  }, [router]);
+
   // Current selected date
   const [selectedDate, setSelectedDate] = useState<Date>(() => {
     const date = initialDate ?? new Date();
@@ -290,6 +308,7 @@ export function FoodLogPage({
       setSummary(data);
     } catch (err) {
       console.error('Error fetching summary:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load daily summary');
     } finally {
       setIsLoadingSummary(false);
     }
@@ -556,11 +575,11 @@ export function FoodLogPage({
   };
 
   // Handle recipe add (legacy RecipeItem)
-  const handleRecipeAdd = (recipe: RecipeItem) => {
+  const handleRecipeAdd = async (recipe: RecipeItem) => {
     if (onRecipeAdd) {
       onRecipeAdd(recipe);
     } else {
-      addFoodEntry({
+      await addFoodEntry({
         name: recipe.name,
         calories: recipe.calories,
         protein: recipe.protein,
@@ -570,6 +589,7 @@ export function FoodLogPage({
         source: 'RECIPE',
         recipeId: recipe.id,
       });
+      toast.success(`Added: ${recipe.name}`);
     }
   };
 
@@ -590,13 +610,14 @@ export function FoodLogPage({
 
     toast.success(`Added: ${recipe.name}`);
 
-    // Increment usage count for the recipe
+    // Increment usage count for the recipe (non-blocking)
     try {
-      await fetch(`/api/recipes/${recipe.id}`, {
+      const res = await fetch(`/api/recipes/${recipe.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ usageCount: recipe.usageCount + 1 }),
       });
+      if (!res.ok) console.warn('Failed to update recipe usage count:', res.status);
     } catch (err) {
       console.error('Failed to update recipe usage:', err);
     }
@@ -657,13 +678,14 @@ export function FoodLogPage({
 
     toast.success(`Added: ${recipe.name}${servingLabel}`);
 
-    // Increment usage count for the recipe
+    // Increment usage count for the recipe (non-blocking)
     try {
-      await fetch(`/api/recipes/${recipe.id}`, {
+      const res = await fetch(`/api/recipes/${recipe.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ usageCount: recipe.usageCount + 1 }),
       });
+      if (!res.ok) console.warn('Failed to update recipe usage count:', res.status);
     } catch (err) {
       console.error('Failed to update recipe usage:', err);
     }
@@ -738,6 +760,9 @@ export function FoodLogPage({
         servingUnit: fullEntry.servingUnit,
         meal: fullEntry.meal,
       });
+    } else {
+      toast.error('Item not found. Refreshing...');
+      fetchEntries();
     }
   };
 
@@ -915,11 +940,20 @@ export function FoodLogPage({
       [staple.mealSlot]: [...prev[staple.mealSlot], optimisticEntry],
     }));
 
-    // Dismiss the carousel for this slot
-    dismissSlot(staple.mealSlot);
-
     // Fire POST and get real entry ID
     const entryId = await logStaple(staple, selectedDate);
+
+    if (!entryId) {
+      // Roll back optimistic entry
+      setEntries(prev => ({
+        ...prev,
+        [staple.mealSlot]: prev[staple.mealSlot].filter(e => e.id !== optimisticEntry.id),
+      }));
+      return;
+    }
+
+    // Dismiss the carousel only after confirmed success
+    dismissSlot(staple.mealSlot);
 
     // Refresh to get real entry
     await Promise.all([fetchEntries(), fetchSummary()]);
@@ -960,17 +994,26 @@ export function FoodLogPage({
 
   const handleUnpinStaple = useCallback(async (item: FoodLogItemData, meal: string) => {
     const mealSlot = meal.toUpperCase() as MealType;
-    // Fetch fresh staples to avoid stale closure
-    const res = await fetch('/api/food-staples');
-    if (!res.ok) return;
-    const data = await res.json();
-    const allStaples: Array<{ id: string; name: string; mealSlot: string }> = data.staples;
-    const match = allStaples.find(
-      s => s.mealSlot === mealSlot && s.name.toLowerCase() === item.name.toLowerCase()
-    );
-    if (match) {
-      await deleteStaple(match.id);
-      toast('Unpinned staple');
+    try {
+      const res = await fetch('/api/food-staples');
+      if (!res.ok) {
+        toast.error('Could not unpin staple. Please try again.');
+        return;
+      }
+      const data = await res.json();
+      const allStaples: Array<{ id: string; name: string; mealSlot: string }> = data.staples;
+      const match = allStaples.find(
+        s => s.mealSlot === mealSlot && s.name.toLowerCase() === item.name.toLowerCase()
+      );
+      if (match) {
+        await deleteStaple(match.id);
+        toast('Unpinned staple');
+      } else {
+        toast.error('Staple not found. It may have been removed already.');
+      }
+    } catch (err) {
+      console.error('Error unpinning staple:', err);
+      toast.error('Failed to unpin staple');
     }
   }, [deleteStaple]);
 
@@ -990,7 +1033,8 @@ export function FoodLogPage({
         toast.error('Failed to reorder staples');
       }
       await fetchStaples();
-    } catch {
+    } catch (err) {
+      console.error('Failed to reorder staples:', err);
       toast.error('Failed to reorder staples');
     }
   }, [managingSlot, fetchStaples]);
@@ -1068,6 +1112,48 @@ export function FoodLogPage({
 
   // Recipes appear first (visually distinct), then regular quick foods
   const quickFoodItems: QuickFoodItem[] = [...recipeItems, ...regularQuickFoods];
+
+  // Build merged quick items for the new MergedQuickAdd component
+  const mergedQuickItems: MergedQuickItem[] = useMemo(() => {
+    const stapleItems: MergedQuickItem[] = Object.values(staplesBySlot)
+      .flat()
+      .map((s) => ({
+        id: `staple-${s.id}`,
+        name: s.name,
+        calories: s.calories,
+        protein: s.protein,
+        emoji: s.emoji ?? undefined,
+        tag: 'staple' as const,
+      }));
+
+    const recipeQuickItems: MergedQuickItem[] = topRecipes.map((r) => ({
+      id: `recipe-${r.id}`,
+      name: r.name,
+      calories: r.calories,
+      protein: r.protein,
+      emoji: r.emoji ?? undefined,
+      tag: 'recipe' as const,
+      isRecipe: true,
+      recipeId: r.id,
+    }));
+
+    const recentItems: MergedQuickItem[] = quickFoods.map((qf) => ({
+      id: qf.id,
+      name: qf.name,
+      calories: qf.calories,
+      protein: qf.protein,
+      emoji: qf.emoji ?? undefined,
+      tag: 'recent' as const,
+    }));
+
+    const seenNames = new Set<string>();
+    return [...stapleItems, ...recipeQuickItems, ...recentItems].filter((item) => {
+      const key = item.name.toLowerCase();
+      if (seenNames.has(key)) return false;
+      seenNames.add(key);
+      return true;
+    });
+  }, [staplesBySlot, topRecipes, quickFoods]);
 
   // Loading state
   const isLoading = isLoadingEntries || isLoadingSummary || isLoadingQuickFoods;
@@ -1234,8 +1320,6 @@ export function FoodLogPage({
           onOpenCopyMealModal={handleOpenCopyMealModal}
           onSaveAsRecipe={handleSaveAsRecipe}
           recipeSidebarRefreshTrigger={recipeSidebarRefreshTrigger}
-          remainingCalories={remainingCalories}
-          remainingProtein={remainingProtein}
           suggestion={suggestion}
           onSuggestionClick={handleSuggestionClick}
           staples={staplesBySlot}
@@ -1248,6 +1332,9 @@ export function FoodLogPage({
           onManageStaples={(slot: string) => setManagingSlot(slot as MealType)}
           onPinAsStaple={handlePinAsStaple}
           onUnpinStaple={handleUnpinStaple}
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          mergedQuickItems={mergedQuickItems}
           customFooter={errorBanner ? (
             <>
               {errorBanner}
@@ -1299,7 +1386,6 @@ export function FoodLogPage({
           onSaveAsRecipe={handleSaveAsRecipe}
           recipeSidebarRefreshTrigger={recipeSidebarRefreshTrigger}
           suggestion={suggestion}
-          suggestionDetail={suggestion}
           onSuggestionClick={handleSuggestionClick}
           rightContentExtra={errorBanner}
           staples={staplesBySlot}
@@ -1312,6 +1398,9 @@ export function FoodLogPage({
           onManageStaples={(slot: string) => setManagingSlot(slot as MealType)}
           onPinAsStaple={handlePinAsStaple}
           onUnpinStaple={handleUnpinStaple}
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          mergedQuickItems={mergedQuickItems}
         />
       </div>
 

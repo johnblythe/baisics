@@ -27,6 +27,24 @@ const DEV_PAGES = [
     description: 'Exploring rest day UX approaches - zen, celebration, active recovery, coaching, gamification, social proof',
     status: 'ready',
   },
+  {
+    path: '/dev/staples-carousel',
+    title: 'Staples Carousel (#376)',
+    description: 'Food staples carousel in meal slots — comparing minimal, inline macros, and rich card designs',
+    status: 'ready',
+  },
+  {
+    path: '/dev/staples-pin-ux',
+    title: 'Staples Pin/Unpin UX (#376)',
+    description: 'Pin/unpin interactions, visual distinction of pinned vs unpinned food items in the meal log',
+    status: 'ready',
+  },
+  {
+    path: '/dev/food-log-redesign',
+    title: 'Food Log Page Redesign (#376)',
+    description: 'Full page redesign — 5 options: current, log-first, dashboard+drill, timeline, and tabbed zones',
+    status: 'ready',
+  },
 ];
 
 export default function DevIndexPage() {
