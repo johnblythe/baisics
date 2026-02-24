@@ -30,16 +30,6 @@ export function StapleCarousel({
   const touchStartX = useRef<number | null>(null);
   const touchDeltaX = useRef(0);
 
-  const current = staples[index];
-  if (!current) return null;
-
-  const calPct = dailyTargets.calories > 0
-    ? Math.round((current.calories / dailyTargets.calories) * 100)
-    : 0;
-  const protPct = dailyTargets.protein > 0
-    ? Math.round((current.protein / dailyTargets.protein) * 100)
-    : 0;
-
   const goTo = (newIndex: number) => {
     setDirection(newIndex > index ? 1 : -1);
     setIndex(newIndex);
@@ -68,6 +58,16 @@ export function StapleCarousel({
     touchDeltaX.current = 0;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [staples.length, index]);
+
+  const current = staples[index];
+  if (!current) return null;
+
+  const calPct = dailyTargets.calories > 0
+    ? Math.round((current.calories / dailyTargets.calories) * 100)
+    : 0;
+  const protPct = dailyTargets.protein > 0
+    ? Math.round((current.protein / dailyTargets.protein) * 100)
+    : 0;
 
   const items = Array.isArray(current.items) ? current.items as string[] : null;
 

@@ -10,16 +10,16 @@ const MOCK_TARGETS = { calories: 2000, protein: 150, carbs: 250, fat: 65 };
 
 const MOCK_MEALS = {
   breakfast: [
-    { id: '1', name: 'Kirkland Greek Yogurt', calories: 130, protein: 23, carbs: 9, fat: 0, isStaple: true },
-    { id: '2', name: 'Blueberries', calories: 29, protein: 0, carbs: 7, fat: 0, isStaple: true },
+    { id: '1', name: 'Kirkland Greek Yogurt', calories: 130, protein: 23, carbs: 9, fat: 0, isStaple: true, isApproximate: false },
+    { id: '2', name: 'Blueberries', calories: 29, protein: 0, carbs: 7, fat: 0, isStaple: true, isApproximate: false },
   ],
   lunch: [
-    { id: '3', name: 'Bone-In Pork Shoulder Butt Roast', calories: 282, protein: 27, carbs: 0, fat: 19 },
+    { id: '3', name: 'Bone-In Pork Shoulder Butt Roast', calories: 282, protein: 27, carbs: 0, fat: 19, isStaple: false, isApproximate: false },
   ],
   dinner: [],
   snacks: [
-    { id: '4', name: 'Banana', calories: 105, protein: 1, carbs: 27, fat: 0 },
-    { id: '5', name: 'Optimum Nutrition Whey', calories: 124, protein: 24, carbs: 3, fat: 1.5 },
+    { id: '4', name: 'Banana', calories: 105, protein: 1, carbs: 27, fat: 0, isStaple: false, isApproximate: false },
+    { id: '5', name: 'Optimum Nutrition Whey', calories: 124, protein: 24, carbs: 3, fat: 1.5, isStaple: false, isApproximate: false },
   ],
 };
 
