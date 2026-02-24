@@ -26,6 +26,8 @@ export interface UnifiedFoodResult {
   source: FoodSearchSource;
   /** For USDA foods, the FDC ID */
   fdcId?: number;
+  /** For OFF foods, the barcode */
+  offCode?: string;
   /** For user QuickFoods, serving info */
   servingSize?: number;
   servingUnit?: string;

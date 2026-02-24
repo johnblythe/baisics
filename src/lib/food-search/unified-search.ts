@@ -262,6 +262,55 @@ async function searchOpenFoodFacts(
 }
 
 /**
+ * Row type for raw SQL query against foods_off table
+ */
+interface FoodsOffRow {
+  id: string;
+  code: string;
+  product_name: string;
+  brands: string | null;
+  calories_per_100g: number | null;
+  protein_per_100g: number | null;
+  carbs_per_100g: number | null;
+  fat_per_100g: number | null;
+  serving_size: string | null;
+}
+
+/**
+ * Search local Open Food Facts cache via Postgres tsvector
+ */
+async function searchLocalOff(
+  query: string,
+  pageSize: number
+): Promise<UnifiedFoodResult[]> {
+  try {
+    const foods = await prisma.$queryRaw<FoodsOffRow[]>`
+      SELECT id, code, product_name, brands,
+             calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g,
+             serving_size
+      FROM foods_off
+      WHERE search_vector @@ plainto_tsquery('english', ${query})
+      ORDER BY ts_rank(search_vector, plainto_tsquery('english', ${query})) DESC
+      LIMIT ${pageSize}
+    `;
+    return foods.map(food => ({
+      id: `off-local:${food.code}`,
+      name: food.product_name,
+      brand: food.brands ?? undefined,
+      calories: Math.round(food.calories_per_100g ?? 0),
+      protein: Math.round(food.protein_per_100g ?? 0),
+      carbs: Math.round(food.carbs_per_100g ?? 0),
+      fat: Math.round(food.fat_per_100g ?? 0),
+      source: 'OPEN_FOOD_FACTS' as FoodSearchSource,
+      offCode: food.code,
+    }));
+  } catch (error) {
+    console.error('Local OFF search error:', error);
+    return [];
+  }
+}
+
+/**
  * Search all food sources and return unified, deduplicated results
  *
  * Search order:
@@ -284,15 +333,21 @@ export async function unifiedSearch(
     skipOff = false,
   } = options;
 
-  // Search all sources concurrently
-  const [quickFoodResults, usdaResults, offResults] = await Promise.all([
+  // Phase 1: parallel search — QuickFoods + USDA + local OFF
+  const [quickFoodResults, usdaResults, offLocalResults] = await Promise.all([
     userId ? searchQuickFoods(query, userId, pageSize) : Promise.resolve([]),
     skipUsda ? Promise.resolve([]) : searchUsdaFoods(query, pageSize),
-    skipOff ? Promise.resolve([]) : searchOpenFoodFacts(query, pageSize),
+    skipOff ? Promise.resolve([]) : searchLocalOff(query, pageSize),
   ]);
 
+  // Phase 2: conditional SAL fallback — only if local OFF is thin
+  let offSalResults: UnifiedFoodResult[] = [];
+  if (!skipOff && offLocalResults.length < 5) {
+    offSalResults = await searchOpenFoodFacts(query, pageSize);
+  }
+
   // Combine all results
-  const combined = [...quickFoodResults, ...usdaResults, ...offResults];
+  const combined = [...quickFoodResults, ...usdaResults, ...offLocalResults, ...offSalResults];
 
   // Filter out bad data (0 cal/0 everything, invalid values)
   const validResults = combined.filter(hasValidNutrition);
@@ -312,7 +367,7 @@ export async function unifiedSearch(
     counts: {
       quickFoods: quickFoodResults.length,
       usda: usdaResults.length,
-      openFoodFacts: offResults.length,
+      openFoodFacts: offLocalResults.length + offSalResults.length,
     },
   };
 }
