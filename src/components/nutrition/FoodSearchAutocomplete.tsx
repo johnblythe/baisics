@@ -170,16 +170,16 @@ export function FoodSearchAutocomplete({
   }, [query, searchStartTime]);
 
   // Close dropdown when clicking outside
-  // Using 'click' instead of 'mousedown' to avoid closing during scroll gestures
+  // Using 'pointerdown' to avoid closing when switching browser tabs (click fires on tab switch)
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
+    const handleClickOutside = (e: PointerEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setIsOpen(false);
       }
     };
 
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
+    document.addEventListener('pointerdown', handleClickOutside);
+    return () => document.removeEventListener('pointerdown', handleClickOutside);
   }, []);
 
   // Log abandon when search is closed without selection (debounced)
@@ -487,8 +487,12 @@ export function FoodSearchAutocomplete({
             )
           ) : foods.length === 0 ? (
             loading ? (
-              <li className="px-4 py-3 text-sm" style={{ color: COLORS.gray400 }}>
-                Searching food databases...
+              <li className="px-4 py-6 text-sm text-center" style={{ color: COLORS.gray400 }}>
+                <div
+                  className="inline-block w-4 h-4 border-2 rounded-full animate-spin mb-2"
+                  style={{ borderColor: COLORS.gray100, borderTopColor: COLORS.coral }}
+                />
+                <div>Searching food databases...</div>
               </li>
             ) : searchComplete ? (
               <li className="px-4 py-3 text-sm" style={{ color: COLORS.gray400 }}>
