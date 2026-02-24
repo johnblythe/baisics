@@ -1,41 +1,28 @@
 'use client';
 
 import React, { useState, ReactNode } from 'react';
-import { Search, TrendingUp, Clock, ChefHat, Plus, Database } from 'lucide-react';
 import { MealType as PrismaMealType } from '@prisma/client';
+import { DualRing } from '../DualRing';
+import { SuggestionBanner } from '../SuggestionBanner';
+import { MergedQuickAdd, type MergedQuickItem } from '../MergedQuickAdd';
+import { PantryTab } from '../PantryTab';
 import {
   MacroProgressBar,
-  QuickInput,
-  QuickPills,
   WeeklyStrip,
-  MealSection,
-  USDAFoodSearch,
-  MyRecipesSidebar,
   type MacroTotals,
   type MacroTargets,
   type QuickFoodItem,
   type WeeklyDayData,
   type FoodLogItemData,
-  type MealType,
   type USDAFoodResult,
   type MealSectionFoodResult,
   type Recipe,
   type RecipeWithIngredients,
 } from '../index';
 import type { FoodStaple } from '@/hooks/useStaples';
+import { MealSectionList, TabBar, type RecipeItem, type MealData } from './shared';
 
-export interface RecipeItem {
-  id: string;
-  name: string;
-  calories: number;
-  protein: number;
-  emoji?: string;
-}
-
-export interface MealData {
-  meal: MealType | string;
-  items: FoodLogItemData[];
-}
+export type { RecipeItem, MealData };
 
 export interface DesktopLayoutProps {
   // Header
@@ -110,7 +97,6 @@ export interface DesktopLayoutProps {
 
   // Suggestion
   suggestion?: string;
-  suggestionDetail?: string;
   onSuggestionClick?: () => void;
 
   // Custom content slots
@@ -132,52 +118,11 @@ export interface DesktopLayoutProps {
   onManageStaples?: (mealSlot: string) => void;
   onPinAsStaple?: (item: FoodLogItemData, meal: string) => void;
   onUnpinStaple?: (item: FoodLogItemData, meal: string) => void;
-}
 
-function RecipesPanel({
-  recipes,
-  onAdd,
-  onCreateRecipe,
-}: {
-  recipes: RecipeItem[];
-  onAdd: (item: RecipeItem) => void;
-  onCreateRecipe?: () => void;
-}) {
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="font-medium text-[#0F172A] flex items-center gap-2">
-          <ChefHat className="w-4 h-4 text-[#FF6B6B]" />
-          My Recipes
-        </h3>
-      </div>
-      {recipes.map((recipe) => (
-        <button
-          key={recipe.id}
-          type="button"
-          onClick={() => onAdd(recipe)}
-          className="w-full flex items-center gap-3 p-3 bg-[#F8FAFC] hover:bg-[#F1F5F9] rounded-xl transition-colors text-left"
-        >
-          {recipe.emoji && <span className="text-xl">{recipe.emoji}</span>}
-          <div className="flex-1">
-            <div className="text-sm font-medium text-[#0F172A]">{recipe.name}</div>
-            <div className="text-xs text-[#94A3B8]">{recipe.calories} cal · {recipe.protein}g P</div>
-          </div>
-          <Plus className="w-4 h-4 text-[#94A3B8]" />
-        </button>
-      ))}
-      {onCreateRecipe && (
-        <button
-          type="button"
-          onClick={onCreateRecipe}
-          className="w-full flex items-center justify-center gap-2 p-3 border-2 border-dashed border-[#E2E8F0] hover:border-[#FF6B6B] rounded-xl text-sm text-[#94A3B8] hover:text-[#FF6B6B] transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          Create Recipe
-        </button>
-      )}
-    </div>
-  );
+  // Tab system
+  activeTab?: 'log' | 'pantry';
+  onTabChange?: (tab: 'log' | 'pantry') => void;
+  mergedQuickItems?: MergedQuickItem[];
 }
 
 export function DesktopLayout({
@@ -215,7 +160,6 @@ export function DesktopLayout({
   onOpenCopyMealModal,
   onSaveAsRecipe,
   suggestion,
-  suggestionDetail,
   onSuggestionClick,
   customHeader,
   leftSidebarExtra,
@@ -231,18 +175,20 @@ export function DesktopLayout({
   onManageStaples,
   onPinAsStaple,
   onUnpinStaple,
+  activeTab: activeTabProp,
+  onTabChange: onTabChangeProp,
+  mergedQuickItems = [],
 }: DesktopLayoutProps) {
+  // Internal tab state as fallback when props not provided
+  const [internalTab, setInternalTab] = useState<'log' | 'pantry'>('log');
+  const activeTab = activeTabProp ?? internalTab;
+  const onTabChange = onTabChangeProp ?? setInternalTab;
+
   const [weekExpanded, setWeekExpanded] = useState(defaultWeeklyExpanded);
 
-  // Check if selected date is today
-  const isSelectedDateToday = selectedDate
-    ? selectedDate.toDateString() === new Date().toDateString()
-    : true;
-
-  // Format date for display
-  const mealsTitle = isSelectedDateToday
-    ? "Today's Meals"
-    : selectedDate?.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) + "'s Meals";
+  // Calculate remaining macros
+  const remainingCalories = Math.max(0, (macroTargets.calories ?? 0) - (macroTotals.calories ?? 0));
+  const remainingProtein = Math.max(0, (macroTargets.protein ?? 0) - (macroTotals.protein ?? 0));
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
@@ -265,158 +211,116 @@ export function DesktopLayout({
         </div>
       )}
 
+      {/* Tab Bar */}
+      <TabBar
+        activeTab={activeTab}
+        onTabChange={onTabChange}
+        className="[&>div]:max-w-6xl [&>div]:mx-auto [&>div]:px-6"
+      />
+
       {/* Main Content */}
       <div className="max-w-6xl mx-auto px-6 py-6">
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Left Column: Quick Add (sticky) */}
-          <div className="lg:col-span-1">
-            <div className="lg:sticky lg:top-6 space-y-4">
-              {/* USDA Food Search - Primary Entry Point */}
-              {onUSDAFoodAdd && (
-                <div className="bg-white rounded-xl border border-[#E2E8F0] p-4">
-                  <h3 className="font-medium text-[#0F172A] mb-3 flex items-center gap-2">
-                    <Search className="w-4 h-4 text-[#FF6B6B]" />
-                    Search Foods
-                  </h3>
-                  <USDAFoodSearch
-                    userId={userId}
-                    onConfirm={onUSDAFoodAdd}
-                    placeholder="Search foods... (chicken, rice, banana)"
-                  />
-                </div>
-              )}
+        {activeTab === 'log' ? (
+          <div className="grid grid-cols-3 gap-6">
+            {/* Main Column (2/3) */}
+            <div className="col-span-2 space-y-4">
+              {/* Weekly Overview */}
+              <WeeklyStrip
+                weekData={weekData}
+                expanded={weekExpanded}
+                onToggle={() => setWeekExpanded(!weekExpanded)}
+                summaryMessage={weeklySummaryMessage}
+                onDayClick={onDayClick}
+              />
 
-              {/* AI Quick Input */}
-              <div className="bg-white rounded-xl border border-[#E2E8F0] p-4">
-                <h3 className="font-medium text-[#0F172A] mb-3 flex items-center gap-2">
-                  <Database className="w-4 h-4 text-[#FF6B6B]" />
-                  AI Quick Add
-                </h3>
-                <QuickInput
-                  onSubmit={onAISubmit}
-                  placeholder={aiInputPlaceholder}
-                  isLoading={isAILoading}
-                />
-              </div>
+              {/* Suggestion Banner */}
+              <SuggestionBanner
+                remainingCalories={remainingCalories}
+                remainingProtein={remainingProtein}
+                suggestion={suggestion}
+                onSuggestMeal={onSuggestionClick}
+              />
 
-              {/* Today's Progress */}
-              <div className="bg-white rounded-xl border border-[#E2E8F0] p-4">
-                <h3 className="font-medium text-[#0F172A] mb-3 flex items-center gap-2">
-                  <TrendingUp className="w-4 h-4 text-[#FF6B6B]" />
-                  Today&apos;s Progress
-                </h3>
-                <MacroProgressBar layout="vertical" totals={macroTotals} targets={macroTargets} />
-              </div>
-
-              {/* Quick Add */}
-              <div className="bg-white rounded-xl border border-[#E2E8F0] p-4">
-                <h3 className="font-medium text-[#0F172A] mb-3 flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-[#FF6B6B]" />
-                  Quick Add
-                </h3>
-                <QuickPills foods={quickFoods} onAdd={onQuickAdd} onRecipeLog={onQuickRecipeLog} layout="grid" maxItems={6} />
-              </div>
-
-              {/* My Recipes Sidebar - Self-fetching */}
-              {enableRecipeSidebar && (
-                <MyRecipesSidebar
-                  onRecipeAdd={onSidebarRecipeAdd}
+              {/* Meals Log */}
+              <div className="space-y-4">
+                <MealSectionList
+                  meals={meals}
+                  onAddToMeal={onAddToMeal}
+                  onEditItem={onEditItem}
+                  onDeleteItem={onDeleteItem}
+                  enableInlineSearch={enableInlineSearch}
+                  onInlineFoodAdd={onInlineFoodAdd}
+                  onInlineRecipeAdd={onInlineRecipeAdd}
                   onCreateRecipe={onCreateRecipe}
-                  maxItems={5}
-                  refreshTrigger={recipeSidebarRefreshTrigger}
+                  userId={userId}
+                  selectedDate={selectedDate}
+                  onCopyFromYesterday={onCopyFromYesterday}
+                  onOpenCopyMealModal={onOpenCopyMealModal}
+                  onSaveAsRecipe={onSaveAsRecipe}
+                  staples={staples}
+                  dailyTargets={dailyTargets}
+                  dismissedSlots={dismissedSlots}
+                  isToday={isTodayProp}
+                  onLogStaple={onLogStaple}
+                  onDismissSlot={onDismissSlot}
+                  onDeleteStaple={onDeleteStaple}
+                  onManageStaples={onManageStaples}
+                  onPinAsStaple={onPinAsStaple}
+                  onUnpinStaple={onUnpinStaple}
                 />
-              )}
-
-              {/* Legacy Recipes Panel (for passed-in recipes) */}
-              {!enableRecipeSidebar && recipes.length > 0 && onRecipeAdd && (
-                <div className="bg-white rounded-xl border border-[#E2E8F0] p-4">
-                  <RecipesPanel
-                    recipes={recipes}
-                    onAdd={onRecipeAdd}
-                    onCreateRecipe={onCreateRecipe}
-                  />
-                </div>
-              )}
+              </div>
 
               {/* Optional extra content */}
-              {leftSidebarExtra}
-            </div>
-          </div>
-
-          {/* Right Column: Log + Weekly */}
-          <div className="lg:col-span-2 space-y-4">
-            {/* Weekly Overview */}
-            <WeeklyStrip
-              weekData={weekData}
-              expanded={weekExpanded}
-              onToggle={() => setWeekExpanded(!weekExpanded)}
-              summaryMessage={weeklySummaryMessage}
-              onDayClick={onDayClick}
-            />
-
-            {/* Meals Log */}
-            <div className="bg-white rounded-xl border border-[#E2E8F0] p-4">
-              <h3 className="font-medium text-[#0F172A] mb-4">{mealsTitle}</h3>
-              <div className="space-y-4">
-                {meals.map((mealData) => (
-                  <MealSection
-                    key={mealData.meal}
-                    meal={mealData.meal}
-                    items={mealData.items}
-                    onAdd={() => onAddToMeal(mealData.meal)}
-                    onEditItem={onEditItem}
-                    onDeleteItem={onDeleteItem}
-                    showItemActions={true}
-                    enableInlineSearch={enableInlineSearch && !!onInlineFoodAdd}
-                    onFoodAdd={onInlineFoodAdd}
-                    userId={userId}
-                    onRecipeAdd={onInlineRecipeAdd ? (recipe, multiplier) => onInlineRecipeAdd(recipe, multiplier, mealData.meal) : undefined}
-                    onCreateRecipe={onCreateRecipe}
-                    selectedDate={selectedDate}
-                    onCopyFromYesterday={onCopyFromYesterday}
-                    onOpenCopyMealModal={onOpenCopyMealModal}
-                    onSaveAsRecipe={onSaveAsRecipe}
-                    staples={staples?.[mealData.meal.toUpperCase()]}
-                    dailyTargets={dailyTargets}
-                    isDismissed={dismissedSlots?.has(mealData.meal.toUpperCase())}
-                    isToday={isTodayProp}
-                    onLogStaple={onLogStaple}
-                    onDismissStaples={onDismissSlot ? () => onDismissSlot(mealData.meal.toUpperCase()) : undefined}
-                    onDeleteStaple={onDeleteStaple}
-                    onManageStaples={onManageStaples ? () => onManageStaples(mealData.meal.toUpperCase()) : undefined}
-                    onPinAsStaple={onPinAsStaple ? (item) => onPinAsStaple(item, mealData.meal) : undefined}
-                    onUnpinStaple={onUnpinStaple ? (item) => onUnpinStaple(item, mealData.meal) : undefined}
-                  />
-                ))}
-              </div>
+              {rightContentExtra}
             </div>
 
-            {/* Smart Suggestion */}
-            {suggestion && (
-              <div className="bg-gradient-to-r from-[#FF6B6B]/10 to-[#EF5350]/10 rounded-xl border border-[#FF6B6B]/20 p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-sm text-[#64748B]">To hit your targets</div>
-                    <div className="font-bold text-[#0F172A]">
-                      {suggestionDetail || suggestion}
+            {/* Sidebar (1/3, sticky) */}
+            <div className="col-span-1">
+              <div className="sticky top-6 space-y-4">
+                {/* Card 1: DualRing + MacroProgressBar */}
+                <div className="bg-white rounded-xl border border-[#E2E8F0] p-5">
+                  <div className="flex items-center gap-4 mb-4">
+                    <DualRing totals={macroTotals} targets={macroTargets} size="md" />
+                    <div>
+                      <div className="text-lg font-bold text-[#0F172A]">{remainingCalories}</div>
+                      <div className="text-xs text-[#94A3B8]">cal remaining</div>
+                      <div className="text-sm font-medium text-green-600 mt-0.5">{remainingProtein}g P to go</div>
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={onSuggestionClick}
-                    className="px-4 py-2 bg-[#FF6B6B] text-white font-medium rounded-lg hover:bg-[#EF5350] transition-colors flex items-center gap-2"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Add
-                  </button>
+                  <MacroProgressBar layout="vertical" totals={macroTotals} targets={macroTargets} />
                 </div>
-              </div>
-            )}
 
-            {/* Optional extra content */}
-            {rightContentExtra}
+                {/* Card 2: MergedQuickAdd */}
+                <div className="bg-white rounded-xl border border-[#E2E8F0] p-4">
+                  <MergedQuickAdd
+                    items={mergedQuickItems}
+                    onAdd={(item) => onQuickAdd({ ...item })}
+                    onRecipeLog={onQuickRecipeLog ? async (item, meal) => {
+                      await onQuickRecipeLog({ ...item, isRecipe: true }, meal);
+                    } : undefined}
+                    onViewPantry={() => onTabChange('pantry')}
+                    maxItems={6}
+                  />
+                </div>
+
+                {/* Optional extra content */}
+                {leftSidebarExtra}
+              </div>
+            </div>
           </div>
-        </div>
+        ) : (
+          /* Pantry Tab -- full width */
+          <PantryTab
+            quickFoods={quickFoods}
+            onQuickAdd={onQuickAdd}
+            onCreateRecipe={onCreateRecipe}
+            onSidebarRecipeAdd={onSidebarRecipeAdd}
+            recipeSidebarRefreshTrigger={recipeSidebarRefreshTrigger}
+            staples={staples}
+            onManageStaples={onManageStaples}
+            onLogStaple={onLogStaple}
+          />
+        )}
       </div>
     </div>
   );

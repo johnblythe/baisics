@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Pencil, Trash2, AlertCircle, Pin } from 'lucide-react';
+import { Pencil, Trash2, AlertCircle, Pin, PinOff } from 'lucide-react';
 
 export interface FoodLogItemData {
   id: string;
@@ -34,7 +34,9 @@ export function FoodLogItem({
   showActions = false,
 }: FoodLogItemProps) {
   return (
-    <div data-testid="food-log-item" className="group flex items-center justify-between p-3 bg-[#F8FAFC] rounded-xl hover:bg-[#F1F5F9] transition-colors">
+    <div data-testid="food-log-item" className={`group flex items-center justify-between p-3 rounded-xl transition-colors ${
+      isPinned ? 'bg-transparent hover:bg-[#FFE5E5]/60' : 'bg-[#F8FAFC] hover:bg-[#F1F5F9]'
+    }`}>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
           <span className="text-sm font-medium text-[#0F172A] truncate">{item.name}</span>
@@ -55,12 +57,8 @@ export function FoodLogItem({
           <div className="text-sm font-medium text-[#0F172A]">{item.calories} cal</div>
           <div className="text-xs text-green-600">{item.protein}g P</div>
         </div>
-        {/* Pinned indicator (always visible when pinned) */}
-        {isPinned && (
-          <Pin className="w-3.5 h-3.5 text-[#FF6B6B] shrink-0" />
-        )}
-        {showActions && (onEdit || onDelete || onPinAsStaple) && (
-          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        {showActions && (onEdit || onDelete || onPinAsStaple || onUnpinStaple) && (
+          <div className="flex items-center gap-1">
             {isPinned && onUnpinStaple ? (
               <button
                 type="button"
@@ -69,13 +67,13 @@ export function FoodLogItem({
                 aria-label={`Unpin ${item.name}`}
                 title="Unpin staple"
               >
-                <Pin className="w-3.5 h-3.5" />
+                <PinOff className="w-3.5 h-3.5" />
               </button>
             ) : !isPinned && onPinAsStaple ? (
               <button
                 type="button"
                 onClick={() => onPinAsStaple(item)}
-                className="p-1.5 text-[#94A3B8] hover:text-[#FF6B6B] hover:bg-[#FFE5E5] rounded-lg transition-colors"
+                className="p-1.5 text-[#94A3B8] hover:text-[#FF6B6B] hover:bg-[#FFE5E5] rounded-lg transition-all opacity-0 group-hover:opacity-100"
                 aria-label={`Pin ${item.name} as staple`}
                 title="Pin as staple"
               >
@@ -86,7 +84,7 @@ export function FoodLogItem({
               <button
                 type="button"
                 onClick={() => onEdit(item)}
-                className="p-1.5 text-[#94A3B8] hover:text-[#64748B] hover:bg-[#E2E8F0] rounded-lg transition-colors"
+                className="p-1.5 text-[#94A3B8] hover:text-[#64748B] hover:bg-[#E2E8F0] rounded-lg transition-colors opacity-0 group-hover:opacity-100"
                 aria-label={`Edit ${item.name}`}
               >
                 <Pencil className="w-3.5 h-3.5" />
@@ -96,7 +94,7 @@ export function FoodLogItem({
               <button
                 type="button"
                 onClick={() => onDelete(item)}
-                className="p-1.5 text-[#94A3B8] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                className="p-1.5 text-[#94A3B8] hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
                 aria-label={`Delete ${item.name}`}
               >
                 <Trash2 className="w-3.5 h-3.5" />

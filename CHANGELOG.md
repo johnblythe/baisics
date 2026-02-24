@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Food log page redesign (Option H) — 2-tab Log/Pantry layout with DualRing, MergedQuickAdd, SuggestionBanner (#376)
+- Shared MealSectionList and TabBar components to deduplicate layout code (#376)
 - Food Staples — pin frequently-eaten foods to meal slots as a swipeable carousel (#376)
   - Rich card (Option C): macro chips, daily % bars, expandable ingredients
   - Optimistic confirm with background POST, localStorage dismiss persistence
@@ -15,6 +17,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - CRUD API with max-5-per-slot transaction enforcement
 
 ### Fixed
+- Transparent backgrounds on food log cards — meal sections, suggestion banner, staple carousel now have solid white backgrounds (#376)
+- Duplicate Tailwind transition utilities on pin-as-staple button (transition-colors + transition-opacity → transition-all) (#376)
+- Missing Suspense fallback on nutrition page causing blank flash during navigation (#376)
+- Silent failure in fetchSummary, handleUnpinStaple, handleLogStaple — now shows error toasts (#376)
+- handleLogStaple optimistic update not rolled back on API failure (#376)
+- Unsafe type cast in MobileLayout MergedQuickAdd (as unknown as → spread) (#376)
+- Duplicate items in merged quick-add list when food is both staple and recent (#376)
+- No-op onCreateRecipe fallback in PantryTab — button now hidden when handler absent (#376)
+- Empty catch block in handleReorderStaples now logs error (#376)
 - Sticky workout header now sticks to top of viewport instead of below nav bar (#369)
 - Numeric inputs show number keypad on mobile across workout and food logging flows (#370)
 - "Save" buttons now say "Update" when editing existing data across 10 components (#371)

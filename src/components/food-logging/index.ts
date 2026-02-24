@@ -53,6 +53,13 @@ export type { DatePickerModalProps } from './DatePickerModal';
 export { StapleCarousel } from './StapleCarousel';
 export type { StapleCarouselProps } from './StapleCarousel';
 
+// New redesign components
+export { DualRing } from './DualRing';
+export { SuggestionBanner } from './SuggestionBanner';
+export { MergedQuickAdd } from './MergedQuickAdd';
+export type { MergedQuickItem } from './MergedQuickAdd';
+export { PantryTab } from './PantryTab';
+
 // USDA Food Search
 export { USDAFoodSearch } from './USDAFoodSearch';
 export type { USDAFoodSearchProps, USDAFoodResult } from './USDAFoodSearch';

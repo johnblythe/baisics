@@ -80,7 +80,7 @@ export function StapleCarousel({
   return (
     <div className="mt-2 mb-1">
       <div
-        className="relative rounded-xl border-2 border-dashed border-[#E2E8F0] bg-gray-50/60"
+        className="relative rounded-xl border-2 border-dashed border-[#E2E8F0] bg-white"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}

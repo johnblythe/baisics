@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Search, Plus, Loader2, BookOpen } from 'lucide-react';
+import { Search, Plus, Loader2, BookOpen, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 import MainLayout from '@/app/components/layouts/MainLayout';
-import { NutritionTabs } from '@/components/nutrition/NutritionTabs';
 import { CreateRecipeModal } from '@/components/food-logging/CreateRecipeModal';
 import { RecipeCard } from '@/components/nutrition/RecipeCard';
 
@@ -81,9 +81,16 @@ export default function RecipesPage() {
 
   return (
     <MainLayout>
-      <NutritionTabs />
-
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
+        {/* Back link */}
+        <Link
+          href="/nutrition"
+          className="inline-flex items-center gap-1.5 text-sm text-[#64748B] hover:text-[#0F172A] transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Food Log
+        </Link>
+
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
