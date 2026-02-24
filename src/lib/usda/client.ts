@@ -41,6 +41,8 @@ export function simplifyFood(food: USDAFood): SimplifiedFood {
     protein: extractNutrient(food.foodNutrients, NUTRIENT_IDS.PROTEIN),
     carbs: extractNutrient(food.foodNutrients, NUTRIENT_IDS.CARBOHYDRATES),
     fat: extractNutrient(food.foodNutrients, NUTRIENT_IDS.FAT),
+    servingSize: food.servingSize,
+    servingSizeUnit: food.servingSizeUnit,
   };
 }
 

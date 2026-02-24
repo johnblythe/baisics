@@ -1,6 +1,6 @@
 /**
- * Open Food Facts API Types
- * @see https://wiki.openfoodfacts.org/API
+ * Open Food Facts API Types (Search-a-licious / Elasticsearch)
+ * @see https://search.openfoodfacts.org/docs
  */
 
 /** Nutriment data from Open Food Facts (per 100g) */
@@ -12,22 +12,24 @@ export interface OFFNutriments {
   fat_100g?: number;
 }
 
-/** Product from Open Food Facts search results */
+/** Product from Search-a-licious results */
 export interface OFFProduct {
   code: string;
   product_name?: string;
   product_name_en?: string;
-  brands?: string;
+  brands?: string[];  // Search-a-licious returns array, not comma-separated string
   nutriments?: OFFNutriments;
 }
 
-/** Open Food Facts search API response */
+/** Search-a-licious search response */
 export interface OFFSearchResult {
   count: number;
   page: number;
   page_count: number;
   page_size: number;
-  products: OFFProduct[];
+  hits: OFFProduct[];
+  took?: number;
+  timed_out?: boolean;
 }
 
 /** Simplified food data matching USDA format */

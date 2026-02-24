@@ -42,6 +42,8 @@ export interface SimplifiedFood {
   protein: number;
   carbs: number;
   fat: number;
+  servingSize?: number;
+  servingSizeUnit?: string;
 }
 
 /** Nutrient IDs in USDA FoodData Central */
