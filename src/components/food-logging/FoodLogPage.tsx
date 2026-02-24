@@ -945,6 +945,16 @@ export function FoodLogPage({
     });
   }, [createStaple]);
 
+  const handleUnpinStaple = useCallback(async (item: FoodLogItemData, meal: string) => {
+    const mealSlot = meal.toUpperCase() as MealType;
+    const slotStaples = staplesBySlot[mealSlot] || [];
+    const match = slotStaples.find(s => s.name.toLowerCase() === item.name.toLowerCase());
+    if (match) {
+      await deleteStaple(match.id);
+      toast('Unpinned staple');
+    }
+  }, [staplesBySlot, deleteStaple]);
+
   const handleDismissSlot = useCallback((mealSlot: string) => {
     dismissSlot(mealSlot as MealType);
   }, [dismissSlot]);
@@ -1214,6 +1224,7 @@ export function FoodLogPage({
           onDeleteStaple={deleteStaple}
           onManageStaples={(slot: string) => setManagingSlot(slot as MealType)}
           onPinAsStaple={handlePinAsStaple}
+          onUnpinStaple={handleUnpinStaple}
           customFooter={errorBanner ? (
             <>
               {errorBanner}
@@ -1275,6 +1286,7 @@ export function FoodLogPage({
           onDeleteStaple={deleteStaple}
           onManageStaples={(slot: string) => setManagingSlot(slot as MealType)}
           onPinAsStaple={handlePinAsStaple}
+          onUnpinStaple={handleUnpinStaple}
         />
       </div>
 

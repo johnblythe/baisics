@@ -130,6 +130,7 @@ export interface DesktopLayoutProps {
   onDeleteStaple?: (stapleId: string) => void;
   onManageStaples?: (mealSlot: string) => void;
   onPinAsStaple?: (item: FoodLogItemData, meal: string) => void;
+  onUnpinStaple?: (item: FoodLogItemData, meal: string) => void;
 }
 
 function RecipesPanel({
@@ -227,6 +228,7 @@ export function DesktopLayout({
   onDeleteStaple,
   onManageStaples,
   onPinAsStaple,
+  onUnpinStaple,
 }: DesktopLayoutProps) {
   const [weekExpanded, setWeekExpanded] = useState(defaultWeeklyExpanded);
 
@@ -380,6 +382,7 @@ export function DesktopLayout({
                     onDeleteStaple={onDeleteStaple}
                     onManageStaples={onManageStaples ? () => onManageStaples(mealData.meal.toUpperCase()) : undefined}
                     onPinAsStaple={onPinAsStaple ? (item) => onPinAsStaple(item, mealData.meal) : undefined}
+                    onUnpinStaple={onUnpinStaple ? (item) => onUnpinStaple(item, mealData.meal) : undefined}
                   />
                 ))}
               </div>

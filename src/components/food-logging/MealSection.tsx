@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Coffee, Sun, Moon, Apple, Plus, X, Search, Loader2, Copy, Check, BookOpen } from 'lucide-react';
 import { SaveMealAsRecipeModal } from './SaveMealAsRecipeModal';
 import { StapleCarousel } from './StapleCarousel';
@@ -127,6 +127,8 @@ export interface MealSectionProps {
   onManageStaples?: () => void;
   /** Pin a food item as a staple */
   onPinAsStaple?: (item: FoodLogItemData) => void;
+  /** Unpin a food item (remove staple) */
+  onUnpinStaple?: (item: FoodLogItemData) => void;
 }
 
 function getMealIcon(meal: string) {
@@ -177,7 +179,14 @@ export function MealSection({
   onDeleteStaple,
   onManageStaples,
   onPinAsStaple,
+  onUnpinStaple,
 }: MealSectionProps) {
+  // Build a set of pinned staple names for this slot (case-insensitive)
+  const pinnedNames = useMemo(() => {
+    if (!staples) return new Set<string>();
+    return new Set(staples.map(s => s.name.toLowerCase()));
+  }, [staples]);
+
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [selectedFood, setSelectedFood] = useState<UnifiedFoodResult | null>(null);
   const [recipes, setRecipes] = useState<RecipeWithIngredients[]>([]);
@@ -412,16 +421,21 @@ export function MealSection({
       {/* Food items list */}
       {items.length > 0 && (
         <div className="space-y-1 mb-2">
-          {items.map((item) => (
-            <FoodLogItem
-              key={item.id}
-              item={item}
-              onEdit={onEditItem}
-              onDelete={onDeleteItem}
-              onPinAsStaple={isToday ? onPinAsStaple : undefined}
-              showActions={showItemActions}
-            />
-          ))}
+          {items.map((item) => {
+            const pinned = pinnedNames.has(item.name.toLowerCase());
+            return (
+              <FoodLogItem
+                key={item.id}
+                item={item}
+                onEdit={onEditItem}
+                onDelete={onDeleteItem}
+                onPinAsStaple={isToday && !pinned ? onPinAsStaple : undefined}
+                onUnpinStaple={isToday && pinned ? onUnpinStaple : undefined}
+                isPinned={pinned}
+                showActions={showItemActions}
+              />
+            );
+          })}
         </div>
       )}
 

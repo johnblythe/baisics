@@ -79,6 +79,22 @@ export async function POST(request: Request) {
       );
     }
 
+    // Check for duplicate (same name in same slot)
+    const existing = await prisma.foodStaple.findFirst({
+      where: {
+        userId: session.user.id,
+        mealSlot: mealSlot as MealType,
+        name: { equals: name, mode: 'insensitive' },
+      },
+    });
+
+    if (existing) {
+      return NextResponse.json(
+        { error: 'Already pinned as a staple', staple: existing },
+        { status: 409 }
+      );
+    }
+
     // Max 5 per slot — count + insert in transaction to prevent race
     const staple = await prisma.$transaction(async (tx) => {
       const count = await tx.foodStaple.count({

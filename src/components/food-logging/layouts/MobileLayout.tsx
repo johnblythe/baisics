@@ -137,6 +137,7 @@ export interface MobileLayoutProps {
   onDeleteStaple?: (stapleId: string) => void;
   onManageStaples?: (mealSlot: string) => void;
   onPinAsStaple?: (item: FoodLogItemData, meal: string) => void;
+  onUnpinStaple?: (item: FoodLogItemData, meal: string) => void;
 }
 
 function RecipesPanel({
@@ -238,6 +239,7 @@ export function MobileLayout({
   onDeleteStaple,
   onManageStaples,
   onPinAsStaple,
+  onUnpinStaple,
 }: MobileLayoutProps) {
   // Calculate remaining if not provided
   const calcRemainingCal = remainingCalories ?? (macroTargets.calories - macroTotals.calories);
@@ -345,6 +347,7 @@ export function MobileLayout({
             onDeleteStaple={onDeleteStaple}
             onManageStaples={onManageStaples ? () => onManageStaples(mealData.meal.toUpperCase()) : undefined}
             onPinAsStaple={onPinAsStaple ? (item) => onPinAsStaple(item, mealData.meal) : undefined}
+            onUnpinStaple={onUnpinStaple ? (item) => onUnpinStaple(item, mealData.meal) : undefined}
           />
         ))}
       </div>
