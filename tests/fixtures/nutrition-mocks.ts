@@ -236,12 +236,12 @@ export const MOCK_OFF_API_RESPONSE: OFFSearchResult = {
   page: 1,
   page_count: 5,
   page_size: 10,
-  products: [
+  hits: [
     {
       code: "3329770057142",
       product_name: "Greek Yogurt Plain",
       product_name_en: "Greek Yogurt Plain",
-      brands: "Fage",
+      brands: ["Fage"],
       nutriments: {
         "energy-kcal_100g": 97,
         proteins_100g: 17,

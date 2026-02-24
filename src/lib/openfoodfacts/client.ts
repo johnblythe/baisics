@@ -1,6 +1,6 @@
 /**
- * Open Food Facts API Client
- * @see https://wiki.openfoodfacts.org/API
+ * Open Food Facts Client (Search-a-licious / Elasticsearch)
+ * @see https://search.openfoodfacts.org/docs
  */
 
 import {
@@ -9,7 +9,7 @@ import {
   SimplifiedOFFFood,
 } from './types';
 
-const OFF_BASE_URL = 'https://world.openfoodfacts.org';
+const OFF_SEARCH_URL = 'https://search.openfoodfacts.org/search';
 const USER_AGENT = 'Baisics/1.0 (https://baisics.app)';
 
 /**
@@ -30,7 +30,7 @@ export function simplifyProduct(product: OFFProduct): SimplifiedOFFFood | null {
   return {
     id: product.code,
     name,
-    brand: product.brands,
+    brand: product.brands?.[0],
     calories: extractCalories(product.nutriments),
     protein: product.nutriments?.proteins_100g ?? 0,
     carbs: product.nutriments?.carbohydrates_100g ?? 0,
@@ -39,22 +39,7 @@ export function simplifyProduct(product: OFFProduct): SimplifiedOFFFood | null {
 }
 
 /**
- * Parse error details from OFF API response body
- */
-async function parseErrorBody(response: Response): Promise<string> {
-  try {
-    const body = await response.json();
-    if (body.status_verbose) {
-      return body.status_verbose;
-    }
-    return JSON.stringify(body);
-  } catch {
-    return response.statusText;
-  }
-}
-
-/**
- * Search for foods in Open Food Facts
+ * Search for foods in Open Food Facts via Search-a-licious (Elasticsearch)
  * @param query - Search term
  * @param pageSize - Number of results (default 25, max 100)
  * @returns Array of simplified food items
@@ -64,8 +49,7 @@ export async function searchFoods(
   pageSize: number = 25
 ): Promise<SimplifiedOFFFood[]> {
   const params = new URLSearchParams({
-    search_terms: query,
-    json: '1',
+    q: query,
     page_size: String(Math.min(pageSize, 100)),
     fields: 'code,product_name,product_name_en,brands,nutriments',
   });
@@ -74,7 +58,7 @@ export async function searchFoods(
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 5000);
-    response = await fetch(`${OFF_BASE_URL}/cgi/search.pl?${params}`, {
+    response = await fetch(`${OFF_SEARCH_URL}?${params}`, {
       method: 'GET',
       headers: {
         'User-Agent': USER_AGENT,
@@ -91,14 +75,13 @@ export async function searchFoods(
   }
 
   if (!response.ok) {
-    const errorDetail = await parseErrorBody(response);
-    throw new Error(`Open Food Facts API error ${response.status}: ${errorDetail}`);
+    throw new Error(`Open Food Facts API error ${response.status}: ${response.statusText}`);
   }
 
   const result: OFFSearchResult = await response.json();
 
   // Convert to simplified format, filtering out products without names
-  return result.products
+  return result.hits
     .map(simplifyProduct)
     .filter((food): food is SimplifiedOFFFood => food !== null);
 }

@@ -226,6 +226,8 @@ async function searchUsdaFoods(
         fat: simplified.fat,
         source: 'USDA' as FoodSearchSource,
         fdcId: simplified.fdcId,
+        servingSize: simplified.servingSize,
+        servingUnit: simplified.servingSizeUnit,
       };
     });
   } catch (error) {
