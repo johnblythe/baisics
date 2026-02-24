@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
         suggestions = getFallbackSuggestions(ingredient);
       } else {
         const message = await anthropic.messages.create({
-          model: process.env.HAIKU_MODEL || 'claude-3-5-haiku-20241022',
+          model: process.env.HAIKU_MODEL || 'claude-haiku-4-5-20251001',
           max_tokens: 512,
           messages: [
             {

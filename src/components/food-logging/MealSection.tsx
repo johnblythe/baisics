@@ -1,14 +1,16 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { Coffee, Sun, Moon, Apple, Plus, X, Search, Loader2, Copy, Check, BookOpen } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { Coffee, Sun, Moon, Apple, Plus, X, Search, Loader2, Copy, Check, BookOpen, Pin } from 'lucide-react';
 import { SaveMealAsRecipeModal } from './SaveMealAsRecipeModal';
+import { StapleCarousel } from './StapleCarousel';
 import { MealType as PrismaMealType } from '@prisma/client';
 import { FoodLogItem, type FoodLogItemData } from './FoodLogItem';
 import { FoodSearchAutocomplete } from '@/components/nutrition/FoodSearchAutocomplete';
 import { ServingSizeSelector, type CalculatedMacros } from '@/components/nutrition/ServingSizeSelector';
 import type { UnifiedFoodResult } from '@/lib/food-search/types';
 import { formatDateForAPI } from '@/lib/date-utils';
+import type { FoodStaple } from '@/hooks/useStaples';
 
 export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'snacks';
 
@@ -107,6 +109,26 @@ export interface MealSectionProps {
     carbs: number;
     fat: number;
   }) => void;
+  /** Staples for this meal slot */
+  staples?: FoodStaple[];
+  /** Daily macro targets for staple % bars */
+  dailyTargets?: { calories: number; protein: number; carbs: number; fat: number };
+  /** Whether this slot's staples are dismissed for today */
+  isDismissed?: boolean;
+  /** Whether we're viewing today (staples only show for today) */
+  isToday?: boolean;
+  /** Confirm a staple (log it) */
+  onLogStaple?: (staple: FoodStaple) => void;
+  /** Dismiss staples for this slot */
+  onDismissStaples?: () => void;
+  /** Delete a staple permanently */
+  onDeleteStaple?: (stapleId: string) => void;
+  /** Open manage staples modal */
+  onManageStaples?: () => void;
+  /** Pin a food item as a staple */
+  onPinAsStaple?: (item: FoodLogItemData) => void;
+  /** Unpin a food item (remove staple) */
+  onUnpinStaple?: (item: FoodLogItemData) => void;
 }
 
 function getMealIcon(meal: string) {
@@ -148,7 +170,23 @@ export function MealSection({
   onCopyFromYesterday,
   onOpenCopyMealModal,
   onSaveAsRecipe,
+  staples,
+  dailyTargets,
+  isDismissed,
+  isToday,
+  onLogStaple,
+  onDismissStaples,
+  onDeleteStaple,
+  onManageStaples,
+  onPinAsStaple,
+  onUnpinStaple,
 }: MealSectionProps) {
+  // Build a set of pinned staple names for this slot (case-insensitive)
+  const pinnedNames = useMemo(() => {
+    if (!staples) return new Set<string>();
+    return new Set(staples.map(s => s.name.toLowerCase()));
+  }, [staples]);
+
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [selectedFood, setSelectedFood] = useState<UnifiedFoodResult | null>(null);
   const [recipes, setRecipes] = useState<RecipeWithIngredients[]>([]);
@@ -368,20 +406,79 @@ export function MealSection({
         </div>
       </div>
 
-      {/* Food items list */}
-      {items.length > 0 && (
-        <div className="space-y-1 mb-2">
-          {items.map((item) => (
-            <FoodLogItem
-              key={item.id}
-              item={item}
-              onEdit={onEditItem}
-              onDelete={onDeleteItem}
-              showActions={showItemActions}
-            />
-          ))}
-        </div>
+      {/* Staple carousel — when staples exist and not dismissed */}
+      {!isDismissed && staples && staples.length > 0 && dailyTargets && onLogStaple && onDismissStaples && onDeleteStaple && (
+        <StapleCarousel
+          staples={staples}
+          dailyTargets={dailyTargets}
+          onLog={onLogStaple}
+          onDismiss={onDismissStaples}
+          onDelete={onDeleteStaple}
+          onManage={onManageStaples}
+        />
       )}
+
+      {/* Food items list — split into pinned/unpinned when viewing today */}
+      {items.length > 0 && (() => {
+        const pinnedItems = isToday ? items.filter(item => pinnedNames.has(item.name.toLowerCase())) : [];
+        const unpinnedItems = isToday ? items.filter(item => !pinnedNames.has(item.name.toLowerCase())) : items;
+
+        return (
+          <>
+            {/* Pinned staples section */}
+            {pinnedItems.length > 0 && (
+              <div className="mb-2">
+                <div className="flex items-center gap-1.5 px-1 mb-1">
+                  <Pin className="w-3 h-3 text-[#FF6B6B]" />
+                  <span className="text-[11px] font-semibold text-[#FF6B6B] uppercase tracking-wide">
+                    Pinned Staples
+                  </span>
+                </div>
+                <div className="space-y-1">
+                  {pinnedItems.map((item) => (
+                    <div key={item.id} className="bg-[#FFF5F5] rounded-xl">
+                      <FoodLogItem
+                        item={item}
+                        onEdit={onEditItem}
+                        onDelete={onDeleteItem}
+                        onUnpinStaple={onUnpinStaple}
+                        isPinned={true}
+                        showActions={showItemActions}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Regular items */}
+            {unpinnedItems.length > 0 && (
+              <div className="mb-2">
+                {pinnedItems.length > 0 && (
+                  <div className="flex items-center gap-1.5 px-1 mb-1">
+                    <span className="text-[11px] font-semibold text-[#94A3B8] uppercase tracking-wide">
+                      Today&apos;s Log
+                    </span>
+                  </div>
+                )}
+                <div className="space-y-1">
+                  {unpinnedItems.map((item) => (
+                    <FoodLogItem
+                      key={item.id}
+                      item={item}
+                      onEdit={onEditItem}
+                      onDelete={onDeleteItem}
+                      onPinAsStaple={isToday ? onPinAsStaple : undefined}
+                      isPinned={false}
+                      showActions={showItemActions}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
+        );
+      })()}
 
       {/* Inline search panel */}
       {isSearchOpen && enableInlineSearch ? (

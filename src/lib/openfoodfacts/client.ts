@@ -72,13 +72,20 @@ export async function searchFoods(
 
   let response: Response;
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
     response = await fetch(`${OFF_BASE_URL}/cgi/search.pl?${params}`, {
       method: 'GET',
       headers: {
         'User-Agent': USER_AGENT,
       },
+      signal: controller.signal,
     });
+    clearTimeout(timeout);
   } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw new Error('Open Food Facts API timeout (5s)');
+    }
     const message = error instanceof Error ? error.message : String(error);
     throw new Error(`Open Food Facts API network error: ${message}`);
   }

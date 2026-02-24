@@ -23,6 +23,7 @@ import {
   type Recipe,
   type RecipeWithIngredients,
 } from '../index';
+import type { FoodStaple } from '@/hooks/useStaples';
 
 export interface RecipeItem {
   id: string;
@@ -64,6 +65,7 @@ export interface MobileLayoutProps {
   weeklyExpanded?: boolean;
   onWeeklyToggle?: () => void;
   weeklySummaryMessage?: string;
+  onDayClick?: (dateStr: string) => void;
 
   // Meals
   meals: MealData[];
@@ -125,6 +127,18 @@ export interface MobileLayoutProps {
 
   // Recipe sidebar refresh trigger
   recipeSidebarRefreshTrigger?: number;
+
+  // Staples
+  staples?: Record<string, FoodStaple[]>;
+  dailyTargets?: { calories: number; protein: number; carbs: number; fat: number };
+  dismissedSlots?: Set<string>;
+  isToday?: boolean;
+  onLogStaple?: (staple: FoodStaple) => void;
+  onDismissSlot?: (mealSlot: string) => void;
+  onDeleteStaple?: (stapleId: string) => void;
+  onManageStaples?: (mealSlot: string) => void;
+  onPinAsStaple?: (item: FoodLogItemData, meal: string) => void;
+  onUnpinStaple?: (item: FoodLogItemData, meal: string) => void;
 }
 
 function RecipesPanel({
@@ -190,6 +204,7 @@ export function MobileLayout({
   weeklyExpanded,
   onWeeklyToggle,
   weeklySummaryMessage,
+  onDayClick,
   meals,
   onAddToMeal,
   onEditItem,
@@ -217,6 +232,16 @@ export function MobileLayout({
   customHeader,
   customFooter,
   recipeSidebarRefreshTrigger,
+  staples,
+  dailyTargets,
+  dismissedSlots,
+  isToday: isTodayProp,
+  onLogStaple,
+  onDismissSlot,
+  onDeleteStaple,
+  onManageStaples,
+  onPinAsStaple,
+  onUnpinStaple,
 }: MobileLayoutProps) {
   // Calculate remaining if not provided
   const calcRemainingCal = remainingCalories ?? (macroTargets.calories - macroTotals.calories);
@@ -292,6 +317,7 @@ export function MobileLayout({
           expanded={weeklyExpanded}
           onToggle={onWeeklyToggle}
           summaryMessage={weeklySummaryMessage}
+          onDayClick={onDayClick}
         />
       </div>
 
@@ -315,6 +341,16 @@ export function MobileLayout({
             onCopyFromYesterday={onCopyFromYesterday}
             onOpenCopyMealModal={onOpenCopyMealModal}
             onSaveAsRecipe={onSaveAsRecipe}
+            staples={staples?.[mealData.meal.toUpperCase()]}
+            dailyTargets={dailyTargets}
+            isDismissed={dismissedSlots?.has(mealData.meal.toUpperCase())}
+            isToday={isTodayProp}
+            onLogStaple={onLogStaple}
+            onDismissStaples={onDismissSlot ? () => onDismissSlot(mealData.meal.toUpperCase()) : undefined}
+            onDeleteStaple={onDeleteStaple}
+            onManageStaples={onManageStaples ? () => onManageStaples(mealData.meal.toUpperCase()) : undefined}
+            onPinAsStaple={onPinAsStaple ? (item) => onPinAsStaple(item, mealData.meal) : undefined}
+            onUnpinStaple={onUnpinStaple ? (item) => onUnpinStaple(item, mealData.meal) : undefined}
           />
         ))}
       </div>

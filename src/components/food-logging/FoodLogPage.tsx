@@ -6,6 +6,8 @@ import { ChevronLeft, ChevronRight, Loader2, AlertCircle, Target } from 'lucide-
 import { NutritionTargetsModal } from '@/components/nutrition/NutritionTargetsModal';
 import { MealType } from '@prisma/client';
 import { toast } from 'sonner';
+import { useStaples, type FoodStaple } from '@/hooks/useStaples';
+import { StapleManageModal } from './StapleManageModal';
 import {
   MobileLayout,
   DesktopLayout,
@@ -239,6 +241,23 @@ export function FoodLogPage({
   // Recipe sidebar refresh trigger
   const [recipeSidebarRefreshTrigger, setRecipeSidebarRefreshTrigger] = useState(0);
 
+  // Staples
+  const {
+    staples: staplesBySlot,
+    dismissedSlots,
+    logStaple,
+    undoLogStaple,
+    dismissSlot,
+    undismissSlot,
+    deleteStaple,
+    createStaple,
+    fetchStaples,
+    toggleAutoLog,
+  } = useStaples();
+
+  // Manage modal state
+  const [managingSlot, setManagingSlot] = useState<MealType | null>(null);
+
   // Fetch entries for selected date
   const fetchEntries = useCallback(async () => {
     setIsLoadingEntries(true);
@@ -348,6 +367,12 @@ export function FoodLogPage({
     today.setHours(0, 0, 0, 0);
     setSelectedDate(today);
     onDateChange?.(today);
+  };
+
+  const handleDayClick = (dateStr: string) => {
+    const newDate = new Date(dateStr + 'T00:00:00');
+    setSelectedDate(newDate);
+    onDateChange?.(newDate);
   };
 
   // Add food entry
@@ -761,6 +786,11 @@ export function FoodLogPage({
     setRecipeSidebarRefreshTrigger((prev) => prev + 1);
   }, []);
 
+  // Handle suggestion card click - open quick add
+  const handleSuggestionClick = useCallback(() => {
+    setShowQuickAdd(true);
+  }, []);
+
   // Handle copy from yesterday (for DateMenu) - opens copy day modal
   const handleDateMenuCopyFromYesterday = useCallback(() => {
     const yesterday = new Date(selectedDate);
@@ -862,6 +892,111 @@ export function FoodLogPage({
     toast.success(`Added: ${food.name}`);
   };
 
+  // Staple handlers
+  const handleLogStaple = useCallback(async (staple: FoodStaple) => {
+    // Optimistic: add entry to local state immediately
+    const optimisticEntry = {
+      id: `optimistic-${Date.now()}`,
+      name: staple.name,
+      calories: staple.calories,
+      protein: staple.protein,
+      carbs: staple.carbs,
+      fat: staple.fat,
+      servingSize: 1,
+      servingUnit: 'serving',
+      meal: staple.mealSlot,
+      date: formatDateForAPI(selectedDate),
+      source: 'STAPLE',
+      createdAt: new Date().toISOString(),
+    } as FoodLogEntry;
+
+    setEntries(prev => ({
+      ...prev,
+      [staple.mealSlot]: [...prev[staple.mealSlot], optimisticEntry],
+    }));
+
+    // Dismiss the carousel for this slot
+    dismissSlot(staple.mealSlot);
+
+    // Fire POST and get real entry ID
+    const entryId = await logStaple(staple, selectedDate);
+
+    // Refresh to get real entry
+    await Promise.all([fetchEntries(), fetchSummary()]);
+
+    // Show undo toast
+    if (entryId) {
+      toast(`Logged: ${staple.name}`, {
+        action: {
+          label: 'Undo',
+          onClick: async () => {
+            await undoLogStaple(entryId, staple.mealSlot);
+            // Remove entry and refresh
+            setEntries(prev => ({
+              ...prev,
+              [staple.mealSlot]: prev[staple.mealSlot].filter(e => e.id !== entryId),
+            }));
+            await Promise.all([fetchEntries(), fetchSummary()]);
+          },
+        },
+        duration: 5000,
+      });
+    }
+  }, [selectedDate, dismissSlot, logStaple, undoLogStaple, fetchEntries, fetchSummary]);
+
+  const handlePinAsStaple = useCallback(async (item: FoodLogItemData, meal: string) => {
+    const mealSlot = meal.toUpperCase() as MealType;
+    await createStaple({
+      mealSlot,
+      name: item.name,
+      calories: item.calories,
+      protein: item.protein,
+      carbs: item.carbs ?? 0,
+      fat: item.fat ?? 0,
+    });
+    // Auto-dismiss carousel — item is already logged, no need to show "log this" prompt
+    dismissSlot(mealSlot);
+  }, [createStaple, dismissSlot]);
+
+  const handleUnpinStaple = useCallback(async (item: FoodLogItemData, meal: string) => {
+    const mealSlot = meal.toUpperCase() as MealType;
+    // Fetch fresh staples to avoid stale closure
+    const res = await fetch('/api/food-staples');
+    if (!res.ok) return;
+    const data = await res.json();
+    const allStaples: Array<{ id: string; name: string; mealSlot: string }> = data.staples;
+    const match = allStaples.find(
+      s => s.mealSlot === mealSlot && s.name.toLowerCase() === item.name.toLowerCase()
+    );
+    if (match) {
+      await deleteStaple(match.id);
+      toast('Unpinned staple');
+    }
+  }, [deleteStaple]);
+
+  const handleDismissSlot = useCallback((mealSlot: string) => {
+    dismissSlot(mealSlot as MealType);
+  }, [dismissSlot]);
+
+  const handleReorderStaples = useCallback(async (stapleIds: string[]) => {
+    if (!managingSlot) return;
+    try {
+      const res = await fetch('/api/food-staples/reorder', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mealSlot: managingSlot, stapleIds }),
+      });
+      if (!res.ok) {
+        toast.error('Failed to reorder staples');
+      }
+      await fetchStaples();
+    } catch {
+      toast.error('Failed to reorder staples');
+    }
+  }, [managingSlot, fetchStaples]);
+
+  const isTodaySelected = selectedDate.toDateString() === new Date().toDateString();
+
   // Build macro totals and targets
   const macroTotals: MacroTotals = {
     calories: summary?.totals.totalCalories ?? 0,
@@ -889,6 +1024,7 @@ export function FoodLogPage({
     return {
       day: dayOfWeek,
       date: dayDate.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' }),
+      fullDate: day.date, // YYYY-MM-DD from API
       calories: day.calories,
       target: macroTargets.calories,
       protein: day.protein,
@@ -1058,6 +1194,7 @@ export function FoodLogPage({
     suggestion = `${remainingCalories} cal remaining`;
   }
 
+
   return (
     <>
       {/* Targets banner - above both layouts */}
@@ -1075,6 +1212,7 @@ export function FoodLogPage({
           onQuickAdd={handleQuickAdd}
           onQuickRecipeLog={handleQuickRecipeLog}
           weekData={weekData}
+          onDayClick={handleDayClick}
           meals={mealsData}
           onAddToMeal={handleAddToMeal}
           onEditItem={handleEditItem}
@@ -1099,6 +1237,17 @@ export function FoodLogPage({
           remainingCalories={remainingCalories}
           remainingProtein={remainingProtein}
           suggestion={suggestion}
+          onSuggestionClick={handleSuggestionClick}
+          staples={staplesBySlot}
+          dailyTargets={macroTargets}
+          dismissedSlots={dismissedSlots}
+          isToday={isTodaySelected}
+          onLogStaple={handleLogStaple}
+          onDismissSlot={handleDismissSlot}
+          onDeleteStaple={deleteStaple}
+          onManageStaples={(slot: string) => setManagingSlot(slot as MealType)}
+          onPinAsStaple={handlePinAsStaple}
+          onUnpinStaple={handleUnpinStaple}
           customFooter={errorBanner ? (
             <>
               {errorBanner}
@@ -1129,6 +1278,7 @@ export function FoodLogPage({
           onQuickAdd={handleQuickAdd}
           onQuickRecipeLog={handleQuickRecipeLog}
           weekData={weekData}
+          onDayClick={handleDayClick}
           meals={mealsData}
           onAddToMeal={handleAddToMeal}
           onEditItem={handleEditItem}
@@ -1150,7 +1300,18 @@ export function FoodLogPage({
           recipeSidebarRefreshTrigger={recipeSidebarRefreshTrigger}
           suggestion={suggestion}
           suggestionDetail={suggestion}
+          onSuggestionClick={handleSuggestionClick}
           rightContentExtra={errorBanner}
+          staples={staplesBySlot}
+          dailyTargets={macroTargets}
+          dismissedSlots={dismissedSlots}
+          isToday={isTodaySelected}
+          onLogStaple={handleLogStaple}
+          onDismissSlot={handleDismissSlot}
+          onDeleteStaple={deleteStaple}
+          onManageStaples={(slot: string) => setManagingSlot(slot as MealType)}
+          onPinAsStaple={handlePinAsStaple}
+          onUnpinStaple={handleUnpinStaple}
         />
       </div>
 
@@ -1226,6 +1387,23 @@ export function FoodLogPage({
           await Promise.all([fetchEntries(), fetchSummary()]);
         }}
       />
+
+      {/* Staple Manage Modal */}
+      <AnimatePresence>
+        {managingSlot && (
+          <StapleManageModal
+            mealSlot={managingSlot}
+            staples={staplesBySlot[managingSlot] || []}
+            onClose={() => {
+              setManagingSlot(null);
+              fetchStaples();
+            }}
+            onDelete={deleteStaple}
+            onReorder={handleReorderStaples}
+            onToggleAutoLog={toggleAutoLog}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Nutrition Targets Modal */}
       <NutritionTargetsModal

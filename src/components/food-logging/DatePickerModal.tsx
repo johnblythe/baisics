@@ -58,10 +58,7 @@ export function DatePickerModal({
   title = 'Pick a date to copy from',
 }: DatePickerModalProps) {
   const [currentMonth, setCurrentMonth] = useState<MonthData>(() => {
-    // Start with previous month (since we're copying from past dates)
-    const prevMonth = new Date(targetDate);
-    prevMonth.setMonth(prevMonth.getMonth() - 1);
-    return getMonthData(prevMonth.getFullYear(), prevMonth.getMonth());
+    return getMonthData(targetDate.getFullYear(), targetDate.getMonth());
   });
   const [datesWithFood, setDatesWithFood] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
@@ -94,9 +91,7 @@ export function DatePickerModal({
   // Reset month when modal opens
   useEffect(() => {
     if (isOpen) {
-      const prevMonth = new Date(targetDate);
-      prevMonth.setMonth(prevMonth.getMonth() - 1);
-      setCurrentMonth(getMonthData(prevMonth.getFullYear(), prevMonth.getMonth()));
+      setCurrentMonth(getMonthData(targetDate.getFullYear(), targetDate.getMonth()));
     }
   }, [isOpen, targetDate]);
 

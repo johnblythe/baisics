@@ -100,6 +100,7 @@ model User {
   foodLogEntries   FoodLogEntry[]
   recipes          Recipe[]
   quickFoods       QuickFood[]
+  foodStaples      FoodStaple[]
   foodSearchLogs   FoodSearchLog[]
 
   // Coach Mode relations
@@ -651,6 +652,7 @@ enum FoodSource {
   RECIPE          // Added from a recipe
   SCREENSHOT      // Parsed from screenshot
   OPEN_FOOD_FACTS // Selected from Open Food Facts database
+  STAPLE          // Confirmed from a pinned staple
 }
 
 enum MealType {
@@ -677,12 +679,14 @@ model FoodLogEntry {
   source        FoodSource @default(MANUAL)
   isApproximate Boolean    @default(false) @map("is_approximate")
   recipeId      String?    @map("recipe_id") @db.Uuid
+  stapleId      String?    @map("staple_id") @db.Uuid
   notes       String?    @db.Text
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt @map("updated_at")
 
-  user   User    @relation(fields: [userId], references: [id])
-  recipe Recipe? @relation(fields: [recipeId], references: [id])
+  user   User        @relation(fields: [userId], references: [id])
+  recipe Recipe?     @relation(fields: [recipeId], references: [id], onDelete: SetNull)
+  staple FoodStaple? @relation(fields: [stapleId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([date])
@@ -709,6 +713,7 @@ model Recipe {
 
   user           User?          @relation(fields: [userId], references: [id])
   foodLogEntries FoodLogEntry[]
+  staples        FoodStaple[]
 
   @@index([userId])
   @@index([isPublic])
@@ -737,13 +742,53 @@ model QuickFood {
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
-  user User @relation(fields: [userId], references: [id])
+  user    User         @relation(fields: [userId], references: [id])
+  staples FoodStaple[]
 
   @@index([userId])
   @@index([sortOrder])
   @@index([usageCount])
   @@index([isStarter])
   @@map("quick_foods")
+}
+
+model FoodStaple {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+
+  mealSlot    MealType @map("meal_slot")
+
+  // Inline food data (snapshot pattern, same as FoodLogEntry)
+  name        String
+  emoji       String?
+  calories    Int
+  protein     Float
+  carbs       Float
+  fat         Float
+
+  // Optional source references (mutually exclusive — enforced by CHECK constraint)
+  recipeId    String?  @map("recipe_id") @db.Uuid
+  quickFoodId String?  @map("quick_food_id") @db.Uuid
+
+  // Items breakdown for combos (JSON array, same shape as Recipe.ingredients)
+  items       Json?    @db.JsonB
+
+  // Ordering
+  sortOrder   Int      @default(0) @map("sort_order")
+
+  // Auto-log flag (cron implementation deferred to Phase 3)
+  autoLog     Boolean  @default(false) @map("auto_log")
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user        User       @relation(fields: [userId], references: [id])
+  recipe      Recipe?    @relation(fields: [recipeId], references: [id], onDelete: SetNull)
+  quickFood   QuickFood? @relation(fields: [quickFoodId], references: [id], onDelete: SetNull)
+  logEntries  FoodLogEntry[]
+
+  @@index([userId, mealSlot])
+  @@map("food_staples")
 }
 
 model Account {

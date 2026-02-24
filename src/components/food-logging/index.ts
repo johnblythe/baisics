@@ -50,6 +50,9 @@ export type { CopyMealModalProps } from './CopyMealModal';
 export { DatePickerModal } from './DatePickerModal';
 export type { DatePickerModalProps } from './DatePickerModal';
 
+export { StapleCarousel } from './StapleCarousel';
+export type { StapleCarouselProps } from './StapleCarousel';
+
 // USDA Food Search
 export { USDAFoodSearch } from './USDAFoodSearch';
 export type { USDAFoodSearchProps, USDAFoodResult } from './USDAFoodSearch';
