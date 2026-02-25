@@ -681,6 +681,7 @@ model FoodLogEntry {
   recipeId      String?    @map("recipe_id") @db.Uuid
   stapleId      String?    @map("staple_id") @db.Uuid
   notes       String?    @db.Text
+  deletedAt   DateTime?  @map("deleted_at") @db.Timestamptz
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt @map("updated_at")
 
@@ -688,6 +689,8 @@ model FoodLogEntry {
   recipe Recipe?     @relation(fields: [recipeId], references: [id], onDelete: SetNull)
   staple FoodStaple? @relation(fields: [stapleId], references: [id], onDelete: SetNull)
 
+  // Partial unique index (user_id, date, staple_id) WHERE staple_id IS NOT NULL
+  // defined in raw SQL migration — Prisma can't express partial unique constraints
   @@index([userId])
   @@index([date])
   @@index([userId, date])

@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Staple auto-log — auto-creates food log entries from `autoLog` staples when loading /nutrition for today (#398)
+  - Soft-delete on FoodLogEntry (Prisma middleware) — deleted entries suppress re-creation cross-device
+  - Dedup via raw SQL check (includes soft-deleted rows) + partial unique index safety net
+  - "Clear Day" soft-deletes all entries, preventing re-creation on refresh
+  - Copy-day intentionally omits `stapleId` — copies are snapshots, not staple references
 - Local Open Food Facts search — imported OFF products into `foods_off` table with Postgres tsvector full-text search (#390)
   - Weighted search ranking: product name (A) > brand (B) via `setweight()` + GIN index
   - Import script (`scripts/import-off-data.ts`) streams JSONL, filters English market + valid macros, batch upserts
