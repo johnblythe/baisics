@@ -23,26 +23,27 @@ export const prisma =
 // - Use $queryRaw to bypass when you need to see soft-deleted rows
 prisma.$use(async (params, next) => {
   if (params.model === 'FoodLogEntry') {
-    // Read operations: filter out soft-deleted rows
-    if (['findMany', 'findFirst', 'count', 'aggregate', 'groupBy'].includes(params.action)) {
-      params.args = params.args || {};
-      params.args.where = { ...params.args.where, deletedAt: null };
-    }
+    const action = params.action;
 
-    // findUnique can't accept non-unique fields, so convert to findFirst
-    if (params.action === 'findUnique') {
+    // findUnique can't accept non-unique fields — convert to findFirst
+    if (action === 'findUnique') {
       params.action = 'findFirst';
-      params.args = params.args || {};
-      params.args.where = { ...params.args.where, deletedAt: null };
     }
 
-    // Convert hard deletes to soft deletes
-    if (params.action === 'delete') {
+    // Read operations: filter out soft-deleted rows
+    if (['findMany', 'findFirst', 'findUnique', 'count', 'aggregate', 'groupBy'].includes(action)) {
+      params.args = params.args || {};
+      params.args.where = { ...params.args.where, deletedAt: null };
+    } else if (action === 'update' || action === 'updateMany') {
+      // Prevent updates to soft-deleted rows
+      params.args = params.args || {};
+      params.args.where = { ...params.args.where, deletedAt: null };
+    } else if (action === 'delete') {
       params.action = 'update';
-      params.args.data = { deletedAt: new Date() };
-    }
-    if (params.action === 'deleteMany') {
+      params.args.data = { ...params.args?.data, deletedAt: new Date() };
+    } else if (action === 'deleteMany') {
       params.action = 'updateMany';
+      params.args.where = { ...params.args?.where, deletedAt: null };
       params.args.data = { ...params.args?.data, deletedAt: new Date() };
     }
   }

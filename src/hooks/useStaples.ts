@@ -276,7 +276,8 @@ export function useStaples(): UseStaplesReturn {
         setAllStaples(prev => prev.map(s => s.id === stapleId ? { ...s, autoLog: !newValue } : s));
         toast.error('Failed to update auto-log');
       }
-    } catch {
+    } catch (error) {
+      console.error('Error toggling auto-log for staple:', stapleId, error);
       setAllStaples(prev => prev.map(s => s.id === stapleId ? { ...s, autoLog: !newValue } : s));
       toast.error('Failed to update auto-log');
     }

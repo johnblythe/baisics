@@ -27,15 +27,16 @@ export async function GET(request: Request) {
     date.setHours(0, 0, 0, 0);
 
     // Auto-log: create entries from autoLog staples when viewing today
+    // Non-critical side-effect — failures must not block the GET response
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     if (date.getTime() === today.getTime()) {
-      await prisma.$transaction(async (tx) => {
-        const staples = await tx.foodStaple.findMany({
-          where: { userId: session.user.id, autoLog: true },
-        });
+      try {
+        await prisma.$transaction(async (tx) => {
+          const staples = await tx.foodStaple.findMany({
+            where: { userId: session.user.id, autoLog: true },
+          });
 
-        if (staples.length > 0) {
           // Raw SQL bypasses soft-delete middleware — we need to see deleted rows for dedup
           const existing = await tx.$queryRaw<Array<{ staple_id: string }>>`
             SELECT DISTINCT staple_id FROM food_log_entries
@@ -64,8 +65,10 @@ export async function GET(request: Request) {
               })),
             });
           }
-        }
-      });
+        });
+      } catch (autoLogError) {
+        console.error(`Auto-log failed for user ${session.user.id} on ${dateParam}:`, autoLogError);
+      }
     }
 
     const entries = await prisma.foodLogEntry.findMany({

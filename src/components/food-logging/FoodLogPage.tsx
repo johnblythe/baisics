@@ -359,7 +359,9 @@ export function FoodLogPage({
   // Fetch data on mount and date change
   // Entries first (triggers auto-log for today), then summary (needs those entries)
   useEffect(() => {
-    fetchEntries().then(() => fetchSummary());
+    fetchEntries()
+      .then(() => fetchSummary())
+      .catch((err) => console.error('Food log fetch sequence failed:', err));
   }, [fetchEntries, fetchSummary]);
 
   useEffect(() => {
@@ -1089,23 +1091,20 @@ export function FoodLogPage({
   ];
 
   // Filter out staples already logged today (auto-logged or manually)
-  const loggedStapleIds = useMemo(() => {
-    const ids = new Set<string>();
+  const filteredStaplesBySlot = useMemo(() => {
+    const loggedIds = new Set<string>();
     for (const meal of Object.values(entries)) {
       for (const entry of meal) {
-        if (entry.stapleId) ids.add(entry.stapleId);
+        if (entry.stapleId) loggedIds.add(entry.stapleId);
       }
     }
-    return ids;
-  }, [entries]);
 
-  const filteredStaplesBySlot = useMemo(() => {
     const result = {} as Record<MealType, FoodStaple[]>;
     for (const [slot, staples] of Object.entries(staplesBySlot)) {
-      result[slot as MealType] = staples.filter(s => !loggedStapleIds.has(s.id));
+      result[slot as MealType] = staples.filter(s => !loggedIds.has(s.id));
     }
     return result;
-  }, [staplesBySlot, loggedStapleIds]);
+  }, [entries, staplesBySlot]);
 
   // Build quick foods for pills (recipes first, then regular quick foods)
   const recipeItems: QuickFoodItem[] = topRecipes.map((r) => ({
