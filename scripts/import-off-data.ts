@@ -5,15 +5,16 @@
  * and batch-inserts into Postgres via Prisma.
  *
  * Usage:
- *   npx tsx scripts/import-off-data.ts --file ./off-data.jsonl               # Dry run (local)
- *   npx tsx scripts/import-off-data.ts --file ./off-data.jsonl --apply       # Apply (local)
- *   npx tsx scripts/import-off-data.ts --file ./off-data.jsonl --apply --prod  # Apply (prod)
+ *   npx tsx scripts/import-off-data.ts --file ./data.jsonl                   # Dry run (local)
+ *   npx tsx scripts/import-off-data.ts --file ./data.jsonl.gz --apply        # .gz supported
+ *   npx tsx scripts/import-off-data.ts --file ./data.jsonl --apply --prod    # Apply (prod)
  *
  * Prerequisite for prod: vercel env pull .env.production --environment=production
  */
 import * as fs from "fs";
 import * as path from "path";
 import * as readline from "readline";
+import * as zlib from "zlib";
 
 // Load env from appropriate file (must happen before PrismaClient import)
 const useProd = process.argv.includes("--prod");
@@ -122,27 +123,45 @@ function hasValidMacros(macros: {
   return hasNonZero;
 }
 
-function escapeSQL(value: string): string {
-  return value.replace(/'/g, "''").replace(/\\/g, "\\\\");
-}
-
-function sqlVal(v: string | null): string {
-  if (v === null) return "NULL";
-  return `'${escapeSQL(v)}'`;
-}
-
-function sqlNum(v: number | null): string {
-  if (v === null) return "NULL";
-  return String(v);
+/**
+ * Sanitize string for Postgres — strip null bytes and control chars
+ */
+function sanitize(v: string): string {
+  return v.replace(/\0/g, "").replace(/[\x01-\x08\x0B\x0C\x0E-\x1F]/g, "");
 }
 
 async function flushBatch(batch: AcceptedRow[], dryRun: boolean): Promise<number> {
   if (batch.length === 0 || dryRun) return 0;
 
-  const valueRows = batch.map(
-    (r) =>
-      `(gen_random_uuid(), ${sqlVal(r.code)}, ${sqlVal(r.product_name)}, ${sqlVal(r.brands)}, ${sqlNum(r.calories_per_100g)}, ${sqlNum(r.protein_per_100g)}, ${sqlNum(r.carbs_per_100g)}, ${sqlNum(r.fat_per_100g)}, ${sqlVal(r.serving_size)}, NOW())`
-  );
+  // Dedupe within batch — OFF JSONL can have duplicate barcodes
+  const seen = new Set<string>();
+  const deduped = batch.filter((r) => {
+    if (seen.has(r.code)) return false;
+    seen.add(r.code);
+    return true;
+  });
+
+  const COLS_PER_ROW = 8;
+  const params: (string | number | null)[] = [];
+  const valueRows: string[] = [];
+
+  for (let i = 0; i < deduped.length; i++) {
+    const r = deduped[i];
+    const p = i * COLS_PER_ROW;
+    valueRows.push(
+      `(gen_random_uuid(), $${p+1}, $${p+2}, $${p+3}, $${p+4}, $${p+5}, $${p+6}, $${p+7}, $${p+8}, NOW())`
+    );
+    params.push(
+      sanitize(r.code),
+      sanitize(r.product_name),
+      r.brands ? sanitize(r.brands) : null,
+      r.calories_per_100g,
+      r.protein_per_100g,
+      r.carbs_per_100g,
+      r.fat_per_100g,
+      r.serving_size ? sanitize(r.serving_size) : null,
+    );
+  }
 
   const sql = `
     INSERT INTO foods_off (id, code, product_name, brands, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g, serving_size, imported_at)
@@ -158,7 +177,7 @@ async function flushBatch(batch: AcceptedRow[], dryRun: boolean): Promise<number
       imported_at = EXCLUDED.imported_at
   `;
 
-  const result = await prisma.$executeRawUnsafe(sql);
+  const result = await prisma.$executeRawUnsafe(sql, ...params);
   return result;
 }
 
@@ -178,8 +197,15 @@ async function importOFF(filePath: string, dryRun: boolean) {
     process.exit(1);
   }
 
+  const isGz = filePath.endsWith(".gz");
+  let inputStream: NodeJS.ReadableStream = fs.createReadStream(filePath);
+  if (isGz) {
+    console.log("Detected .gz file — streaming through gunzip (no disk extraction needed)");
+    inputStream = inputStream.pipe(zlib.createGunzip());
+  }
+
   const rl = readline.createInterface({
-    input: fs.createReadStream(filePath),
+    input: inputStream,
     crlfDelay: Infinity,
   });
 
