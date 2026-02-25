@@ -83,17 +83,19 @@ function SortableStapleRow({ staple, onDelete, onToggleAutoLog }: SortableStaple
       {onToggleAutoLog && (
         <button
           onClick={() => onToggleAutoLog(staple.id)}
-          className={`relative w-10 h-5 rounded-full transition-colors shrink-0 ${
-            staple.autoLog ? 'bg-[#FF6B6B]' : 'bg-[#E2E8F0]'
-          }`}
+          className="flex items-center gap-1.5 shrink-0"
           title={staple.autoLog ? 'Auto-log enabled' : 'Enable auto-log'}
         >
-          <span
-            className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${
-              staple.autoLog ? 'translate-x-5' : 'translate-x-0.5'
-            }`}
-          />
-          <Clock className={`absolute top-1 right-1 w-3 h-3 ${staple.autoLog ? 'text-white' : 'text-gray-400'}`} />
+          <div className={`relative w-9 h-5 rounded-full transition-colors ${
+            staple.autoLog ? 'bg-[#FF6B6B]' : 'bg-[#E2E8F0]'
+          }`}>
+            <span
+              className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${
+                staple.autoLog ? 'translate-x-4' : 'translate-x-0'
+              }`}
+            />
+          </div>
+          <Clock className={`w-3.5 h-3.5 ${staple.autoLog ? 'text-[#FF6B6B]' : 'text-gray-300'}`} />
         </button>
       )}
 
