@@ -160,6 +160,11 @@ export function StapleManageModal({
     onDelete(id);
   };
 
+  const handleToggleAutoLog = (id: string) => {
+    setItems(prev => prev.map(s => s.id === id ? { ...s, autoLog: !s.autoLog } : s));
+    onToggleAutoLog?.(id);
+  };
+
   return (
     <>
       {/* Backdrop */}
@@ -213,7 +218,7 @@ export function StapleManageModal({
                       key={staple.id}
                       staple={staple}
                       onDelete={handleDelete}
-                      onToggleAutoLog={onToggleAutoLog}
+                      onToggleAutoLog={handleToggleAutoLog}
                     />
                   ))}
                 </div>
