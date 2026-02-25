@@ -26,6 +26,51 @@ export async function GET(request: Request) {
     const date = new Date(dateParam + 'T00:00:00');
     date.setHours(0, 0, 0, 0);
 
+    // Auto-log: create entries from autoLog staples when viewing today
+    // Non-critical side-effect — failures must not block the GET response
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (date.getTime() === today.getTime()) {
+      try {
+        await prisma.$transaction(async (tx) => {
+          const staples = await tx.foodStaple.findMany({
+            where: { userId: session.user.id, autoLog: true },
+          });
+
+          // Raw SQL bypasses soft-delete middleware — we need to see deleted rows for dedup
+          const existing = await tx.$queryRaw<Array<{ staple_id: string }>>`
+            SELECT DISTINCT staple_id FROM food_log_entries
+            WHERE user_id = ${session.user.id}::uuid
+              AND date = ${date}::date
+              AND staple_id IS NOT NULL
+          `;
+          const handledIds = new Set(existing.map((r) => r.staple_id));
+
+          const toCreate = staples.filter((s) => !handledIds.has(s.id));
+          if (toCreate.length > 0) {
+            await tx.foodLogEntry.createMany({
+              data: toCreate.map((s) => ({
+                userId: session.user.id,
+                date,
+                meal: s.mealSlot,
+                name: s.name,
+                calories: s.calories,
+                protein: s.protein,
+                carbs: s.carbs,
+                fat: s.fat,
+                servingSize: 1,
+                servingUnit: 'serving',
+                source: FoodSource.STAPLE,
+                stapleId: s.id,
+              })),
+            });
+          }
+        });
+      } catch (autoLogError) {
+        console.error(`Auto-log failed for user ${session.user.id} on ${dateParam}:`, autoLogError);
+      }
+    }
+
     const entries = await prisma.foodLogEntry.findMany({
       where: {
         userId: session.user.id,

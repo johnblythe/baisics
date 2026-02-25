@@ -50,6 +50,7 @@ interface FoodLogEntry {
   fdcId?: string | null;
   brand?: string | null;
   source: string;
+  stapleId?: string | null;
   notes?: string | null;
   createdAt: string;
   isApproximate?: boolean;
@@ -356,9 +357,11 @@ export function FoodLogPage({
   }, []);
 
   // Fetch data on mount and date change
+  // Entries first (triggers auto-log for today), then summary (needs those entries)
   useEffect(() => {
-    fetchEntries();
-    fetchSummary();
+    fetchEntries()
+      .then(() => fetchSummary())
+      .catch((err) => console.error('Food log fetch sequence failed:', err));
   }, [fetchEntries, fetchSummary]);
 
   useEffect(() => {
@@ -1087,6 +1090,22 @@ export function FoodLogPage({
     { meal: 'snack', items: entries.SNACK.map(entryToItemData) },
   ];
 
+  // Filter out staples already logged today (auto-logged or manually)
+  const filteredStaplesBySlot = useMemo(() => {
+    const loggedIds = new Set<string>();
+    for (const meal of Object.values(entries)) {
+      for (const entry of meal) {
+        if (entry.stapleId) loggedIds.add(entry.stapleId);
+      }
+    }
+
+    const result = {} as Record<MealType, FoodStaple[]>;
+    for (const [slot, staples] of Object.entries(staplesBySlot)) {
+      result[slot as MealType] = staples.filter(s => !loggedIds.has(s.id));
+    }
+    return result;
+  }, [entries, staplesBySlot]);
+
   // Build quick foods for pills (recipes first, then regular quick foods)
   const recipeItems: QuickFoodItem[] = topRecipes.map((r) => ({
     id: `recipe-${r.id}`,
@@ -1115,7 +1134,7 @@ export function FoodLogPage({
 
   // Build merged quick items for the new MergedQuickAdd component
   const mergedQuickItems: MergedQuickItem[] = useMemo(() => {
-    const stapleItems: MergedQuickItem[] = Object.values(staplesBySlot)
+    const stapleItems: MergedQuickItem[] = Object.values(filteredStaplesBySlot)
       .flat()
       .map((s) => ({
         id: `staple-${s.id}`,
@@ -1153,7 +1172,7 @@ export function FoodLogPage({
       seenNames.add(key);
       return true;
     });
-  }, [staplesBySlot, topRecipes, quickFoods]);
+  }, [filteredStaplesBySlot, topRecipes, quickFoods]);
 
   // Loading state
   const isLoading = isLoadingEntries || isLoadingSummary || isLoadingQuickFoods;
@@ -1322,7 +1341,7 @@ export function FoodLogPage({
           recipeSidebarRefreshTrigger={recipeSidebarRefreshTrigger}
           suggestion={suggestion}
           onSuggestionClick={handleSuggestionClick}
-          staples={staplesBySlot}
+          staples={filteredStaplesBySlot}
           dailyTargets={macroTargets}
           dismissedSlots={dismissedSlots}
           isToday={isTodaySelected}
@@ -1388,7 +1407,7 @@ export function FoodLogPage({
           suggestion={suggestion}
           onSuggestionClick={handleSuggestionClick}
           rightContentExtra={errorBanner}
-          staples={staplesBySlot}
+          staples={filteredStaplesBySlot}
           dailyTargets={macroTargets}
           dismissedSlots={dismissedSlots}
           isToday={isTodaySelected}

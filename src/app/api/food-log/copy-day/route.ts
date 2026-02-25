@@ -68,6 +68,8 @@ export async function POST(request: Request) {
     }
 
     // Create new entries for target date
+    // Note: stapleId intentionally NOT copied — copies are independent snapshots,
+    // not staple references. This lets auto-log still fire for staples on copied days.
     const createdEntries = await prisma.foodLogEntry.createMany({
       data: sourceEntries.map((entry) => ({
         userId: session.user.id,
