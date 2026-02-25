@@ -1099,3 +1099,20 @@ model FoodSearchLog {
   @@index([userId, createdAt])
   @@map("food_search_logs")
 }
+
+// Open Food Facts local product cache for fast tsvector search
+// search_vector is a generated column — managed in raw SQL migration, not modeled here
+model FoodsOff {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code            String   @unique
+  productName     String   @map("product_name")
+  brands          String?
+  caloriesPer100g Float?   @map("calories_per_100g")
+  proteinPer100g  Float?   @map("protein_per_100g")
+  carbsPer100g    Float?   @map("carbs_per_100g")
+  fatPer100g      Float?   @map("fat_per_100g")
+  servingSize     String?  @map("serving_size")
+  importedAt      DateTime @default(now()) @map("imported_at")
+
+  @@map("foods_off")
+}

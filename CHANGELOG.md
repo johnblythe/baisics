@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Local Open Food Facts search — imported OFF products into `foods_off` table with Postgres tsvector full-text search (#390)
+  - Weighted search ranking: product name (A) > brand (B) via `setweight()` + GIN index
+  - Import script (`scripts/import-off-data.ts`) streams JSONL, filters English market + valid macros, batch upserts
+  - Search-a-licious (SAL) now conditional fallback — only fires when local OFF returns < 5 results
 - Food log page redesign (Option H) — 2-tab Log/Pantry layout with DualRing, MergedQuickAdd, SuggestionBanner (#376)
 - Shared MealSectionList and TabBar components to deduplicate layout code (#376)
 - Food Staples — pin frequently-eaten foods to meal slots as a swipeable carousel (#376)
