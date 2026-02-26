@@ -310,9 +310,9 @@ export function RecipeCard({ recipe, onUpdate, onDelete, selectedDate }: RecipeC
           name: editName.trim(),
           emoji: editEmoji,
           calories: Math.round(totals.calories),
-          protein: Math.round(totals.protein * 10) / 10,
-          carbs: Math.round(totals.carbs * 10) / 10,
-          fat: Math.round(totals.fat * 10) / 10,
+          protein: Math.round(totals.protein),
+          carbs: Math.round(totals.carbs),
+          fat: Math.round(totals.fat),
           ingredients: validIngredients.map(({ id: _id, ...rest }) => rest),
         }),
       });
@@ -452,7 +452,7 @@ export function RecipeCard({ recipe, onUpdate, onDelete, selectedDate }: RecipeC
                 {recipe.name}
               </div>
               <div className="text-sm text-[#64748B]">
-                {recipe.calories} cal · {Math.round(recipe.protein)}g P · {Math.round(recipe.carbs)}g C · {Math.round(recipe.fat)}g F
+                {Math.round(recipe.calories)} cal · {Math.round(recipe.protein)}g P · {Math.round(recipe.carbs)}g C · {Math.round(recipe.fat)}g F
               </div>
             </div>
           </div>
@@ -570,9 +570,9 @@ export function RecipeCard({ recipe, onUpdate, onDelete, selectedDate }: RecipeC
                   <div className="text-xs text-[#64748B] mb-2">Total per serving</div>
                   <div className="flex items-center gap-4 text-sm">
                     <span className="font-bold text-[#0F172A]">{Math.round(editTotals.calories)} cal</span>
-                    <span className="text-green-600">{Math.round(editTotals.protein * 10) / 10}g P</span>
-                    <span className="text-amber-600">{Math.round(editTotals.carbs * 10) / 10}g C</span>
-                    <span className="text-blue-600">{Math.round(editTotals.fat * 10) / 10}g F</span>
+                    <span className="text-green-600">{Math.round(editTotals.protein)}g P</span>
+                    <span className="text-amber-600">{Math.round(editTotals.carbs)}g C</span>
+                    <span className="text-blue-600">{Math.round(editTotals.fat)}g F</span>
                   </div>
                 </div>
               )}

@@ -149,7 +149,7 @@ export function AIParseResult({
               </span>
             </div>
             <span className="text-[#94A3B8] flex-shrink-0 text-xs">
-              {food.calories} cal
+              {Math.round(food.calories)} cal
             </span>
           </div>
         ))}
@@ -158,9 +158,9 @@ export function AIParseResult({
       {/* Macro totals */}
       <div className="flex items-center gap-4 text-sm mb-4 p-3 bg-[#F8FAFC] rounded-xl">
         <span className="font-bold text-[#0F172A]">{Math.round(totals.calories)} cal</span>
-        <span className="text-green-600">{Math.round(totals.protein * 10) / 10}g P</span>
-        <span className="text-amber-600">{Math.round(totals.carbs * 10) / 10}g C</span>
-        <span className="text-blue-600">{Math.round(totals.fat * 10) / 10}g F</span>
+        <span className="text-green-600">{Math.round(totals.protein)}g P</span>
+        <span className="text-amber-600">{Math.round(totals.carbs)}g C</span>
+        <span className="text-blue-600">{Math.round(totals.fat)}g F</span>
       </div>
 
       {/* Action buttons */}

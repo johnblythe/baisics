@@ -36,7 +36,7 @@ export function MacroProgressBar({ layout = 'horizontal', totals, targets }: Mac
             <div className="flex items-center justify-between text-sm mb-1">
               <span className="text-[#64748B]">{macro.label}</span>
               <span className={`font-medium ${macro.textColor}`}>
-                {macro.current}{macro.unit || ''} / {macro.target}{macro.unit || ''}
+                {Math.round(macro.current)}{macro.unit || ''} / {Math.round(macro.target)}{macro.unit || ''}
               </span>
             </div>
             <div className="h-2 bg-[#E2E8F0] rounded-full overflow-hidden">
@@ -56,7 +56,7 @@ export function MacroProgressBar({ layout = 'horizontal', totals, targets }: Mac
       <div className="flex-1">
         <div className="flex items-center justify-between text-xs mb-1">
           <span className="text-[#64748B]">Calories</span>
-          <span className="font-medium text-[#0F172A]">{totals.calories} / {targets.calories}</span>
+          <span className="font-medium text-[#0F172A]">{Math.round(totals.calories)} / {Math.round(targets.calories)}</span>
         </div>
         <div className="h-2 bg-[#E2E8F0] rounded-full overflow-hidden">
           <div
@@ -68,7 +68,7 @@ export function MacroProgressBar({ layout = 'horizontal', totals, targets }: Mac
       <div className="flex-1">
         <div className="flex items-center justify-between text-xs mb-1">
           <span className="text-[#64748B]">Protein</span>
-          <span className="font-medium text-green-600">{totals.protein}g / {targets.protein}g</span>
+          <span className="font-medium text-green-600">{Math.round(totals.protein)}g / {Math.round(targets.protein)}g</span>
         </div>
         <div className="h-2 bg-[#E2E8F0] rounded-full overflow-hidden">
           <div

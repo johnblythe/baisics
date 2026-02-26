@@ -50,9 +50,9 @@ export function ServingSizeSelector({
     return {
       grams,
       calories: Math.round(food.calories * multiplier),
-      protein: Math.round(food.protein * multiplier * 10) / 10,
-      carbs: Math.round(food.carbs * multiplier * 10) / 10,
-      fat: Math.round(food.fat * multiplier * 10) / 10,
+      protein: Math.round(food.protein * multiplier),
+      carbs: Math.round(food.carbs * multiplier),
+      fat: Math.round(food.fat * multiplier),
       food,
     };
   }, [grams, food]);

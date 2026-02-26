@@ -136,7 +136,7 @@ export function StapleCarousel({
               {/* Macro chips */}
               <div className="flex items-center justify-center gap-2 mt-2 flex-wrap">
                 <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-white border border-gray-200">
-                  <span className="text-xs font-semibold text-gray-700">{current.calories}</span>
+                  <span className="text-xs font-semibold text-gray-700">{Math.round(current.calories)}</span>
                   <span className="text-[10px] text-gray-400">cal</span>
                 </div>
                 <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-50 border border-blue-100">

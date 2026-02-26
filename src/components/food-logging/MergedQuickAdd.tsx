@@ -106,7 +106,7 @@ function MergedItem({
             <span className="text-sm text-[#0F172A] truncate">{item.name}</span>
             <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${tagBg} ${tagText}`}>{item.tag}</span>
           </div>
-          <span className="text-xs text-[#94A3B8]">{item.calories} cal &middot; {item.protein}g P</span>
+          <span className="text-xs text-[#94A3B8]">{Math.round(item.calories)} cal &middot; {Math.round(item.protein)}g P</span>
         </div>
         {isLogging ? (
           <Loader2 className="w-4 h-4 text-[#FF6B6B] animate-spin flex-shrink-0" />

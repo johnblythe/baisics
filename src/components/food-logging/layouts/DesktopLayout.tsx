@@ -187,8 +187,8 @@ export function DesktopLayout({
   const [weekExpanded, setWeekExpanded] = useState(defaultWeeklyExpanded);
 
   // Calculate remaining macros
-  const remainingCalories = Math.max(0, (macroTargets.calories ?? 0) - (macroTotals.calories ?? 0));
-  const remainingProtein = Math.max(0, (macroTargets.protein ?? 0) - (macroTotals.protein ?? 0));
+  const remainingCalories = Math.round(Math.max(0, (macroTargets.calories ?? 0) - (macroTotals.calories ?? 0)));
+  const remainingProtein = Math.round(Math.max(0, (macroTargets.protein ?? 0) - (macroTotals.protein ?? 0)));
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">

@@ -55,8 +55,8 @@ export function FoodLogItem({
       </div>
       <div className="flex items-center gap-3">
         <div className="text-right">
-          <div className="text-sm font-medium text-[#0F172A]">{item.calories} cal</div>
-          <div className="text-xs text-green-600">{item.protein}g P</div>
+          <div className="text-sm font-medium text-[#0F172A]">{Math.round(item.calories)} cal</div>
+          <div className="text-xs text-green-600">{Math.round(item.protein)}g P</div>
         </div>
         {showActions && (onEdit || onDelete || onPinAsStaple || onUnpinStaple) && (
           <div className="flex items-center gap-1">

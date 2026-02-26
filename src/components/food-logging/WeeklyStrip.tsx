@@ -120,7 +120,7 @@ export function WeeklyStrip({ weekData, expanded: controlledExpanded, onToggle, 
                             {day.adherence}%
                           </span>
                           <span className={`text-[10px] ${day.isToday ? 'text-white/80' : 'text-[#94A3B8]'}`}>
-                            {day.protein}g P
+                            {Math.round(day.protein)}g P
                           </span>
                         </>
                       ) : (

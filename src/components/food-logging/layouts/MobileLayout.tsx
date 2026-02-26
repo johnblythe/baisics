@@ -178,8 +178,8 @@ export function MobileLayout({
   onTabChange,
   mergedQuickItems,
 }: MobileLayoutProps) {
-  const remainingCalories = Math.max(0, macroTargets.calories - macroTotals.calories);
-  const remainingProtein = Math.max(0, macroTargets.protein - macroTotals.protein);
+  const remainingCalories = Math.round(Math.max(0, macroTargets.calories - macroTotals.calories));
+  const remainingProtein = Math.round(Math.max(0, macroTargets.protein - macroTotals.protein));
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col">

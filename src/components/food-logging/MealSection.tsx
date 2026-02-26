@@ -362,7 +362,7 @@ export function MealSection({
           <span className="font-medium text-[#0F172A]">{displayName}</span>
           {items.length > 0 && (
             <span className="text-xs text-[#94A3B8]">
-              {totals.calories} cal · {totals.protein}g P
+              {Math.round(totals.calories)} cal · {Math.round(totals.protein)}g P
             </span>
           )}
         </div>
@@ -575,7 +575,7 @@ export function MealSection({
                                     {recipe.name}
                                   </div>
                                   <div className="text-xs text-[#94A3B8]">
-                                    {recipe.calories} cal · {Math.round(recipe.protein)}g P
+                                    {Math.round(recipe.calories)} cal · {Math.round(recipe.protein)}g P
                                     {Array.isArray(recipe.ingredients) && recipe.ingredients.length > 0 && (
                                       <span> · {recipe.ingredients.length} items</span>
                                     )}

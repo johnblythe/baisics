@@ -1045,10 +1045,10 @@ export function FoodLogPage({
 
   // Build macro totals and targets
   const macroTotals: MacroTotals = {
-    calories: summary?.totals.totalCalories ?? 0,
-    protein: summary?.totals.totalProtein ?? 0,
-    carbs: summary?.totals.totalCarbs ?? 0,
-    fat: summary?.totals.totalFat ?? 0,
+    calories: Math.round(summary?.totals.totalCalories ?? 0),
+    protein: Math.round(summary?.totals.totalProtein ?? 0),
+    carbs: Math.round(summary?.totals.totalCarbs ?? 0),
+    fat: Math.round(summary?.totals.totalFat ?? 0),
   };
 
   const macroTargets: MacroTargets = {
@@ -1295,7 +1295,7 @@ export function FoodLogPage({
   if (remainingProtein > 30) {
     suggestion = `Add ${Math.round(remainingProtein)}g protein`;
   } else if (remainingCalories > 300) {
-    suggestion = `${remainingCalories} cal remaining`;
+    suggestion = `${Math.round(remainingCalories)} cal remaining`;
   }
 
 
