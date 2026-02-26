@@ -93,7 +93,10 @@ export async function POST(request: Request) {
     }
 
     const userId = session.user.id;
-    const now = new Date();
+    // Strip time — effectiveDate is date-level, not time-level
+    // Use UTC midnight so timezone doesn't shift the calendar date
+    const today = new Date();
+    const now = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
 
     // Check if user has an active program
     const activeProgram = await prisma.program.findFirst({

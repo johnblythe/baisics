@@ -46,10 +46,9 @@ export async function resolveNutritionTargets(
   userId: string,
   forDate?: Date
 ): Promise<ResolveNutritionResult> {
-  // Use end-of-day so plans created during the target day are included
-  const targetDate = forDate ?? new Date()
-  const lookupDate = new Date(targetDate)
-  lookupDate.setHours(23, 59, 59, 999)
+  // Normalize to UTC midnight — comparisons are date-level, not time-level
+  const d = forDate ?? new Date()
+  const targetDate = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()))
 
   // 1. Try to find active program's nutrition plan
   const activeProgram = await prisma.program.findFirst({
@@ -69,10 +68,10 @@ export async function resolveNutritionTargets(
       where: {
         programId: activeProgram.id,
         phaseNumber: activeProgram.currentPhase,
-        effectiveDate: { lte: lookupDate },
+        effectiveDate: { lte: targetDate },
         OR: [
           { endDate: null },
-          { endDate: { gt: lookupDate } },
+          { endDate: { gt: targetDate } },
         ],
       },
       orderBy: { effectiveDate: 'desc' },
