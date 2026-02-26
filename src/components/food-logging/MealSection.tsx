@@ -420,8 +420,9 @@ export function MealSection({
 
       {/* Food items list — split into pinned/unpinned when viewing today */}
       {items.length > 0 && (() => {
-        const pinnedItems = isToday ? items.filter(item => pinnedNames.has(item.name.toLowerCase())) : [];
-        const unpinnedItems = isToday ? items.filter(item => !pinnedNames.has(item.name.toLowerCase())) : items;
+        const isPinned = (item: FoodLogItemData) => !!item.stapleId || pinnedNames.has(item.name.toLowerCase());
+        const pinnedItems = isToday ? items.filter(isPinned) : [];
+        const unpinnedItems = isToday ? items.filter(item => !isPinned(item)) : items;
 
         return (
           <>

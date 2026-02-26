@@ -12,6 +12,7 @@ export interface FoodLogItemData {
   carbs?: number;
   fat?: number;
   isApproximate?: boolean;
+  stapleId?: string | null;
 }
 
 export interface FoodLogItemProps {

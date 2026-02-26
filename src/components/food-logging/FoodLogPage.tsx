@@ -159,6 +159,7 @@ function entryToItemData(entry: FoodLogEntry): FoodLogItemData {
     carbs: entry.carbs,
     fat: entry.fat,
     isApproximate: entry.isApproximate,
+    stapleId: entry.stapleId,
   };
 }
 
@@ -935,6 +936,7 @@ export function FoodLogPage({
       meal: staple.mealSlot,
       date: formatDateForAPI(selectedDate),
       source: 'STAPLE',
+      stapleId: staple.id,
       createdAt: new Date().toISOString(),
     } as FoodLogEntry;
 
@@ -955,10 +957,7 @@ export function FoodLogPage({
       return;
     }
 
-    // Dismiss the carousel only after confirmed success
-    dismissSlot(staple.mealSlot);
-
-    // Refresh to get real entry
+    // Refresh to get real entry (filteredStaplesBySlot hides logged staples from carousel)
     await Promise.all([fetchEntries(), fetchSummary()]);
 
     // Show undo toast
@@ -979,7 +978,7 @@ export function FoodLogPage({
         duration: 5000,
       });
     }
-  }, [selectedDate, dismissSlot, logStaple, undoLogStaple, fetchEntries, fetchSummary]);
+  }, [selectedDate, logStaple, undoLogStaple, fetchEntries, fetchSummary]);
 
   const handlePinAsStaple = useCallback(async (item: FoodLogItemData, meal: string) => {
     const mealSlot = meal.toUpperCase() as MealType;
