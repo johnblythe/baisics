@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Loader2, AlertCircle, Target } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Loader2, AlertCircle } from 'lucide-react';
 import { NutritionTargetsModal } from '@/components/nutrition/NutritionTargetsModal';
 import { MealType } from '@prisma/client';
 import { toast } from 'sonner';
@@ -1264,27 +1264,7 @@ export function FoodLogPage({
     </div>
   ) : null;
 
-  // Targets banner - shows when using default targets
-  const targetsBanner = summary?.isDefault ? (
-    <div className="max-w-6xl mx-auto px-4">
-      <div className="mt-4 p-3 bg-[#FFE5E5] border border-[#FF6B6B]/20 rounded-xl flex items-center gap-3">
-        <div className="w-8 h-8 bg-[#FF6B6B] rounded-full flex items-center justify-center flex-shrink-0">
-          <Target className="w-4 h-4 text-white" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-[#0F172A]">Set your nutrition targets</p>
-          <p className="text-xs text-[#64748B]">Personalize your calorie and macro goals</p>
-        </div>
-        <button
-          type="button"
-          onClick={() => setShowTargetsModal(true)}
-          className="px-3 py-1.5 bg-[#FF6B6B] text-white text-sm font-medium rounded-lg hover:bg-[#EF5350] transition-colors flex-shrink-0"
-        >
-          Set Goals
-        </button>
-      </div>
-    </div>
-  ) : null;
+  const isDefaultTargets = summary?.isDefault ?? false;
 
   // Calculate remaining for suggestion
   const remainingCalories = macroTargets.calories - macroTotals.calories;
@@ -1301,9 +1281,6 @@ export function FoodLogPage({
 
   return (
     <>
-      {/* Targets banner - above both layouts */}
-      {targetsBanner}
-
       {/* Mobile Layout */}
       <div className="lg:hidden" data-testid="mobile-layout">
         <MobileLayout
@@ -1353,6 +1330,8 @@ export function FoodLogPage({
           activeTab={activeTab}
           onTabChange={handleTabChange}
           mergedQuickItems={mergedQuickItems}
+          isDefaultTargets={isDefaultTargets}
+          onEditTargets={() => setShowTargetsModal(true)}
           customFooter={errorBanner ? (
             <>
               {errorBanner}
@@ -1419,6 +1398,8 @@ export function FoodLogPage({
           activeTab={activeTab}
           onTabChange={handleTabChange}
           mergedQuickItems={mergedQuickItems}
+          isDefaultTargets={isDefaultTargets}
+          onEditTargets={() => setShowTargetsModal(true)}
         />
       </div>
 

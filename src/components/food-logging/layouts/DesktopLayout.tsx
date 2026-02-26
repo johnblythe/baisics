@@ -2,6 +2,7 @@
 
 import React, { useState, ReactNode } from 'react';
 import { MealType as PrismaMealType } from '@prisma/client';
+import { Settings, Target } from 'lucide-react';
 import { DualRing } from '../DualRing';
 import { SuggestionBanner } from '../SuggestionBanner';
 import { MergedQuickAdd, type MergedQuickItem } from '../MergedQuickAdd';
@@ -123,6 +124,10 @@ export interface DesktopLayoutProps {
   activeTab?: 'log' | 'pantry';
   onTabChange?: (tab: 'log' | 'pantry') => void;
   mergedQuickItems?: MergedQuickItem[];
+
+  // Targets
+  isDefaultTargets?: boolean;
+  onEditTargets?: () => void;
 }
 
 export function DesktopLayout({
@@ -178,6 +183,8 @@ export function DesktopLayout({
   activeTab: activeTabProp,
   onTabChange: onTabChangeProp,
   mergedQuickItems = [],
+  isDefaultTargets,
+  onEditTargets,
 }: DesktopLayoutProps) {
   // Internal tab state as fallback when props not provided
   const [internalTab, setInternalTab] = useState<'log' | 'pantry'>('log');
@@ -277,17 +284,46 @@ export function DesktopLayout({
             {/* Sidebar (1/3, sticky) */}
             <div className="col-span-1">
               <div className="sticky top-6 space-y-4">
-                {/* Card 1: DualRing + MacroProgressBar */}
+                {/* Card 1: DualRing + MacroProgressBar (or Set Goals CTA) */}
                 <div className="bg-white rounded-xl border border-[#E2E8F0] p-5">
-                  <div className="flex items-center gap-4 mb-4">
-                    <DualRing totals={macroTotals} targets={macroTargets} size="md" />
-                    <div>
-                      <div className="text-lg font-bold text-[#0F172A]">{remainingCalories}</div>
-                      <div className="text-xs text-[#94A3B8]">cal remaining</div>
-                      <div className="text-sm font-medium text-green-600 mt-0.5">{remainingProtein}g P to go</div>
+                  {isDefaultTargets ? (
+                    <div className="text-center py-4">
+                      <div className="w-12 h-12 bg-[#FFE5E5] rounded-full flex items-center justify-center mx-auto mb-3">
+                        <Target className="w-6 h-6 text-[#FF6B6B]" />
+                      </div>
+                      <h3 className="text-sm font-bold text-[#0F172A] mb-1">Set your nutrition goals</h3>
+                      <p className="text-xs text-[#94A3B8] mb-4">Personalize calories and macros to track your progress</p>
+                      <button
+                        type="button"
+                        onClick={onEditTargets}
+                        className="px-4 py-2 bg-[#FF6B6B] text-white text-sm font-semibold rounded-xl hover:bg-[#EF5350] transition-colors"
+                      >
+                        Set Goals
+                      </button>
                     </div>
-                  </div>
-                  <MacroProgressBar layout="vertical" totals={macroTotals} targets={macroTargets} />
+                  ) : (
+                    <>
+                      <div className="flex items-center gap-4 mb-4">
+                        <DualRing totals={macroTotals} targets={macroTargets} size="md" />
+                        <div className="flex-1">
+                          <div className="text-lg font-bold text-[#0F172A]">{remainingCalories}</div>
+                          <div className="text-xs text-[#94A3B8]">cal remaining</div>
+                          <div className="text-sm font-medium text-green-600 mt-0.5">{remainingProtein}g P to go</div>
+                        </div>
+                        {onEditTargets && (
+                          <button
+                            type="button"
+                            onClick={onEditTargets}
+                            className="p-1.5 text-[#94A3B8] hover:text-[#64748B] hover:bg-[#F1F5F9] rounded-lg transition-colors"
+                            title="Edit nutrition goals"
+                          >
+                            <Settings className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                      <MacroProgressBar layout="vertical" totals={macroTotals} targets={macroTargets} />
+                    </>
+                  )}
                 </div>
 
                 {/* Card 2: MergedQuickAdd */}

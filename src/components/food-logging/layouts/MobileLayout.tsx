@@ -1,6 +1,7 @@
 'use client';
 
 import React, { ReactNode } from 'react';
+import { Settings, Target } from 'lucide-react';
 import { MealType as PrismaMealType } from '@prisma/client';
 import {
   QuickInput,
@@ -128,6 +129,10 @@ export interface MobileLayoutProps {
   activeTab?: 'log' | 'pantry';
   onTabChange?: (tab: 'log' | 'pantry') => void;
   mergedQuickItems?: MergedQuickItem[];
+
+  // Targets
+  isDefaultTargets?: boolean;
+  onEditTargets?: () => void;
 }
 
 export function MobileLayout({
@@ -177,6 +182,8 @@ export function MobileLayout({
   activeTab = 'log',
   onTabChange,
   mergedQuickItems,
+  isDefaultTargets,
+  onEditTargets,
 }: MobileLayoutProps) {
   const remainingCalories = Math.round(Math.max(0, macroTargets.calories - macroTotals.calories));
   const remainingProtein = Math.round(Math.max(0, macroTargets.protein - macroTotals.protein));
@@ -188,15 +195,44 @@ export function MobileLayout({
 
       {/* Macro summary row */}
       <div className="bg-white border-b border-[#E2E8F0] px-4 py-2 flex items-center gap-3">
-        <DualRing totals={macroTotals} targets={macroTargets} size="sm" />
-        <div className="flex-1">
-          <div className="text-sm font-bold text-[#0F172A]">
-            {Math.round(remainingCalories)} cal left
-          </div>
-          <div className="text-xs text-[#94A3B8]">
-            {Math.round(remainingProtein)}g P to go
-          </div>
-        </div>
+        {isDefaultTargets ? (
+          <button
+            type="button"
+            onClick={onEditTargets}
+            className="flex items-center gap-3 w-full py-1"
+          >
+            <div className="w-8 h-8 bg-[#FFE5E5] rounded-full flex items-center justify-center flex-shrink-0">
+              <Target className="w-4 h-4 text-[#FF6B6B]" />
+            </div>
+            <div className="flex-1 text-left">
+              <div className="text-sm font-bold text-[#0F172A]">Set your goals</div>
+              <div className="text-xs text-[#94A3B8]">Personalize calories &amp; macros</div>
+            </div>
+            <span className="text-xs font-medium text-[#FF6B6B]">Set up →</span>
+          </button>
+        ) : (
+          <>
+            <DualRing totals={macroTotals} targets={macroTargets} size="sm" />
+            <div className="flex-1">
+              <div className="text-sm font-bold text-[#0F172A]">
+                {remainingCalories} cal left
+              </div>
+              <div className="text-xs text-[#94A3B8]">
+                {remainingProtein}g P to go
+              </div>
+            </div>
+            {onEditTargets && (
+              <button
+                type="button"
+                onClick={onEditTargets}
+                className="p-1.5 text-[#94A3B8] hover:text-[#64748B] hover:bg-[#F1F5F9] rounded-lg transition-colors"
+                title="Edit nutrition goals"
+              >
+                <Settings className="w-4 h-4" />
+              </button>
+            )}
+          </>
+        )}
       </div>
 
       {/* Tab Bar */}

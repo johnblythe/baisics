@@ -53,17 +53,16 @@ export function WeeklyStrip({ weekData, expanded: controlledExpanded, onToggle, 
                 role={onDayClick ? 'button' : undefined}
                 tabIndex={onDayClick ? 0 : undefined}
                 onClick={onDayClick ? (e) => { e.stopPropagation(); onDayClick(day.fullDate); } : undefined}
-                className={`w-6 h-6 rounded-md flex items-center justify-center text-xs font-medium
-                  ${onDayClick ? 'cursor-pointer hover:ring-2 hover:ring-[#FF6B6B]/30' : ''}
+                className={`w-6 h-6 rounded-md flex items-center justify-center text-xs font-medium transition-colors
                   ${day.isToday
                     ? 'bg-[#FF6B6B] text-white'
                     : day.logged
                       ? day.adherence >= 90
-                        ? 'bg-green-100 text-green-700'
+                        ? `bg-green-100 text-green-700 ${onDayClick ? 'hover:bg-green-200' : ''}`
                         : day.adherence >= 75
-                          ? 'bg-amber-100 text-amber-700'
-                          : 'bg-red-100 text-red-700'
-                      : 'bg-[#F1F5F9] text-[#94A3B8]'
+                          ? `bg-amber-100 text-amber-700 ${onDayClick ? 'hover:bg-amber-200' : ''}`
+                          : `bg-red-100 text-red-700 ${onDayClick ? 'hover:bg-red-200' : ''}`
+                      : `bg-[#F1F5F9] text-[#94A3B8] ${onDayClick ? 'hover:bg-[#E2E8F0]' : ''}`
                   }`}
               >
                 {day.day}
@@ -101,17 +100,16 @@ export function WeeklyStrip({ weekData, expanded: controlledExpanded, onToggle, 
                     onClick={onDayClick ? () => onDayClick(day.fullDate) : undefined}
                   >
                     <div className={`
-                      aspect-square rounded-xl flex flex-col items-center justify-center text-xs
-                      ${onDayClick ? 'hover:ring-2 hover:ring-inset hover:ring-[#FF6B6B]/30' : ''}
+                      aspect-square rounded-xl flex flex-col items-center justify-center text-xs transition-colors
                       ${day.isToday
                         ? 'bg-[#FF6B6B] text-white'
                         : day.logged
                           ? day.adherence >= 90
-                            ? 'bg-green-50 border-2 border-green-200'
+                            ? `bg-green-50 border-2 border-green-200 ${onDayClick ? 'hover:bg-green-100 hover:border-green-300' : ''}`
                             : day.adherence >= 75
-                              ? 'bg-amber-50 border-2 border-amber-200'
-                              : 'bg-red-50 border-2 border-red-200'
-                          : 'bg-[#F8FAFC] border border-[#E2E8F0]'
+                              ? `bg-amber-50 border-2 border-amber-200 ${onDayClick ? 'hover:bg-amber-100 hover:border-amber-300' : ''}`
+                              : `bg-red-50 border-2 border-red-200 ${onDayClick ? 'hover:bg-red-100 hover:border-red-300' : ''}`
+                          : `bg-[#F8FAFC] border border-[#E2E8F0] ${onDayClick ? 'hover:bg-[#F1F5F9] hover:border-[#CBD5E1]' : ''}`
                       }`}
                     >
                       {day.logged ? (
