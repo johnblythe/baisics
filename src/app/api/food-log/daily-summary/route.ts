@@ -69,9 +69,9 @@ export async function GET(request: Request) {
 
     // Round totals for display
     totals.totalCalories = Math.round(totals.totalCalories);
-    totals.totalProtein = Math.round(totals.totalProtein * 10) / 10;
-    totals.totalCarbs = Math.round(totals.totalCarbs * 10) / 10;
-    totals.totalFat = Math.round(totals.totalFat * 10) / 10;
+    totals.totalProtein = Math.round(totals.totalProtein);
+    totals.totalCarbs = Math.round(totals.totalCarbs);
+    totals.totalFat = Math.round(totals.totalFat);
 
     // Use resolveNutritionTargets for point-in-time target resolution
     const nutritionResult = await resolveNutritionTargets(userId, date);
