@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - CRUD API with max-5-per-slot transaction enforcement
 
 ### Fixed
+- Food log edit: changing portion now recalculates macros proportionally (#393)
 - Add server-side length caps to workout chat history — `.max(20)` on history array, `.max(2000)` on message content (#402)
 - Add max-length guard (200 chars) to food search query parameter (#403)
 - Transparent backgrounds on food log cards — meal sections, suggestion banner, staple carousel now have solid white backgrounds (#376)

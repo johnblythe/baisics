@@ -452,6 +452,7 @@ export function FoodLogPage({
       await Promise.all([fetchEntries(), fetchSummary()]);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update food');
+      throw err;
     } finally {
       setIsSubmitting(false);
     }
@@ -772,9 +773,13 @@ export function FoodLogPage({
 
   // Handle save edit
   const handleSaveEdit = async (id: string, updates: Partial<FoodEditData>) => {
-    await editFoodEntry(id, updates);
-    setEditingItem(null);
-    toast.success('Food updated');
+    try {
+      await editFoodEntry(id, updates);
+      setEditingItem(null);
+      toast.success('Food updated');
+    } catch {
+      toast.error('Failed to update food');
+    }
   };
 
   // Handle delete item

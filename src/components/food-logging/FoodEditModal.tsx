@@ -37,6 +37,7 @@ export function FoodEditModal({
   onCancel,
   isSaving = false,
 }: FoodEditModalProps) {
+  const originalServingSize = food.servingSize || 1;
   const [name, setName] = useState(food.name);
   const [calories, setCalories] = useState(Math.round(food.calories).toString());
   const [protein, setProtein] = useState(Math.round(food.protein).toString());
@@ -45,16 +46,38 @@ export function FoodEditModal({
   const [servingSize, setServingSize] = useState(food.servingSize?.toString() ?? '1');
   const [servingUnit, setServingUnit] = useState(food.servingUnit ?? 'serving');
   const [meal, setMeal] = useState<MealType>(food.meal ?? MealType.SNACK);
+  const [macroEdited, setMacroEdited] = useState({ calories: false, protein: false, carbs: false, fat: false });
+
+  const handleServingSizeChange = (newValue: string) => {
+    setServingSize(newValue);
+    const newSize = parseFloat(newValue);
+    if (isNaN(newSize)) return;
+    if (newSize <= 0) {
+      if (!macroEdited.calories) setCalories('0');
+      if (!macroEdited.protein) setProtein('0');
+      if (!macroEdited.carbs) setCarbs('0');
+      if (!macroEdited.fat) setFat('0');
+      return;
+    }
+    const ratio = newSize / originalServingSize;
+    if (!macroEdited.calories) setCalories(Math.round(food.calories * ratio).toString());
+    if (!macroEdited.protein) setProtein(Math.round(food.protein * ratio).toString());
+    if (!macroEdited.carbs) setCarbs(Math.round(food.carbs * ratio).toString());
+    if (!macroEdited.fat) setFat(Math.round(food.fat * ratio).toString());
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const parsed = {
+      calories: Math.max(0, parseFloat(calories) || 0),
+      protein: Math.max(0, parseFloat(protein) || 0),
+      carbs: Math.max(0, parseFloat(carbs) || 0),
+      fat: Math.max(0, parseFloat(fat) || 0),
+      servingSize: Math.max(0, parseFloat(servingSize) || 1),
+    };
     await onSave(food.id, {
-      name,
-      calories: parseFloat(calories) || 0,
-      protein: parseFloat(protein) || 0,
-      carbs: parseFloat(carbs) || 0,
-      fat: parseFloat(fat) || 0,
-      servingSize: parseFloat(servingSize) || 1,
+      name: name.trim() || food.name,
+      ...parsed,
       servingUnit,
       meal,
     });
@@ -139,7 +162,7 @@ export function FoodEditModal({
                 step="0.1"
                 min="0"
                 value={servingSize}
-                onChange={(e) => setServingSize(e.target.value)}
+                onChange={(e) => handleServingSizeChange(e.target.value)}
                 className="w-full px-3 py-2 border border-[#E2E8F0] rounded-xl text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]/50 focus:border-[#FF6B6B]"
               />
             </div>
@@ -171,7 +194,7 @@ export function FoodEditModal({
                 step="1"
                 min="0"
                 value={calories}
-                onChange={(e) => setCalories(e.target.value)}
+                onChange={(e) => { setCalories(e.target.value); setMacroEdited(prev => ({ ...prev, calories: true })); }}
                 className="w-full px-3 py-2 border border-[#E2E8F0] rounded-xl text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]/50 focus:border-[#FF6B6B]"
               />
             </div>
@@ -187,7 +210,7 @@ export function FoodEditModal({
                 step="0.1"
                 min="0"
                 value={protein}
-                onChange={(e) => setProtein(e.target.value)}
+                onChange={(e) => { setProtein(e.target.value); setMacroEdited(prev => ({ ...prev, protein: true })); }}
                 className="w-full px-3 py-2 border border-[#E2E8F0] rounded-xl text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500"
               />
             </div>
@@ -203,7 +226,7 @@ export function FoodEditModal({
                 step="0.1"
                 min="0"
                 value={carbs}
-                onChange={(e) => setCarbs(e.target.value)}
+                onChange={(e) => { setCarbs(e.target.value); setMacroEdited(prev => ({ ...prev, carbs: true })); }}
                 className="w-full px-3 py-2 border border-[#E2E8F0] rounded-xl text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500"
               />
             </div>
@@ -219,7 +242,7 @@ export function FoodEditModal({
                 step="0.1"
                 min="0"
                 value={fat}
-                onChange={(e) => setFat(e.target.value)}
+                onChange={(e) => { setFat(e.target.value); setMacroEdited(prev => ({ ...prev, fat: true })); }}
                 className="w-full px-3 py-2 border border-[#E2E8F0] rounded-xl text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500"
               />
             </div>
