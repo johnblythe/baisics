@@ -8,6 +8,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Free-text recipe creation — type a recipe description, AI parses ingredients with DB-enriched macros (#397)
+  - System/user prompt split to prevent prompt injection (#409)
+  - validateParsedOutput with clamping for AI responses
+  - DB enrichment: binary match (DB vs AI macros), `source: 'database' | 'ai_estimated'`
+  - Key prop remount pattern for modal state reset (#410)
+- Shared AI JSON parse utility — `parseAIJson` consolidates markdown fence stripping across 7 routes (#419)
+- Shared `RecipeIngredient` type in `src/types/recipe.ts` (#420, #425)
+
+### Fixed
+- convertToGrams null path for count-based units (piece/slice/strip) (#408)
+- USDA single-pass search when pageSize≤5, eliminates double-request (#416)
+- Skip external OFF API fallback in enrichment mode via `skipOffFallback` (#417)
+- Client-side AbortController with 15s timeout on recipe parse fetch (#418)
+- Hardcode `isPublic: false` on user-created recipes (#421)
+- Differentiate error types in recipe parse: 400 for bad JSON, 429 for rate limit (#422)
+- Backport system/user prompt split + validation clamping to food-log parse route (#423)
+- Validation limits on recipe save: max 50 ingredients, 200-char names (#424)
+- Add maxDuration=30 for recipe parse + food-log parse routes (#415)
+
 - Staple auto-log — auto-creates food log entries from `autoLog` staples when loading /nutrition for today (#398)
   - Soft-delete on FoodLogEntry (Prisma middleware) — deleted entries suppress re-creation cross-device
   - Dedup via raw SQL check (includes soft-deleted rows) + partial unique index safety net
