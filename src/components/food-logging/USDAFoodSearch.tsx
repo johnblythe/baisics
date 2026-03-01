@@ -135,7 +135,11 @@ export function USDAFoodSearch({
     return (
       <div className={className}>
         {/* Keep search mounted (hidden) so state survives cancel from detail view */}
-        <div className={selectedFood ? 'hidden' : ''}>
+        <div
+          className={selectedFood ? 'hidden' : ''}
+          aria-hidden={!!selectedFood || undefined}
+          inert={selectedFood ? true : undefined}
+        >
           <FoodSearchAutocomplete
             key={searchKey}
             onSelect={handleFoodSelect}
@@ -200,7 +204,11 @@ export function USDAFoodSearch({
         {/* Content */}
         <div className="p-4 overflow-y-auto max-h-[70vh]">
           {/* Keep search mounted (hidden) so state survives cancel from detail view */}
-          <div className={selectedFood ? 'hidden' : ''}>
+          <div
+            className={selectedFood ? 'hidden' : ''}
+            aria-hidden={!!selectedFood || undefined}
+            inert={selectedFood ? true : undefined}
+          >
             <FoodSearchAutocomplete
               key={searchKey}
               onSelect={handleFoodSelect}

@@ -189,6 +189,7 @@ export function MealSection({
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [selectedFood, setSelectedFood] = useState<UnifiedFoodResult | null>(null);
+  const [searchKey, setSearchKey] = useState(0);
   const [recipes, setRecipes] = useState<RecipeWithIngredients[]>([]);
   const [recipesLoading, setRecipesLoading] = useState(false);
   const [showSaveRecipeModal, setShowSaveRecipeModal] = useState(false);
@@ -330,6 +331,7 @@ export function MealSection({
     // Reset state
     setSelectedFood(null);
     setIsSearchOpen(false);
+    setSearchKey(prev => prev + 1);
   };
 
   // Handle cancel/close
@@ -499,8 +501,13 @@ export function MealSection({
               </button>
             </div>
             {/* Keep search mounted (hidden) so results survive cancel from detail view */}
-            <div className={selectedFood ? 'hidden' : ''}>
+            <div
+              className={selectedFood ? 'hidden' : ''}
+              aria-hidden={!!selectedFood || undefined}
+              inert={selectedFood ? true : undefined}
+            >
               <FoodSearchAutocomplete
+                key={searchKey}
                 onSelect={handleFoodSelect}
                 placeholder={`Search foods for ${displayName.toLowerCase()}...`}
                 userId={userId}

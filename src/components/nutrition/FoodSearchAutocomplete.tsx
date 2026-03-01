@@ -100,6 +100,8 @@ export function FoodSearchAutocomplete({
   const [searchId, setSearchId] = useState<string | null>(null);
   const [searchStartTime, setSearchStartTime] = useState<number | null>(null);
   const abandonTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // Guard to skip spurious re-fetch when search effect re-triggers after selection
+  const skipNextSearchRef = useRef(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
@@ -121,6 +123,12 @@ export function FoodSearchAutocomplete({
 
   // Debounced search
   useEffect(() => {
+    // Skip spurious re-trigger after food selection (searchStartTime change)
+    if (skipNextSearchRef.current) {
+      skipNextSearchRef.current = false;
+      return;
+    }
+
     if (query.length < 2) {
       setFoods([]);
       setShowingRecent(false);
@@ -234,7 +242,9 @@ export function FoodSearchAutocomplete({
       setIsOpen(false);
       setHighlightedIndex(-1);
       setShowingRecent(false);
-      // Reset search tracking
+      setSearchComplete(false);
+      // Reset search tracking — use ref guard to prevent spurious re-fetch
+      skipNextSearchRef.current = true;
       setSearchId(null);
       setSearchStartTime(null);
     },
