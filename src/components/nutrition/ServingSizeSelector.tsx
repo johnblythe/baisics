@@ -34,7 +34,7 @@ export interface ServingSizeSelectorProps {
   className?: string;
 }
 
-const QUICK_AMOUNTS = [50, 100, 150, 200];
+const BASE_QUICK_AMOUNTS = [50, 100, 150, 200];
 
 export function ServingSizeSelector({
   food,
@@ -42,7 +42,14 @@ export function ServingSizeSelector({
   onCancel,
   className = '',
 }: ServingSizeSelectorProps) {
-  const [grams, setGrams] = useState(100);
+  const [grams, setGrams] = useState(food.verifiedServingGrams ?? 100);
+
+  const quickAmounts = useMemo(() => {
+    if (food.verifiedServingGrams && !BASE_QUICK_AMOUNTS.includes(food.verifiedServingGrams)) {
+      return [food.verifiedServingGrams, ...BASE_QUICK_AMOUNTS].sort((a, b) => a - b);
+    }
+    return BASE_QUICK_AMOUNTS;
+  }, [food.verifiedServingGrams]);
 
   // Calculate macros based on selected grams (food is per 100g)
   const calculatedMacros = useMemo((): CalculatedMacros => {
@@ -126,20 +133,23 @@ export function ServingSizeSelector({
 
       {/* Quick amount buttons */}
       <div className="flex gap-2 mb-4 flex-wrap">
-        {QUICK_AMOUNTS.map((amount) => (
-          <button
-            key={amount}
-            type="button"
-            onClick={() => handleQuickAmount(amount)}
-            className="px-3 py-1.5 rounded-full text-sm font-medium transition-colors"
-            style={{
-              backgroundColor: grams === amount ? COLORS.coral : COLORS.gray100,
-              color: grams === amount ? COLORS.white : COLORS.gray600,
-            }}
-          >
-            {amount}g
-          </button>
-        ))}
+        {quickAmounts.map((amount) => {
+          const isVerifiedAmount = amount === food.verifiedServingGrams && food.verifiedServingUnit;
+          return (
+            <button
+              key={amount}
+              type="button"
+              onClick={() => handleQuickAmount(amount)}
+              className="px-3 py-1.5 rounded-full text-sm font-medium transition-colors"
+              style={{
+                backgroundColor: grams === amount ? COLORS.coral : COLORS.gray100,
+                color: grams === amount ? COLORS.white : COLORS.gray600,
+              }}
+            >
+              {amount}g{isVerifiedAmount ? ` (${food.verifiedServingUnit})` : ''}
+            </button>
+          );
+        })}
       </div>
 
       {/* Calculated macros display */}

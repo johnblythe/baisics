@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Curated verified foods — ~100 common foods with USDA SR Legacy macros, green "Verified" badge, smart serving defaults (#379)
+  - `is_verified`, `verified_serving_unit`, `verified_serving_grams` columns on `foods_off`
+  - `VERIFIED` source type with +150 relevance boost, `shouldReplace()` dedup preference
+  - ServingSizeSelector defaults to verified serving grams, dynamic quick-amount buttons
+  - `key={food.id}` on ServingSizeSelector parents to fix stale state on food switch
 - Free-text recipe creation — type a recipe description, AI parses ingredients with DB-enriched macros (#397)
   - System/user prompt split to prevent prompt injection (#409)
   - validateParsedOutput with clamping for AI responses

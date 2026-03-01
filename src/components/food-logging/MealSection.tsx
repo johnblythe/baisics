@@ -533,6 +533,7 @@ export function MealSection({
           <div className="p-3">
             {selectedFood ? (
               <ServingSizeSelector
+                key={selectedFood.id}
                 food={selectedFood}
                 onConfirm={handleServingConfirm}
                 onCancel={handleBackToSearch}

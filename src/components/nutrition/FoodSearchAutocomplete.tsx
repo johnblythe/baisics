@@ -69,6 +69,7 @@ const SOURCE_BADGES: Record<FoodSearchSource, { label: string; color: string; bg
   USDA: { label: 'USDA', color: '#1D4ED8', bgColor: '#DBEAFE' },
   OPEN_FOOD_FACTS: { label: 'Community', color: '#7C3AED', bgColor: '#EDE9FE' },
   AI_ESTIMATED: { label: '≈ Estimate', color: '#DC2626', bgColor: '#FEE2E2' },
+  VERIFIED: { label: 'Verified', color: '#15803D', bgColor: '#DCFCE7' },
 };
 
 export interface FoodSearchAutocompleteProps {
@@ -310,13 +311,18 @@ export function FoodSearchAutocomplete({
   }, [highlightedIndex, showingRecent, recentFoods.length]);
 
   const formatMacros = (food: UnifiedFoodResult) => {
-    return `${Math.round(food.calories)} cal | ${Math.round(food.protein)}g P | ${Math.round(food.carbs)}g C | ${Math.round(food.fat)}g F`;
+    let macros = `${Math.round(food.calories)} cal | ${Math.round(food.protein)}g P | ${Math.round(food.carbs)}g C | ${Math.round(food.fat)}g F`;
+    if (food.isVerified && food.verifiedServingUnit && food.verifiedServingGrams) {
+      macros += ` | ${food.verifiedServingUnit} = ${food.verifiedServingGrams}g`;
+    }
+    return macros;
   };
 
   // Render source badge with optional star icon for user's foods
   const renderSourceBadge = (source: FoodSearchSource) => {
     const badge = SOURCE_BADGES[source];
     const isUserFood = source === 'QUICK_FOOD';
+    const isVerified = source === 'VERIFIED';
 
     return (
       <span
@@ -331,6 +337,16 @@ export function FoodSearchAutocomplete({
             aria-hidden="true"
           >
             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+          </svg>
+        )}
+        {isVerified && (
+          <svg
+            className="w-3 h-3"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            aria-hidden="true"
+          >
+            <path fillRule="evenodd" d="M16.403 12.652a3 3 0 010-5.304 3 3 0 00-3.75-3.751 3 3 0 00-5.305 0 3 3 0 00-3.751 3.75 3 3 0 000 5.305 3 3 0 003.75 3.751 3 3 0 005.305 0 3 3 0 003.751-3.75zm-2.546-4.46a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
           </svg>
         )}
         {badge.label}

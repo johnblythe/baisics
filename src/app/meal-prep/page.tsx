@@ -439,6 +439,7 @@ export default function MealPrepPage() {
                 />
               ) : (
                 <ServingSizeSelector
+                  key={selectedFood.id}
                   food={selectedFood}
                   onConfirm={handleServingConfirm}
                   onCancel={handleServingCancel}

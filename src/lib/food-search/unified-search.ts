@@ -57,6 +57,19 @@ function hasValidNutrition(food: UnifiedFoodResult): boolean {
  * Prioritizes name matches over brand matches to avoid "brand pollution"
  * where searching "fresh blueberries" returns "Meadow Fresh" branded products.
  */
+/** Named scoring constants for relevance calculation */
+const SCORING = {
+  exactNameMatch: 100,
+  nameStartsWithQuery: 50,
+  queryWordInName: 25,
+  queryWordInBrandOnly: 5,
+  allWordsInNameBonus: 30,
+  brandOnlyPenalty: -20,
+  quickFoodBoost: 200,
+  verifiedBoost: 150,
+  lowCaloriePenalty: -20,
+} as const;
+
 function calculateRelevanceScore(food: UnifiedFoodResult, query: string): number {
   const queryLower = query.toLowerCase();
   const queryWords = queryLower.split(/\s+/).filter(Boolean);
@@ -65,13 +78,9 @@ function calculateRelevanceScore(food: UnifiedFoodResult, query: string): number
 
   let score = 0;
 
-  // Exact name match = highest boost
-  if (nameLower === queryLower) score += 100;
+  if (nameLower === queryLower) score += SCORING.exactNameMatch;
+  if (nameLower.startsWith(queryLower)) score += SCORING.nameStartsWithQuery;
 
-  // Name starts with query = very good
-  if (nameLower.startsWith(queryLower)) score += 50;
-
-  // Count how many query words appear in the name vs only in brand
   let nameMatches = 0;
   let brandOnlyMatches = 0;
 
@@ -80,34 +89,26 @@ function calculateRelevanceScore(food: UnifiedFoodResult, query: string): number
     const inBrand = brandLower.includes(word);
 
     if (inName) {
-      // Name match = strong boost
-      score += 25;
+      score += SCORING.queryWordInName;
       nameMatches++;
     } else if (inBrand) {
-      // Brand-only match = small boost (user might be filtering by brand)
-      // but don't let it dominate name matches
-      score += 5;
+      score += SCORING.queryWordInBrandOnly;
       brandOnlyMatches++;
     }
   }
 
-  // Bonus for matching most/all query words in name
   if (queryWords.length > 0) {
     const nameMatchRatio = nameMatches / queryWords.length;
-    score += Math.round(nameMatchRatio * 30); // Up to +30 for all words in name
+    score += Math.round(nameMatchRatio * SCORING.allWordsInNameBonus);
   }
 
-  // Penalize results where brand matched but name didn't
-  // This prevents "Meadow Fresh" from ranking high for "fresh blueberries"
   if (nameMatches === 0 && brandOnlyMatches > 0) {
-    score -= 20;
+    score += SCORING.brandOnlyPenalty;
   }
 
-  // User's own foods get priority boost
-  if (food.source === 'QUICK_FOOD') score += 200;
-
-  // Penalize results with very low calories (likely incomplete data)
-  if (food.calories < 5) score -= 20;
+  if (food.source === 'QUICK_FOOD') score += SCORING.quickFoodBoost;
+  if (food.isVerified) score += SCORING.verifiedBoost;
+  if (food.calories < 5) score += SCORING.lowCaloriePenalty;
 
   return score;
 }
@@ -152,15 +153,29 @@ function isDuplicate(food1: UnifiedFoodResult, food2: UnifiedFoodResult): boolea
 }
 
 /**
- * Deduplicate results, keeping the first occurrence (preserves priority order)
+ * Determine if a candidate should replace an existing entry during dedup.
+ * Verified foods beat non-verified; QuickFoods always win.
+ */
+function shouldReplace(existing: UnifiedFoodResult, candidate: UnifiedFoodResult): boolean {
+  if (candidate.isVerified && !existing.isVerified) return true;
+  if (existing.source === 'QUICK_FOOD') return false;
+  if (candidate.source === 'QUICK_FOOD') return true;
+  return false;
+}
+
+/**
+ * Deduplicate results, keeping the best occurrence per name+brand.
+ * Uses shouldReplace() to prefer verified/QuickFood entries.
  */
 function deduplicateResults(results: UnifiedFoodResult[]): UnifiedFoodResult[] {
   const unique: UnifiedFoodResult[] = [];
 
   for (const food of results) {
-    const hasDuplicate = unique.some(existing => isDuplicate(existing, food));
-    if (!hasDuplicate) {
+    const dupeIndex = unique.findIndex(existing => isDuplicate(existing, food));
+    if (dupeIndex === -1) {
       unique.push(food);
+    } else if (shouldReplace(unique[dupeIndex], food)) {
+      unique[dupeIndex] = food;
     }
   }
 
@@ -268,6 +283,7 @@ async function searchOpenFoodFacts(
 
 /**
  * Row type for raw SQL query against foods_off table
+ * Mirrors Prisma FoodsOff model columns used in search
  */
 interface FoodsOffRow {
   id: string;
@@ -279,6 +295,9 @@ interface FoodsOffRow {
   carbs_per_100g: number | null;
   fat_per_100g: number | null;
   serving_size: string | null;
+  is_verified: boolean;
+  verified_serving_unit: string | null;
+  verified_serving_grams: number | null;
 }
 
 /**
@@ -293,10 +312,10 @@ async function searchLocalOff(
     const foods = await prisma.$queryRaw<FoodsOffRow[]>`
       SELECT id, code, product_name, brands,
              calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g,
-             serving_size
+             serving_size, is_verified, verified_serving_unit, verified_serving_grams
       FROM foods_off
       WHERE search_vector @@ plainto_tsquery('english', ${query})
-      ORDER BY ts_rank(search_vector, plainto_tsquery('english', ${query})) DESC
+      ORDER BY is_verified DESC, ts_rank(search_vector, plainto_tsquery('english', ${query})) DESC
       LIMIT ${pageSize}
     `;
     return foods.map(food => ({
@@ -307,8 +326,11 @@ async function searchLocalOff(
       protein: Math.round(food.protein_per_100g ?? 0),
       carbs: Math.round(food.carbs_per_100g ?? 0),
       fat: Math.round(food.fat_per_100g ?? 0),
-      source: 'OPEN_FOOD_FACTS' as FoodSearchSource,
+      source: (food.is_verified ? 'VERIFIED' : 'OPEN_FOOD_FACTS') as FoodSearchSource,
       offCode: food.code,
+      isVerified: food.is_verified,
+      verifiedServingUnit: food.verified_serving_unit ?? undefined,
+      verifiedServingGrams: food.verified_serving_grams ?? undefined,
     }));
   } catch (error) {
     console.error('Local OFF search error:', error);
