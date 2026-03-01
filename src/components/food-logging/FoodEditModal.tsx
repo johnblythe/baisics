@@ -37,7 +37,7 @@ export function FoodEditModal({
   onCancel,
   isSaving = false,
 }: FoodEditModalProps) {
-  const originalServingSize = food.servingSize ?? 1;
+  const originalServingSize = food.servingSize || 1;
   const [name, setName] = useState(food.name);
   const [calories, setCalories] = useState(Math.round(food.calories).toString());
   const [protein, setProtein] = useState(Math.round(food.protein).toString());
@@ -51,7 +51,14 @@ export function FoodEditModal({
   const handleServingSizeChange = (newValue: string) => {
     setServingSize(newValue);
     const newSize = parseFloat(newValue);
-    if (!newSize || !originalServingSize) return;
+    if (isNaN(newSize)) return;
+    if (newSize <= 0) {
+      if (!macroEdited.calories) setCalories('0');
+      if (!macroEdited.protein) setProtein('0');
+      if (!macroEdited.carbs) setCarbs('0');
+      if (!macroEdited.fat) setFat('0');
+      return;
+    }
     const ratio = newSize / originalServingSize;
     if (!macroEdited.calories) setCalories(Math.round(food.calories * ratio).toString());
     if (!macroEdited.protein) setProtein(Math.round(food.protein * ratio).toString());
@@ -61,13 +68,16 @@ export function FoodEditModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const parsed = {
+      calories: Math.max(0, parseFloat(calories) || 0),
+      protein: Math.max(0, parseFloat(protein) || 0),
+      carbs: Math.max(0, parseFloat(carbs) || 0),
+      fat: Math.max(0, parseFloat(fat) || 0),
+      servingSize: Math.max(0, parseFloat(servingSize) || 1),
+    };
     await onSave(food.id, {
-      name,
-      calories: parseFloat(calories) || 0,
-      protein: parseFloat(protein) || 0,
-      carbs: parseFloat(carbs) || 0,
-      fat: parseFloat(fat) || 0,
-      servingSize: parseFloat(servingSize) || 1,
+      name: name.trim() || food.name,
+      ...parsed,
       servingUnit,
       meal,
     });
