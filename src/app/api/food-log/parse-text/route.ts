@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 import { anthropic } from '@/lib/anthropic';
 import { checkRateLimit, rateLimitedResponse } from '@/utils/security/rateLimit';
-import { parseAIJson } from '@/lib/ai/parse-helpers';
+import { parseAIJson, clamp } from '@/lib/ai/parse-helpers';
 
 type ParsedFood = {
   name: string;
@@ -37,7 +37,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
+    let body: { text?: unknown };
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { error: 'Invalid JSON body' },
+        { status: 400 }
+      );
+    }
     const { text } = body;
 
     if (!text || typeof text !== 'string') {
@@ -191,19 +199,34 @@ If the text doesn't contain any food items, return: { "foods": [], "detectedMeal
       );
     }
 
+    if (!Array.isArray(parsed.foods)) {
+      console.error('[food-log/parse-text] AI response missing foods array. Keys:', Object.keys(parsed));
+    }
+
     // Validate, clamp, and normalize response (#423)
+    // Cap at 30 items (food logging can include full-day entries, more than recipe's 15)
     const foods: ParsedFood[] = (parsed.foods || []).slice(0, 30).map(food => ({
       name: String(food.name || 'Unknown food').slice(0, 100),
-      servingSize: Math.min(Math.max(Number(food.servingSize) || 1, 0.01), 10000),
+      servingSize: clamp(Number(food.servingSize) || 1, 0.01, 10000),
       servingUnit: String(food.servingUnit || 'serving').slice(0, 20),
-      calories: Math.min(Math.max(Math.round(Number(food.calories) || 0), 0), 10000),
-      protein: Math.min(Math.max(Math.round((Number(food.protein) || 0) * 10) / 10, 0), 1000),
-      carbs: Math.min(Math.max(Math.round((Number(food.carbs) || 0) * 10) / 10, 0), 1000),
-      fat: Math.min(Math.max(Math.round((Number(food.fat) || 0) * 10) / 10, 0), 1000),
+      calories: clamp(Math.round(Number(food.calories) || 0), 0, 10000),
+      protein: clamp(Math.round((Number(food.protein) || 0) * 10) / 10, 0, 1000),
+      carbs: clamp(Math.round((Number(food.carbs) || 0) * 10) / 10, 0, 1000),
+      fat: clamp(Math.round((Number(food.fat) || 0) * 10) / 10, 0, 1000),
       confidence: (['high', 'medium', 'low'].includes(food.confidence)
         ? food.confidence
         : 'medium') as 'high' | 'medium' | 'low',
     }));
+
+    // Warn if AI returned foods with all-zero macros
+    const zeroMacroCount = foods.filter(
+      f => f.calories === 0 && f.protein === 0 && f.carbs === 0 && f.fat === 0
+    ).length;
+    if (zeroMacroCount > 0) {
+      console.warn(
+        `[food-log/parse-text] ${zeroMacroCount}/${foods.length} food(s) have all-zero macros`
+      );
+    }
 
     // Validate detected meal
     const validMeals: MealType[] = ['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK'];
@@ -219,6 +242,15 @@ If the text doesn't contain any food items, return: { "foods": [], "detectedMeal
     } satisfies ParseTextResponse);
   } catch (error) {
     console.error('Error parsing food text:', error);
+
+    // Anthropic rate limit — pass through as 429
+    if (error && typeof error === 'object' && 'status' in error && (error as { status: number }).status === 429) {
+      return NextResponse.json(
+        { error: 'AI service rate limited. Please wait a moment and try again.' },
+        { status: 429 }
+      );
+    }
+
     return NextResponse.json(
       { error: 'Failed to parse food text' },
       { status: 500 }

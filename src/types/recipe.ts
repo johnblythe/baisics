@@ -39,5 +39,5 @@ export interface RecipeIngredient {
   baseCarbs?: number;
   baseFat?: number;
   /** Source of macro data */
-  source?: 'database' | 'ai_estimated';
+  source: 'database' | 'ai_estimated' | 'manual';
 }

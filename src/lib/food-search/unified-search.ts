@@ -41,9 +41,10 @@ function hasValidNutrition(food: UnifiedFoodResult): boolean {
   if (food.calories === 0 && food.protein === 0 && food.carbs === 0 && food.fat === 0) {
     return false;
   }
-  // Reject obviously bad data (negative values, impossibly high values)
-  if (food.calories < 0 || food.calories > 1000) return false;
-  if (food.protein < 0 || food.protein > 100) return false;
+  // Reject obviously bad data (negative values, impossibly high per-100g values)
+  // Raised thresholds: oils = 884 cal/100g, protein isolates = 90g+/100g
+  if (food.calories < 0 || food.calories > 1200) return false;
+  if (food.protein < 0 || food.protein > 120) return false;
   if (food.carbs < 0 || food.carbs > 100) return false;
   if (food.fat < 0 || food.fat > 100) return false;
   return true;
@@ -210,7 +211,8 @@ async function searchQuickFoods(
  */
 async function searchUsdaFoods(
   query: string,
-  pageSize: number
+  pageSize: number,
+  errors?: Record<string, string>
 ): Promise<UnifiedFoodResult[]> {
   try {
     const result = await searchUsda(query, pageSize);
@@ -232,6 +234,7 @@ async function searchUsdaFoods(
     });
   } catch (error) {
     console.error('USDA search error:', error);
+    if (errors) errors.usda = error instanceof Error ? error.message : 'Unknown error';
     return [];
   }
 }
@@ -241,7 +244,8 @@ async function searchUsdaFoods(
  */
 async function searchOpenFoodFacts(
   query: string,
-  pageSize: number
+  pageSize: number,
+  errors?: Record<string, string>
 ): Promise<UnifiedFoodResult[]> {
   try {
     const foods = await searchOff(query, pageSize);
@@ -257,6 +261,7 @@ async function searchOpenFoodFacts(
     }));
   } catch (error) {
     console.error('Open Food Facts search error:', error);
+    if (errors) errors.offApi = error instanceof Error ? error.message : 'Unknown error';
     return [];
   }
 }
@@ -281,7 +286,8 @@ interface FoodsOffRow {
  */
 async function searchLocalOff(
   query: string,
-  pageSize: number
+  pageSize: number,
+  errors?: Record<string, string>
 ): Promise<UnifiedFoodResult[]> {
   try {
     const foods = await prisma.$queryRaw<FoodsOffRow[]>`
@@ -306,6 +312,7 @@ async function searchLocalOff(
     }));
   } catch (error) {
     console.error('Local OFF search error:', error);
+    if (errors) errors.offLocal = error instanceof Error ? error.message : 'Unknown error';
     return [];
   }
 }
@@ -334,17 +341,42 @@ export async function unifiedSearch(
     skipOffFallback = false,
   } = options;
 
+  const errors: Record<string, string> = {};
+
   // Phase 1: parallel search — QuickFoods + USDA + local OFF
+  // Each source is individually try/caught to prevent one failure from crashing others
+  const searchQuickFoodsSafe = async (): Promise<UnifiedFoodResult[]> => {
+    if (!userId) return [];
+    try {
+      return await searchQuickFoods(query, userId, pageSize);
+    } catch (error) {
+      console.error('QuickFoods search error:', error);
+      errors.quickFoods = error instanceof Error ? error.message : 'Unknown error';
+      return [];
+    }
+  };
+
   const [quickFoodResults, usdaResults, offLocalResults] = await Promise.all([
-    userId ? searchQuickFoods(query, userId, pageSize) : Promise.resolve([]),
-    skipUsda ? Promise.resolve([]) : searchUsdaFoods(query, pageSize),
-    skipOff ? Promise.resolve([]) : searchLocalOff(query, pageSize),
+    searchQuickFoodsSafe(),
+    skipUsda ? Promise.resolve([]) : searchUsdaFoods(query, pageSize, errors),
+    skipOff ? Promise.resolve([]) : searchLocalOff(query, pageSize, errors),
   ]);
 
   // Phase 2: conditional SAL fallback — only if local OFF is thin and not skipped (#417)
   let offSalResults: UnifiedFoodResult[] = [];
   if (!skipOff && !skipOffFallback && offLocalResults.length < 5) {
-    offSalResults = await searchOpenFoodFacts(query, pageSize);
+    offSalResults = await searchOpenFoodFacts(query, pageSize, errors);
+  }
+
+  // Log high-severity warning when ALL sources failed
+  if (Object.keys(errors).length > 0) {
+    const sourceCount = [!skipUsda, !skipOff, !!userId].filter(Boolean).length;
+    if (Object.keys(errors).length >= sourceCount && sourceCount > 0) {
+      console.error(
+        `[unified-search] ALL ${sourceCount} food sources failed for query "${query}":`,
+        errors
+      );
+    }
   }
 
   // Combine all results
@@ -370,5 +402,6 @@ export async function unifiedSearch(
       usda: usdaResults.length,
       openFoodFacts: offLocalResults.length + offSalResults.length,
     },
+    ...(Object.keys(errors).length > 0 && { errors }),
   };
 }

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
+import { validateIngredients, clamp } from '@/lib/ai/parse-helpers';
 
 // GET /api/recipes/[id] - returns recipe details with ingredients
 export async function GET(
@@ -90,7 +91,11 @@ export async function PATCH(
     if (body.emoji !== undefined) updateData.emoji = body.emoji || null;
     // isPublic is not user-settable (#421)
     if (body.servingSize !== undefined) {
-      updateData.servingSize = body.servingSize != null ? parseFloat(body.servingSize.toString()) : 1;
+      const sv = Number(body.servingSize);
+      if (!isFinite(sv)) {
+        return NextResponse.json({ error: 'servingSize must be a valid finite number' }, { status: 400 });
+      }
+      updateData.servingSize = clamp(sv, 0.01, 10000);
     }
     if (body.servingUnit !== undefined) updateData.servingUnit = body.servingUnit || 'serving';
 
@@ -102,20 +107,9 @@ export async function PATCH(
           { status: 400 }
         );
       }
-      if (body.ingredients.length > 50) {
-        return NextResponse.json(
-          { error: 'Maximum 50 ingredients per recipe' },
-          { status: 400 }
-        );
-      }
-      const longName = body.ingredients.find((ing: { name?: string }) =>
-        typeof ing.name === 'string' && ing.name.length > 200
-      );
-      if (longName) {
-        return NextResponse.json(
-          { error: 'Ingredient names must be under 200 characters' },
-          { status: 400 }
-        );
+      const ingError = validateIngredients(body.ingredients);
+      if (ingError) {
+        return NextResponse.json({ error: ingError }, { status: 400 });
       }
       updateData.ingredients = body.ingredients;
 
@@ -142,16 +136,32 @@ export async function PATCH(
         { calories: 0, protein: 0, carbs: 0, fat: 0 }
       );
 
-      updateData.calories = Math.round(totals.calories);
-      updateData.protein = Math.round(totals.protein * 10) / 10;
-      updateData.carbs = Math.round(totals.carbs * 10) / 10;
-      updateData.fat = Math.round(totals.fat * 10) / 10;
+      updateData.calories = clamp(Math.round(totals.calories), 0, 99999);
+      updateData.protein = clamp(Math.round(totals.protein * 10) / 10, 0, 9999);
+      updateData.carbs = clamp(Math.round(totals.carbs * 10) / 10, 0, 9999);
+      updateData.fat = clamp(Math.round(totals.fat * 10) / 10, 0, 9999);
     } else {
       // If no ingredients update, allow direct macro updates (backwards compatibility)
-      if (body.calories !== undefined) updateData.calories = Math.round(body.calories);
-      if (body.protein !== undefined) updateData.protein = parseFloat(body.protein.toString());
-      if (body.carbs !== undefined) updateData.carbs = parseFloat(body.carbs.toString());
-      if (body.fat !== undefined) updateData.fat = parseFloat(body.fat.toString());
+      if (body.calories !== undefined) {
+        const v = Number(body.calories);
+        if (!isFinite(v)) return NextResponse.json({ error: 'calories must be a valid finite number' }, { status: 400 });
+        updateData.calories = clamp(Math.round(v), 0, 99999);
+      }
+      if (body.protein !== undefined) {
+        const v = Number(body.protein);
+        if (!isFinite(v)) return NextResponse.json({ error: 'protein must be a valid finite number' }, { status: 400 });
+        updateData.protein = clamp(Math.round(v * 10) / 10, 0, 9999);
+      }
+      if (body.carbs !== undefined) {
+        const v = Number(body.carbs);
+        if (!isFinite(v)) return NextResponse.json({ error: 'carbs must be a valid finite number' }, { status: 400 });
+        updateData.carbs = clamp(Math.round(v * 10) / 10, 0, 9999);
+      }
+      if (body.fat !== undefined) {
+        const v = Number(body.fat);
+        if (!isFinite(v)) return NextResponse.json({ error: 'fat must be a valid finite number' }, { status: 400 });
+        updateData.fat = clamp(Math.round(v * 10) / 10, 0, 9999);
+      }
     }
 
     const updatedRecipe = await prisma.recipe.update({

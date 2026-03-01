@@ -23,7 +23,7 @@ export function RecipeTextInput({ onParsed }: RecipeTextInputProps) {
 
     setIsParsing(true);
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15_000);
+    const timeout = setTimeout(() => controller.abort(), 25_000);
     try {
       const response = await fetch('/api/recipes/parse-text', {
         method: 'POST',

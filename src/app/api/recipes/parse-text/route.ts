@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { anthropic } from '@/lib/anthropic';
 import { unifiedSearch } from '@/lib/food-search/unified-search';
-import { parseAIJson } from '@/lib/ai/parse-helpers';
+import { parseAIJson, clamp } from '@/lib/ai/parse-helpers';
 import { checkRateLimit, rateLimitedResponse } from '@/utils/security/rateLimit';
 
 type AIParsedIngredient = {
@@ -25,6 +25,21 @@ import type { ParsedRecipeIngredient, ParseRecipeResponse } from '@/types/recipe
 
 const MAX_INPUT_LENGTH = 2000;
 const MIN_INPUT_LENGTH = 3;
+const MAX_CONCURRENT_SEARCHES = 5;
+
+/** Run async operations with bounded concurrency to avoid DB pool exhaustion */
+async function mapWithConcurrency<T, R>(items: T[], fn: (item: T) => Promise<R>, limit: number): Promise<R[]> {
+  const results: R[] = new Array(items.length);
+  let idx = 0;
+  const workers = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (idx < items.length) {
+      const i = idx++;
+      results[i] = await fn(items[i]);
+    }
+  });
+  await Promise.all(workers);
+  return results;
+}
 
 const SYSTEM_PROMPT = `You are a recipe ingredient parser. Given a recipe description, extract each ingredient with its quantity, unit, and estimated nutritional values.
 
@@ -54,13 +69,11 @@ Guidelines:
 - If serving count is mentioned (e.g., "makes 4 servings"), extract it
 - If the text doesn't contain food items, return: { "ingredients": [], "suggestedName": null, "detectedServings": null }`;
 
-/** Clamp a number between min and max */
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(max, Math.max(min, value));
-}
-
 /** Validate and sanitize AI-parsed ingredients */
 function validateParsedOutput(raw: AIParseResult): AIParseResult {
+  if (!Array.isArray(raw.ingredients)) {
+    console.error('[parse-text] AI response missing ingredients array. Keys:', Object.keys(raw));
+  }
   const ingredients = (Array.isArray(raw.ingredients) ? raw.ingredients : []).map(ing => ({
     name: String(ing.name || 'Unknown').slice(0, 100),
     quantity: clamp(Number(ing.quantity) || 1, 0.01, 10000),
@@ -143,8 +156,8 @@ export async function POST(request: NextRequest) {
       messages: [{ role: 'user', content: trimmed }],
     });
 
-    const textContent = message.content[0];
-    if (textContent.type !== 'text') {
+    const textContent = message.content?.[0];
+    if (!textContent || textContent.type !== 'text') {
       return NextResponse.json(
         { error: 'Failed to get text response from AI' },
         { status: 500 }
@@ -175,9 +188,9 @@ export async function POST(request: NextRequest) {
       } satisfies ParseRecipeResponse);
     }
 
-    // Enrich each ingredient with DB lookup (parallel, per-ingredient try/catch ensures no rejects)
-    const ingredients: ParsedRecipeIngredient[] = await Promise.all(
-      aiIngredients.map(async (ingredient): Promise<ParsedRecipeIngredient> => {
+    // Enrich each ingredient with DB lookup (bounded concurrency to avoid pool exhaustion)
+    const ingredients: ParsedRecipeIngredient[] = await mapWithConcurrency(
+      aiIngredients, async (ingredient): Promise<ParsedRecipeIngredient> => {
         try {
           const { results } = await unifiedSearch(ingredient.name, {
             userId: session.user!.id,
@@ -225,15 +238,21 @@ export async function POST(request: NextRequest) {
           fat: Math.round(ingredient.fat * 10) / 10,
           source: 'ai_estimated',
         };
-      })
-    );
+      }, MAX_CONCURRENT_SEARCHES);
+
+    // Warn if all ingredients fell back to AI estimates (no DB enrichment succeeded)
+    const allAiEstimated = ingredients.length > 0 && ingredients.every(i => i.source === 'ai_estimated');
+    if (allAiEstimated) {
+      console.warn(`[parse-text] All ${ingredients.length} ingredients fell back to AI estimates for: "${trimmed.slice(0, 80)}"`);
+    }
 
     return NextResponse.json({
       ingredients,
       suggestedName: parsed.suggestedName,
       detectedServings: parsed.detectedServings,
       originalText: trimmed,
-    } satisfies ParseRecipeResponse);
+      ...(allAiEstimated && { warning: 'All nutrition values are AI estimates — database lookup failed for all ingredients.' }),
+    });
   } catch (error: unknown) {
     console.error('Error parsing recipe text:', error);
 

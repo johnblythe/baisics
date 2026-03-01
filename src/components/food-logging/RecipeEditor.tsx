@@ -44,6 +44,7 @@ const emptyIngredient: RecipeIngredient = {
   protein: 0,
   carbs: 0,
   fat: 0,
+  source: 'manual',
 };
 
 export function RecipeEditor({

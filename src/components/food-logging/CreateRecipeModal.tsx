@@ -107,6 +107,7 @@ export function CreateRecipeModal({
         baseProtein: selectedFood.protein,
         baseCarbs: selectedFood.carbs,
         baseFat: selectedFood.fat,
+        source: 'manual',
       };
 
       setIngredients((prev) => [...prev, newIngredient]);
@@ -157,7 +158,7 @@ export function CreateRecipeModal({
           protein: ing.protein,
           carbs: ing.carbs,
           fat: ing.fat,
-          ...(ing.source && { source: ing.source }),
+          source: ing.source,
         })),
       };
 

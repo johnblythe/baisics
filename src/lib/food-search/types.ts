@@ -59,4 +59,6 @@ export interface UnifiedSearchResult {
     usda: number;
     openFoodFacts: number;
   };
+  /** Sources that errored during search (empty = all succeeded) */
+  errors?: Record<string, string>;
 }
