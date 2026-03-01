@@ -22,6 +22,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import type { FoodStaple } from '@/hooks/useStaples';
 import type { MealType } from '@prisma/client';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 const MEAL_LABELS: Record<string, string> = {
   BREAKFAST: 'Breakfast',
@@ -128,6 +129,8 @@ export function StapleManageModal({
   onReorder,
   onToggleAutoLog,
 }: StapleManageModalProps) {
+  useEscapeKey(onClose);
+
   const [items, setItems] = useState(initialStaples);
   const [orderChanged, setOrderChanged] = useState(false);
   const dndId = useId();

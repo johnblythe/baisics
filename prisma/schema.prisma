@@ -144,6 +144,9 @@ model User {
   dailyPulses DailyPulse[]
   pulsePhotos PulsePhoto[]
 
+  // Gym Buddy (shared food library)
+  buddyMemberships BuddyMembership[]
+
   @@index([email])
   @@map("users")
 }
@@ -1121,4 +1124,30 @@ model FoodsOff {
   verifiedServingGrams Float?   @map("verified_serving_grams")
 
   @@map("foods_off")
+}
+
+// Gym Buddy — shared food library between partners/gym buddies
+model BuddyGroup {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  inviteCode String   @unique @map("invite_code") @db.VarChar(8)
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  memberships BuddyMembership[]
+
+  @@map("buddy_groups")
+}
+
+model BuddyMembership {
+  id       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  groupId  String   @map("group_id") @db.Uuid
+  userId   String   @map("user_id") @db.Uuid
+  joinedAt DateTime @default(now()) @map("joined_at")
+
+  group BuddyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+  @@index([userId])
+  @@map("buddy_memberships")
 }

@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Gym Buddy — shared food library between partners/gym buddies (#428)
+  - `BuddyGroup` + `BuddyMembership` models (1 group per user, max 5 members)
+  - 8-char invite code for pairing (unambiguous charset, collision-safe)
+  - API routes: create group, join by code, leave group (`/api/buddy/*`)
+  - Join page at `/buddy/join?code=X4MN7P3R` with auto-fill + auth gate
+  - `getBuddyUserIds()` utility — single query, excludes caller, returns `[]` if no group
+  - Recipe/quick food/staple queries expanded to include buddy items (read-only)
+  - `BuddyBadge` component — avatar/initial badge for buddy item attribution
+  - Buddy management UI in Pantry tab (create, join, share, leave)
+  - Buddy items capped: up to 12 quick foods total, 3 buddy staples per meal slot
 - Curated verified foods — ~100 common foods with USDA SR Legacy macros, green "Verified" badge, smart serving defaults (#379)
   - `is_verified`, `verified_serving_unit`, `verified_serving_grams` columns on `foods_off`
   - `VERIFIED` source type with +150 relevance boost, `shouldReplace()` dedup preference

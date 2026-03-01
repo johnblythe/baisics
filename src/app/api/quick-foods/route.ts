@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
+import { getBuddyUserIds } from '@/lib/buddy';
 
-// GET /api/quick-foods - returns user's quick foods
-// Ordering: user's logged foods (by usageCount DESC) first, then starter foods
-// Limited to 12 items total for Quick Add display
+// GET /api/quick-foods - returns user's quick foods + buddy quick foods
+// Own items first (up to 12), buddy items fill remaining slots
 export async function GET() {
   try {
     const session = await auth();
@@ -12,20 +12,44 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const quickFoods = await prisma.quickFood.findMany({
-      where: {
-        userId: session.user.id,
+    // Fetch own quick foods first
+    const ownFoods = await prisma.quickFood.findMany({
+      where: { userId: session.user.id },
+      include: {
+        user: { select: { id: true, name: true, image: true } },
       },
       orderBy: [
-        { isStarter: 'asc' },    // User foods (isStarter=false) first
-        { usageCount: 'desc' },  // Most used foods first
-        { lastUsedAt: 'desc' },  // Recently used foods next
-        { createdAt: 'desc' },   // Newest foods last
+        { isStarter: 'asc' },
+        { usageCount: 'desc' },
+        { lastUsedAt: 'desc' },
+        { createdAt: 'desc' },
       ],
-      take: 12, // Limit to 12 items for Quick Add
+      take: 12,
     });
 
-    return NextResponse.json(quickFoods);
+    // If we have room and buddies, fill remaining slots
+    const buddyIds = await getBuddyUserIds(session.user.id);
+    let buddyFoods: typeof ownFoods = [];
+
+    if (buddyIds.length > 0 && ownFoods.length < 12) {
+      const remaining = 12 - ownFoods.length;
+      buddyFoods = await prisma.quickFood.findMany({
+        where: {
+          userId: { in: buddyIds },
+          isStarter: false, // Only user-created buddy foods, not starters
+        },
+        include: {
+          user: { select: { id: true, name: true, image: true } },
+        },
+        orderBy: [
+          { usageCount: 'desc' },
+          { lastUsedAt: 'desc' },
+        ],
+        take: remaining,
+      });
+    }
+
+    return NextResponse.json([...ownFoods, ...buddyFoods]);
   } catch (error) {
     console.error('Error fetching quick foods:', error);
     return NextResponse.json(

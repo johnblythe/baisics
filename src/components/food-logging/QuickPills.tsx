@@ -2,6 +2,7 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import { Plus, ArrowUp, Search, ChefHat, Coffee, Sun, Moon, Apple, Loader2 } from 'lucide-react';
+import { BuddyBadge, type BuddyUser } from './BuddyBadge';
 
 export interface QuickFoodItem {
   id: string;
@@ -15,6 +16,8 @@ export interface QuickFoodItem {
   isRecipe?: boolean;
   /** Recipe ID for incrementing usageCount */
   recipeId?: string;
+  /** If present, this item is from a buddy's library */
+  buddyUser?: BuddyUser;
 }
 
 export interface QuickPillsProps {
@@ -185,7 +188,14 @@ export function QuickPills({ foods, onAdd, onRecipeLog, layout = 'horizontal', m
             onClick={() => onAdd(food)}
             className="flex-shrink-0 flex items-center gap-2 px-3 py-2 bg-[#F8FAFC] hover:bg-[#F1F5F9] border border-[#E2E8F0] rounded-full transition-colors group"
           >
-            {food.emoji && <span className="text-lg">{food.emoji}</span>}
+            <span className="relative">
+              {food.emoji && <span className="text-lg">{food.emoji}</span>}
+              {food.buddyUser && (
+                <span className="absolute -bottom-1 -right-1">
+                  <BuddyBadge user={food.buddyUser} size={14} />
+                </span>
+              )}
+            </span>
             <span className="text-sm font-medium text-[#0F172A] whitespace-nowrap">{food.name}</span>
             <Plus className="w-4 h-4 text-[#94A3B8] group-hover:text-[#FF6B6B] transition-colors" />
           </button>

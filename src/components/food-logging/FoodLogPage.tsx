@@ -100,6 +100,7 @@ interface QuickFoodResponse {
   emoji?: string | null;
   fdcId?: string | null;
   brand?: string | null;
+  user?: { id: string; name: string | null; image: string | null } | null;
 }
 
 interface ParseTextResponse {
@@ -219,6 +220,8 @@ export function FoodLogPage({
     servingSize: number;
     servingUnit: string;
     usageCount: number;
+    userId?: string | null;
+    user?: { id: string; name: string | null; image: string | null } | null;
   }>>([]);
 
   // Loading states
@@ -1122,6 +1125,7 @@ export function FoodLogPage({
     emoji: r.emoji ?? undefined,
     isRecipe: true,
     recipeId: r.id,
+    buddyUser: r.user && r.userId && r.userId !== userId ? r.user : undefined,
   }));
 
   const regularQuickFoods: QuickFoodItem[] = quickFoods.map((qf) => ({
@@ -1132,6 +1136,7 @@ export function FoodLogPage({
     carbs: qf.carbs,
     fat: qf.fat,
     emoji: qf.emoji ?? undefined,
+    buddyUser: qf.user && qf.user.id !== userId ? qf.user : undefined,
   }));
 
   // Recipes appear first (visually distinct), then regular quick foods
@@ -1159,6 +1164,7 @@ export function FoodLogPage({
       tag: 'recipe' as const,
       isRecipe: true,
       recipeId: r.id,
+      buddyUser: r.user && r.userId && r.userId !== userId ? r.user : undefined,
     }));
 
     const recentItems: MergedQuickItem[] = quickFoods.map((qf) => ({
@@ -1168,6 +1174,7 @@ export function FoodLogPage({
       protein: qf.protein,
       emoji: qf.emoji ?? undefined,
       tag: 'recent' as const,
+      buddyUser: qf.user && qf.user.id !== userId ? qf.user : undefined,
     }));
 
     const seenNames = new Set<string>();
