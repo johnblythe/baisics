@@ -39,9 +39,12 @@ export default function RecipesPage() {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [parsedIngredients, setParsedIngredients] = useState<RecipeIngredient[] | undefined>();
-  const [parsedName, setParsedName] = useState<string | undefined>();
-  const [parsedServings, setParsedServings] = useState<number | undefined>();
+  const [modalKey, setModalKey] = useState(0);
+  const [parsedData, setParsedData] = useState<{
+    ingredients: RecipeIngredient[];
+    name?: string;
+    servings?: number;
+  } | null>(null);
 
   const fetchRecipes = useCallback(async () => {
     setIsLoading(true);
@@ -76,15 +79,12 @@ export default function RecipesPage() {
   }, [recipes, searchQuery]);
 
   const handleCreateRecipe = () => {
-    // Clear any parsed data when opening manual mode
-    setParsedIngredients(undefined);
-    setParsedName(undefined);
-    setParsedServings(undefined);
+    setParsedData(null);
+    setModalKey(k => k + 1);
     setIsCreateModalOpen(true);
   };
 
   const handleParsedRecipe = (response: ParseRecipeResponse) => {
-    // Convert parsed ingredients to RecipeIngredient format
     const ingredients: RecipeIngredient[] = response.ingredients.map((ing, i) => ({
       id: `parsed-${i}-${Date.now()}`,
       name: ing.name,
@@ -97,26 +97,23 @@ export default function RecipesPage() {
       source: ing.source,
     }));
 
-    setParsedIngredients(ingredients);
-    setParsedName(response.suggestedName || undefined);
-    setParsedServings(response.detectedServings || undefined);
+    setParsedData({
+      ingredients,
+      name: response.suggestedName || undefined,
+      servings: response.detectedServings || undefined,
+    });
+    setModalKey(k => k + 1);
     setIsCreateModalOpen(true);
   };
 
   const handleRecipeSaved = () => {
-    // Client-side prepend: refetch to get the new recipe at the top
     fetchRecipes();
-    // Clear parsed data
-    setParsedIngredients(undefined);
-    setParsedName(undefined);
-    setParsedServings(undefined);
+    setParsedData(null);
   };
 
   const handleModalClose = () => {
     setIsCreateModalOpen(false);
-    setParsedIngredients(undefined);
-    setParsedName(undefined);
-    setParsedServings(undefined);
+    setParsedData(null);
   };
 
   return (
@@ -229,12 +226,13 @@ export default function RecipesPage() {
       </div>
 
       <CreateRecipeModal
+        key={modalKey}
         isOpen={isCreateModalOpen}
         onClose={handleModalClose}
         onSave={handleRecipeSaved}
-        initialIngredients={parsedIngredients}
-        initialName={parsedName}
-        initialServings={parsedServings}
+        initialIngredients={parsedData?.ingredients}
+        initialName={parsedData?.name}
+        initialServings={parsedData?.servings}
       />
     </MainLayout>
   );

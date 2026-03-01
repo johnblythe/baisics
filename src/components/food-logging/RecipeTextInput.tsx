@@ -30,8 +30,14 @@ export function RecipeTextInput({ onParsed }: RecipeTextInputProps) {
       });
 
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to parse recipe');
+        let errorMessage = 'Failed to parse recipe';
+        try {
+          const data = await response.json();
+          errorMessage = data.error || errorMessage;
+        } catch {
+          errorMessage = `Server error (${response.status}). Please try again.`;
+        }
+        throw new Error(errorMessage);
       }
 
       const data: ParseRecipeResponse = await response.json();

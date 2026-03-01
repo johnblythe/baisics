@@ -35,6 +35,8 @@ export type { MyRecipesSidebarProps, Recipe } from './MyRecipesSidebar';
 export { CreateRecipeModal } from './CreateRecipeModal';
 export type { CreateRecipeModalProps, RecipeIngredient as CreateRecipeIngredient } from './CreateRecipeModal';
 
+export { RecipeTextInput } from './RecipeTextInput';
+
 export { SaveMealAsRecipeModal } from './SaveMealAsRecipeModal';
 export type { SaveMealAsRecipeModalProps } from './SaveMealAsRecipeModal';
 

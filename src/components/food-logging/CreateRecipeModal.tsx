@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, useMemo } from 'react';
-import { X, Search, Plus } from 'lucide-react';
+import { X, Plus } from 'lucide-react';
 import { FoodSearchAutocomplete } from '../nutrition/FoodSearchAutocomplete';
 import { ServingSizeSelector, CalculatedMacros } from '../nutrition/ServingSizeSelector';
 import { UnifiedFoodResult } from '@/lib/food-search/types';
@@ -185,8 +185,14 @@ export function CreateRecipeModal({
       });
 
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to save recipe');
+        let errorMessage = 'Failed to save recipe';
+        try {
+          const data = await response.json();
+          errorMessage = data.error || errorMessage;
+        } catch {
+          errorMessage = `Server error (${response.status}). Please try again.`;
+        }
+        throw new Error(errorMessage);
       }
 
       const savedRecipe = await response.json();
@@ -203,8 +209,6 @@ export function CreateRecipeModal({
         ingredients,
       });
 
-      // Reset form and close
-      resetForm();
       onClose();
     } catch (error) {
       console.error('Error saving recipe:', error);
@@ -214,19 +218,8 @@ export function CreateRecipeModal({
     }
   }, [name, emoji, ingredients, totals, onSave, onClose]);
 
-  // Reset form state
-  const resetForm = () => {
-    setName('');
-    setEmoji('🍽️');
-    setIngredients([]);
-    setServingCount(1);
-    setSelectedFood(null);
-    setShowEmojiPicker(false);
-  };
-
-  // Handle close - reset form
+  // Handle close (key prop remounts component with fresh state on next open)
   const handleClose = useCallback(() => {
-    resetForm();
     onClose();
   }, [onClose]);
 
@@ -288,20 +281,20 @@ export function CreateRecipeModal({
           </div>
 
           {/* Serving count */}
-          {servingCount > 1 && (
-            <div className="flex items-center gap-2">
-              <label className="text-sm text-gray-600">Servings:</label>
-              <input
-                type="number"
-                min={1}
-                max={50}
-                value={servingCount}
-                onChange={(e) => setServingCount(Math.max(1, parseInt(e.target.value) || 1))}
-                className="w-16 px-2 py-1 border border-gray-200 rounded-lg text-center text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]/20 focus:border-[#FF6B6B] text-[#0F172A]"
-              />
+          <div className="flex items-center gap-2">
+            <label className="text-sm text-gray-600">Servings:</label>
+            <input
+              type="number"
+              min={1}
+              max={50}
+              value={servingCount}
+              onChange={(e) => setServingCount(Math.max(1, parseInt(e.target.value) || 1))}
+              className="w-16 px-2 py-1 border border-gray-200 rounded-lg text-center text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]/20 focus:border-[#FF6B6B] text-[#0F172A]"
+            />
+            {servingCount > 1 && (
               <span className="text-xs text-gray-400">Macros shown per serving</span>
-            </div>
-          )}
+            )}
+          </div>
 
           {/* Ingredients header and search */}
           <div>
@@ -432,4 +425,3 @@ export function CreateRecipeModal({
   );
 }
 
-export default CreateRecipeModal;
