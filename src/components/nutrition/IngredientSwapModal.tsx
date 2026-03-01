@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { COLORS } from '@/lib/design/colors';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 export interface Ingredient {
   name: string;
@@ -45,6 +46,7 @@ export function IngredientSwapModal({
   userGoals = [],
   programId,
 }: IngredientSwapModalProps) {
+  useEscapeKey(onClose, isOpen);
   const [loading, setLoading] = useState(true);
   const [suggestions, setSuggestions] = useState<SwapSuggestion[]>([]);
   const [error, setError] = useState<string | null>(null);

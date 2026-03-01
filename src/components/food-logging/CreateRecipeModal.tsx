@@ -6,6 +6,7 @@ import { FoodSearchAutocomplete } from '../nutrition/FoodSearchAutocomplete';
 import { ServingSizeSelector, CalculatedMacros } from '../nutrition/ServingSizeSelector';
 import { UnifiedFoodResult } from '@/lib/food-search/types';
 import { toast } from 'sonner';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 // Common emojis for recipes
 const RECIPE_EMOJIS = [
@@ -50,6 +51,8 @@ export function CreateRecipeModal({
   initialName,
   initialServings,
 }: CreateRecipeModalProps) {
+  useEscapeKey(onClose, isOpen);
+
   // Form state — initialized from props (parent uses key prop to remount on new data)
   const [name, setName] = useState(initialName || '');
   const [emoji, setEmoji] = useState<string | null>('🍽️');

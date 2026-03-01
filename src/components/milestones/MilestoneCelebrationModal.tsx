@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 import { MilestoneConfig, getMilestoneConfig, getNextMilestone, formatVolume, MILESTONES } from '@/lib/milestones';
 import { MilestoneType } from '@prisma/client';
 import {
@@ -52,6 +53,8 @@ export function MilestoneCelebrationModal({
   onClose,
   onShare,
 }: MilestoneCelebrationModalProps) {
+  useEscapeKey(onClose);
+
   const [showConfetti, setShowConfetti] = useState(true);
   const [copied, setCopied] = useState(false);
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });

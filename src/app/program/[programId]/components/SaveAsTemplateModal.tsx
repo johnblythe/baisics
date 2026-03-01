@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { X } from 'lucide-react';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 interface SaveAsTemplateModalProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ export function SaveAsTemplateModal({
   programName,
   onSuccess,
 }: SaveAsTemplateModalProps) {
+  useEscapeKey(onClose, isOpen);
   const [isPublic, setIsPublic] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);

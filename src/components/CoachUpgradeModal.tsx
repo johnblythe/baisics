@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 import { COACH_TIER_CONFIG } from '@/lib/coach-tiers';
 import type { CoachTier } from '@prisma/client';
 
@@ -21,6 +22,8 @@ export function CoachUpgradeModal({
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState<'SWOLE' | 'YOKED' | null>(null);
   const [error, setError] = useState('');
+
+  useEscapeKey(onClose, isOpen);
 
   const handleUpgrade = async (tier: 'SWOLE' | 'YOKED') => {
     if (!session?.user) {

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { CalculatorForm } from './CalculatorForm';
 import { GoalForm } from './GoalForm';
 import { COLORS } from '@/lib/design/colors';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 // Validation bounds matching POST /api/nutrition-plan
 const BOUNDS = {
@@ -38,6 +39,7 @@ export function NutritionTargetsModal({
   onSaved,
   initialValues,
 }: NutritionTargetsModalProps) {
+  useEscapeKey(onClose, isOpen);
   const [values, setValues] = useState<NutritionValues>({
     dailyCalories: '',
     proteinGrams: '',

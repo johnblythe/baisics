@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { formatDateForAPI } from '@/lib/date-utils';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 export interface DatePickerModalProps {
   /** Whether the modal is open */
@@ -57,6 +58,8 @@ export function DatePickerModal({
   targetDate,
   title = 'Pick a date to copy from',
 }: DatePickerModalProps) {
+  useEscapeKey(onClose, isOpen);
+
   const [currentMonth, setCurrentMonth] = useState<MonthData>(() => {
     return getMonthData(targetDate.getFullYear(), targetDate.getMonth());
   });

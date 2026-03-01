@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 import Link from 'next/link';
 import type { Week2CheckInData } from '@/app/api/programs/[programId]/week2-checkin/route';
 
@@ -52,6 +53,8 @@ export function Week2CheckInModal({
   onComplete,
   onDismiss,
 }: Week2CheckInModalProps) {
+  useEscapeKey(onDismiss);
+
   const [selectedOption, setSelectedOption] = useState<CheckInOption | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showResult, setShowResult] = useState(false);

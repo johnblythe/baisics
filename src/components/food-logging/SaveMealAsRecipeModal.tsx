@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { FoodLogItemData } from './FoodLogItem';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 // Common emojis for recipes
 const RECIPE_EMOJIS = [
@@ -39,6 +40,8 @@ export function SaveMealAsRecipeModal({
   mealName,
   onSave,
 }: SaveMealAsRecipeModalProps) {
+  useEscapeKey(onClose, isOpen);
+
   const [name, setName] = useState('');
   const [emoji, setEmoji] = useState<string | null>('🍽️');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);

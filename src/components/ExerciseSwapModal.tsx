@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 interface SimilarExercise {
   id: string;
@@ -44,6 +45,8 @@ export function ExerciseSwapModal({
   const [swapping, setSwapping] = useState<string | null>(null);
   const [exercises, setExercises] = useState<SimilarExercise[]>([]);
   const [error, setError] = useState<string | null>(null);
+
+  useEscapeKey(onClose, isOpen);
 
   useEffect(() => {
     if (!isOpen) return;

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Search, Plus, X } from 'lucide-react';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 interface LibraryExercise {
   id: string;
@@ -36,6 +37,7 @@ export function ExerciseAddModal({
   workoutId,
   onAdd,
 }: ExerciseAddModalProps) {
+  useEscapeKey(onClose, isOpen);
   const [searchQuery, setSearchQuery] = useState('');
   const [exercises, setExercises] = useState<LibraryExercise[]>([]);
   const [categories, setCategories] = useState<string[]>([]);

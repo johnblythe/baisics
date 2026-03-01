@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Loader2, Calendar, Coffee, Sun, Moon, Cookie, ChevronLeft, Square, CheckSquare } from 'lucide-react';
 import { MealType } from '@prisma/client';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 // Meal icon mapping
 const MEAL_ICONS: Record<MealType, typeof Coffee> = {
@@ -91,6 +92,8 @@ export function CopyMealModal({
   targetDate,
   onCopySuccess,
 }: CopyMealModalProps) {
+  useEscapeKey(onClose, isOpen);
+
   const [days, setDays] = useState<DaySummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

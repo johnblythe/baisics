@@ -7,6 +7,7 @@ import { sendEmailAction } from "../hi/actions";
 import { User } from "@prisma/client";
 import { sendGTMEvent } from "@next/third-parties/google";
 import { useABTest } from "@/utils/abTest";
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -477,6 +478,8 @@ export function UpsellModal({ isOpen, onClose, onEmailSubmit, onPurchase, userEm
     trackDismiss();
     onClose();
   };
+
+  useEscapeKey(handleClose, isOpen);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

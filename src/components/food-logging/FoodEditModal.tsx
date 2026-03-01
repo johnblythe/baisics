@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { X, Save, Loader2 } from 'lucide-react';
 import { MealType } from '@prisma/client';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 const MEAL_OPTIONS = [
   { value: 'BREAKFAST', label: 'Breakfast' },
@@ -37,6 +38,8 @@ export function FoodEditModal({
   onCancel,
   isSaving = false,
 }: FoodEditModalProps) {
+  useEscapeKey(onCancel);
+
   const originalServingSize = food.servingSize || 1;
   const [name, setName] = useState(food.name);
   const [calories, setCalories] = useState(Math.round(food.calories).toString());

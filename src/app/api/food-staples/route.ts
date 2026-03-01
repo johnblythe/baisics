@@ -43,32 +43,37 @@ export async function GET(request: Request) {
       ],
     });
 
-    // Buddy staples (capped per slot)
-    const buddyIds = await getBuddyUserIds(session.user.id);
+    // Buddy staples (capped per slot) — gracefully degrade if buddy tables aren't ready
     let buddyStaples: typeof ownStaples = [];
+    try {
+      const buddyIds = await getBuddyUserIds(session.user.id);
 
-    if (buddyIds.length > 0) {
-      const allBuddyStaples = await prisma.foodStaple.findMany({
-        where: {
-          userId: { in: buddyIds },
-          ...slotFilter,
-        },
-        include: {
-          user: { select: { id: true, name: true, image: true } },
-        },
-        orderBy: [
-          { mealSlot: 'asc' },
-          { sortOrder: 'asc' },
-        ],
-      });
+      if (buddyIds.length > 0) {
+        const allBuddyStaples = await prisma.foodStaple.findMany({
+          where: {
+            userId: { in: buddyIds },
+            ...slotFilter,
+          },
+          include: {
+            user: { select: { id: true, name: true, image: true } },
+          },
+          orderBy: [
+            { mealSlot: 'asc' },
+            { sortOrder: 'asc' },
+          ],
+        });
 
-      // Cap buddy staples to MAX_BUDDY_STAPLES_PER_SLOT per slot
-      const slotCounts: Record<string, number> = {};
-      buddyStaples = allBuddyStaples.filter((s) => {
-        const slot = s.mealSlot;
-        slotCounts[slot] = (slotCounts[slot] || 0) + 1;
-        return slotCounts[slot] <= MAX_BUDDY_STAPLES_PER_SLOT;
-      });
+        // Cap buddy staples to MAX_BUDDY_STAPLES_PER_SLOT per slot
+        const slotCounts: Record<string, number> = {};
+        buddyStaples = allBuddyStaples.filter((s) => {
+          const slot = s.mealSlot;
+          slotCounts[slot] = (slotCounts[slot] || 0) + 1;
+          return slotCounts[slot] <= MAX_BUDDY_STAPLES_PER_SLOT;
+        });
+      }
+    } catch (e) {
+      // Buddy tables may not exist yet — return own staples only
+      console.warn('Buddy staples query failed, skipping:', e);
     }
 
     return NextResponse.json({ staples: ownStaples, buddyStaples });

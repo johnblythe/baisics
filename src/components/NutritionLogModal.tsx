@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 interface NutritionLogModalProps {
   isOpen: boolean;
@@ -354,6 +355,8 @@ export function NutritionLogModal({
     setLoadingExisting(false);
     onClose();
   };
+
+  useEscapeKey(handleClose, isOpen);
 
   if (!isOpen) return null;
 

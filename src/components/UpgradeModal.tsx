@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 interface UpgradeModalProps {
   isOpen: boolean;
@@ -46,6 +47,8 @@ export function UpgradeModal({
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+
+  useEscapeKey(onClose, isOpen);
 
   const messages = contextMessages[context];
 

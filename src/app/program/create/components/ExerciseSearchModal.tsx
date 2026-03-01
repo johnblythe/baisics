@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 import { searchExercises, getExerciseFilterOptions, type ExerciseFilters } from '../actions';
 
 interface Exercise {
@@ -24,6 +25,7 @@ interface ExerciseSearchModalProps {
 }
 
 export function ExerciseSearchModal({ isOpen, onClose, onSelect }: ExerciseSearchModalProps) {
+  useEscapeKey(onClose, isOpen);
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Exercise[]>([]);
   const [isSearching, setIsSearching] = useState(false);

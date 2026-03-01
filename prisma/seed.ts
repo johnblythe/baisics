@@ -6,7 +6,7 @@
  * "prisma": { "seed": "npx tsx prisma/seed.ts" }
  */
 
-import { PrismaClient, Difficulty, MovementPattern, MuscleGroup, ExerciseTier, SubscriptionStatus, MilestoneType, InviteStatus } from '@prisma/client';
+import { PrismaClient, Difficulty, MovementPattern, MuscleGroup, ExerciseTier, SubscriptionStatus, MilestoneType, InviteStatus, MealType } from '@prisma/client';
 import exercisesData from './seed-data/exercises.json';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -890,6 +890,460 @@ async function seedStarterQuickFoods() {
   console.log(`  ✓ Starter foods seeded for ${usersSeeded} users (${starterFoods.length} foods each)`);
 }
 
+/**
+ * Seed persona-specific food data: recipes, quick foods, and food staples
+ * for users who would realistically have food data (meticulous trackers, paid users)
+ */
+async function seedPersonaFoodData() {
+  console.log('Seeding persona food data...');
+
+  // ============ Data Definitions ============
+
+  type RecipeSeed = {
+    name: string;
+    emoji?: string;
+    servingSize: number;
+    servingUnit: string;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+    ingredients: Array<{ name: string; amount: string; unit: string; calories: number; protein: number; carbs: number; fat: number }>;
+    usageCount: number;
+  };
+
+  type QuickFoodSeed = {
+    name: string;
+    emoji?: string;
+    brand?: string;
+    servingSize: number;
+    servingUnit: string;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+    usageCount: number;
+    lastUsedDaysAgo?: number;
+  };
+
+  type FoodStapleSeed = {
+    mealSlot: MealType;
+    name: string;
+    emoji?: string;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+    sortOrder: number;
+  };
+
+  type PersonaFoodData = {
+    email: string;
+    recipes: RecipeSeed[];
+    quickFoods: QuickFoodSeed[];
+    staples: FoodStapleSeed[];
+  };
+
+  // ---------- Marcus: Gym bro, meticulous tracker, protein-heavy ----------
+  const marcusFoods: PersonaFoodData = {
+    email: 'marcus@test.baisics.app',
+    recipes: [
+      {
+        name: 'Chicken Rice Bowl',
+        emoji: '🍗',
+        servingSize: 1,
+        servingUnit: 'bowl',
+        calories: 520,
+        protein: 48,
+        carbs: 52,
+        fat: 12,
+        ingredients: [
+          { name: 'Chicken breast', amount: '6', unit: 'oz', calories: 280, protein: 52, carbs: 0, fat: 6 },
+          { name: 'White rice', amount: '1', unit: 'cup cooked', calories: 206, protein: 4, carbs: 45, fat: 0 },
+          { name: 'Broccoli', amount: '1', unit: 'cup', calories: 34, protein: 3, carbs: 7, fat: 0 },
+        ],
+        usageCount: 14,
+      },
+      {
+        name: 'Protein Oatmeal',
+        emoji: '🥣',
+        servingSize: 1,
+        servingUnit: 'bowl',
+        calories: 440,
+        protein: 38,
+        carbs: 48,
+        fat: 12,
+        ingredients: [
+          { name: 'Oats', amount: '1', unit: 'cup dry', calories: 300, protein: 10, carbs: 54, fat: 5 },
+          { name: 'Whey protein', amount: '1', unit: 'scoop', calories: 120, protein: 24, carbs: 3, fat: 2 },
+          { name: 'Banana', amount: '0.5', unit: 'medium', calories: 53, protein: 1, carbs: 14, fat: 0 },
+          { name: 'Peanut butter', amount: '1', unit: 'tbsp', calories: 95, protein: 4, carbs: 3, fat: 8 },
+        ],
+        usageCount: 18,
+      },
+      {
+        name: 'Ground Turkey Stir Fry',
+        emoji: '🥘',
+        servingSize: 1,
+        servingUnit: 'plate',
+        calories: 480,
+        protein: 42,
+        carbs: 38,
+        fat: 16,
+        ingredients: [
+          { name: 'Ground turkey 93/7', amount: '6', unit: 'oz', calories: 240, protein: 38, carbs: 0, fat: 10 },
+          { name: 'Mixed vegetables', amount: '2', unit: 'cups', calories: 80, protein: 4, carbs: 16, fat: 0 },
+          { name: 'Jasmine rice', amount: '0.75', unit: 'cup cooked', calories: 155, protein: 3, carbs: 34, fat: 0 },
+          { name: 'Soy sauce', amount: '1', unit: 'tbsp', calories: 10, protein: 1, carbs: 1, fat: 0 },
+          { name: 'Sesame oil', amount: '1', unit: 'tsp', calories: 40, protein: 0, carbs: 0, fat: 5 },
+        ],
+        usageCount: 9,
+      },
+      {
+        name: 'Post-Workout Shake',
+        emoji: '🥤',
+        servingSize: 1,
+        servingUnit: 'shake',
+        calories: 380,
+        protein: 50,
+        carbs: 40,
+        fat: 4,
+        ingredients: [
+          { name: 'Whey protein', amount: '2', unit: 'scoops', calories: 240, protein: 48, carbs: 6, fat: 3 },
+          { name: 'Banana', amount: '1', unit: 'medium', calories: 105, protein: 1, carbs: 27, fat: 0 },
+          { name: 'Skim milk', amount: '8', unit: 'oz', calories: 80, protein: 8, carbs: 12, fat: 0 },
+        ],
+        usageCount: 20,
+      },
+      {
+        name: 'Beef and Sweet Potato',
+        emoji: '🥩',
+        servingSize: 1,
+        servingUnit: 'plate',
+        calories: 560,
+        protein: 44,
+        carbs: 48,
+        fat: 20,
+        ingredients: [
+          { name: 'Ground beef 90/10', amount: '6', unit: 'oz', calories: 340, protein: 40, carbs: 0, fat: 18 },
+          { name: 'Sweet potato', amount: '1', unit: 'medium', calories: 115, protein: 2, carbs: 27, fat: 0 },
+          { name: 'Green beans', amount: '1', unit: 'cup', calories: 35, protein: 2, carbs: 8, fat: 0 },
+          { name: 'Olive oil', amount: '0.5', unit: 'tbsp', calories: 60, protein: 0, carbs: 0, fat: 7 },
+        ],
+        usageCount: 7,
+      },
+    ],
+    quickFoods: [
+      { name: 'Whey Protein Shake', emoji: '🥤', brand: 'Optimum Nutrition', servingSize: 1, servingUnit: 'scoop', calories: 120, protein: 24, carbs: 3, fat: 1.5, usageCount: 22, lastUsedDaysAgo: 0 },
+      { name: 'Greek Yogurt', emoji: '🥛', brand: 'Fage 0%', servingSize: 1, servingUnit: 'cup', calories: 100, protein: 18, carbs: 6, fat: 0, usageCount: 15, lastUsedDaysAgo: 1 },
+      { name: 'Hard Boiled Eggs', emoji: '🥚', servingSize: 3, servingUnit: 'eggs', calories: 216, protein: 19, carbs: 1, fat: 15, usageCount: 12, lastUsedDaysAgo: 0 },
+      { name: 'Almonds', emoji: '🥜', servingSize: 1, servingUnit: 'oz (23 nuts)', calories: 164, protein: 6, carbs: 6, fat: 14, usageCount: 8, lastUsedDaysAgo: 2 },
+      { name: 'Rice Cakes + PB', emoji: '🍘', servingSize: 2, servingUnit: 'cakes', calories: 260, protein: 8, carbs: 30, fat: 12, usageCount: 6, lastUsedDaysAgo: 3 },
+    ],
+    staples: [
+      { mealSlot: 'BREAKFAST', name: 'Protein Oatmeal', emoji: '🥣', calories: 440, protein: 38, carbs: 48, fat: 12, sortOrder: 0 },
+      { mealSlot: 'SNACK', name: 'Whey Protein Shake', emoji: '🥤', calories: 120, protein: 24, carbs: 3, fat: 1.5, sortOrder: 0 },
+      { mealSlot: 'DINNER', name: 'Chicken Rice Bowl', emoji: '🍗', calories: 520, protein: 48, carbs: 52, fat: 12, sortOrder: 0 },
+    ],
+  };
+
+  // ---------- Priya: Weight loss, calorie-conscious, consistent tracker ----------
+  const priyaFoods: PersonaFoodData = {
+    email: 'priya@test.baisics.app',
+    recipes: [
+      {
+        name: 'Greek Salad with Grilled Chicken',
+        emoji: '🥗',
+        servingSize: 1,
+        servingUnit: 'bowl',
+        calories: 380,
+        protein: 38,
+        carbs: 14,
+        fat: 18,
+        ingredients: [
+          { name: 'Chicken breast grilled', amount: '5', unit: 'oz', calories: 230, protein: 35, carbs: 0, fat: 5 },
+          { name: 'Mixed greens', amount: '3', unit: 'cups', calories: 20, protein: 2, carbs: 4, fat: 0 },
+          { name: 'Cucumber', amount: '0.5', unit: 'cup', calories: 8, protein: 0, carbs: 2, fat: 0 },
+          { name: 'Cherry tomatoes', amount: '0.5', unit: 'cup', calories: 15, protein: 1, carbs: 3, fat: 0 },
+          { name: 'Feta cheese', amount: '1', unit: 'oz', calories: 75, protein: 4, carbs: 1, fat: 6 },
+          { name: 'Olive oil dressing', amount: '1', unit: 'tbsp', calories: 72, protein: 0, carbs: 0, fat: 8 },
+        ],
+        usageCount: 16,
+      },
+      {
+        name: 'Turkey Lettuce Wraps',
+        emoji: '🥬',
+        servingSize: 3,
+        servingUnit: 'wraps',
+        calories: 310,
+        protein: 32,
+        carbs: 12,
+        fat: 14,
+        ingredients: [
+          { name: 'Ground turkey 99% lean', amount: '5', unit: 'oz', calories: 175, protein: 30, carbs: 0, fat: 5 },
+          { name: 'Butter lettuce leaves', amount: '3', unit: 'large', calories: 5, protein: 1, carbs: 1, fat: 0 },
+          { name: 'Diced tomato', amount: '0.25', unit: 'cup', calories: 8, protein: 0, carbs: 2, fat: 0 },
+          { name: 'Avocado', amount: '0.25', unit: 'medium', calories: 80, protein: 1, carbs: 4, fat: 7 },
+          { name: 'Salsa', amount: '2', unit: 'tbsp', calories: 10, protein: 0, carbs: 2, fat: 0 },
+        ],
+        usageCount: 10,
+      },
+      {
+        name: 'Egg White Veggie Scramble',
+        emoji: '🍳',
+        servingSize: 1,
+        servingUnit: 'plate',
+        calories: 220,
+        protein: 28,
+        carbs: 10,
+        fat: 8,
+        ingredients: [
+          { name: 'Egg whites', amount: '6', unit: 'large', calories: 102, protein: 22, carbs: 1, fat: 0 },
+          { name: 'Whole egg', amount: '1', unit: 'large', calories: 72, protein: 6, carbs: 0, fat: 5 },
+          { name: 'Spinach', amount: '1', unit: 'cup', calories: 7, protein: 1, carbs: 1, fat: 0 },
+          { name: 'Bell pepper', amount: '0.5', unit: 'cup diced', calories: 15, protein: 1, carbs: 3, fat: 0 },
+          { name: 'Mushrooms', amount: '0.5', unit: 'cup', calories: 8, protein: 1, carbs: 1, fat: 0 },
+          { name: 'Cooking spray', amount: '1', unit: 'spray', calories: 5, protein: 0, carbs: 0, fat: 1 },
+        ],
+        usageCount: 12,
+      },
+      {
+        name: 'Zucchini Noodle Shrimp Bowl',
+        emoji: '🍤',
+        servingSize: 1,
+        servingUnit: 'bowl',
+        calories: 290,
+        protein: 34,
+        carbs: 16,
+        fat: 10,
+        ingredients: [
+          { name: 'Shrimp', amount: '6', unit: 'oz', calories: 170, protein: 32, carbs: 1, fat: 3 },
+          { name: 'Zucchini noodles', amount: '2', unit: 'cups', calories: 40, protein: 3, carbs: 7, fat: 1 },
+          { name: 'Cherry tomatoes', amount: '0.5', unit: 'cup', calories: 15, protein: 1, carbs: 3, fat: 0 },
+          { name: 'Garlic', amount: '2', unit: 'cloves', calories: 10, protein: 0, carbs: 2, fat: 0 },
+          { name: 'Olive oil', amount: '1', unit: 'tsp', calories: 40, protein: 0, carbs: 0, fat: 5 },
+          { name: 'Lemon juice', amount: '1', unit: 'tbsp', calories: 4, protein: 0, carbs: 1, fat: 0 },
+        ],
+        usageCount: 7,
+      },
+    ],
+    quickFoods: [
+      { name: 'Protein Bar', emoji: '🍫', brand: 'Quest', servingSize: 1, servingUnit: 'bar', calories: 190, protein: 21, carbs: 21, fat: 7, usageCount: 18, lastUsedDaysAgo: 1 },
+      { name: 'Apple + Almond Butter', emoji: '🍎', servingSize: 1, servingUnit: 'apple + 1 tbsp', calories: 195, protein: 4, carbs: 30, fat: 9, usageCount: 11, lastUsedDaysAgo: 0 },
+      { name: 'Cottage Cheese', emoji: '🧀', brand: 'Good Culture', servingSize: 1, servingUnit: 'cup', calories: 120, protein: 20, carbs: 5, fat: 2.5, usageCount: 14, lastUsedDaysAgo: 1 },
+      { name: 'Turkey Jerky', emoji: '🥩', brand: 'Chomps', servingSize: 1, servingUnit: 'stick', calories: 100, protein: 10, carbs: 2, fat: 6, usageCount: 8, lastUsedDaysAgo: 3 },
+      { name: 'Rice Cake', emoji: '🍘', servingSize: 1, servingUnit: 'cake', calories: 35, protein: 1, carbs: 7, fat: 0, usageCount: 10, lastUsedDaysAgo: 2 },
+    ],
+    staples: [
+      { mealSlot: 'BREAKFAST', name: 'Egg White Veggie Scramble', emoji: '🍳', calories: 220, protein: 28, carbs: 10, fat: 8, sortOrder: 0 },
+      { mealSlot: 'LUNCH', name: 'Greek Salad with Grilled Chicken', emoji: '🥗', calories: 380, protein: 38, carbs: 14, fat: 18, sortOrder: 0 },
+      { mealSlot: 'SNACK', name: 'Cottage Cheese', emoji: '🧀', calories: 120, protein: 20, carbs: 5, fat: 2.5, sortOrder: 0 },
+    ],
+  };
+
+  // ---------- Derek: Veteran, former athlete, varied diet ----------
+  const derekFoods: PersonaFoodData = {
+    email: 'derek@test.baisics.app',
+    recipes: [
+      {
+        name: 'Steak and Eggs Breakfast',
+        emoji: '🥩',
+        servingSize: 1,
+        servingUnit: 'plate',
+        calories: 620,
+        protein: 52,
+        carbs: 4,
+        fat: 42,
+        ingredients: [
+          { name: 'Sirloin steak', amount: '6', unit: 'oz', calories: 340, protein: 40, carbs: 0, fat: 18 },
+          { name: 'Whole eggs', amount: '3', unit: 'large', calories: 216, protein: 19, carbs: 1, fat: 15 },
+          { name: 'Butter', amount: '1', unit: 'tbsp', calories: 100, protein: 0, carbs: 0, fat: 11 },
+          { name: 'Salt & pepper', amount: '1', unit: 'pinch', calories: 0, protein: 0, carbs: 0, fat: 0 },
+        ],
+        usageCount: 8,
+      },
+      {
+        name: 'Salmon Rice Bowl',
+        emoji: '🐟',
+        servingSize: 1,
+        servingUnit: 'bowl',
+        calories: 580,
+        protein: 42,
+        carbs: 52,
+        fat: 22,
+        ingredients: [
+          { name: 'Salmon fillet', amount: '6', unit: 'oz', calories: 354, protein: 39, carbs: 0, fat: 21 },
+          { name: 'Brown rice', amount: '1', unit: 'cup cooked', calories: 216, protein: 5, carbs: 45, fat: 2 },
+          { name: 'Edamame', amount: '0.5', unit: 'cup', calories: 95, protein: 9, carbs: 7, fat: 4 },
+          { name: 'Soy sauce', amount: '1', unit: 'tbsp', calories: 10, protein: 1, carbs: 1, fat: 0 },
+        ],
+        usageCount: 6,
+      },
+      {
+        name: 'Turkey Chili',
+        emoji: '🌶️',
+        servingSize: 1.5,
+        servingUnit: 'cups',
+        calories: 420,
+        protein: 38,
+        carbs: 36,
+        fat: 14,
+        ingredients: [
+          { name: 'Ground turkey', amount: '6', unit: 'oz', calories: 240, protein: 34, carbs: 0, fat: 10 },
+          { name: 'Kidney beans', amount: '0.5', unit: 'cup', calories: 110, protein: 8, carbs: 20, fat: 0 },
+          { name: 'Diced tomatoes', amount: '0.5', unit: 'cup', calories: 25, protein: 1, carbs: 6, fat: 0 },
+          { name: 'Onion', amount: '0.25', unit: 'cup diced', calories: 16, protein: 0, carbs: 4, fat: 0 },
+          { name: 'Chili powder & cumin', amount: '1', unit: 'tbsp each', calories: 20, protein: 1, carbs: 3, fat: 1 },
+          { name: 'Olive oil', amount: '0.5', unit: 'tbsp', calories: 60, protein: 0, carbs: 0, fat: 7 },
+        ],
+        usageCount: 5,
+      },
+      {
+        name: 'BBQ Chicken Wrap',
+        emoji: '🌯',
+        servingSize: 1,
+        servingUnit: 'wrap',
+        calories: 490,
+        protein: 40,
+        carbs: 44,
+        fat: 16,
+        ingredients: [
+          { name: 'Chicken breast grilled', amount: '5', unit: 'oz', calories: 230, protein: 35, carbs: 0, fat: 5 },
+          { name: 'Large flour tortilla', amount: '1', unit: 'tortilla', calories: 160, protein: 4, carbs: 28, fat: 4 },
+          { name: 'BBQ sauce', amount: '2', unit: 'tbsp', calories: 60, protein: 0, carbs: 14, fat: 0 },
+          { name: 'Coleslaw mix', amount: '0.5', unit: 'cup', calories: 15, protein: 1, carbs: 3, fat: 0 },
+          { name: 'Ranch dressing', amount: '1', unit: 'tbsp', calories: 65, protein: 0, carbs: 1, fat: 7 },
+        ],
+        usageCount: 4,
+      },
+      {
+        name: 'Peanut Butter Banana Smoothie',
+        emoji: '🥜',
+        servingSize: 1,
+        servingUnit: 'smoothie',
+        calories: 450,
+        protein: 34,
+        carbs: 48,
+        fat: 16,
+        ingredients: [
+          { name: 'Whey protein', amount: '1', unit: 'scoop', calories: 120, protein: 24, carbs: 3, fat: 2 },
+          { name: 'Banana', amount: '1', unit: 'medium', calories: 105, protein: 1, carbs: 27, fat: 0 },
+          { name: 'Peanut butter', amount: '2', unit: 'tbsp', calories: 190, protein: 8, carbs: 6, fat: 16 },
+          { name: 'Whole milk', amount: '8', unit: 'oz', calories: 150, protein: 8, carbs: 12, fat: 8 },
+        ],
+        usageCount: 11,
+      },
+    ],
+    quickFoods: [
+      { name: 'Beef Jerky', emoji: '🥩', brand: 'Jack Links', servingSize: 1, servingUnit: 'oz', calories: 80, protein: 10, carbs: 5, fat: 2, usageCount: 9, lastUsedDaysAgo: 1 },
+      { name: 'Protein Shake', emoji: '🥤', brand: 'Dymatize ISO100', servingSize: 1, servingUnit: 'scoop', calories: 120, protein: 25, carbs: 2, fat: 0.5, usageCount: 16, lastUsedDaysAgo: 0 },
+      { name: 'Trail Mix', emoji: '🥜', servingSize: 0.25, servingUnit: 'cup', calories: 175, protein: 5, carbs: 16, fat: 11, usageCount: 7, lastUsedDaysAgo: 2 },
+      { name: 'String Cheese', emoji: '🧀', servingSize: 2, servingUnit: 'sticks', calories: 160, protein: 14, carbs: 2, fat: 10, usageCount: 10, lastUsedDaysAgo: 1 },
+      { name: 'Banana', emoji: '🍌', servingSize: 1, servingUnit: 'medium', calories: 105, protein: 1, carbs: 27, fat: 0, usageCount: 13, lastUsedDaysAgo: 0 },
+    ],
+    staples: [
+      { mealSlot: 'BREAKFAST', name: 'Steak and Eggs Breakfast', emoji: '🥩', calories: 620, protein: 52, carbs: 4, fat: 42, sortOrder: 0 },
+      { mealSlot: 'LUNCH', name: 'BBQ Chicken Wrap', emoji: '🌯', calories: 490, protein: 40, carbs: 44, fat: 16, sortOrder: 0 },
+      { mealSlot: 'SNACK', name: 'Protein Shake', emoji: '🥤', calories: 120, protein: 25, carbs: 2, fat: 0.5, sortOrder: 0 },
+    ],
+  };
+
+  // ============ Seed Loop ============
+
+  const allPersonaFoods = [marcusFoods, priyaFoods, derekFoods];
+
+  for (const personaFood of allPersonaFoods) {
+    const user = await prisma.user.findUnique({
+      where: { email: personaFood.email },
+    });
+
+    if (!user) {
+      console.log(`  Skipping ${personaFood.email} - user not found`);
+      continue;
+    }
+
+    // Clean up existing non-starter food data for this user
+    await prisma.foodStaple.deleteMany({ where: { userId: user.id } });
+    await prisma.quickFood.deleteMany({ where: { userId: user.id, isStarter: false } });
+    await prisma.recipe.deleteMany({ where: { userId: user.id } });
+
+    // --- Recipes ---
+    const recipeIdsByName: Map<string, string> = new Map();
+    for (const recipeSeed of personaFood.recipes) {
+      const recipe = await prisma.recipe.create({
+        data: {
+          userId: user.id,
+          name: recipeSeed.name,
+          emoji: recipeSeed.emoji,
+          servingSize: recipeSeed.servingSize,
+          servingUnit: recipeSeed.servingUnit,
+          calories: recipeSeed.calories,
+          protein: recipeSeed.protein,
+          carbs: recipeSeed.carbs,
+          fat: recipeSeed.fat,
+          ingredients: recipeSeed.ingredients,
+          usageCount: recipeSeed.usageCount,
+        },
+      });
+      recipeIdsByName.set(recipeSeed.name, recipe.id);
+    }
+
+    // --- Quick Foods (user-created, non-starter) ---
+    const quickFoodIdsByName: Map<string, string> = new Map();
+    for (let i = 0; i < personaFood.quickFoods.length; i++) {
+      const qfSeed = personaFood.quickFoods[i];
+      const quickFood = await prisma.quickFood.create({
+        data: {
+          userId: user.id,
+          name: qfSeed.name,
+          emoji: qfSeed.emoji,
+          brand: qfSeed.brand,
+          servingSize: qfSeed.servingSize,
+          servingUnit: qfSeed.servingUnit,
+          calories: qfSeed.calories,
+          protein: qfSeed.protein,
+          carbs: qfSeed.carbs,
+          fat: qfSeed.fat,
+          sortOrder: i,
+          usageCount: qfSeed.usageCount,
+          isStarter: false,
+          lastUsedAt: qfSeed.lastUsedDaysAgo !== undefined
+            ? new Date(Date.now() - qfSeed.lastUsedDaysAgo * 24 * 60 * 60 * 1000)
+            : null,
+        },
+      });
+      quickFoodIdsByName.set(qfSeed.name, quickFood.id);
+    }
+
+    // --- Food Staples ---
+    for (const stapleSeed of personaFood.staples) {
+      // Try to link to recipe or quick food by name match
+      const recipeId = recipeIdsByName.get(stapleSeed.name) ?? null;
+      const quickFoodId = !recipeId ? (quickFoodIdsByName.get(stapleSeed.name) ?? null) : null;
+
+      await prisma.foodStaple.create({
+        data: {
+          userId: user.id,
+          mealSlot: stapleSeed.mealSlot,
+          name: stapleSeed.name,
+          emoji: stapleSeed.emoji,
+          calories: stapleSeed.calories,
+          protein: stapleSeed.protein,
+          carbs: stapleSeed.carbs,
+          fat: stapleSeed.fat,
+          recipeId,
+          quickFoodId,
+          sortOrder: stapleSeed.sortOrder,
+        },
+      });
+    }
+
+    console.log(`  ✓ ${personaFood.email}: ${personaFood.recipes.length} recipes, ${personaFood.quickFoods.length} quick foods, ${personaFood.staples.length} staples`);
+  }
+
+  console.log('Persona food data seeded');
+}
+
 async function main() {
   console.log('Starting database seed...\n');
 
@@ -897,6 +1351,7 @@ async function main() {
   await seedPersonas();
   await seedSpecialUsers();
   await seedStarterQuickFoods();
+  await seedPersonaFoodData();
 
   console.log('\nSeed complete!');
 }
