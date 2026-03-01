@@ -2,8 +2,9 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 import { validateIngredients, clamp } from '@/lib/ai/parse-helpers';
+import { getBuddyUserIds } from '@/lib/buddy';
 
-// GET /api/recipes - returns user's recipes + public recipes
+// GET /api/recipes - returns user's recipes + public recipes + buddy recipes
 export async function GET(request: Request) {
   try {
     const session = await auth();
@@ -14,12 +15,19 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search');
 
-    // Build where clause: user's recipes OR public recipes
+    const buddyIds = await getBuddyUserIds(session.user.id);
+
+    // Build where clause: user's recipes OR public OR buddy recipes
+    const orClauses: Record<string, unknown>[] = [
+      { userId: session.user.id },
+      { isPublic: true },
+    ];
+    if (buddyIds.length > 0) {
+      orClauses.push({ userId: { in: buddyIds } });
+    }
+
     const whereClause = {
-      OR: [
-        { userId: session.user.id },
-        { isPublic: true },
-      ],
+      OR: orClauses,
       ...(search && {
         name: {
           contains: search,
@@ -30,6 +38,11 @@ export async function GET(request: Request) {
 
     const recipes = await prisma.recipe.findMany({
       where: whereClause,
+      include: {
+        user: {
+          select: { id: true, name: true, image: true },
+        },
+      },
       orderBy: [
         { usageCount: 'desc' },
         { createdAt: 'desc' },

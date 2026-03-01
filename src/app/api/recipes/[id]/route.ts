@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 import { validateIngredients, clamp } from '@/lib/ai/parse-helpers';
+import { isBuddy } from '@/lib/buddy';
 
 // GET /api/recipes/[id] - returns recipe details with ingredients
 export async function GET(
@@ -18,14 +19,18 @@ export async function GET(
 
     const recipe = await prisma.recipe.findUnique({
       where: { id },
+      include: {
+        user: { select: { id: true, name: true, image: true } },
+      },
     });
 
     if (!recipe) {
       return NextResponse.json({ error: 'Recipe not found' }, { status: 404 });
     }
 
-    // Allow access if user owns the recipe OR it's public
-    if (recipe.userId !== session.user.id && !recipe.isPublic) {
+    // Allow access if user owns the recipe, it's public, OR owner is a buddy
+    const isBuddyRecipe = recipe.userId ? await isBuddy(session.user.id, recipe.userId) : false;
+    if (recipe.userId !== session.user.id && !recipe.isPublic && !isBuddyRecipe) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

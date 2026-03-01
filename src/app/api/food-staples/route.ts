@@ -2,8 +2,11 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 import { MealType } from '@prisma/client';
+import { getBuddyUserIds } from '@/lib/buddy';
 
-// GET /api/food-staples - returns staples for user, optionally filtered by mealSlot
+const MAX_BUDDY_STAPLES_PER_SLOT = 3;
+
+// GET /api/food-staples - returns staples for user + buddy staples, optionally filtered by mealSlot
 export async function GET(request: Request) {
   try {
     const session = await auth();
@@ -22,10 +25,16 @@ export async function GET(request: Request) {
       );
     }
 
-    const staples = await prisma.foodStaple.findMany({
+    const slotFilter = mealSlot ? { mealSlot: mealSlot as MealType } : {};
+
+    // Own staples (full set)
+    const ownStaples = await prisma.foodStaple.findMany({
       where: {
         userId: session.user.id,
-        ...(mealSlot ? { mealSlot: mealSlot as MealType } : {}),
+        ...slotFilter,
+      },
+      include: {
+        user: { select: { id: true, name: true, image: true } },
       },
       orderBy: [
         { mealSlot: 'asc' },
@@ -34,7 +43,35 @@ export async function GET(request: Request) {
       ],
     });
 
-    return NextResponse.json({ staples });
+    // Buddy staples (capped per slot)
+    const buddyIds = await getBuddyUserIds(session.user.id);
+    let buddyStaples: typeof ownStaples = [];
+
+    if (buddyIds.length > 0) {
+      const allBuddyStaples = await prisma.foodStaple.findMany({
+        where: {
+          userId: { in: buddyIds },
+          ...slotFilter,
+        },
+        include: {
+          user: { select: { id: true, name: true, image: true } },
+        },
+        orderBy: [
+          { mealSlot: 'asc' },
+          { sortOrder: 'asc' },
+        ],
+      });
+
+      // Cap buddy staples to MAX_BUDDY_STAPLES_PER_SLOT per slot
+      const slotCounts: Record<string, number> = {};
+      buddyStaples = allBuddyStaples.filter((s) => {
+        const slot = s.mealSlot;
+        slotCounts[slot] = (slotCounts[slot] || 0) + 1;
+        return slotCounts[slot] <= MAX_BUDDY_STAPLES_PER_SLOT;
+      });
+    }
+
+    return NextResponse.json({ staples: ownStaples, buddyStaples });
   } catch (error) {
     console.error('Error fetching food staples:', error);
     return NextResponse.json(
