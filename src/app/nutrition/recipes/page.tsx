@@ -4,8 +4,10 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Search, Plus, Loader2, BookOpen, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import MainLayout from '@/app/components/layouts/MainLayout';
-import { CreateRecipeModal } from '@/components/food-logging/CreateRecipeModal';
+import { CreateRecipeModal, RecipeIngredient } from '@/components/food-logging/CreateRecipeModal';
+import { RecipeTextInput } from '@/components/food-logging/RecipeTextInput';
 import { RecipeCard } from '@/components/nutrition/RecipeCard';
+import type { ParseRecipeResponse } from '@/app/api/recipes/parse-text/route';
 
 export interface RecipeWithIngredients {
   id: string;
@@ -37,6 +39,9 @@ export default function RecipesPage() {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [parsedIngredients, setParsedIngredients] = useState<RecipeIngredient[] | undefined>();
+  const [parsedName, setParsedName] = useState<string | undefined>();
+  const [parsedServings, setParsedServings] = useState<number | undefined>();
 
   const fetchRecipes = useCallback(async () => {
     setIsLoading(true);
@@ -71,12 +76,47 @@ export default function RecipesPage() {
   }, [recipes, searchQuery]);
 
   const handleCreateRecipe = () => {
+    // Clear any parsed data when opening manual mode
+    setParsedIngredients(undefined);
+    setParsedName(undefined);
+    setParsedServings(undefined);
+    setIsCreateModalOpen(true);
+  };
+
+  const handleParsedRecipe = (response: ParseRecipeResponse) => {
+    // Convert parsed ingredients to RecipeIngredient format
+    const ingredients: RecipeIngredient[] = response.ingredients.map((ing, i) => ({
+      id: `parsed-${i}-${Date.now()}`,
+      name: ing.name,
+      servingSize: ing.quantity,
+      servingUnit: ing.unit,
+      calories: ing.calories,
+      protein: ing.protein,
+      carbs: ing.carbs,
+      fat: ing.fat,
+      source: ing.source,
+    }));
+
+    setParsedIngredients(ingredients);
+    setParsedName(response.suggestedName || undefined);
+    setParsedServings(response.detectedServings || undefined);
     setIsCreateModalOpen(true);
   };
 
   const handleRecipeSaved = () => {
-    // Refresh recipes list after save
+    // Client-side prepend: refetch to get the new recipe at the top
     fetchRecipes();
+    // Clear parsed data
+    setParsedIngredients(undefined);
+    setParsedName(undefined);
+    setParsedServings(undefined);
+  };
+
+  const handleModalClose = () => {
+    setIsCreateModalOpen(false);
+    setParsedIngredients(undefined);
+    setParsedName(undefined);
+    setParsedServings(undefined);
   };
 
   return (
@@ -106,12 +146,16 @@ export default function RecipesPage() {
           </button>
         </div>
 
+        {/* AI Recipe Input */}
+        <RecipeTextInput onParsed={handleParsedRecipe} />
+
         {/* Search */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#94A3B8]" />
           <input
             type="text"
             placeholder="Search recipes..."
+            autoComplete="off"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-10 pr-4 py-3 border border-[#E2E8F0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]/20 focus:border-[#FF6B6B] text-[#0F172A] bg-white"
@@ -186,8 +230,11 @@ export default function RecipesPage() {
 
       <CreateRecipeModal
         isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        onClose={handleModalClose}
         onSave={handleRecipeSaved}
+        initialIngredients={parsedIngredients}
+        initialName={parsedName}
+        initialServings={parsedServings}
       />
     </MainLayout>
   );

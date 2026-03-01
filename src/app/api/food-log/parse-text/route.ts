@@ -1,7 +1,8 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 import { anthropic } from '@/lib/anthropic';
+import { checkRateLimit, rateLimitedResponse } from '@/utils/security/rateLimit';
 
 type ParsedFood = {
   name: string;
@@ -24,8 +25,12 @@ type ParseTextResponse = {
 };
 
 // POST /api/food-log/parse-text - parses natural language food text
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    // Rate limit: 20 requests per minute
+    const { ok } = checkRateLimit(request, 20, 60_000);
+    if (!ok) return rateLimitedResponse();
+
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -37,6 +42,14 @@ export async function POST(request: Request) {
     if (!text || typeof text !== 'string') {
       return NextResponse.json(
         { error: 'text field is required' },
+        { status: 400 }
+      );
+    }
+
+    // Input length guard
+    if (text.length > 2000) {
+      return NextResponse.json(
+        { error: 'Text must be under 2000 characters' },
         { status: 400 }
       );
     }
