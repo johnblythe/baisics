@@ -483,7 +483,7 @@ export function MealSection({
 
       {/* Inline search panel */}
       {isSearchOpen && enableInlineSearch ? (
-        <div className="border border-[#E2E8F0] rounded-xl overflow-hidden">
+        <div className="border border-[#E2E8F0] rounded-xl">
           {/* Search header */}
           <div className="p-3 bg-[#F8FAFC] border-b border-[#E2E8F0]">
             <div className="flex items-center justify-between mb-2">
@@ -498,13 +498,15 @@ export function MealSection({
                 <X className="w-4 h-4" />
               </button>
             </div>
-            {!selectedFood ? (
+            {/* Keep search mounted (hidden) so results survive cancel from detail view */}
+            <div className={selectedFood ? 'hidden' : ''}>
               <FoodSearchAutocomplete
                 onSelect={handleFoodSelect}
                 placeholder={`Search foods for ${displayName.toLowerCase()}...`}
                 userId={userId}
               />
-            ) : (
+            </div>
+            {selectedFood && (
               <div className="flex items-center gap-2">
                 <button
                   type="button"

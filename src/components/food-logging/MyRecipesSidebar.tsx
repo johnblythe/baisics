@@ -174,7 +174,7 @@ export function MyRecipesSidebar({
                   {recipe.name}
                 </div>
                 <div className="text-xs text-[#94A3B8]">
-                  {recipe.calories} cal · {Math.round(recipe.protein)}g P
+                  {Math.round(recipe.calories)} cal · {Math.round(recipe.protein)}g P
                 </div>
               </div>
             </div>

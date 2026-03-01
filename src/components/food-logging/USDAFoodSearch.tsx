@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { MealType } from '@prisma/client';
 import { FoodSearchAutocomplete } from '@/components/nutrition/FoodSearchAutocomplete';
@@ -64,6 +64,8 @@ export function USDAFoodSearch({
   className = '',
 }: USDAFoodSearchProps) {
   const [selectedFood, setSelectedFood] = useState<UnifiedFoodResult | null>(null);
+  // Key to force FoodSearchAutocomplete remount after confirm (clears stale results)
+  const [searchKey, setSearchKey] = useState(0);
 
   // Default meal based on current time
   const defaultMeal = useMemo(() => getDefaultMealByTime(), []);
@@ -91,6 +93,7 @@ export function USDAFoodSearch({
     });
 
     setSelectedFood(null);
+    setSearchKey(prev => prev + 1); // Reset search for next use
   };
 
   const handleCancel = () => {
@@ -131,36 +134,29 @@ export function USDAFoodSearch({
   if (!isModal) {
     return (
       <div className={className}>
-        <AnimatePresence mode="wait">
-          {!selectedFood ? (
-            <motion.div
-              key="search"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <FoodSearchAutocomplete
-                onSelect={handleFoodSelect}
-                placeholder={placeholder}
-                userId={userId}
-              />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="serving"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-            >
-              {mealSelector}
-              <ServingSizeSelector
-                food={selectedFood}
-                onConfirm={handleServingConfirm}
-                onCancel={handleBackToSearch}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* Keep search mounted (hidden) so state survives cancel from detail view */}
+        <div className={selectedFood ? 'hidden' : ''}>
+          <FoodSearchAutocomplete
+            key={searchKey}
+            onSelect={handleFoodSelect}
+            placeholder={placeholder}
+            userId={userId}
+          />
+        </div>
+        {selectedFood && (
+          <motion.div
+            key="serving"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            {mealSelector}
+            <ServingSizeSelector
+              food={selectedFood}
+              onConfirm={handleServingConfirm}
+              onCancel={handleBackToSearch}
+            />
+          </motion.div>
+        )}
       </div>
     );
   }
@@ -203,46 +199,39 @@ export function USDAFoodSearch({
 
         {/* Content */}
         <div className="p-4 overflow-y-auto max-h-[70vh]">
-          <AnimatePresence mode="wait">
-            {!selectedFood ? (
-              <motion.div
-                key="search"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+          {/* Keep search mounted (hidden) so state survives cancel from detail view */}
+          <div className={selectedFood ? 'hidden' : ''}>
+            <FoodSearchAutocomplete
+              key={searchKey}
+              onSelect={handleFoodSelect}
+              placeholder={placeholder}
+              userId={userId}
+            />
+            <p className="mt-3 text-xs text-[#94A3B8] text-center">
+              Search the USDA FoodData Central database
+            </p>
+          </div>
+          {selectedFood && (
+            <motion.div
+              key="serving"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+            >
+              <button
+                type="button"
+                onClick={handleBackToSearch}
+                className="mb-3 text-sm text-[#FF6B6B] hover:text-[#EF5350] transition-colors flex items-center gap-1"
               >
-                <FoodSearchAutocomplete
-                  onSelect={handleFoodSelect}
-                  placeholder={placeholder}
-                  userId={userId}
-                />
-                <p className="mt-3 text-xs text-[#94A3B8] text-center">
-                  Search the USDA FoodData Central database
-                </p>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="serving"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-              >
-                <button
-                  type="button"
-                  onClick={handleBackToSearch}
-                  className="mb-3 text-sm text-[#FF6B6B] hover:text-[#EF5350] transition-colors flex items-center gap-1"
-                >
-                  ← Back to search
-                </button>
-                {mealSelector}
-                <ServingSizeSelector
-                  food={selectedFood}
-                  onConfirm={handleServingConfirm}
-                  onCancel={handleBackToSearch}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
+                ← Back to search
+              </button>
+              {mealSelector}
+              <ServingSizeSelector
+                food={selectedFood}
+                onConfirm={handleServingConfirm}
+                onCancel={handleBackToSearch}
+              />
+            </motion.div>
+          )}
         </div>
       </motion.div>
     </>
