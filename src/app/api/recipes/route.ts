@@ -61,7 +61,6 @@ export async function POST(request: Request) {
       carbs,
       fat,
       emoji,
-      isPublic,
       servingSize,
       servingUnit,
       ingredients,
@@ -75,12 +74,38 @@ export async function POST(request: Request) {
       );
     }
 
+    // Validation limits (#424)
+    if (typeof name !== 'string' || name.length > 200) {
+      return NextResponse.json(
+        { error: 'Recipe name must be under 200 characters' },
+        { status: 400 }
+      );
+    }
+
     // Validate ingredients is an array if provided
     if (ingredients !== undefined && !Array.isArray(ingredients)) {
       return NextResponse.json(
         { error: 'ingredients must be an array' },
         { status: 400 }
       );
+    }
+
+    if (Array.isArray(ingredients)) {
+      if (ingredients.length > 50) {
+        return NextResponse.json(
+          { error: 'Maximum 50 ingredients per recipe' },
+          { status: 400 }
+        );
+      }
+      const longName = ingredients.find((ing: { name?: string }) =>
+        typeof ing.name === 'string' && ing.name.length > 200
+      );
+      if (longName) {
+        return NextResponse.json(
+          { error: 'Ingredient names must be under 200 characters' },
+          { status: 400 }
+        );
+      }
     }
 
     const recipe = await prisma.recipe.create({
@@ -92,7 +117,7 @@ export async function POST(request: Request) {
         carbs: parseFloat(carbs.toString()),
         fat: parseFloat(fat.toString()),
         emoji: emoji || null,
-        isPublic: isPublic === true,
+        isPublic: false, // User-created recipes are always private (#421)
         servingSize: servingSize != null ? parseFloat(servingSize.toString()) : 1,
         servingUnit: servingUnit || 'serving',
         ingredients: ingredients || [],

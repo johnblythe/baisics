@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { checkRateLimit, rateLimitedResponse } from '@/utils/security/rateLimit';
 import { anthropic } from '@/lib/anthropic';
+import { parseAIJson } from '@/lib/ai/parse-helpers';
 import { sendEmail } from '@/lib/email';
 import { adminToolUsageTemplate } from '@/lib/email/templates';
 
@@ -89,13 +90,7 @@ Rules:
 
     // Try to parse JSON from response
     try {
-      // Handle potential markdown code blocks
-      let jsonText = textContent.text.trim();
-      if (jsonText.startsWith('```')) {
-        jsonText = jsonText.replace(/```json?\n?/g, '').replace(/```$/g, '').trim();
-      }
-
-      const parsed = JSON.parse(jsonText);
+      const parsed = parseAIJson<any>(textContent.text);
       return {
         protein: typeof parsed.protein === 'number' ? Math.round(parsed.protein) : null,
         carbs: typeof parsed.carbs === 'number' ? Math.round(parsed.carbs) : null,

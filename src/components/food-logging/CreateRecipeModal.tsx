@@ -13,25 +13,8 @@ const RECIPE_EMOJIS = [
   '🥘', '🍛', '🍱', '🥙', '🌯', '🥡', '🍽️', '🍴',
 ];
 
-/** Ingredient with serving info */
-export interface RecipeIngredient {
-  id: string;
-  name: string;
-  brand?: string;
-  servingSize: number;
-  servingUnit: string;
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  /** Original per-100g values for recalculation (optional for AI-parsed ingredients) */
-  baseCalories?: number;
-  baseProtein?: number;
-  baseCarbs?: number;
-  baseFat?: number;
-  /** Source of macro data */
-  source?: 'database' | 'ai_estimated';
-}
+import type { RecipeIngredient } from '@/types/recipe';
+export type { RecipeIngredient } from '@/types/recipe';
 
 export interface CreateRecipeModalProps {
   /** Whether the modal is open */

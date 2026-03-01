@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Sparkles, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import type { ParseRecipeResponse } from '@/app/api/recipes/parse-text/route';
+import type { ParseRecipeResponse } from '@/types/recipe';
 
 const MAX_LENGTH = 2000;
 
@@ -22,11 +22,14 @@ export function RecipeTextInput({ onParsed }: RecipeTextInputProps) {
     if (!canParse) return;
 
     setIsParsing(true);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15_000);
     try {
       const response = await fetch('/api/recipes/parse-text', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: trimmed }),
+        signal: controller.signal,
       });
 
       if (!response.ok) {
@@ -50,10 +53,15 @@ export function RecipeTextInput({ onParsed }: RecipeTextInputProps) {
       setText('');
       onParsed(data);
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : 'Failed to parse recipe. Try again.'
-      );
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        toast.error('Request timed out. Try a shorter recipe description.');
+      } else {
+        toast.error(
+          error instanceof Error ? error.message : 'Failed to parse recipe. Try again.'
+        );
+      }
     } finally {
+      clearTimeout(timeout);
       setIsParsing(false);
     }
   };

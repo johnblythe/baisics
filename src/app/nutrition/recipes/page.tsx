@@ -4,10 +4,11 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Search, Plus, Loader2, BookOpen, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import MainLayout from '@/app/components/layouts/MainLayout';
-import { CreateRecipeModal, RecipeIngredient } from '@/components/food-logging/CreateRecipeModal';
+import { CreateRecipeModal } from '@/components/food-logging/CreateRecipeModal';
+import type { RecipeIngredient } from '@/types/recipe';
 import { RecipeTextInput } from '@/components/food-logging/RecipeTextInput';
 import { RecipeCard } from '@/components/nutrition/RecipeCard';
-import type { ParseRecipeResponse } from '@/app/api/recipes/parse-text/route';
+import type { ParseRecipeResponse } from '@/types/recipe';
 
 export interface RecipeWithIngredients {
   id: string;

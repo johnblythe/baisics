@@ -77,9 +77,18 @@ export async function PATCH(
     // Build update data - only include fields that were provided
     const updateData: Record<string, unknown> = {};
 
-    if (body.name !== undefined) updateData.name = body.name;
+    // Validation limits (#424)
+    if (body.name !== undefined) {
+      if (typeof body.name !== 'string' || body.name.length > 200) {
+        return NextResponse.json(
+          { error: 'Recipe name must be under 200 characters' },
+          { status: 400 }
+        );
+      }
+      updateData.name = body.name;
+    }
     if (body.emoji !== undefined) updateData.emoji = body.emoji || null;
-    if (body.isPublic !== undefined) updateData.isPublic = body.isPublic === true;
+    // isPublic is not user-settable (#421)
     if (body.servingSize !== undefined) {
       updateData.servingSize = body.servingSize != null ? parseFloat(body.servingSize.toString()) : 1;
     }
@@ -90,6 +99,21 @@ export async function PATCH(
       if (!Array.isArray(body.ingredients)) {
         return NextResponse.json(
           { error: 'ingredients must be an array' },
+          { status: 400 }
+        );
+      }
+      if (body.ingredients.length > 50) {
+        return NextResponse.json(
+          { error: 'Maximum 50 ingredients per recipe' },
+          { status: 400 }
+        );
+      }
+      const longName = body.ingredients.find((ing: { name?: string }) =>
+        typeof ing.name === 'string' && ing.name.length > 200
+      );
+      if (longName) {
+        return NextResponse.json(
+          { error: 'Ingredient names must be under 200 characters' },
           { status: 400 }
         );
       }

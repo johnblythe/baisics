@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { anthropic } from '@/lib/anthropic';
 import { unifiedSearch } from '@/lib/food-search/unified-search';
+import { parseAIJson } from '@/lib/ai/parse-helpers';
 import { checkRateLimit, rateLimitedResponse } from '@/utils/security/rateLimit';
 
 type AIParsedIngredient = {
@@ -20,23 +21,7 @@ type AIParseResult = {
   detectedServings: number | null;
 };
 
-export type ParsedRecipeIngredient = {
-  name: string;
-  quantity: number;
-  unit: string;
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  source: 'database' | 'ai_estimated';
-};
-
-export type ParseRecipeResponse = {
-  ingredients: ParsedRecipeIngredient[];
-  suggestedName: string | null;
-  detectedServings: number | null;
-  originalText: string;
-};
+import type { ParsedRecipeIngredient, ParseRecipeResponse } from '@/types/recipe';
 
 const MAX_INPUT_LENGTH = 2000;
 const MIN_INPUT_LENGTH = 3;
@@ -117,7 +102,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
+    let body: { text?: unknown };
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { error: 'Invalid JSON body' },
+        { status: 400 }
+      );
+    }
     const { text } = body;
 
     // Validate input
@@ -158,15 +151,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Parse JSON response (strip markdown fences if present)
-    let jsonText = textContent.text.trim();
-    if (jsonText.startsWith('```')) {
-      jsonText = jsonText.replace(/```json?\n?/g, '').replace(/```$/g, '').trim();
-    }
-
     let parsed: AIParseResult;
     try {
-      const raw = JSON.parse(jsonText);
+      const raw = parseAIJson<AIParseResult>(textContent.text);
       parsed = validateParsedOutput(raw);
     } catch (parseError) {
       console.error('Failed to parse AI response:', parseError, '\nRaw (truncated):', textContent.text.slice(0, 200));
@@ -195,6 +182,7 @@ export async function POST(request: NextRequest) {
           const { results } = await unifiedSearch(ingredient.name, {
             userId: session.user!.id,
             pageSize: 1,
+            skipOffFallback: true, // Enrichment mode: skip slow external OFF API (#417)
           });
 
           if (results.length > 0) {
@@ -246,8 +234,17 @@ export async function POST(request: NextRequest) {
       detectedServings: parsed.detectedServings,
       originalText: trimmed,
     } satisfies ParseRecipeResponse);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error parsing recipe text:', error);
+
+    // Anthropic rate limit — pass through as 429
+    if (error && typeof error === 'object' && 'status' in error && (error as { status: number }).status === 429) {
+      return NextResponse.json(
+        { error: 'AI service rate limited. Please wait a moment and try again.' },
+        { status: 429 }
+      );
+    }
+
     return NextResponse.json(
       { error: 'Failed to parse recipe text' },
       { status: 500 }

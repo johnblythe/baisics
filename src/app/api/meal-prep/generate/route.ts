@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { checkRateLimit, rateLimitedResponse } from '@/utils/security/rateLimit';
 import { anthropic } from '@/lib/anthropic';
+import { parseAIJson } from '@/lib/ai/parse-helpers';
 import { v4 as uuidv4 } from 'uuid';
 import { sendEmail } from '@/lib/email';
 import { adminToolUsageTemplate } from '@/lib/email/templates';
@@ -193,17 +194,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Parse JSON from response
-    let jsonText = textContent.text.trim();
-    if (jsonText.startsWith('```')) {
-      jsonText = jsonText.replace(/```json?\n?/g, '').replace(/```$/g, '').trim();
-    }
-
     let parsed;
     try {
-      parsed = JSON.parse(jsonText);
+      parsed = parseAIJson<any>(textContent.text);
     } catch (e) {
-      console.error('Failed to parse AI response:', jsonText);
+      console.error('Failed to parse AI response:', textContent.text.slice(0, 200));
       return NextResponse.json(
         { error: 'Failed to parse meal plan response' },
         { status: 500 }

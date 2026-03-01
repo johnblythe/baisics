@@ -331,6 +331,7 @@ export async function unifiedSearch(
     pageSize = DEFAULT_PAGE_SIZE,
     skipUsda = false,
     skipOff = false,
+    skipOffFallback = false,
   } = options;
 
   // Phase 1: parallel search — QuickFoods + USDA + local OFF
@@ -340,9 +341,9 @@ export async function unifiedSearch(
     skipOff ? Promise.resolve([]) : searchLocalOff(query, pageSize),
   ]);
 
-  // Phase 2: conditional SAL fallback — only if local OFF is thin
+  // Phase 2: conditional SAL fallback — only if local OFF is thin and not skipped (#417)
   let offSalResults: UnifiedFoodResult[] = [];
-  if (!skipOff && offLocalResults.length < 5) {
+  if (!skipOff && !skipOffFallback && offLocalResults.length < 5) {
     offSalResults = await searchOpenFoodFacts(query, pageSize);
   }
 
