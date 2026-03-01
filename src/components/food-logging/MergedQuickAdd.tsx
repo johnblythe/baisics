@@ -2,6 +2,7 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import { Coffee, Sun, Moon, Apple, Plus, Loader2 } from 'lucide-react';
+import { BuddyBadge, type BuddyUser } from './BuddyBadge';
 
 export interface MergedQuickItem {
   id: string;
@@ -12,6 +13,7 @@ export interface MergedQuickItem {
   tag: 'staple' | 'recipe' | 'recent';
   isRecipe?: boolean;
   recipeId?: string;
+  buddyUser?: BuddyUser;
 }
 
 interface MergedQuickAddProps {
@@ -100,11 +102,23 @@ function MergedItem({
         disabled={isLogging}
         className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-[#F8FAFC] transition-colors group text-left"
       >
-        <span>{item.emoji || (item.tag === 'recipe' ? '\uD83C\uDF73' : '\uD83C\uDF7D\uFE0F')}</span>
+        <span className="relative">
+          <span>{item.emoji || (item.tag === 'recipe' ? '\uD83C\uDF73' : '\uD83C\uDF7D\uFE0F')}</span>
+          {item.buddyUser && (
+            <span className="absolute -bottom-1 -right-1">
+              <BuddyBadge user={item.buddyUser} size={14} />
+            </span>
+          )}
+        </span>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5">
             <span className="text-sm text-[#0F172A] truncate">{item.name}</span>
             <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${tagBg} ${tagText}`}>{item.tag}</span>
+            {item.buddyUser && (
+              <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[#DBEAFE] text-[#2563EB]">
+                {item.buddyUser.name?.split(' ')[0] || 'buddy'}
+              </span>
+            )}
           </div>
           <span className="text-xs text-[#94A3B8]">{Math.round(item.calories)} cal &middot; {Math.round(item.protein)}g P</span>
         </div>
