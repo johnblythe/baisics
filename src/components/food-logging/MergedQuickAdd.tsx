@@ -119,7 +119,7 @@ function MergedItem({
 
       {/* Meal selector dropdown for recipes */}
       {showMealSelector && (
-        <div className="absolute z-20 top-full left-0 mt-1 bg-white border border-[#E2E8F0] rounded-lg shadow-lg py-1 min-w-[140px]">
+        <div className="absolute z-50 top-full left-0 mt-1 bg-white border border-[#E2E8F0] rounded-lg shadow-lg py-1 min-w-[140px]">
           <div className="px-2 py-1 text-xs text-[#64748B] font-medium">Add to...</div>
           {MEAL_OPTIONS.map((option) => (
             <button

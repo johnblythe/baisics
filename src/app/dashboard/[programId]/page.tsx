@@ -898,7 +898,7 @@ function DashboardContent() {
                     </button>
 
                     {isWorkoutSelectorOpen && currentWorkout.allWorkouts && (
-                      <div className="absolute z-[60] w-full min-w-[280px] mt-2 bg-white rounded-xl shadow-lg border border-[#E2E8F0] py-1 overflow-hidden">
+                      <div className="absolute z-[60] w-full min-w-[280px] mt-2 bg-white rounded-xl shadow-lg border border-[#E2E8F0] py-1">
                         {currentWorkout.allWorkouts.map((workout) => (
                           <button
                             key={workout.id}

@@ -211,7 +211,7 @@ export function NutritionWidget({ onLogClick }: NutritionWidgetProps) {
                 {/* Center text */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                   <span className="text-xl font-bold text-[#0F172A]">
-                    {summary?.totals.totalCalories || 0}
+                    {Math.round(summary?.totals.totalCalories || 0)}
                   </span>
                   <span className="text-xs text-[#64748B]">
                     {summary?.targets?.dailyCalories ? `/ ${summary.targets.dailyCalories}` : 'cal'}

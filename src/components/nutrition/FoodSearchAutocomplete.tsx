@@ -100,6 +100,8 @@ export function FoodSearchAutocomplete({
   const [searchId, setSearchId] = useState<string | null>(null);
   const [searchStartTime, setSearchStartTime] = useState<number | null>(null);
   const abandonTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // Guard to skip spurious re-fetch when search effect re-triggers after selection
+  const skipNextSearchRef = useRef(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
@@ -121,6 +123,12 @@ export function FoodSearchAutocomplete({
 
   // Debounced search
   useEffect(() => {
+    // Skip spurious re-trigger after food selection (searchStartTime change)
+    if (skipNextSearchRef.current) {
+      skipNextSearchRef.current = false;
+      return;
+    }
+
     if (query.length < 2) {
       setFoods([]);
       setShowingRecent(false);
@@ -230,13 +238,13 @@ export function FoodSearchAutocomplete({
       setRecentFoods(getRecentFoods(userId));
 
       onSelect(food);
-      setQuery('');
-      setFoods([]);
+      // Don't clear query/foods — preserve them so user can return via cancel
       setIsOpen(false);
       setHighlightedIndex(-1);
       setShowingRecent(false);
       setSearchComplete(false);
-      // Reset search tracking
+      // Reset search tracking — use ref guard to prevent spurious re-fetch
+      skipNextSearchRef.current = true;
       setSearchId(null);
       setSearchStartTime(null);
     },
@@ -302,7 +310,7 @@ export function FoodSearchAutocomplete({
   }, [highlightedIndex, showingRecent, recentFoods.length]);
 
   const formatMacros = (food: UnifiedFoodResult) => {
-    return `${food.calories} cal | ${food.protein}g P | ${food.carbs}g C | ${food.fat}g F`;
+    return `${Math.round(food.calories)} cal | ${Math.round(food.protein)}g P | ${Math.round(food.carbs)}g C | ${Math.round(food.fat)}g F`;
   };
 
   // Render source badge with optional star icon for user's foods

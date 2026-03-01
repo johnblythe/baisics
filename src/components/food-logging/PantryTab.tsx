@@ -74,7 +74,7 @@ export function PantryTab({
                   <div className="text-sm font-medium text-[#0F172A] truncate">
                     {food.name}
                   </div>
-                  <div className="text-xs text-[#94A3B8]">{food.calories} cal</div>
+                  <div className="text-xs text-[#94A3B8]">{Math.round(food.calories)} cal</div>
                 </div>
                 <Plus className="w-4 h-4 text-[#94A3B8] opacity-0 group-hover:opacity-100 group-hover:text-[#FF6B6B] transition-all flex-shrink-0" />
               </button>
@@ -169,7 +169,7 @@ export function PantryTab({
                           {staple.name}
                         </span>
                         <span className="text-[#94A3B8] text-xs">
-                          {staple.calories}
+                          {Math.round(staple.calories)}
                         </span>
                         <Plus className="w-3.5 h-3.5 text-[#FF6B6B] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
                       </button>

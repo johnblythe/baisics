@@ -38,10 +38,10 @@ export function FoodEditModal({
   isSaving = false,
 }: FoodEditModalProps) {
   const [name, setName] = useState(food.name);
-  const [calories, setCalories] = useState(food.calories.toString());
-  const [protein, setProtein] = useState(food.protein.toString());
-  const [carbs, setCarbs] = useState(food.carbs.toString());
-  const [fat, setFat] = useState(food.fat.toString());
+  const [calories, setCalories] = useState(Math.round(food.calories).toString());
+  const [protein, setProtein] = useState(Math.round(food.protein).toString());
+  const [carbs, setCarbs] = useState(Math.round(food.carbs).toString());
+  const [fat, setFat] = useState(Math.round(food.fat).toString());
   const [servingSize, setServingSize] = useState(food.servingSize?.toString() ?? '1');
   const [servingUnit, setServingUnit] = useState(food.servingUnit ?? 'serving');
   const [meal, setMeal] = useState<MealType>(food.meal ?? MealType.SNACK);

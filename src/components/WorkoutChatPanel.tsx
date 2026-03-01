@@ -202,7 +202,7 @@ export function WorkoutChatPanel({
       </div>
 
       {/* Input */}
-      <form onSubmit={handleSubmit} className="p-3 border-t border-gray-200 bg-[#F8FAFC]">
+      <form onSubmit={handleSubmit} className="p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] border-t border-gray-200 bg-[#F8FAFC]">
         <div className="flex gap-2">
           <input
             ref={inputRef}
@@ -211,13 +211,13 @@ export function WorkoutChatPanel({
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type your question..."
             disabled={loading}
-            className="flex-1 px-3 py-2 rounded-xl border border-gray-200 bg-white text-[#0F172A] placeholder-[#94A3B8] text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]/20 focus:border-[#FF6B6B] disabled:opacity-50"
+            className="flex-1 min-w-0 px-3 py-2 rounded-xl border border-gray-200 bg-white text-[#0F172A] placeholder-[#94A3B8] text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]/20 focus:border-[#FF6B6B] disabled:opacity-50"
             maxLength={500}
           />
           <button
             type="submit"
             disabled={loading || !input.trim()}
-            className="px-3 py-2 bg-[#FF6B6B] text-white rounded-xl hover:bg-[#EF5350] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="min-w-[44px] min-h-[44px] flex items-center justify-center bg-[#FF6B6B] text-white rounded-xl hover:bg-[#EF5350] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
           >
             <Send className="w-4 h-4" />
           </button>

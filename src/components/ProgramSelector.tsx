@@ -110,7 +110,7 @@ export function ProgramSelector({ currentProgram, programs, isPremium = false }:
 
         {isOpen && (
           <div
-            className="absolute z-[60] w-full min-w-[300px] max-w-[400px] mt-2 bg-white rounded-xl shadow-lg border border-[#E2E8F0] py-1 overflow-hidden"
+            className="absolute z-[60] w-full min-w-[300px] max-w-[400px] mt-2 bg-white rounded-xl shadow-lg border border-[#E2E8F0] py-1"
             role="listbox"
             tabIndex={-1}
           >
