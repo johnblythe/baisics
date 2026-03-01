@@ -7,6 +7,7 @@ import { MealType } from '@prisma/client';
 import { FoodSearchAutocomplete } from '@/components/nutrition/FoodSearchAutocomplete';
 import { ServingSizeSelector, type CalculatedMacros } from '@/components/nutrition/ServingSizeSelector';
 import type { UnifiedFoodResult } from '@/lib/food-search/types';
+import { COLORS } from '@/lib/design/colors';
 
 export interface USDAFoodResult {
   name: string;
@@ -31,14 +32,6 @@ function getDefaultMealByTime(): MealType {
   if (hour < 20) return MealType.DINNER;
   return MealType.SNACK;
 }
-
-// Colors matching v2a design system
-const COLORS = {
-  gray100: '#F1F5F9',
-  gray600: '#475569',
-  coral: '#FF6B6B',
-  white: '#FFFFFF',
-};
 
 export interface USDAFoodSearchProps {
   /** User ID for tracking recent foods */
@@ -235,6 +228,7 @@ export function USDAFoodSearch({
               </button>
               {mealSelector}
               <ServingSizeSelector
+                key={selectedFood.id}
                 food={selectedFood}
                 onConfirm={handleServingConfirm}
                 onCancel={handleBackToSearch}

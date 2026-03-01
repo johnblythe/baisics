@@ -8,6 +8,7 @@ import { ProgramTemplate, PROGRAM_TEMPLATES } from '@/data/templates';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { UpgradeModal } from '@/components/UpgradeModal';
+import { COLORS } from '@/lib/design/colors';
 
 const DIFFICULTY_COLORS: Record<ProgramTemplate['difficulty'], string> = {
   beginner: 'bg-emerald-100 text-emerald-700',
@@ -15,18 +16,6 @@ const DIFFICULTY_COLORS: Record<ProgramTemplate['difficulty'], string> = {
   advanced: 'bg-red-100 text-red-700',
 };
 
-// v2a colors
-const COLORS = {
-  coral: '#FF6B6B',
-  coralDark: '#EF5350',
-  coralLight: '#FFE5E5',
-  navy: '#0F172A',
-  navyLight: '#1E293B',
-  gray50: '#F8FAFC',
-  gray100: '#F1F5F9',
-  gray400: '#94A3B8',
-  gray600: '#475569',
-};
 
 interface TemplateDetailClientProps {
   template: ProgramTemplate;

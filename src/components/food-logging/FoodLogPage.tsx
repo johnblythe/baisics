@@ -881,6 +881,7 @@ export function FoodLogPage({
       'QUICK_FOOD': 'QUICK_ADD',
       'OPEN_FOOD_FACTS': 'OPEN_FOOD_FACTS',
       'AI_ESTIMATED': 'AI_ESTIMATED',
+      'VERIFIED': 'OPEN_FOOD_FACTS',
     };
     const source = sourceMap[food.source || ''] || food.source || 'USDA_SEARCH';
 

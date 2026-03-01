@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { PROGRAM_TEMPLATES, ProgramTemplate } from '@/data/templates';
 import Footer from '@/components/Footer';
+import { COLORS } from '@/lib/design/colors';
 
 const CATEGORY_LABELS: Record<ProgramTemplate['category'], string> = {
   strength: 'Strength',
@@ -17,19 +18,6 @@ const DIFFICULTY_COLORS: Record<ProgramTemplate['difficulty'], string> = {
   beginner: 'bg-emerald-100 text-emerald-700',
   intermediate: 'bg-amber-100 text-amber-700',
   advanced: 'bg-red-100 text-red-700',
-};
-
-// v2a colors
-const COLORS = {
-  coral: '#FF6B6B',
-  coralDark: '#EF5350',
-  coralLight: '#FFE5E5',
-  navy: '#0F172A',
-  navyLight: '#1E293B',
-  gray50: '#F8FAFC',
-  gray100: '#F1F5F9',
-  gray400: '#94A3B8',
-  gray600: '#475569',
 };
 
 export default function TemplatesPage() {

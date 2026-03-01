@@ -37,6 +37,7 @@ function roundMacro(value: number): number {
  * Filters out junk entries with 0 everything or clearly bad data
  */
 function hasValidNutrition(food: UnifiedFoodResult): boolean {
+  if (food.isVerified) return true;
   // Must have at least some calories or macros
   if (food.calories === 0 && food.protein === 0 && food.carbs === 0 && food.fat === 0) {
     return false;
@@ -157,9 +158,9 @@ function isDuplicate(food1: UnifiedFoodResult, food2: UnifiedFoodResult): boolea
  * Verified foods beat non-verified; QuickFoods always win.
  */
 function shouldReplace(existing: UnifiedFoodResult, candidate: UnifiedFoodResult): boolean {
-  if (candidate.isVerified && !existing.isVerified) return true;
   if (existing.source === 'QUICK_FOOD') return false;
   if (candidate.source === 'QUICK_FOOD') return true;
+  if (candidate.isVerified && !existing.isVerified) return true;
   return false;
 }
 
@@ -310,12 +311,13 @@ async function searchLocalOff(
 ): Promise<UnifiedFoodResult[]> {
   try {
     const foods = await prisma.$queryRaw<FoodsOffRow[]>`
-      SELECT id, code, product_name, brands,
-             calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g,
-             serving_size, is_verified, verified_serving_unit, verified_serving_grams
-      FROM foods_off
-      WHERE search_vector @@ plainto_tsquery('english', ${query})
-      ORDER BY is_verified DESC, ts_rank(search_vector, plainto_tsquery('english', ${query})) DESC
+      WITH q AS (SELECT plainto_tsquery('english', ${query}) AS tsq)
+      SELECT f.id, f.code, f.product_name, f.brands,
+             f.calories_per_100g, f.protein_per_100g, f.carbs_per_100g, f.fat_per_100g,
+             f.serving_size, f.is_verified, f.verified_serving_unit, f.verified_serving_grams
+      FROM foods_off f, q
+      WHERE f.search_vector @@ q.tsq
+      ORDER BY f.is_verified DESC, ts_rank(f.search_vector, q.tsq) DESC
       LIMIT ${pageSize}
     `;
     return foods.map(food => ({
@@ -326,7 +328,7 @@ async function searchLocalOff(
       protein: Math.round(food.protein_per_100g ?? 0),
       carbs: Math.round(food.carbs_per_100g ?? 0),
       fat: Math.round(food.fat_per_100g ?? 0),
-      source: (food.is_verified ? 'VERIFIED' : 'OPEN_FOOD_FACTS') as FoodSearchSource,
+      source: food.is_verified ? 'VERIFIED' : 'OPEN_FOOD_FACTS',
       offCode: food.code,
       isVerified: food.is_verified,
       verifiedServingUnit: food.verified_serving_unit ?? undefined,
@@ -410,19 +412,20 @@ export async function unifiedSearch(
   // Deduplicate
   const deduplicated = deduplicateResults(validResults);
 
-  // Sort by relevance score (higher = better match)
-  const sorted = deduplicated.sort((a, b) => {
-    const scoreA = calculateRelevanceScore(a, query);
-    const scoreB = calculateRelevanceScore(b, query);
-    return scoreB - scoreA; // Descending (highest score first)
-  });
+  // Pre-compute relevance scores, then sort (avoids re-computing inside comparator)
+  const scored = deduplicated.map(food => ({ food, score: calculateRelevanceScore(food, query) }));
+  scored.sort((a, b) => b.score - a.score);
+  const sorted = scored.map(s => s.food);
+
+  const verifiedCount = offLocalResults.filter(f => f.isVerified).length;
 
   return {
     results: sorted,
     counts: {
       quickFoods: quickFoodResults.length,
       usda: usdaResults.length,
-      openFoodFacts: offLocalResults.length + offSalResults.length,
+      openFoodFacts: offLocalResults.length - verifiedCount + offSalResults.length,
+      verified: verifiedCount,
     },
     ...(Object.keys(errors).length > 0 && { errors }),
   };

@@ -64,6 +64,7 @@ export interface UnifiedSearchResult {
     quickFoods: number;
     usda: number;
     openFoodFacts: number;
+    verified: number;
   };
   /** Sources that errored during search (empty = all succeeded) */
   errors?: Record<string, string>;

@@ -1,3 +1,10 @@
+-- Rollback:
+--   DROP INDEX IF EXISTS foods_off_verified_idx;
+--   DELETE FROM foods_off WHERE code LIKE 'BAISICS-%';
+--   ALTER TABLE foods_off DROP COLUMN IF EXISTS is_verified;
+--   ALTER TABLE foods_off DROP COLUMN IF EXISTS verified_serving_unit;
+--   ALTER TABLE foods_off DROP COLUMN IF EXISTS verified_serving_grams;
+
 -- Add verified food columns to foods_off
 ALTER TABLE "foods_off" ADD COLUMN IF NOT EXISTS "is_verified" BOOLEAN NOT NULL DEFAULT false;
 ALTER TABLE "foods_off" ADD COLUMN IF NOT EXISTS "verified_serving_unit" TEXT;
@@ -94,7 +101,6 @@ VALUES
   ('BAISICS-PROTEIN-BAR-001', 'Protein Bar', NULL, 362, 25, 40, 12, true, 'bar', 60),
   ('BAISICS-GRANOLA-001', 'Granola', NULL, 471, 10, 64, 20, true, 'half cup', 55),
   ('BAISICS-TRAIL-MIX-001', 'Trail Mix', NULL, 462, 13.8, 44.1, 29, true, '1oz', 28),
-  ('BAISICS-CANNED-TUNA-WATER-001', 'Canned Tuna (in Water)', NULL, 116, 25.5, 0, 0.8, true, 'can drained', 142),
   ('BAISICS-BEEF-JERKY-001', 'Beef Jerky', NULL, 410, 33.2, 11, 25.6, true, '1oz', 28),
   ('BAISICS-POPCORN-001', 'Popcorn (Air-Popped)', NULL, 387, 13, 78, 4.5, true, 'cup popped', 8),
   ('BAISICS-DARK-CHOCOLATE-001', 'Dark Chocolate (70%)', NULL, 598, 7.8, 45.9, 42.6, true, '1oz', 28),
@@ -115,3 +121,6 @@ ON CONFLICT (code) DO UPDATE SET
   is_verified = EXCLUDED.is_verified,
   verified_serving_unit = EXCLUDED.verified_serving_unit,
   verified_serving_grams = EXCLUDED.verified_serving_grams;
+
+-- Partial index for verified food sort priority
+CREATE INDEX IF NOT EXISTS foods_off_verified_idx ON foods_off(is_verified) WHERE is_verified = true;
