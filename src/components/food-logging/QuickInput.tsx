@@ -44,6 +44,7 @@ export function QuickInput({
           onChange={(e) => setInput(e.target.value)}
           onFocus={onFocus}
           onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+          autoComplete="off"
           placeholder={placeholder}
           className="w-full pl-10 pr-4 py-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6B6B] focus:border-transparent text-sm"
         />

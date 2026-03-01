@@ -156,6 +156,7 @@ export function ExerciseSearchModal({ isOpen, onClose, onSelect }: ExerciseSearc
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search exercises..."
+              autoComplete="off"
               className="w-full pl-10 pr-20 py-3 rounded-lg border border-[#E2E8F0] focus:ring-2 focus:ring-[#FF6B6B] focus:border-transparent text-[#0F172A]"
             />
             <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">

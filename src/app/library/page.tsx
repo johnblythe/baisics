@@ -245,6 +245,7 @@ function LibraryPageContent() {
                 <input
                   type="text"
                   placeholder="Search programs..."
+                  autoComplete="off"
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   className="w-full px-4 py-2 pl-10 rounded-lg border border-[var(--color-gray-100)] bg-white text-[var(--color-navy)] focus:ring-2 focus:ring-[var(--color-coral)]/20 focus:border-[var(--color-coral)] outline-none transition-all"

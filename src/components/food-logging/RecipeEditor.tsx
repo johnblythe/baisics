@@ -251,6 +251,7 @@ export function RecipeEditor({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Recipe name"
+              autoComplete="off"
               className="flex-1 px-4 py-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#FF6B6B] focus:border-transparent"
             />
           </div>
@@ -312,6 +313,7 @@ export function RecipeEditor({
                       value={ing.name}
                       onChange={(e) => updateIngredient(index, 'name', e.target.value)}
                       placeholder="Ingredient name"
+                      autoComplete="off"
                       className="flex-1 px-3 py-2 bg-white border border-[#E2E8F0] rounded-lg text-sm text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-1 focus:ring-[#FF6B6B] focus:border-transparent"
                     />
                     {ingredients.length > 1 && (

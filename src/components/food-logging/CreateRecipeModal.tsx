@@ -67,32 +67,18 @@ export function CreateRecipeModal({
   initialName,
   initialServings,
 }: CreateRecipeModalProps) {
-  // Form state
-  const [name, setName] = useState('');
+  // Form state — initialized from props (parent uses key prop to remount on new data)
+  const [name, setName] = useState(initialName || '');
   const [emoji, setEmoji] = useState<string | null>('🍽️');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [ingredients, setIngredients] = useState<RecipeIngredient[]>([]);
-  const [servingCount, setServingCount] = useState(1);
+  const [ingredients, setIngredients] = useState<RecipeIngredient[]>(initialIngredients || []);
+  const [servingCount, setServingCount] = useState(
+    initialServings && initialServings > 1 ? initialServings : 1
+  );
   const [isSaving, setIsSaving] = useState(false);
 
   // Search state - for when user is adding an ingredient
   const [selectedFood, setSelectedFood] = useState<UnifiedFoodResult | null>(null);
-
-  // Pre-populate from AI parse when modal opens with initial data
-  const [lastInitialKey, setLastInitialKey] = useState('');
-  const initialKey = initialIngredients ? JSON.stringify(initialIngredients.map(i => i.name)) : '';
-  if (isOpen && initialKey && initialKey !== lastInitialKey) {
-    setLastInitialKey(initialKey);
-    if (initialIngredients && initialIngredients.length > 0) {
-      setIngredients(initialIngredients);
-    }
-    if (initialName) {
-      setName(initialName);
-    }
-    if (initialServings && initialServings > 1) {
-      setServingCount(initialServings);
-    }
-  }
 
   // Calculate totals (per-serving when servingCount > 1)
   const totals = useMemo(() => {
@@ -236,7 +222,6 @@ export function CreateRecipeModal({
     setServingCount(1);
     setSelectedFood(null);
     setShowEmojiPicker(false);
-    setLastInitialKey('');
   };
 
   // Handle close - reset form
