@@ -1,7 +1,9 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 import { anthropic } from '@/lib/anthropic';
+import { checkRateLimit, rateLimitedResponse } from '@/utils/security/rateLimit';
+import { parseAIJson, clamp } from '@/lib/ai/parse-helpers';
 
 type ParsedFood = {
   name: string;
@@ -24,19 +26,45 @@ type ParseTextResponse = {
 };
 
 // POST /api/food-log/parse-text - parses natural language food text
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    // Rate limit: 20 requests per minute
+    const { ok } = checkRateLimit(request, 20, 60_000);
+    if (!ok) return rateLimitedResponse();
+
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
+    let body: { text?: unknown };
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { error: 'Invalid JSON body' },
+        { status: 400 }
+      );
+    }
     const { text } = body;
 
     if (!text || typeof text !== 'string') {
       return NextResponse.json(
         { error: 'text field is required' },
+        { status: 400 }
+      );
+    }
+
+    // Input length guards (#423)
+    if (text.trim().length < 3) {
+      return NextResponse.json(
+        { error: 'Text must be at least 3 characters' },
+        { status: 400 }
+      );
+    }
+    if (text.length > 2000) {
+      return NextResponse.json(
+        { error: 'Text must be under 2000 characters' },
         { status: 400 }
       );
     }
@@ -98,10 +126,8 @@ export async function POST(request: Request) {
       } satisfies ParseTextResponse);
     }
 
-    // Use Claude to parse natural language food input
-    const prompt = `Parse this food logging text into structured food data. The user is logging food they ate.
-
-Text: "${text}"
+    // System/user prompt split to prevent prompt injection (#423)
+    const systemPrompt = `Parse food logging text into structured food data. The user is logging food they ate.
 
 Extract each food item mentioned and estimate nutritional values. Common patterns include:
 - "6oz chicken breast" or "chicken breast 6 oz"
@@ -150,10 +176,8 @@ If the text doesn't contain any food items, return: { "foods": [], "detectedMeal
     const message = await anthropic.messages.create({
       model: process.env.SONNET_MODEL || 'claude-sonnet-4-20250514',
       max_tokens: 1024,
-      messages: [{
-        role: 'user',
-        content: prompt,
-      }],
+      system: systemPrompt,
+      messages: [{ role: 'user', content: text.trim() }],
     });
 
     const textContent = message.content[0];
@@ -164,36 +188,45 @@ If the text doesn't contain any food items, return: { "foods": [], "detectedMeal
       );
     }
 
-    // Parse JSON response
-    let jsonText = textContent.text.trim();
-    if (jsonText.startsWith('```')) {
-      jsonText = jsonText.replace(/```json?\n?/g, '').replace(/```$/g, '').trim();
-    }
-
     let parsed: { foods: ParsedFood[]; detectedMeal?: string | null };
     try {
-      parsed = JSON.parse(jsonText);
-    } catch {
-      console.error('Failed to parse AI response:', textContent.text);
+      parsed = parseAIJson(textContent.text);
+    } catch (parseError) {
+      console.error('Failed to parse AI response:', parseError, '\nRaw (truncated):', textContent.text.slice(0, 200));
       return NextResponse.json(
-        { error: 'Failed to parse AI response' },
+        { error: 'Failed to parse AI response. Try rephrasing.' },
         { status: 500 }
       );
     }
 
-    // Validate and normalize response
-    const foods: ParsedFood[] = (parsed.foods || []).map(food => ({
-      name: String(food.name || 'Unknown food'),
-      servingSize: typeof food.servingSize === 'number' ? food.servingSize : 1,
-      servingUnit: String(food.servingUnit || 'serving'),
-      calories: Math.round(Number(food.calories) || 0),
-      protein: Math.round((Number(food.protein) || 0) * 10) / 10,
-      carbs: Math.round((Number(food.carbs) || 0) * 10) / 10,
-      fat: Math.round((Number(food.fat) || 0) * 10) / 10,
+    if (!Array.isArray(parsed.foods)) {
+      console.error('[food-log/parse-text] AI response missing foods array. Keys:', Object.keys(parsed));
+    }
+
+    // Validate, clamp, and normalize response (#423)
+    // Cap at 30 items (food logging can include full-day entries, more than recipe's 15)
+    const foods: ParsedFood[] = (parsed.foods || []).slice(0, 30).map(food => ({
+      name: String(food.name || 'Unknown food').slice(0, 100),
+      servingSize: clamp(Number(food.servingSize) || 1, 0.01, 10000),
+      servingUnit: String(food.servingUnit || 'serving').slice(0, 20),
+      calories: clamp(Math.round(Number(food.calories) || 0), 0, 10000),
+      protein: clamp(Math.round((Number(food.protein) || 0) * 10) / 10, 0, 1000),
+      carbs: clamp(Math.round((Number(food.carbs) || 0) * 10) / 10, 0, 1000),
+      fat: clamp(Math.round((Number(food.fat) || 0) * 10) / 10, 0, 1000),
       confidence: (['high', 'medium', 'low'].includes(food.confidence)
         ? food.confidence
         : 'medium') as 'high' | 'medium' | 'low',
     }));
+
+    // Warn if AI returned foods with all-zero macros
+    const zeroMacroCount = foods.filter(
+      f => f.calories === 0 && f.protein === 0 && f.carbs === 0 && f.fat === 0
+    ).length;
+    if (zeroMacroCount > 0) {
+      console.warn(
+        `[food-log/parse-text] ${zeroMacroCount}/${foods.length} food(s) have all-zero macros`
+      );
+    }
 
     // Validate detected meal
     const validMeals: MealType[] = ['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK'];
@@ -209,6 +242,15 @@ If the text doesn't contain any food items, return: { "foods": [], "detectedMeal
     } satisfies ParseTextResponse);
   } catch (error) {
     console.error('Error parsing food text:', error);
+
+    // Anthropic rate limit — pass through as 429
+    if (error && typeof error === 'object' && 'status' in error && (error as { status: number }).status === 429) {
+      return NextResponse.json(
+        { error: 'AI service rate limited. Please wait a moment and try again.' },
+        { status: 429 }
+      );
+    }
+
     return NextResponse.json(
       { error: 'Failed to parse food text' },
       { status: 500 }

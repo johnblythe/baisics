@@ -184,6 +184,7 @@ export function SaveMealAsRecipeModal({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Recipe name"
+              autoComplete="off"
               className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]/20 focus:border-[#FF6B6B] text-[#0F172A]"
               autoFocus
             />

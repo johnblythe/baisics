@@ -72,3 +72,13 @@ playwright-report/
 scripts/ralph/prd.json
 scripts/ralph/progress.txt
 scripts/ralph/.last-branch
+
+# Large data files
+*.jsonl.gz
+
+# Session context artifacts
+context/HANDOFF.md
+context/archive/
+
+# Compound engineering local learnings
+docs/solutions/

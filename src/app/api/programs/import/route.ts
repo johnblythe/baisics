@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { workoutFilePrompt } from '@/utils/prompts/workoutFileProcessing';
 import { anthropic } from '@/lib/anthropic';
+import { parseAIJson } from '@/lib/ai/parse-helpers';
 import { prisma } from '@/lib/prisma';
 import fs from 'fs/promises';
 import path from 'path';
@@ -260,13 +261,7 @@ export async function POST(request: Request) {
     }
 
     try {
-      // Strip markdown code blocks if present (Claude sometimes wraps in ```json ... ```)
-      let jsonContent = content.trim();
-      if (jsonContent.startsWith('```')) {
-        jsonContent = jsonContent.replace(/^```(?:json)?\s*\n?/, '').replace(/\n?```\s*$/, '');
-      }
-
-      const parsed = JSON.parse(jsonContent);
+      const parsed = parseAIJson<any>(content);
       
       // If autoSave is false, just return the parsed data
       if (!autoSave) {

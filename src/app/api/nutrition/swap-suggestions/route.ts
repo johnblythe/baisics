@@ -3,6 +3,7 @@ import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { checkRateLimit, rateLimitedResponse } from '@/utils/security/rateLimit';
 import { anthropic } from '@/lib/anthropic';
+import { parseAIJson } from '@/lib/ai/parse-helpers';
 
 interface Ingredient {
   name: string;
@@ -231,13 +232,7 @@ function getFallbackSuggestions(ingredient: Ingredient): SwapSuggestion[] {
 
 function parseSwapSuggestions(responseText: string): SwapSuggestion[] {
   try {
-    // Handle potential markdown code blocks
-    let jsonText = responseText.trim();
-    if (jsonText.startsWith('```')) {
-      jsonText = jsonText.replace(/```json?\n?/g, '').replace(/```$/g, '').trim();
-    }
-
-    const parsed = JSON.parse(jsonText);
+    const parsed = parseAIJson<unknown>(responseText);
 
     if (!Array.isArray(parsed)) {
       return [];

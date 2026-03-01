@@ -27,13 +27,18 @@ export { RecipePanel } from './RecipePanel';
 export type { RecipePanelProps, RecipeData } from './RecipePanel';
 
 export { RecipeEditor } from './RecipeEditor';
-export type { RecipeEditorProps, RecipeEditData, RecipeIngredient } from './RecipeEditor';
+export type { RecipeEditorProps, RecipeEditData } from './RecipeEditor';
+
+// Canonical RecipeIngredient type (#420)
+export type { RecipeIngredient } from '@/types/recipe';
 
 export { MyRecipesSidebar } from './MyRecipesSidebar';
 export type { MyRecipesSidebarProps, Recipe } from './MyRecipesSidebar';
 
 export { CreateRecipeModal } from './CreateRecipeModal';
-export type { CreateRecipeModalProps, RecipeIngredient as CreateRecipeIngredient } from './CreateRecipeModal';
+export type { CreateRecipeModalProps } from './CreateRecipeModal';
+
+export { RecipeTextInput } from './RecipeTextInput';
 
 export { SaveMealAsRecipeModal } from './SaveMealAsRecipeModal';
 export type { SaveMealAsRecipeModalProps } from './SaveMealAsRecipeModal';

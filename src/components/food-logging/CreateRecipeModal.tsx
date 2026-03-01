@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
-import { X, Search, Plus } from 'lucide-react';
+import React, { useState, useCallback, useMemo } from 'react';
+import { X, Plus } from 'lucide-react';
 import { FoodSearchAutocomplete } from '../nutrition/FoodSearchAutocomplete';
 import { ServingSizeSelector, CalculatedMacros } from '../nutrition/ServingSizeSelector';
 import { UnifiedFoodResult } from '@/lib/food-search/types';
@@ -13,23 +13,8 @@ const RECIPE_EMOJIS = [
   '🥘', '🍛', '🍱', '🥙', '🌯', '🥡', '🍽️', '🍴',
 ];
 
-/** Ingredient with serving info */
-export interface RecipeIngredient {
-  id: string;
-  name: string;
-  brand?: string;
-  servingSize: number;
-  servingUnit: string;
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  /** Original per-100g values for recalculation */
-  baseCalories: number;
-  baseProtein: number;
-  baseCarbs: number;
-  baseFat: number;
-}
+import type { RecipeIngredient } from '@/types/recipe';
+export type { RecipeIngredient } from '@/types/recipe';
 
 export interface CreateRecipeModalProps {
   /** Whether the modal is open */
@@ -48,6 +33,12 @@ export interface CreateRecipeModalProps {
   }) => void;
   /** User ID for search scoping */
   userId?: string;
+  /** Pre-populate ingredients (from AI parse) */
+  initialIngredients?: RecipeIngredient[];
+  /** Pre-fill recipe name (from AI suggestion) */
+  initialName?: string;
+  /** Pre-fill serving count */
+  initialServings?: number;
 }
 
 export function CreateRecipeModal({
@@ -55,27 +46,41 @@ export function CreateRecipeModal({
   onClose,
   onSave,
   userId,
+  initialIngredients,
+  initialName,
+  initialServings,
 }: CreateRecipeModalProps) {
-  // Form state
-  const [name, setName] = useState('');
+  // Form state — initialized from props (parent uses key prop to remount on new data)
+  const [name, setName] = useState(initialName || '');
   const [emoji, setEmoji] = useState<string | null>('🍽️');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [ingredients, setIngredients] = useState<RecipeIngredient[]>([]);
+  const [ingredients, setIngredients] = useState<RecipeIngredient[]>(initialIngredients || []);
+  const [servingCount, setServingCount] = useState(
+    initialServings && initialServings > 1 ? initialServings : 1
+  );
   const [isSaving, setIsSaving] = useState(false);
 
   // Search state - for when user is adding an ingredient
   const [selectedFood, setSelectedFood] = useState<UnifiedFoodResult | null>(null);
 
-  // Calculate totals
-  const totals = ingredients.reduce(
-    (acc, ing) => ({
-      calories: acc.calories + ing.calories,
-      protein: acc.protein + ing.protein,
-      carbs: acc.carbs + ing.carbs,
-      fat: acc.fat + ing.fat,
-    }),
-    { calories: 0, protein: 0, carbs: 0, fat: 0 }
-  );
+  // Calculate totals (per-serving when servingCount > 1)
+  const totals = useMemo(() => {
+    const total = ingredients.reduce(
+      (acc, ing) => ({
+        calories: acc.calories + ing.calories,
+        protein: acc.protein + ing.protein,
+        carbs: acc.carbs + ing.carbs,
+        fat: acc.fat + ing.fat,
+      }),
+      { calories: 0, protein: 0, carbs: 0, fat: 0 }
+    );
+    return {
+      calories: total.calories / servingCount,
+      protein: total.protein / servingCount,
+      carbs: total.carbs / servingCount,
+      fat: total.fat / servingCount,
+    };
+  }, [ingredients, servingCount]);
 
   // Handle food selection from search
   const handleFoodSelect = useCallback((food: UnifiedFoodResult) => {
@@ -102,6 +107,7 @@ export function CreateRecipeModal({
         baseProtein: selectedFood.protein,
         baseCarbs: selectedFood.carbs,
         baseFat: selectedFood.fat,
+        source: 'manual',
       };
 
       setIngredients((prev) => [...prev, newIngredient]);
@@ -133,6 +139,7 @@ export function CreateRecipeModal({
 
     setIsSaving(true);
     try {
+      // Store per-serving macros (totals already divided by servingCount)
       const recipeData = {
         name: name.trim(),
         emoji,
@@ -141,7 +148,7 @@ export function CreateRecipeModal({
         carbs: Math.round(totals.carbs * 10) / 10,
         fat: Math.round(totals.fat * 10) / 10,
         servingSize: 1,
-        servingUnit: 'recipe',
+        servingUnit: 'serving',
         ingredients: ingredients.map((ing) => ({
           name: ing.name,
           brand: ing.brand,
@@ -151,6 +158,7 @@ export function CreateRecipeModal({
           protein: ing.protein,
           carbs: ing.carbs,
           fat: ing.fat,
+          source: ing.source,
         })),
       };
 
@@ -161,8 +169,14 @@ export function CreateRecipeModal({
       });
 
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to save recipe');
+        let errorMessage = 'Failed to save recipe';
+        try {
+          const data = await response.json();
+          errorMessage = data.error || errorMessage;
+        } catch {
+          errorMessage = `Server error (${response.status}). Please try again.`;
+        }
+        throw new Error(errorMessage);
       }
 
       const savedRecipe = await response.json();
@@ -179,8 +193,6 @@ export function CreateRecipeModal({
         ingredients,
       });
 
-      // Reset form and close
-      resetForm();
       onClose();
     } catch (error) {
       console.error('Error saving recipe:', error);
@@ -190,18 +202,8 @@ export function CreateRecipeModal({
     }
   }, [name, emoji, ingredients, totals, onSave, onClose]);
 
-  // Reset form state
-  const resetForm = () => {
-    setName('');
-    setEmoji('🍽️');
-    setIngredients([]);
-    setSelectedFood(null);
-    setShowEmojiPicker(false);
-  };
-
-  // Handle close - reset form
+  // Handle close (key prop remounts component with fresh state on next open)
   const handleClose = useCallback(() => {
-    resetForm();
     onClose();
   }, [onClose]);
 
@@ -257,8 +259,25 @@ export function CreateRecipeModal({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Recipe name"
+              autoComplete="off"
               className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]/20 focus:border-[#FF6B6B] text-[#0F172A]"
             />
+          </div>
+
+          {/* Serving count */}
+          <div className="flex items-center gap-2">
+            <label className="text-sm text-gray-600">Servings:</label>
+            <input
+              type="number"
+              min={1}
+              max={50}
+              value={servingCount}
+              onChange={(e) => setServingCount(Math.max(1, parseInt(e.target.value) || 1))}
+              className="w-16 px-2 py-1 border border-gray-200 rounded-lg text-center text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]/20 focus:border-[#FF6B6B] text-[#0F172A]"
+            />
+            {servingCount > 1 && (
+              <span className="text-xs text-gray-400">Macros shown per serving</span>
+            )}
           </div>
 
           {/* Ingredients header and search */}
@@ -304,9 +323,16 @@ export function CreateRecipeModal({
                     <div className="text-sm font-medium text-[#0F172A] truncate">
                       {ing.name}
                     </div>
-                    <div className="text-xs text-gray-500">
-                      {ing.servingSize}
-                      {ing.servingUnit}
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <span>
+                        {ing.servingSize}
+                        {ing.servingUnit}
+                      </span>
+                      {ing.source === 'ai_estimated' && (
+                        <span className="px-1.5 py-0.5 bg-amber-50 text-amber-600 rounded text-[10px] font-medium">
+                          AI est.
+                        </span>
+                      )}
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -335,7 +361,9 @@ export function CreateRecipeModal({
           {ingredients.length > 0 && (
             <div className="bg-gray-50 rounded-lg p-3 mt-4">
               <div className="flex justify-between items-center">
-                <span className="font-semibold text-[#0F172A]">Total</span>
+                <span className="font-semibold text-[#0F172A]">
+                  {servingCount > 1 ? 'Per Serving' : 'Total'}
+                </span>
                 <div className="text-right">
                   <span className="font-bold text-lg">{Math.round(totals.calories)} cal</span>
                   <span className="text-green-600 ml-2">{Math.round(totals.protein)}g P</span>
@@ -344,6 +372,9 @@ export function CreateRecipeModal({
               <div className="flex justify-end gap-4 mt-1 text-xs text-gray-500">
                 <span>{Math.round(totals.carbs)}g C</span>
                 <span>{Math.round(totals.fat)}g F</span>
+                {servingCount > 1 && (
+                  <span className="text-gray-400">({servingCount} servings)</span>
+                )}
               </div>
             </div>
           )}
@@ -378,4 +409,3 @@ export function CreateRecipeModal({
   );
 }
 
-export default CreateRecipeModal;

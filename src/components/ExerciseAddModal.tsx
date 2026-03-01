@@ -246,6 +246,7 @@ export function ExerciseAddModal({
                     value={customExercise.name}
                     onChange={(e) => setCustomExercise(prev => ({ ...prev, name: e.target.value }))}
                     placeholder="e.g., Bulgarian Split Squat"
+                    autoComplete="off"
                     className="w-full px-4 py-2 border border-[#E2E8F0] rounded-lg focus:border-[#FF6B6B] focus:outline-none focus:ring-1 focus:ring-[#FF6B6B]"
                   />
                 </div>
@@ -320,6 +321,7 @@ export function ExerciseAddModal({
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder="Search exercises..."
+                      autoComplete="off"
                       className="w-full pl-10 pr-4 py-2 border border-[#E2E8F0] rounded-lg focus:border-[#FF6B6B] focus:outline-none focus:ring-1 focus:ring-[#FF6B6B]"
                     />
                   </div>

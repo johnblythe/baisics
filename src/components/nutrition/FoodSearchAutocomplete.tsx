@@ -361,6 +361,7 @@ export function FoodSearchAutocomplete({
           }}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
+          autoComplete="off"
           className="w-full px-4 py-3 pl-10 rounded-xl border-2 text-sm transition-colors outline-none"
           style={{
             borderColor: isOpen ? COLORS.coral : COLORS.gray100,

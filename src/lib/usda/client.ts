@@ -133,9 +133,8 @@ const BRANDED_THRESHOLD = 5;
  * Search for foods in USDA FoodData Central with tiered approach
  *
  * Strategy:
- * 1. Search Branded foods first (these are products with brands)
- * 2. If <5 Branded results, supplement with Foundation and SR Legacy
- * 3. Sort results: Branded first, then by name
+ * - Small pageSize (≤5): single-pass search all data types to avoid double-request (#416)
+ * - Larger pageSize: Branded first, then Foundation/SR Legacy if <5 results
  *
  * @param query - Search term
  * @param pageSize - Number of results (default 25, max 200)
@@ -147,6 +146,15 @@ export async function searchFoods(
 ): Promise<USDASearchResult> {
   const apiKey = getApiKey();
   const effectivePageSize = Math.min(pageSize, 200);
+
+  // Small pageSize (enrichment mode): single request with all data types (#416)
+  if (effectivePageSize <= BRANDED_THRESHOLD) {
+    const result = await executeSearch(apiKey, query, effectivePageSize, ['Branded', 'Foundation', 'SR Legacy']);
+    return {
+      ...result,
+      foods: sortFoodsByPriority(result.foods),
+    };
+  }
 
   // Step 1: Search Branded foods first
   const brandedResult = await executeSearch(apiKey, query, effectivePageSize, ['Branded']);

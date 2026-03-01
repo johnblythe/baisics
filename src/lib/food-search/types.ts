@@ -45,6 +45,8 @@ export interface UnifiedSearchOptions {
   skipUsda?: boolean;
   /** Skip Open Food Facts search */
   skipOff?: boolean;
+  /** Skip external OFF API fallback (Search-a-licious) when local results are thin (#417) */
+  skipOffFallback?: boolean;
 }
 
 /** Result of unified search */
@@ -57,4 +59,6 @@ export interface UnifiedSearchResult {
     usda: number;
     openFoodFacts: number;
   };
+  /** Sources that errored during search (empty = all succeeded) */
+  errors?: Record<string, string>;
 }

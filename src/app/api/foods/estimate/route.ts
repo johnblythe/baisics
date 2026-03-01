@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { checkRateLimit, rateLimitedResponse } from '@/utils/security/rateLimit';
 import { anthropic } from '@/lib/anthropic';
+import { parseAIJson } from '@/lib/ai/parse-helpers';
 
 type EstimatedFood = {
   name: string;
@@ -132,13 +133,7 @@ Do not include any text outside the JSON object.`;
 
     // Parse JSON from response
     try {
-      // Handle potential markdown code blocks
-      let jsonText = textContent.text.trim();
-      if (jsonText.startsWith('```')) {
-        jsonText = jsonText.replace(/```json?\n?/g, '').replace(/```$/g, '').trim();
-      }
-
-      const parsed = JSON.parse(jsonText);
+      const parsed = parseAIJson<any>(textContent.text);
 
       // Check if AI returned an error
       if (parsed.error) {

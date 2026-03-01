@@ -210,6 +210,7 @@ export function WorkoutChatPanel({
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type your question..."
+            autoComplete="off"
             disabled={loading}
             className="flex-1 min-w-0 px-3 py-2 rounded-xl border border-gray-200 bg-white text-[#0F172A] placeholder-[#94A3B8] text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]/20 focus:border-[#FF6B6B] disabled:opacity-50"
             maxLength={500}

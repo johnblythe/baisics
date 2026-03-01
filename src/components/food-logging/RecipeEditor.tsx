@@ -4,16 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { X, Plus, Trash2, Loader2 } from 'lucide-react';
 
-// Type for a recipe ingredient
-export interface RecipeIngredient {
-  name: string;
-  amount: number;
-  unit: string;
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-}
+import type { RecipeIngredient } from '@/types/recipe';
 
 // Type for recipe data when editing
 export interface RecipeEditData {
@@ -45,13 +36,15 @@ const UNIT_OPTIONS = ['g', 'oz', 'cup', 'tbsp', 'tsp', 'ml', 'piece', 'serving']
 
 // Empty ingredient template
 const emptyIngredient: RecipeIngredient = {
+  id: '',
   name: '',
-  amount: 0,
-  unit: 'g',
+  servingSize: 0,
+  servingUnit: 'g',
   calories: 0,
   protein: 0,
   carbs: 0,
   fat: 0,
+  source: 'manual',
 };
 
 export function RecipeEditor({
@@ -251,6 +244,7 @@ export function RecipeEditor({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Recipe name"
+              autoComplete="off"
               className="flex-1 px-4 py-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#FF6B6B] focus:border-transparent"
             />
           </div>
@@ -312,6 +306,7 @@ export function RecipeEditor({
                       value={ing.name}
                       onChange={(e) => updateIngredient(index, 'name', e.target.value)}
                       placeholder="Ingredient name"
+                      autoComplete="off"
                       className="flex-1 px-3 py-2 bg-white border border-[#E2E8F0] rounded-lg text-sm text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-1 focus:ring-[#FF6B6B] focus:border-transparent"
                     />
                     {ingredients.length > 1 && (
@@ -331,16 +326,16 @@ export function RecipeEditor({
                       type="number"
                       inputMode="numeric"
                       pattern="[0-9]*"
-                      value={ing.amount || ''}
-                      onChange={(e) => updateIngredient(index, 'amount', parseFloat(e.target.value) || 0)}
+                      value={ing.servingSize || ''}
+                      onChange={(e) => updateIngredient(index, 'servingSize', parseFloat(e.target.value) || 0)}
                       placeholder="Amount"
                       min={0}
                       step={0.1}
                       className="w-20 px-3 py-2 bg-white border border-[#E2E8F0] rounded-lg text-sm text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-1 focus:ring-[#FF6B6B] focus:border-transparent"
                     />
                     <select
-                      value={ing.unit}
-                      onChange={(e) => updateIngredient(index, 'unit', e.target.value)}
+                      value={ing.servingUnit}
+                      onChange={(e) => updateIngredient(index, 'servingUnit', e.target.value)}
                       className="w-20 px-2 py-2 bg-white border border-[#E2E8F0] rounded-lg text-sm text-[#0F172A] focus:outline-none focus:ring-1 focus:ring-[#FF6B6B] focus:border-transparent"
                     >
                       {UNIT_OPTIONS.map((u) => (

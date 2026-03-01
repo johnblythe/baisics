@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
+import { validateIngredients, clamp } from '@/lib/ai/parse-helpers';
 
 // GET /api/recipes - returns user's recipes + public recipes
 export async function GET(request: Request) {
@@ -61,7 +62,6 @@ export async function POST(request: Request) {
       carbs,
       fat,
       emoji,
-      isPublic,
       servingSize,
       servingUnit,
       ingredients,
@@ -75,6 +75,14 @@ export async function POST(request: Request) {
       );
     }
 
+    // Validation limits (#424)
+    if (typeof name !== 'string' || name.length > 200) {
+      return NextResponse.json(
+        { error: 'Recipe name must be under 200 characters' },
+        { status: 400 }
+      );
+    }
+
     // Validate ingredients is an array if provided
     if (ingredients !== undefined && !Array.isArray(ingredients)) {
       return NextResponse.json(
@@ -83,17 +91,37 @@ export async function POST(request: Request) {
       );
     }
 
+    if (Array.isArray(ingredients)) {
+      const ingError = validateIngredients(ingredients);
+      if (ingError) {
+        return NextResponse.json({ error: ingError }, { status: 400 });
+      }
+    }
+
+    // Validate numeric fields
+    const cal = Number(calories);
+    const prot = Number(protein);
+    const carb = Number(carbs);
+    const fatVal = Number(fat);
+    const sSize = servingSize != null ? Number(servingSize) : 1;
+    if (!isFinite(cal) || !isFinite(prot) || !isFinite(carb) || !isFinite(fatVal) || !isFinite(sSize)) {
+      return NextResponse.json(
+        { error: 'Numeric fields must be valid finite numbers' },
+        { status: 400 }
+      );
+    }
+
     const recipe = await prisma.recipe.create({
       data: {
         userId: session.user.id,
         name,
-        calories: Math.round(calories),
-        protein: parseFloat(protein.toString()),
-        carbs: parseFloat(carbs.toString()),
-        fat: parseFloat(fat.toString()),
+        calories: clamp(Math.round(cal), 0, 99999),
+        protein: clamp(Math.round(prot * 10) / 10, 0, 9999),
+        carbs: clamp(Math.round(carb * 10) / 10, 0, 9999),
+        fat: clamp(Math.round(fatVal * 10) / 10, 0, 9999),
         emoji: emoji || null,
-        isPublic: isPublic === true,
-        servingSize: servingSize != null ? parseFloat(servingSize.toString()) : 1,
+        isPublic: false, // User-created recipes are always private (#421)
+        servingSize: clamp(sSize, 0.01, 10000),
         servingUnit: servingUnit || 'serving',
         ingredients: ingredients || [],
       },

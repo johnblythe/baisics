@@ -28,6 +28,12 @@
     },
     "src/app/api/nutrition/parse/route.ts": {
       "maxDuration": 30
+    },
+    "src/app/api/recipes/parse-text/route.ts": {
+      "maxDuration": 30
+    },
+    "src/app/api/food-log/parse-text/route.ts": {
+      "maxDuration": 30
     }
   },
   "headers": [
