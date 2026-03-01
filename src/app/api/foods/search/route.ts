@@ -31,6 +31,12 @@ export async function GET(request: Request) {
       { status: 400 }
     );
   }
+  if (query.length > 200) {
+    return NextResponse.json(
+      { error: 'Query too long' },
+      { status: 400 }
+    );
+  }
 
   try {
     const result = await unifiedSearch(query, {

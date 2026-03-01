@@ -26,6 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - CRUD API with max-5-per-slot transaction enforcement
 
 ### Fixed
+- Add server-side length caps to workout chat history — `.max(20)` on history array, `.max(2000)` on message content (#402)
+- Add max-length guard (200 chars) to food search query parameter (#403)
 - Transparent backgrounds on food log cards — meal sections, suggestion banner, staple carousel now have solid white backgrounds (#376)
 - Duplicate Tailwind transition utilities on pin-as-staple button (transition-colors + transition-opacity → transition-all) (#376)
 - Missing Suspense fallback on nutrition page causing blank flash during navigation (#376)

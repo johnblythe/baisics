@@ -16,8 +16,8 @@ const RequestSchema = z.object({
   }),
   history: z.array(z.object({
     role: z.enum(['user', 'assistant']),
-    content: z.string(),
-  })).optional().default([]),
+    content: z.string().max(2000),
+  })).max(20).optional().default([]),
 });
 
 export async function POST(req: Request) {
