@@ -37,6 +37,7 @@ export function FoodEditModal({
   onCancel,
   isSaving = false,
 }: FoodEditModalProps) {
+  const originalServingSize = food.servingSize ?? 1;
   const [name, setName] = useState(food.name);
   const [calories, setCalories] = useState(Math.round(food.calories).toString());
   const [protein, setProtein] = useState(Math.round(food.protein).toString());
@@ -45,6 +46,17 @@ export function FoodEditModal({
   const [servingSize, setServingSize] = useState(food.servingSize?.toString() ?? '1');
   const [servingUnit, setServingUnit] = useState(food.servingUnit ?? 'serving');
   const [meal, setMeal] = useState<MealType>(food.meal ?? MealType.SNACK);
+
+  const handleServingSizeChange = (newValue: string) => {
+    setServingSize(newValue);
+    const newSize = parseFloat(newValue);
+    if (!newSize || !originalServingSize) return;
+    const ratio = newSize / originalServingSize;
+    setCalories(Math.round(food.calories * ratio).toString());
+    setProtein(Math.round(food.protein * ratio).toString());
+    setCarbs(Math.round(food.carbs * ratio).toString());
+    setFat(Math.round(food.fat * ratio).toString());
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,7 +151,7 @@ export function FoodEditModal({
                 step="0.1"
                 min="0"
                 value={servingSize}
-                onChange={(e) => setServingSize(e.target.value)}
+                onChange={(e) => handleServingSizeChange(e.target.value)}
                 className="w-full px-3 py-2 border border-[#E2E8F0] rounded-xl text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#FF6B6B]/50 focus:border-[#FF6B6B]"
               />
             </div>
