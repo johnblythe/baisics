@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { COLORS as BASE_COLORS } from '@/lib/design/colors';
 
 export interface ProgramCardProps {
   id: string;
@@ -22,18 +23,9 @@ export interface ProgramCardProps {
   isLoading?: boolean;
 }
 
-// v2a color palette
 const COLORS = {
-  coral: '#FF6B6B',
-  coralDark: '#EF5350',
-  coralLight: '#FFE5E5',
-  navy: '#0F172A',
-  navyLight: '#1E293B',
+  ...BASE_COLORS,
   navyMid: '#334155',
-  gray50: '#F8FAFC',
-  gray100: '#F1F5F9',
-  gray400: '#94A3B8',
-  gray600: '#475569',
   descriptionText: '#CBD5E1',
 };
 

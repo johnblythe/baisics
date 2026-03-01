@@ -4,7 +4,7 @@
  */
 
 /** Source of a food search result */
-export type FoodSearchSource = 'QUICK_FOOD' | 'USDA' | 'OPEN_FOOD_FACTS' | 'AI_ESTIMATED';
+export type FoodSearchSource = 'QUICK_FOOD' | 'USDA' | 'OPEN_FOOD_FACTS' | 'AI_ESTIMATED' | 'VERIFIED';
 
 /** Unified food result from any source */
 export interface UnifiedFoodResult {
@@ -33,6 +33,12 @@ export interface UnifiedFoodResult {
   servingUnit?: string;
   /** For sorting: user's personal usage count */
   usageCount?: number;
+  /** Whether this is a verified/curated food */
+  isVerified?: boolean;
+  /** Verified serving unit label (e.g. "medium", "cup cooked") */
+  verifiedServingUnit?: string;
+  /** Verified serving grams (e.g. 118 for a medium banana) */
+  verifiedServingGrams?: number;
 }
 
 /** Options for unified search */
@@ -58,6 +64,7 @@ export interface UnifiedSearchResult {
     quickFoods: number;
     usda: number;
     openFoodFacts: number;
+    verified: number;
   };
   /** Sources that errored during search (empty = all succeeded) */
   errors?: Record<string, string>;

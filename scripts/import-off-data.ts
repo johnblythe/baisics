@@ -175,6 +175,7 @@ async function flushBatch(batch: AcceptedRow[], dryRun: boolean): Promise<number
       fat_per_100g = EXCLUDED.fat_per_100g,
       serving_size = EXCLUDED.serving_size,
       imported_at = EXCLUDED.imported_at
+    WHERE foods_off.is_verified = false
   `;
 
   const result = await prisma.$executeRawUnsafe(sql, ...params);

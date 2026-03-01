@@ -1116,6 +1116,9 @@ model FoodsOff {
   fatPer100g      Float?   @map("fat_per_100g")
   servingSize     String?  @map("serving_size")
   importedAt      DateTime @default(now()) @map("imported_at")
+  isVerified      Boolean  @default(false) @map("is_verified")
+  verifiedServingUnit  String?  @map("verified_serving_unit")
+  verifiedServingGrams Float?   @map("verified_serving_grams")
 
   @@map("foods_off")
 }

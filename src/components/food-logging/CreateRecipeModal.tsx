@@ -294,6 +294,7 @@ export function CreateRecipeModal({
                   )}
                 </div>
                 <ServingSizeSelector
+                  key={selectedFood.id}
                   food={selectedFood}
                   onConfirm={handleServingConfirm}
                   onCancel={handleServingCancel}

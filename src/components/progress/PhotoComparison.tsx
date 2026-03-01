@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { Calendar } from 'lucide-react';
+import { COLORS } from '@/lib/design/colors';
 
 interface Photo {
   id: string;
@@ -31,13 +32,6 @@ const PHOTO_TYPE_LABELS: Record<PhotoType, string> = {
   SIDE_RIGHT: 'Right Side',
 };
 
-const COLORS = {
-  coral: '#FF6B6B',
-  coralDark: '#EF5350',
-  coralLight: '#FFE5E5',
-  navy: '#0F172A',
-  navyLight: '#1E293B',
-};
 
 export function PhotoComparison({ programId, onClose }: PhotoComparisonProps) {
   const [checkIns, setCheckIns] = useState<CheckInWithPhotos[]>([]);

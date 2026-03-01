@@ -8,6 +8,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Curated verified foods — ~100 common foods with USDA SR Legacy macros, green "Verified" badge, smart serving defaults (#379)
+  - `is_verified`, `verified_serving_unit`, `verified_serving_grams` columns on `foods_off`
+  - `VERIFIED` source type with +150 relevance boost, `shouldReplace()` dedup preference
+  - ServingSizeSelector defaults to verified serving grams, dynamic quick-amount buttons
+  - `key={food.id}` on ServingSizeSelector parents to fix stale state on food switch
+- Shared `COLORS` constant in `src/lib/design/colors.ts` — replaces 12 duplicate definitions (#379)
+- `verified` count in `UnifiedSearchResult.counts` — separated from `openFoodFacts` (#379)
+- Partial index `foods_off_verified_idx` for verified food sort priority (#379)
+
+### Changed
+- Inline SVGs in FoodSearchAutocomplete replaced with `lucide-react` icons (#379)
+- `searchLocalOff` SQL uses CTE to avoid duplicate `plainto_tsquery` evaluation (#379)
+- Pre-compute relevance scores before sort for ~12x fewer string operations (#379)
 - Free-text recipe creation — type a recipe description, AI parses ingredients with DB-enriched macros (#397)
   - System/user prompt split to prevent prompt injection (#409)
   - validateParsedOutput with clamping for AI responses
@@ -17,6 +30,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Shared `RecipeIngredient` type in `src/types/recipe.ts` (#420, #425)
 
 ### Fixed
+- `shouldReplace()` guard ordering — QuickFoods can no longer be replaced by verified foods during dedup (#379)
+- `VERIFIED` source mapped to `OPEN_FOOD_FACTS` in Prisma `FoodSource` enum so logging verified foods succeeds (#379)
+- Removed duplicate tuna entry `BAISICS-CANNED-TUNA-WATER-001` from verified foods (#379)
+- Quinoa FDC ID corrected from 168917 (pasta) to 168874 (#379)
+- Missing `key={selectedFood.id}` on modal ServingSizeSelector in USDAFoodSearch (#379)
+- `hasValidNutrition` bypasses validation for verified foods to prevent boundary filtering (#379)
+- Removed unnecessary `as FoodSearchSource` type cast in searchLocalOff (#379)
+- OFF bulk import guarded with `WHERE is_verified = false` to protect verified data (#379)
 - convertToGrams null path for count-based units (piece/slice/strip) (#408)
 - USDA single-pass search when pageSize≤5, eliminates double-request (#416)
 - Skip external OFF API fallback in enrichment mode via `skipOffFallback` (#417)
