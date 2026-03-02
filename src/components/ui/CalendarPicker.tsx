@@ -112,7 +112,7 @@ export function CalendarPicker({
   return (
     <div
       ref={containerRef}
-      className="absolute top-full left-0 mt-2 z-50 bg-white rounded-xl shadow-xl border border-[#E2E8F0] p-4 w-[280px] animate-in fade-in slide-in-from-top-2 duration-200"
+      className="absolute top-full left-0 mt-2 z-[60] bg-white rounded-xl shadow-xl border border-[#E2E8F0] p-4 w-[280px] animate-in fade-in slide-in-from-top-2 duration-200"
     >
       {/* Header with month/year navigation */}
       <div className="flex items-center justify-between mb-4">
