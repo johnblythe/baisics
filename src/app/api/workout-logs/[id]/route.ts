@@ -2,6 +2,17 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 
+const EXERCISE_SELECT = {
+  id: true,
+  name: true,
+  sets: true,
+  reps: true,
+  restPeriod: true,
+  measureType: true,
+  measureUnit: true,
+  sortOrder: true,
+} as const;
+
 // GET /api/workout-logs/[id] - fetch workout log with full details
 export async function GET(
   request: Request,
@@ -20,18 +31,7 @@ export async function GET(
       include: {
         exerciseLogs: {
           include: {
-            exercise: {
-              select: {
-                id: true,
-                name: true,
-                sets: true,
-                reps: true,
-                restPeriod: true,
-                measureType: true,
-                measureUnit: true,
-                sortOrder: true,
-              },
-            },
+            exercise: { select: EXERCISE_SELECT },
             setLogs: {
               orderBy: { setNumber: 'asc' },
             },
@@ -47,16 +47,7 @@ export async function GET(
             dayNumber: true,
             focus: true,
             exercises: {
-              select: {
-                id: true,
-                name: true,
-                sets: true,
-                reps: true,
-                restPeriod: true,
-                measureType: true,
-                measureUnit: true,
-                sortOrder: true,
-              },
+              select: EXERCISE_SELECT,
               orderBy: { sortOrder: 'asc' },
             },
           },
@@ -75,6 +66,21 @@ export async function GET(
     // Quick-log backfill: if no exercise logs, create shells from workout template
     if (workoutLog.quickLog && workoutLog.exerciseLogs.length === 0 && workoutLog.workout.exercises.length > 0) {
       const createdExerciseLogs = await prisma.$transaction(async (tx) => {
+        // Race condition guard: check again inside transaction
+        const existingCount = await tx.exerciseLog.count({
+          where: { workoutLogId: workoutLog.id },
+        });
+        if (existingCount > 0) {
+          return tx.exerciseLog.findMany({
+            where: { workoutLogId: workoutLog.id },
+            include: {
+              exercise: { select: EXERCISE_SELECT },
+              setLogs: { orderBy: { setNumber: 'asc' } },
+            },
+            orderBy: { exercise: { sortOrder: 'asc' } },
+          });
+        }
+
         const logs = [];
         for (const exercise of workoutLog.workout.exercises) {
           const exerciseLog = await tx.exerciseLog.create({
@@ -83,58 +89,28 @@ export async function GET(
               exerciseId: exercise.id,
               startedAt: workoutLog.startedAt,
             },
-            include: {
-              exercise: {
-                select: {
-                  id: true,
-                  name: true,
-                  sets: true,
-                  reps: true,
-                  restPeriod: true,
-                  measureType: true,
-                  measureUnit: true,
-                  sortOrder: true,
-                },
-              },
-              setLogs: true,
-            },
           });
 
           // Create empty set log placeholders
           const setCount = exercise.sets || 1;
-          for (let i = 1; i <= setCount; i++) {
-            await tx.setLog.create({
-              data: {
-                exerciseLogId: exerciseLog.id,
-                setNumber: i,
-                weight: null,
-                reps: 0,
-              },
-            });
-          }
+          await tx.setLog.createMany({
+            data: Array.from({ length: setCount }, (_, i) => ({
+              exerciseLogId: exerciseLog.id,
+              setNumber: i + 1,
+              weight: null,
+              reps: 0,
+            })),
+          });
 
-          // Re-fetch with set logs
+          // Fetch with set logs
           const fullLog = await tx.exerciseLog.findUnique({
             where: { id: exerciseLog.id },
             include: {
-              exercise: {
-                select: {
-                  id: true,
-                  name: true,
-                  sets: true,
-                  reps: true,
-                  restPeriod: true,
-                  measureType: true,
-                  measureUnit: true,
-                  sortOrder: true,
-                },
-              },
-              setLogs: {
-                orderBy: { setNumber: 'asc' },
-              },
+              exercise: { select: EXERCISE_SELECT },
+              setLogs: { orderBy: { setNumber: 'asc' } },
             },
           });
-          logs.push(fullLog);
+          if (fullLog) logs.push(fullLog);
         }
         return logs;
       });
@@ -167,7 +143,13 @@ export async function PATCH(
     }
 
     const { id } = await context.params;
-    const body = await request.json();
+
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+    }
 
     // Find entry and verify ownership
     const workoutLog = await prisma.workoutLog.findUnique({
@@ -183,15 +165,18 @@ export async function PATCH(
     }
 
     // Build update data
-    const updateData: Record<string, unknown> = {};
+    const updateData: { notes?: string | null; completedAt?: Date; startedAt?: Date } = {};
 
     if (body.notes !== undefined) {
-      updateData.notes = body.notes || null;
+      updateData.notes = body.notes === '' ? null : body.notes;
     }
 
     // Handle date change (completedAt + startedAt)
     if (body.completedAt !== undefined) {
       const newDate = new Date(body.completedAt);
+      if (isNaN(newDate.getTime())) {
+        return NextResponse.json({ error: 'Invalid date format' }, { status: 400 });
+      }
 
       // Date conflict check: another completed log for same workoutId on target date
       const dayStart = new Date(newDate);
@@ -202,6 +187,7 @@ export async function PATCH(
       const conflict = await prisma.workoutLog.findFirst({
         where: {
           id: { not: id },
+          userId: session.user.id,
           workoutId: workoutLog.workoutId,
           status: 'completed',
           completedAt: {
@@ -222,12 +208,19 @@ export async function PATCH(
 
       // Also shift startedAt if provided, otherwise preserve original duration
       if (body.startedAt !== undefined) {
-        updateData.startedAt = new Date(body.startedAt);
+        const startDate = new Date(body.startedAt);
+        if (!isNaN(startDate.getTime())) {
+          updateData.startedAt = startDate;
+        }
       } else if (workoutLog.startedAt && workoutLog.completedAt) {
         // Preserve duration: shift startedAt by same offset
         const duration = workoutLog.completedAt.getTime() - workoutLog.startedAt.getTime();
         updateData.startedAt = new Date(newDate.getTime() - duration);
       }
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      return NextResponse.json({ error: 'No recognized fields to update' }, { status: 400 });
     }
 
     const updated = await prisma.workoutLog.update({

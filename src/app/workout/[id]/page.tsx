@@ -199,13 +199,16 @@ function WorkoutPageContent() {
   const saveEditNotes = useCallback(async (notes: string) => {
     if (!workoutLog?.id) return;
     try {
-      await fetch(`/api/workout-logs/${workoutLog.id}`, {
+      const response = await fetch(`/api/workout-logs/${workoutLog.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ notes }),
       });
+      if (!response.ok) {
+        toast.error('Failed to save notes');
+      }
     } catch {
-      // Silent — notes are best-effort
+      toast.error('Failed to save notes');
     }
   }, [workoutLog?.id]);
 
@@ -233,7 +236,7 @@ function WorkoutPageContent() {
           }
 
           // Build exercises from the log's exercise data
-          const exercisesWithLogs = logData.exerciseLogs.map((el: any) => {
+          const exercisesWithLogs = (logData.exerciseLogs || []).map((el: any) => {
             const exercise = el.exercise;
             const setCount = Math.max(exercise.sets || 1, el.setLogs?.length || 0);
             return {
@@ -688,10 +691,14 @@ function WorkoutPageContent() {
               {showDatePicker && (
                 <CalendarPicker
                   selectedDate={workoutDate}
-                  onDateSelect={(date) => {
+                  onDateSelect={async (date) => {
+                    const previousDate = workoutDate;
                     setWorkoutDate(date);
                     if (isEditMode) {
-                      saveEditDate(date);
+                      const success = await saveEditDate(date);
+                      if (!success) {
+                        setWorkoutDate(previousDate);
+                      }
                     }
                   }}
                   maxDate={today}
@@ -987,10 +994,7 @@ function WorkoutPageContent() {
               </button>
             ) : isEditMode ? (
               <button
-                onClick={() => {
-                  toast.success('Changes saved');
-                  router.back();
-                }}
+                onClick={() => router.back()}
                 className="px-6 py-2.5 rounded-xl bg-[#FF6B6B] text-white font-medium hover:bg-[#EF5350] transition-colors shadow-lg shadow-[#FF6B6B]/25"
               >
                 Done
