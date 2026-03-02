@@ -1,6 +1,6 @@
 'use client';
 
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useState } from 'react';
 import { Settings, Target } from 'lucide-react';
 import { MealType as PrismaMealType } from '@prisma/client';
 import {
@@ -187,10 +187,14 @@ export function MobileLayout({
 }: MobileLayoutProps) {
   const remainingCalories = Math.round(Math.max(0, macroTargets.calories - macroTotals.calories));
   const remainingProtein = Math.round(Math.max(0, macroTargets.protein - macroTotals.protein));
+  const remainingCarbs = Math.round(Math.max(0, macroTargets.carbs - macroTotals.carbs));
+  const remainingFat = Math.round(Math.max(0, macroTargets.fat - macroTotals.fat));
+  const [macroCountUp, setMacroCountUp] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col">
-      {/* Compact Header */}
+    <div className="min-h-dvh bg-[#F8FAFC] flex flex-col">
+      {/* Sticky header group: date header + macro summary */}
+      <div className="sticky top-16 z-20">
       {customHeader}
 
       {/* Macro summary row */}
@@ -211,28 +215,62 @@ export function MobileLayout({
             <span className="text-xs font-medium text-[#FF6B6B]">Set up →</span>
           </button>
         ) : (
-          <>
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => setMacroCountUp(prev => !prev)}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setMacroCountUp(prev => !prev); }}
+            className="flex items-start gap-3 w-full cursor-pointer select-none"
+          >
             <DualRing totals={macroTotals} targets={macroTargets} size="sm" />
-            <div className="flex-1">
-              <div className="text-sm font-bold text-[#0F172A]">
-                {remainingCalories} cal left
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-bold text-[#0F172A] tabular-nums truncate">
+                  {macroCountUp
+                    ? `${Math.round(macroTotals.calories)} / ${Math.round(macroTargets.calories)} cal`
+                    : `${remainingCalories} cal left`}
+                </span>
+                {onEditTargets && (
+                  <button
+                    type="button"
+                    aria-label="Edit nutrition goals"
+                    onClick={(e) => { e.stopPropagation(); onEditTargets(); }}
+                    className="p-1 text-[#94A3B8] hover:text-[#64748B] rounded-lg"
+                  >
+                    <Settings className="size-4" />
+                  </button>
+                )}
               </div>
-              <div className="text-xs text-[#94A3B8]">
-                {remainingProtein}g P to go
+              <div className="mt-1 space-y-1">
+                {[
+                  { label: 'P', current: macroTotals.protein, target: macroTargets.protein, remaining: remainingProtein, color: 'bg-green-500' },
+                  { label: 'C', current: macroTotals.carbs, target: macroTargets.carbs, remaining: remainingCarbs, color: 'bg-amber-500' },
+                  { label: 'F', current: macroTotals.fat, target: macroTargets.fat, remaining: remainingFat, color: 'bg-blue-500' },
+                ].map((m) => {
+                  const pct = m.target > 0 ? Math.min((m.current / m.target) * 100, 100) : 0;
+                  return (
+                    <div key={m.label} className="flex items-center gap-2">
+                      <span className="text-xs font-medium text-[#64748B] w-3">{m.label}</span>
+                      <div className="flex-1 h-1.5 bg-[#E2E8F0] rounded-full overflow-hidden">
+                        <div
+                          className={`h-full ${m.color} rounded-full`}
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                      <span className="text-xs font-medium text-[#0F172A] tabular-nums text-right w-16">
+                        {macroCountUp
+                          ? `${Math.round(m.current)}/${Math.round(m.target)}g`
+                          : `${m.remaining}g`}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
-            {onEditTargets && (
-              <button
-                type="button"
-                onClick={onEditTargets}
-                className="p-1.5 text-[#94A3B8] hover:text-[#64748B] hover:bg-[#F1F5F9] rounded-lg transition-colors"
-                title="Edit nutrition goals"
-              >
-                <Settings className="w-4 h-4" />
-              </button>
-            )}
-          </>
+          </div>
         )}
+      </div>
+
       </div>
 
       {/* Tab Bar */}
@@ -267,7 +305,7 @@ export function MobileLayout({
           </div>
 
           {/* Meal Sections */}
-          <div className="flex-1 overflow-y-auto px-4 pb-24 space-y-4">
+          <div className="flex-1 px-4 pb-24 space-y-4">
             <MealSectionList
               meals={meals}
               onAddToMeal={onAddToMeal}
@@ -350,7 +388,7 @@ export function MobileLayout({
 
       {/* Pantry Tab Content */}
       {activeTab === 'pantry' && (
-        <div className="flex-1 overflow-y-auto px-4 py-4">
+        <div className="flex-1 px-4 py-4">
           <PantryTab
             quickFoods={quickFoods}
             onQuickAdd={onQuickAdd}
