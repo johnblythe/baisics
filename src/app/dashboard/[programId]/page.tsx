@@ -1232,7 +1232,7 @@ function DashboardContent() {
                         </div>
                       </div>
                     </div>
-                    <svg className="w-4 h-4 text-[#FF6B6B]/40 group-hover:text-[#FF6B6B] transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-4 h-4 text-[#475569] group-hover:text-[#FF6B6B] transition-colors flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </Link>
