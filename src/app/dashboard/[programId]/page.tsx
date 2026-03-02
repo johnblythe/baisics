@@ -1216,9 +1216,10 @@ function DashboardContent() {
             {recentActivity.length > 0 ? (
               <div className="space-y-1.5">
                 {recentActivity.slice(0, 5).map((activity) => (
-                  <div
+                  <Link
                     key={activity.id}
-                    className="flex items-center justify-between p-2 rounded-lg bg-gray-50 hover:bg-[#FFE5E5]/30 transition-colors"
+                    href={`/workout/${activity.workoutId}?logId=${activity.id}`}
+                    className="flex items-center justify-between p-2 rounded-lg bg-gray-50 hover:bg-[#FFE5E5]/30 transition-colors cursor-pointer"
                   >
                     <div className="flex items-center gap-2 min-w-0">
                       <div className="w-6 h-6 rounded-full bg-[#FF6B6B]/10 text-[#FF6B6B] flex items-center justify-center font-bold text-xs flex-shrink-0">
@@ -1231,7 +1232,10 @@ function DashboardContent() {
                         </div>
                       </div>
                     </div>
-                  </div>
+                    <svg className="w-4 h-4 text-[#94A3B8] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </Link>
                 ))}
               </div>
             ) : (

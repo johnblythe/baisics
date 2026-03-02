@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { CheckCircle, PlayCircle, ChevronLeft, ChevronRight, Dumbbell, MessageCircle, Calendar } from 'lucide-react';
+import React, { Suspense, useState, useEffect, useRef, useCallback } from 'react';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { CheckCircle, PlayCircle, ChevronLeft, ChevronRight, Dumbbell, MessageCircle, Calendar, ArrowLeft } from 'lucide-react';
+import { toast } from 'sonner';
 import MainLayout from '@/app/components/layouts/MainLayout';
 import { formatExerciseMeasure } from '@/utils/formatters';
 import ExerciseSwapModal from '@/components/ExerciseSwapModal';
@@ -89,8 +90,25 @@ interface ExerciseHistory {
 }
 
 export default function WorkoutPage() {
+  return (
+    <Suspense fallback={
+      <MainLayout>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="w-8 h-8 border-2 border-[#F1F5F9] border-t-[#FF6B6B] rounded-full animate-spin" />
+        </div>
+      </MainLayout>
+    }>
+      <WorkoutPageContent />
+    </Suspense>
+  );
+}
+
+function WorkoutPageContent() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const editLogId = searchParams.get('logId');
+  const isEditMode = !!editLogId;
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [exercises, setExercises] = useState<ExerciseWithLogs[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -116,6 +134,7 @@ export default function WorkoutPage() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareData, setShareData] = useState<WorkoutShareData | null>(null);
   const [workoutName, setWorkoutName] = useState('');
+  const [workoutNotes, setWorkoutNotes] = useState('');
   // Program completion celebration state
   const [showProgramCompletion, setShowProgramCompletion] = useState(false);
   const [programCompletionData, setProgramCompletionData] = useState<ProgramCompletionData | null>(null);
@@ -154,9 +173,99 @@ export default function WorkoutPage() {
     setShowRestTimer(false);
   }, [currentExerciseIndex]);
 
+  // Save date change in edit mode via PATCH
+  const saveEditDate = useCallback(async (date: Date) => {
+    if (!workoutLog?.id) return;
+    try {
+      const response = await fetch(`/api/workout-logs/${workoutLog.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ completedAt: date.toISOString() }),
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        toast.error(data.error || 'Failed to update date');
+        return false;
+      }
+      toast.success('Date updated');
+      return true;
+    } catch {
+      toast.error('Failed to update date');
+      return false;
+    }
+  }, [workoutLog?.id]);
+
+  // Save notes change in edit mode via PATCH
+  const saveEditNotes = useCallback(async (notes: string) => {
+    if (!workoutLog?.id) return;
+    try {
+      await fetch(`/api/workout-logs/${workoutLog.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notes }),
+      });
+    } catch {
+      // Silent — notes are best-effort
+    }
+  }, [workoutLog?.id]);
+
   useEffect(() => {
     const fetchWorkout = async () => {
       try {
+        // Edit mode: load existing completed log
+        if (editLogId) {
+          const logResponse = await fetch(`/api/workout-logs/${editLogId}`);
+          if (!logResponse.ok) {
+            throw new Error('Failed to load workout log');
+          }
+          const logData = await logResponse.json();
+
+          setWorkoutName(logData.workout?.name || 'Workout');
+          setWorkoutLog(logData);
+          setWorkoutStarted(true);
+
+          // Set date picker to the log's completedAt
+          if (logData.completedAt) {
+            setWorkoutDate(new Date(logData.completedAt));
+          }
+          if (logData.notes) {
+            setWorkoutNotes(logData.notes);
+          }
+
+          // Build exercises from the log's exercise data
+          const exercisesWithLogs = logData.exerciseLogs.map((el: any) => {
+            const exercise = el.exercise;
+            const setCount = Math.max(exercise.sets || 1, el.setLogs?.length || 0);
+            return {
+              ...exercise,
+              exerciseLogId: el.id,
+              logs: Array(setCount).fill(null).map((_: any, i: number) => {
+                const existingSet = el.setLogs?.find(
+                  (set: any) => set.setNumber === i + 1
+                );
+                return existingSet ? {
+                  setNumber: existingSet.setNumber,
+                  reps: existingSet.reps,
+                  weight: existingSet.weight,
+                  notes: existingSet.notes || '',
+                  isCompleted: !!existingSet.completedAt,
+                } : {
+                  setNumber: i + 1,
+                  reps: exercise.reps,
+                  weight: undefined,
+                  notes: '',
+                  isCompleted: false,
+                };
+              }),
+            };
+          });
+
+          setExercises(exercisesWithLogs);
+          setIsLoading(false);
+          return;
+        }
+
+        // Normal mode: fetch workout template + create/resume log
         const response = await fetch(`/api/workouts/${params.id}`);
         if (!response.ok) {
           throw new Error('Failed to fetch workout');
@@ -250,7 +359,7 @@ export default function WorkoutPage() {
     };
 
     fetchWorkout();
-  }, [params.id]);
+  }, [params.id, editLogId]);
 
   // Fetch exercise history (PR and last session) for all exercises
   useEffect(() => {
@@ -529,6 +638,17 @@ export default function WorkoutPage() {
         <div className="flex gap-6">
           {/* Main Content */}
           <div className={`flex-1 ${chatOpen ? 'lg:max-w-3xl' : 'max-w-4xl mx-auto'}`}>
+        {/* Back link in edit mode */}
+        {isEditMode && (
+          <button
+            onClick={() => router.back()}
+            className="flex items-center gap-1.5 text-sm text-[#475569] hover:text-[#FF6B6B] transition-colors mb-4"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Dashboard
+          </button>
+        )}
+
         {/* Progress Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
@@ -537,7 +657,7 @@ export default function WorkoutPage() {
                 <Dumbbell className="w-5 h-5 text-[#FF6B6B]" />
               </div>
               <div>
-                <p className="text-sm text-[#94A3B8] font-medium">Workout in Progress</p>
+                <p className="text-sm text-[#94A3B8] font-medium">{isEditMode ? 'Editing Workout' : 'Workout in Progress'}</p>
                 <p className="text-lg font-semibold text-[#0F172A]">{completedSets} of {totalSets} sets complete</p>
               </div>
             </div>
@@ -570,6 +690,9 @@ export default function WorkoutPage() {
                   selectedDate={workoutDate}
                   onDateSelect={(date) => {
                     setWorkoutDate(date);
+                    if (isEditMode) {
+                      saveEditDate(date);
+                    }
                   }}
                   maxDate={today}
                   onClose={() => setShowDatePicker(false)}
@@ -586,6 +709,20 @@ export default function WorkoutPage() {
               </div>
             )}
           </div>
+
+          {/* Workout Notes (edit mode) */}
+          {isEditMode && (
+            <div className="mt-4">
+              <textarea
+                value={workoutNotes}
+                onChange={(e) => setWorkoutNotes(e.target.value)}
+                onBlur={() => saveEditNotes(workoutNotes)}
+                placeholder="Add workout notes..."
+                rows={2}
+                className="w-full px-4 py-2.5 rounded-xl border border-[#E2E8F0] text-sm text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#FF6B6B] focus:ring-1 focus:ring-[#FF6B6B] resize-none"
+              />
+            </div>
+          )}
         </div>
 
         {/* Exercise Card */}
@@ -847,6 +984,16 @@ export default function WorkoutPage() {
               >
                 Next
                 <ChevronRight className="w-4 h-4" />
+              </button>
+            ) : isEditMode ? (
+              <button
+                onClick={() => {
+                  toast.success('Changes saved');
+                  router.back();
+                }}
+                className="px-6 py-2.5 rounded-xl bg-[#FF6B6B] text-white font-medium hover:bg-[#EF5350] transition-colors shadow-lg shadow-[#FF6B6B]/25"
+              >
+                Done
               </button>
             ) : (
               <button
