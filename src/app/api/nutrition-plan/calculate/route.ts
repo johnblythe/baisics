@@ -131,11 +131,10 @@ export async function POST(request: Request) {
       goal,
     });
 
-    // Rest-day adjustments: same protein, -25% carbs, fat fills remainder
+    // Rest-day adjustments: same protein, same fat, -25% carbs, calories follow
     const restProtein = result.protein;
     const restCarbs = Math.round(result.carbs * 0.75);
-    const restFatCalories = (result.targetCalories - (restProtein * 4) - (restCarbs * 4));
-    const restFat = Math.max(20, Math.round(restFatCalories / 9));
+    const restFat = result.fats;
     const restCalories = Math.round(restProtein * 4 + restCarbs * 4 + restFat * 9);
 
     return NextResponse.json({
