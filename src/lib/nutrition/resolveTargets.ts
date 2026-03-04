@@ -156,8 +156,12 @@ export async function resolveNutritionTargets(
     }
   }
 
-  // Determine if plan has rest-day targets
-  const hasRestDayTargets = foundPlan.restDayCalories !== null
+  // Determine if plan has rest-day targets (all four must be present)
+  const hasRestDayTargets =
+    foundPlan.restDayCalories !== null &&
+    foundPlan.restDayProtein !== null &&
+    foundPlan.restDayCarbs !== null &&
+    foundPlan.restDayFat !== null
 
   // Resolve day type: explicit override > workout detection > default to training
   let resolvedDayType: 'training' | 'rest' = dayType ?? 'training'

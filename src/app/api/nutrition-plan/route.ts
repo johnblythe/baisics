@@ -104,12 +104,20 @@ export async function POST(request: Request) {
     // Rest-day fields: premium gate + validation
     const hasRestFields = restDayCalories != null || restDayProtein != null || restDayCarbs != null || restDayFat != null;
     if (hasRestFields) {
+      // All four rest-day fields must be provided together
+      if (restDayCalories == null || restDayProtein == null || restDayCarbs == null || restDayFat == null) {
+        return NextResponse.json(
+          { error: 'All rest day fields (calories, protein, carbs, fat) must be provided together' },
+          { status: 400 }
+        );
+      }
+
       const user = await prisma.user.findUnique({ where: { id: userId }, select: { isPremium: true } });
       if (!user?.isPremium) {
         return NextResponse.json({ error: 'Rest day targets require a Jacked subscription' }, { status: 403 });
       }
 
-      // Validate rest-day fields (same bounds as training) — only if provided
+      // Validate rest-day fields (same bounds as training)
       const restValidationErrors: string[] = [];
       if (restDayCalories != null && (typeof restDayCalories !== 'number' || restDayCalories < VALIDATION_BOUNDS.dailyCalories.min || restDayCalories > VALIDATION_BOUNDS.dailyCalories.max)) {
         restValidationErrors.push(`restDayCalories must be a number between ${VALIDATION_BOUNDS.dailyCalories.min} and ${VALIDATION_BOUNDS.dailyCalories.max}`);
@@ -156,7 +164,8 @@ export async function POST(request: Request) {
       },
     });
 
-    let createdPlan;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let createdPlan: any = null;
 
     if (activeProgram) {
       // Program user: version the program's NutritionPlan
@@ -217,23 +226,28 @@ export async function POST(request: Request) {
       });
     }
 
+    if (!createdPlan) {
+      console.error('nutrition-plan POST: transaction completed but createdPlan is null', { userId });
+      return NextResponse.json({ error: 'Plan was saved but response failed. Please refresh.' }, { status: 500 });
+    }
+
     return NextResponse.json(
       {
         plan: {
-          id: createdPlan!.id,
-          dailyCalories: createdPlan!.dailyCalories,
-          proteinGrams: createdPlan!.proteinGrams,
-          carbGrams: createdPlan!.carbGrams,
-          fatGrams: createdPlan!.fatGrams,
-          effectiveDate: createdPlan!.effectiveDate,
+          id: createdPlan.id,
+          dailyCalories: createdPlan.dailyCalories,
+          proteinGrams: createdPlan.proteinGrams,
+          carbGrams: createdPlan.carbGrams,
+          fatGrams: createdPlan.fatGrams,
+          effectiveDate: createdPlan.effectiveDate,
         },
-        restDayTargets: createdPlan!.restDayCalories != null ? {
-          dailyCalories: createdPlan!.restDayCalories,
-          proteinGrams: createdPlan!.restDayProtein,
-          carbGrams: createdPlan!.restDayCarbs,
-          fatGrams: createdPlan!.restDayFat,
+        restDayTargets: createdPlan.restDayCalories != null ? {
+          dailyCalories: createdPlan.restDayCalories,
+          proteinGrams: createdPlan.restDayProtein,
+          carbGrams: createdPlan.restDayCarbs,
+          fatGrams: createdPlan.restDayFat,
         } : null,
-        hasRestDayTargets: createdPlan!.restDayCalories != null,
+        hasRestDayTargets: createdPlan.restDayCalories != null,
         source: activeProgram ? 'program' : 'standalone',
       },
       { status: 201 }

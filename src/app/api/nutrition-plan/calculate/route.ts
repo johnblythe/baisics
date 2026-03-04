@@ -135,7 +135,7 @@ export async function POST(request: Request) {
     const restProtein = result.protein;
     const restCarbs = Math.round(result.carbs * 0.75);
     const restFatCalories = (result.targetCalories - (restProtein * 4) - (restCarbs * 4));
-    const restFat = Math.round(restFatCalories / 9);
+    const restFat = Math.max(20, Math.round(restFatCalories / 9));
     const restCalories = Math.round(restProtein * 4 + restCarbs * 4 + restFat * 9);
 
     return NextResponse.json({

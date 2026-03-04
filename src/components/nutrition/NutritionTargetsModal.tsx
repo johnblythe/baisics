@@ -96,23 +96,27 @@ export function NutritionTargetsModal({
     setLoading(true);
     try {
       const response = await fetch('/api/nutrition-plan');
-      if (response.ok) {
-        const data = await response.json();
-        if (data.plan && !data.isDefault) {
-          setValues({
-            dailyCalories: data.plan.dailyCalories?.toString() || '',
-            proteinGrams: data.plan.proteinGrams?.toString() || '',
-            carbGrams: data.plan.carbGrams?.toString() || '',
-            fatGrams: data.plan.fatGrams?.toString() || '',
-            restDayCalories: data.restDayTargets?.dailyCalories?.toString() || '',
-            restDayProtein: data.restDayTargets?.proteinGrams?.toString() || '',
-            restDayCarbs: data.restDayTargets?.carbGrams?.toString() || '',
-            restDayFat: data.restDayTargets?.fatGrams?.toString() || '',
-          });
-        }
+      if (!response.ok) {
+        console.error('Failed to load current targets:', response.status);
+        setError('Could not load your current targets. You can still enter new values.');
+        return;
+      }
+      const data = await response.json();
+      if (data.plan && !data.isDefault) {
+        setValues({
+          dailyCalories: data.plan.dailyCalories?.toString() || '',
+          proteinGrams: data.plan.proteinGrams?.toString() || '',
+          carbGrams: data.plan.carbGrams?.toString() || '',
+          fatGrams: data.plan.fatGrams?.toString() || '',
+          restDayCalories: data.restDayTargets?.dailyCalories?.toString() || '',
+          restDayProtein: data.restDayTargets?.proteinGrams?.toString() || '',
+          restDayCarbs: data.restDayTargets?.carbGrams?.toString() || '',
+          restDayFat: data.restDayTargets?.fatGrams?.toString() || '',
+        });
       }
     } catch (err) {
       console.error('Failed to fetch current targets:', err);
+      setError('Could not load your current targets. You can still enter new values.');
     } finally {
       setLoading(false);
     }
@@ -160,7 +164,7 @@ export function NutritionTargetsModal({
       return;
     }
 
-    // If user edits calories directly, clear macros (kcal-only mode)
+    // If user edits calories directly, clear macros (kcal-only mode) + stale rest-day values
     if (field === 'dailyCalories') {
       setValues(prev => ({
         ...prev,
@@ -168,6 +172,10 @@ export function NutritionTargetsModal({
         proteinGrams: '',
         carbGrams: '',
         fatGrams: '',
+        restDayCalories: '',
+        restDayProtein: '',
+        restDayCarbs: '',
+        restDayFat: '',
       }));
       return;
     }

@@ -312,10 +312,14 @@ export function FoodLogPage({
     async function fetchPremiumStatus() {
       try {
         const res = await fetch('/api/user');
+        if (!res.ok) {
+          console.error('Failed to fetch premium status:', res.status);
+          return;
+        }
         const data = await res.json();
         setIsPremium(data.isPremium || false);
-      } catch {
-        // Non-critical, default to free
+      } catch (err) {
+        console.error('Error fetching premium status:', err);
       }
     }
     fetchPremiumStatus();
