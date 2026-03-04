@@ -18,6 +18,14 @@ export interface NutritionTargets {
   proteinGrams: number
   carbGrams: number
   fatGrams: number
+  restDayCalories?: number
+  restDayProtein?: number
+  restDayCarbs?: number
+  restDayFat?: number
+  trainingDayCalories?: number
+  trainingDayProtein?: number
+  trainingDayCarbs?: number
+  trainingDayFat?: number
 }
 
 /**
@@ -28,7 +36,21 @@ export interface ResolveNutritionResult {
   source: 'program' | 'standalone' | 'default'
   isDefault: boolean
   planId?: string
+  dayType: 'training' | 'rest'
+  hasRestDayTargets: boolean
 }
+
+const REST_DAY_SELECT = {
+  id: true,
+  dailyCalories: true,
+  proteinGrams: true,
+  carbGrams: true,
+  fatGrams: true,
+  restDayCalories: true,
+  restDayProtein: true,
+  restDayCarbs: true,
+  restDayFat: true,
+} as const
 
 /**
  * Resolves nutrition targets for a user with point-in-time support.
@@ -38,13 +60,19 @@ export interface ResolveNutritionResult {
  * 2. Standalone NutritionPlan (point-in-time)
  * 3. Default targets
  *
+ * When a plan has rest-day targets, the function auto-detects whether the
+ * target date is a training or rest day (based on WorkoutLog), unless an
+ * explicit dayType override is provided.
+ *
  * @param userId - The user's ID
  * @param forDate - Optional date for point-in-time lookup (defaults to now)
+ * @param dayType - Optional override for training/rest day detection
  * @returns Resolved nutrition targets with source info
  */
 export async function resolveNutritionTargets(
   userId: string,
-  forDate?: Date
+  forDate?: Date,
+  dayType?: 'training' | 'rest'
 ): Promise<ResolveNutritionResult> {
   // Normalize to UTC midnight — comparisons are date-level, not time-level
   const d = forDate ?? new Date()
@@ -62,9 +90,22 @@ export async function resolveNutritionTargets(
     },
   })
 
+  let foundPlan: {
+    id: string
+    dailyCalories: number
+    proteinGrams: number
+    carbGrams: number
+    fatGrams: number
+    restDayCalories: number | null
+    restDayProtein: number | null
+    restDayCarbs: number | null
+    restDayFat: number | null
+  } | null = null
+  let source: 'program' | 'standalone' | 'default' = 'default'
+
   if (activeProgram) {
     // Find program-level nutrition plan for current phase, effective at targetDate
-    const programPlan = await prisma.nutritionPlan.findFirst({
+    foundPlan = await prisma.nutritionPlan.findFirst({
       where: {
         programId: activeProgram.id,
         phaseNumber: activeProgram.currentPhase,
@@ -75,69 +116,101 @@ export async function resolveNutritionTargets(
         ],
       },
       orderBy: { effectiveDate: 'desc' },
-      select: {
-        id: true,
-        dailyCalories: true,
-        proteinGrams: true,
-        carbGrams: true,
-        fatGrams: true,
-      },
+      select: REST_DAY_SELECT,
     })
 
-    if (programPlan) {
-      return {
-        plan: {
-          dailyCalories: programPlan.dailyCalories,
-          proteinGrams: programPlan.proteinGrams,
-          carbGrams: programPlan.carbGrams,
-          fatGrams: programPlan.fatGrams,
-        },
-        source: 'program',
-        isDefault: false,
-        planId: programPlan.id,
-      }
+    if (foundPlan) {
+      source = 'program'
     }
   }
 
-  // 2. Try standalone nutrition plan for user (point-in-time)
-  const standalonePlan = await prisma.nutritionPlan.findFirst({
-    where: {
-      userId,
-      programId: null,
-      effectiveDate: { lte: targetDate },
-      OR: [
-        { endDate: null },
-        { endDate: { gt: targetDate } },
-      ],
-    },
-    orderBy: { effectiveDate: 'desc' },
-    select: {
-      id: true,
-      dailyCalories: true,
-      proteinGrams: true,
-      carbGrams: true,
-      fatGrams: true,
-    },
-  })
-
-  if (standalonePlan) {
-    return {
-      plan: {
-        dailyCalories: standalonePlan.dailyCalories,
-        proteinGrams: standalonePlan.proteinGrams,
-        carbGrams: standalonePlan.carbGrams,
-        fatGrams: standalonePlan.fatGrams,
+  if (!foundPlan) {
+    // 2. Try standalone nutrition plan for user (point-in-time)
+    foundPlan = await prisma.nutritionPlan.findFirst({
+      where: {
+        userId,
+        programId: null,
+        effectiveDate: { lte: targetDate },
+        OR: [
+          { endDate: null },
+          { endDate: { gt: targetDate } },
+        ],
       },
-      source: 'standalone',
-      isDefault: false,
-      planId: standalonePlan.id,
+      orderBy: { effectiveDate: 'desc' },
+      select: REST_DAY_SELECT,
+    })
+
+    if (foundPlan) {
+      source = 'standalone'
     }
   }
 
   // 3. Fall back to defaults
+  if (!foundPlan) {
+    return {
+      plan: { ...DEFAULT_TARGETS },
+      source: 'default',
+      isDefault: true,
+      dayType: dayType ?? 'training',
+      hasRestDayTargets: false,
+    }
+  }
+
+  // Determine if plan has rest-day targets
+  const hasRestDayTargets = foundPlan.restDayCalories !== null
+
+  // Resolve day type: explicit override > workout detection > default to training
+  let resolvedDayType: 'training' | 'rest' = dayType ?? 'training'
+
+  if (hasRestDayTargets && !dayType) {
+    // Auto-detect based on whether user has a completed workout on this date
+    const startOfDay = targetDate
+    const endOfDay = new Date(targetDate.getTime() + 86400000) // +24h
+
+    const workoutOnDate = await prisma.workoutLog.findFirst({
+      where: {
+        userId,
+        completedAt: {
+          not: null,
+          gte: startOfDay,
+          lt: endOfDay,
+        },
+      },
+      select: { id: true },
+    })
+
+    resolvedDayType = workoutOnDate ? 'training' : 'rest'
+  }
+
+  // Build the plan targets — if rest day and rest columns exist, use rest values as main targets
+  const isRestDay = resolvedDayType === 'rest' && hasRestDayTargets
+
+  const plan: NutritionTargets = {
+    dailyCalories: isRestDay ? foundPlan.restDayCalories! : foundPlan.dailyCalories,
+    proteinGrams: isRestDay ? foundPlan.restDayProtein! : foundPlan.proteinGrams,
+    carbGrams: isRestDay ? foundPlan.restDayCarbs! : foundPlan.carbGrams,
+    fatGrams: isRestDay ? foundPlan.restDayFat! : foundPlan.fatGrams,
+    // Always include both sets so client can display/compare
+    ...(hasRestDayTargets
+      ? {
+          restDayCalories: foundPlan.restDayCalories!,
+          restDayProtein: foundPlan.restDayProtein!,
+          restDayCarbs: foundPlan.restDayCarbs!,
+          restDayFat: foundPlan.restDayFat!,
+          trainingDayCalories: foundPlan.dailyCalories,
+          trainingDayProtein: foundPlan.proteinGrams,
+          trainingDayCarbs: foundPlan.carbGrams,
+          trainingDayFat: foundPlan.fatGrams,
+        }
+      : {}),
+  }
+
   return {
-    plan: { ...DEFAULT_TARGETS },
-    source: 'default',
-    isDefault: true,
+    plan,
+    source,
+    isDefault: false,
+    planId: foundPlan.id,
+    dayType: resolvedDayType,
+    hasRestDayTargets,
   }
 }

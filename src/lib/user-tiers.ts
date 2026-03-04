@@ -30,6 +30,7 @@ export const USER_TIER_CONFIG = {
       programHistory: false,
       programImport: true,
       exerciseLibrary: true,
+      macroCycling: false,
     },
   },
   JACKED: {
@@ -56,6 +57,7 @@ export const USER_TIER_CONFIG = {
       programHistory: true,
       programImport: true,
       exerciseLibrary: true,
+      macroCycling: true,
     },
   },
 } as const
