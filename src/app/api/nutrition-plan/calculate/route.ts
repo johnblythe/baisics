@@ -131,11 +131,13 @@ export async function POST(request: Request) {
       goal,
     });
 
-    // Rest-day adjustments: same protein, same fat, -25% carbs, calories follow
-    const restProtein = result.protein;
-    const restCarbs = Math.round(result.carbs * 0.75);
-    const restFat = result.fats;
-    const restCalories = Math.round(restProtein * 4 + restCarbs * 4 + restFat * 9);
+    // Rest-day macro cycling: lower total cals, same protein, higher fat %, carbs fill remainder
+    const restCalMultiplier = goal === 'lose' ? 0.85 : goal === 'gain' ? 0.90 : 0.90;
+    const restCalories = Math.round(result.targetCalories * restCalMultiplier);
+    const restProtein = result.protein; // constant across both days
+    const restFatCal = restCalories * 0.30; // 30% fat on rest (vs 27% training)
+    const restFat = Math.round(restFatCal / 9);
+    const restCarbs = Math.round((restCalories - (restProtein * 4) - restFatCal) / 4);
 
     return NextResponse.json({
       suggested: {
