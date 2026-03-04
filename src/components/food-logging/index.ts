@@ -69,6 +69,10 @@ export { PantryTab } from './PantryTab';
 export { USDAFoodSearch } from './USDAFoodSearch';
 export type { USDAFoodSearchProps, USDAFoodResult } from './USDAFoodSearch';
 
+// Day type pill for macro cycling
+export { DayTypePill } from './DayTypePill';
+export type { DayTypePillProps } from './DayTypePill';
+
 // Page orchestrator
 export { FoodLogPage } from './FoodLogPage';
 export type { FoodLogPageProps } from './FoodLogPage';

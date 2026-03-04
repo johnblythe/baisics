@@ -31,6 +31,8 @@ export async function GET(request: Request) {
     const userId = session.user.id;
     const { searchParams } = new URL(request.url);
     const dateParam = searchParams.get('date');
+    const dayTypeParam = searchParams.get('dayType') as 'training' | 'rest' | null;
+    const dayTypeOverride = dayTypeParam === 'training' || dayTypeParam === 'rest' ? dayTypeParam : undefined;
 
     // Default to today if no date provided
     // Add time component to parse as local time (avoids UTC midnight → previous day in local)
@@ -74,13 +76,34 @@ export async function GET(request: Request) {
     totals.totalFat = Math.round(totals.totalFat);
 
     // Use resolveNutritionTargets for point-in-time target resolution
-    const nutritionResult = await resolveNutritionTargets(userId, date);
+    const nutritionResult = await resolveNutritionTargets(userId, date, dayTypeOverride);
     const targets = {
       dailyCalories: nutritionResult.plan.dailyCalories,
       proteinGrams: nutritionResult.plan.proteinGrams,
       carbGrams: nutritionResult.plan.carbGrams,
       fatGrams: nutritionResult.plan.fatGrams,
     };
+
+    // Build rest-day targets for client display (when they exist)
+    const restDayTargets = nutritionResult.hasRestDayTargets
+      ? {
+          dailyCalories: nutritionResult.plan.restDayCalories!,
+          proteinGrams: nutritionResult.plan.restDayProtein!,
+          carbGrams: nutritionResult.plan.restDayCarbs!,
+          fatGrams: nutritionResult.plan.restDayFat!,
+        }
+      : undefined;
+
+    // Training targets — always the training-day values (for weekly compliance)
+    // resolveTargets always includes trainingDay* when hasRestDayTargets is true
+    const trainingTargets = nutritionResult.hasRestDayTargets
+      ? {
+          dailyCalories: nutritionResult.plan.trainingDayCalories!,
+          proteinGrams: nutritionResult.plan.trainingDayProtein!,
+          carbGrams: nutritionResult.plan.trainingDayCarbs!,
+          fatGrams: nutritionResult.plan.trainingDayFat!,
+        }
+      : targets;
 
     // Calculate weekly compliance (Sun-Sat week containing the specified date)
     // Single groupBy query instead of 7 individual queries
@@ -109,6 +132,26 @@ export async function GET(request: Request) {
       ])
     );
 
+    // Per-day training/rest resolution for weekly compliance
+    // Only query workouts if the plan has rest-day targets
+    let workoutDates: Set<string> | null = null;
+    if (nutritionResult.hasRestDayTargets) {
+      const weekWorkouts = await prisma.workoutLog.findMany({
+        where: {
+          userId,
+          completedAt: {
+            not: null,
+            gte: weekStart,
+            lte: new Date(weekEnd.getTime() + 86400000),
+          },
+        },
+        select: { completedAt: true },
+      });
+      workoutDates = new Set(
+        weekWorkouts.map((w) => w.completedAt!.toISOString().split('T')[0])
+      );
+    }
+
     const weeklyCompliance: DayCompliance[] = [];
     for (let i = 0; i <= 6; i++) {
       const dayDate = new Date(weekStart);
@@ -121,9 +164,18 @@ export async function GET(request: Request) {
       const dayCalories = agg?._sum?.calories ?? 0;
       const dayProtein = agg?._sum?.protein ?? 0;
 
+      // Determine which targets to use for this day's adherence
+      let dayTargetProtein = trainingTargets.proteinGrams;
+      if (nutritionResult.hasRestDayTargets && workoutDates && restDayTargets) {
+        const isTrainingDay = workoutDates.has(dayKey);
+        dayTargetProtein = isTrainingDay
+          ? trainingTargets.proteinGrams
+          : restDayTargets.proteinGrams;
+      }
+
       let adherencePercent: number | null = null;
-      if (logged && targets) {
-        const rawPercent = (dayProtein / targets.proteinGrams) * 100;
+      if (logged) {
+        const rawPercent = (dayProtein / dayTargetProtein) * 100;
         adherencePercent = Math.min(100, Math.round(rawPercent));
       }
 
@@ -148,6 +200,10 @@ export async function GET(request: Request) {
       source: nutritionResult.source,
       isDefault: nutritionResult.isDefault,
       hasPersonalizedTargets,
+      // Rest-day cycling fields
+      dayType: nutritionResult.dayType,
+      hasRestDayTargets: nutritionResult.hasRestDayTargets,
+      ...(restDayTargets ? { restDayTargets } : {}),
     });
   } catch (error) {
     console.error('Error fetching daily summary:', error);
