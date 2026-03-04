@@ -40,6 +40,12 @@ interface CalculatedTargets {
   proteinGrams: number;
   carbGrams: number;
   fatGrams: number;
+  restDay?: {
+    dailyCalories: number;
+    proteinGrams: number;
+    carbGrams: number;
+    fatGrams: number;
+  };
 }
 
 interface CalculatorFormProps {
@@ -114,8 +120,11 @@ export function CalculatorForm({ onCalculated, onCollapse }: CalculatorFormProps
         throw new Error(data.error || 'Failed to calculate targets');
       }
 
-      // Pass calculated targets to parent
-      onCalculated(data.suggested);
+      // Pass calculated targets to parent (include restDay if present)
+      onCalculated({
+        ...data.suggested,
+        ...(data.restDay ? { restDay: data.restDay } : {}),
+      });
       onCollapse?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to calculate');

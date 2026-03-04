@@ -5,6 +5,8 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Loader2, AlertCircle } from 'lucide-react';
 import { NutritionTargetsModal } from '@/components/nutrition/NutritionTargetsModal';
+import { UpgradeModal } from '@/components/UpgradeModal';
+import { DayTypePill } from './DayTypePill';
 import { MealType } from '@prisma/client';
 import { toast } from 'sonner';
 import { useStaples, type FoodStaple } from '@/hooks/useStaples';
@@ -86,6 +88,14 @@ interface DailySummaryResponse {
   source?: string;
   isDefault?: boolean;
   hasPersonalizedTargets?: boolean;
+  dayType?: 'training' | 'rest';
+  hasRestDayTargets?: boolean;
+  restDayTargets?: {
+    dailyCalories: number;
+    proteinGrams: number;
+    carbGrams: number;
+    fatGrams: number;
+  };
 }
 
 interface QuickFoodResponse {
@@ -257,6 +267,12 @@ export function FoodLogPage({
   // Nutrition targets modal state
   const [showTargetsModal, setShowTargetsModal] = useState(false);
 
+  // Day type (training/rest) cycling state
+  const [dayType, setDayType] = useState<'training' | 'rest'>('training');
+  const [hasRestDayTargets, setHasRestDayTargets] = useState(false);
+  const [isPremium, setIsPremium] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
   // Copy meal modal state
   const [showCopyMealModal, setShowCopyMealModal] = useState(false);
   const [copyMealType, setCopyMealType] = useState<MealType>(MealType.SNACK);
@@ -281,6 +297,30 @@ export function FoodLogPage({
   // Manage modal state
   const [managingSlot, setManagingSlot] = useState<MealType | null>(null);
 
+  // Day type localStorage helpers
+  const getDayTypeOverride = useCallback((dateStr: string): 'training' | 'rest' | null => {
+    if (typeof window === 'undefined') return null;
+    const val = localStorage.getItem(`baisics_daytype_${dateStr}`);
+    return val === 'training' || val === 'rest' ? val : null;
+  }, []);
+
+  // toggleDayType placeholder — assigned after fetchSummary is defined
+  const toggleDayTypeRef = React.useRef<() => void>(() => {});
+
+  // Fetch premium status on mount
+  useEffect(() => {
+    async function fetchPremiumStatus() {
+      try {
+        const res = await fetch('/api/user');
+        const data = await res.json();
+        setIsPremium(data.isPremium || false);
+      } catch {
+        // Non-critical, default to free
+      }
+    }
+    fetchPremiumStatus();
+  }, []);
+
   // Fetch entries for selected date
   const fetchEntries = useCallback(async () => {
     setIsLoadingEntries(true);
@@ -304,20 +344,39 @@ export function FoodLogPage({
   const fetchSummary = useCallback(async () => {
     setIsLoadingSummary(true);
     try {
-      const response = await fetch(`/api/food-log/daily-summary?date=${formatDateForAPI(selectedDate)}`);
+      const dateStr = formatDateForAPI(selectedDate);
+      const override = getDayTypeOverride(dateStr);
+      let url = `/api/food-log/daily-summary?date=${dateStr}`;
+      if (override) {
+        url += `&dayType=${override}`;
+      }
+      const response = await fetch(url);
       if (!response.ok) {
         const data = await response.json();
         throw new Error(data.error || 'Failed to fetch summary');
       }
       const data: DailySummaryResponse = await response.json();
       setSummary(data);
+      // Sync day type state from API response
+      if (data.dayType) setDayType(data.dayType);
+      if (data.hasRestDayTargets !== undefined) setHasRestDayTargets(data.hasRestDayTargets);
     } catch (err) {
       console.error('Error fetching summary:', err);
       setError(err instanceof Error ? err.message : 'Failed to load daily summary');
     } finally {
       setIsLoadingSummary(false);
     }
-  }, [selectedDate]);
+  }, [selectedDate, getDayTypeOverride]);
+
+  // Assign toggleDayType now that fetchSummary is available
+  toggleDayTypeRef.current = () => {
+    const dateStr = formatDateForAPI(selectedDate);
+    const newType = dayType === 'training' ? 'rest' : 'training';
+    localStorage.setItem(`baisics_daytype_${dateStr}`, newType);
+    setDayType(newType);
+    // Re-fetch summary with new dayType (will read from localStorage)
+    setTimeout(() => fetchSummary(), 0);
+  };
 
   // Fetch quick foods (only once on mount)
   const fetchQuickFoods = useCallback(async () => {
@@ -1213,9 +1272,18 @@ export function FoodLogPage({
           <ChevronLeft className="w-5 h-5 lg:text-[#64748B]" />
         </button>
         <div className="text-center flex-1">
-          <h1 className="text-lg font-bold lg:text-[#0F172A]">
-            {isToday(selectedDate) ? 'Today' : formatDateForDisplay(selectedDate)}
-          </h1>
+          <div className="flex items-center justify-center gap-2">
+            <h1 className="text-lg font-bold lg:text-[#0F172A]">
+              {isToday(selectedDate) ? 'Today' : formatDateForDisplay(selectedDate)}
+            </h1>
+            <DayTypePill
+              dayType={dayType}
+              hasRestDayTargets={hasRestDayTargets}
+              isPremium={isPremium}
+              onToggle={() => toggleDayTypeRef.current()}
+              onUpgrade={() => setShowUpgradeModal(true)}
+            />
+          </div>
           {!isToday(selectedDate) && (
             <button
               type="button"
@@ -1514,12 +1582,26 @@ export function FoodLogPage({
           // Refresh summary to get updated targets
           fetchSummary();
         }}
+        isPremium={isPremium}
         initialValues={summary?.targets ? {
           dailyCalories: summary.targets.dailyCalories,
           proteinGrams: summary.targets.proteinGrams,
           carbGrams: summary.targets.carbGrams,
           fatGrams: summary.targets.fatGrams,
+          ...(summary.restDayTargets ? {
+            restDayCalories: summary.restDayTargets.dailyCalories,
+            restDayProtein: summary.restDayTargets.proteinGrams,
+            restDayCarbs: summary.restDayTargets.carbGrams,
+            restDayFat: summary.restDayTargets.fatGrams,
+          } : {}),
         } : undefined}
+      />
+
+      {/* Upgrade Modal (for macro cycling upsell) */}
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        context="general"
       />
 
       {/* Submitting overlay */}

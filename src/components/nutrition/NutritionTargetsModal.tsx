@@ -19,33 +19,49 @@ interface NutritionValues {
   proteinGrams: string;
   carbGrams: string;
   fatGrams: string;
+  restDayCalories: string;
+  restDayProtein: string;
+  restDayCarbs: string;
+  restDayFat: string;
 }
 
 interface NutritionTargetsModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSaved?: () => void;
+  isPremium?: boolean;
   initialValues?: {
     dailyCalories?: number;
     proteinGrams?: number;
     carbGrams?: number;
     fatGrams?: number;
+    restDayCalories?: number;
+    restDayProtein?: number;
+    restDayCarbs?: number;
+    restDayFat?: number;
   };
 }
+
+const EMPTY_VALUES: NutritionValues = {
+  dailyCalories: '',
+  proteinGrams: '',
+  carbGrams: '',
+  fatGrams: '',
+  restDayCalories: '',
+  restDayProtein: '',
+  restDayCarbs: '',
+  restDayFat: '',
+};
 
 export function NutritionTargetsModal({
   isOpen,
   onClose,
   onSaved,
+  isPremium,
   initialValues,
 }: NutritionTargetsModalProps) {
   useEscapeKey(onClose, isOpen);
-  const [values, setValues] = useState<NutritionValues>({
-    dailyCalories: '',
-    proteinGrams: '',
-    carbGrams: '',
-    fatGrams: '',
-  });
+  const [values, setValues] = useState<NutritionValues>({ ...EMPTY_VALUES });
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -62,6 +78,10 @@ export function NutritionTargetsModal({
           proteinGrams: initialValues.proteinGrams?.toString() || '',
           carbGrams: initialValues.carbGrams?.toString() || '',
           fatGrams: initialValues.fatGrams?.toString() || '',
+          restDayCalories: initialValues.restDayCalories?.toString() || '',
+          restDayProtein: initialValues.restDayProtein?.toString() || '',
+          restDayCarbs: initialValues.restDayCarbs?.toString() || '',
+          restDayFat: initialValues.restDayFat?.toString() || '',
         });
       } else {
         // Fetch current targets if no initial values provided
@@ -84,6 +104,10 @@ export function NutritionTargetsModal({
             proteinGrams: data.plan.proteinGrams?.toString() || '',
             carbGrams: data.plan.carbGrams?.toString() || '',
             fatGrams: data.plan.fatGrams?.toString() || '',
+            restDayCalories: data.restDayTargets?.dailyCalories?.toString() || '',
+            restDayProtein: data.restDayTargets?.proteinGrams?.toString() || '',
+            restDayCarbs: data.restDayTargets?.carbGrams?.toString() || '',
+            restDayFat: data.restDayTargets?.fatGrams?.toString() || '',
           });
         }
       }
@@ -109,14 +133,42 @@ export function NutritionTargetsModal({
     setError(null);
     setValidationErrors([]);
 
+    // Rest-day calorie field: clear rest-day macros
+    if (field === 'restDayCalories') {
+      setValues(prev => ({
+        ...prev,
+        restDayCalories: value,
+        restDayProtein: '',
+        restDayCarbs: '',
+        restDayFat: '',
+      }));
+      return;
+    }
+
+    // Rest-day macro fields: auto-calculate rest-day calories
+    if (field === 'restDayProtein' || field === 'restDayCarbs' || field === 'restDayFat') {
+      const newValues = { ...values, [field]: value };
+      const calculatedCalories = calculateCaloriesFromMacros(
+        field === 'restDayProtein' ? value : newValues.restDayProtein,
+        field === 'restDayCarbs' ? value : newValues.restDayCarbs,
+        field === 'restDayFat' ? value : newValues.restDayFat
+      );
+      setValues({
+        ...newValues,
+        restDayCalories: calculatedCalories,
+      });
+      return;
+    }
+
     // If user edits calories directly, clear macros (kcal-only mode)
     if (field === 'dailyCalories') {
-      setValues({
+      setValues(prev => ({
+        ...prev,
         dailyCalories: value,
         proteinGrams: '',
         carbGrams: '',
         fatGrams: '',
-      });
+      }));
       return;
     }
 
@@ -170,6 +222,39 @@ export function NutritionTargetsModal({
       }
     }
 
+    // Validate rest-day fields if any are provided
+    const hasRestDayMacros = values.restDayCalories || values.restDayProtein || values.restDayCarbs || values.restDayFat;
+    if (hasRestDayMacros) {
+      const restCal = parseInt(values.restDayCalories, 10) || 0;
+      const restProtein = parseInt(values.restDayProtein, 10) || 0;
+      const restCarbs = parseInt(values.restDayCarbs, 10) || 0;
+      const restFat = parseInt(values.restDayFat, 10) || 0;
+
+      if (!values.restDayCalories) {
+        errors.push('Rest day calories is required when using rest day targets');
+      }
+      if (values.restDayCalories && (restCal < BOUNDS.dailyCalories.min || restCal > BOUNDS.dailyCalories.max)) {
+        errors.push(`Rest day calories must be ${BOUNDS.dailyCalories.min}-${BOUNDS.dailyCalories.max}`);
+      }
+
+      const hasRestMacroValues = values.restDayProtein || values.restDayCarbs || values.restDayFat;
+      if (hasRestMacroValues) {
+        if (!values.restDayProtein) errors.push('Rest day protein is required when using rest day macros');
+        if (!values.restDayCarbs && values.restDayCarbs !== '0') errors.push('Rest day carbs is required when using rest day macros');
+        if (!values.restDayFat) errors.push('Rest day fat is required when using rest day macros');
+
+        if (values.restDayProtein && (restProtein < BOUNDS.proteinGrams.min || restProtein > BOUNDS.proteinGrams.max)) {
+          errors.push(`Rest day protein must be ${BOUNDS.proteinGrams.min}-${BOUNDS.proteinGrams.max}g`);
+        }
+        if ((values.restDayCarbs || values.restDayCarbs === '0') && (restCarbs < BOUNDS.carbGrams.min || restCarbs > BOUNDS.carbGrams.max)) {
+          errors.push(`Rest day carbs must be ${BOUNDS.carbGrams.min}-${BOUNDS.carbGrams.max}g`);
+        }
+        if (values.restDayFat && (restFat < BOUNDS.fatGrams.min || restFat > BOUNDS.fatGrams.max)) {
+          errors.push(`Rest day fat must be ${BOUNDS.fatGrams.min}-${BOUNDS.fatGrams.max}g`);
+        }
+      }
+    }
+
     setValidationErrors(errors);
     return errors.length === 0;
   };
@@ -204,6 +289,10 @@ export function NutritionTargetsModal({
           proteinGrams,
           carbGrams,
           fatGrams,
+          restDayCalories: values.restDayCalories ? parseInt(values.restDayCalories, 10) : null,
+          restDayProtein: values.restDayProtein ? parseInt(values.restDayProtein, 10) : null,
+          restDayCarbs: values.restDayCarbs ? parseInt(values.restDayCarbs, 10) : null,
+          restDayFat: values.restDayFat ? parseInt(values.restDayFat, 10) : null,
         }),
       });
 
@@ -228,7 +317,7 @@ export function NutritionTargetsModal({
   };
 
   const handleClose = () => {
-    setValues({ dailyCalories: '', proteinGrams: '', carbGrams: '', fatGrams: '' });
+    setValues({ ...EMPTY_VALUES });
     setError(null);
     setValidationErrors([]);
     setShowCalculator(false);
@@ -241,12 +330,22 @@ export function NutritionTargetsModal({
     proteinGrams: number;
     carbGrams: number;
     fatGrams: number;
+    restDay?: {
+      dailyCalories: number;
+      proteinGrams: number;
+      carbGrams: number;
+      fatGrams: number;
+    };
   }) => {
     setValues({
       dailyCalories: targets.dailyCalories.toString(),
       proteinGrams: targets.proteinGrams.toString(),
       carbGrams: targets.carbGrams.toString(),
       fatGrams: targets.fatGrams.toString(),
+      restDayCalories: isPremium && targets.restDay ? targets.restDay.dailyCalories.toString() : '',
+      restDayProtein: isPremium && targets.restDay ? targets.restDay.proteinGrams.toString() : '',
+      restDayCarbs: isPremium && targets.restDay ? targets.restDay.carbGrams.toString() : '',
+      restDayFat: isPremium && targets.restDay ? targets.restDay.fatGrams.toString() : '',
     });
     setShowCalculator(false);
   };
@@ -467,6 +566,122 @@ export function NutritionTargetsModal({
                   <p className="text-xs" style={{ color: COLORS.gray400 }}>
                     Protein: {BOUNDS.proteinGrams.min}-{BOUNDS.proteinGrams.max}g • Carbs: {BOUNDS.carbGrams.min}-{BOUNDS.carbGrams.max}g • Fat: {BOUNDS.fatGrams.min}-{BOUNDS.fatGrams.max}g
                   </p>
+                </div>
+
+                {/* Rest Day Targets section */}
+                <div className="mt-6 pt-4 border-t" style={{ borderColor: COLORS.gray100 }}>
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-sm font-semibold" style={{ color: COLORS.navy }}>
+                      Rest Day Targets
+                    </h3>
+                    {!isPremium && (
+                      <span
+                        className="text-xs px-2 py-0.5 rounded-full"
+                        style={{ backgroundColor: COLORS.gray100, color: COLORS.gray600 }}
+                      >
+                        Jacked
+                      </span>
+                    )}
+                  </div>
+                  {isPremium ? (
+                    <>
+                      <p className="text-xs mb-3" style={{ color: COLORS.gray400 }}>
+                        Optional — leave empty for same targets every day
+                      </p>
+                      <div className="space-y-3">
+                        <div>
+                          <label
+                            htmlFor="rest-day-calories"
+                            className="block text-sm font-medium mb-1"
+                            style={{ color: COLORS.gray600 }}
+                          >
+                            Rest Day Calories
+                          </label>
+                          <input
+                            id="rest-day-calories"
+                            type="text"
+                            inputMode="numeric"
+                            value={values.restDayCalories}
+                            onChange={(e) => handleValueChange('restDayCalories', e.target.value)}
+                            placeholder="1800"
+                            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors"
+                            style={{ borderColor: COLORS.gray100 }}
+                          />
+                        </div>
+                        <div className="grid grid-cols-3 gap-3">
+                          <div>
+                            <label
+                              htmlFor="rest-day-protein"
+                              className="block text-sm font-medium mb-1"
+                              style={{ color: COLORS.gray600 }}
+                            >
+                              Protein (g)
+                            </label>
+                            <input
+                              id="rest-day-protein"
+                              type="text"
+                              inputMode="numeric"
+                              value={values.restDayProtein}
+                              onChange={(e) => handleValueChange('restDayProtein', e.target.value)}
+                              placeholder="150"
+                              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors"
+                              style={{ borderColor: COLORS.gray100 }}
+                            />
+                          </div>
+                          <div>
+                            <label
+                              htmlFor="rest-day-carbs"
+                              className="block text-sm font-medium mb-1"
+                              style={{ color: COLORS.gray600 }}
+                            >
+                              Carbs (g)
+                            </label>
+                            <input
+                              id="rest-day-carbs"
+                              type="text"
+                              inputMode="numeric"
+                              value={values.restDayCarbs}
+                              onChange={(e) => handleValueChange('restDayCarbs', e.target.value)}
+                              placeholder="180"
+                              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors"
+                              style={{ borderColor: COLORS.gray100 }}
+                            />
+                          </div>
+                          <div>
+                            <label
+                              htmlFor="rest-day-fat"
+                              className="block text-sm font-medium mb-1"
+                              style={{ color: COLORS.gray600 }}
+                            >
+                              Fat (g)
+                            </label>
+                            <input
+                              id="rest-day-fat"
+                              type="text"
+                              inputMode="numeric"
+                              value={values.restDayFat}
+                              onChange={(e) => handleValueChange('restDayFat', e.target.value)}
+                              placeholder="60"
+                              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors"
+                              style={{ borderColor: COLORS.gray100 }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div
+                      className="text-center py-4 rounded-lg"
+                      style={{ backgroundColor: COLORS.gray50 }}
+                    >
+                      <p className="text-sm mb-2" style={{ color: COLORS.gray600 }}>
+                        Set different targets for training and rest days
+                      </p>
+                      <p className="text-xs" style={{ color: COLORS.gray400 }}>
+                        Upgrade to Jacked to unlock macro cycling
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 {/* Validation errors */}
