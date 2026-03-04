@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Training/rest day macro cycling — different macro targets for training vs rest days (Jacked tier)
+  - 4 nullable rest-day columns on `NutritionPlan` (restDayCalories, restDayProtein, restDayCarbs, restDayFat)
+  - Auto-detects training/rest via WorkoutLog; manual override via DayTypePill + localStorage
+  - `resolveNutritionTargets()` returns day-appropriate targets; weekly compliance uses per-day resolution
+  - NutritionTargetsModal: rest-day fields section (premium editable, free locked with upgrade CTA)
+  - Macro calculator returns both training + rest suggestions
+  - `macroCycling` feature key in user-tiers; server-side premium gate on POST
 - Gym Buddy — shared food library between partners/gym buddies (#428)
   - `BuddyGroup` + `BuddyMembership` models (1 group per user, max 5 members)
   - 8-char invite code for pairing (unambiguous charset, collision-safe)
