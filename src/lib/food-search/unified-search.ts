@@ -322,23 +322,30 @@ async function searchLocalOff(
       LIMIT ${pageSize}
     `;
 
-    // Phase 2: trigram fuzzy fallback — only when tsvector returned few results
+    // Phase 2: trigram fuzzy fallback — only when tsvector returned few results.
+    // Own try-catch so Phase 1 results survive if pg_trgm is unavailable.
     let fuzzyResults: FoodsOffRow[] = [];
     if (tsResults.length < 5 && query.trim().length >= 3) {
-      fuzzyResults = await prisma.$queryRaw<FoodsOffRow[]>`
-        SELECT f.id, f.code, f.product_name, f.brands,
-               f.calories_per_100g, f.protein_per_100g, f.carbs_per_100g, f.fat_per_100g,
-               f.serving_size, f.is_verified, f.verified_serving_unit, f.verified_serving_grams,
-               public.similarity(f.product_name, ${query}) AS sim
-        FROM foods_off f
-        WHERE f.product_name % ${query}
-        ORDER BY f.is_verified DESC, sim DESC
-        LIMIT ${pageSize}
-      `;
+      try {
+        fuzzyResults = await prisma.$transaction(async (tx) => {
+          await tx.$executeRaw`SET LOCAL pg_trgm.similarity_threshold = 0.4`;
+          return tx.$queryRaw<FoodsOffRow[]>`
+            SELECT f.id, f.code, f.product_name, f.brands,
+                   f.calories_per_100g, f.protein_per_100g, f.carbs_per_100g, f.fat_per_100g,
+                   f.serving_size, f.is_verified, f.verified_serving_unit, f.verified_serving_grams
+            FROM foods_off f
+            WHERE f.product_name % ${query}
+            ORDER BY f.product_name <-> ${query}
+            LIMIT ${pageSize}
+          `;
+        });
+      } catch (fuzzyError) {
+        console.error('Trigram fuzzy search error (tsvector results preserved):', fuzzyError);
+      }
     }
 
-    // Merge: tsvector first, then fuzzy. deduplicateResults() handles overlap.
-    const allRows = [...tsResults, ...fuzzyResults];
+    // Merge: tsvector first, then fuzzy. Cap to pageSize. deduplicateResults() handles overlap.
+    const allRows = [...tsResults, ...fuzzyResults].slice(0, pageSize);
     return allRows.map(food => ({
       id: `off-local:${food.code}`,
       name: food.product_name,
