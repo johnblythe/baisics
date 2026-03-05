@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Fuzzy food search via pg_trgm — typo-tolerant search fallback for misspelled queries (#387)
+  - Two-phase hybrid: tsvector exact-stem first, trigram fuzzy fallback when < 5 results
+  - GiST trigram index on `foods_off.product_name` with KNN distance ordering
+  - Similarity threshold raised to 0.4 (via `SET LOCAL`) to reduce false positives
+  - "chiken brest", "brocoli", "bnana" now return correct results
+  - Phase 2 isolated in own try-catch — tsvector results survive if pg_trgm unavailable
 - Training/rest day macro cycling — different macro targets for training vs rest days (Jacked tier)
   - 4 nullable rest-day columns on `NutritionPlan` (restDayCalories, restDayProtein, restDayCarbs, restDayFat)
   - Auto-detects training/rest via WorkoutLog; manual override via DayTypePill + localStorage
