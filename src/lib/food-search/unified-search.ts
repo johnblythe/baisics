@@ -107,11 +107,36 @@ function calculateRelevanceScore(food: UnifiedFoodResult, query: string): number
     score += SCORING.brandOnlyPenalty;
   }
 
+  // Fuzzy name match: boost foods whose name is similar to the query
+  // even when exact substring match fails (e.g., "bnana" → "banana")
+  if (nameMatches === 0) {
+    const fuzzySim = trigramSimilarity(nameLower, queryLower);
+    if (fuzzySim >= 0.3) score += Math.round(fuzzySim * 50);
+  }
+
   if (food.source === 'QUICK_FOOD') score += SCORING.quickFoodBoost;
   if (food.isVerified) score += SCORING.verifiedBoost;
   if (food.calories < 5) score += SCORING.lowCaloriePenalty;
 
   return score;
+}
+
+/**
+ * Character-level trigram similarity (mirrors pg_trgm logic).
+ * Used in relevance scoring so fuzzy DB matches aren't penalized
+ * by the exact-string relevance checks.
+ */
+function trigramSimilarity(a: string, b: string): number {
+  if (a === b) return 1;
+  const trgA = new Set<string>();
+  const trgB = new Set<string>();
+  for (let i = 0; i <= a.length - 3; i++) trgA.add(a.slice(i, i + 3));
+  for (let i = 0; i <= b.length - 3; i++) trgB.add(b.slice(i, i + 3));
+  if (trgA.size === 0 && trgB.size === 0) return 1;
+  if (trgA.size === 0 || trgB.size === 0) return 0;
+  let intersection = 0;
+  for (const t of trgA) if (trgB.has(t)) intersection++;
+  return intersection / (trgA.size + trgB.size - intersection);
 }
 
 /**
@@ -329,7 +354,18 @@ async function searchLocalOff(
       try {
         fuzzyResults = await prisma.$transaction(async (tx) => {
           await tx.$executeRaw`SET LOCAL pg_trgm.similarity_threshold = 0.4`;
-          return tx.$queryRaw<FoodsOffRow[]>`
+          // Verified fuzzy first — tiny subset (~100-250 verified foods), instant
+          const verifiedFuzzy = await tx.$queryRaw<FoodsOffRow[]>`
+            SELECT f.id, f.code, f.product_name, f.brands,
+                   f.calories_per_100g, f.protein_per_100g, f.carbs_per_100g, f.fat_per_100g,
+                   f.serving_size, f.is_verified, f.verified_serving_unit, f.verified_serving_grams
+            FROM foods_off f
+            WHERE f.product_name % ${query} AND f.is_verified = true
+            ORDER BY f.product_name <-> ${query}
+            LIMIT 5
+          `;
+          // General fuzzy to fill remaining slots
+          const generalFuzzy = await tx.$queryRaw<FoodsOffRow[]>`
             SELECT f.id, f.code, f.product_name, f.brands,
                    f.calories_per_100g, f.protein_per_100g, f.carbs_per_100g, f.fat_per_100g,
                    f.serving_size, f.is_verified, f.verified_serving_unit, f.verified_serving_grams
@@ -338,6 +374,7 @@ async function searchLocalOff(
             ORDER BY f.product_name <-> ${query}
             LIMIT ${pageSize}
           `;
+          return [...verifiedFuzzy, ...generalFuzzy];
         });
       } catch (fuzzyError) {
         console.error('Trigram fuzzy search error (tsvector results preserved):', fuzzyError);
