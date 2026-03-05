@@ -133,6 +133,9 @@ export interface MobileLayoutProps {
   // Targets
   isDefaultTargets?: boolean;
   onEditTargets?: () => void;
+
+  // Carb cycling
+  hasRestDayTargets?: boolean;
 }
 
 export function MobileLayout({
@@ -184,6 +187,7 @@ export function MobileLayout({
   mergedQuickItems,
   isDefaultTargets,
   onEditTargets,
+  hasRestDayTargets,
 }: MobileLayoutProps) {
   const remainingCalories = Math.round(Math.max(0, macroTargets.calories - macroTotals.calories));
   const remainingProtein = Math.round(Math.max(0, macroTargets.protein - macroTotals.protein));
@@ -291,6 +295,7 @@ export function MobileLayout({
               onToggle={onWeeklyToggle}
               summaryMessage={weeklySummaryMessage}
               onDayClick={onDayClick}
+              hasRestDayTargets={hasRestDayTargets}
             />
           </div>
 

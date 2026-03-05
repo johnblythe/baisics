@@ -1,10 +1,109 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { CalculatorForm } from './CalculatorForm';
 import { GoalForm } from './GoalForm';
 import { COLORS } from '@/lib/design/colors';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
+
+// --- Tooltip ---
+function InfoTooltip({ text }: { text: string }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent | TouchEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    document.addEventListener('touchstart', handler);
+    return () => {
+      document.removeEventListener('mousedown', handler);
+      document.removeEventListener('touchstart', handler);
+    };
+  }, [open]);
+
+  return (
+    <div ref={ref} className="relative inline-flex items-center">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => setOpen(false)}
+        className="w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold leading-none"
+        style={{ backgroundColor: COLORS.gray100, color: COLORS.gray600 }}
+        aria-label="What is carb cycling?"
+      >
+        ?
+      </button>
+      {open && (
+        <div
+          className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-64 px-3 py-2 rounded-lg text-xs leading-relaxed text-white z-50 shadow-lg"
+          style={{ backgroundColor: COLORS.navy }}
+        >
+          {text}
+          {/* Arrow */}
+          <div
+            className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0"
+            style={{
+              borderLeft: '6px solid transparent',
+              borderRight: '6px solid transparent',
+              borderTop: `6px solid ${COLORS.navy}`,
+            }}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+// --- Carb-cycle auto-calculator ---
+export function computeCarbCycleFromBaseline(vals: NutritionValues): { training: Partial<NutritionValues>; rest: Partial<NutritionValues> } | null {
+  const cal = parseInt(vals.dailyCalories, 10);
+  if (!cal || cal <= 0) return null; // no baseline calories
+
+  const protein = parseInt(vals.proteinGrams, 10) || 0;
+  const carbs = parseInt(vals.carbGrams, 10) || 0;
+  const fat = parseInt(vals.fatGrams, 10) || 0;
+  const hasMacros = protein > 0 || carbs > 0 || fat > 0;
+
+  // Training = baseline × 1.10, Rest = (7×baseline - 4×training) / 3
+  const trainingCal = Math.round(cal * 1.10);
+  const restCal = Math.round((7 * cal - 4 * trainingCal) / 3);
+
+  if (!hasMacros) {
+    // Calories-only mode
+    return {
+      training: { dailyCalories: String(trainingCal) },
+      rest: { restDayCalories: String(restCal) },
+    };
+  }
+
+  // Full macro split
+  // Training: same protein, 25% fat, carbs remainder
+  const trainingFat = Math.round((trainingCal * 0.25) / 9);
+  const trainingCarbs = Math.round((trainingCal - protein * 4 - trainingFat * 9) / 4);
+
+  // Rest: same protein, 35% fat, carbs remainder
+  const restFat = Math.round((restCal * 0.35) / 9);
+  const restCarbs = Math.round((restCal - protein * 4 - restFat * 9) / 4);
+
+  return {
+    training: {
+      dailyCalories: String(trainingCal),
+      proteinGrams: String(protein),
+      carbGrams: String(Math.max(0, trainingCarbs)),
+      fatGrams: String(trainingFat),
+    },
+    rest: {
+      restDayCalories: String(restCal),
+      restDayProtein: String(protein),
+      restDayCarbs: String(Math.max(0, restCarbs)),
+      restDayFat: String(restFat),
+    },
+  };
+}
 
 // Validation bounds matching POST /api/nutrition-plan
 const BOUNDS = {
@@ -14,7 +113,7 @@ const BOUNDS = {
   fatGrams: { min: 20, max: 300 },
 };
 
-interface NutritionValues {
+export interface NutritionValues {
   dailyCalories: string;
   proteinGrams: string;
   carbGrams: string;
@@ -63,6 +162,8 @@ export function NutritionTargetsModal({
   useEscapeKey(onClose, isOpen);
   const [values, setValues] = useState<NutritionValues>({ ...EMPTY_VALUES });
   const [carbCycling, setCarbCycling] = useState(false);
+  // Snapshot of training-day fields before carb-cycling shift, so toggle OFF can restore
+  const baselineRef = useRef<Pick<NutritionValues, 'dailyCalories' | 'proteinGrams' | 'carbGrams' | 'fatGrams'> | null>(null);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -194,13 +295,30 @@ export function NutritionTargetsModal({
 
   const handleCarbCyclingToggle = () => {
     if (!carbCycling) {
-      // Turning ON — rest day fields start empty for manual entry or calculator
+      // Turning ON — snapshot current values as baseline, then compute split
+      baselineRef.current = {
+        dailyCalories: values.dailyCalories,
+        proteinGrams: values.proteinGrams,
+        carbGrams: values.carbGrams,
+        fatGrams: values.fatGrams,
+      };
       setCarbCycling(true);
+      const result = computeCarbCycleFromBaseline(values);
+      if (result) {
+        setValues(prev => ({
+          ...prev,
+          ...result.training,
+          ...result.rest,
+        }));
+      }
     } else {
-      // Turning OFF — clear rest-day values
+      // Turning OFF — restore baseline training values, clear rest-day
       setCarbCycling(false);
+      const baseline = baselineRef.current;
+      baselineRef.current = null;
       setValues(prev => ({
         ...prev,
+        ...(baseline ?? {}),
         restDayCalories: '',
         restDayProtein: '',
         restDayCarbs: '',
@@ -592,6 +710,7 @@ export function NutritionTargetsModal({
                         <span className="text-sm font-medium" style={{ color: COLORS.navy }}>
                           Carb Cycling
                         </span>
+                        <InfoTooltip text="Eat more carbs on training days for energy, fewer on rest days. Your weekly average stays the same — you're just timing nutrients around workouts." />
                       </label>
 
                       {carbCycling && (
@@ -677,6 +796,7 @@ export function NutritionTargetsModal({
                         <span className="text-sm font-medium" style={{ color: COLORS.gray400 }}>
                           Carb Cycling
                         </span>
+                        <InfoTooltip text="Eat more carbs on training days for energy, fewer on rest days. Your weekly average stays the same — you're just timing nutrients around workouts." />
                         <span
                           className="text-xs px-2 py-0.5 rounded-full"
                           style={{ backgroundColor: COLORS.gray100, color: COLORS.gray600 }}

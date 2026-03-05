@@ -1417,6 +1417,7 @@ export function FoodLogPage({
           mergedQuickItems={mergedQuickItems}
           isDefaultTargets={isDefaultTargets}
           onEditTargets={() => setShowTargetsModal(true)}
+          hasRestDayTargets={hasRestDayTargets}
           customFooter={errorBanner ? (
             <>
               {errorBanner}
@@ -1485,6 +1486,7 @@ export function FoodLogPage({
           mergedQuickItems={mergedQuickItems}
           isDefaultTargets={isDefaultTargets}
           onEditTargets={() => setShowTargetsModal(true)}
+          hasRestDayTargets={hasRestDayTargets}
         />
       </div>
 

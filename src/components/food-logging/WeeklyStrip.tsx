@@ -23,9 +23,10 @@ export interface WeeklyStripProps {
   onToggle?: () => void;
   summaryMessage?: string;
   onDayClick?: (dateStr: string) => void;
+  hasRestDayTargets?: boolean;
 }
 
-export function WeeklyStrip({ weekData, expanded: controlledExpanded, onToggle, summaryMessage, onDayClick }: WeeklyStripProps) {
+export function WeeklyStrip({ weekData, expanded: controlledExpanded, onToggle, summaryMessage, onDayClick, hasRestDayTargets }: WeeklyStripProps) {
   const [internalExpanded, setInternalExpanded] = useState(false);
   const expanded = controlledExpanded ?? internalExpanded;
   const toggle = onToggle ?? (() => setInternalExpanded(!internalExpanded));
@@ -133,6 +134,15 @@ export function WeeklyStrip({ weekData, expanded: controlledExpanded, onToggle, 
               {summaryMessage && (
                 <div className="mt-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200">
                   <p className="text-sm text-green-800">{summaryMessage}</p>
+                </div>
+              )}
+
+              {hasRestDayTargets && (
+                <div className="mt-3 p-3 bg-blue-50 rounded-xl border border-blue-200 flex items-start gap-2">
+                  <svg className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <p className="text-xs text-blue-700">Weekly average is what counts — training and rest days balance out.</p>
                 </div>
               )}
             </div>

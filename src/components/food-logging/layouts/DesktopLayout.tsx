@@ -128,6 +128,9 @@ export interface DesktopLayoutProps {
   // Targets
   isDefaultTargets?: boolean;
   onEditTargets?: () => void;
+
+  // Carb cycling
+  hasRestDayTargets?: boolean;
 }
 
 export function DesktopLayout({
@@ -185,6 +188,7 @@ export function DesktopLayout({
   mergedQuickItems = [],
   isDefaultTargets,
   onEditTargets,
+  hasRestDayTargets,
 }: DesktopLayoutProps) {
   // Internal tab state as fallback when props not provided
   const [internalTab, setInternalTab] = useState<'log' | 'pantry'>('log');
@@ -238,6 +242,7 @@ export function DesktopLayout({
                 onToggle={() => setWeekExpanded(!weekExpanded)}
                 summaryMessage={weeklySummaryMessage}
                 onDayClick={onDayClick}
+                hasRestDayTargets={hasRestDayTargets}
               />
 
               {/* Suggestion Banner */}
