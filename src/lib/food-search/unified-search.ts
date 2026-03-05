@@ -302,7 +302,7 @@ interface FoodsOffRow {
 }
 
 /**
- * Search local Open Food Facts cache via Postgres tsvector
+ * Search local Open Food Facts cache via Postgres tsvector + trigram fuzzy fallback
  */
 async function searchLocalOff(
   query: string,
@@ -310,7 +310,8 @@ async function searchLocalOff(
   errors?: Record<string, string>
 ): Promise<UnifiedFoodResult[]> {
   try {
-    const foods = await prisma.$queryRaw<FoodsOffRow[]>`
+    // Phase 1: tsvector exact-stem search
+    const tsResults = await prisma.$queryRaw<FoodsOffRow[]>`
       WITH q AS (SELECT plainto_tsquery('english', ${query}) AS tsq)
       SELECT f.id, f.code, f.product_name, f.brands,
              f.calories_per_100g, f.protein_per_100g, f.carbs_per_100g, f.fat_per_100g,
@@ -320,7 +321,25 @@ async function searchLocalOff(
       ORDER BY f.is_verified DESC, ts_rank(f.search_vector, q.tsq) DESC
       LIMIT ${pageSize}
     `;
-    return foods.map(food => ({
+
+    // Phase 2: trigram fuzzy fallback — only when tsvector returned few results
+    let fuzzyResults: FoodsOffRow[] = [];
+    if (tsResults.length < 5 && query.trim().length >= 3) {
+      fuzzyResults = await prisma.$queryRaw<FoodsOffRow[]>`
+        SELECT f.id, f.code, f.product_name, f.brands,
+               f.calories_per_100g, f.protein_per_100g, f.carbs_per_100g, f.fat_per_100g,
+               f.serving_size, f.is_verified, f.verified_serving_unit, f.verified_serving_grams,
+               public.similarity(f.product_name, ${query}) AS sim
+        FROM foods_off f
+        WHERE f.product_name % ${query}
+        ORDER BY f.is_verified DESC, sim DESC
+        LIMIT ${pageSize}
+      `;
+    }
+
+    // Merge: tsvector first, then fuzzy. deduplicateResults() handles overlap.
+    const allRows = [...tsResults, ...fuzzyResults];
+    return allRows.map(food => ({
       id: `off-local:${food.code}`,
       name: food.product_name,
       brand: food.brands ?? undefined,
