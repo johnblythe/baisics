@@ -35,8 +35,10 @@ export default function NutritionForMuscleGrowth() {
     <BlogPost frontmatter={frontmatter}>
       <p className="text-lg mb-6">
         The fitness industry has made muscle-building nutrition seem impossibly complex.
-        Meal timing windows. Anabolic eating protocols. Carb cycling. Nutrient periodization.
-        Most of it doesn&apos;t matter.
+        Meal timing windows. Anabolic eating protocols. Nutrient periodization.
+        Most of it doesn&apos;t matter for beginners. Some advanced strategies
+        like <Link href="/blog/carb-cycling-explained">carb cycling</Link> can
+        help experienced lifters, but the fundamentals come first.
       </p>
 
       <p className="mb-6">

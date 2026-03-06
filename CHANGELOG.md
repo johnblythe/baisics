@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Landing page pricing: stale 3-tier ($0/$10/$20) → correct 2-tier (Free $0, Jacked $5/mo) matching `user-tiers.ts` (#452)
+- MFP comparison blog: removed "no manual logging" claims, corrected pricing, added food search/verified data/carb cycling rows (#453)
+- Nutrition-for-muscle-growth blog: softened carb cycling dismissal, added link to carb cycling guide
+
+### Changed
+- Landing page "Nutrition Targets" card → "Food Logging & Nutrition" with smart search/verified foods/recipe parsing (#452)
+- Features page nutrition cards rewritten for food logging, recipe parsing, and carb cycling (#452)
+
+### Added
+- Blog: "How to Track Macros: A Beginner's Guide" (`/blog/how-to-track-macros`)
+- Blog: "Calorie Counting Made Simple: The No-BS Guide" (`/blog/calorie-counting-guide`)
+- Blog: "Carb Cycling Explained: When It Works and When It Doesn't" (`/blog/carb-cycling-explained`)
+- Blog: "Why Most Calorie Tracking Apps Get Food Data Wrong" (`/blog/calorie-tracking-app-food-data`)
+- Blog: "Meal Prep for Your Macros: A Week-by-Week System" (`/blog/meal-prep-macros`)
+
 ### Changed
 - Rate limit on `/api/foods/search` — 60 req/min per IP to protect trigram queries (#448)
 - Structured error logging in `unified-search.ts` — `logError()` with source tags, error IDs, query context; replaces raw `console.error` (#449)
