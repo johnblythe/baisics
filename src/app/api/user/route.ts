@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { isEffectivelyPremium, isTrialActive, hasTrialExpired, getTrialDaysRemaining } from '@/lib/trial';
 
 export async function GET() {
   try {
@@ -17,6 +18,8 @@ export async function GET() {
         email: true,
         name: true,
         isPremium: true,
+        trialStartedAt: true,
+        trialEndsAt: true,
         isCoach: true,
         coachTier: true,
         coachOnboardedAt: true,
@@ -61,11 +64,17 @@ export async function GET() {
       : null;
 
     // Flatten for easier consumption
+    const trialUser = {
+      isPremium: user?.isPremium ?? false,
+      trialStartedAt: user?.trialStartedAt ?? null,
+      trialEndsAt: user?.trialEndsAt ?? null,
+    };
+
     return NextResponse.json({
       id: user?.id,
       email: user?.email,
       name: user?.name,
-      isPremium: user?.isPremium,
+      isPremium: isEffectivelyPremium(trialUser),
       isCoach: user?.isCoach,
       coachTier: user?.coachTier || 'FREE',
       coachOnboardedAt: user?.coachOnboardedAt || null,
@@ -73,6 +82,10 @@ export async function GET() {
       streakLongest: user?.streakLongest,
       subscriptionStatus: user?.subscription?.status || null,
       coach,
+      trialActive: isTrialActive(trialUser),
+      trialExpired: hasTrialExpired(trialUser),
+      trialDaysRemaining: getTrialDaysRemaining(trialUser),
+      trialEndsAt: user?.trialEndsAt?.toISOString() ?? null,
     });
   } catch (error) {
     console.error('Error fetching user:', error);

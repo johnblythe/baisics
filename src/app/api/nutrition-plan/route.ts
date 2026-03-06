@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { resolveNutritionTargets } from '@/lib/nutrition/resolveTargets';
+import { isEffectivelyPremium } from '@/lib/trial';
 
 /**
  * Validation bounds for nutrition values
@@ -112,8 +113,8 @@ export async function POST(request: Request) {
         );
       }
 
-      const user = await prisma.user.findUnique({ where: { id: userId }, select: { isPremium: true } });
-      if (!user?.isPremium) {
+      const user = await prisma.user.findUnique({ where: { id: userId }, select: { isPremium: true, trialStartedAt: true, trialEndsAt: true } });
+      if (!user || !isEffectivelyPremium(user)) {
         return NextResponse.json({ error: 'Rest day targets require a Jacked subscription' }, { status: 403 });
       }
 
