@@ -10,6 +10,7 @@
  */
 
 import { prisma } from '@/lib/prisma';
+import { logError } from '@/lib/logger';
 import { searchFoods as searchUsda, simplifyFood } from '@/lib/usda/client';
 import { searchFoods as searchOff } from '@/lib/openfoodfacts/client';
 import {
@@ -274,7 +275,7 @@ async function searchUsdaFoods(
       };
     });
   } catch (error) {
-    console.error('USDA search error:', error);
+    logError('food-search:usda', error, { query });
     if (errors) errors.usda = error instanceof Error ? error.message : 'Unknown error';
     return [];
   }
@@ -301,7 +302,7 @@ async function searchOpenFoodFacts(
       source: 'OPEN_FOOD_FACTS' as FoodSearchSource,
     }));
   } catch (error) {
-    console.error('Open Food Facts search error:', error);
+    logError('food-search:off-api', error, { query });
     if (errors) errors.offApi = error instanceof Error ? error.message : 'Unknown error';
     return [];
   }
@@ -377,7 +378,7 @@ async function searchLocalOff(
           return [...verifiedFuzzy, ...generalFuzzy];
         });
       } catch (fuzzyError) {
-        console.error('Trigram fuzzy search error (tsvector results preserved):', fuzzyError);
+        logError('food-search:off-local:fuzzy', fuzzyError, { query });
       }
     }
 
@@ -398,7 +399,7 @@ async function searchLocalOff(
       verifiedServingGrams: food.verified_serving_grams ?? undefined,
     }));
   } catch (error) {
-    console.error('Local OFF search error:', error);
+    logError('food-search:off-local', error, { query });
     if (errors) errors.offLocal = error instanceof Error ? error.message : 'Unknown error';
     return [];
   }
@@ -437,7 +438,7 @@ export async function unifiedSearch(
     try {
       return await searchQuickFoods(query, userId, pageSize);
     } catch (error) {
-      console.error('QuickFoods search error:', error);
+      logError('food-search:quickfoods', error, { query, userId });
       errors.quickFoods = error instanceof Error ? error.message : 'Unknown error';
       return [];
     }
@@ -459,10 +460,7 @@ export async function unifiedSearch(
   if (Object.keys(errors).length > 0) {
     const sourceCount = [!skipUsda, !skipOff, !!userId].filter(Boolean).length;
     if (Object.keys(errors).length >= sourceCount && sourceCount > 0) {
-      console.error(
-        `[unified-search] ALL ${sourceCount} food sources failed for query "${query}":`,
-        errors
-      );
+      logError('food-search:all-sources-failed', new Error('All food sources failed'), { query, errors, sourceCount });
     }
   }
 

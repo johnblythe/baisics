@@ -1,6 +1,7 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { checkRateLimit, rateLimitedResponse } from '@/utils/security/rateLimit';
 import { unifiedSearch } from '@/lib/food-search';
 import { prisma } from '@/lib/prisma';
 
@@ -11,7 +12,11 @@ import { prisma } from '@/lib/prisma';
  * Returns unified results with source field indicating origin.
  * User's QuickFoods appear first in results.
  */
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
+  // Rate limit: 60 searches per minute (type-ahead needs higher limit than estimate)
+  const { ok } = checkRateLimit(request, 60, 60_000);
+  if (!ok) return rateLimitedResponse();
+
   // Check authentication
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
