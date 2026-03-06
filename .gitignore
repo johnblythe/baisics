@@ -50,6 +50,7 @@ uploads/*
 
 # Claude Code local settings
 .claude/settings.local.json
+.claude/tmp/
 
 # Local issue cache
 .issues.json.issues.json
