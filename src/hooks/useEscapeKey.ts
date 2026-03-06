@@ -6,10 +6,11 @@ import { useEffect } from 'react';
  * listener invokes only the last (topmost) handler.
  */
 const escapeStack: (() => void)[] = [];
+let listenerBound = false;
 
 function ensureGlobalListener() {
-  if ((ensureGlobalListener as any).__bound) return;
-  (ensureGlobalListener as any).__bound = true;
+  if (listenerBound) return;
+  listenerBound = true;
   document.addEventListener('keydown', (e: KeyboardEvent) => {
     if (e.key === 'Escape' && escapeStack.length > 0) {
       escapeStack[escapeStack.length - 1]();
