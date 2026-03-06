@@ -61,9 +61,9 @@ export async function POST(request: Request) {
 
     // Check for existing completed log for this workout on the target date
     const startOfDay = new Date(targetDate);
-    startOfDay.setHours(0, 0, 0, 0);
+    startOfDay.setUTCHours(0, 0, 0, 0);
     const endOfDay = new Date(targetDate);
-    endOfDay.setHours(23, 59, 59, 999);
+    endOfDay.setUTCHours(23, 59, 59, 999);
 
     const existingLog = await prisma.workoutLog.findFirst({
       where: {

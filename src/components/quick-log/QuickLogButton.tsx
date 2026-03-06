@@ -54,11 +54,21 @@ export function QuickLogButton({ workoutId, workoutName, variant = 'button', sho
 
   const handleClick = () => {
     if (state === 'idle') {
+      setSelectedDate(toLocalDateString(new Date()));
       setState('confirming');
     }
   };
 
   const handleConfirm = async () => {
+    if (state !== 'confirming') return;
+
+    if (showDatePicker && !selectedDate) {
+      setError('Please select a date');
+      setState('error');
+      setTimeout(() => { setState('idle'); setError(null); }, 3000);
+      return;
+    }
+
     setState('loading');
     setError(null);
 
@@ -74,10 +84,24 @@ export function QuickLogButton({ workoutId, workoutName, variant = 'button', sho
         body: JSON.stringify(body),
       });
 
+      if (!response.ok) {
+        let serverMessage = 'Failed to log workout';
+        try {
+          const data = await response.json();
+          serverMessage = data.error || serverMessage;
+        } catch {
+          // non-JSON error response (proxy, CDN, etc.)
+        }
+        throw new Error(serverMessage);
+      }
+
       const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to log workout');
+      if (data.alreadyLogged) {
+        setError(data.message || 'Already logged on that date');
+        setState('error');
+        setTimeout(() => { setState('idle'); setError(null); }, 3000);
+        return;
       }
 
       setState('success');
