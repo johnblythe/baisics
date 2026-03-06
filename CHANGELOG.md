@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Custom food creation when search fails or item not found (#459)
+  - `CreateFoodModal` — name, brand, protein/carbs/fat with auto-calculated calories
+  - `POST /api/foods/community` — saves to `foods_off` as community entry, available to all users
+  - "Create custom food" CTA in search dropdown on empty/error results
+  - `COMMUNITY` source type across FoodSearchSource, FoodSource enum, sourceMap, SOURCE_BADGES
+
+### Fixed
+- Food search timeout error — check content-type before JSON parse to avoid `<!DOCTYPE` crash (#459)
+
+### Added
 - 14-day cardless Jacked trial (#456)
   - `trialStartedAt` + `trialEndsAt` fields on User model
   - `src/lib/trial.ts` — `isEffectivelyPremium()`, `isTrialActive()`, `hasTrialExpired()`, `getTrialDaysRemaining()`

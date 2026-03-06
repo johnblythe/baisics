@@ -948,6 +948,7 @@ export function FoodLogPage({
       'OPEN_FOOD_FACTS': 'OPEN_FOOD_FACTS',
       'AI_ESTIMATED': 'AI_ESTIMATED',
       'VERIFIED': 'OPEN_FOOD_FACTS',
+      'COMMUNITY': 'COMMUNITY',
     };
     const source = sourceMap[food.source || ''] || food.source || 'USDA_SEARCH';
 
