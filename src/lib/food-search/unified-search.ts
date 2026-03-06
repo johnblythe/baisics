@@ -449,16 +449,21 @@ export async function unifiedSearch(
     }
   };
 
-  const [quickFoodResults, usdaResults, offLocalResults] = await Promise.all([
+  const [quickFoodResults, offLocalResults] = await Promise.all([
     searchQuickFoodsSafe(),
-    skipUsda ? Promise.resolve([]) : searchUsdaFoods(query, pageSize, errors),
     skipOff ? Promise.resolve([]) : searchLocalOff(query, pageSize, errors),
   ]);
 
-  // Phase 2: conditional SAL fallback — only if local OFF is thin and not skipped (#417)
+  // Phase 2: USDA + OFF SAL fallbacks — only when local results are thin.
+  // Local DB has 1.4M+ foods; external APIs add ~1s latency and mostly duplicate.
+  const localCount = quickFoodResults.length + offLocalResults.length;
+  let usdaResults: UnifiedFoodResult[] = [];
   let offSalResults: UnifiedFoodResult[] = [];
-  if (!skipOff && !skipOffFallback && offLocalResults.length < 5) {
-    offSalResults = await searchOpenFoodFacts(query, pageSize, errors);
+  if (localCount < 5) {
+    [usdaResults, offSalResults] = await Promise.all([
+      skipUsda ? Promise.resolve([]) : searchUsdaFoods(query, pageSize, errors),
+      (!skipOff && !skipOffFallback) ? searchOpenFoodFacts(query, pageSize, errors) : Promise.resolve([]),
+    ]);
   }
 
   // Log high-severity warning when ALL sources failed

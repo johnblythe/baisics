@@ -50,26 +50,29 @@ export async function GET(request: NextRequest) {
       pageSize: limit,
     });
 
-    // Log search query non-blocking — don't let log failure break search response
-    let searchId: string | undefined;
-    try {
-      const searchLog = await prisma.foodSearchLog.create({
-        data: {
-          userId: session.user.id,
-          query,
-          resultCount: result.results.length,
-          action: 'REFINED',
-        },
-      });
-      searchId = searchLog.id;
-    } catch (logErr) {
+    // Fire-and-forget search log — don't block the response
+    const searchLogPromise = prisma.foodSearchLog.create({
+      data: {
+        userId: session.user.id,
+        query,
+        resultCount: result.results.length,
+        action: 'REFINED',
+      },
+    }).catch((logErr: unknown) => {
       logError('food-search:route:search-log', logErr, { query, userId: session.user.id });
-    }
+      return null;
+    });
+
+    // Return results immediately; searchId is best-effort
+    const searchLog = await Promise.race([
+      searchLogPromise,
+      new Promise<null>(resolve => setTimeout(() => resolve(null), 50)),
+    ]);
 
     return NextResponse.json({
       foods: result.results,
       counts: result.counts,
-      ...(searchId && { searchId }),
+      ...(searchLog?.id && { searchId: searchLog.id }),
     });
   } catch (error) {
     logError('food-search:route', error, { query });

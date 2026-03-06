@@ -381,16 +381,6 @@ export function FoodSearchAutocomplete({
           className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5"
           style={{ color: COLORS.gray400 }}
         />
-        {/* Loading spinner */}
-        {loading && (
-          <div
-            className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 border-2 rounded-full animate-spin"
-            style={{
-              borderColor: COLORS.gray100,
-              borderTopColor: COLORS.coral,
-            }}
-          />
-        )}
       </div>
 
       {/* Dropdown */}

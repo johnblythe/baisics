@@ -79,7 +79,7 @@ async function executeSearch(
   let response: Response;
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
+    const timeout = setTimeout(() => controller.abort(), 3000);
     response = await fetch(`${USDA_BASE_URL}/foods/search`, {
       method: 'POST',
       headers: {
@@ -96,7 +96,7 @@ async function executeSearch(
     clearTimeout(timeout);
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') {
-      throw new Error('USDA API timeout (8s)');
+      throw new Error('USDA API timeout (3s)');
     }
     const message = error instanceof Error ? error.message : String(error);
     throw new Error(`USDA API network error: ${message}`);
