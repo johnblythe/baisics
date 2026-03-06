@@ -110,9 +110,9 @@ const PRICING_TIERS = [
   },
   {
     name: 'Jacked',
-    price: 20,
+    price: 5,
     period: 'month',
-    description: 'The full experience',
+    description: 'Try free for 14 days — no card needed',
     features: [
       'Everything in Fit',
       'AI meal prep plans',
@@ -123,6 +123,7 @@ const PRICING_TIERS = [
     ],
     cta: 'Start Free Trial',
     highlighted: false,
+    trialBadge: true,
   },
 ];
 
@@ -680,6 +681,11 @@ export default function LandingPageV3() {
                       MOST POPULAR
                     </span>
                   )}
+                  {tier.trialBadge && (
+                    <span className="inline-block px-3 py-1 bg-[var(--color-coral)] text-white text-xs font-bold rounded-full mb-4">
+                      14-DAY FREE TRIAL
+                    </span>
+                  )}
                   <p className={`font-mono text-sm uppercase tracking-wider ${tier.highlighted ? 'text-[var(--color-gray-500)]' : 'text-[var(--color-gray-400)]'}`}>
                     {tier.name}
                   </p>
@@ -710,7 +716,7 @@ export default function LandingPageV3() {
                         : 'bg-white text-[var(--color-navy)] hover:bg-[var(--color-gray-100)]'
                     }`}
                   >
-                    {tier.name === 'Jacked' ? 'Go Jacked' : tier.cta}
+                    {tier.name === 'Jacked' ? 'Try Jacked Free' : tier.cta}
                   </button>
                 </div>
               ))}
