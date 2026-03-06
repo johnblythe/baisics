@@ -379,6 +379,7 @@ async function searchLocalOff(
         });
       } catch (fuzzyError) {
         logError('food-search:off-local:fuzzy', fuzzyError, { query });
+        if (errors) errors.offLocalFuzzy = fuzzyError instanceof Error ? fuzzyError.message : 'Unknown error';
       }
     }
 

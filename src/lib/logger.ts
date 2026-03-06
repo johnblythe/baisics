@@ -67,7 +67,7 @@ export function logError(
     source,
     message,
     ...(stack && { stack }),
-    ...context,
+    ...(context && { context }),
     timestamp: new Date().toISOString(),
   };
 
