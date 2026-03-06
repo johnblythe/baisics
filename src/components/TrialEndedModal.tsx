@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 
@@ -15,20 +15,11 @@ export function TrialEndedModal({ isOpen, onClose }: TrialEndedModalProps) {
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [dismissed, setDismissed] = useState(false);
 
-  useEscapeKey(handleDismiss, isOpen && !dismissed);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const wasDismissed = sessionStorage.getItem(SESSION_STORAGE_KEY) === 'true';
-      setDismissed(wasDismissed);
-    }
-  }, []);
+  useEscapeKey(handleDismiss, isOpen);
 
   function handleDismiss() {
     sessionStorage.setItem(SESSION_STORAGE_KEY, 'true');
-    setDismissed(true);
     onClose();
   }
 
@@ -65,6 +56,8 @@ export function TrialEndedModal({ isOpen, onClose }: TrialEndedModalProps) {
 
       if (data.url) {
         window.location.href = data.url;
+      } else {
+        throw new Error('Failed to create checkout. Please try again.');
       }
     } catch (err) {
       console.error('Upgrade error:', err);
@@ -74,7 +67,7 @@ export function TrialEndedModal({ isOpen, onClose }: TrialEndedModalProps) {
     }
   };
 
-  if (!isOpen || dismissed) return null;
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4">

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { calculateTrialEnd } from '@/lib/trial';
+import { logError } from '@/lib/logger';
 
 export async function POST() {
   try {
@@ -11,37 +12,29 @@ export async function POST() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { isPremium: true, trialStartedAt: true },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
-    if (user.isPremium) {
-      return NextResponse.json({ error: 'Already premium' }, { status: 400 });
-    }
-
-    if (user.trialStartedAt) {
-      return NextResponse.json({ error: 'Trial already used' }, { status: 400 });
-    }
-
     const now = new Date();
-    const trialEndsAt = calculateTrialEnd();
+    const trialEndsAt = calculateTrialEnd(now);
 
-    await prisma.user.update({
-      where: { id: session.user.id },
+    // Atomic check-and-set: only update if not premium AND no existing trial
+    const result = await prisma.user.updateMany({
+      where: {
+        id: session.user.id,
+        isPremium: false,
+        trialStartedAt: null,
+      },
       data: { trialStartedAt: now, trialEndsAt },
     });
+
+    if (result.count === 0) {
+      return NextResponse.json({ error: 'Trial already used or already premium' }, { status: 400 });
+    }
 
     return NextResponse.json({
       success: true,
       trialEndsAt: trialEndsAt.toISOString(),
     });
   } catch (error) {
-    console.error('Error starting trial:', error);
+    logError('api/trial/start', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

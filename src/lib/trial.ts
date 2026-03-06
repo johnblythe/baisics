@@ -23,17 +23,14 @@ export function hasTrialExpired(user: TrialUser): boolean {
 }
 
 export function getTrialDaysRemaining(user: TrialUser): number {
+  if (user.isPremium) return 0;
   if (!user.trialEndsAt) return 0;
   const diff = new Date(user.trialEndsAt).getTime() - Date.now();
   return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
 }
 
-export function hasUsedTrial(user: TrialUser): boolean {
-  return user.trialStartedAt !== null;
-}
-
-export function calculateTrialEnd(): Date {
-  const end = new Date();
+export function calculateTrialEnd(from: Date = new Date()): Date {
+  const end = new Date(from);
   end.setDate(end.getDate() + TRIAL_DURATION_DAYS);
   return end;
 }

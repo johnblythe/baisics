@@ -63,8 +63,8 @@ export async function GET() {
         }
       : null;
 
-    // Flatten for easier consumption
-    const trialUser = {
+    // Trial fields default to free/no-trial when user is null
+    const trial = {
       isPremium: user?.isPremium ?? false,
       trialStartedAt: user?.trialStartedAt ?? null,
       trialEndsAt: user?.trialEndsAt ?? null,
@@ -74,7 +74,7 @@ export async function GET() {
       id: user?.id,
       email: user?.email,
       name: user?.name,
-      isPremium: isEffectivelyPremium(trialUser),
+      isPremium: isEffectivelyPremium(trial),
       isCoach: user?.isCoach,
       coachTier: user?.coachTier || 'FREE',
       coachOnboardedAt: user?.coachOnboardedAt || null,
@@ -82,9 +82,9 @@ export async function GET() {
       streakLongest: user?.streakLongest,
       subscriptionStatus: user?.subscription?.status || null,
       coach,
-      trialActive: isTrialActive(trialUser),
-      trialExpired: hasTrialExpired(trialUser),
-      trialDaysRemaining: getTrialDaysRemaining(trialUser),
+      trialActive: isTrialActive(trial),
+      trialExpired: hasTrialExpired(trial),
+      trialDaysRemaining: getTrialDaysRemaining(trial),
       trialEndsAt: user?.trialEndsAt?.toISOString() ?? null,
     });
   } catch (error) {

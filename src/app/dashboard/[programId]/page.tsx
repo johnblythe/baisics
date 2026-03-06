@@ -548,16 +548,16 @@ function DashboardContent() {
         // Pick up pending trial from onboarding (anon user who signed in)
         const pendingTrial = localStorage.getItem('pendingTrial');
         if (pendingTrial === 'jacked' && !data.trialActive && !data.isPremium && !data.trialExpired) {
-          localStorage.removeItem('pendingTrial');
           try {
             const trialRes = await fetch('/api/trial/start', { method: 'POST' });
             if (trialRes.ok) {
+              localStorage.removeItem('pendingTrial');
               setTrialActive(true);
               setTrialDaysRemaining(14);
               setIsPremium(true);
             }
           } catch {
-            // silently ignore
+            // Leave pendingTrial for retry on next page load
           }
         }
       } catch (error) {

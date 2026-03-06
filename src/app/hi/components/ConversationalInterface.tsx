@@ -340,20 +340,21 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
       }
     }
 
-    // If user came in via ?tier=jacked, start their trial
-    if (tier === 'jacked' && activeUserId) {
+    // If user came in via ?tier=jacked, start their trial.
+    // Anon users won't have a session yet — defer to dashboard via localStorage.
+    if (tier === 'jacked') {
       try {
         const trialRes = await fetch('/api/trial/start', { method: 'POST' });
         if (trialRes.ok) {
           toast.success('Your 14-day Jacked trial is active! All premium features unlocked.');
+        } else {
+          // 401 (not authed yet) or other error — dashboard picks it up after sign-in
+          localStorage.setItem('pendingTrial', 'jacked');
         }
-        // Silently ignore failures (already premium, trial used, or not authenticated yet)
       } catch {
-        // Network error — ignore silently
+        // Network error — same fallback
+        localStorage.setItem('pendingTrial', 'jacked');
       }
-    } else if (tier === 'jacked' && !activeUserId) {
-      // Anonymous user — store for later activation on dashboard
-      localStorage.setItem('pendingTrial', 'jacked');
     }
 
     // Convert extractedData to intake format and use streaming generation
