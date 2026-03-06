@@ -78,51 +78,37 @@ const PERSONAS = [
 
 const PRICING_TIERS = [
   {
-    name: 'Starter',
+    name: 'Free',
     price: 0,
     period: 'forever',
-    description: 'Everything you need to start',
+    description: 'Everything you need to start training',
     features: [
-      'Custom workout program',
-      'Nutrition & macro targets',
+      'AI workout programs (4/month)',
+      'Workout logging & tracking',
+      'Nutrition logging & macro targets',
       'Exercise library access',
-      'PDF export',
-      '1 active program',
+      'Program import',
     ],
     cta: 'Start Free',
     highlighted: false,
   },
   {
-    name: 'Fit',
-    price: 10,
-    period: 'month',
-    description: 'For people who want to track progress',
-    features: [
-      'Everything in Starter',
-      'Workout logging',
-      'Weekly check-ins',
-      'Program auto-adjusts',
-      'Progress charts',
-      'Unlimited programs',
-    ],
-    cta: 'Start Free Trial',
-    highlighted: true,
-  },
-  {
     name: 'Jacked',
-    price: 20,
+    price: 5,
     period: 'month',
-    description: 'The full experience',
+    description: 'The full experience, unlocked',
     features: [
-      'Everything in Fit',
-      'AI meal prep plans',
-      'Progress photo analysis',
-      'Exercise swap suggestions',
-      'Priority generation',
-      'Early access to new features',
+      'Everything in Free',
+      'Unlimited program generations',
+      'Carb cycling (auto training/rest macros)',
+      'AI meal plans with dietary filters',
+      'Shopping lists',
+      'Check-in reminders',
+      'Live workout coach',
+      'Program library & history',
     ],
-    cta: 'Start Free Trial',
-    highlighted: false,
+    cta: 'Go Jacked',
+    highlighted: true,
   },
 ];
 
@@ -558,8 +544,8 @@ export default function LandingPageV3() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
                   </svg>
                 </div>
-                <h3 className="text-xl font-bold text-[var(--color-navy)] mb-3">Nutrition Targets</h3>
-                <p className="text-[var(--color-gray-500)]">Calories and macros calculated for your goal. Gain muscle, lose fat, or maintain—we&apos;ll set the numbers.</p>
+                <h3 className="text-xl font-bold text-[var(--color-navy)] mb-3">Food Logging & Nutrition</h3>
+                <p className="text-[var(--color-gray-500)]">Log what you eat with smart search and a verified food database. Track macros daily, see how you&apos;re hitting your targets, and paste plain-text recipes for instant breakdowns.</p>
               </div>
             </div>
 
@@ -665,7 +651,7 @@ export default function LandingPageV3() {
               <p className="mt-3 text-lg text-[var(--color-gray-400)]">Free is actually free. Forever. No tricks.</p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
               {PRICING_TIERS.map((tier) => (
                 <div
                   key={tier.name}

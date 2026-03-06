@@ -85,14 +85,29 @@ export default function BaisicsVsMyFitnessPal() {
               <td className="px-4 py-3 text-sm">No - Manual logging only</td>
             </tr>
             <tr>
-              <td className="px-4 py-3 text-sm">Calorie/Food Tracking</td>
-              <td className="px-4 py-3 text-sm">AI meal plans, no manual logging</td>
-              <td className="px-4 py-3 text-sm">14M+ food database, barcode scanner</td>
+              <td className="px-4 py-3 text-sm">Food Logging</td>
+              <td className="px-4 py-3 text-sm">Smart search + verified USDA database</td>
+              <td className="px-4 py-3 text-sm">14M+ user-submitted database</td>
+            </tr>
+            <tr>
+              <td className="px-4 py-3 text-sm">Food Data Quality</td>
+              <td className="px-4 py-3 text-sm">Verified foods prioritized, USDA-sourced</td>
+              <td className="px-4 py-3 text-sm">Crowd-sourced, accuracy varies</td>
+            </tr>
+            <tr>
+              <td className="px-4 py-3 text-sm">Recipe Parsing</td>
+              <td className="px-4 py-3 text-sm">Paste plain-text recipes for instant macros</td>
+              <td className="px-4 py-3 text-sm">Manual ingredient-by-ingredient entry</td>
             </tr>
             <tr>
               <td className="px-4 py-3 text-sm">Barcode Scanner</td>
-              <td className="px-4 py-3 text-sm">No</td>
+              <td className="px-4 py-3 text-sm">No (verified foods instead)</td>
               <td className="px-4 py-3 text-sm">Yes - Scan packaged foods</td>
+            </tr>
+            <tr>
+              <td className="px-4 py-3 text-sm">Carb Cycling</td>
+              <td className="px-4 py-3 text-sm">Auto training/rest day macros (Jacked)</td>
+              <td className="px-4 py-3 text-sm">Manual macro goal switching</td>
             </tr>
             <tr>
               <td className="px-4 py-3 text-sm">Workout Programming</td>
@@ -145,24 +160,27 @@ export default function BaisicsVsMyFitnessPal() {
 
         <p className="mb-4">
           Baisics uses AI to generate complete, personalized workout and
-          nutrition programs. Instead of manually logging every food you eat,
-          Baisics creates meal plans with recipes and shopping lists based
-          on your goals.
+          nutrition programs. It also offers food logging with smart fuzzy
+          search and a verified food database, plus the ability to paste
+          any recipe for instant nutritional breakdowns.
         </p>
 
         <p className="mb-4">
-          The platform leads with workout programming - multi-week plans
-          with progressive overload built in. Nutrition is included as
-          AI-generated meal plans rather than a food diary.
+          The platform leads with workout programming — multi-week plans
+          with progressive overload built in. Nutrition includes both
+          food logging with verified data and AI-generated meal plans.
+          Jacked tier adds carb cycling with auto-calculated training
+          and rest day macros.
         </p>
 
         <h3 className="text-2xl font-semibold mt-6 mb-4">Baisics Strengths</h3>
         <BlogList items={[
           "AI-generated workout programs tailored to your goals",
-          "Meal plans with recipes - no manual food logging required",
+          "Food logging with smart fuzzy search and verified USDA data",
+          "Paste any recipe for instant nutritional breakdown",
+          "Carb cycling with auto training/rest day macros (Jacked tier)",
           "Combined workout + nutrition in one platform",
-          "Coach mode to create programs for clients",
-          "Simple pricing: $5/month for everything"
+          "Simple pricing: Free tier + $5/month for everything"
         ]} />
       </BlogSection>
 
@@ -188,8 +206,8 @@ export default function BaisicsVsMyFitnessPal() {
           planning.
         </p>
         <BlogList items={[
-          "Free: 4 AI program generations/month, workout tracking, basic nutrition",
-          "Jacked: $5/month - Unlimited programs, full meal plans, all features"
+          "Free: 4 AI program generations/month, workout tracking, nutrition logging with verified foods",
+          "Jacked: $5/month - Unlimited programs, carb cycling, full meal plans, dietary filters, shopping lists, all features"
         ]} />
 
         <h3 className="text-2xl font-semibold mt-6 mb-4">Value Analysis</h3>
@@ -216,9 +234,11 @@ export default function BaisicsVsMyFitnessPal() {
           macros down to the gram. You decide what to eat and log it precisely.
         </p>
         <p className="mb-4">
-          <strong>Baisics:</strong> AI generates meal plans with specific recipes
-          and portions. No manual logging - you follow the plan or swap meals.
-          Less precise but less work. No barcode scanner.
+          <strong>Baisics:</strong> Log foods with smart fuzzy search across a
+          verified database (USDA-sourced, not crowd-submitted). Paste any
+          plain-text recipe for instant macro breakdowns. AI meal plans are
+          also available. No barcode scanner, but verified data means less
+          garbage entries to sift through.
         </p>
 
         <h3 className="text-2xl font-semibold mt-6 mb-4">Workout Programming</h3>
@@ -273,10 +293,10 @@ export default function BaisicsVsMyFitnessPal() {
         <h3 className="text-2xl font-semibold mt-6 mb-4">Choose Baisics If...</h3>
         <BlogList items={[
           "You want AI to build your workout programs",
-          "You prefer following meal plans over tracking food",
+          "You want food logging with verified data (fewer garbage entries)",
           "You're newer to training and need programming guidance",
-          "You want workouts and nutrition designed together",
-          "You want a simpler, lower-effort approach"
+          "You want workouts and nutrition in one platform",
+          "You want carb cycling with auto training/rest day macros"
         ]} />
 
         <h3 className="text-2xl font-semibold mt-6 mb-4">The Bottom Line</h3>
