@@ -21,6 +21,7 @@ import { sendGTMEvent } from "@next/third-parties/google";
 import { useStreamingGeneration, GenerationProgress } from "@/hooks/useStreamingGeneration";
 import { convertToIntakeFormat } from "@/utils/formatters";
 import { clearWelcomeData } from "@/components/ClaimWelcomeBanner";
+import { toast } from "sonner";
 
 // Quick start prompts for new users
 const QUICK_PROMPTS = [
@@ -75,9 +76,10 @@ interface ConversationalInterfaceProps {
   initialExtractedData?: IntakeFormData | null;
   onProgramChange?: (program: Program | null) => void;
   preventNavigation?: boolean;
+  tier?: string | null;
 }
 
-export const ConversationalInterface = forwardRef<ConversationalIntakeRef, ConversationalInterfaceProps>(({ userId, user, initialProgram, initialExtractedData, onProgramChange, preventNavigation }, ref) => {
+export const ConversationalInterface = forwardRef<ConversationalIntakeRef, ConversationalInterfaceProps>(({ userId, user, initialProgram, initialExtractedData, onProgramChange, preventNavigation, tier }, ref) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -336,6 +338,22 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
         }]);
         return;
       }
+    }
+
+    // If user came in via ?tier=jacked, start their trial
+    if (tier === 'jacked' && activeUserId) {
+      try {
+        const trialRes = await fetch('/api/trial/start', { method: 'POST' });
+        if (trialRes.ok) {
+          toast.success('Your 14-day Jacked trial is active! All premium features unlocked.');
+        }
+        // Silently ignore failures (already premium, trial used, or not authenticated yet)
+      } catch {
+        // Network error — ignore silently
+      }
+    } else if (tier === 'jacked' && !activeUserId) {
+      // Anonymous user — store for later activation on dashboard
+      localStorage.setItem('pendingTrial', 'jacked');
     }
 
     // Convert extractedData to intake format and use streaming generation

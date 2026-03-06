@@ -15,6 +15,8 @@ interface UserData {
   isCoach: boolean;
   isPremium: boolean;
   subscriptionStatus: string | null;
+  trialActive?: boolean;
+  trialDaysRemaining?: number;
 }
 
 interface NotificationPrefs {
@@ -183,7 +185,9 @@ export default function SettingsPage() {
               <div className="flex justify-between py-2">
                 <span className="text-[#64748B]">Subscription</span>
                 <span className="text-[#0F172A] capitalize">
-                  {userData?.subscriptionStatus || 'Free'}
+                  {userData?.trialActive
+                    ? `Jacked Trial (${userData.trialDaysRemaining} day${userData.trialDaysRemaining !== 1 ? 's' : ''} left)`
+                    : userData?.subscriptionStatus || 'Free'}
                 </span>
               </div>
             </div>

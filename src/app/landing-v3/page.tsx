@@ -703,14 +703,14 @@ export default function LandingPageV3() {
                   </ul>
 
                   <button
-                    onClick={() => handleGetStarted()}
+                    onClick={() => tier.name === 'Jacked' ? router.push('/hi?tier=jacked') : handleGetStarted()}
                     className={`w-full mt-6 py-3 font-semibold rounded-xl transition-all ${
                       tier.highlighted
                         ? 'bg-[var(--color-coral)] text-white hover:bg-[var(--color-coral-dark)]'
                         : 'bg-white text-[var(--color-navy)] hover:bg-[var(--color-gray-100)]'
                     }`}
                   >
-                    {tier.cta}
+                    {tier.name === 'Jacked' ? 'Go Jacked' : tier.cta}
                   </button>
                 </div>
               ))}

@@ -145,6 +145,7 @@ function ConversationalIntakeContent({ chatRef, userId: propUserId, preventNavig
   const [program, setProgram] = useState<Program | null>(null);
   const [existingIntake, setExistingIntake] = useState<IntakeFormData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [tier, setTier] = useState<string | null>(null);
 
   // Initialize from URL params or authenticated session
   useEffect(() => {
@@ -159,6 +160,12 @@ function ConversationalIntakeContent({ chatRef, userId: propUserId, preventNavig
       const personaId = searchParams.get("persona");
       if (personaId && PERSONA_DATA[personaId]) {
         setExistingIntake(PERSONA_DATA[personaId]);
+      }
+
+      // Read tier param for trial activation during onboarding
+      const tierParam = searchParams.get("tier");
+      if (tierParam) {
+        setTier(tierParam);
       }
 
       if (activeUserId) {
@@ -224,6 +231,7 @@ function ConversationalIntakeContent({ chatRef, userId: propUserId, preventNavig
         onProgramChange={handleProgramChange}
         ref={chatRef}
         preventNavigation={preventNavigation}
+        tier={tier}
       />
       
       {/* Admin Testing Corner */}
