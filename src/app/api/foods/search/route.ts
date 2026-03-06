@@ -1,7 +1,9 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { checkRateLimit, rateLimitedResponse } from '@/utils/security/rateLimit';
 import { unifiedSearch } from '@/lib/food-search';
+import { logError } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
 
 /**
@@ -11,7 +13,11 @@ import { prisma } from '@/lib/prisma';
  * Returns unified results with source field indicating origin.
  * User's QuickFoods appear first in results.
  */
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
+  // Rate limit: 60 searches per minute (type-ahead needs higher limit than estimate)
+  const { ok } = checkRateLimit(request, 60, 60_000);
+  if (!ok) return rateLimitedResponse();
+
   // Check authentication
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
@@ -44,24 +50,29 @@ export async function GET(request: Request) {
       pageSize: limit,
     });
 
-    // Log the search query (non-blocking, don't await)
-    const searchLog = await prisma.foodSearchLog.create({
-      data: {
-        userId: session.user.id,
-        query,
-        resultCount: result.results.length,
-        action: 'REFINED', // Initial search is marked as REFINED until selection/abandon
-      },
-    });
+    // Log search query non-blocking — don't let log failure break search response
+    let searchId: string | undefined;
+    try {
+      const searchLog = await prisma.foodSearchLog.create({
+        data: {
+          userId: session.user.id,
+          query,
+          resultCount: result.results.length,
+          action: 'REFINED',
+        },
+      });
+      searchId = searchLog.id;
+    } catch (logErr) {
+      logError('food-search:route:search-log', logErr, { query, userId: session.user.id });
+    }
 
-    // Return foods with source field and searchId for tracking
     return NextResponse.json({
       foods: result.results,
       counts: result.counts,
-      searchId: searchLog.id,
+      ...(searchId && { searchId }),
     });
   } catch (error) {
-    console.error('Food search error:', error);
+    logError('food-search:route', error, { query });
 
     const errorMessage = error instanceof Error ? error.message : String(error);
     const isDev = process.env.NODE_ENV === 'development';

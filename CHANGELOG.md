@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Rate limit on `/api/foods/search` — 60 req/min per IP to protect trigram queries (#448)
+- Structured error logging in `unified-search.ts` — `logError()` with source tags, error IDs, query context; replaces raw `console.error` (#449)
+- Verified `pg_trgm` extension lives in `public` schema on prod — migration safe to deploy (#450)
+
 ### Added
 - Fuzzy food search via pg_trgm — typo-tolerant search fallback for misspelled queries (#387)
   - Two-phase hybrid: tsvector exact-stem first, trigram fuzzy fallback when < 5 results

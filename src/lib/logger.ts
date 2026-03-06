@@ -41,3 +41,43 @@ export const logger = {
 };
 
 export type { LogEntry };
+
+/**
+ * Structured error logger — minimal wrapper for future Sentry/Datadog swap.
+ * Logs JSON in production, readable format in development.
+ */
+
+type ErrorContext = Record<string, unknown>;
+
+function generateErrorId(): string {
+  return Math.random().toString(36).slice(2, 10);
+}
+
+export function logError(
+  source: string,
+  error: unknown,
+  context?: ErrorContext
+): string {
+  const errorId = generateErrorId();
+  const message = error instanceof Error ? error.message : String(error);
+  const stack = error instanceof Error ? error.stack : undefined;
+
+  const entry = {
+    errorId,
+    source,
+    message,
+    ...(stack && { stack }),
+    ...(context && { context }),
+    timestamp: new Date().toISOString(),
+  };
+
+  if (process.env.NODE_ENV === 'production') {
+    console.error(JSON.stringify(entry));
+  } else {
+    console.error(`[${source}] ${message}`, { errorId, ...context });
+  }
+
+  // Future: Sentry.captureException(error, { extra: entry });
+
+  return errorId;
+}
