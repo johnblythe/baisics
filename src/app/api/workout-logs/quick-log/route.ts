@@ -21,10 +21,23 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { workoutId } = body;
+    const { workoutId, date } = body;
 
     if (!workoutId) {
       return NextResponse.json({ error: 'workoutId is required' }, { status: 400 });
+    }
+
+    // Parse optional date for retroactive logging
+    let targetDate = new Date();
+    if (date) {
+      const parsed = new Date(date);
+      if (isNaN(parsed.getTime())) {
+        return NextResponse.json({ error: 'Invalid date format' }, { status: 400 });
+      }
+      if (parsed > new Date()) {
+        return NextResponse.json({ error: 'Cannot log workouts in the future' }, { status: 400 });
+      }
+      targetDate = parsed;
     }
 
     // Get the workout to verify it exists and get its program
@@ -46,10 +59,10 @@ export async function POST(request: Request) {
     const now = new Date();
     const expiryDate = new Date(now.getTime() + 48 * 60 * 60 * 1000); // 48 hours from now
 
-    // Check for existing completed log for this workout on the same day
-    const startOfDay = new Date(now);
+    // Check for existing completed log for this workout on the target date
+    const startOfDay = new Date(targetDate);
     startOfDay.setHours(0, 0, 0, 0);
-    const endOfDay = new Date(now);
+    const endOfDay = new Date(targetDate);
     endOfDay.setHours(23, 59, 59, 999);
 
     const existingLog = await prisma.workoutLog.findFirst({
@@ -67,7 +80,7 @@ export async function POST(request: Request) {
       },
     });
 
-    // If already logged today, return existing log instead of creating duplicate
+    // If already logged on that date, return existing log instead of creating duplicate
     if (existingLog) {
       return NextResponse.json({
         success: true,
@@ -80,7 +93,7 @@ export async function POST(request: Request) {
           quickLog: existingLog.quickLog,
           quickLogExpiry: existingLog.quickLogExpiry,
         },
-        message: 'This workout was already logged today.',
+        message: 'This workout was already logged on that date.',
       });
     }
 
@@ -91,8 +104,8 @@ export async function POST(request: Request) {
         workoutId,
         programId: workout.workoutPlan.program.id,
         status: 'completed',
-        startedAt: now,
-        completedAt: now,
+        startedAt: targetDate,
+        completedAt: targetDate,
         quickLog: true,
         quickLogExpiry: expiryDate,
         notes: 'Quick logged - details can be added within 48 hours',

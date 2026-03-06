@@ -30,6 +30,7 @@ import type { RecoveryData } from '@/app/api/programs/[programId]/recovery/route
 import { Week2CheckInModal } from '@/components/week2-checkin';
 import type { Week2CheckInData } from '@/app/api/programs/[programId]/week2-checkin/route';
 import { FirstWorkoutCelebration } from '@/components/first-workout';
+import { QuickLogButton } from '@/components/quick-log/QuickLogButton';
 
 // Types for our API responses
 interface ProgramOverview {
@@ -944,27 +945,13 @@ function DashboardContent() {
                   </Link>
                   <p className="text-center text-sm text-[#94A3B8] mt-2">
                     or{' '}
-                    <button
-                      onClick={async () => {
-                        try {
-                          const response = await fetch('/api/workout-logs/quick-log', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ workoutId: selectedWorkoutId }),
-                          });
-                          if (!response.ok) {
-                            throw new Error(`HTTP ${response.status}`);
-                          }
-                          router.refresh();
-                        } catch (err) {
-                          console.error('Quick log failed:', err);
-                          alert('Failed to mark workout complete. Please try again.');
-                        }
-                      }}
-                      className="text-[#FF6B6B] hover:underline"
-                    >
-                      mark complete without tracking
-                    </button>
+                    <QuickLogButton
+                      workoutId={selectedWorkoutId!}
+                      workoutName={selectedWorkout.name}
+                      variant="link"
+                      showDatePicker
+                      onSuccess={() => router.refresh()}
+                    />
                     {' →'}
                   </p>
                 </>
