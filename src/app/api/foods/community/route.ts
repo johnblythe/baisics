@@ -61,12 +61,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Update search_vector for this entry so it appears in tsvector searches
-    await prisma.$executeRaw`
-      UPDATE foods_off
-      SET search_vector = to_tsvector('english', ${food.productName} || ' ' || COALESCE(${food.brands}, ''))
-      WHERE id = ${food.id}::uuid
-    `;
+    // search_vector is a GENERATED ALWAYS column — auto-populated from product_name + brands on INSERT
 
     return NextResponse.json({
       id: `off-local:${food.code}`,
