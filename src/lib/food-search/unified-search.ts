@@ -39,6 +39,7 @@ function roundMacro(value: number): number {
  */
 function hasValidNutrition(food: UnifiedFoodResult): boolean {
   if (food.isVerified) return true;
+  if (food.source === 'COMMUNITY') return true;
   // Must have at least some calories or macros
   if (food.calories === 0 && food.protein === 0 && food.carbs === 0 && food.fat === 0) {
     return false;

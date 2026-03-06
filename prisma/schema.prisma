@@ -658,6 +658,7 @@ enum FoodSource {
   SCREENSHOT      // Parsed from screenshot
   OPEN_FOOD_FACTS // Selected from Open Food Facts database
   STAPLE          // Confirmed from a pinned staple
+  COMMUNITY       // User-created community food entry
 }
 
 enum MealType {
@@ -1128,6 +1129,8 @@ model FoodsOff {
   isVerified      Boolean  @default(false) @map("is_verified")
   verifiedServingUnit  String?  @map("verified_serving_unit")
   verifiedServingGrams Float?   @map("verified_serving_grams")
+  isCommunity          Boolean  @default(false) @map("is_community")
+  createdByUserId      String?  @map("created_by_user_id") @db.Uuid
 
   @@map("foods_off")
 }

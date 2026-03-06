@@ -4,7 +4,7 @@
  */
 
 /** Source of a food search result */
-export type FoodSearchSource = 'QUICK_FOOD' | 'USDA' | 'OPEN_FOOD_FACTS' | 'AI_ESTIMATED' | 'VERIFIED';
+export type FoodSearchSource = 'QUICK_FOOD' | 'USDA' | 'OPEN_FOOD_FACTS' | 'AI_ESTIMATED' | 'VERIFIED' | 'COMMUNITY';
 
 /** Unified food result from any source */
 export interface UnifiedFoodResult {

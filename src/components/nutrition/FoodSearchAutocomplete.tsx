@@ -5,7 +5,8 @@ import { UnifiedFoodResult, FoodSearchSource } from '@/lib/food-search/types';
 import { getRecentFoods, addRecentFood } from '@/lib/foods/recentFoods';
 import { AIEstimateModal } from './AIEstimateModal';
 import { COLORS } from '@/lib/design/colors';
-import { Star, ShieldCheck, Search, Lightbulb } from 'lucide-react';
+import { Star, ShieldCheck, Search, Lightbulb, PlusCircle } from 'lucide-react';
+import { CreateFoodModal } from './CreateFoodModal';
 
 /** Log selection to analytics endpoint */
 async function logSearchSelection(
@@ -58,6 +59,7 @@ const SOURCE_BADGES: Record<FoodSearchSource, { label: string; color: string; bg
   OPEN_FOOD_FACTS: { label: 'Community', color: '#7C3AED', bgColor: '#EDE9FE' },
   AI_ESTIMATED: { label: '≈ Estimate', color: '#DC2626', bgColor: '#FEE2E2' },
   VERIFIED: { label: 'Verified', color: '#15803D', bgColor: '#DCFCE7' },
+  COMMUNITY: { label: 'Community', color: '#0891B2', bgColor: '#CFFAFE' },
 };
 
 export interface FoodSearchAutocompleteProps {
@@ -83,6 +85,7 @@ export function FoodSearchAutocomplete({
   const [error, setError] = useState<string | null>(null);
   const [showingRecent, setShowingRecent] = useState(false);
   const [showAIModal, setShowAIModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [searchComplete, setSearchComplete] = useState(false);
 
   // Search analytics tracking
@@ -141,6 +144,10 @@ export function FoodSearchAutocomplete({
       setError(null);
       try {
         const res = await fetch(`/api/foods/search?q=${encodeURIComponent(query)}&limit=10`);
+        const contentType = res.headers.get('content-type') || '';
+        if (!contentType.includes('application/json')) {
+          throw new Error('Search timed out. Try again or create a custom food.');
+        }
         if (!res.ok) {
           const data = await res.json();
           throw new Error(data.error || 'Search failed');
@@ -551,6 +558,26 @@ export function FoodSearchAutocomplete({
               </p>
             </li>
           )}
+
+          {/* Create custom food — show on error OR empty results */}
+          {!showingRecent && (error || (searchComplete && foods.length === 0)) && (
+            <li
+              className="px-4 py-3 border-t cursor-pointer transition-colors hover:bg-gray-50"
+              style={{ borderColor: COLORS.gray100, backgroundColor: COLORS.gray50 }}
+              onClick={() => {
+                setShowCreateModal(true);
+                setIsOpen(false);
+              }}
+            >
+              <div className="flex items-center gap-2 text-sm" style={{ color: '#0891B2' }}>
+                <PlusCircle className="w-5 h-5" />
+                <span className="font-medium">Create custom food</span>
+              </div>
+              <p className="text-xs mt-1" style={{ color: COLORS.gray400 }}>
+                Add a new food with name and macros for everyone to use
+              </p>
+            </li>
+          )}
         </ul>
       )}
 
@@ -560,6 +587,14 @@ export function FoodSearchAutocomplete({
         onClose={() => setShowAIModal(false)}
         onAddFood={handleAIFoodSelect}
         initialDescription={query}
+      />
+
+      {/* Create Custom Food Modal */}
+      <CreateFoodModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onAddFood={handleAIFoodSelect}
+        initialName={query}
       />
     </div>
   );
