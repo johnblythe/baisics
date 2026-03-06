@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { logError } from '@/lib/logger';
 import { checkRateLimit, rateLimitedResponse } from '@/utils/security/rateLimit';
 import { randomUUID } from 'crypto';
 
@@ -26,22 +27,35 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
   }
 
-  const { name, brand, protein, carbs, fat } = body;
+  const { name, brand, protein: rawProtein, carbs: rawCarbs, fat: rawFat } = body;
 
   // Validate name
   if (!name || typeof name !== 'string' || name.trim().length < 2 || name.trim().length > 200) {
     return NextResponse.json({ error: 'Name must be 2-200 characters' }, { status: 400 });
   }
 
+  // Validate brand
+  if (brand !== undefined && brand !== null && (typeof brand !== 'string' || brand.trim().length > 100)) {
+    return NextResponse.json({ error: 'Brand must be under 100 characters' }, { status: 400 });
+  }
+
   // Validate macros
-  const p = Number(protein);
-  const c = Number(carbs);
-  const f = Number(fat);
+  const p = Number(rawProtein);
+  const c = Number(rawCarbs);
+  const f = Number(rawFat);
   if (isNaN(p) || isNaN(c) || isNaN(f) || p < 0 || c < 0 || f < 0) {
     return NextResponse.json({ error: 'Macros must be non-negative numbers' }, { status: 400 });
   }
+  if (p > 100 || c > 100 || f > 100) {
+    return NextResponse.json({ error: 'Macro values per 100g seem too high. Please double-check.' }, { status: 400 });
+  }
+  if (p === 0 && c === 0 && f === 0) {
+    return NextResponse.json({ error: 'Enter at least one macro value' }, { status: 400 });
+  }
 
-  // Auto-calculate calories: P*4 + C*4 + F*9
+  const protein = Math.round(p * 10) / 10;
+  const carbs = Math.round(c * 10) / 10;
+  const fat = Math.round(f * 10) / 10;
   const calories = Math.round(p * 4 + c * 4 + f * 9);
 
   const code = `community:${randomUUID()}`;
@@ -53,29 +67,27 @@ export async function POST(request: NextRequest) {
         productName: name.trim(),
         brands: brand?.trim() || null,
         caloriesPer100g: calories,
-        proteinPer100g: Math.round(p * 10) / 10,
-        carbsPer100g: Math.round(c * 10) / 10,
-        fatPer100g: Math.round(f * 10) / 10,
+        proteinPer100g: protein,
+        carbsPer100g: carbs,
+        fatPer100g: fat,
         isCommunity: true,
         createdByUserId: session.user.id,
       },
     });
-
-    // search_vector is a GENERATED ALWAYS column — auto-populated from product_name + brands on INSERT
 
     return NextResponse.json({
       id: `off-local:${food.code}`,
       name: food.productName,
       brand: food.brands ?? undefined,
       calories,
-      protein: Math.round(p * 10) / 10,
-      carbs: Math.round(c * 10) / 10,
-      fat: Math.round(f * 10) / 10,
+      protein,
+      carbs,
+      fat,
       source: 'COMMUNITY',
       offCode: food.code,
     });
   } catch (error) {
-    console.error('Failed to create community food:', error);
+    logError('foods:community:create', error, { userId: session.user.id, foodName: name.trim() });
     return NextResponse.json({ error: 'Failed to create food entry' }, { status: 500 });
   }
 }

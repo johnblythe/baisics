@@ -39,7 +39,9 @@ function roundMacro(value: number): number {
  */
 function hasValidNutrition(food: UnifiedFoodResult): boolean {
   if (food.isVerified) return true;
-  if (food.source === 'COMMUNITY') return true;
+  if (food.source === 'COMMUNITY') {
+    return food.calories > 0 || food.protein > 0 || food.carbs > 0 || food.fat > 0;
+  }
   // Must have at least some calories or macros
   if (food.calories === 0 && food.protein === 0 && food.carbs === 0 && food.fat === 0) {
     return false;
@@ -324,6 +326,7 @@ interface FoodsOffRow {
   fat_per_100g: number | null;
   serving_size: string | null;
   is_verified: boolean;
+  is_community: boolean;
   verified_serving_unit: string | null;
   verified_serving_grams: number | null;
 }
@@ -342,7 +345,7 @@ async function searchLocalOff(
       WITH q AS (SELECT plainto_tsquery('english', ${query}) AS tsq)
       SELECT f.id, f.code, f.product_name, f.brands,
              f.calories_per_100g, f.protein_per_100g, f.carbs_per_100g, f.fat_per_100g,
-             f.serving_size, f.is_verified, f.verified_serving_unit, f.verified_serving_grams
+             f.serving_size, f.is_verified, f.is_community, f.verified_serving_unit, f.verified_serving_grams
       FROM foods_off f, q
       WHERE f.search_vector @@ q.tsq
       ORDER BY f.is_verified DESC, ts_rank(f.search_vector, q.tsq) DESC
@@ -360,7 +363,7 @@ async function searchLocalOff(
           const verifiedFuzzy = await tx.$queryRaw<FoodsOffRow[]>`
             SELECT f.id, f.code, f.product_name, f.brands,
                    f.calories_per_100g, f.protein_per_100g, f.carbs_per_100g, f.fat_per_100g,
-                   f.serving_size, f.is_verified, f.verified_serving_unit, f.verified_serving_grams
+                   f.serving_size, f.is_verified, f.is_community, f.verified_serving_unit, f.verified_serving_grams
             FROM foods_off f
             WHERE f.product_name % ${query} AND f.is_verified = true
             ORDER BY f.product_name <-> ${query}
@@ -370,7 +373,7 @@ async function searchLocalOff(
           const generalFuzzy = await tx.$queryRaw<FoodsOffRow[]>`
             SELECT f.id, f.code, f.product_name, f.brands,
                    f.calories_per_100g, f.protein_per_100g, f.carbs_per_100g, f.fat_per_100g,
-                   f.serving_size, f.is_verified, f.verified_serving_unit, f.verified_serving_grams
+                   f.serving_size, f.is_verified, f.is_community, f.verified_serving_unit, f.verified_serving_grams
             FROM foods_off f
             WHERE f.product_name % ${query}
             ORDER BY f.product_name <-> ${query}
@@ -394,7 +397,7 @@ async function searchLocalOff(
       protein: Math.round(food.protein_per_100g ?? 0),
       carbs: Math.round(food.carbs_per_100g ?? 0),
       fat: Math.round(food.fat_per_100g ?? 0),
-      source: food.is_verified ? 'VERIFIED' : 'OPEN_FOOD_FACTS',
+      source: food.is_verified ? 'VERIFIED' : food.is_community ? 'COMMUNITY' : 'OPEN_FOOD_FACTS',
       offCode: food.code,
       isVerified: food.is_verified,
       verifiedServingUnit: food.verified_serving_unit ?? undefined,

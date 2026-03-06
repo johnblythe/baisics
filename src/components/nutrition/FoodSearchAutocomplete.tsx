@@ -146,7 +146,11 @@ export function FoodSearchAutocomplete({
         const res = await fetch(`/api/foods/search?q=${encodeURIComponent(query)}&limit=10`);
         const contentType = res.headers.get('content-type') || '';
         if (!contentType.includes('application/json')) {
-          throw new Error('Search timed out. Try again or create a custom food.');
+          throw new Error(
+            res.status >= 500
+              ? `Search service error (${res.status}). Try again or create a custom food.`
+              : `Unexpected response (${res.status}). Please refresh and try again.`
+          );
         }
         if (!res.ok) {
           const data = await res.json();
@@ -165,6 +169,7 @@ export function FoodSearchAutocomplete({
         setError(err instanceof Error ? err.message : 'Search failed');
         setFoods([]);
         setSearchComplete(true);
+        setIsOpen(true);
       } finally {
         setLoading(false);
       }
@@ -569,7 +574,7 @@ export function FoodSearchAutocomplete({
                 setIsOpen(false);
               }}
             >
-              <div className="flex items-center gap-2 text-sm" style={{ color: '#0891B2' }}>
+              <div className="flex items-center gap-2 text-sm" style={{ color: SOURCE_BADGES.COMMUNITY.color }}>
                 <PlusCircle className="w-5 h-5" />
                 <span className="font-medium">Create custom food</span>
               </div>

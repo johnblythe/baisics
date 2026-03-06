@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { UnifiedFoodResult } from '@/lib/food-search/types';
 import { COLORS } from '@/lib/design/colors';
 import { toast } from 'sonner';
@@ -29,8 +29,7 @@ export function CreateFoodModal({
 
   const nameRef = useRef<HTMLInputElement>(null);
 
-  // Auto-calc calories
-  const calories = useMemo(() => Math.round(protein * 4 + carbs * 4 + fat * 9), [protein, carbs, fat]);
+  const calories = Math.round(protein * 4 + carbs * 4 + fat * 9);
 
   // Reset on open
   useEffect(() => {
@@ -151,7 +150,7 @@ export function CreateFoodModal({
           {/* Macros */}
           <div>
             <label className="block text-sm font-medium mb-2" style={{ color: COLORS.navy }}>
-              Macros (per serving)
+              Macros (per 100g)
             </label>
             <div className="grid grid-cols-3 gap-3">
               <MacroField id="protein" label="Protein" value={protein} onChange={setProtein} unit="g" />
