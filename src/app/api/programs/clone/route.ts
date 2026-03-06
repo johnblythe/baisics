@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { cloneProgram } from '@/services/programClone';
+import { isEffectivelyPremium } from '@/lib/trial';
 
 export async function POST(request: Request) {
   try {
@@ -28,10 +29,10 @@ export async function POST(request: Request) {
     // Check tier restriction for free users
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { isPremium: true },
+      select: { isPremium: true, trialStartedAt: true, trialEndsAt: true },
     });
 
-    if (!user?.isPremium) {
+    if (!user || !isEffectivelyPremium(user)) {
       // Check if user already has a program
       const existingPrograms = await prisma.program.count({
         where: {

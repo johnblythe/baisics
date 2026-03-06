@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { checkRateLimit, rateLimitedResponse } from '@/utils/security/rateLimit';
+import { isEffectivelyPremium } from '@/lib/trial';
 import { anthropic } from '@/lib/anthropic';
 import { parseAIJson } from '@/lib/ai/parse-helpers';
 
@@ -48,10 +49,10 @@ export async function POST(request: NextRequest) {
     // Check if user has paid tier
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { isPremium: true },
+      select: { isPremium: true, trialStartedAt: true, trialEndsAt: true },
     });
 
-    if (!user?.isPremium) {
+    if (!user || !isEffectivelyPremium(user)) {
       return NextResponse.json(
         { error: 'This feature requires a premium subscription' },
         { status: 403 }

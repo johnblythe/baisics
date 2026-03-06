@@ -11,6 +11,7 @@ import { sanitizeUserProfile, logSuspiciousInput } from '@/utils/security/prompt
 import { generatePhaseLean } from '@/services/programGeneration/leanGeneration';
 import type { GeneratedPhase } from '@/services/programGeneration/types';
 import { canGenerateProgram, shouldResetGenerations } from '@/lib/user-tiers';
+import { isEffectivelyPremium } from '@/lib/trial';
 
 // Exercise category ordering
 const CATEGORY_ORDER: Record<string, number> = {
@@ -118,6 +119,8 @@ export async function POST(request: Request) {
       where: { id: userId },
       select: {
         isPremium: true,
+        trialStartedAt: true,
+        trialEndsAt: true,
         programGenerationsThisMonth: true,
         generationsResetAt: true,
       },
@@ -138,12 +141,13 @@ export async function POST(request: Request) {
       }
 
       // Check if user can generate
-      if (!canGenerateProgram(user.isPremium, generationsThisMonth)) {
+      const effectivelyPremium = isEffectivelyPremium(user);
+      if (!canGenerateProgram(effectivelyPremium, generationsThisMonth)) {
         return new Response(
           JSON.stringify({
             error: 'generation_limit_reached',
             message: 'You have reached your monthly program generation limit',
-            limit: user.isPremium ? Infinity : 4,
+            limit: effectivelyPremium ? Infinity : 4,
             used: generationsThisMonth,
           }),
           { status: 403, headers: { 'Content-Type': 'application/json' } }

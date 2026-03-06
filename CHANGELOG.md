@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- 14-day cardless Jacked trial (#456)
+  - `trialStartedAt` + `trialEndsAt` fields on User model
+  - `src/lib/trial.ts` — `isEffectivelyPremium()`, `isTrialActive()`, `hasTrialExpired()`, `getTrialDaysRemaining()`
+  - POST `/api/trial/start` — auth + guards (already premium, already used trial)
+  - `/api/user` returns `trialActive`, `trialExpired`, `trialDaysRemaining`; `isPremium` computed via `isEffectivelyPremium()`
+  - All premium-gated API routes honor active trial (generate/phase, clone, nutrition-plan, swap-suggestions, dashboard)
+  - Landing page: "Go Jacked" → `/hi?tier=jacked`
+  - Onboarding: starts trial after user creation; localStorage fallback for anonymous users
+  - `TrialEndedModal` — session-once, "Go Jacked $5/mo" → Stripe or "Continue Free" → dismiss
+  - Dashboard: trial countdown badge, pending trial pickup, expiry modal
+  - Settings: trial status display
+
 ### Changed
 - Rate limit on `/api/foods/search` — 60 req/min per IP to protect trigram queries (#448)
 - Structured error logging in `unified-search.ts` — `logError()` with source tags, error IDs, query context; replaces raw `console.error` (#449)

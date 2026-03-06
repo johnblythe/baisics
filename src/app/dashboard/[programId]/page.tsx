@@ -15,6 +15,7 @@ import Image from 'next/image';
 import { ProgramSelector } from '@/components/ProgramSelector';
 import { PhotoComparison } from '@/components/PhotoComparison';
 import { UpgradeModal } from '@/components/UpgradeModal';
+import { TrialEndedModal } from '@/components/TrialEndedModal';
 import { ProgramCard } from '@/components/share/ProgramCard';
 import { MacroDisplay } from '@/components/MacroDisplay';
 import { NutritionLogModal } from '@/components/NutritionLogModal';
@@ -301,7 +302,10 @@ function DashboardContent() {
     source: string;
   } | null>(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [showTrialEndedModal, setShowTrialEndedModal] = useState(false);
   const [isPremium, setIsPremium] = useState(false);
+  const [trialActive, setTrialActive] = useState(false);
+  const [trialDaysRemaining, setTrialDaysRemaining] = useState(0);
   const [streak, setStreak] = useState({ current: 0, longest: 0 });
   const [coach, setCoach] = useState<{
     id: string;
@@ -525,6 +529,8 @@ function DashboardContent() {
         const response = await fetch('/api/user');
         const data = await response.json();
         setIsPremium(data.isPremium || false);
+        setTrialActive(data.trialActive || false);
+        setTrialDaysRemaining(data.trialDaysRemaining || 0);
         setStreak({
           current: data.streakCurrent || 0,
           longest: data.streakLongest || 0
@@ -532,6 +538,27 @@ function DashboardContent() {
         // Set coach info if user has one
         if (data.coach) {
           setCoach(data.coach);
+        }
+
+        // Show trial ended modal if trial expired and not dismissed this session
+        if (data.trialExpired && !sessionStorage.getItem('trialEndedModalDismissed')) {
+          setShowTrialEndedModal(true);
+        }
+
+        // Pick up pending trial from onboarding (anon user who signed in)
+        const pendingTrial = localStorage.getItem('pendingTrial');
+        if (pendingTrial === 'jacked' && !data.trialActive && !data.isPremium && !data.trialExpired) {
+          try {
+            const trialRes = await fetch('/api/trial/start', { method: 'POST' });
+            if (trialRes.ok) {
+              localStorage.removeItem('pendingTrial');
+              setTrialActive(true);
+              setTrialDaysRemaining(14);
+              setIsPremium(true);
+            }
+          } catch {
+            // Leave pendingTrial for retry on next page load
+          }
         }
       } catch (error) {
         console.error('Failed to fetch user status:', error);
@@ -1010,6 +1037,13 @@ function DashboardContent() {
                       <div className="text-[10px] text-gray-500">day streak</div>
                     </div>
                   </div>
+                  {trialActive && (
+                    <div className="mt-2 bg-gradient-to-r from-[#FF6B6B]/10 to-[#FF6B6B]/5 rounded-lg p-2 text-center">
+                      <div className="text-xs font-semibold text-[#FF6B6B]">
+                        Jacked trial: {trialDaysRemaining} day{trialDaysRemaining !== 1 ? 's' : ''} left
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -1283,6 +1317,10 @@ function DashboardContent() {
           onClose={() => setShowUpgradeModal(false)}
           context="program_limit"
           currentProgramName={program?.name}
+        />
+        <TrialEndedModal
+          isOpen={showTrialEndedModal}
+          onClose={() => setShowTrialEndedModal(false)}
         />
       </div>
     </div>

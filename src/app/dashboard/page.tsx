@@ -6,6 +6,7 @@ import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { matchTemplateToToolData, ToolSource } from '@/services/templateMatcher';
 import { cloneStaticTemplate } from '@/services/programClone';
+import { isEffectivelyPremium } from '@/lib/trial';
 import { Sparkles, LayoutGrid, Upload } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -79,7 +80,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     }),
     prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { isPremium: true },
+      select: { isPremium: true, trialStartedAt: true, trialEndsAt: true },
     }),
     prisma.program.count({
       where: {
@@ -164,7 +165,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
   // Free tier: if user already has a program and tries to claim another via token,
   // redirect to current program with upgrade prompt
-  if (claimData && !user?.isPremium && programCount > 0) {
+  if (claimData && user && !isEffectivelyPremium(user) && programCount > 0) {
     redirect(`/dashboard/${latestProgram.id}?upgrade_prompt=program_limit`);
   }
 

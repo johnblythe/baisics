@@ -21,6 +21,7 @@ import { sendGTMEvent } from "@next/third-parties/google";
 import { useStreamingGeneration, GenerationProgress } from "@/hooks/useStreamingGeneration";
 import { convertToIntakeFormat } from "@/utils/formatters";
 import { clearWelcomeData } from "@/components/ClaimWelcomeBanner";
+import { toast } from "sonner";
 
 // Quick start prompts for new users
 const QUICK_PROMPTS = [
@@ -75,9 +76,10 @@ interface ConversationalInterfaceProps {
   initialExtractedData?: IntakeFormData | null;
   onProgramChange?: (program: Program | null) => void;
   preventNavigation?: boolean;
+  tier?: string | null;
 }
 
-export const ConversationalInterface = forwardRef<ConversationalIntakeRef, ConversationalInterfaceProps>(({ userId, user, initialProgram, initialExtractedData, onProgramChange, preventNavigation }, ref) => {
+export const ConversationalInterface = forwardRef<ConversationalIntakeRef, ConversationalInterfaceProps>(({ userId, user, initialProgram, initialExtractedData, onProgramChange, preventNavigation, tier }, ref) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -335,6 +337,23 @@ export const ConversationalInterface = forwardRef<ConversationalIntakeRef, Conve
           content: "I encountered an error while creating your program. Please try again."
         }]);
         return;
+      }
+    }
+
+    // If user came in via ?tier=jacked, start their trial.
+    // Anon users won't have a session yet — defer to dashboard via localStorage.
+    if (tier === 'jacked') {
+      try {
+        const trialRes = await fetch('/api/trial/start', { method: 'POST' });
+        if (trialRes.ok) {
+          toast.success('Your 14-day Jacked trial is active! All premium features unlocked.');
+        } else {
+          // 401 (not authed yet) or other error — dashboard picks it up after sign-in
+          localStorage.setItem('pendingTrial', 'jacked');
+        }
+      } catch {
+        // Network error — same fallback
+        localStorage.setItem('pendingTrial', 'jacked');
       }
     }
 

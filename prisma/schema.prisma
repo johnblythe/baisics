@@ -75,6 +75,8 @@ model User {
   email         String?   @unique @map("email")
   password      String?   @map("password")
   isPremium     Boolean   @default(false) @map("is_premium")
+  trialStartedAt DateTime? @map("trial_started_at")
+  trialEndsAt   DateTime? @map("trial_ends_at")
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
   name          String?
