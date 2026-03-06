@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { UnifiedFoodResult } from '@/lib/food-search/types';
 import { COLORS } from '@/lib/design/colors';
 import { toast } from 'sonner';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 export interface CreateFoodModalProps {
   isOpen: boolean;
@@ -45,14 +46,7 @@ export function CreateFoodModal({
     }
   }, [isOpen, initialName]);
 
-  // Escape key
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) onClose();
-    };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
+  useEscapeKey(onClose, isOpen);
 
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) onClose();

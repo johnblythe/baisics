@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { UnifiedFoodResult } from '@/lib/food-search/types';
 import { COLORS } from '@/lib/design/colors';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 /** AI estimation result from /api/foods/estimate */
 export interface AIEstimateResult {
@@ -71,16 +72,7 @@ export function AIEstimateModal({
     }
   }, [estimate]);
 
-  // Close on Escape key
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
-        onClose();
-      }
-    };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
+  useEscapeKey(onClose, isOpen);
 
   // Close when clicking backdrop
   const handleBackdropClick = (e: React.MouseEvent) => {
