@@ -16,6 +16,10 @@ export async function POST(
   try {
     const { exerciseLibraryId, sets = 3 } = await request.json();
 
+    if (!exerciseLibraryId || typeof exerciseLibraryId !== 'string') {
+      return NextResponse.json({ error: 'exerciseLibraryId is required' }, { status: 400 });
+    }
+
     // Verify the workout belongs to the user
     const workout = await prisma.workout.findFirst({
       where: { id: workoutId },
@@ -167,7 +171,7 @@ export async function DELETE(
     }
 
     await prisma.exercise.delete({
-      where: { id: exerciseId },
+      where: { id: exerciseId, workoutId },
     });
 
     return NextResponse.json({ success: true });

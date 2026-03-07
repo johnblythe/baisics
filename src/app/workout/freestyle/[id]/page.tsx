@@ -198,25 +198,29 @@ function FreestyleWorkoutContent() {
     loadWorkout();
   }, [workoutLogId]);
 
-  // Fetch exercise history when exercises change
-  useEffect(() => {
-    const fetchHistory = async () => {
-      if (exercises.length === 0) return;
+  // Track exercise IDs separately so set updates don't trigger history re-fetches
+  const exerciseIdList = exercises.map(e => e.id).join(',');
 
+  // Fetch exercise history only when exercises are added/removed
+  useEffect(() => {
+    const ids = exerciseIdList.split(',').filter(Boolean);
+    if (ids.length === 0) return;
+
+    const fetchHistory = async () => {
       const historyData: Record<string, ExerciseHistory> = {};
       const failed: string[] = [];
 
       await Promise.all(
-        exercises.map(async (exercise) => {
+        ids.map(async (exerciseId) => {
           try {
-            const res = await fetch(`/api/exercises/${exercise.id}/history`);
+            const res = await fetch(`/api/exercises/${exerciseId}/history`);
             if (res.ok) {
-              historyData[exercise.id] = await res.json();
+              historyData[exerciseId] = await res.json();
             } else {
-              failed.push(exercise.id);
+              failed.push(exerciseId);
             }
           } catch {
-            failed.push(exercise.id);
+            failed.push(exerciseId);
           }
         })
       );
@@ -226,7 +230,7 @@ function FreestyleWorkoutContent() {
     };
 
     fetchHistory();
-  }, [exercises]);
+  }, [exerciseIdList]);
 
   // Hide rest timer when changing exercises
   useEffect(() => {
@@ -478,7 +482,7 @@ function FreestyleWorkoutContent() {
 
     if (replaceScheduled && nextWorkoutId) {
       try {
-        await fetch('/api/workout-logs/quick-log', {
+        const res = await fetch('/api/workout-logs/quick-log', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -486,9 +490,12 @@ function FreestyleWorkoutContent() {
             date: workoutDate.toISOString(),
           }),
         });
+        if (!res.ok) {
+          toast.error('Workout completed, but couldn\'t mark your scheduled workout as done.');
+        }
       } catch (err) {
         console.error('Failed to create replacement log:', err);
-        // Non-critical — freestyle workout is already completed
+        toast.error('Workout completed, but couldn\'t mark your scheduled workout as done.');
       }
     }
 

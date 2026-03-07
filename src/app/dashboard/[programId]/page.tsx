@@ -13,6 +13,7 @@ import { WorkoutPlan as WorkoutPlanHiType } from '@/types/program';
 import { ProgramWithRelations, TransformedProgram } from '../../api/programs/current/route';
 import Image from 'next/image';
 import { ProgramSelector } from '@/components/ProgramSelector';
+import { toast } from 'sonner';
 import { PhotoComparison } from '@/components/PhotoComparison';
 import { UpgradeModal } from '@/components/UpgradeModal';
 import { TrialEndedModal } from '@/components/TrialEndedModal';
@@ -342,6 +343,7 @@ function DashboardContent() {
       router.push(`/workout/freestyle/${data.workoutLogId}`);
     } catch (err) {
       console.error('Failed to go off-script:', err);
+      toast.error('Failed to start workout. Please try again.');
       setGoingOffScript(false);
     }
   };
