@@ -161,9 +161,8 @@ export function FoodEditModal({
               <input
                 id="serving-size"
                 type="number"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                step="0.1"
+                inputMode="decimal"
+                step="any"
                 min="0"
                 value={servingSize}
                 onChange={(e) => handleServingSizeChange(e.target.value)}
