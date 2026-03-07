@@ -466,10 +466,10 @@ function FreestyleWorkoutContent() {
 
   // Generate a name from the exercises' muscle groups
   const generateWorkoutName = () => {
-    if (exercises.length === 0) return 'Freestyle Workout';
+    if (exercises.length === 0) return 'F*ck It Workout';
     const names = exercises.map(e => e.name);
-    if (names.length <= 2) return `Freestyle — ${names.join(', ')}`;
-    return `Freestyle — ${names.slice(0, 2).join(', ')} +${names.length - 2} more`;
+    if (names.length <= 2) return `F*ck It — ${names.join(', ')}`;
+    return `F*ck It — ${names.slice(0, 2).join(', ')} +${names.length - 2} more`;
   };
 
   // Handle replace decision
@@ -616,7 +616,7 @@ function FreestyleWorkoutContent() {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <p className="text-sm text-[#94A3B8] font-medium">Freestyle Workout</p>
+                  <p className="text-sm text-[#94A3B8] font-medium">F*ck It Workout</p>
                   <span className="px-2 py-0.5 rounded-full bg-[#FFE5E5] text-[#FF6B6B] text-xs font-medium">Off-Script</span>
                 </div>
                 {exercises.length > 0 ? (

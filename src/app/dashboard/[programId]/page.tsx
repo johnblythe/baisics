@@ -1282,7 +1282,7 @@ function DashboardContent() {
                     <div className="flex items-center gap-2 min-w-0">
                       {activity.focus === 'freestyle' ? (
                         <div className="px-1.5 py-0.5 rounded-full bg-[#FFE5E5] text-[#FF6B6B] text-[10px] font-bold flex-shrink-0">
-                          FS
+                          F*IT
                         </div>
                       ) : (
                         <div className="w-6 h-6 rounded-full bg-[#FF6B6B]/10 text-[#FF6B6B] flex items-center justify-center font-bold text-xs flex-shrink-0">

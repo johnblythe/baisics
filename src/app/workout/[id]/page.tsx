@@ -712,7 +712,7 @@ function WorkoutPageContent() {
                 disabled={goingOffScript}
                 className="text-xs text-[#94A3B8] hover:text-[#FF6B6B] transition-colors disabled:opacity-50"
               >
-                {goingOffScript ? 'Starting freestyle...' : 'or go off-script'}
+                {goingOffScript ? 'Starting f*ck it mode...' : 'or go off-script'}
               </button>
             </div>
           )}
