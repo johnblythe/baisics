@@ -35,8 +35,8 @@ export default function NutritionForMuscleGrowth() {
     <BlogPost frontmatter={frontmatter}>
       <p className="text-lg mb-6">
         The fitness industry has made muscle-building nutrition seem impossibly complex.
-        Meal timing windows. Anabolic eating protocols. Carb cycling. Nutrient periodization.
-        Most of it doesn&apos;t matter.
+        Meal timing windows. Anabolic eating protocols. Nutrient periodization.
+        For most beginners, most of it doesn&apos;t matter yet.
       </p>
 
       <p className="mb-6">
@@ -158,6 +158,15 @@ Optimal: 144-180g protein/day`}
           Once protein and calories are set, how you fill the remaining calories
           matters less than people think. Carbs fuel training and may help slightly
           with recovery. Fats support hormone production. Both are fine.
+        </p>
+
+        <p className="mb-4">
+          Strategies like carb cycling — eating more carbs on training days and fewer
+          on rest days — can be a useful optimization tool once you&apos;ve nailed your
+          overall calorie and protein targets. For most beginners, though, it&apos;s added
+          complexity before the basics are locked in. Get consistent with the
+          fundamentals first, then layer in periodization strategies if you want to
+          fine-tune.
         </p>
 
         <BlogCode>
@@ -284,7 +293,8 @@ Total: ~175g protein, plenty of carbs, moderate fat.`}
 3. Train with progressive overload
 4. Be consistent for months and years
 
-That's it. Everything else is noise.`}
+That's it. Everything else is optimization
+you can layer in once these are locked in.`}
         </BlogCode>
 
         <p className="mt-6">

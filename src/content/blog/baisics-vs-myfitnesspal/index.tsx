@@ -76,7 +76,7 @@ export default function BaisicsVsMyFitnessPal() {
             </tr>
             <tr>
               <td className="px-4 py-3 text-sm">Premium Price</td>
-              <td className="px-4 py-3 text-sm">$5/month</td>
+              <td className="px-4 py-3 text-sm">Fit $10/month, Jacked $5/month</td>
               <td className="px-4 py-3 text-sm">$19.99/month or $79.99/year</td>
             </tr>
             <tr>
@@ -86,12 +86,12 @@ export default function BaisicsVsMyFitnessPal() {
             </tr>
             <tr>
               <td className="px-4 py-3 text-sm">Calorie/Food Tracking</td>
-              <td className="px-4 py-3 text-sm">AI meal plans, no manual logging</td>
+              <td className="px-4 py-3 text-sm">Full manual logging + AI meal plans. USDA &amp; Open Food Facts (1.4M+ foods), fuzzy search, verified foods, community food creation</td>
               <td className="px-4 py-3 text-sm">14M+ food database, barcode scanner</td>
             </tr>
             <tr>
               <td className="px-4 py-3 text-sm">Barcode Scanner</td>
-              <td className="px-4 py-3 text-sm">No</td>
+              <td className="px-4 py-3 text-sm">No scanner, but verified foods with smart serving defaults reduce manual entry</td>
               <td className="px-4 py-3 text-sm">Yes - Scan packaged foods</td>
             </tr>
             <tr>
@@ -159,10 +159,11 @@ export default function BaisicsVsMyFitnessPal() {
         <h3 className="text-2xl font-semibold mt-6 mb-4">Baisics Strengths</h3>
         <BlogList items={[
           "AI-generated workout programs tailored to your goals",
-          "Meal plans with recipes - no manual food logging required",
+          "Full food logging with 1.4M+ foods from USDA & Open Food Facts, plus AI meal plans",
+          "Fuzzy search across multiple databases with verified foods and smart defaults",
           "Combined workout + nutrition in one platform",
           "Coach mode to create programs for clients",
-          "Simple pricing: $5/month for everything"
+          "Tiered pricing: Fit at $10/month, Jacked at $5/month"
         ]} />
       </BlogSection>
 
@@ -188,13 +189,14 @@ export default function BaisicsVsMyFitnessPal() {
           planning.
         </p>
         <BlogList items={[
-          "Free: 4 AI program generations/month, workout tracking, basic nutrition",
-          "Jacked: $5/month - Unlimited programs, full meal plans, all features"
+          "Free (Starter): Custom workout program, nutrition & macro targets, exercise library, PDF export",
+          "Fit: $10/month - Workout logging, weekly check-ins, program auto-adjusts, progress charts, unlimited programs",
+          "Jacked: $5/month - Everything in Fit plus AI meal prep plans, progress photo analysis, exercise swap suggestions, priority generation"
         ]} />
 
         <h3 className="text-2xl font-semibold mt-6 mb-4">Value Analysis</h3>
         <p className="mb-4">
-          At $19.99/month vs $5/month, Baisics is significantly cheaper. But
+          At $19.99/month vs $5-10/month, Baisics is significantly cheaper at both tiers. But
           they solve different problems. MyFitnessPal excels at tracking what
           you actually eat with precision. Baisics tells you what to eat and
           how to train.
@@ -216,9 +218,13 @@ export default function BaisicsVsMyFitnessPal() {
           macros down to the gram. You decide what to eat and log it precisely.
         </p>
         <p className="mb-4">
-          <strong>Baisics:</strong> AI generates meal plans with specific recipes
-          and portions. No manual logging - you follow the plan or swap meals.
-          Less precise but less work. No barcode scanner.
+          <strong>Baisics:</strong> Full manual food logging backed by USDA and
+          Open Food Facts databases (1.4M+ foods combined), plus AI-generated
+          meal plans with recipes. Fuzzy search finds foods even with typos or
+          partial names, verified foods come with smart serving defaults, and
+          users can create custom foods when needed. No barcode scanner, but
+          the unified multi-source search and verified food data keep logging
+          fast.
         </p>
 
         <h3 className="text-2xl font-semibold mt-6 mb-4">Workout Programming</h3>
@@ -273,10 +279,10 @@ export default function BaisicsVsMyFitnessPal() {
         <h3 className="text-2xl font-semibold mt-6 mb-4">Choose Baisics If...</h3>
         <BlogList items={[
           "You want AI to build your workout programs",
-          "You prefer following meal plans over tracking food",
+          "You want food logging plus AI meal plans in one app",
           "You're newer to training and need programming guidance",
           "You want workouts and nutrition designed together",
-          "You want a simpler, lower-effort approach"
+          "You want verified foods with smart defaults for faster logging"
         ]} />
 
         <h3 className="text-2xl font-semibold mt-6 mb-4">The Bottom Line</h3>
@@ -287,9 +293,9 @@ export default function BaisicsVsMyFitnessPal() {
           everything.
         </p>
         <p className="mb-4">
-          Baisics removes the tracking and thinking. AI designs your workouts
-          and meals - you follow the plan. Less precise, but also less daily
-          effort. Different trade-offs for different people.
+          Baisics combines food logging with AI-designed workouts and meals.
+          You can track what you eat with 1.4M+ foods or follow AI meal plans -
+          or both. Different trade-offs for different people.
         </p>
         <p className="mb-4">
           Some users even combine them: Baisics for workout programming, MFP
@@ -336,9 +342,11 @@ export default function BaisicsVsMyFitnessPal() {
 
         <h3 className="text-xl font-semibold mt-6 mb-2">Is Baisics a good MyFitnessPal alternative?</h3>
         <p className="mb-4">
-          It depends on what you need. If you want workout programming and
-          meal plans without daily food logging, yes. If you need precise
-          calorie tracking with a huge food database, MFP is better suited.
+          It depends on what you need. Baisics now offers full food logging
+          with 1.4M+ foods from USDA and Open Food Facts, plus AI meal plans
+          and workout programming. MFP still has the larger database (14M+)
+          and barcode scanning, but Baisics covers more of the fitness picture
+          in one place.
         </p>
 
         <h3 className="text-xl font-semibold mt-6 mb-2">Does MyFitnessPal have workout programs?</h3>
