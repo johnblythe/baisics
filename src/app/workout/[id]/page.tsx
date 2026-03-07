@@ -126,6 +126,10 @@ function WorkoutPageContent() {
   const [workoutDate, setWorkoutDate] = useState<Date>(() => new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const today = new Date();
+  // Off-script freestyle state
+  const [goingOffScript, setGoingOffScript] = useState(false);
+  const [showOffScriptConfirm, setShowOffScriptConfirm] = useState(false);
+
   // Rest timer state for auto-start after set completion
   const [showRestTimer, setShowRestTimer] = useState(false);
   const [restTimerKey, setRestTimerKey] = useState(0); // Key to force timer restart
@@ -519,6 +523,33 @@ function WorkoutPageContent() {
     router.push('/dashboard');
   };
 
+  // Go off-script — start a freestyle workout
+  const goOffScript = async () => {
+    setGoingOffScript(true);
+    try {
+      const res = await fetch('/api/workout/freestyle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (!res.ok) throw new Error('Failed to start freestyle workout');
+      const data = await res.json();
+      router.push(`/workout/freestyle/${data.workoutLogId}`);
+    } catch (err) {
+      console.error('Failed to go off-script:', err);
+      toast.error('Failed to start freestyle workout');
+      setGoingOffScript(false);
+    }
+  };
+
+  const handleOffScriptClick = () => {
+    // If user has logged any sets, confirm before leaving
+    if (completedSets > 0) {
+      setShowOffScriptConfirm(true);
+    } else {
+      goOffScript();
+    }
+  };
+
   // Calculate progress
   const totalSets = exercises.reduce((acc, ex) => acc + ex.logs.length, 0);
   const completedSets = exercises.reduce((acc, ex) => acc + ex.logs.filter(l => l.isCompleted).length, 0);
@@ -672,6 +703,19 @@ function WorkoutPageContent() {
               style={{ width: `${progressPercent}%` }}
             />
           </div>
+
+          {/* Go off-script link — hidden in edit mode, fades after first set logged */}
+          {!isEditMode && (
+            <div className={`mt-2 transition-opacity duration-500 ${completedSets > 0 ? 'opacity-30 hover:opacity-60' : 'opacity-100'}`}>
+              <button
+                onClick={handleOffScriptClick}
+                disabled={goingOffScript}
+                className="text-xs text-[#94A3B8] hover:text-[#FF6B6B] transition-colors disabled:opacity-50"
+              >
+                {goingOffScript ? 'Starting f*ck it mode...' : 'or go off-script'}
+              </button>
+            </div>
+          )}
 
           {/* Date Picker for Backdating */}
           <div className="mt-4 flex items-center gap-3">
@@ -877,7 +921,7 @@ function WorkoutPageContent() {
                     setNumber={currentLog.setNumber}
                     targetReps={String(currentExercise.reps)}
                     weight={currentLog.weight ?? previousLog?.weight ?? ''}
-                    reps={currentLog.reps > 0 ? currentLog.reps : ''}
+                    reps={currentLog.reps > 0 ? currentLog.reps : (previousLog?.reps ?? '')}
                     notes={currentLog.notes}
                     isEditing={isEditingCompletedSet}
                     history={exerciseHistory[currentExercise.id]}
@@ -1099,6 +1143,36 @@ function WorkoutPageContent() {
             ));
           }}
         />
+      )}
+
+      {/* Off-script confirmation dialog */}
+      {showOffScriptConfirm && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setShowOffScriptConfirm(false)} />
+          <div className="relative bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 text-center">
+            <h3 className="text-lg font-bold text-[#0F172A] mb-2">Go off-script?</h3>
+            <p className="text-sm text-[#475569] mb-6">
+              You have {completedSets} set{completedSets !== 1 ? 's' : ''} logged. Your progress here will be saved — you can come back to finish later.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowOffScriptConfirm(false)}
+                className="flex-1 py-2.5 rounded-xl border border-[#E2E8F0] text-[#475569] font-medium hover:border-[#0F172A] transition-colors"
+              >
+                Stay here
+              </button>
+              <button
+                onClick={() => {
+                  setShowOffScriptConfirm(false);
+                  goOffScript();
+                }}
+                className="flex-1 py-2.5 rounded-xl bg-[#FF6B6B] text-white font-medium hover:bg-[#EF5350] transition-colors"
+              >
+                Go off-script
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </MainLayout>
   );

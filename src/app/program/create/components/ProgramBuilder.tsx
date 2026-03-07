@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react';
 import { createManualProgram, type ProgramFormData, type WorkoutFormData } from '../actions';
 import { WorkoutSection } from './WorkoutSection';
-import { ExerciseSearchModal } from './ExerciseSearchModal';
+import { ExerciseSearchModal } from '@/components/ExerciseSearchModal';
 import { Plus, X, Layers } from 'lucide-react';
 import { toast } from 'sonner';
 

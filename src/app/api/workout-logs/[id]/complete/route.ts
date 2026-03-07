@@ -175,8 +175,8 @@ export async function POST(
         },
       });
 
-      if (program) {
-        // Get all unique workouts in the program
+      if (program && program.source !== 'freestyle') {
+        // Get all unique workouts in the program (skip freestyle programs)
         const allWorkouts = program.workoutPlans.flatMap(wp => wp.workouts);
         const workoutPlan = program.workoutPlans[0];
         const daysPerWeek = workoutPlan?.daysPerWeek || 3;
