@@ -880,13 +880,41 @@ function FreestyleWorkoutContent() {
                 </button>
               ) : null
             ) : currentExercise ? (
-              <button
-                onClick={handleNext}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#FF6B6B] text-white font-medium hover:bg-[#EF5350] transition-colors shadow-lg shadow-[#FF6B6B]/25"
-              >
-                Next
-                <ChevronRight className="w-4 h-4" />
-              </button>
+              (() => {
+                const isLastExercise = currentExerciseIndex === exercises.length - 1;
+                const allSetsComplete = currentExercise.logs.every(l => l.isCompleted);
+
+                if (isLastExercise && allSetsComplete) {
+                  // Last exercise, all sets done — show Complete + Add More
+                  return (
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={handleNext}
+                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-[#F1F5F9] text-[#475569] font-medium hover:border-[#0F172A] hover:text-[#0F172A] transition-all duration-200"
+                      >
+                        <Plus className="w-4 h-4" />
+                        Add More
+                      </button>
+                      <button
+                        onClick={completeWorkout}
+                        className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#FF6B6B] text-white font-medium hover:bg-[#EF5350] transition-colors shadow-lg shadow-[#FF6B6B]/25"
+                      >
+                        Complete Workout
+                      </button>
+                    </div>
+                  );
+                }
+
+                return (
+                  <button
+                    onClick={handleNext}
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#FF6B6B] text-white font-medium hover:bg-[#EF5350] transition-colors shadow-lg shadow-[#FF6B6B]/25"
+                  >
+                    Next
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                );
+              })()
             ) : null}
           </div>
         </div>
