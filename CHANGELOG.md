@@ -8,6 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Freestyle "off-script" workout logging — log exercises not in your program (#461)
+  - New freestyle workout page at `/workout/freestyle/[id]` with same one-exercise-at-a-time UX
+  - Exercise search modal extracted to shared component `src/components/ExerciseSearchModal.tsx`
+  - API: `POST /api/workout/freestyle` — creates singleton freestyle program + workout
+  - API: `POST/DELETE /api/workout/freestyle/[workoutId]/exercises` — add/remove exercises
+  - API: `GET /api/exercises/search` + `/filters` — exercise library search endpoints
+  - "Go off-script" CTA on dashboard (workout day + rest day) and active workout page
+  - End-of-workout "replace scheduled?" decision with quick-log integration
+  - Confirmation dialog when leaving in-progress prescribed workout
+  - Freestyle badge in recent activity feed
+  - Program completion check skips freestyle programs
 - Custom food creation when search fails or item not found (#459)
   - `CreateFoodModal` — name, brand, protein/carbs/fat with auto-calculated calories
   - `POST /api/foods/community` — saves to `foods_off` as community entry, available to all users

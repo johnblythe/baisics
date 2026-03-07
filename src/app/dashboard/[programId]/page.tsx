@@ -328,6 +328,23 @@ function DashboardContent() {
     totalVolume: number;
     workoutName: string;
   } | null>(null);
+  const [goingOffScript, setGoingOffScript] = useState(false);
+
+  const goOffScript = async () => {
+    setGoingOffScript(true);
+    try {
+      const res = await fetch('/api/workout/freestyle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (!res.ok) throw new Error('Failed to start freestyle workout');
+      const data = await res.json();
+      router.push(`/workout/freestyle/${data.workoutLogId}`);
+    } catch (err) {
+      console.error('Failed to go off-script:', err);
+      setGoingOffScript(false);
+    }
+  };
 
   useEffect(() => {
     const disclaimerAcknowledged = localStorage.getItem('disclaimer-acknowledged');
@@ -907,6 +924,16 @@ function DashboardContent() {
                       >
                         Train anyway: {selectedWorkout.name}
                       </Link>
+                      <p className="text-center text-xs text-[#94A3B8] mt-2">
+                        or{' '}
+                        <button
+                          onClick={goOffScript}
+                          disabled={goingOffScript}
+                          className="text-[#FF6B6B] hover:underline font-medium disabled:opacity-50"
+                        >
+                          {goingOffScript ? 'Starting...' : 'go off-script'}
+                        </button>
+                      </p>
                     </div>
                   )}
                 </>
@@ -980,6 +1007,16 @@ function DashboardContent() {
                       onSuccess={() => router.refresh()}
                     />
                     {' →'}
+                  </p>
+                  <p className="text-center text-sm text-[#94A3B8] mt-1">
+                    or{' '}
+                    <button
+                      onClick={goOffScript}
+                      disabled={goingOffScript}
+                      className="text-[#FF6B6B] hover:underline font-medium disabled:opacity-50"
+                    >
+                      {goingOffScript ? 'Starting...' : 'go off-script'}
+                    </button>
                   </p>
                 </>
               ) : (
@@ -1243,9 +1280,15 @@ function DashboardContent() {
                     className="group flex items-center justify-between p-2 rounded-lg bg-gray-50 hover:bg-[#FFE5E5]/30 transition-colors"
                   >
                     <div className="flex items-center gap-2 min-w-0">
-                      <div className="w-6 h-6 rounded-full bg-[#FF6B6B]/10 text-[#FF6B6B] flex items-center justify-center font-bold text-xs flex-shrink-0">
-                        {activity.dayNumber}
-                      </div>
+                      {activity.focus === 'freestyle' ? (
+                        <div className="px-1.5 py-0.5 rounded-full bg-[#FFE5E5] text-[#FF6B6B] text-[10px] font-bold flex-shrink-0">
+                          FS
+                        </div>
+                      ) : (
+                        <div className="w-6 h-6 rounded-full bg-[#FF6B6B]/10 text-[#FF6B6B] flex items-center justify-center font-bold text-xs flex-shrink-0">
+                          {activity.dayNumber}
+                        </div>
+                      )}
                       <div className="min-w-0">
                         <div className="font-medium text-xs text-[#0F172A] truncate">{activity.workoutName}</div>
                         <div className="text-[10px] text-[#64748B]">
