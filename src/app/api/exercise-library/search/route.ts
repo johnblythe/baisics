@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
+import { expandExerciseSynonyms } from '@/lib/exercise-synonyms';
 
 export async function GET(request: Request) {
   try {
@@ -17,11 +18,12 @@ export async function GET(request: Request) {
 
     const whereClause: any = {};
 
-    // Text search
-    if (query) {
+    // Text search with synonym expansion
+    const expandedQuery = query ? expandExerciseSynonyms(query) : '';
+    if (expandedQuery) {
       whereClause.OR = [
-        { name: { contains: query, mode: 'insensitive' } },
-        { category: { contains: query, mode: 'insensitive' } },
+        { name: { contains: expandedQuery, mode: 'insensitive' } },
+        { category: { contains: expandedQuery, mode: 'insensitive' } },
       ];
     }
 

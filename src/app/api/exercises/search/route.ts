@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { expandExerciseSynonyms } from '@/lib/exercise-synonyms';
 
 export async function GET(req: Request) {
   const session = await auth();
@@ -21,8 +22,8 @@ export async function GET(req: Request) {
     return NextResponse.json([]);
   }
 
-  // Sanitize and limit query length
-  const sanitizedQuery = query.trim().slice(0, 100);
+  // Sanitize, expand synonyms, and limit query length
+  const sanitizedQuery = expandExerciseSynonyms(query.trim()).slice(0, 100);
 
   // Build where clause
   const where: Record<string, unknown> = {};

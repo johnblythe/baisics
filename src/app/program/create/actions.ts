@@ -6,6 +6,7 @@ import { Prisma } from '@prisma/client';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
+import { expandExerciseSynonyms } from '@/lib/exercise-synonyms';
 
 const ExerciseSchema = z.object({
   exerciseLibraryId: z.string().uuid(),
@@ -165,8 +166,8 @@ export async function searchExercises(query: string, filters?: ExerciseFilters, 
     return [];
   }
 
-  // Sanitize and limit query length
-  const sanitizedQuery = query?.trim().slice(0, 100) || '';
+  // Sanitize, expand synonyms, and limit query length
+  const sanitizedQuery = expandExerciseSynonyms(query?.trim() || '').slice(0, 100);
 
   // Build where clause
   const where: Record<string, unknown> = {};
