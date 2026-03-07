@@ -921,7 +921,7 @@ function WorkoutPageContent() {
                     setNumber={currentLog.setNumber}
                     targetReps={String(currentExercise.reps)}
                     weight={currentLog.weight ?? previousLog?.weight ?? ''}
-                    reps={currentLog.reps > 0 ? currentLog.reps : ''}
+                    reps={currentLog.reps > 0 ? currentLog.reps : (previousLog?.reps ?? '')}
                     notes={currentLog.notes}
                     isEditing={isEditingCompletedSet}
                     history={exerciseHistory[currentExercise.id]}

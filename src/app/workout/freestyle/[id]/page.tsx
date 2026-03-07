@@ -775,7 +775,7 @@ function FreestyleWorkoutContent() {
                       setNumber={currentLog.setNumber}
                       targetReps="0"
                       weight={currentLog.weight ?? previousLog?.weight ?? ''}
-                      reps={currentLog.reps > 0 ? currentLog.reps : ''}
+                      reps={currentLog.reps > 0 ? currentLog.reps : (previousLog?.reps ?? '')}
                       notes={currentLog.notes}
                       isEditing={isEditingCompletedSet}
                       history={exerciseHistory[currentExercise.id]}
